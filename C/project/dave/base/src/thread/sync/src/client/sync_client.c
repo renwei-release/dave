@@ -1,0 +1,839 @@
+/*
+ * ================================================================================
+ * (c) Copyright 2017 Renwei All rights reserved.
+ * --------------------------------------------------------------------------------
+ * 2017.04.26. - 2020.09.30.
+ * The synchronization service in the future may try to connect to all within
+ * the framework of the server.
+ * ================================================================================
+ */
+
+#include "base_macro.h"
+#include "thread_sync.h"
+#if defined(SYNC_STACK_CLIENT)
+#include "dave_verno.h"
+#include "dave_base.h"
+#include "dave_tools.h"
+#include "base_rxtx.h"
+#include "thread_tools.h"
+#include "sync_base_package.h"
+#include "sync_param.h"
+#include "sync_cfg.h"
+#include "sync_client_param.h"
+#include "sync_client_data.h"
+#include "sync_client_thread.h"
+#include "sync_client_link.h"
+#include "sync_client_tools.h"
+#include "sync_client_tx.h"
+#include "sync_client_rx.h"
+#include "sync_client_run.h"
+#include "sync_client_msg_buffer.h"
+#include "sync_client_info.h"
+#include "sync_client_route.h"
+#include "sync_test.h"
+#include "sync_lock.h"
+#include "sync_log.h"
+
+static TLock _sync_client_system_lock;
+static ThreadId _sync_client_thread = INVALID_THREAD_ID;
+static ThreadId _socket_thread = INVALID_THREAD_ID;
+extern TLock _sync_client_data_pv;
+static TIMERID _sync_client_reconnect_syncs_logic_timer = INVALID_TIMER_ID;
+static dave_bool _sync_client_reconnect_syncs_logic_flag = dave_false;
+
+static void _sync_client_reconnect_syncs_action(void);
+static void _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_index);
+
+static void
+_sync_client_system_mount(ThreadId src, SystemMount *pMount)
+{
+	SystemMount *pmount;
+
+	if(src == _sync_client_thread)
+	{
+		/*
+		 * 收到SYNC服务的内部挂载消息，
+		 * 把这个消息广播给本地除自己外的其他线程。
+		 */
+		pmount = thread_msg(pmount);
+
+		dave_memcpy(pmount, pMount, sizeof(SystemMount));
+
+		SYNCTRACE("socker:%d verno:%s", pmount->socket, pmount->verno);
+
+		broadcast_local(MSGID_SYSTEM_MOUNT, pmount);
+	}
+
+	sync_client_link_start();
+}
+
+static void
+_sync_client_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
+{
+	SystemDecoupling *pdecoupling;
+
+	sync_client_link_stop();
+
+	if(src == _sync_client_thread)
+	{
+		pdecoupling = thread_msg(pdecoupling);
+
+		dave_memcpy(pdecoupling, pDecoupling, sizeof(SystemDecoupling));
+
+		SYNCTRACE("socker:%d verno:%s", pdecoupling->socket, pdecoupling->verno);
+
+		broadcast_local(MSGID_SYSTEM_DECOUPLING, pdecoupling);
+	}
+}
+
+static void
+_sync_client_disconnect_rsp(SocketDisconnectRsp *pRsp)
+{
+	SyncServer *pServer = (SyncServer *)(pRsp->ptr);
+
+	if(pServer != NULL)
+	{
+		if(pServer->server_socket == pRsp->socket)
+		{
+			SYNCTRACE("socket:%d", pRsp->socket);
+		}
+	}
+}
+
+static void
+_sync_client_disconnect_req(SyncServer *pServer)
+{
+	SocketDisconnectReq *pReq;
+	s32 socket = pServer->server_socket;
+
+	if(socket != INVALID_SOCKET_ID)
+	{
+		SYNCTRACE("verno:%s disconnect! socket:%d type:%d state:%d/%d/%d/%d left-timer:%d recnt:%d",
+			pServer->verno,
+			pServer->server_socket,
+			pServer->server_type,
+			pServer->server_connecting,
+			pServer->server_cnt,
+			pServer->server_booting,
+			pServer->server_ready,
+			pServer->left_timer,
+			pServer->reconnect_times);
+
+		pReq = thread_reset_msg(pReq);
+
+		pReq->socket = socket;
+		pReq->ptr = pServer;
+
+		write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+	}
+}
+
+static void
+_sync_client_connect_rsp(SocketConnectRsp *pRsp)
+{
+	SyncServer *pServer = (SyncServer *)(pRsp->ptr);
+
+	if(pServer == NULL)
+	{
+		SYNCLOG("can't find server:%s",
+			ipv4str(pRsp->NetInfo.addr.ip.ip_addr, pRsp->NetInfo.port));
+		return;
+	}
+
+	switch(pRsp->ConnectInfo)
+	{
+		case SOCKETINFO_CONNECT_OK:
+		case SOCKETINFO_CONNECT_WAIT:
+				if(pServer->server_connecting == dave_true)
+				{
+					pServer->server_socket = pRsp->socket;
+
+					SYNCTRACE("socket:%d %d/%d",
+						pServer->server_socket,
+						pServer->server_connecting,
+						pServer->server_cnt);
+				}
+			break;
+		default:
+				SYNCABNOR("%s type:%s failed! (%d)",
+					ipv4str(pRsp->NetInfo.addr.ip.ip_addr, pRsp->NetInfo.port),
+					sync_client_type_to_str(pServer->server_type),
+					pRsp->ConnectInfo);
+
+				sync_client_data_reset_server(pServer, dave_true);
+			break;
+	}
+}
+
+static void
+_sync_client_connect_req(SyncServer *pServer)
+{
+	SocketConnectReq *pReq;
+
+	if((pServer->server_socket == INVALID_SOCKET_ID)
+		&& (pServer->server_connecting == dave_false)
+		&& (pServer->cfg_server_port != 0)
+		&& (base_power_state() == dave_true))
+	{
+		pServer->server_connecting = dave_true;
+		pServer->server_cnt = dave_false;
+		pServer->left_timer = SYNC_SERVER_LEFT_MAX;
+
+		pReq = thread_reset_msg(pReq);
+
+		pReq->NetInfo.domain = DM_SOC_PF_RAW_INET;
+		pReq->NetInfo.type = TYPE_SOCK_STREAM;
+		pReq->NetInfo.addr_type = NetAddrIPType;
+		pReq->NetInfo.addr.ip.ver = IPVER_IPV4;
+		dave_memcpy(pReq->NetInfo.addr.ip.ip_addr, pServer->cfg_server_ip, sizeof(pServer->cfg_server_ip));
+		pReq->NetInfo.port = pServer->cfg_server_port;
+		pReq->NetInfo.fixed_src_flag = NotFixedPort;
+		pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
+		pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
+
+		pReq->ptr = pServer;
+
+		SYNCTRACE("%s", ipv4str(pReq->NetInfo.addr.ip.ip_addr, pReq->NetInfo.port));
+
+		write_msg(_socket_thread, SOCKET_CONNECT_REQ, pReq);
+	}
+}
+
+static dave_bool
+_sync_client_disconnect_all(dave_bool reboot_flag)
+{
+	SyncServer *pServerHead = sync_client_data_head_server();
+	ub server_index;
+	dave_bool has_disconnect = dave_false;
+
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		if(pServerHead[server_index].server_socket != INVALID_SOCKET_ID)
+		{
+			SYNCDEBUG("reboot_flag:%d server_socket:%d server_type:%d cfg_server_port:%d",
+				reboot_flag,
+				pServerHead[server_index].server_socket,
+				pServerHead[server_index].server_type,
+				pServerHead[server_index].cfg_server_port);
+
+			if((reboot_flag == dave_true)
+				|| ((pServerHead[server_index].server_type == SyncServerType_client)
+					&& (pServerHead[server_index].cfg_server_port == 0)))
+			{
+				has_disconnect = dave_true;
+
+				_sync_client_disconnect_req(&pServerHead[server_index]);
+			}
+		}
+	}
+
+	return has_disconnect;
+}
+
+static void
+_sync_client_connect_all(void)
+{
+	SyncServer *pServerHead = sync_client_data_head_server();
+	ub server_index;
+
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		if(((pServerHead[server_index].server_type == SyncServerType_sync_client)
+			  || (pServerHead[server_index].server_type == SyncServerType_client))
+			&& (pServerHead[server_index].server_socket == INVALID_SOCKET_ID)
+			&& (pServerHead[server_index].server_connecting == dave_false)
+			&& (pServerHead[server_index].cfg_server_port != 0))
+		{
+			_sync_client_connect_req(&pServerHead[server_index]);
+		}
+	}
+}
+
+static void
+_sync_client_plugin_server(SocketPlugIn *pPlugIn, SyncServer *pServer)
+{
+	if(pServer == NULL)
+	{
+		SYNCLOG("can't find server! socket:%d", pPlugIn->child_socket);
+		return;
+	}
+
+	build_rxtx(TYPE_SOCK_STREAM, pPlugIn->child_socket, pPlugIn->NetInfo.port);
+
+	pServer->server_socket = pPlugIn->child_socket;
+	pServer->server_connecting = dave_false;
+	pServer->server_cnt = dave_true;
+	pServer->server_booting = dave_true;
+	pServer->booting_reciprocal = SYNC_BOOTING_RECIPROCAL;
+
+	pServer->left_timer = SYNC_SERVER_LEFT_MAX;
+	pServer->reconnect_times = SYNC_RECONNECT_TIMES;
+
+	pServer->recv_data_counter = 0;
+	pServer->send_data_counter = 0;
+}
+
+static void
+_sync_client_plugout_server(SocketPlugOut *pPlugOut, SyncServer *pServer)
+{
+	dave_bool clean_flag;
+
+	if(pServer == NULL)
+	{
+		SYNCLOG("can't find server! socket:%d", pPlugOut->socket);
+		return;
+	}
+
+	SYNCTRACE("verno:%s %s socket:%d",
+		pServer->verno, sync_client_type_to_str(pServer->server_type),
+		pServer->server_socket);
+
+	clean_rxtx(pPlugOut->socket);
+
+	sync_client_data_del_server_on_all_thread(pServer);
+
+	clean_flag = (_sync_client_reconnect_syncs_logic_flag == dave_true ? dave_true : dave_false);
+	if(pServer->server_type == SyncServerType_child)
+	{
+		clean_flag = dave_true;
+	}
+
+	sync_client_data_reset_server(pServer, clean_flag);
+
+	if((_sync_client_reconnect_syncs_logic_flag == dave_true)
+		&& (sync_client_data_all_server_is_disconnect() == dave_true))
+	{
+		_sync_client_reconnect_syncs_action();
+	}
+}
+
+static void
+_sync_client_plugin(SocketPlugIn *pPlugIn)
+{
+	SyncServer *pServer;
+
+	pServer = sync_client_link_plugin(pPlugIn);
+	if(pServer == NULL)
+	{
+		pServer = (SyncServer *)(pPlugIn->ptr);
+
+		pServer->server_socket = pPlugIn->child_socket;
+	}
+
+	if(pServer == NULL)
+	{
+		SYNCLOG("socket:%d/%d %s/%s empty pServer!",
+			pPlugIn->father_socket, pPlugIn->child_socket,
+			ipv4str(pPlugIn->NetInfo.addr.ip.ip_addr, pPlugIn->NetInfo.port),
+			ipv4str2(pPlugIn->NetInfo.src_ip.ip_addr, pPlugIn->NetInfo.src_port));
+		return;
+	}
+
+	SYNCTRACE("socket:%d/%d pServer:%x/%x/%x type:%s %s/%s",
+		pPlugIn->father_socket, pPlugIn->child_socket,
+		pServer, pServer->server_index, pServer->shadow_index,
+		sync_client_type_to_str(pServer->server_type),
+		ipv4str(pPlugIn->NetInfo.addr.ip.ip_addr, pPlugIn->NetInfo.port),
+		ipv4str2(pPlugIn->NetInfo.src_ip.ip_addr, pPlugIn->NetInfo.src_port));
+
+	SAFEZONEv5W(pServer->rxtx_pv, _sync_client_plugin_server(pPlugIn, pServer););
+}
+
+static void
+_sync_client_plugout(SocketPlugOut *pPlugOut)
+{
+	SyncServer *pServer;
+
+	pServer = sync_client_link_plugout(pPlugOut);
+	if(pServer == NULL)
+	{
+		pServer = sync_client_data_server_inq_on_socket(pPlugOut->socket);
+		if(pServer == NULL)
+		{
+			pServer = sync_client_data_server_inq_on_net(pPlugOut->NetInfo.addr.ip.ip_addr, pPlugOut->NetInfo.port);
+		}
+	}
+
+	if(pServer != NULL)
+	{
+		SYNCTRACE("socket:%d pServer:%x/%x/%x type:%s %s/%s time:%d/%d",
+			pPlugOut->socket,
+			pServer, pServer->server_index, pServer->shadow_index,
+			sync_client_type_to_str(pServer->server_type),
+			pServer->globally_identifier, pServer->verno,
+			pServer->left_timer, pServer->reconnect_times);
+
+		SAFEZONEv5W(pServer->rxtx_pv, _sync_client_plugout_server(pPlugOut, pServer););
+	}
+}
+
+static void
+_sync_client_reboot(RESTARTREQMSG *pRestart)
+{
+	if(pRestart->times == 1)
+	{
+		sync_client_link_stop();
+	}
+	else if(pRestart->times == 3)
+	{
+		_sync_client_disconnect_all(dave_true);
+	}
+}
+
+static void
+_sync_client_check_time(void)
+{
+	SyncServer *pServerHead = sync_client_data_head_server();
+	SyncServer *pServer;
+	ub server_index;
+	sb left_timer;
+
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		pServer = &pServerHead[server_index];
+		if(pServer->server_socket != INVALID_SOCKET_ID)
+		{
+			sync_lock();
+			left_timer = -- pServer->left_timer;
+			sync_unlock();
+
+			if(left_timer < 0)
+			{
+				SYNCLOG("verno:%s disconnect! socket:%d state:%d/%d/%d/%d left-timer:%d recnt:%d",
+					pServer->verno,
+					pServer->server_socket,
+					pServer->server_connecting,
+					pServer->server_cnt,
+					pServer->server_booting,
+					pServer->server_ready,
+					pServer->left_timer,
+					pServer->reconnect_times);
+
+				_sync_client_disconnect_req(pServer);
+
+				sync_lock();
+				pServer->left_timer = SYNC_SERVER_LEFT_MAX;
+				sync_unlock();
+			}
+			else if(pServer->server_cnt == dave_true)
+			{
+				SYNCDEBUG("verno:%s server_socket:%d state:%d/%d/%d/%d left_timer:%d",
+					pServer->verno,
+					pServer->server_socket,
+					pServer->server_connecting,
+					pServer->server_cnt,
+					pServer->server_booting,
+					pServer->server_ready,
+					pServer->left_timer);
+
+				if(left_timer < (SYNC_SERVER_LEFT_MAX / 2))
+				{
+					sync_client_tx_heartbeat(pServer, dave_true);
+				}
+			}
+		}
+	}
+}
+
+static void
+_sync_client_booting_time(void)
+{
+	SyncServer *pServerHead = sync_client_data_head_server();
+	SyncServer *pServer;
+	ub server_index;
+
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		pServer = &pServerHead[server_index];
+		if((pServer->server_socket != INVALID_SOCKET_ID)
+			&& (pServer->server_cnt == dave_true)
+			&& (pServer->server_booting == dave_true)
+			&& ((-- pServer->booting_reciprocal) <= 0))
+		{
+			SYNCTRACE("%x type:%s socket:%d (%d%d%d%d)",
+				pServer,
+				sync_client_type_to_str(pServer->server_type),
+				pServer->server_socket,
+				pServer->server_connecting, pServer->server_cnt,
+				pServer->server_booting, pServer->server_ready);
+
+			pServer->booting_reciprocal = SYNC_BOOTING_RECIPROCAL;
+
+			sync_client_tx_my_verno(pServer);
+
+			sync_client_tx_rpcver_req(pServer);
+		}
+	}
+}
+
+static void
+_sync_client_guard_time(TIMERID timer_id, ub thread_index)
+{
+	SAFEZONEv5TW(_sync_client_system_lock, {
+		SAFEZONEv5TW(_sync_client_data_pv, {
+
+			/*
+			 * 用到了sync_client_data_head_server结构体的位置都需要用
+			 * 锁锁起来！
+			 */
+
+			_sync_client_booting_time();
+			_sync_client_check_time();
+
+			if(_sync_client_reconnect_syncs_logic_flag == dave_false)
+			{
+				_sync_client_connect_all();
+				_sync_client_disconnect_all(dave_false);
+			}
+
+		} );
+	} );
+}
+
+static void
+_sync_client_events(InternalEvents *pEvents)
+{
+	sync_client_run_thread_events(pEvents->ptr);
+}
+
+static void
+_sync_client_busy(ClientBusy *pBusy)
+{
+	sync_client_tx_system_state(dave_true);
+}
+
+static void
+_sync_client_idle(ClientIdle *pIdle)
+{
+	sync_client_tx_system_state(dave_false);
+}
+
+static void
+_sync_client_reconnect_syncs_action(void)
+{
+	SyncServer *pSyncServer;
+
+	_sync_client_reconnect_syncs_logic_flag = dave_false;
+	
+	sync_client_data_reset_sync_server();
+	pSyncServer = sync_client_data_sync_server();
+	_sync_client_connect_all();
+
+	SYNCLOG("Configuration has changed, Connect to SYNC service from %s!",
+		ipv4str(pSyncServer->cfg_server_ip, pSyncServer->cfg_server_port));
+}
+
+static void
+_sync_client_reconnect_syncs_logic(void)
+{
+	SyncServer *pSyncServer = sync_client_data_sync_server();
+	u8 cfg_ip_before[16];
+	u16 cfg_port_before;
+	u8 cfg_ip_after[16];
+	u16 cfg_port_after;
+
+	dave_memset(cfg_ip_before, 0x00, sizeof(cfg_ip_before));
+	dave_memset(cfg_ip_after, 0x00, sizeof(cfg_ip_after));
+
+	dave_memcpy(cfg_ip_before, pSyncServer->cfg_server_ip, sizeof(pSyncServer->cfg_server_ip));
+	cfg_port_before = pSyncServer->cfg_server_port;
+	sync_client_data_reset_sync_server();
+	dave_memcpy(cfg_ip_after, pSyncServer->cfg_server_ip, sizeof(pSyncServer->cfg_server_ip));
+	cfg_port_after = pSyncServer->cfg_server_port;
+
+	if((dave_memcmp(cfg_ip_before, cfg_ip_after, 4) == dave_true)
+		&& (cfg_port_before == cfg_port_after))
+	{
+		SYNCLOG("Configuration not change!");
+	}
+	else
+	{
+		_sync_client_reconnect_syncs_logic_flag = dave_true;
+
+		sync_client_link_stop();
+
+		SYNCLOG("Configuration has changed(%s->%s), restart sync now(%d) ...",
+			ipv4str(cfg_ip_before, cfg_port_before),
+			ipv4str2(cfg_ip_after, cfg_port_after),
+			_sync_client_reconnect_syncs_logic_flag);
+
+		if(_sync_client_disconnect_all(dave_true) == dave_false)
+		{
+			_sync_client_reconnect_syncs_action();
+		}
+	}
+}
+
+static void
+_sync_client_cfg_update(CFGUpdate *pUpdate)
+{
+	if((dave_strcmp(pUpdate->cfg_name, CFG_SYNC_ADDRESS) == dave_true)
+		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_PORT) == dave_true))
+	{
+		SYNCTRACE("%s update! %d/%d",
+			pUpdate->cfg_name,
+			_sync_client_reconnect_syncs_logic_flag,
+			_sync_client_reconnect_syncs_logic_timer);
+
+		if((_sync_client_reconnect_syncs_logic_flag == dave_false)
+			&& (_sync_client_reconnect_syncs_logic_timer == INVALID_TIMER_ID))
+		{
+			/*
+			 * 有可能还有CFG_SYNC_PORT设置信息过来，
+			 * 通过定时器同步。
+			 */
+			_sync_client_reconnect_syncs_logic_timer = base_timer_creat("scrl", _sync_client_safe_reconnect_syncs_logic_timer_out, 3000);
+		}
+	}
+}
+
+static inline void
+_sync_client_broadcast_route(MSGBODY *pMsg)
+{
+	if((pMsg->msg_type == BaseMsgType_Unicast)
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_local))
+	{
+		return;
+	}
+
+	sync_client_message_route(pMsg);
+}
+
+static void
+_sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_index)
+{
+	SAFEZONEv5W(_sync_client_system_lock, {
+
+		if(_sync_client_reconnect_syncs_logic_flag == dave_false)
+		{
+			_sync_client_reconnect_syncs_logic();
+		}
+
+		base_timer_die(timer_id);
+
+		_sync_client_reconnect_syncs_logic_timer = INVALID_TIMER_ID;
+
+	} );
+}
+
+static void
+_sync_client_safe_system_mount(ThreadId src, SystemMount *pMount)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_system_mount(src, pMount); } );
+}
+
+static void
+_sync_client_safe_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_system_decoupling(src, pDecoupling); } );
+}
+
+static void
+_sync_client_safe_connect_rsp(SocketConnectRsp *pRsp)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_connect_rsp(pRsp); } );
+}
+
+static void
+_sync_client_safe_disconnect_rsp(SocketDisconnectRsp *pRsp)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_disconnect_rsp(pRsp); } );
+}
+
+static void
+_sync_client_safe_plugin(SocketPlugIn *pPlugIn)
+{
+	if(base_power_state() == dave_false)
+	{
+		return;
+	}
+
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_plugin(pPlugIn); });
+}
+
+static void
+_sync_client_safe_plugout(SocketPlugOut *pPlugOut)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_plugout(pPlugOut); });
+}
+
+static void
+_sync_client_safe_rx_read(SocketRead *pRead)
+{
+	SyncServer *pServer = sync_client_data_server_inq_on_socket(pRead->socket);
+
+	if((pServer == NULL) || (pServer->server_socket == INVALID_SOCKET_ID))
+	{
+		dave_mfree(pRead->data);
+		return;
+	}
+
+	if(pServer->server_cnt == dave_false)
+	{
+		SocketRead *pNewRead = thread_msg(pNewRead);
+
+		*pNewRead = *pRead;
+
+		dave_os_sleep(1000);
+
+		write_msg(self(), SOCKET_READ, pNewRead);
+	}
+	else
+	{
+		SAFEZONEv5R(pServer->rxtx_pv, sync_client_rx_read(pServer, pRead););
+	}
+}
+
+static void
+_sync_client_safe_rx_event(SocketRawEvent *pEvent)
+{
+	SyncServer *pServer = sync_client_data_server_inq_on_socket(pEvent->socket);
+	dave_bool re_event = dave_true;
+
+	if((pServer == NULL) || (pServer->server_socket == INVALID_SOCKET_ID))
+	{
+		dave_mfree(pEvent->data);
+		return;
+	}
+
+	if(pServer->server_cnt == dave_false)
+	{
+		dave_os_sleep(1000);
+	}
+	else
+	{
+		SAFEZONEv5TR( pServer->rxtx_pv, sync_client_rx_event(pServer, pEvent); re_event = dave_false; );
+	}
+
+	if(re_event == dave_true)
+	{
+		SocketRawEvent *pNewEvent = thread_msg(pNewEvent);	
+		*pNewEvent = *pEvent;
+		write_msg(self(), SOCKET_RAW_EVENT, pNewEvent);
+	}
+}
+
+static void
+_sync_client_safe_reboot(RESTARTREQMSG *pRestart)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_reboot(pRestart); } );
+}
+
+static void
+_sync_client_safe_cfg_update(CFGUpdate *pUpdate)
+{
+	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_cfg_update(pUpdate); } );
+}
+
+static void
+_sync_client_init(MSGBODY *msg)
+{
+	t_lock_reset(&_sync_client_system_lock);
+
+	_socket_thread = thread_id(SOCKET_THREAD_NAME);
+
+	sync_client_data_init();
+
+	sync_client_run_init();
+
+	sync_client_thread_init();
+
+	sync_client_link_init();
+
+	sync_client_msg_buffer_init();
+
+	_sync_client_connect_all();
+
+	base_timer_creat("syncct", _sync_client_guard_time, SYNC_CLIENT_BASE_TIME);
+}
+
+static void
+_sync_client_main(MSGBODY *msg)
+{	
+	switch((ub)(msg->msg_id))
+	{
+		case MSGID_RESTART_REQ:
+		case MSGID_POWER_OFF:
+				_sync_client_safe_reboot((RESTARTREQMSG *)(msg->msg_body));
+			break;
+		case MSGID_CFG_UPDATE:
+				_sync_client_safe_cfg_update((CFGUpdate *)(msg->msg_body));
+			break;
+		case MSGID_DEBUG_REQ:
+				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
+			break;
+		case MSGID_INTERNAL_EVENTS:
+				_sync_client_events((InternalEvents *)(msg->msg_body));
+			break;
+		case MSGID_SYSTEM_MOUNT:
+				_sync_client_safe_system_mount(msg->msg_src, (SystemMount *)(msg->msg_body));
+			break;
+		case MSGID_SYSTEM_DECOUPLING:
+				_sync_client_safe_system_decoupling(msg->msg_src, (SystemDecoupling *)(msg->msg_body));
+			break;
+		case MSGID_CLIENT_BUSY:
+				_sync_client_busy((ClientBusy *)(msg->msg_body));
+			break;
+		case MSGID_CLIENT_IDLE:
+				_sync_client_idle((ClientIdle *)(msg->msg_body));
+			break;
+		case SOCKET_CONNECT_RSP:
+				_sync_client_safe_connect_rsp((SocketConnectRsp *)(msg->msg_body));
+			break;
+		case SOCKET_DISCONNECT_RSP:
+				_sync_client_safe_disconnect_rsp((SocketDisconnectRsp *)(msg->msg_body));
+			break;
+		case SOCKET_PLUGIN:
+				_sync_client_safe_plugin((SocketPlugIn *)(msg->msg_body));
+			break;
+		case SOCKET_PLUGOUT:
+				_sync_client_safe_plugout((SocketPlugOut *)(msg->msg_body));
+			break;
+		case SOCKET_READ:
+				_sync_client_safe_rx_read((SocketRead *)(msg->msg_body));
+			break;
+		case SOCKET_RAW_EVENT:
+				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
+			break;
+		default:
+				_sync_client_broadcast_route(msg);
+			break;
+	}
+}
+
+static void
+_sync_client_exit(MSGBODY *msg)
+{
+	sync_client_run_exit();
+
+	sync_client_msg_buffer_exit();
+
+	sync_client_thread_exit();
+
+	sync_client_link_exit();
+
+	sync_client_data_exit();
+}
+
+// =====================================================================
+
+void
+sync_client_init(void)
+{
+	ub thread_number = dave_os_cpu_process_number();
+
+	_sync_client_thread = base_thread_creat(SYNC_CLIENT_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _sync_client_init, _sync_client_main, _sync_client_exit);
+	if(_sync_client_thread == INVALID_THREAD_ID)
+		base_restart(SYNC_CLIENT_THREAD_NAME);
+}
+
+void
+sync_client_exit(void)
+{
+	if(_sync_client_thread != INVALID_THREAD_ID)
+		base_thread_del(_sync_client_thread);
+	_sync_client_thread = INVALID_THREAD_ID;
+}
+
+#endif
+

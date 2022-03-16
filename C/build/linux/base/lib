@@ -1,0 +1,45 @@
+#!/bin/bash
+
+PROJECT=${PWD##*/}
+PROJECT=${PROJECT^^}
+
+############## build_lib function ##############
+build_lib()
+{
+   ./clean >> $LOGFILE
+
+   echo build $LEVEL ...
+   ./build $LEVEL >> $LOGFILE
+   
+   echo build $LEVEL, save c lib
+   make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$LEVEL lib >> $LOGFILE
+
+   echo build $LEVEL, save python and go lib
+   make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$LEVEL end_build >> $LOGFILE
+}
+############## build_lib function ##############
+
+LEVEL=$1
+LOGFILE=log.txt
+
+if [ "$LEVEL" == "" ] || [ "$LEVEL" == "alpha" ]; then
+   LEVEL=alpha
+   build_lib
+fi
+
+if [ "$LEVEL" == "beta" ]; then
+   LEVEL=beta
+   build_lib
+fi
+
+if [ "$LEVEL" == "all" ]; then
+   LEVEL=alpha
+   build_lib
+
+   LEVEL=beta
+   build_lib
+fi
+
+./clean >> $LOGFILE
+
+rm -rf $LOGFILE

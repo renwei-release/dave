@@ -1,0 +1,29 @@
+#!/bin/bash
+#/*
+# * ================================================================================
+# * (c) Copyright 2022 Renwei All rights reserved.
+# * --------------------------------------------------------------------------------
+# * 2022.02.08.
+# * ================================================================================
+# */
+
+PROJECT=${PWD##*/}
+HOMEPATH=$(cd `dirname $0`; pwd)
+FINDATTACH=0
+
+if [ -f ../../../../Deploy/deploy/${PROJECT}/attach.sh ]; then
+   cd ../../../../Deploy/deploy/${PROJECT}/
+   FINDATTACH=1
+elif [ -f ../../../Deploy/deploy/${PROJECT}/attach.sh ]; then
+   cd ../../../Deploy/deploy/${PROJECT}/
+   FINDATTACH=1
+elif [ -f ../../Deploy/deploy/${PROJECT}/attach.sh ]; then
+   cd ../../Deploy/deploy/${PROJECT}/
+   FINDATTACH=1
+fi
+
+if [ ${FINDATTACH} == 1 ]; then
+   echo attach ${PROJECT}
+   chmod a+x *.sh
+   ./attach.sh
+fi
