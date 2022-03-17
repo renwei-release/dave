@@ -1,10 +1,10 @@
 /*
- * ================================================================================
- * (c) Copyright 2022 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2022.02.22.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
+
 #include "dave_tools.h"
 #include "t_bson_define.h"
 #include "t_bson_inq.h"

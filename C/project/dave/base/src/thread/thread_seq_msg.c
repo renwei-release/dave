@@ -1,14 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2018 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * The main purpose of this module is to prevent the network interface from reading
- * data out of order. 
- * In a multi-threaded environment, messages that read data from the network enter
- * the queue in order, but threads that do not necessarily get the message first
- * are executed first, which causes subsequent messages to be read first.
- * 2018.07.22.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #include "base_macro.h"

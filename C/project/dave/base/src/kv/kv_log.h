@@ -1,16 +1,15 @@
 /*
- * ================================================================================
- * (c) Copyright 2020 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2020.11.26.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __KV_LOG_H__
 #define __KV_LOG_H__
 #include "dave_base.h"
 
-#if defined(__DAVE_ALPHA_VERSION__)
+#if defined(__BASE_ALPHA_VERSION__)
 // #define KV_DEBUG
 #endif
 

@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2016 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2016.9.1.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __MEM_LOG_H__
@@ -11,13 +10,13 @@
 #include "base_macro.h"
 #include "dave_base.h"
 
-#if defined(__DAVE_ALPHA_VERSION__)
+#if defined(__BASE_ALPHA_VERSION__)
  #define MEMORY_DEBUG
 // #define MEMORY_TRACE
 // #define MEMORY_TEST
 #endif
 
-#ifdef __DAVE_ALPHA_VERSION__
+#ifdef __BASE_ALPHA_VERSION__
 // #define MEMORY_DEBUG_SHOW_INIT_INFO
 #endif
 

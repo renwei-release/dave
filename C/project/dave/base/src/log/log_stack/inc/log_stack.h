@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2017 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2017.04.01.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __LOG_STACK_H__

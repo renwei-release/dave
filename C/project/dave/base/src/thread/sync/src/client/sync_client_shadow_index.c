@@ -1,18 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2021 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2021.09.29.
- * The synchronization service in the future may try to connect to all within
- * the framework of the server.
+ * Copyright (c) 2022 Renwei
  *
- * 因为两个sync client端之间会同时建立两个链接，
- * 一个是通过Client端连接，一个是通过Child连接，
- * 而这两个连接会产生不一样的thread_id出来，
- * 这样造成在应用端的混乱，在此通过最先就绪的账号来设定为未来通信的唯一账号。
- * 这个最先就绪的账号不确定是Client还是Child端的。
- *
- * ================================================================================
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #include "base_macro.h"

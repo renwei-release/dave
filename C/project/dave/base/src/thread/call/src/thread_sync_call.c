@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2018 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2018.08.23.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #include "base_macro.h"
@@ -234,7 +233,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 
 	wait_start_time = dave_os_time_us();
 
-#ifdef __DAVE_ALPHA_VERSION__
+#ifdef __BASE_ALPHA_VERSION__
 	/*
 	 * 在处理同步消息时，不用做同线程资源竞争检测。
 	 */

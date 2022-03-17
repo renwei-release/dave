@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2018 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2018.08.23.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __THREAD_SYNC_CALL_H__

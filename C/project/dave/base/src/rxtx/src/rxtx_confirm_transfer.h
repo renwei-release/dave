@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2019 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2019.05.20.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __RXTX_CONFIRM_TRANSFER_H__

@@ -1,11 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2020 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2020.08.07.
- * The synchronization service in the future may try to connect to all within
- * the framework of the server.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #include "base_macro.h"

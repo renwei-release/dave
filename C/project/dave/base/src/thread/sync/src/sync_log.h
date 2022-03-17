@@ -1,16 +1,15 @@
 /*
- * ================================================================================
- * (c) Copyright 2018 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2018.01.22.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __SYNC_LOG_H__
 #define __SYNC_LOG_H__
 #include "dave_base.h"
 
-#if defined(__DAVE_ALPHA_VERSION__)
+#if defined(__BASE_ALPHA_VERSION__)
 // #define SYNC_DEBUG
 #endif
 

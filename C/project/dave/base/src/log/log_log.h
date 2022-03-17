@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2017 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2017.10.02. - 2021.04.17.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #include "base_macro.h"
@@ -11,7 +10,7 @@
 #define __LOG_LOG_H__
 #include "dave_base.h"
 
-#ifdef __DAVE_ALPHA_VERSION__
+#ifdef __BASE_ALPHA_VERSION__
 // #define LOG_DEBUG
 #endif
 

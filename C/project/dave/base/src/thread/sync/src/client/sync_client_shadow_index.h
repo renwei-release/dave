@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2021 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2021.09.29.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __SYNC_CLIENT_SHADOW_INDEX_H__
