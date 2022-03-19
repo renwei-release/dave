@@ -19,7 +19,5 @@
 #define __VERNO_ALPHA_VERSION__
 #endif
 
-#define __VERNO_PC_LINUX__
-
 #endif
 

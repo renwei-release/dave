@@ -30,7 +30,7 @@ _dos_debug_rsp(MSGBODY *ptr)
 }
 
 static ErrCode
-_dos_debug_req(s8 *cmd, ub cmd_len)
+_dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index;
 	s8 thread_name[128];
@@ -41,8 +41,8 @@ _dos_debug_req(s8 *cmd, ub cmd_len)
 
 	cmd_index = 0;
 
-	cmd_index += dos_get_one_parameters(&cmd[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
-	dos_get_last_parameters(&cmd[cmd_index], cmd_len-cmd_index, pReq->msg, sizeof(pReq->msg));
+	cmd_index += dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
+	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, pReq->msg, sizeof(pReq->msg));
 
 	debug_thread = thread_id(thread_name);
 	if(debug_thread == INVALID_THREAD_ID)
@@ -55,7 +55,7 @@ _dos_debug_req(s8 *cmd, ub cmd_len)
 		}
 		else
 		{
-			dave_strcpy(thread_name, "GUARDIAN", sizeof(thread_name));
+			dave_strcpy(thread_name, GUARDIAN_THREAD_NAME, sizeof(thread_name));
 		}
 	}
 

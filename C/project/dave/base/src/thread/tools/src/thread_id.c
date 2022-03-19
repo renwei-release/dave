@@ -40,9 +40,7 @@ typedef union {
 static inline dave_bool
 _thread_sync_flag(void)
 {
-	s8 *product = dave_verno_product(NULL, NULL, 0);
-
-	if(dave_strcmp(product, "SYNC") == dave_true)
+	if(dave_strcmp(dave_verno_my_product(), "SYNC") == dave_true)
 	{
 		return dave_true;
 	}

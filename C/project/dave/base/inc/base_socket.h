@@ -110,7 +110,6 @@ typedef struct {
 } SocketRawEvent;
 
 void base_socket_init(void);
-
 void base_socket_exit(void);
 
 #endif

@@ -20,7 +20,6 @@
 #endif
 
 void thread_sync_init(void);
-
 void thread_sync_exit(void);
 
 #endif

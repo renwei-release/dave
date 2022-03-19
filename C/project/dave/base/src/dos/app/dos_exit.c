@@ -23,7 +23,7 @@ _dos_restart_help(void)
 }
 
 static ErrCode
-_dos_restart_user(s8 *param, ub param_len)
+_dos_restart_user(s8 *param_ptr, ub param_len)
 {
 	const char *msg = "User restart the system!";
 
@@ -41,7 +41,7 @@ _dos_exit_help(void)
 }
 
 static ErrCode
-_dos_exit_user(s8 *param, ub param_len)
+_dos_exit_user(s8 *param_ptr, ub param_len)
 {
 	const char *msg = "User reboot the system!";
 

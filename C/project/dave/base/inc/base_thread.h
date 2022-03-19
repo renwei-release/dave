@@ -8,6 +8,8 @@
 #ifndef __BASE_THREAD_H__
 #define __BASE_THREAD_H__
 
+#define GUARDIAN_THREAD_NAME "g"
+
 #define INVALID_THREAD_ID (0xffffffffffffffff)
 
 typedef u64 ThreadId;

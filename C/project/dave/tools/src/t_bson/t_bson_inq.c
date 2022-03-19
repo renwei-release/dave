@@ -261,6 +261,9 @@ t_bson_array_number_inq(tBsonObject *pBson)
 	size_t number;
 	tBsonData *pInq;
 
+	if(pBson == NULL)
+		return 0;
+
 	if(pBson->type != tBsonType_array)
 	{
 		TOOLSLOG("invalid type:%d",

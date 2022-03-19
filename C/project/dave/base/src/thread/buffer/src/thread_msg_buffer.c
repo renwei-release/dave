@@ -21,11 +21,7 @@
 #define base_mask (0xfffffffc)
 #endif
 
-#if defined(__BASE_PC_LINUX__) || defined(__BASE_MAC__)
 #define MSG_BUFFER_MAX (20480)
-#else
-#error Please define thread platform!
-#endif
 #define MSG_IN_BUFFER_MAX_TIME (1000 * 1000 * 720)	// 720 s
 #define WAIT_PUSH_BUFFER_TIME (1000 * 3000) 		// 6 s
 #define MAX_ACTION_THREAD (THREAD_MAX)

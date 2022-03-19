@@ -81,11 +81,7 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
     with open(c_verno_inc_file, "w") as file_id:
         file_id.write(def_c_verno_head_file)
         file_id.write(f'#define VERSION_PRODUCT "{projectname}"\n\n')
-        file_id.write(f'#ifdef __VERNO_PC_LINUX__\n')
-        file_id.write(f' #define VERSION_MISC "linux"\n')
-        file_id.write(f'#else\n')
-        file_id.write(f' #error Please define valid misc version!!!\n')
-        file_id.write(f'#endif\n\n')
+        file_id.write(f'#define VERSION_MISC "linux"\n\n')
         file_id.write(f'#define VERSION_MAIN "{MAIN}"\n')
         file_id.write(f'#if defined(__VERNO_ALPHA_VERSION__)\n')
         file_id.write(f' #define VERSION_SUB "{SUB}"\n')
@@ -103,7 +99,8 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
         file_id.write(f'#define __BUILD_HOSTNAME__ \"{socket.getfqdn(socket.gethostname())}\"\n')
         file_id.write(f'#define __BUILD_USERNAME__ \"{getpass.getuser()}\"\n\n')
         file_id.write(f's8 * dave_verno(void);\n')
-        file_id.write(f's8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);\n\n')
+        file_id.write(f's8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);\n')
+        file_id.write(f's8 * dave_verno_my_product(void);\n\n')
         file_id.write(def_c_verno_end_file)
 
     touch_file(c_verno_src_file)

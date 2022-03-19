@@ -23,7 +23,7 @@ _sync_test_echo(ThreadId dst, void *ptr, s8 *msg_ptr, ub msg_len)
 	t_time_get_date(&date);
 
 	dave_snprintf(msg_ptr, msg_len, "%s echo : hello (%s)",
-		dave_verno_product(NULL, NULL, 0), t_a2b_date_str(&date));
+		dave_verno_my_product(), t_a2b_date_str(&date));
 }
 
 static ub

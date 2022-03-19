@@ -18,11 +18,7 @@
 
 #define VERSION_PRODUCT "BASE"
 
-#ifdef __VERNO_PC_LINUX__
- #define VERSION_MISC "linux"
-#else
- #error Please define valid misc version!!!
-#endif
+#define VERSION_MISC "linux"
 
 #define VERSION_MAIN "4"
 #if defined(__VERNO_ALPHA_VERSION__)
@@ -32,7 +28,7 @@
 #endif
 #define VERSION_REV "1"
 
-#define VERSION_DATE_TIME "20220317115523"
+#define VERSION_DATE_TIME "20220319215256"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -46,6 +42,7 @@
 
 s8 * dave_verno(void);
 s8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);
+s8 * dave_verno_my_product(void);
 
 #endif
 

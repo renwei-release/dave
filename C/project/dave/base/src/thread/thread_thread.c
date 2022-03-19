@@ -11,9 +11,7 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#ifdef __BASE_PC_LINUX__
 #include <sys/prctl.h>
-#endif
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
@@ -141,9 +139,7 @@ _tthread_reset_index_map_all(void)
 static void
 _tthread_setup_thread_name(ThreadThread *pTThread)
 {
-#ifdef __BASE_PC_LINUX__
 	prctl(PR_SET_NAME, pTThread->thread_name);
-#endif
 }
 
 static void
@@ -523,7 +519,7 @@ _tthread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub number_i
 
 	if(ret == dave_true)
 	{
-		dave_snprintf(pTThread->thread_name, THREAD_NAME_MAX, "%s%s%d", dave_verno_product(NULL, NULL, 0), thread_name, number_index);
+		dave_snprintf(pTThread->thread_name, THREAD_NAME_MAX, "%s%s%d", dave_verno_my_product(), thread_name, number_index);
 		pTThread->thread_index = thread_index;
 		pTThread->thread_id = thread_id;
 

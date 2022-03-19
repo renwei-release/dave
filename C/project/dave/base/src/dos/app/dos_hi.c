@@ -22,7 +22,7 @@ _hi_help(void)
 }
 
 static ErrCode
-_hi_show(s8 *param, ub param_len)
+_hi_show(s8 *param_ptr, ub param_len)
 {
 	dos_welcome_screen();
 	return ERRCODE_OK;
@@ -33,7 +33,7 @@ _hi_show(s8 *param, ub param_len)
 void
 dos_hi_reset(void)
 {
-	dos_cmd_register("hi", _hi_show, (help_process_fun)_hi_help);
+	dos_cmd_register("hi", _hi_show, _hi_help);
 }
 
 #endif

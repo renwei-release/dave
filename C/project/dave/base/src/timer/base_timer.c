@@ -12,11 +12,7 @@
 #include "dave_tools.h"
 #include "timer_log.h"
 
-#if defined(__BASE_PC_LINUX__)
 #define TIMER_MAX (8192)
-#else
-#define TIMER_MAX (128)
-#endif
 #define TIMER_NAME_LEN (16)
 #define CREAT_SW_TIMER_MIN_VALUE (1000)						// ms
 #define CREAT_SW_TIMER_MAX_VALUE (1000*60*60*24*7UL)		// ms

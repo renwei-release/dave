@@ -30,9 +30,7 @@ typedef enum {
 static LOGType
 _thread_log_server_flag(void)
 {
-	s8 *product = dave_verno_product(NULL, NULL, 0);
-	
-	if(dave_strcmp(product, "LOG") == dave_true)
+	if(dave_strcmp(dave_verno_my_product(), "LOG") == dave_true)
 	{
 		return LOG_SERVER;
 	}

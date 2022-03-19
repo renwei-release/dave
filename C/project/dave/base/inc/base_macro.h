@@ -20,26 +20,17 @@
 #endif
 
 /*
- * BASE platform macro defined by the compiler macro.
- */
-#if defined(ANDROID_NDK_VOIP)
- #define __BASE_ANDROID__
-#else
- #define __BASE_PC_LINUX__
-#endif
-
-/*
  * Product types defined automatically by the
  * compiler macro.
  */
-#if defined(PC_LINUX_LOG) || defined(APPLE_MAC_LOG)
- #define __BASE_PRODUCT_LOG__
-#elif defined(PC_LINUX_SYNC) || defined(APPLE_MAC_SYNC)
- #define __BASE_PRODUCT_SYNC__
-#elif defined(PC_LINUX_BASE)
+#if defined(DAVE_PRODUCT_BASE)
  #define __BASE_PRODUCT_BASE__
-#elif defined(PC_LINUX_DEBUG)
+#elif defined(DAVE_PRODUCT_DEBUG)
  #define __BASE_PRODUCT_DEBUG__
+#elif defined(DAVE_PRODUCT_LOG)
+ #define __BASE_PRODUCT_LOG__
+#elif defined(DAVE_PRODUCT_SYNC)
+ #define __BASE_PRODUCT_SYNC__
 #else
  #define __BASE_PRODUCT_BASE__
 #endif

@@ -48,3 +48,11 @@ dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 	return buf_ptr;
 }
 
+s8 *
+dave_verno_my_product(void)
+{
+	static s8 product_str[128];
+
+	return dave_verno_product(dave_verno(), product_str, sizeof(product_str));
+}
+

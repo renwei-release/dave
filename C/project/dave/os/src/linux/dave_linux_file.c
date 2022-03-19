@@ -39,7 +39,7 @@ _linux_file_home_dir(void)
 {
 	static s8 file_dir[64];
 
-	dave_snprintf(file_dir, sizeof(file_dir), "/dave/%s/", dave_verno_product(NULL, NULL, 0));
+	dave_snprintf(file_dir, sizeof(file_dir), "/dave/%s/", dave_verno_my_product());
 
 	t_stdio_tolowers(file_dir);
 

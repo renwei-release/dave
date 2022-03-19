@@ -21,7 +21,7 @@ static s8 _dos_prompt[256];
 s8 *
 dos_prompt(void)
 {
-	dave_sprintf(_dos_prompt, "%s:> ", dave_verno_product(NULL, NULL, 0));
+	dave_sprintf(_dos_prompt, "%s:> ", dave_verno_my_product());
 
 	return _dos_prompt;
 }

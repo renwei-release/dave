@@ -62,15 +62,15 @@ void
 base_restart(const char *args, ...)
 {
 	va_list list_args;
-	POWEROFFMSG *pPowerOff = thread_msg(pPowerOff);
+	POWEROFFMSG *pRoweroff = thread_msg(pRoweroff);
 
 	_base_power_state = dave_false;
 
 	va_start(list_args, args);
-	vsnprintf((char *)pPowerOff->reason, sizeof(pPowerOff->reason), args, list_args);
+	vsnprintf((char *)pRoweroff->reason, sizeof(pRoweroff->reason), args, list_args);
 	va_end(list_args);
 
-	write_msg(thread_id("GUARDIAN"), MSGID_POWER_OFF, pPowerOff);
+	write_msg(thread_id(GUARDIAN_THREAD_NAME), MSGID_POWER_OFF, pRoweroff);
 }
 
 void

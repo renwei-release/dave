@@ -18,15 +18,17 @@ void dos_cmd_exit(void);
 
 void dos_cmd_reset(void);
 
-void dos_cmd_analysis(s8 *input, ub input_len);
+void dos_cmd_analysis(s8 *input_ptr, ub input_len);
 
-void dos_help_analysis(s8 *cmd, ub cmd_len);
+void dos_help_analysis(s8 *cmd_ptr, ub cmd_len);
 
 ErrCode dos_cmd_register(char *cmd, cmd_process_fun fun, help_process_fun help_fun);
 
 ErrCode dos_cmd_talk_register(s8 *cmd, cmd_process_fun fun, help_process_fun help_fun);
 
 MBUF * dos_cmd_list(void);
+
+void dos_cmd_list_show(void);
 
 #endif
 

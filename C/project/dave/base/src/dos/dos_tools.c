@@ -90,5 +90,27 @@ dos_get_one_parameters(s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len)
 	return cmd_index;
 }
 
+ub
+dos_get_bool(s8 *cmd_ptr, ub cmd_len, dave_bool *bool_value)
+{
+	s8 bool_value_str[32];
+	ub param_len;
+
+	param_len = dos_get_one_parameters(cmd_ptr, cmd_len, bool_value_str, sizeof(bool_value_str));
+
+	if(dave_strcmp(bool_value_str, "true"))
+		*bool_value = dave_true;
+	else
+		*bool_value = dave_false;
+
+	return param_len;
+}
+
+ub
+dos_get_str(s8 *cmd_ptr, ub cmd_len, s8 *str_ptr, ub str_len)
+{
+	return dos_get_one_parameters(cmd_ptr, cmd_len, str_ptr, str_len);
+}
+
 #endif
 

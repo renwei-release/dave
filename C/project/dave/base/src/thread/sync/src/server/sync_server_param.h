@@ -16,7 +16,7 @@ typedef enum {
 } SyncServerEvents;
 
 #define SYNC_SERVER_BASE_TIME (1000)
-#define SYNC_CLIENT_LEFT_MAX (60)
+#define SYNC_CLIENT_LEFT_MAX (30)
 #define SYNC_CLIENT_SYNC_MAX (2)
 #define SYNC_MAX_RELEASE_QUANTITY (2048)
 

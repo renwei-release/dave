@@ -10,11 +10,7 @@
 #include "log_lock.h"
 #include "log_log.h"
 
-#ifdef __BASE_PC_LINUX__
 #define LOG_BUFFER_NUMBER (1024)
-#else
-#define LOG_BUFFER_NUMBER (32)
-#endif
 #define LOG_BUFFER_LENGTH (16392)
 
 typedef struct {

@@ -964,7 +964,7 @@ _thread_guardian_running_function(base_thread_fun thread_fun, base_thread_fun la
 
 	if(_guardian_thread == INVALID_THREAD_ID)
 	{
-		_guardian_thread = _thread_get_id((const s8 *)GUARDIAN_THREAD_NAME);
+		_guardian_thread = _thread_get_id(GUARDIAN_THREAD_NAME);
 	}
 
 	write_msg(_guardian_thread, MSGID_RUN_FUNCTION, pRun);	

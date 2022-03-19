@@ -169,96 +169,51 @@ _dos_get_cmd_and_param(s8 *cmd, ub *cmd_len, s8 *param, ub *param_len, s8 *input
 }
 
 static void
-_show_invalid_cmd_screen(s8 *input, ub input_len)
+_show_invalid_cmd_screen(s8 *input_ptr, ub input_len)
 {
-	s8 *invalid_cmd;
-	ub invalid_cmd_len = 256 + input_len;
-	ub invalid_index;
-
-	invalid_cmd = dave_ralloc(invalid_cmd_len);
-
-	invalid_index = 0;
-	invalid_index += dave_sprintf(&invalid_cmd[invalid_index], "Sorry, you entered an invalid command:");
-	dave_memcpy(&invalid_cmd[invalid_index], input, input_len);
-	invalid_index += input_len;
-	invalid_cmd[invalid_index++] = '\r';
-	invalid_cmd[invalid_index++] = '\n';
-	dave_sprintf(&invalid_cmd[invalid_index], "Please enter help or lscmd to get information!");
-	dos_print(invalid_cmd);
-
-	dave_free(invalid_cmd);
+	dos_print("Sorry, you entered an invalid command:%s\nPlease enter ls to get information!", input_ptr);
 }
 
 static void
-_show_not_support_cmd_screen(s8 *cmd, ub cmd_len)
+_show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 {
-	ub show_index;
-	s8 *support_cmd;
-	ub support_cmd_len = 128 + cmd_len;
+	dos_print("Sorry, you entered an unsupported command:%s", cmd_ptr);
 
-	support_cmd = dave_malloc(support_cmd_len);
-	if(support_cmd != NULL)
-	{
-		show_index = 0;
-		dave_memset(support_cmd, 0x00, support_cmd_len);
-		dave_sprintf(&support_cmd[show_index], "Sorry, you entered an unsupported command:%s\r\n", cmd);
-		dos_print(support_cmd);
-		dave_free(support_cmd);
-	}
+	dos_cmd_list_show();
 }
 
 static void
-_show_run_cmd_failed_screen(s8 *cmd, ub cmd_len, s8 *param, ub param_len, ErrCode ret)
+_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, ErrCode ret)
 {
-	s8 *cmd_failed;
-	ub cmd_failed_len = 128 + cmd_len + param_len;
-
-	cmd_failed = dave_malloc(cmd_failed_len);
-	if(cmd_failed != NULL)
-	{
-		dave_memset(cmd_failed, 0x00, cmd_failed_len);
-		dave_sprintf(cmd_failed, "Sorry(%s), you entered an invalid command:\r\n%s or param:\r\n%s", errorstr(ret), cmd, param);
-		dos_print(cmd_failed);
-		dave_free(cmd_failed);
-	}
+	dos_print("Sorry(%s), you entered an invalid command:\n%s or param:\n%s", errorstr(ret), cmd_ptr, param);
 }
 
 static void
-_show_run_help_failed_screen(s8 *cmd, ub cmd_len)
+_show_run_help_failed_screen(s8 *cmd_ptr, ub cmd_len)
 {
-	s8 *help_failed;
-	ub help_failed_len = 128 + cmd_len;
-
-	help_failed = dave_malloc(help_failed_len);
-	if(help_failed != NULL)
-	{
-		dave_memset(help_failed, 0x00, help_failed_len);
-		dave_sprintf(help_failed, "Sorry,help(%s) failed", cmd);
-		dos_print(help_failed);
-		dave_free(help_failed);
-	}
+	dos_print("Sorry,help(%s) failed!", cmd_ptr);
 }
 
 static void
-_dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd, ub cmd_len, s8 *param, ub param_len)
+_dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len)
 {
 	DOSCmdStruct *pCmd;
 	ErrCode ret;
 
-	if(_dos_get_cmd_and_param(cmd, &cmd_len, param, &param_len, input, input_len) == dave_false)
+	if(_dos_get_cmd_and_param(cmd_ptr, &cmd_len, param, &param_len, input, input_len) == dave_false)
 	{
 		_show_invalid_cmd_screen(input, input_len);
 		return;
 	}
 
-	pCmd = _find_the_cmd(cmd, cmd_len);
+	pCmd = _find_the_cmd(cmd_ptr, cmd_len);
 	if(pCmd == NULL)
 	{
-		_show_not_support_cmd_screen(cmd, cmd_len);
+		_show_not_support_cmd_screen(cmd_ptr, cmd_len);
 		return;
 	}
 
-	DOSLOG("%s %s", cmd, param);
+	DOSLOG("%s %s", cmd_ptr, param);
 
 	ret = ERRCODE_Arithmetic_error;
 	if(pCmd->fun != NULL)
@@ -269,7 +224,7 @@ _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd, ub cmd_len, s8 *param, ub pa
 	{
 		if(pCmd->help_fun == NULL)
 		{
-			_show_run_cmd_failed_screen(cmd, cmd_len, param, param_len, ret);
+			_show_run_cmd_failed_screen(cmd_ptr, cmd_len, param, param_len, ret);
 		}
 		else
 		{
@@ -335,7 +290,7 @@ dos_cmd_reset(void)
 }
 
 void
-dos_cmd_analysis(s8 *input, ub input_len)
+dos_cmd_analysis(s8 *input_ptr, ub input_len)
 {
 	s8 *cmd;
 	ub cmd_len;
@@ -347,32 +302,32 @@ dos_cmd_analysis(s8 *input, ub input_len)
 	cmd_len = input_len;
 	param_len = input_len;
 
-	_dos_cmd_analysis(input, input_len, cmd, cmd_len, param, param_len);
+	_dos_cmd_analysis(input_ptr, input_len, cmd, cmd_len, param, param_len);
 
 	dave_free(cmd);
 	dave_free(param);	
 }
 
 void
-dos_help_analysis(s8 *cmd, ub cmd_len)
+dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 {
 	DOSCmdStruct *pCmd;
-	ErrCode ret = ERRCODE_OK;
+	ErrCode ret;
 
-	pCmd = _find_the_cmd(cmd, cmd_len);
+	pCmd = _find_the_cmd(cmd_ptr, cmd_len);
 	if(pCmd == NULL)
 	{
-		_show_not_support_cmd_screen(cmd, cmd_len);
+		_show_not_support_cmd_screen(cmd_ptr, cmd_len);
 		return;
 	}
-	
+
 	if(pCmd->help_fun != NULL)
 	{
 		ret = (pCmd->help_fun)();
-	}
-	if(ret != ERRCODE_OK)
-	{
-		_show_run_help_failed_screen(cmd, cmd_len);
+		if(ret != ERRCODE_OK)
+		{
+			_show_run_help_failed_screen(cmd_ptr, cmd_len);
+		}
 	}
 }
 
@@ -412,6 +367,60 @@ dos_cmd_list(void)
 		search = (DOSCmdStruct *)(search->next);
 	}
 	return list;
+}
+
+void
+dos_cmd_list_show(void)
+{
+	MBUF *list = dos_cmd_list(), *search;
+	s8 *msg;
+	ub msg_len = 4096, msg_index, cmd_counter;
+	ub space_len, cmd_len, cmd_len_max = 0;
+
+	if(list != NULL)
+	{
+		//get cmd len max
+		search = list;
+		while(search != NULL)
+		{
+			cmd_len = dave_strlen(search->payload);
+			if(cmd_len_max < cmd_len)
+				cmd_len_max = cmd_len;
+
+			search = search->next;
+		}
+
+		msg = dave_malloc(msg_len);
+		if(msg != NULL)
+		{
+			dave_memset(msg, 0x00, msg_len);
+			search = list;
+			msg_index = 0;
+			cmd_counter = 0;
+			msg_index += dave_sprintf(&msg[msg_index], "Support of the command list:\r\n");
+			while(search != NULL)
+			{
+				msg_index += dave_sprintf(&msg[msg_index], "%s ", search->payload);
+				space_len = cmd_len_max+2-dave_strlen(search->payload);
+				dave_memset(&msg[msg_index],' ',space_len);
+				msg_index += space_len;
+				if((++ cmd_counter) > 4)
+				{
+					msg_index += dave_sprintf(&msg[msg_index], "\r\n");
+					cmd_counter = 0;
+				}
+				search = search->next;
+			}
+			dos_print(msg);
+			dave_free(msg);
+		}
+
+		dave_mfree(list);
+	}
+	else
+	{
+		dos_print("empty command list!");
+	}
 }
 
 #endif
