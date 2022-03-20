@@ -22,584 +22,6 @@
 // =====================================================================
 
 void *
-t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketBindReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketBindReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketBindReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketBindReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketBindReq);
-
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketBindRsp(SocketBindRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketBindRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketBindRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketBindRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "SOCKETINFO-BindInfo", t_rpc_ver3_zip_SOCKETINFO(zip_data->BindInfo));
-	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketBindRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketBindRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketBindRsp);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->BindInfo), t_bson_inq_object(pStructBson, "SOCKETINFO-BindInfo"));
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketConnectReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketConnectReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketConnectReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketConnectReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketConnectReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketConnectReq);
-
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketConnectRsp(SocketConnectRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketConnectRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketConnectRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketConnectRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "SOCKETINFO-ConnectInfo", t_rpc_ver3_zip_SOCKETINFO(zip_data->ConnectInfo));
-	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketConnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketConnectRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketConnectRsp);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->ConnectInfo), t_bson_inq_object(pStructBson, "SOCKETINFO-ConnectInfo"));
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketDisconnectReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketDisconnectReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketDisconnectReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketDisconnectReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketDisconnectReq);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketDisconnectRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketDisconnectRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketDisconnectRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "SOCKETINFO-result", t_rpc_ver3_zip_SOCKETINFO(zip_data->result));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketDisconnectRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketDisconnectRsp);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->result), t_bson_inq_object(pStructBson, "SOCKETINFO-result"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketPlugIn) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketPlugIn) does not match(%d/%d), please contact the message settlers!", sizeof(SocketPlugIn), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-father_socket", t_rpc_ver3_zip_s32(zip_data->father_socket));
-	t_bson_add_object(pStructBson, "s32-child_socket", t_rpc_ver3_zip_s32(zip_data->child_socket));
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketPlugIn *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketPlugIn);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->father_socket), t_bson_inq_object(pStructBson, "s32-father_socket"));
-		t_rpc_ver3_unzip_s32(&(pUnzip->child_socket), t_bson_inq_object(pStructBson, "s32-child_socket"));
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketPlugOut) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketPlugOut) does not match(%d/%d), please contact the message settlers!", sizeof(SocketPlugOut), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "SOCKETINFO-reason", t_rpc_ver3_zip_SOCKETINFO(zip_data->reason));
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketPlugOut *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketPlugOut);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->reason), t_bson_inq_object(pStructBson, "SOCKETINFO-reason"));
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketRead) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketRead) does not match(%d/%d), please contact the message settlers!", sizeof(SocketRead), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "IPBaseInfo-IPInfo", t_rpc_ver3_zip_IPBaseInfo(&(zip_data->IPInfo)));
-	t_bson_add_object(pStructBson, "ub-data_len", t_rpc_ver3_zip_ub(zip_data->data_len));
-	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketRead *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketRead);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_IPBaseInfo(&(pUnzip->IPInfo), t_bson_inq_object(pStructBson, "IPBaseInfo-IPInfo"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->data_len), t_bson_inq_object(pStructBson, "ub-data_len"));
-		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketWrite) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketWrite) does not match(%d/%d), please contact the message settlers!", sizeof(SocketWrite), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "IPBaseInfo-IPInfo", t_rpc_ver3_zip_IPBaseInfo(&(zip_data->IPInfo)));
-	t_bson_add_object(pStructBson, "ub-data_len", t_rpc_ver3_zip_ub(zip_data->data_len));
-	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
-	t_bson_add_object(pStructBson, "SOCKETINFO-close_flag", t_rpc_ver3_zip_SOCKETINFO(zip_data->close_flag));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketWrite *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketWrite);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_IPBaseInfo(&(pUnzip->IPInfo), t_bson_inq_object(pStructBson, "IPBaseInfo-IPInfo"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->data_len), t_bson_inq_object(pStructBson, "ub-data_len"));
-		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->close_flag), t_bson_inq_object(pStructBson, "SOCKETINFO-close_flag"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketNotify) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketNotify) does not match(%d/%d), please contact the message settlers!", sizeof(SocketNotify), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "SOCKETINFO-notify", t_rpc_ver3_zip_SOCKETINFO(zip_data->notify));
-	t_bson_add_object(pStructBson, "ub-data", t_rpc_ver3_zip_ub(zip_data->data));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketNotify *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketNotify);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->notify), t_bson_inq_object(pStructBson, "SOCKETINFO-notify"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->data), t_bson_inq_object(pStructBson, "ub-data"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SocketRawEvent) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SocketRawEvent) does not match(%d/%d), please contact the message settlers!", sizeof(SocketRawEvent), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
-	t_bson_add_object(pStructBson, "s32-os_socket", t_rpc_ver3_zip_s32(zip_data->os_socket));
-	t_bson_add_object(pStructBson, "SOCEVENT-event", t_rpc_ver3_zip_SOCEVENT(zip_data->event));
-	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
-	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
-	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SocketRawEvent *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SocketRawEvent);
-
-		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
-		t_rpc_ver3_unzip_s32(&(pUnzip->os_socket), t_bson_inq_object(pStructBson, "s32-os_socket"));
-		t_rpc_ver3_unzip_SOCEVENT(&(pUnzip->event), t_bson_inq_object(pStructBson, "SOCEVENT-event"));
-		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
-		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
-	}
-
-	return ret;
-}
-
-void *
 t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -2032,6 +1454,584 @@ t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_len = sizeof(MsgOSNotify);
 
 		t_rpc_ver3_unzip_ub(&(pUnzip->notify_info), t_bson_inq_object(pStructBson, "ub-notify_info"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketBindReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketBindReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketBindReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketBindReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketBindReq);
+
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketBindRsp(SocketBindRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketBindRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketBindRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketBindRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "SOCKETINFO-BindInfo", t_rpc_ver3_zip_SOCKETINFO(zip_data->BindInfo));
+	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketBindRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketBindRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketBindRsp);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->BindInfo), t_bson_inq_object(pStructBson, "SOCKETINFO-BindInfo"));
+		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketConnectReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketConnectReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketConnectReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketConnectReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketConnectReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketConnectReq);
+
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketConnectRsp(SocketConnectRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketConnectRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketConnectRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketConnectRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "SOCKETINFO-ConnectInfo", t_rpc_ver3_zip_SOCKETINFO(zip_data->ConnectInfo));
+	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketConnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketConnectRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketConnectRsp);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->ConnectInfo), t_bson_inq_object(pStructBson, "SOCKETINFO-ConnectInfo"));
+		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketDisconnectReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketDisconnectReq) does not match(%d/%d), please contact the message settlers!", sizeof(SocketDisconnectReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketDisconnectReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketDisconnectReq);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketDisconnectRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketDisconnectRsp) does not match(%d/%d), please contact the message settlers!", sizeof(SocketDisconnectRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "SOCKETINFO-result", t_rpc_ver3_zip_SOCKETINFO(zip_data->result));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketDisconnectRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketDisconnectRsp);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->result), t_bson_inq_object(pStructBson, "SOCKETINFO-result"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketPlugIn) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketPlugIn) does not match(%d/%d), please contact the message settlers!", sizeof(SocketPlugIn), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-father_socket", t_rpc_ver3_zip_s32(zip_data->father_socket));
+	t_bson_add_object(pStructBson, "s32-child_socket", t_rpc_ver3_zip_s32(zip_data->child_socket));
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketPlugIn *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketPlugIn);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->father_socket), t_bson_inq_object(pStructBson, "s32-father_socket"));
+		t_rpc_ver3_unzip_s32(&(pUnzip->child_socket), t_bson_inq_object(pStructBson, "s32-child_socket"));
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketPlugOut) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketPlugOut) does not match(%d/%d), please contact the message settlers!", sizeof(SocketPlugOut), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "SOCKETINFO-reason", t_rpc_ver3_zip_SOCKETINFO(zip_data->reason));
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketPlugOut *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketPlugOut);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->reason), t_bson_inq_object(pStructBson, "SOCKETINFO-reason"));
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketRead) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketRead) does not match(%d/%d), please contact the message settlers!", sizeof(SocketRead), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "IPBaseInfo-IPInfo", t_rpc_ver3_zip_IPBaseInfo(&(zip_data->IPInfo)));
+	t_bson_add_object(pStructBson, "ub-data_len", t_rpc_ver3_zip_ub(zip_data->data_len));
+	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketRead *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketRead);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_IPBaseInfo(&(pUnzip->IPInfo), t_bson_inq_object(pStructBson, "IPBaseInfo-IPInfo"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->data_len), t_bson_inq_object(pStructBson, "ub-data_len"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketWrite) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketWrite) does not match(%d/%d), please contact the message settlers!", sizeof(SocketWrite), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "IPBaseInfo-IPInfo", t_rpc_ver3_zip_IPBaseInfo(&(zip_data->IPInfo)));
+	t_bson_add_object(pStructBson, "ub-data_len", t_rpc_ver3_zip_ub(zip_data->data_len));
+	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "SOCKETINFO-close_flag", t_rpc_ver3_zip_SOCKETINFO(zip_data->close_flag));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketWrite *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketWrite);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_IPBaseInfo(&(pUnzip->IPInfo), t_bson_inq_object(pStructBson, "IPBaseInfo-IPInfo"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->data_len), t_bson_inq_object(pStructBson, "ub-data_len"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->close_flag), t_bson_inq_object(pStructBson, "SOCKETINFO-close_flag"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketNotify) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketNotify) does not match(%d/%d), please contact the message settlers!", sizeof(SocketNotify), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "SOCKETINFO-notify", t_rpc_ver3_zip_SOCKETINFO(zip_data->notify));
+	t_bson_add_object(pStructBson, "ub-data", t_rpc_ver3_zip_ub(zip_data->data));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketNotify *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketNotify);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_SOCKETINFO(&(pUnzip->notify), t_bson_inq_object(pStructBson, "SOCKETINFO-notify"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->data), t_bson_inq_object(pStructBson, "ub-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SocketRawEvent) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SocketRawEvent) does not match(%d/%d), please contact the message settlers!", sizeof(SocketRawEvent), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s32-socket", t_rpc_ver3_zip_s32(zip_data->socket));
+	t_bson_add_object(pStructBson, "s32-os_socket", t_rpc_ver3_zip_s32(zip_data->os_socket));
+	t_bson_add_object(pStructBson, "SOCEVENT-event", t_rpc_ver3_zip_SOCEVENT(zip_data->event));
+	t_bson_add_object(pStructBson, "SocNetInfo-NetInfo", t_rpc_ver3_zip_SocNetInfo(&(zip_data->NetInfo)));
+	t_bson_add_object(pStructBson, "MBUF_ptr-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void_ptr-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SocketRawEvent *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SocketRawEvent);
+
+		t_rpc_ver3_unzip_s32(&(pUnzip->socket), t_bson_inq_object(pStructBson, "s32-socket"));
+		t_rpc_ver3_unzip_s32(&(pUnzip->os_socket), t_bson_inq_object(pStructBson, "s32-os_socket"));
+		t_rpc_ver3_unzip_SOCEVENT(&(pUnzip->event), t_bson_inq_object(pStructBson, "SOCEVENT-event"));
+		t_rpc_ver3_unzip_SocNetInfo(&(pUnzip->NetInfo), t_bson_inq_object(pStructBson, "SocNetInfo-NetInfo"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF_ptr-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void_ptr-ptr"));
 	}
 
 	return ret;
