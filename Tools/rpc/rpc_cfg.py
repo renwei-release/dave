@@ -23,8 +23,6 @@ rpc_disable_path_list = [
 
 
 ver1_auto_dir = os.path.abspath(__file__).rsplit('/', 1)[0] + '/../../C/project/dave/tools/src/t_rpc/ver1/auto'
-if not os.path.exists(ver1_auto_dir):
-    os.makedirs(ver1_auto_dir)
 ver1_metadata_src_file_name = "../../C/project/dave/tools/src/t_rpc/ver1/t_rpc_ver1_metadata.c"
 ver1_metadata_inc_file_name = "../../C/project/dave/tools/src/t_rpc/ver1/t_rpc_ver1_metadata.h"
 ver1_enumdata_src_file_name = ver1_auto_dir+"/t_rpc_ver1_enumdata.c"
@@ -42,14 +40,10 @@ ver1_rpcdata_inc_file_name = ver1_auto_dir+"/t_rpc_ver1_rpcdata.h"
 
 
 ver2_auto_dir = os.path.abspath(__file__).rsplit('/', 1)[0] + '/../../C/project/dave/tools/src/t_rpc/ver2/auto'
-if not os.path.exists(ver2_auto_dir):
-    os.makedirs(ver2_auto_dir)
 ver2_proto_file_name = ver2_auto_dir+"/t_rpc_ver2_proto.proto"
 
 
 ver3_auto_dir = os.path.abspath(__file__).rsplit('/', 1)[0] + '/../../C/project/dave/tools/src/t_rpc/ver3/auto'
-if not os.path.exists(ver3_auto_dir):
-    os.makedirs(ver3_auto_dir)
 ver3_rpcinc_file_name = "../../C/project/dave/tools/inc/t_rpc.h"
 ver3_metadata_src_file_name = "../../C/project/dave/tools/src/t_rpc/ver3/t_rpc_ver3_metadata.c"
 ver3_metadata_inc_file_name = "../../C/project/dave/tools/src/t_rpc/ver3/t_rpc_ver3_metadata.h"

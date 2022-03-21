@@ -22,11 +22,16 @@
 #    时 ，更难处理。
 #
 
+import os
+from rpc_cfg import *
 from ver2.creat_proto_file import creat_proto_file
 from ver2.creat_c_file import creat_c_file
 
 
 def rpc_ver2():
+    if not os.path.exists(ver2_auto_dir):
+        os.makedirs(ver2_auto_dir)
+
     proto_file = creat_proto_file()
     creat_c_file(proto_file)
     return

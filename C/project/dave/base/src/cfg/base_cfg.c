@@ -737,15 +737,20 @@ _base_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 // =====================================================================
 
 ErrCode
-base_cfg_set(s8 *name, u8 *value_ptr, ub value_len)
+base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
-	return _base_cfg_set(NULL, name, value_ptr, value_len);
+	return _base_cfg_set(dir, name, value_ptr, value_len);
 }
 
 dave_bool
-base_cfg_get(s8 *name, u8 *value_ptr, ub value_len)
+base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
-	if(_base_cfg_get(NULL, name, value_ptr, value_len) == 0)
+	ub get_len;
+
+	get_len = _base_cfg_get(dir, name, value_ptr, value_len);
+	if(get_len < value_len)
+		value_ptr[get_len] = '\0';
+	if(get_len == 0)
 		return dave_false;
 
 	return dave_true;

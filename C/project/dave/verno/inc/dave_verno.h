@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "BASE"
+#define VERSION_PRODUCT "LOG"
 
 #define VERSION_MISC "linux"
 
@@ -28,7 +28,7 @@
 #endif
 #define VERSION_REV "1"
 
-#define VERSION_DATE_TIME "20220320113047"
+#define VERSION_DATE_TIME "20220321121634"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -37,7 +37,7 @@
 #endif
 
 #define __BUILD_MAC_ADDRESS__ "000C2930311F"
-#define __BUILD_HOSTNAME__ "192.168.220.132"
+#define __BUILD_HOSTNAME__ "dave"
 #define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);

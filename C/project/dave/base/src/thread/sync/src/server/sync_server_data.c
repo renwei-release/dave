@@ -253,7 +253,7 @@ _sync_server_please_sync_all_thread_to_all_client(void)
 	{
 		if(_sync_client[client_index].client_socket != INVALID_SOCKET_ID)
 		{
-			_sync_client[client_index].sync_timer = SYNC_CLIENT_SYNC_MAX;
+			_sync_client[client_index].sync_timer = SYNC_CLIENT_SYNC_WAIT_MAX;
 			_sync_client[client_index].sync_thread_flag = dave_true;
 		}
 	}

@@ -423,7 +423,7 @@ _sync_client_check_time(void)
 					pServer->server_ready,
 					pServer->left_timer);
 
-				if(left_timer < (SYNC_SERVER_LEFT_MAX / 2))
+				if((SYNC_SERVER_LEFT_MAX - left_timer) > SYNC_CLIENT_HEARTBEAT_TIME)
 				{
 					sync_client_tx_heartbeat(pServer, dave_true);
 				}

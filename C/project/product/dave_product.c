@@ -30,6 +30,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "product_macro.h"
 #include "os_log.h"
 
 void dave_product_init(void);
