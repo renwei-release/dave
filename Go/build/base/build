@@ -1,0 +1,11 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+PROJECT=${PWD##*/}
+PROJECT=${PROJECT^^}
+
+cd ../
+./build.sh $PROJECT
+
+cp $PROJECT $homepath/dave
+mv $PROJECT $homepath/$PROJECT-BIN

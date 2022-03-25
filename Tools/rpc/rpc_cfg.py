@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import os
 
 
@@ -57,3 +56,9 @@ ver3_msgdata_src_file_name = ver3_auto_dir+"/t_rpc_ver3_msgdata.c"
 ver3_msgdata_inc_file_name = ver3_auto_dir+"/t_rpc_ver3_msgdata.h"
 ver3_rpcdata_src_file_name = ver3_auto_dir+"/t_rpc_ver3_rpcdata.c"
 ver3_rpcdata_inc_file_name = ver3_auto_dir+"/t_rpc_ver3_rpcdata.h"
+
+ver3_gomsgid_file_name = "../../Go/project/dave/base/dave_msg_id.go"
+ver3_godefine_file_name = "../../Go/project/dave/base/dave_define.go"
+ver3_gostruct_file_name = "../../Go/project/dave/base/dave_struct.go"
+ver3_gomsgstruct_file_name = "../../Go/project/dave/base/dave_msg_struct.go"
+ver3_goenum_file_name = "../../Go/project/dave/base/dave_enum.go"

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_union_table import find_union_table
@@ -15,9 +13,10 @@ from find.find_meta_table import find_meta_table
 
 _uniondata_src_head = "\
 #include \"dave_base.h\"\n\
+#include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
-#include \"tools_log.h\"\n"
+#include \"tools_log.h\"\n\n"
 
 
 _uniondata_src_private = "\
@@ -55,9 +54,8 @@ _uniondata_inc_end = "\
 #endif\n\n"
 
 
-def _creat_uniondata_include_file(file_id, include_list):
+def _creat_uniondata_private_file(file_id):
     file_id.write(_uniondata_src_private)
-    file_id.write("\n// =====================================================================\n\n")
     return
 
 
@@ -82,16 +80,18 @@ def _creat_uniondata_fun_file(file_id, union_table):
     return
 
 
-def _creat_uniondata_src_file(union_table, include_list, file_name):
+def _creat_uniondata_src_file(union_table, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_uniondata_src_head)
-        _creat_uniondata_include_file(file_id, include_list)
+        if len(union_table) > 0:
+            _creat_uniondata_private_file(file_id)
+        file_id.write("\n// =====================================================================\n\n")
         _creat_uniondata_fun_file(file_id, union_table)
     return
 
 
-def _creat_uniondata_inc_file(union_table, include_list, file_name):
+def _creat_uniondata_inc_file(union_table, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_uniondata_inc_head)
@@ -115,10 +115,10 @@ def _creat_uniondata_remove_metadata(meta_table, union_table):
 
 
 def creat_uniondata_file():
-    union_table, include_list = find_union_table()
+    union_table, _ = find_union_table()
     meta_table = find_meta_table(ver3_metadata_src_file_name)
     _creat_uniondata_remove_metadata(meta_table, union_table)
     print(f"{len(union_table)}\tuniondata\twrite to {ver3_uniondata_src_file_name}")
-    _creat_uniondata_src_file(union_table, include_list, ver3_uniondata_src_file_name)
-    _creat_uniondata_inc_file(union_table, include_list, ver3_uniondata_inc_file_name)
-    return
+    _creat_uniondata_src_file(union_table, ver3_uniondata_src_file_name)
+    _creat_uniondata_inc_file(union_table, ver3_uniondata_inc_file_name)
+    return union_table

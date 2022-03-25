@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import re
 
-_copyright_message = "\
+
+_copyright_message_for_c_and_go = "\
 /*\n\
  * Copyright (c) 2022 Renwei\n\
  *\n\
@@ -188,11 +187,12 @@ def get_enum_id_table(enum_content):
     return enum_content
 
 
-def copyright_message(file_id):
-    file_id.write(_copyright_message)
+def copyright_message(file_id, copy_flag='c'):
+    if copy_flag == 'c':
+        file_id.write(_copyright_message_for_c_and_go)
 
 
-def include_message(file_id, head_list, file_name=None):
+def include_message(file_id, head_list):
     head_list.sort()
     head_list2 = []
     for include_file in head_list:
@@ -210,13 +210,19 @@ def struct_on_the_table(struct_type, struct_table=None, union_table=None):
         has_ptr = False
     else:
         has_ptr = True
+    is_struct = True
     if struct_table != None:
+        if struct_table.get(struct_type, None) != None:
+            return is_struct, has_ptr, struct_type
         if struct_table.get(no_ptr_struct_type, None) != None:
-            return True, has_ptr, no_ptr_struct_type
+            return is_struct, has_ptr, no_ptr_struct_type
     if union_table != None:
+        if union_table.get(struct_type, None) != None:
+            return is_struct, has_ptr, struct_type
         if union_table.get(no_ptr_struct_type, None) != None:
-            return True, has_ptr, no_ptr_struct_type
-    return False, has_ptr, struct_type
+            return is_struct, has_ptr, no_ptr_struct_type
+    is_struct = False
+    return is_struct, has_ptr, struct_type
 
 
 def struct_dimension_decomposition(struct_dimension):

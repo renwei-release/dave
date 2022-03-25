@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #ifdef __DAVE_BASE__
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "cfg_log.h"
 
@@ -654,7 +655,7 @@ _base_cfg_booting(void)
 	{
 		_config_init_ = 0x89807abcd;
 
-		dave_lock_reset(&_config_option_pv);
+		t_lock_reset(&_config_option_pv);
 
 		_base_cfg_reset_all_buffer();
 	}
@@ -764,7 +765,7 @@ base_cfg_set_ub(s8 *cfg_name, ub ub_value)
 
 	value_len = t_a2b_digital_to_string(value_ptr, sizeof(value_ptr), ub_value);
 
-	return base_cfg_set(cfg_name, (u8 *)value_ptr, value_len);
+	return cfg_set(cfg_name, (u8 *)value_ptr, value_len);
 }
 
 ub
@@ -773,7 +774,7 @@ base_cfg_get_ub(s8 *cfg_name)
 	s8 value_ptr[128];
 	ub ub_data;
 
-	if(base_cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
+	if(cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
 	{
 		ub_data = t_a2b_string_to_digital(value_ptr);
 	}

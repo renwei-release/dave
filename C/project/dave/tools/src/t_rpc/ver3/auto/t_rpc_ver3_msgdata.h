@@ -14,6 +14,7 @@
 #ifndef _T_RPC_MSGDATA_H__
 #define _T_RPC_MSGDATA_H__
 #include "dave_base.h"
+
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 

@@ -41,7 +41,6 @@ __mbuf_mmalloc__(ub length, s8 *file, ub line)
 	m->len = length;
 	m->ref = 1;
 	m->alloc_len = length;
-	m->external_free = NULL;
 
 	/*
 	 * 在内存分配时已经默认多分配了一个字节位置
@@ -103,20 +102,10 @@ __mbuf_mfree__(MBUF *m, s8 *file, ub line)
 		{
 			n = m->next;
 
-			if(m->external_free == NULL)
-			{
-				__base_free__(m, file, line);
-			}
-			else
-			{
-				m->external_free((void *)(m->external_param));
-				m->external_free = NULL;
-
-				__base_free__(m, file, line);
-			}
+			__base_free__(m, file, line);
 
 			count ++;
-			
+
 			m = n;
 		}
 		else

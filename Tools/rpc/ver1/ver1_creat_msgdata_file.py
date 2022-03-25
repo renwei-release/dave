@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_msg_struct_table import find_msg_struct_table
@@ -165,7 +163,7 @@ def _creat_msgdata_src_file(msg_struct_table, file_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_msgdata_src_head)
-        include_message(file_id, file_list, file_name)
+        include_message(file_id, file_list)
         file_id.write("// =====================================================================\n\n")
         _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table)
     return
@@ -175,7 +173,7 @@ def _creat_msgdata_inc_file(msg_struct_table, file_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_msgdata_inc_head)
-        include_message(file_id, file_list, file_name)
+        include_message(file_id, file_list)
         for msg_struct_name in msg_struct_table.keys():
             msg_struct_name = msg_struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver1_zip_"+msg_struct_name+"("+msg_struct_name+" *zip_data, ub zip_len);\n")

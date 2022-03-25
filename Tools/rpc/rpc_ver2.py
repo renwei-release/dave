@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-#
-# ================================================================================
-# (c) Copyright 2022 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2022.01.19.
-#
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 
 #
 # 这是一个想用protobuf传输RPC的尝试，但看起来失败了，原因如下：

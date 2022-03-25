@@ -12,6 +12,7 @@
  */
 
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_third_party.h"
 #include "t_rpc_ver3_enumdata.h"
@@ -20,6 +21,7 @@
 #include "t_rpc_ver3_structdata.h"
 #include "t_rpc_ver3_uniondata.h"
 #include "tools_log.h"
+
 static void *
 _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 {

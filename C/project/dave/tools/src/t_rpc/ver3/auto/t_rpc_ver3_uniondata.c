@@ -12,43 +12,11 @@
  */
 
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_third_party.h"
 #include "tools_log.h"
-#define _t_rpc_zip_uniondata(zip_data, zip_len) __t_rpc_zip_uniondata__(zip_data, zip_len, (s8 *)__func__, (ub)__LINE__)
-static inline void *
-__t_rpc_zip_uniondata__(void *zip_data, ub zip_len, s8 *fun, ub line)
-{
-	void *pArrayBson = t_bson_malloc_array();
-    t_bson_array_add_bin(pArrayBson, (char *)zip_data, (int)zip_len);
-	return pArrayBson;
-}
 
-#define _t_rpc_unzip_uniondata(unzip_data, unzip_len, pArrayBson) __t_rpc_unzip_uniondata__(unzip_data, unzip_len, pArrayBson, (s8 *)__func__, (ub)__LINE__)
-static inline dave_bool
-__t_rpc_unzip_uniondata__(void *unzip_data, ub unzip_len, void *pArrayBson, s8 *fun, ub line)
-{
-    size_t cpy_len;
-	if(pArrayBson == NULL)
-	{
-		dave_memset(unzip_data, 0x00, unzip_len);
-        return dave_false;
-	}
-    cpy_len = (size_t)unzip_len;
-    return t_bson_array_cpy_bin(pArrayBson, 0, (char *)unzip_data, &cpy_len);
-}
 
 // =====================================================================
-
-void *
-t_rpc_ver3_zip_SocNetInfoAddr(SocNetInfoAddr *zip_data)
-{
-	return _t_rpc_zip_uniondata((void *)zip_data, sizeof(SocNetInfoAddr));
-}
-
-dave_bool
-t_rpc_ver3_unzip_SocNetInfoAddr(SocNetInfoAddr *unzip_data, void *pArrayBson)
-{
-	return _t_rpc_unzip_uniondata((void *)unzip_data, sizeof(SocNetInfoAddr), pArrayBson);
-}
 

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.08.23.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import re
 import traceback
 from .find_msg_file_list import find_msg_file_list

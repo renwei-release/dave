@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #ifdef __DAVE_BASE__
 #include "dave_base.h"
+#include "dave_os.h"
 #include "thread_parameter.h"
 #include "thread_mem.h"
 #include "thread_struct.h"

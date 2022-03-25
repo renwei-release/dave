@@ -24,6 +24,7 @@ extern "C"{
 #include "base_msg.h"
 #include "base_main.h"
 #include "base_dos.h"
+#include "base_dll.h"
 
 #ifdef __cplusplus
 } //extern "C"

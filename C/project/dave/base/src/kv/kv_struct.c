@@ -27,7 +27,7 @@ ___kv_pv_booting___(void)
 	{
 		_kv_struct_global_init = 0;
 
-		dave_lock_reset(&_kv_struct_global_pv);
+		t_lock_reset(&_kv_struct_global_pv);
 	}
 	t_unlock_spin(NULL);
 }
@@ -43,7 +43,7 @@ ___kv_malloc___(s8 *name, KVAttrib attrib, ub out_second, kv_out_callback callba
 
 	pKV->magic_data = pKV->magic_rand = dave_rand();
 
-	dave_lock_reset(&(pKV->kv_pv));
+	t_lock_reset(&(pKV->kv_pv));
 
 	dave_strcpy(pKV->thread_name, thread_name(self()), DAVE_THREAD_NAME_LEN);
 

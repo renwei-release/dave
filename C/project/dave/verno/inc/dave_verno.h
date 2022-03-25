@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "LOG"
+#define VERSION_PRODUCT "BASE"
 
 #define VERSION_MISC "linux"
 
@@ -28,7 +28,7 @@
 #endif
 #define VERSION_REV "1"
 
-#define VERSION_DATE_TIME "20220321121634"
+#define VERSION_DATE_TIME "20220325154700"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -41,6 +41,7 @@
 #define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);
+s8 * dave_verno_reset(s8 *verno);
 s8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);
 s8 * dave_verno_my_product(void);
 

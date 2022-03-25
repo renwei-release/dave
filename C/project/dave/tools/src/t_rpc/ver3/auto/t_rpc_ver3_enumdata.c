@@ -12,10 +12,12 @@
  */
 
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_third_party.h"
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
+
 
 #define DEFAULT_ENUM_VALUE -1
 

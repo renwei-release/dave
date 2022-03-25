@@ -283,7 +283,7 @@ s8 *
 t_stdio_tolowers(s8 *str)
 {
 	s8 *opt_str = str;
-	ub safe_counter;
+	ub safe_counter = 0;
 
 	if(opt_str != NULL)
 	{
@@ -307,7 +307,7 @@ s8 *
 t_stdio_touppers(s8 *str)
 {
 	s8 *opt_str = str;
-	ub safe_counter;
+	ub safe_counter = 0;
 
 	if(opt_str != NULL)
 	{

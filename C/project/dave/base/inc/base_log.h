@@ -9,7 +9,6 @@
 #define __BASE_LOG_H__
 
 #include <stdarg.h>
-#include "dave_os.h"
 
 void __base_debug__(const char *args, ...);
 void __base_catcher__(const char *args, ...);

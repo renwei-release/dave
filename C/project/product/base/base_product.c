@@ -8,6 +8,7 @@
 #include "product_macro.h"
 #ifdef __DAVE_PRODUCT_BASE__
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
 #include "base_test.h"

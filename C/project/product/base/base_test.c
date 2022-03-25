@@ -8,6 +8,7 @@
 #include "product_macro.h"
 #ifdef __DAVE_PRODUCT_BASE__
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 
 #define BASETESTLOG(a, ...) { DAVELOG("[BASE]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }

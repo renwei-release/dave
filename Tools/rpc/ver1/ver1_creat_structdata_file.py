@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_other_struct_table import find_other_struct_table
@@ -212,7 +210,7 @@ def _creat_structdata_src_file(struct_table, union_table, head_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_structdata_src_head)
-        include_message(file_id, head_list, file_name)
+        include_message(file_id, head_list)
         file_id.write("\n// =====================================================================\n\n")
         _creat_structdata_fun_file(file_id, struct_table, union_table)
     return
@@ -222,7 +220,7 @@ def _creat_structdata_inc_file(struct_table, head_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_structdata_inc_head)
-        include_message(file_id, head_list, file_name)
+        include_message(file_id, head_list)
         for struct_name in struct_table.keys():
             struct_name = struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver1_zip_"+struct_name+"("+struct_name+" *zip_data);\n")

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_enum_table import find_enum_table
@@ -14,10 +12,11 @@ from find.find_enum_table import find_enum_table
 
 _enumdata_src_head = "\
 #include \"dave_base.h\"\n\
+#include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
-#include \"tools_log.h\"\n"
+#include \"tools_log.h\"\n\n"
 
 
 _enumdata_src_private = "\
@@ -39,7 +38,7 @@ _t_rpc_unzip_enumdata(sb *unzip_data, void *pArrayBson)\n\
 _enumdata_inc_head = "\
 #ifndef _T_RPC_ENUMDATA_H__\n\
 #define _T_RPC_ENUMDATA_H__\n\
-#include \"dave_base.h\"\n"\
+#include \"dave_base.h\"\n\n"\
 
 
 _enumdata_inc_end = "\
@@ -66,7 +65,7 @@ def _creat_enumdata_unzip_fun_file(file_id, enum_name):
 
 
 def _creat_enumdata_fun_file(file_id, enum_table):
-    for enum_name in enum_table:
+    for enum_name in enum_table.keys():
         _creat_enumdata_zip_fun_file(file_id, enum_name)
         _creat_enumdata_unzip_fun_file(file_id, enum_name)
     return
@@ -86,7 +85,7 @@ def _creat_enumdata_inc_file(enum_table, include_list, file_name):
         copyright_message(file_id)
         file_id.write(_enumdata_inc_head)
         file_id.write("\n")
-        for enum_name in enum_table:
+        for enum_name in enum_table.keys():
             file_id.write("void * t_rpc_ver3_zip_"+enum_name+"("+enum_name+" zip_data);\n")
             file_id.write("dave_bool t_rpc_ver3_unzip_"+enum_name+"("+enum_name+" *unzip_data, void *pArrayBson);\n\n")
         file_id.write(_enumdata_inc_end)
@@ -96,9 +95,9 @@ def _creat_enumdata_inc_file(enum_table, include_list, file_name):
 # =====================================================================
 
 
-def creat_enumdata_file():
-    enum_table, include_list = find_enum_table()
+def creat_enumdata_file(struct_table=None):
+    enum_table, include_list = find_enum_table(struct_table)
     print(f"{len(enum_table)}\tenumdata\twrite to {ver3_enumdata_src_file_name}")
     _creat_enumdata_src_file(enum_table, include_list, ver3_enumdata_src_file_name)
     _creat_enumdata_inc_file(enum_table, include_list, ver3_enumdata_inc_file_name)
-    return
+    return enum_table

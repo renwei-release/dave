@@ -15,6 +15,7 @@
 #define _T_RPC_ENUMDATA_H__
 #include "dave_base.h"
 
+
 void * t_rpc_ver3_zip_ErrCode(ErrCode zip_data);
 dave_bool t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson);
 

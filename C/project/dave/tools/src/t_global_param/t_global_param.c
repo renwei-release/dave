@@ -16,7 +16,7 @@ t_gp_localhost(void)
 {
 	static s8 localhost[64];
 
-	if(base_cfg_get(CFG_LOCALHOST, (u8 *)localhost, sizeof(localhost)) == dave_true)
+	if(cfg_get(CFG_LOCALHOST, (u8 *)localhost, sizeof(localhost)) == dave_true)
 	{
 		if(t_is_ipv4((s8 *)localhost) == dave_true)
 		{

@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-#
-# ================================================================================
-# (c) Copyright 2022 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2022.01.19.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
-from find.find_other_struct_table import find_other_struct_table
-from find.find_msg_struct_table import find_msg_struct_table
+from find.find_all_struct_table import find_all_struct_table
 from find.find_enum_table import find_enum_table
 from find.find_fun_table import find_fun_table
 
@@ -50,7 +48,7 @@ def _creat_type_proto(type, struct_table, enum_table, fun_table):
         proto_type = 'uint64'
     elif type == 'ThreadId':
         proto_type = 'uint64'
-    elif type in enum_table:
+    elif enum_table.get(type, None) != None:
         proto_type = 'uint64'
     elif type in struct_table:
         proto_type = type
@@ -124,11 +122,9 @@ def _creat_proto_file(struct_table, enum_table, fun_table, file_name):
 # =====================================================================
 
 
-def creat_proto_file():
-    other_struct_table, _ = find_other_struct_table()
-    _, msg_struct_table, _ = find_msg_struct_table()
-    struct_table = other_struct_table.copy()
-    struct_table.update(msg_struct_table)
+def creat_proto_file(struct_table=None):
+    if struct_table == None:
+        struct_table = find_all_struct_table()
     enum_table, _ = find_enum_table()
     fun_table, _ = find_fun_table()
 

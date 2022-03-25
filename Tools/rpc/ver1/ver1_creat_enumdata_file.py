@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_enum_table import find_enum_table
@@ -71,7 +69,7 @@ def _creat_enumdata_unzip_fun_file(file_id, enum_name):
 
 
 def _creat_enumdata_fun_file(file_id, enum_table):
-    for enum_name in enum_table:
+    for enum_name in enum_table.keys():
         _creat_enumdata_zip_fun_file(file_id, enum_name)
         _creat_enumdata_unzip_fun_file(file_id, enum_name)
     return
@@ -92,7 +90,7 @@ def _creat_enumdata_inc_file(enum_table, include_list, file_name):
         file_id.write(_enumdata_inc_head)
         _creat_enumdata_include_content(file_id, include_list)
         file_id.write("\n")
-        for enum_name in enum_table:
+        for enum_name in enum_table.keys():
             file_id.write("void * t_rpc_ver1_zip_"+enum_name+"("+enum_name+" zip_data);\n")
             file_id.write("dave_bool t_rpc_ver1_unzip_"+enum_name+"("+enum_name+" *unzip_data, void *pArrayJson);\n\n")
         file_id.write(_enumdata_inc_end)

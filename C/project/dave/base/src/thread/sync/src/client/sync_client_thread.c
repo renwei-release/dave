@@ -10,6 +10,7 @@
 #if defined(SYNC_STACK_CLIENT)
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
 #include "thread_parameter.h"
 #include "thread_tools.h"
 #include "sync_param.h"

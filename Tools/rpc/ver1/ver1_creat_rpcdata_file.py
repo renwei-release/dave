@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_msg_struct_table import find_msg_struct_table
@@ -110,7 +108,7 @@ def _creat_rpcdata_src_file(msg_table, file_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_rpcdata_src_head)
-        include_message(file_id, file_list, file_name)
+        include_message(file_id, file_list)
         _creat_rpc_data_private_zip_file(file_id, msg_table)
         _creat_rpc_data_private_unzip_file(file_id, msg_table)
         file_id.write("// =====================================================================\n\n")

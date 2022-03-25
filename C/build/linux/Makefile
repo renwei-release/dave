@@ -5,7 +5,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-VER_PRODUCT=dave	# SYNC LOG ...
+VER_PRODUCT=dave    # SYNC LOG ...
 LEVEL_PRODUCT=alpha	# profiling alpha beta
 DEPLOYPATH=../../../Deploy/deploy/$(shell echo $(VER_PRODUCT) | tr A-Z a-z)
 

@@ -30,7 +30,7 @@ sync_server_default_blocks_flag(SyncClient *pClient)
 {
 	u8 value[64];
 
-	if(base_cfg_get(CFG_SYNC_BLOCKS_DEFAULT_FLAG, value, sizeof(value)) == dave_false)
+	if(cfg_get(CFG_SYNC_BLOCKS_DEFAULT_FLAG, value, sizeof(value)) == dave_false)
 	{
 		return dave_true;
 	}

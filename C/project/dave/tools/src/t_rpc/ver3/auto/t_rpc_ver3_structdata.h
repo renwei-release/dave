@@ -14,11 +14,6 @@
 #ifndef _T_RPC_STRUCTDATA_H__
 #define _T_RPC_STRUCTDATA_H__
 #include "dave_base.h"
-void * t_rpc_ver3_zip_DateStruct(DateStruct *zip_data);
-dave_bool t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson);
-
-void * t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson);
 
 void * t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data);
 dave_bool t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson);
@@ -32,11 +27,29 @@ dave_bool t_rpc_ver3_unzip_IPBaseInfo(IPBaseInfo *unzip_data, void *pStructBson)
 void * t_rpc_ver3_zip_IPBaseInfo_d(IPBaseInfo *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_IPBaseInfo_d(IPBaseInfo *unzip_data, ub unzip_len, void *pArrayBson);
 
+void * t_rpc_ver3_zip_MBUF(MBUF *zip_data);
+dave_bool t_rpc_ver3_unzip_MBUF(MBUF *unzip_data, void *pStructBson);
+
+void * t_rpc_ver3_zip_MBUF_d(MBUF *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MBUF_d(MBUF *unzip_data, ub unzip_len, void *pArrayBson);
+
+void * t_rpc_ver3_zip_DateStruct(DateStruct *zip_data);
+dave_bool t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson);
+
+void * t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson);
+
 void * t_rpc_ver3_zip_BuildingBlocks(BuildingBlocks *zip_data);
 dave_bool t_rpc_ver3_unzip_BuildingBlocks(BuildingBlocks *unzip_data, void *pStructBson);
 
 void * t_rpc_ver3_zip_BuildingBlocks_d(BuildingBlocks *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BuildingBlocks_d(BuildingBlocks *unzip_data, ub unzip_len, void *pArrayBson);
+
+void * t_rpc_ver3_zip_SocNetInfoAddr(SocNetInfoAddr *zip_data);
+dave_bool t_rpc_ver3_unzip_SocNetInfoAddr(SocNetInfoAddr *unzip_data, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocNetInfoAddr_d(SocNetInfoAddr *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocNetInfoAddr_d(SocNetInfoAddr *unzip_data, ub unzip_len, void *pArrayBson);
 
 void * t_rpc_ver3_zip_SocNetInfoIp(SocNetInfoIp *zip_data);
 dave_bool t_rpc_ver3_unzip_SocNetInfoIp(SocNetInfoIp *unzip_data, void *pStructBson);

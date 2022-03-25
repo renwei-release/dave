@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_msg_struct_table import find_msg_struct_table
@@ -16,19 +14,20 @@ from find.find_union_table import find_union_table
 
 _msgdata_src_head = "\
 #include \"dave_base.h\"\n\
+#include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
 #include \"t_rpc_ver3_uniondata.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
-#include \"tools_log.h\"\n"
+#include \"tools_log.h\"\n\n"
 
 
 _msgdata_inc_head = "\
 #ifndef _T_RPC_MSGDATA_H__\n\
 #define _T_RPC_MSGDATA_H__\n\
-#include \"dave_base.h\"\n"\
+#include \"dave_base.h\"\n\n"\
 
 
 _msgdata_inc_end = "\
@@ -60,7 +59,7 @@ def _creat_msgdata_zip_fun_object(file_id, msg_struct_data, struct_table):
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
         struct_dimension = msg_struct_object.get('d', None)
-        is_struct, has_ptr, struct_type = struct_on_the_table(struct_type, struct_table=struct_table)
+        is_struct, has_ptr, _ = struct_on_the_table(struct_type, struct_table=struct_table)
         if struct_dimension == None:
             if is_struct == False:
                 file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
@@ -100,7 +99,7 @@ def _creat_msgdata_unzip_fun_object(file_id, msg_struct_data, struct_table):
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
         struct_dimension = msg_struct_object.get('d', None)
-        is_struct, has_ptr, struct_type = struct_on_the_table(struct_type, struct_table=struct_table)
+        is_struct, has_ptr, _ = struct_on_the_table(struct_type, struct_table=struct_table)
         if struct_dimension == None:
             file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
                 +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
@@ -188,4 +187,4 @@ def creat_msgdata_file():
     print(f"{len(msg_struct_table)}\tmsgdata\t\twrite to {ver3_msgdata_src_file_name}")
     _creat_msgdata_src_file(msg_struct_table, msg_file_list, ver3_msgdata_src_file_name)
     _creat_msgdata_inc_file(msg_struct_table, msg_file_list, ver3_msgdata_inc_file_name)
-    return
+    return msg_struct_table

@@ -10,6 +10,7 @@
 #if defined(SYNC_STACK_CLIENT) || defined(SYNC_STACK_SERVER)
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
 
 #define SYNC_SERVICE_PORT 6004
 
@@ -18,7 +19,7 @@
 void
 sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
-	if(base_cfg_set(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
+	if(cfg_get(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
 	{
 		s8 *ip_str = (s8 *)t_gp_localhost();
 
@@ -30,7 +31,7 @@ sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 			ip[3] = 1;
 		}
 
-		base_cfg_set(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN);
+		cfg_set(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN);
 	}
 }
 
@@ -39,11 +40,11 @@ sync_cfg_get_syncs_port(void)
 {
 	u16 port;
 
-	if(base_cfg_get(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16)) == dave_false)
+	if(cfg_get(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16)) == dave_false)
 	{
 		port = SYNC_SERVICE_PORT;
 
-		base_cfg_set(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16));
+		cfg_set(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16));
 	}
 
 	return port;
@@ -57,7 +58,7 @@ sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 
 	dave_memset(ip_str, 0x00, sizeof(ip_str));
 
-	if((base_cfg_get(CFG_SYNC_CLIENT_ADDRESS, (u8 *)ip_str, sizeof(ip_str)) == dave_false)
+	if((cfg_get(CFG_SYNC_CLIENT_ADDRESS, (u8 *)ip_str, sizeof(ip_str)) == dave_false)
 		|| (strip(ip_str, dave_strlen(ip_str), ip, DAVE_IP_V4_ADDR_LEN) < DAVE_IP_V4_ADDR_LEN))
 	{
 		if(dave_os_on_docker() == dave_false)

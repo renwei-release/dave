@@ -6,6 +6,7 @@
  */
 
 #include "dave_base.h"
+#include "dave_os.h"
 #include "tools_log.h"
 
 // =====================================================================

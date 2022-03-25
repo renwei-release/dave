@@ -9,6 +9,7 @@
 #include "log_stack.h"
 #ifdef LOG_STACK_CLIENT
 #include "dave_verno.h"
+#include "dave_os.h"
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "base_rxtx.h"
@@ -66,7 +67,7 @@ _log_stack_client_get_device_name(s8 *name, ub len)
 static void
 _log_stack_client_server_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
-	if(base_cfg_set(CFG_LOG_SERVER_IP_V4, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
+	if(cfg_get(CFG_LOG_SERVER_IP_V4, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
 	{
 		#if defined(__DAVE_ANDROID__) || defined(__DAVE_IOS__)
 		// LOG-SERVER aliyun disable

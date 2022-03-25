@@ -9,6 +9,7 @@
 #include "log_stack.h"
 #ifdef LOG_STACK_SERVER
 #include "dave_tools.h"
+#include "dave_os.h"
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "base_rxtx.h"

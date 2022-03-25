@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_other_struct_table import find_other_struct_table
@@ -15,6 +13,7 @@ from find.find_union_table import find_union_table
 
 _structdata_src_head = "\
 #include \"dave_base.h\"\n\
+#include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
@@ -27,7 +26,7 @@ _structdata_src_head = "\
 _structdata_inc_head = "\
 #ifndef _T_RPC_STRUCTDATA_H__\n\
 #define _T_RPC_STRUCTDATA_H__\n\
-#include \"dave_base.h\"\n"\
+#include \"dave_base.h\"\n\n"\
 
 
 _structdata_inc_end = "\
@@ -239,4 +238,4 @@ def creat_structdata_file():
     union_table, union_include = find_union_table()
     _creat_structdata_src_file(struct_table, union_table, head_list, ver3_structdata_src_file_name)
     _creat_structdata_inc_file(struct_table, head_list, ver3_structdata_inc_file_name)
-    return
+    return struct_table

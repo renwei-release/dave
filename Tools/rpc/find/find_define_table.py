@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import re
+import traceback
+from .find_file_list import *
 from rpc_tools import *
 
 
@@ -46,9 +46,9 @@ def _find_define_list():
                 traceback.print_exc()
                 return define_list, head_list
             try:
-                result = re.findall('#define [A-Z,a-z,0-9,"_"]+? ["(",")",A-Z,a-z,0-9,"_"]+?\n', file_content)
+                result = re.findall('(#define [A-Z,a-z,0-9,"_"]+? ["(",")","x","X",0-9]+?)\n', file_content)
                 if result:
-                    if _find_define_list(define_list, result) == 1:
+                    if __find_define_list(define_list, result) == 1:
                         head_list.append(file_name)
             except:
                 print(f"file_name:{file_name}")
@@ -57,7 +57,7 @@ def _find_define_list():
     return define_list, head_list
 
 
-def _find_define_digital_table(define_dictionary, define_list=None):
+def _find_define_digital_table(define_table, define_list):
     for define_data in define_list:
         define_name_list = re.findall("#define (.*?) .*?", define_data)
         define_value_list = re.findall("#define .*? ([0-9, *, +]+|0[x,X][a-f, A-F]+)", define_data)
@@ -66,11 +66,11 @@ def _find_define_digital_table(define_dictionary, define_list=None):
         if define_name != None and define_value != None:
             define_name.replace(" ", "")
             define_value.replace(" ", "")
-            define_dictionary[define_name] = eval(define_value)
+            define_table[define_name] = eval(define_value)
     return
 
 
-def _find_define_complex_table(define_dictionary, define_list=None):
+def _find_define_complex_table(define_table, define_list):
     for define_data in define_list:
         define_name_list = re.findall("#define (.*?) .*?", define_data)
         define_value_list = re.findall("#define .*? ([a-z, A-Z, _]+[0-9, a-z, A-Z, _]+)", define_data)
@@ -79,7 +79,7 @@ def _find_define_complex_table(define_dictionary, define_list=None):
         if define_name != None and define_value != None:
             define_name.replace(" ", "")
             define_value.replace(" ", "")
-            define_dictionary[define_name] = define_dictionary.get(define_value, 0)
+            define_table[define_name] = define_table.get(define_value, 0)
     return
 
 
@@ -88,7 +88,7 @@ def _find_define_complex_table(define_dictionary, define_list=None):
 
 def find_define_table():
     define_table = {}
-    define_list, head_list = _find_define_list()
-    _find_define_digital_table(define_table, define_list=define_list)
-    _find_define_complex_table(define_table, define_list=define_list)
-    return define_table
+    define_list, include_list = _find_define_list()
+    _find_define_digital_table(define_table, define_list)
+    _find_define_complex_table(define_table, define_list)
+    return define_table, include_list

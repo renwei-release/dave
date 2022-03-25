@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 from rpc_cfg import *
 from rpc_tools import *
 from find.find_msg_struct_table import find_msg_struct_table
@@ -15,6 +13,7 @@ from find.find_msg_id_list import find_msg_id_list
 
 _rpcdata_src_head = "\
 #include \"dave_base.h\"\n\
+#include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
@@ -22,7 +21,7 @@ _rpcdata_src_head = "\
 #include \"t_rpc_ver3_rpcdata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
 #include \"t_rpc_ver3_uniondata.h\"\n\
-#include \"tools_log.h\"\n"
+#include \"tools_log.h\"\n\n"
 
 
 _rpcdata_inc_head = "\

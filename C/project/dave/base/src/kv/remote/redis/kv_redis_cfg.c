@@ -20,15 +20,15 @@ _kv_redis_cfg(KVRedis *pKV)
 {
 	s8 redis_port[32];
 
-	if(base_cfg_set(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, DAVE_URL_LEN) == dave_false)
+	if(cfg_get(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, DAVE_URL_LEN) == dave_false)
 	{
 		dave_snprintf(pKV->redis_address, sizeof(pKV->redis_address), "%s", t_gp_localhost());
-		base_cfg_set(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, dave_strlen(pKV->redis_address));
+		cfg_set(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, dave_strlen(pKV->redis_address));
 	}
-	if(base_cfg_set(CFG_REDIS_PORT, (u8 *)redis_port, 32) == dave_false)
+	if(cfg_get(CFG_REDIS_PORT, (u8 *)redis_port, 32) == dave_false)
 	{
 		dave_sprintf(redis_port, "6379");
-		base_cfg_set(CFG_REDIS_PORT, (u8 *)redis_port, dave_strlen(redis_port));
+		cfg_set(CFG_REDIS_PORT, (u8 *)redis_port, dave_strlen(redis_port));
 	}
 	pKV->redis_port = t_a2b_string_to_digital(redis_port);
 }

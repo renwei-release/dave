@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import json
 import re
 import traceback
@@ -33,31 +31,33 @@ def _find_struct_table_from_struct_list(msg_table, struct_table, struct_list):
     return
 
 
-def _find_struct_list_from_file(struct_list, file_name):
+def _find_struct_list_from_file(struct_list, include_list, file_name):
     with open(file_name, "r", encoding="utf-8") as file_id:
         try:
             file_content = file_id.read()
         except:
             print(f"file_name:{file_name}")
             traceback.print_exc()
-            return struct_list
+            return struct_list, include_list
         try:
             file_content = remove_invalid_data(file_content)
             result = re.findall("\/\* for *.+? *?message *\*\/.*?typedef struct.*?\{.*?\}.*?;", file_content)
             if result:
                 struct_list.extend(result)
+                include_list.append(file_name)
         except:
             print(f"file_name:{file_name}")
             traceback.print_exc()
-            return struct_list        
-    return struct_list
+            return struct_list, include_list        
+    return struct_list, include_list
 
 
 def _find_struct_list_from_file_list(file_list):
     struct_list = []
+    include_list = []
     for file_name in file_list:
-         _find_struct_list_from_file(struct_list, file_name)
-    return struct_list
+         _find_struct_list_from_file(struct_list, include_list, file_name)
+    return struct_list, include_list
 
 
 # =====================================================================
@@ -65,10 +65,10 @@ def _find_struct_list_from_file_list(file_list):
 
 def find_msg_struct_table():
     file_list = find_msg_file_list()
-    struct_list = _find_struct_list_from_file_list(file_list)
+    struct_list, include_list = _find_struct_list_from_file_list(file_list)
 
     struct_table = {}
     msg_table = {}
     _find_struct_table_from_struct_list(msg_table, struct_table, struct_list)
 
-    return msg_table, struct_table, file_list
+    return msg_table, struct_table, include_list

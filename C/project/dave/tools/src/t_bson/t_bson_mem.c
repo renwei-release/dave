@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include "dave_base.h"
+#include "dave_os.h"
 #include "t_bson_define.h"
 #include "t_bson_mem.h"
 #include "t_bson_serialize.h"

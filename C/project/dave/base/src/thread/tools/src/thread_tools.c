@@ -237,7 +237,7 @@ thread_show_all_info(ThreadStruct *pThread, DateStruct *pWorkDate, s8 *msg_ptr, 
 	if(base_flag == dave_true)
 	{
 		msg_index += _thread_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "=============================================================\n");
+		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "============================================================\n");
 	}
 	msg_index += _thread_msg_wait_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
 	msg_index += base_mem_info(&msg_ptr[msg_index], msg_len-msg_index, base_flag);

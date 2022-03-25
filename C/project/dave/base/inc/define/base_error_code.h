@@ -278,10 +278,6 @@ typedef enum {
 	ERRCODE_data_not_exist = -263,
 	ERRCODE_Invalid_length = -264,
 
-	/* do't move the value */
-	ErrCode_last_xxxx,
-	ErrCode_last_value = ErrCode_last_xxxx - 2,
-	ErrCode_total_number = (- ErrCode_last_value) + 1,
 	ErrCode_max = 0x1fffffffffffffff
 } ErrCode;
 

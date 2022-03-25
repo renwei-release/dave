@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-# 2021.03.11.
-#
-
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import re
 import traceback
 from .find_file_list import find_file_list
@@ -38,12 +36,12 @@ def _find_struct_list_from_file(struct_list, file_name):
 
 def _find_struct_list_from_file_list(file_list):
     struct_list = []
-    valid_file = []
+    include_list = []
     for file_name in file_list:
         valid_document = _find_struct_list_from_file(struct_list, file_name)
         if valid_document == True:
-            valid_file.append(file_name)
-    return struct_list, valid_file
+            include_list.append(file_name)
+    return struct_list, include_list
 
 
 def _find_struct_data_to_table(other_struct_table, struct_data):
@@ -68,29 +66,28 @@ def _find_remove_the_same_name_on_table(msg_struct_table, other_struct_table):
 
 
 def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
-    msg_type_list = {}
-    for struct_key in msg_struct_table:
-        msg_struct = msg_struct_table[struct_key]
-        for msg_member in msg_struct:
-            msg_type_list[msg_member['t']] = msg_member['t']
+    use_struct_table = {}
 
-    new_other_struct_table = {}
-    for key in other_struct_table.keys():
-        if msg_type_list.get(key, None) != None:
-            new_other_struct_table[key] = other_struct_table[key]
+    for struct_name in msg_struct_table.keys():
+        for msg_member in msg_struct_table[struct_name]:
+            struct_name = msg_member['t'].replace('_ptr', '')
+            struct_value = other_struct_table.get(struct_name, None)
+            if struct_value != None:
+                use_struct_table[struct_name] = struct_value
 
     for Loop_multiple_times_to_get_nested_structures in range(6):
-        msg_type_list = {}
-        for struct_key in new_other_struct_table:
-            msg_struct = new_other_struct_table[struct_key]
-            for msg_member in msg_struct:
-                msg_type_list[msg_member['t']] = msg_member['t']
+        detected_new_struct = []
+        for struct_name in use_struct_table.keys():
+            for msg_member in use_struct_table[struct_name]:
+                struct_name = msg_member['t']
+                if use_struct_table.get(struct_name, None) == None:
+                    if other_struct_table.get(struct_name, None) != None:
+                        detected_new_struct.append(struct_name)
 
-        for key in other_struct_table.keys():
-            if msg_type_list.get(key, None) != None:
-                new_other_struct_table[key] = other_struct_table[key]
+        for struct_name in detected_new_struct:
+            use_struct_table[struct_name] = other_struct_table[struct_name]
 
-    return new_other_struct_table
+    return use_struct_table
 
 
 # =====================================================================
@@ -98,11 +95,11 @@ def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
 
 def find_other_struct_table():
     file_list = find_file_list()
-    other_struct_list, valid_struct_file = _find_struct_list_from_file_list(file_list)
+    other_struct_list, include_list = _find_struct_list_from_file_list(file_list)
     other_struct_table = _find_struct_list_to_table(other_struct_list)
 
     _, msg_struct_table, _ = find_msg_struct_table()
     _find_remove_the_same_name_on_table(msg_struct_table, other_struct_table)
     other_struct_table = _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table)
 
-    return other_struct_table, valid_struct_file
+    return other_struct_table, include_list

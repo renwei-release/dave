@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-
-#
-# ================================================================================
-# (c) Copyright 2021 Renwei All rights reserved.
-# --------------------------------------------------------------------------------
-#
-# 2021.03.11.
-#
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 import re
 import platform
 import time
@@ -99,6 +97,7 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
         file_id.write(f'#define __BUILD_HOSTNAME__ \"{socket.getfqdn(socket.gethostname())}\"\n')
         file_id.write(f'#define __BUILD_USERNAME__ \"{getpass.getuser()}\"\n\n')
         file_id.write(f's8 * dave_verno(void);\n')
+        file_id.write(f's8 * dave_verno_reset(s8 *verno);\n')
         file_id.write(f's8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);\n')
         file_id.write(f's8 * dave_verno_my_product(void);\n\n')
         file_id.write(def_c_verno_end_file)

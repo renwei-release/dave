@@ -9,6 +9,7 @@
 #ifdef __DAVE_BASE__
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
 #include "thread_struct.h"
 #include "thread_quit.h"
 #include "thread_tools.h"

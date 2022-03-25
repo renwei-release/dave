@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 
 static const s8 __const_verno__[] = "++DAVEVERNO++"VERSION_PRODUCT"."VERSION_MISC"."VERSION_MAIN"."VERSION_SUB"."VERSION_REV"."VERSION_DATE_TIME"."VERSION_LEVEL"\0";
+static s8 __dave_verno__[DAVE_VERNO_STR_LEN + 1] = { "\0" };
 
 static s8 *
 _verno_product(s8 *verno, s8 *temp_ptr, ub temp_len)
@@ -25,7 +26,18 @@ _verno_product(s8 *verno, s8 *temp_ptr, ub temp_len)
 s8 *
 dave_verno(void)
 {
-	return (s8 *)(&__const_verno__[13]);
+	if(__dave_verno__[0] == '\0')
+		dave_strcpy(__dave_verno__, &__const_verno__[13], sizeof(__dave_verno__));
+
+	return __dave_verno__;
+}
+
+s8 *
+dave_verno_reset(s8 *verno)
+{
+	dave_strcpy(__dave_verno__, verno, sizeof(__dave_verno__));
+
+	return dave_verno();
 }
 
 s8 *
@@ -43,7 +55,7 @@ dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 		buf_len = sizeof(product_str);
 	}
 
-	_verno_product(verno, buf_ptr, sizeof(buf_len));
+	_verno_product(verno, buf_ptr, buf_len);
 
 	return buf_ptr;
 }

@@ -9,10 +9,6 @@
 #define __BASE_STRUCT_H__
 #include "base_macro.h"
 
-typedef void (*mbuf_external_free_fun)(void *param);
-
-#define MBUF base_mbuf
-
 typedef struct {
 	/* next mbuf in singly linked mbuf chain */
 	void *next;
@@ -31,13 +27,7 @@ typedef struct {
 	sb len;
 	sb ref;
 	sb alloc_len;
-
-	/*
-	 * external release interface.
-	 */
-	 u8 external_param[16];
-	 mbuf_external_free_fun external_free;
-} base_mbuf;
+} MBUF;
 
 typedef struct {
 	u16 year;
@@ -54,7 +44,7 @@ typedef struct {
 	u8 ip_addr[16];
 } SocNetInfoIp;
 
-typedef union {
+typedef struct {
 	SocNetInfoIp ip;
 	s8 url[DAVE_URL_LEN];
 } SocNetInfoAddr;

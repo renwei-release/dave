@@ -2,25 +2,43 @@
 
 PROJECT=${PWD##*/}
 PROJECT=${PROJECT^^}
+BASELIBNAME=liblinuxBASE
+LEVEL=$1
+LOGFILE=build_lib_log.txt
+HOMEPATH=$(cd `dirname $0`; pwd)
 
 ############## build_lib function ##############
+build_dynamic_lib()
+{
+   obj_list=$(find `pwd`/../../../project/dave -name '*.o')
+
+   echo lib copy ${HOMEPATH}/../../../project/dave/base/inc to ${HOMEPATH}/../../../../Go/project/dave/base/inc
+   cp -r ${HOMEPATH}/../../../project/dave/base/inc/* ${HOMEPATH}/../../../../Go/project/dave/base/inc
+   rm -f ${HOMEPATH}/../../../../Go/project/dave/base/lib/${BASELIBNAME}.a
+   echo lib build ${HOMEPATH}/../../../../Go/project/dave/base/lib/${BASELIBNAME}.a
+   ar cru ${HOMEPATH}/../../../../Go/project/dave/base/lib/${BASELIBNAME}.a ${obj_list}
+}
+
+build_static_lib()
+{
+   obj_list=$(find `pwd`/../../../project/dave -name '*.o')
+
+   rm -f ${HOMEPATH}/../../../../Python/project/dave/base/lib/${BASELIBNAME}.so
+   echo lib build ${HOMEPATH}/../../../../Python/project/dave/base/lib/${BASELIBNAME}.so
+   gcc -lpthread -lrt -ldl -lm -shared -o ${HOMEPATH}/../../../../Python/project/dave/base/lib/${BASELIBNAME}.so ${obj_list}
+}
+
 build_lib()
 {
    ./clean >> $LOGFILE
 
-   echo build $LEVEL ...
+   echo lib build $LEVEL ...
    ./build $LEVEL >> $LOGFILE
-   
-   echo build $LEVEL, save c lib
-   make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$LEVEL lib >> $LOGFILE
 
-   echo build $LEVEL, save python and go lib
-   make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$LEVEL end_build >> $LOGFILE
+   build_dynamic_lib
+   build_static_lib
 }
 ############## build_lib function ##############
-
-LEVEL=$1
-LOGFILE=log.txt
 
 if [ "$LEVEL" == "" ] || [ "$LEVEL" == "alpha" ]; then
    LEVEL=alpha

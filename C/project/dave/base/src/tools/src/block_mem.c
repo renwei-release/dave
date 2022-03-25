@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #if defined(__DAVE_BASE__)
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "block_mem.h"
 

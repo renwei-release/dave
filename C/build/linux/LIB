@@ -1,3 +1,2 @@
 LIB := -Wl,-Bstatic -L../../../ThirdParty/build/jemalloc/setup/lib -ljemalloc -Wl,-Bdynamic
-
 LIB += -lpthread -lrt -ldl -lm -lgomp -lz -lstdc++ -lutil -lgcov -luuid

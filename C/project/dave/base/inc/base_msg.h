@@ -178,6 +178,7 @@ typedef struct {
 
 /* for MSGID_RPC_DEBUG_MSG message */
 typedef struct {
+	ErrCode ret_debug;
 	s8 s8_debug;
 	u8 u8_debug;
 	u16 u16_debug;
@@ -185,6 +186,7 @@ typedef struct {
 	u32 u32_debug;
 	void *void_debug;
 	DateStruct date_debug;
+	MBUF *mbuf_debug;
 } RPCDebugMsg;
 
 /* for MSGID_CFG_UPDATE message */

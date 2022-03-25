@@ -97,7 +97,7 @@ _thread_sync_call_check(void)
 					pSync->wait_msg,
 					current_second, pSync->wait_time);
 
-				dave_mutex_unlock(&(pSync->sync_pv));
+				t_unlock_mutex(&(pSync->sync_pv));
 			}
 		}
 	}
@@ -186,6 +186,7 @@ thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, Thr
 {
 	ub wakeup_index;
 	ThreadSync *pSync;
+	ub safe_counter;
 
 	if(pSrcThread == NULL)
 	{
@@ -208,10 +209,18 @@ thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, Thr
 		return NULL;
 	}
 
-	if(dave_mutex_trylock(&(pSync->sync_pv)) == dave_false)
+	safe_counter = 0;
+
+	while(t_trylock_mutex(&(pSync->sync_pv)) == dave_false)
 	{
-		THREADLOG("Only one can be locked at a time");
-		return NULL;
+		if((++ safe_counter) > 1024)
+		{
+			THREADLOG("Only one can be locked at a time:%s->%s:%d",
+				pDstThread->thread_name, pSrcThread->thread_name, wait_msg);
+			return NULL;
+		}
+
+		dave_os_sleep(10);
 	}
 
 	dave_strcpy(pSync->wait_name, thread_name(pDstThread->thread_id), THREAD_NAME_MAX);
@@ -316,7 +325,7 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 
 			if(unlock == dave_true)
 			{
-				dave_mutex_unlock(&(pSync->sync_pv));
+				t_unlock_mutex(&(pSync->sync_pv));
 			}
 
 			return dave_true;

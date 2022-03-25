@@ -25,5 +25,8 @@ ub base_cfg_get_ub(s8 *cfg_name);
 #define base_cfg_set(name, value_ptr, value_len) base_cfg_dir_set(NULL, name, value_ptr, value_len)
 #define base_cfg_get(name, value_ptr, value_len) base_cfg_dir_get(NULL, name, value_ptr, value_len)
 
+#define cfg_set base_cfg_set
+#define cfg_get base_cfg_get
+
 #endif
 

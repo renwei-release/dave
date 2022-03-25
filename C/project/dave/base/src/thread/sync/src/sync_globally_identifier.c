@@ -91,13 +91,13 @@ _sync_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identif
 static void
 _sync_globally_identifier_save(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
-	base_cfg_set(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
+	cfg_set(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
 }
 
 static dave_bool
 _sync_globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
-	return base_cfg_get(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
+	return cfg_get(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
 }
 
 // =====================================================================

@@ -1,6 +1,3 @@
-SOURCES=$(shell find `pwd` -name 'dave_linux_main.c')
-SOURCES+=$(shell find `pwd`/../../project -name '*.c')
+SOURCES=$(shell find `pwd`/../../project -name '*.c')
 SOURCES+=$(shell find `pwd`/../../project -name '*.cpp')
-ifeq ($(words $(findstring $(VER_PRODUCT), AIX)), 1)
-SOURCES += $(shell find `pwd`/../../project -name '*.cu')
-endif
+SOURCES+=$(shell find `pwd`/../../project -name '*.cu')

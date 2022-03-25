@@ -10,6 +10,7 @@
 #if defined(SYNC_STACK_CLIENT)
 #include "dave_verno.h"
 #include "dave_base.h"
+#include "dave_os.h"
 #include "dave_tools.h"
 #include "sync_base_package.h"
 #include "sync_param.h"

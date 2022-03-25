@@ -10,6 +10,7 @@
 #if defined(SYNC_STACK_CLIENT) || defined(SYNC_STACK_SERVER)
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
 #include "sync_lock.h"
 
 static s8 _lock_ptr[256];
