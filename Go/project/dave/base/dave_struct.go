@@ -12,43 +12,42 @@ package base
  * ================================================================================
  */
 
-
 import "unsafe"
 
 type SocNetInfo struct {
 	Domain int32
 	Type int32
-	Addr_Type int32
+	Addr_type int32
 	Addr SocNetInfoAddr
 	Port uint16
-	Fixed_Src_Flag int32
-	Src_Ip SocNetInfoIp
-	Src_Port uint16
-	Enable_Keepalive_Flag int32
-	Keepalive_Second int64
-	Netcard_Bind_Flag int32
-	Netcard_Name [DAVE_NORMAL_NAME_LEN] byte
+	Fixed_src_flag int32
+	Src_ip SocNetInfoIp
+	Src_port uint16
+	Enable_keepalive_flag int32
+	Keepalive_second int64
+	Netcard_bind_flag int32
+	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
 }
 
 type IPBaseInfo struct {
 	Protocol int32
 	Ver int32
-	Src_Ip [16] byte
-	Src_Port uint16
-	Dst_Ip [16] byte
-	Dst_Port uint16
-	Keepalive_Second int64
-	Netcard_Name [DAVE_NORMAL_NAME_LEN] byte
-	Fixed_Port_Flag int32
+	Src_ip [16] byte
+	Src_port uint16
+	Dst_ip [16] byte
+	Dst_port uint16
+	Keepalive_second int64
+	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
+	Fixed_port_flag int32
 }
 
 type MBUF struct {
 	Next unsafe.Pointer
 	Payload unsafe.Pointer
-	Tot_Len int64
+	Tot_len int64
 	Len int64
 	Ref int64
-	Alloc_Len int64
+	Alloc_len int64
 }
 
 type DateStruct struct {
@@ -62,14 +61,14 @@ type DateStruct struct {
 }
 
 type BuildingBlocks struct {
-	Blocks_Id uint64
+	Blocks_id uint64
 	Verno [DAVE_VERNO_STR_LEN] byte
-	Ip_Addr [16] byte
+	Ip_addr [16] byte
 	Port uint16
-	Ready_Flag int8
-	Blocks_Flag int8
-	Client_Flag int8
-	Release_Quantity uint64
+	Ready_flag int8
+	Blocks_flag int8
+	Client_flag int8
+	Release_quantity uint64
 }
 
 type SocNetInfoAddr struct {
@@ -79,6 +78,6 @@ type SocNetInfoAddr struct {
 
 type SocNetInfoIp struct {
 	Ver int32
-	Ip_Addr [16] byte
+	Ip_addr [16] byte
 }
 

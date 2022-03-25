@@ -95,12 +95,12 @@ def _creat_struct_file(struct_table, struct_total, enum_table, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         file_id.write('package base\n')
         copyright_message(file_id)
-        file_id.write('\nimport "unsafe"\n\n')
+        file_id.write('import "unsafe"\n\n')
 
         for struct_name in struct_table.keys():
             file_id.write(f'type {struct_name} struct {"{"}\n')
             for struct_data in struct_table[struct_name]:
-                value_name = struct_data['n'].title()
+                value_name = struct_data['n'].capitalize()
                 value_type = struct_data['t']
                 value_dimension = struct_data.get('d', None)
                 if value_dimension == None:

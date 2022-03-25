@@ -32,15 +32,15 @@ func _fun_MSGID_DEBUG_REQ(src_name string, src_id uint64, msg_len uint64, msg_bo
 
 func _fun_MSGID_REMOTE_THREAD_ID_READY(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pReady := (*base.ThreadRemoteIDReadyMsg)(msg_body)
-	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_Thread_Name[:])
-	remote_thread_id := pReady.Remote_Thread_Id
+	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])
+	remote_thread_id := pReady.Remote_thread_id
 	base.DAVELOG("%s/%x", remote_thread_name, remote_thread_id)
 }
 
 func _fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pRemove := (*base.ThreadRemoteIDRemoveMsg)(msg_body)
-	remote_thread_name := tools.T_cgo_gobyte2gostring(pRemove.Remote_Thread_Name[:])
-	remote_thread_id := pRemove.Remote_Thread_Id
+	remote_thread_name := tools.T_cgo_gobyte2gostring(pRemove.Remote_thread_name[:])
+	remote_thread_id := pRemove.Remote_thread_id
 	base.DAVELOG("%s/%x", remote_thread_name, remote_thread_id)
 }
 

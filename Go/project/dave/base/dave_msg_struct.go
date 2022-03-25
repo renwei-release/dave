@@ -12,7 +12,6 @@ package base
  * ================================================================================
  */
 
-
 import "unsafe"
 
 type SocketBindReq struct {
@@ -24,7 +23,7 @@ type SocketBindRsp struct {
 	Socket int32
 	Netinfo SocNetInfo
 	Bindinfo int32
-	Thread_Id uint64
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
@@ -37,7 +36,7 @@ type SocketConnectRsp struct {
 	Socket int32
 	Netinfo SocNetInfo
 	Connectinfo int32
-	Thread_Id uint64
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
@@ -53,10 +52,10 @@ type SocketDisconnectRsp struct {
 }
 
 type SocketPlugIn struct {
-	Father_Socket int32
-	Child_Socket int32
+	Father_socket int32
+	Child_socket int32
 	Netinfo SocNetInfo
-	Thread_Id uint64
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
@@ -64,14 +63,14 @@ type SocketPlugOut struct {
 	Socket int32
 	Reason int32
 	Netinfo SocNetInfo
-	Thread_Id uint64
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
 type SocketRead struct {
 	Socket int32
 	Ipinfo IPBaseInfo
-	Data_Len uint64
+	Data_len uint64
 	Data *MBUF
 	Ptr unsafe.Pointer
 }
@@ -79,9 +78,9 @@ type SocketRead struct {
 type SocketWrite struct {
 	Socket int32
 	Ipinfo IPBaseInfo
-	Data_Len uint64
+	Data_len uint64
 	Data *MBUF
-	Close_Flag int32
+	Close_flag int32
 }
 
 type SocketNotify struct {
@@ -93,7 +92,7 @@ type SocketNotify struct {
 
 type SocketRawEvent struct {
 	Socket int32
-	Os_Socket int32
+	Os_socket int32
 	Event int32
 	Netinfo SocNetInfo
 	Data *MBUF
@@ -101,23 +100,23 @@ type SocketRawEvent struct {
 }
 
 type TESTMSG struct {
-	Test_Msg [4096] byte
+	Test_msg [4096] byte
 }
 
 type TIMERMSG struct {
-	Timer_Id int64
+	Timer_id int64
 }
 
 type WAKEUPMSG struct {
-	Null_Msg unsafe.Pointer
-	Some_Msg uint32
+	Null_msg unsafe.Pointer
+	Some_msg uint32
 }
 
 type RUNFUNCTIONMSG struct {
-	Thread_Fun unsafe.Pointer
-	Last_Fun unsafe.Pointer
-	Thread_Dst uint64
-	Initialization_Flag int8
+	Thread_fun unsafe.Pointer
+	Last_fun unsafe.Pointer
+	Thread_dst uint64
+	Initialization_flag int8
 }
 
 type DebugReq struct {
@@ -136,7 +135,7 @@ type RESTARTREQMSG struct {
 }
 
 type RESTARTRSPMSG struct {
-	Wait_Flag int8
+	Wait_flag int8
 }
 
 type POWEROFFMSG struct {
@@ -144,24 +143,24 @@ type POWEROFFMSG struct {
 }
 
 type ThreadRemoteReadyMsg struct {
-	Remote_Thread_Id uint64
-	Remote_Thread_Name [128] byte
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
 }
 
 type ThreadRemoteRemoveMsg struct {
-	Remote_Thread_Id uint64
-	Remote_Thread_Name [128] byte
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
 }
 
 type TraceSwitchMsg struct {
-	Thread_Id uint64
-	Trace_On int8
+	Thread_id uint64
+	Trace_on int8
 }
 
 type RemoteMsgTimerOutMsg struct {
-	Msg_Id uint64
-	Msg_Len uint64
-	Msg_Body unsafe.Pointer
+	Msg_id uint64
+	Msg_len uint64
+	Msg_body unsafe.Pointer
 }
 
 type TemporarilyDefineMessageMsg struct {
@@ -181,32 +180,32 @@ type SystemDecoupling struct {
 }
 
 type MemoryWarning struct {
-	Used_Percentage uint64
+	Used_percentage uint64
 }
 
 type MsgIdEcho struct {
-	Echo_Counter uint64
-	Echo_Time uint64
-	Echo_Multiple int8
-	Concurrency_Flag int8
+	Echo_counter uint64
+	Echo_time uint64
+	Echo_multiple int8
+	Concurrency_flag int8
 	Msg [256] byte
 }
 
 type InternalEvents struct {
-	Event_Id uint64
+	Event_id uint64
 	Ptr unsafe.Pointer
 }
 
 type ThreadBusy struct {
-	Thread_Id uint64
-	Thread_Name [DAVE_THREAD_NAME_LEN] byte
-	Msg_Id uint64
-	Msg_Number uint64
+	Thread_id uint64
+	Thread_name [DAVE_THREAD_NAME_LEN] byte
+	Msg_id uint64
+	Msg_number uint64
 }
 
 type ThreadIdle struct {
-	Thread_Id uint64
-	Thread_Name [DAVE_THREAD_NAME_LEN] byte
+	Thread_id uint64
+	Thread_name [DAVE_THREAD_NAME_LEN] byte
 }
 
 type ClientBusy struct {
@@ -220,49 +219,49 @@ type ClientIdle struct {
 }
 
 type ThreadRemoteIDReadyMsg struct {
-	Remote_Thread_Id uint64
-	Remote_Thread_Name [128] byte
-	Globally_Identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 }
 
 type ThreadRemoteIDRemoveMsg struct {
-	Remote_Thread_Id uint64
-	Remote_Thread_Name [128] byte
-	Globally_Identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 }
 
 type ThreadLocalReadyMsg struct {
-	Local_Thread_Id uint64
-	Local_Thread_Name [128] byte
+	Local_thread_id uint64
+	Local_thread_name [128] byte
 }
 
 type ThreadLocalRemoveMsg struct {
-	Local_Thread_Id uint64
-	Local_Thread_Name [128] byte
+	Local_thread_id uint64
+	Local_thread_name [128] byte
 }
 
 type RPCDebugMsg struct {
-	Ret_Debug int64
-	S8_Debug byte
-	U8_Debug byte
-	U16_Debug uint16
-	S32_Debug int32
-	U32_Debug uint32
-	Void_Debug unsafe.Pointer
-	Date_Debug DateStruct
-	Mbuf_Debug *MBUF
+	Ret_debug int64
+	S8_debug byte
+	U8_debug byte
+	U16_debug uint16
+	S32_debug int32
+	U32_debug uint32
+	Void_debug unsafe.Pointer
+	Date_debug DateStruct
+	Mbuf_debug *MBUF
 }
 
 type CFGUpdate struct {
-	Cfg_Name [DAVE_NORMAL_NAME_LEN] byte
-	Cfg_Length uint64
-	Cfg_Value [8196] byte
+	Cfg_name [DAVE_NORMAL_NAME_LEN] byte
+	Cfg_length uint64
+	Cfg_value [8196] byte
 }
 
 type MsgBlocksReq struct {
 	Opt int32
-	Blocks_Id_1 uint64
-	Blocks_Id_2 uint64
+	Blocks_id_1 uint64
+	Blocks_id_2 uint64
 	Ptr unsafe.Pointer
 }
 
@@ -274,6 +273,6 @@ type MsgBlocksRsp struct {
 }
 
 type MsgOSNotify struct {
-	Notify_Info uint64
+	Notify_info uint64
 }
 
