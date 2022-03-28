@@ -148,4 +148,4 @@ def creat_gorpc_file(struct_table, msg_struct_table, msg_id_table, enum_table):
     _creat_struct_file(struct_table, struct_total, enum_table, ver3_gostruct_file_name)
     _creat_struct_file(msg_struct_table, struct_total, enum_table, ver3_gomsgstruct_file_name)
     _creat_enum_file(enum_table, ver3_goenum_file_name)
-    return
+    return define_table, struct_total

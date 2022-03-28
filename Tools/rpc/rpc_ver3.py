@@ -9,6 +9,7 @@ import os
 from rpc_cfg import *
 from ver3.creat_c import creat_ver3_c
 from ver3.creat_go import creat_ver3_go
+from ver3.creat_python import creat_ver3_python
 
 
 def rpc_ver3():
@@ -16,4 +17,5 @@ def rpc_ver3():
         os.makedirs(ver3_auto_dir)
 
     struct_table, msg_struct_table, enum_table, msg_id_table = creat_ver3_c()
-    creat_ver3_go(struct_table, msg_struct_table, msg_id_table, enum_table)
+    define_table, struct_total = creat_ver3_go(struct_table, msg_struct_table, msg_id_table, enum_table)
+    creat_ver3_python(struct_total, struct_table, msg_struct_table, define_table, msg_id_table, enum_table)
