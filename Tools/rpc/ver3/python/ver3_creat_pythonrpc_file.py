@@ -65,6 +65,7 @@ def _c_type_to_python_type(c_type, struct_total, enum_table):
 def _creat_define_file(define_table, file_name):
     print(f"{len(define_table)}\tdefine\t\twrite to {file_name}")
     with open(file_name, "w+", encoding="utf-8") as file_id:
+        file_id.write('# -*- coding: utf-8 -*-\n')
         copyright_message(file_id, 'python')
         file_id.write('from ctypes import *\n\n')
 
@@ -76,6 +77,7 @@ def _creat_define_file(define_table, file_name):
 def _creat_msg_id_file(msg_id_table, file_name):
     print(f'{len(msg_id_table)}\tmsgid\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
+        file_id.write('# -*- coding: utf-8 -*-\n')
         copyright_message(file_id, 'python')
         file_id.write('from ctypes import *\n\n')
 
@@ -87,24 +89,25 @@ def _creat_msg_id_file(msg_id_table, file_name):
 def _creat_struct_file(struct_table, struct_total, enum_table, file_name):
     print(f'{len(struct_table)}\tstruct\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
+        file_id.write('# -*- coding: utf-8 -*-\n')
         copyright_message(file_id, 'python')
         file_id.write('from ctypes import *\n')
         file_id.write('from .dave_enum import *\n')
         file_id.write('from .dave_msg_id import *\n')
         file_id.write('from .dave_struct import *\n')
-        file_id.write('from .dave_define import *\n')
+        file_id.write('from .dave_define import *\n\n')
 
         for struct_name in struct_table.keys():
             file_id.write(f'class {struct_name} (Structure):\n')
             file_id.write(f'\t_fields_ = [\n')
             for struct_data in struct_table[struct_name]:
-                value_name = struct_data['n'].capitalize()
+                value_name = struct_data['n']
                 value_type = struct_data['t']
                 value_dimension = struct_data.get('d', None)
                 if value_dimension == None:
-                    file_id.write(f'\t("{value_name}", {_c_type_to_python_type(value_type, struct_total, enum_table)})\n')
+                    file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, struct_total, enum_table)}),\n')
                 else:
-                    file_id.write(f'\t("{value_name}", {_c_type_to_python_type(value_type, struct_total, enum_table)} * {value_dimension})\n')
+                    file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, struct_total, enum_table)} * {value_dimension}),\n')
             file_id.write(f'{"]"}\n\n')
     return
 
@@ -112,6 +115,7 @@ def _creat_struct_file(struct_table, struct_total, enum_table, file_name):
 def _creat_enum_file(enum_table, file_name):
     print(f'{len(enum_table)}\tenum\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
+        file_id.write('# -*- coding: utf-8 -*-\n')
         copyright_message(file_id, 'python')
         file_id.write('from ctypes import *\n\n')
 
@@ -139,6 +143,8 @@ def _creat_enum_file(enum_table, file_name):
 
 
 def creat_pythonrpc_file(struct_total, struct_table, msg_struct_table, define_table, msg_id_table, enum_table):
+    struct_table = struct_sort_by_before_and_after_calls(struct_table)
+
     _creat_define_file(define_table, ver3_pydefine_file_name)
     _creat_msg_id_file(msg_id_table, ver3_pymsgid_file_name)
     _creat_struct_file(struct_table, struct_total, enum_table, ver3_pystruct_file_name)

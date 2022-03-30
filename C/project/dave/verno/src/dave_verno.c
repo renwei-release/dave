@@ -63,7 +63,10 @@ dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 s8 *
 dave_verno_my_product(void)
 {
-	static s8 product_str[128];
+	static s8 product_str[128] = { '\0' };
+
+	if(product_str[0] != '\0')
+		return product_str;
 
 	return dave_verno_product(dave_verno(), product_str, sizeof(product_str));
 }

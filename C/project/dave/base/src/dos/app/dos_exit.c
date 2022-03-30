@@ -34,39 +34,16 @@ _dos_restart_user(s8 *param_ptr, ub param_len)
 	return ERRCODE_OK;
 }
 
-static ErrCode
-_dos_exit_help(void)
-{
-	dos_print("Usage: exit\nExit the system!");
-	return ERRCODE_OK;
-}
-
-static ErrCode
-_dos_exit_user(s8 *param_ptr, ub param_len)
-{
-	const char *msg = "User reboot the system!";
-
-	if(dave_os_on_docker() == dave_true)
-	{
-		dos_print("In the docker environment, please do not use the exit command!");
-	}
-	else
-	{
-		dos_print(msg);
-
-		dave_restart(msg);
-	}
-
-	return ERRCODE_OK;
-}
-
 // =====================================================================
 
 void
 dos_exit_reset(void)
 {
 	dos_cmd_register("restart", _dos_restart_user, (help_process_fun)_dos_restart_help);
-	dos_cmd_register("exit", _dos_exit_user, (help_process_fun)_dos_exit_help);
+	if(dave_os_on_docker() == dave_false)
+	{
+		dos_cmd_register("exit", _dos_restart_user, (help_process_fun)_dos_restart_help);
+	}
 }
 
 #endif

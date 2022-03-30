@@ -30,18 +30,14 @@ copy_python_project_to_container()
       docker exec -it ${PROJECTNAME} mkdir -p /project/dave
       docker exec -it ${PROJECTNAME} mkdir -p /project/product
 
-      docker cp ${PRJPYFILE}/dave_cfg.py ${PROJECTNAME}:/project
       docker cp ${PRJPYFILE}/dave_main.py ${PROJECTNAME}:/project
-      docker cp ${PRJPYFILE}/dave_setup.py ${PROJECTNAME}:/project
-      docker cp ${PRJPYFILE}/MANIFEST.in ${PROJECTNAME}:/project
-
       docker cp ${PRJPYFILE}/dave/__init__.py ${PROJECTNAME}:/project/dave
-      docker cp ${PRJPYFILE}/dave/dave_test.py ${PROJECTNAME}:/project/dave
 
       docker cp ${PRJPYFILE}/dave/base ${PROJECTNAME}:/project/dave
       docker cp ${PRJPYFILE}/dave/tools ${PROJECTNAME}:/project/dave
 
       if [ -d ${PRJPYFILE}/product/${PROJECT} ]; then
+         docker cp ${PRJPYFILE}/product/product_function.py ${PROJECTNAME}:/project/product
          docker cp ${PRJPYFILE}/product/${PROJECT} ${PROJECTNAME}:/project/product
       fi
    fi

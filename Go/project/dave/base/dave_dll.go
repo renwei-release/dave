@@ -38,11 +38,6 @@ type DllMsgBody struct {
 var _product_init_fun func()
 var _product_exit_fun func()
 
-//export dave_go_self_check_callback
-func dave_go_self_check_callback(callback_input C.int) C.int {
-	return callback_input
-}
-
 //export dave_go_init
 func dave_go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
@@ -58,7 +53,12 @@ func dave_go_exit(c_data unsafe.Pointer) {
 	_product_exit_fun()
 }
 
-func dave_go_self_check() C.int {
+//export dave_go_self_check_callback
+func dave_go_self_check_callback(callback_input C.int) C.int {
+	return callback_input
+}
+
+func _dave_go_self_check() C.int {
 	check_str := C.CString("123456")
 
 	ret := C.dave_dll_self_check(check_str, C.int(123456), C.float(123456.123456), C.dll_checkback_fun(C.dave_go_self_check_callback))
@@ -83,7 +83,7 @@ func Dave_go_init(init_fun func(), exit_fun func()) {
 }
 
 func Dave_go_running() {
-	ret := dave_go_self_check()
+	ret := _dave_go_self_check()
 	if ret == 0 {
 		C.dave_dll_running()
 	}

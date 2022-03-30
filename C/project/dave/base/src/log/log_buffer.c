@@ -174,9 +174,9 @@ log_buffer_get(s8 *log_buf, ub log_buf_len, TraceLevel *level)
 		*level = TRACELEVEL_MAX;
 	}
 
-	LOGDEBUG("<%d/%d> log_copy_len:%d level:%s",
+	LOGDEBUG("<%d/%d> log_copy_len:%d level:%d",
 		_log_buffer_w_index, _log_buffer_r_index,
-		log_copy_len, trace_level_to_str(*level));
+		log_copy_len, *level);
 
 	if(log_copy_len > log_buf_len)
 	{

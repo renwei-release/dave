@@ -86,7 +86,7 @@ dave_dll_log(char *func, int line, char *log_msg)
 
 	_dll_log_remove_some_data(log_buffer, log_len);
 
-	DAVELOG("[%s]<%s:%d>%s\r\n", dave_verno_my_product(), func, line, log_buffer);
+	DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_buffer);
 }
 
 #endif

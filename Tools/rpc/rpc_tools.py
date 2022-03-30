@@ -142,6 +142,20 @@ def _get_struct_name_and_body(struct_data):
     return get_array_data(struct_name, 0).replace(" ", ""), struct_body
 
 
+def _struct_sort_by_before_and_after_calls(struct_data):
+    new_struct_data = {}
+
+    for struct_name in struct_data.keys():
+        for struct_member in struct_data[struct_name]:
+            member_name = struct_member['t']
+            member_data = struct_data.get(member_name, None)
+            if member_data != None:
+                new_struct_data[member_name] = member_data
+        new_struct_data[struct_name] = struct_data.get(struct_name, None)
+
+    return new_struct_data
+
+
 # =====================================================================
 
 
@@ -250,3 +264,9 @@ def struct_dimension_decomposition(struct_dimension):
         return str(1), low_struct_dimension
     else:
         return high_struct_dimension, low_struct_dimension
+
+
+def struct_sort_by_before_and_after_calls(struct_data):
+    for loop_multiple_times_to_fully_sort in range(3):
+        struct_data = _struct_sort_by_before_and_after_calls(struct_data)
+    return struct_data

@@ -186,6 +186,7 @@ typedef struct {
 	u32 u32_debug;
 	void *void_debug;
 	DateStruct date_debug;
+	MBUF *mbuf_debug;
 } RPCDebugMsg;
 
 /* for MSGID_CFG_UPDATE message */
