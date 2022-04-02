@@ -39,10 +39,13 @@ _dos_restart_user(s8 *param_ptr, ub param_len)
 void
 dos_exit_reset(void)
 {
-	dos_cmd_register("restart", _dos_restart_user, (help_process_fun)_dos_restart_help);
 	if(dave_os_on_docker() == dave_false)
 	{
 		dos_cmd_register("exit", _dos_restart_user, (help_process_fun)_dos_restart_help);
+	}
+	else
+	{
+		dos_cmd_register("restart", _dos_restart_user, (help_process_fun)_dos_restart_help);
 	}
 }
 

@@ -9,6 +9,7 @@
 #include "dave_tools.h"
 #include "dave_http.h"
 #include "dave_os.h"
+#include "dave_third_party.h"
 #include "http_recv.h"
 #include "http_distributor.h"
 #include "http_test.h"
@@ -44,6 +45,7 @@ _http_restart(RESTARTREQMSG *pRestart)
 static void
 _http_init(MSGBODY *msg)
 {
+	dave_nginx_init();
 	http_recv_init();
 	http_distributor_init();
 }
@@ -66,7 +68,6 @@ _http_main(MSGBODY *msg)
 				http_recv_close(msg->msg_src, (HTTPCloseReq *)(msg->msg_body));
 			break;
 		default:
-				HTTPLOG("unprocessed message:%d", msg->msg_id);
 			break;
 	}
 }
@@ -74,7 +75,7 @@ _http_main(MSGBODY *msg)
 static void
 _http_exit(MSGBODY *msg)
 {
-
+	dave_nginx_exit();
 }
 
 // =====================================================================

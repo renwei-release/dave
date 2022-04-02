@@ -192,7 +192,7 @@ _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "%s%d%s\n", NGINX_SERVER_CONF_FLAG, https_port, NGINX_SERVER_CONF_FLAG);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    server {\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   listen	%d ssl;\n", https_port);
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   server_name	https;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   server_name	https_%d;\n", https_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   error_page   500 502 503 504 /50x.html;\n");
 		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_session_cache shared:SSL:10m;\n");
@@ -225,7 +225,7 @@ _nginx_conf_write_http_server(s8 *conf, ub conf_len, ub http_port, ub cgi_port, 
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "%s%d%s\n", NGINX_SERVER_CONF_FLAG, http_port, NGINX_SERVER_CONF_FLAG);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    server {\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        listen       %d;\n", http_port);
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        server_name  http;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        server_name  http_%d;\n", http_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        error_page   500 502 503 504 /50x.html;\n");
 		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location %s {\n", nginx_path);
@@ -252,7 +252,7 @@ _nginx_conf_write_web_server(s8 *conf, ub conf_len, ub web_port, ub cgi_port, s8
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "%s%d%s\n", NGINX_SERVER_CONF_FLAG, web_port, NGINX_SERVER_CONF_FLAG);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    server {\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        listen       %d;\n", web_port);
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        server_name  web;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        server_name  web_%d;\n", web_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location / { \n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "          root   html; \n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "          index  index.html index.htm;\n");
@@ -290,9 +290,9 @@ _nginx_conf_read_server(s8 *conf, ub conf_len, s8 *server, ub server_len, ub *se
 	{
 		if(dave_memcmp(&conf[conf_index], NGINX_SERVER_CONF_FLAG, conf_flag_len) == dave_true)
 		{
-			PARTYDEBUG("%d/%d", conf_index, conf_len);
-			conf_index += 9;
+			conf_index += dave_strlen(NGINX_SERVER_CONF_FLAG);
 			*server_port = stringdigital(&conf[conf_index]);
+			PARTYDEBUG("%d/%d:%s/%d", conf_index, conf_len, &conf[conf_index], *server_port);
 			break;
 		}
 
@@ -384,13 +384,13 @@ nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port,
 
 	switch (type){
 		case ListenHttps:
-			new_conf_index += _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				new_conf_index += _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
 			break;
 		case ListenHttp:
-			new_conf_index += _nginx_conf_write_http_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				new_conf_index += _nginx_conf_write_http_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
 			break;
 		case ListenWeb:
-			new_conf_index += _nginx_conf_write_web_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				new_conf_index += _nginx_conf_write_web_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
 			break;
 		default:
 				PARTYABNOR("Invalid listen type[%d]", type);

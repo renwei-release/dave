@@ -93,7 +93,7 @@ t_a2b_string_to_digital(s8 *str_ptr)
 {
 	ub str_len = dave_strlen(str_ptr);
 
-	if(t_is_all_digit((u8 *)str_ptr, str_len) == dave_true)
+	if(t_is_decimal_str(str_ptr, str_len) == dave_true)
 		return _t_a2b_string_to_digital(str_ptr, str_len, 10);
 	else
 		return _t_a2b_string_to_digital(str_ptr, str_len, 16);

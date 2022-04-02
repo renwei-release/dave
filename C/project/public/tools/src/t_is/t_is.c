@@ -194,3 +194,57 @@ t_is_ipv4(s8 *ip_str)
 	return dave_true;
 }
 
+dave_bool
+t_is_decimal_str(s8 *str_ptr, ub str_len)
+{
+	ub str_index;
+	dave_bool ret;
+
+	if(str_len == 0)
+		str_len = dave_strlen(str_ptr);
+
+	if(str_len > 2)
+	{
+		if((str_ptr[0] == '0')
+			&& ((str_ptr[1] == 'x') || (str_ptr[1] == 'X')))
+		{
+			return dave_false;
+		}
+	}
+
+	ret = dave_true;
+
+	for(str_index=0; str_index<str_len; str_index++)
+	{
+		if(str_ptr[str_index] == '\0')
+			break;
+
+		if(t_is_digit((u8)str_ptr[str_index]) == dave_false)
+		{
+			switch(str_ptr[str_index])
+			{
+				case 'a':
+				case 'A':
+				case 'b':
+				case 'B':
+				case 'c':
+				case 'C':
+				case 'd':
+				case 'D':
+				case 'e':
+				case 'E':
+				case 'f':
+				case 'F':
+						ret = dave_false;
+					break;
+				default:
+					break;
+			}
+
+			break;
+		}
+	}
+
+	return ret;
+}
+

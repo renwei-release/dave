@@ -37,7 +37,7 @@ copy_python_project_to_container()
       docker cp ${PRJPYFILE}/public/tools ${PROJECTNAME}:/project/public
 
       if [ -d ${PRJPYFILE}/product/${PROJECT} ]; then
-         docker cp ${PRJPYFILE}/product/product_function.py ${PROJECTNAME}:/project/product
+         docker cp ${PRJPYFILE}/product/dave_product.py ${PROJECTNAME}:/project/product
          docker cp ${PRJPYFILE}/product/${PROJECT} ${PROJECTNAME}:/project/product
       fi
    fi

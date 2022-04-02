@@ -20,6 +20,7 @@ dave_bool t_is_all_show_char_or_rn(u8 *data_ptr, ub data_len);
 dave_bool t_is_legal_char(u8 c);
 dave_bool t_is_empty_str(s8 *str);
 dave_bool t_is_ipv4(s8 *ip_str);
+dave_bool t_is_decimal_str(s8 *str_ptr, ub str_len);
 
 #endif
 

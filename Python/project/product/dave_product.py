@@ -19,7 +19,7 @@ def _setup_product(product_name):
 # =====================================================================
 
 
-def product_function(product_name):
+def dave_product(product_name):
     _setup_product(product_name)
 
     try:

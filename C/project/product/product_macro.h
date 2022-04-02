@@ -25,6 +25,8 @@
  */
 #if defined(DAVE_PRODUCT_BASE)
  #define __DAVE_PRODUCT_BASE__
+#elif defined(DAVE_PRODUCT_IO)
+ #define __DAVE_PRODUCT_IO__
 #else
  #define __DAVE_PRODUCT_NULL__
 #endif
