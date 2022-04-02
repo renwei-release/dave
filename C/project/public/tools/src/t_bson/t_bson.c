@@ -274,8 +274,13 @@ t_serialize_to_bson(char *serialize_ptr, size_t serialize_len)
 MBUF *
 t_bson_to_mbuf(void *pBson)
 {
-	tBsonSerialize serialize = ((tBsonObject *)pBson)->serialize;
+	tBsonSerialize serialize;
 	MBUF *pMbuf;
+
+	if(pBson == NULL)
+		return NULL;
+
+	serialize = ((tBsonObject *)pBson)->serialize;
 
 	pMbuf = dave_mmalloc(serialize.estimated_len);
 

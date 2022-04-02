@@ -38,6 +38,8 @@ static DaveLock _recv_listen_pv;
 static DaveLock _recv_api_pv;
 static volatile ub _cgi_listen_port = RECV_CGI_LISTEN_START;
 static RecvListen _recv_listen[RECV_LISTEN_MAX];
+static s8 _ssl_certificate_path[256];
+static s8 _ssl_certificate_key_path[256];
 
 static ub
 _http_recv_listen_port(void)
@@ -76,6 +78,21 @@ _http_recv_listen_reset_all(void)
 		_recv_listen[listen_index].cgi_listen_port = 0;
 
 		_http_recv_listen_reset(&_recv_listen[listen_index]);
+	}
+}
+
+static void
+_http_recv_listen_cfg_load(void)
+{
+	if(cfg_get(CFG_SSL_CERTIFICATE_PATH, (u8 *)_ssl_certificate_path, sizeof(_ssl_certificate_path)) == dave_false)
+	{
+		dave_strcpy(_ssl_certificate_path, "/dave/tools/nginx/key/214602082670658.pem", sizeof(_ssl_certificate_path));
+		cfg_set(CFG_SSL_CERTIFICATE_PATH, (u8 *)_ssl_certificate_path, dave_strlen(_ssl_certificate_path));
+	}
+	if(cfg_get(CFG_SSL_CERTIFICATE_KEY_PATH, (u8 *)_ssl_certificate_key_path, sizeof(_ssl_certificate_key_path)) == dave_false)
+	{
+		dave_strcpy(_ssl_certificate_key_path, "/dave/tools/nginx/key/214602082670658.key", sizeof(_ssl_certificate_key_path));
+		cfg_set(CFG_SSL_CERTIFICATE_KEY_PATH, (u8 *)_ssl_certificate_key_path, dave_strlen(_ssl_certificate_key_path));
 	}
 }
 
@@ -118,11 +135,11 @@ _http_recv_listen_find(ub nginx_port, dave_bool find_new)
 }
 
 static ErrCode
-_http_recv_listen_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path)
+_http_recv_listen_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	ErrCode ret = ERRCODE_Resource_conflicts;
 
-	SAFEZONEv3(_recv_api_pv, { ret = dave_nginx_start(nginx_port, type, cgi_port, nginx_path); } );
+	SAFEZONEv3(_recv_api_pv, { ret = dave_nginx_start(nginx_port, type, cgi_port, nginx_path, pem_path, key_path); } );
 
 	return ret;
 }
@@ -155,7 +172,9 @@ _http_recv_listen_bind_rsp(MSGBODY *ptr)
 	{
 		case SOCKETINFO_BIND_OK:
 				pListen->cgi_listen_socket = pRsp->socket;
-				ret = _http_recv_listen_start(pListen->nginx_port, pListen->nginx_type, pListen->cgi_listen_port, pListen->nginx_path);
+				ret = _http_recv_listen_start(
+					pListen->nginx_port, pListen->nginx_type, pListen->cgi_listen_port, pListen->nginx_path,
+					_ssl_certificate_path, _ssl_certificate_key_path);
 				if(ret == ERRCODE_OK)
 				{
 					pListen->nginx_booting = dave_true;
@@ -511,10 +530,9 @@ http_recv_listen_init(void)
 {
 	dave_lock_reset(&_recv_listen_pv);
 	dave_lock_reset(&_recv_api_pv);
-
 	_cgi_listen_port = RECV_CGI_LISTEN_START;
-
 	_http_recv_listen_reset_all();
+	_http_recv_listen_cfg_load();
 
 	reg_msg(SOCKET_PLUGIN, _http_recv_listen_plugin);
 	reg_msg(SOCKET_PLUGOUT, _http_recv_listen_plugout);

@@ -13,9 +13,9 @@ import "dave/product/base"
 // =====================================================================
 
 func Product_init() {
-	base.Main_init()
+	base.Dave_product_init()
 }
 
 func Product_exit() {
-	base.Main_exit()
+	base.Dave_product_exit()
 }

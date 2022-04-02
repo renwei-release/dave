@@ -138,11 +138,11 @@ _nginx_action_safe_stop(void)
 }
 
 static dave_bool
-_nginx_action_safe_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path)
+_nginx_action_safe_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv3( _nginx_action_pv, ret = nginx_conf_add(work_process, nginx_port, type, cgi_port, nginx_path); );
+	SAFEZONEv3( _nginx_action_pv, ret = nginx_conf_add(work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path); );
 
 	return ret;
 }
@@ -201,9 +201,9 @@ nginx_action_exit(void)
 }
 
 dave_bool
-nginx_action_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path)
+nginx_action_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
-	return _nginx_action_safe_conf_add(work_process, nginx_port, type, cgi_port, nginx_path);
+	return _nginx_action_safe_conf_add(work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path);
 }
 
 ub

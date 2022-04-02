@@ -19,7 +19,7 @@
 #include "sync_log.h"
 
 #define SYNC_CLIENT_MSG_BUFFER_MAX (81920)
-#define SYNC_CLIENT_MSG_BUFFER_BASE_TIMER (3000)
+#define SYNC_CLIENT_MSG_BUFFER_BASE_TIMER (1000)
 #define SYNC_CLIENT_MSG_BUFFER_LEFT (128)
 
 typedef struct {
@@ -231,7 +231,7 @@ _sync_client_msg_buffer_pop(void)
 					pBuffer->msg_len, pBuffer->msg_body,
 					dave_true) == dave_true)
 				{
-					SYNCTRACE("%s->%s %d buffer pop success!", pBuffer->src, pBuffer->dst, pBuffer->msg_id);
+					SYNCDEBUG("%s->%s %d buffer pop success!", pBuffer->src, pBuffer->dst, pBuffer->msg_id);
 
 					pBuffer->msg_body = NULL;
 
@@ -282,6 +282,8 @@ _sync_client_msg_buffer_safe_push(
 
 		}
 	);
+
+	SYNCDEBUG("%s<%lx>->%s<%lx> %d", src, route_src, dst, route_dst, msg_id);
 
 	return ret;
 }

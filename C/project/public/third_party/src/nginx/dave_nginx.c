@@ -68,7 +68,7 @@ dave_nginx_exit(void)
 }
 
 ErrCode
-dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path)
+dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	ErrCode ret;
 	ub work_process = _nginx_max_work_process();
@@ -79,7 +79,7 @@ dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path
 		return ERRCODE_Invalid_parameter;
 	}
 
-	ret = nginx_action_conf_add(work_process, nginx_port, type, cgi_port, nginx_path);
+	ret = nginx_action_conf_add(work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path);
 	if(ret == dave_false)
 	{
 		PARTYABNOR("conf add failed! work_process:%d nginx_port:%d type:%d cgi_port:%d nginx_path:%s",

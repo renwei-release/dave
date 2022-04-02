@@ -13,7 +13,7 @@ void dave_nginx_init(void);
 
 void dave_nginx_exit(void);
 
-ErrCode dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path);
+ErrCode dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path);
 
 ErrCode dave_nginx_stop(ub nginx_port);
 

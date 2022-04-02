@@ -104,19 +104,9 @@ _dave_dll_main_thread(void *arg)
 {
 	base_init(_dave_main_thread_id);
 
-	dave_dll_main_init(_dll_main_fun);
-
-	if(_dll_init_fun != NULL)
-	{
-		_dll_init_fun(NULL);
-	}
+	dave_dll_main_init(_dll_init_fun, _dll_main_fun, _dll_exit_fun);
 
 	base_running(dave_false);
-
-	if(_dll_exit_fun != NULL)
-	{
-		_dll_exit_fun(NULL);
-	}
 
 	dave_dll_main_exit();
 

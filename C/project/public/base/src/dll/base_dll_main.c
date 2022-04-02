@@ -46,7 +46,9 @@ typedef struct {
 } DllMsgBody;
 
 static ThreadId _main_thread = INVALID_THREAD_ID;
+static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
+static dll_callback_fun _dll_exit_fun = NULL;
 
 static char *
 _dll_main_name(void)
@@ -68,7 +70,10 @@ _dll_main_number(void)
 static void
 _dll_main_init(MSGBODY *msg)
 {
-
+	if(_dll_init_fun != NULL)
+	{
+		_dll_init_fun(NULL);
+	}
 }
 
 static void
@@ -102,15 +107,20 @@ _dll_main_main(MSGBODY *msg)
 static void
 _dll_main_exit(MSGBODY *msg)
 {
-
+	if(_dll_exit_fun != NULL)
+	{
+		_dll_exit_fun(NULL);
+	}
 }
 
 // =====================================================================
 
 void
-dave_dll_main_init(dll_callback_fun dll_main_fun)
+dave_dll_main_init(dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
+	_dll_init_fun = dll_init_fun;
 	_dll_main_fun = dll_main_fun;
+	_dll_exit_fun = dll_exit_fun;
 
 	_main_thread = dave_thread_creat(_dll_main_name(), _dll_main_number(), THREAD_THREAD_FLAG, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)

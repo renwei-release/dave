@@ -24,7 +24,7 @@
 
 #define MSG_BUFFER_MAX (20480)
 #define MSG_IN_BUFFER_MAX_TIME (1000 * 1000 * 720)	// 720 s
-#define WAIT_PUSH_BUFFER_TIME (1000 * 3000) 		// 6 s
+#define WAIT_PUSH_BUFFER_TIME (1000 * 1000 * 1) 	// 1 s
 #define MAX_ACTION_THREAD (THREAD_MAX)
 
 typedef struct {

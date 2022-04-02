@@ -23,13 +23,13 @@ def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
 # =====================================================================
 
 
-def product_init():
+def dave_product_init():
     public.dave_system_function_table_add(public.MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)
     public.dave_system_function_table_add(public.MSGID_REMOTE_THREAD_ID_REMOVE, fun_MSGID_REMOTE_THREAD_ID_REMOVE)
     return
 
 
-def product_exit():
+def dave_product_exit():
     public.dave_system_function_table_del(public.MSGID_REMOTE_THREAD_ID_READY)
     public.dave_system_function_table_del(public.MSGID_REMOTE_THREAD_ID_REMOVE)
     return

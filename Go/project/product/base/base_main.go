@@ -58,10 +58,10 @@ func _main_msg_unregister() {
 
 // =====================================================================
 
-func Main_init() {
+func Dave_product_init() {
 	_main_msg_register()
 }
 
-func Main_exit() {
+func Dave_product_exit() {
 	_main_msg_unregister()
 }

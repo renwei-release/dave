@@ -19,7 +19,7 @@ def main():
    product = dave_product(product_name)
 
    if product != None:
-      public.dave_python_init(product.product_init, product.product_exit)
+      public.dave_python_init(product.dave_product_init, product.dave_product_exit)
    else:
       public.dave_python_init(None, None)
    public.dave_python_running()

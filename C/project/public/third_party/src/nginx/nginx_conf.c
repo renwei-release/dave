@@ -181,7 +181,7 @@ _nginx_conf_write_allow_cross_domain_cfg(s8 *conf, ub conf_len)
 }
 
 static ub
-_nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port, s8 *nginx_path)
+_nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	ub conf_index;
 
@@ -197,8 +197,11 @@ _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port
 		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_session_cache shared:SSL:10m;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_session_timeout 10m;\n");
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_certificate %s;\n", "/dave/tools/nginx/key/214602082670658.pem");
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_certificate_key %s;\n", "/dave/tools/nginx/key/214602082670658.key");
+		if(pem_path != NULL)
+		{
+			conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_certificate %s;\n", pem_path);
+			conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_certificate_key %s;\n", key_path);
+		}
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_protocols TLSv1.2 TLSv1.3;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   location %s {\n", nginx_path);
@@ -351,7 +354,7 @@ _nginx_conf_read_server(s8 *conf, ub conf_len, s8 *server, ub server_len, ub *se
 // =====================================================================
 
 dave_bool
-nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path)
+nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	s8 *old_conf, *new_conf, *server_conf;
 	ub old_conf_len, old_conf_index, new_conf_index;
@@ -384,7 +387,7 @@ nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port,
 
 	switch (type){
 		case ListenHttps:
-				new_conf_index += _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				new_conf_index += _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path, pem_path, key_path);
 			break;
 		case ListenHttp:
 				new_conf_index += _nginx_conf_write_http_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);

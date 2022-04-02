@@ -32,6 +32,8 @@ _t_rpc_zip_ver3(ub msg_id, void *msg_body, ub msg_len)
 	MBUF *mbuf_data;
 
 	pBson = t_rpc_ver3_zip(msg_id, msg_body, msg_len);
+	if(pBson == NULL)
+		return NULL;
 
 	mbuf_data = t_bson_to_mbuf(pBson);
 

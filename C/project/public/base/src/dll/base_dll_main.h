@@ -9,7 +9,7 @@
 #define __BASE_DLL_MAIN_H__
 #include "base_dll.h"
 
-void dave_dll_main_init(dll_callback_fun dll_main_fun);
+void dave_dll_main_init(dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun);
 
 void dave_dll_main_exit(void);
 

@@ -33,7 +33,7 @@ typedef struct {
 
 static ThreadId _sync_client_thread = INVALID_THREAD_ID;
 
-static dave_bool
+static inline dave_bool
 _sync_client_run_thread_msg(
 	SyncServer *pServer,
 	s8 *src, ThreadId route_src,
@@ -84,7 +84,7 @@ _sync_client_run_thread_msg(
 	return snd_from_msg(route_src, route_dst, msg_id, msg_len, msg_body);
 }
 
-static dave_bool
+static inline dave_bool
 _sync_client_run_thread(
 	SyncServer *pServer,
 	s8 *src, ThreadId route_src,
@@ -179,7 +179,7 @@ _sync_client_run_internal(
 	}
 }
 
-static void
+static inline void
 _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 {
 	ThreadId route_src, route_dst;

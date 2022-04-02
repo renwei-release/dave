@@ -748,9 +748,12 @@ base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
 	ub get_len;
 
+	dave_memset(value_ptr, 0x00, value_len);
+
 	get_len = _base_cfg_get(dir, name, value_ptr, value_len);
 	if(get_len < value_len)
 		value_ptr[get_len] = '\0';
+
 	if(get_len == 0)
 		return dave_false;
 
