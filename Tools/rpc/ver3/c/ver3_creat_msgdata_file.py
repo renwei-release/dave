@@ -21,13 +21,13 @@ _msgdata_src_head = "\
 #include \"t_rpc_ver3_uniondata.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
-#include \"tools_log.h\"\n\n"
+#include \"tools_log.h\"\n"
 
 
 _msgdata_inc_head = "\
 #ifndef _T_RPC_MSGDATA_H__\n\
 #define _T_RPC_MSGDATA_H__\n\
-#include \"dave_base.h\"\n\n"\
+#include \"dave_base.h\"\n"\
 
 
 _msgdata_inc_end = "\
@@ -157,20 +157,22 @@ def _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table):
     return
 
 
-def _creat_msgdata_src_file(msg_struct_table, file_list, file_name):
+def _creat_msgdata_src_file(msg_struct_table, include_list, file_name):
     struct_table = _creat_msgdata_struct_table()
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_msgdata_src_head)
+        include_message(file_id, include_list)
         file_id.write("// =====================================================================\n\n")
         _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table)
     return
 
 
-def _creat_msgdata_inc_file(msg_struct_table, file_list, file_name):
+def _creat_msgdata_inc_file(msg_struct_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_msgdata_inc_head)
+        include_message(file_id, include_list)
         for msg_struct_name in msg_struct_table.keys():
             msg_struct_name = msg_struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver3_zip_"+msg_struct_name+"("+msg_struct_name+" *zip_data, ub zip_len);\n")
@@ -183,8 +185,8 @@ def _creat_msgdata_inc_file(msg_struct_table, file_list, file_name):
 
 
 def creat_msgdata_file():
-    msg_msg_table, msg_struct_table, msg_file_list = find_msg_struct_table()
+    _, msg_struct_table, include_list = find_msg_struct_table()
     print(f"{len(msg_struct_table)}\tmsgdata\t\twrite to {ver3_msgdata_src_file_name}")
-    _creat_msgdata_src_file(msg_struct_table, msg_file_list, ver3_msgdata_src_file_name)
-    _creat_msgdata_inc_file(msg_struct_table, msg_file_list, ver3_msgdata_inc_file_name)
+    _creat_msgdata_src_file(msg_struct_table, include_list, ver3_msgdata_src_file_name)
+    _creat_msgdata_inc_file(msg_struct_table, include_list, ver3_msgdata_inc_file_name)
     return msg_struct_table

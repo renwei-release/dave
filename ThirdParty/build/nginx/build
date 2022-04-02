@@ -1,0 +1,35 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=1.21.6
+
+if [ ! -f nginx-${VERSION}.tar.gz ]; then
+   wget http://nginx.org/download/nginx-${VERSION}.tar.gz
+fi
+if [ ! -d ./nginx-${VERSION} ]; then
+   tar -xzvf nginx-${VERSION}.tar.gz
+fi
+
+#
+# build nginx
+#
+
+cp -rf conf-static ./nginx-${VERSION}/auto/lib/openssl/conf
+
+cd nginx-${VERSION}
+
+chmod a+x configure ./auto/*
+
+./configure --prefix=/dave/tools/nginx --with-http_stub_status_module --with-http_ssl_module --with-openssl=/dave/tools
+
+make && make install && make clean
+
+cd $homepath
+
+if [ -d ./setup ]; then
+   rm -rf setup
+fi
+mkdir setup
+cp -r /dave/tools/nginx/* ./setup/
+rm -rf nginx-${VERSION}

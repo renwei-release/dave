@@ -1,0 +1,28 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=0.15-20200726
+
+if [ ! -f json-c-${VERSION}.tar.gz ]; then
+  wget https://github.com/json-c/json-c/archive/refs/tags/json-c-${VERSION}.tar.gz
+fi
+if [ ! -d ./json-c-json-c-${VERSION} ]; then
+  tar -zxvf json-c-${VERSION}.tar.gz
+fi
+
+cd json-c-json-c-${VERSION}
+
+mkdir build
+cd build
+../cmake-configure --prefix=/dave/tools/json-c
+make && make install
+
+cd $homepath
+
+rm -rf setup
+mkdir setup
+cp -r /dave/tools/json-c/* ./setup
+cp -r json-c-json-c-${VERSION}/*.h ./setup/include/json-c
+
+rm -rf json-c-json-c-${VERSION}

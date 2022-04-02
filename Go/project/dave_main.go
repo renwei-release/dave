@@ -7,7 +7,7 @@ package main
  */
 
 import (
-	"dave/dave/base"
+	"dave/public/base"
 	"dave/product"
 )
 

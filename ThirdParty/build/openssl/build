@@ -1,0 +1,32 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=1_1_1k
+
+if [ ! -f ./OpenSSL_${VERSION}.tar.gz ]; then
+  wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_${VERSION}.tar.gz
+fi
+if [ ! -d ./openssl-OpenSSL_${VERSION} ]; then
+  tar -xzvf OpenSSL_${VERSION}.tar.gz
+fi
+
+cd openssl-OpenSSL_${VERSION}
+
+./config -fPIC no-shared --prefix=/dave/tools/openssl --openssldir=/dave/tools/openssl
+
+make && make install
+
+cd ../
+
+if [ -d ./setup ]; then
+   rm -rf ./setup
+fi
+mkdir ./setup
+
+cp -rf /dave/tools/openssl/* ./setup
+rm -rf ./setup/share
+
+cd $homepath
+
+rm -rf openssl-OpenSSL_${VERSION}

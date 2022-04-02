@@ -29,13 +29,18 @@ def _find_enum_body(body_content):
     return body_table
 
 
-def _find_enum_name_and_body(enum_list, name_array, body_array):
+def _find_enum_name_and_body(enum_list, name_array, body_array, type_array):
+    is_valid_enum_data = False
     for index in range(len(name_array)):
-        enum_list[name_array[index].replace(' ', '')] = _find_enum_body(body_array[index].replace(' ', ''))
-    return
+        enum_name = name_array[index].replace(' ', '')
+        enum_body = body_array[index].replace(' ', '')
+        if enum_name in type_array:
+            enum_list[enum_name] = _find_enum_body(enum_body)
+            is_valid_enum_data = True
+    return is_valid_enum_data
 
 
-def _find_enum_list_from_file(enum_list, include_list, file_name):
+def _find_enum_list_from_file(enum_list, include_list, type_array, file_name):
     with open(file_name, "r", encoding="utf-8") as file_id:
         try:
             file_content = file_id.read()
@@ -48,8 +53,8 @@ def _find_enum_list_from_file(enum_list, include_list, file_name):
             name_array = re.findall("typedef enum.*?\{.*?\}(.*?);", file_content)
             body_array = re.findall("typedef enum.*?(\{.*?\}).*?;", file_content)
             if name_array:
-                _find_enum_name_and_body(enum_list, name_array, body_array)
-                include_list.append(file_name)
+                if _find_enum_name_and_body(enum_list, name_array, body_array, type_array) == True:
+                    include_list.append(file_name)
         except:
             print(f"file_name:{file_name}")
             traceback.print_exc()
@@ -57,38 +62,33 @@ def _find_enum_list_from_file(enum_list, include_list, file_name):
     return
 
 
-def _find_enum_list_from_file_list(file_list):
+def _find_enum_list_from_file_list(type_array, file_list):
     enum_list = {}
     include_list = []
     for file_name in file_list:
-        _find_enum_list_from_file(enum_list, include_list, file_name)
+        _find_enum_list_from_file(enum_list, include_list, type_array, file_name)
     return enum_list, include_list
 
 
-def _find_enum_use_in_msg_struct(struct_table, enum_list):
-    struct_type_list = {}
+def _find_struct_type_array(struct_table):
+    if struct_table == None:
+        struct_table = find_all_struct_table()
+
+    type_array = []
     for struct_key in struct_table:
         msg_struct = struct_table[struct_key]
         for msg_member in msg_struct:
-            struct_type_list[msg_member['t']] = msg_member['t']
-
-    enum_table = {}
-    for enum_name in enum_list.keys():
-        if struct_type_list.get(enum_name, None) != None:
-            enum_table[enum_name] = enum_list[enum_name]
-
-    return enum_table
+            type_array.append(msg_member['t'])
+    return type_array
 
 
 # =====================================================================
 
 
 def find_enum_table(struct_table=None):
+    type_array = _find_struct_type_array(struct_table)
     file_list = find_file_list()
-    enum_list, include_list = _find_enum_list_from_file_list(file_list)
-    if struct_table == None:
-        struct_table = find_all_struct_table()
 
-    enum_table = _find_enum_use_in_msg_struct(struct_table, enum_list)
+    enum_list, include_list = _find_enum_list_from_file_list(type_array, file_list)
 
-    return enum_table, include_list
+    return enum_list, include_list

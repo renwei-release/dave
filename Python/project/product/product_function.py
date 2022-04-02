@@ -8,11 +8,11 @@
 import importlib
 import traceback
 import sys
-import dave
+import public
 
 
 def _setup_product(product_name):
-   dave.dave_product(product_name)
+   public.dave_product(product_name)
    return
 
 

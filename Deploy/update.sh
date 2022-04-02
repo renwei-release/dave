@@ -27,14 +27,14 @@ copy_python_project_to_container()
    if [ -d ${PRJPYFILE} ]; then
       echo update.sh copy ${PRJPYFILE} to ${PROJECTNAME}
 
-      docker exec -it ${PROJECTNAME} mkdir -p /project/dave
+      docker exec -it ${PROJECTNAME} mkdir -p /project/public
       docker exec -it ${PROJECTNAME} mkdir -p /project/product
 
       docker cp ${PRJPYFILE}/dave_main.py ${PROJECTNAME}:/project
-      docker cp ${PRJPYFILE}/dave/__init__.py ${PROJECTNAME}:/project/dave
+      docker cp ${PRJPYFILE}/public/__init__.py ${PROJECTNAME}:/project/public
 
-      docker cp ${PRJPYFILE}/dave/base ${PROJECTNAME}:/project/dave
-      docker cp ${PRJPYFILE}/dave/tools ${PROJECTNAME}:/project/dave
+      docker cp ${PRJPYFILE}/public/base ${PROJECTNAME}:/project/public
+      docker cp ${PRJPYFILE}/public/tools ${PROJECTNAME}:/project/public
 
       if [ -d ${PRJPYFILE}/product/${PROJECT} ]; then
          docker cp ${PRJPYFILE}/product/product_function.py ${PROJECTNAME}:/project/product
@@ -53,9 +53,9 @@ copy_python_project_file()
 copy_ai_project_to_container()
 {
    if [ -d ${PRJAIFILE} ]; then
-      echo update.sh copy ${PRJAIFILE} to ${PROJECTNAME}:/project/dave
-      docker exec -it ${PROJECTNAME} mkdir -p /project/dave
-      docker cp ${PRJAIFILE} ${PROJECTNAME}:/project/dave
+      echo update.sh copy ${PRJAIFILE} to ${PROJECTNAME}:/project/public
+      docker exec -it ${PROJECTNAME} mkdir -p /project/public
+      docker cp ${PRJAIFILE} ${PROJECTNAME}:/project/public
    fi
 }
 
@@ -66,7 +66,7 @@ copy_ai_project_file()
       || [ ${PROJECT} == "bagword" ] \
       || [ ${PROJECT} == "sculptures" ] \
       || [ ${PROJECT} == "style" ]; then
-      PRJAIFILE=${HOMEPRJDIR}/dave/neural_network
+      PRJAIFILE=${HOMEPRJDIR}/public/neural_network
 
       copy_ai_project_to_container
    fi

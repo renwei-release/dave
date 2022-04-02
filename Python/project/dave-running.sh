@@ -8,7 +8,7 @@
 
 action=release
 
-export LD_PRELOAD="./dave/base/lib/libjemalloc.so"
+export LD_PRELOAD="./public/base/lib/libjemalloc.so"
 
 function loop_notify()
 {

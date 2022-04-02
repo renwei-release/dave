@@ -1,0 +1,12 @@
+prefix=/dave/tools/json-c
+exec_prefix=/dave/tools/json-c
+libdir=/dave/tools/json-c/lib64
+includedir=/dave/tools/json-c/include
+
+Name: json-c
+Description: A JSON implementation in C
+Version: 0.15
+Requires:
+Libs.private: 
+Libs: -L${libdir} -ljson-c
+Cflags: -I${includedir} -I${includedir}/json-c

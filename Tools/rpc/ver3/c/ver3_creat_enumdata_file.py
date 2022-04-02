@@ -16,7 +16,7 @@ _enumdata_src_head = "\
 #include \"dave_tools.h\"\n\
 #include \"dave_third_party.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
-#include \"tools_log.h\"\n\n"
+#include \"tools_log.h\"\n"
 
 
 _enumdata_src_private = "\
@@ -38,7 +38,7 @@ _t_rpc_unzip_enumdata(sb *unzip_data, void *pArrayBson)\n\
 _enumdata_inc_head = "\
 #ifndef _T_RPC_ENUMDATA_H__\n\
 #define _T_RPC_ENUMDATA_H__\n\
-#include \"dave_base.h\"\n\n"\
+#include \"dave_base.h\"\n"\
 
 
 _enumdata_inc_end = "\
@@ -75,6 +75,7 @@ def _creat_enumdata_src_file(enum_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_enumdata_src_head)
+        include_message(file_id, include_list)
         _creat_enumdata_include_file(file_id, include_list)
         _creat_enumdata_fun_file(file_id, enum_table)
     return
@@ -84,6 +85,7 @@ def _creat_enumdata_inc_file(enum_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_enumdata_inc_head)
+        include_message(file_id, include_list)
         file_id.write("\n")
         for enum_name in enum_table.keys():
             file_id.write("void * t_rpc_ver3_zip_"+enum_name+"("+enum_name+" zip_data);\n")

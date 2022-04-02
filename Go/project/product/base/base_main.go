@@ -7,8 +7,8 @@ package base
  */
 
 import (
-	"dave/dave/base"
-	"dave/dave/tools"
+	"dave/public/base"
+	"dave/public/tools"
 	"unsafe"
 )
 

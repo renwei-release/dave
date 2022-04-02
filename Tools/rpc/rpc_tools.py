@@ -224,10 +224,10 @@ def copyright_message(file_id, copy_flag='c'):
         file_id.write(_copyright_message_for_c_and_go)
 
 
-def include_message(file_id, head_list):
-    head_list.sort()
+def include_message(file_id, include_list):
+    include_list.sort()
     head_list2 = []
-    for include_file in head_list:
+    for include_file in include_list:
         if include_file in head_list2:
             continue
         head_list2.append(include_file)

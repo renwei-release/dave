@@ -151,10 +151,10 @@ def update_py_verno_file(py_verno_file, MAIN, SUB, REV):
 
 def refresh_version(root_path, projectname):
     verno_file = root_path+"VERSION"
-    c_verno_inc_file = root_path+"C/project/dave/verno/inc/dave_verno.h"
-    c_verno_src_file = root_path+"C/project/dave/verno/src/dave_verno.c"
-    go_verno_file = root_path+"Go/project/dave/base/dave_verno.go"
-    py_verno_file = root_path+"Python/project/dave/base/dave_verno.py"
+    c_verno_inc_file = root_path+"C/project/public/verno/inc/dave_verno.h"
+    c_verno_src_file = root_path+"C/project/public/verno/src/dave_verno.c"
+    go_verno_file = root_path+"Go/project/public/base/dave_verno.go"
+    py_verno_file = root_path+"Python/project/public/base/dave_verno.py"
 
     MAIN, SUB, REV = load_verno_file(verno_file)
     if MAIN == None or SUB == None or REV == None:
