@@ -310,7 +310,7 @@ sync_server_tx_heartbeat(SyncClient *pClient)
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_heartbeat_packet(pClient->recv_data_counter, pClient->send_data_counter);
+	snd_buffer = sync_heartbeat_packet(pClient->recv_data_counter, pClient->send_data_counter, t_time_get_date(NULL));
 
 	_sync_server_tx(pClient, ORDER_CODE_HEARTBEAT_RSP, snd_buffer);
 }

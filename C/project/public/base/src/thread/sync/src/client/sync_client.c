@@ -305,7 +305,7 @@ _sync_client_plugout_server(SocketPlugOut *pPlugOut, SyncServer *pServer)
 	}
 }
 
-static void
+static SyncServer *
 _sync_client_plugin(SocketPlugIn *pPlugIn)
 {
 	SyncServer *pServer;
@@ -324,7 +324,7 @@ _sync_client_plugin(SocketPlugIn *pPlugIn)
 			pPlugIn->father_socket, pPlugIn->child_socket,
 			ipv4str(pPlugIn->NetInfo.addr.ip.ip_addr, pPlugIn->NetInfo.port),
 			ipv4str2(pPlugIn->NetInfo.src_ip.ip_addr, pPlugIn->NetInfo.src_port));
-		return;
+		return NULL;
 	}
 
 	SYNCTRACE("socket:%d/%d pServer:%x/%x/%x type:%s %s/%s",
@@ -335,6 +335,8 @@ _sync_client_plugin(SocketPlugIn *pPlugIn)
 		ipv4str2(pPlugIn->NetInfo.src_ip.ip_addr, pPlugIn->NetInfo.src_port));
 
 	SAFEZONEv5W(pServer->rxtx_pv, _sync_client_plugin_server(pPlugIn, pServer););
+
+	return pServer;
 }
 
 static void
@@ -641,12 +643,17 @@ _sync_client_safe_disconnect_rsp(SocketDisconnectRsp *pRsp)
 static void
 _sync_client_safe_plugin(SocketPlugIn *pPlugIn)
 {
+	SyncServer *pServer = NULL;
+
 	if(base_power_state() == dave_false)
 	{
 		return;
 	}
 
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_plugin(pPlugIn); });
+	SAFEZONEv5W(_sync_client_system_lock, { pServer = _sync_client_plugin(pPlugIn); });
+
+	if(pServer != NULL)
+		sync_client_tx_heartbeat(pServer, dave_true);
 }
 
 static void

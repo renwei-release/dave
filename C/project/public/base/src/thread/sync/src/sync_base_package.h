@@ -13,9 +13,9 @@ ub sync_str_packet(u8 *frame, ub frame_len, s8 *str);
 
 ub sync_str_unpacket(u8 *frame, ub frame_len, s8 *str, ub str_len);
 
-MBUF * sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter);
+MBUF * sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter, DateStruct date);
 
-ub sync_heartbeat_unpacket(u8 *frame, ub frame_len, ub *recv_data_counter, ub *send_data_counter);
+ub sync_heartbeat_unpacket(u8 *frame, ub frame_len, ub *recv_data_counter, ub *send_data_counter, DateStruct *date);
 
 MBUF * sync_thread_name_packet(s8 *verno, s8 *globally_identifier, s8 *thread_name, sb thread_index);
 

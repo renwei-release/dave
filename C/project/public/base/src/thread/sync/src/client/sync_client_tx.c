@@ -139,7 +139,7 @@ sync_client_tx_heartbeat(SyncServer *pServer, dave_bool req_flag)
 
 	SYNCDEBUG("%d/%s", pServer->server_socket, pServer->verno);
 
-	snd_buffer = sync_heartbeat_packet(pServer->recv_data_counter, pServer->send_data_counter);
+	snd_buffer = sync_heartbeat_packet(pServer->recv_data_counter, pServer->send_data_counter, t_time_get_date(NULL));
 
 	if(req_flag == dave_true)
 	{

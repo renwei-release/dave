@@ -37,6 +37,8 @@ s8 * t_a2b_date_str_6(DateStruct *pDate);
 #define errorstr t_a2b_errcode_str
 #define ipv4str t_a2b_net_ipv4_to_str
 #define ipv4str2 t_a2b_net_ipv4_to_str_2
+#define datestr t_a2b_date_str
+#define datestr2 t_a2b_date_str_2
 #define ipstr t_a2b_net_ip_to_str
 #define strip t_a2b_net_str_to_ip
 #define macstr t_a2b_net_mac_to_str

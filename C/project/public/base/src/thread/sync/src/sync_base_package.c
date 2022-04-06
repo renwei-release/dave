@@ -16,14 +16,15 @@ typedef enum {
 	SyncDataType_ub = 0,
 	SyncDataType_str,
 	SyncDataType_bin,
+	SyncDataType_date,
 } SyncDataType;
 
 #define byte_to_u32(d) {u32 t; t=((((u32)(frame[frame_index++]))<<24)&0xff000000); t+=((((u32)(frame[frame_index++]))<<16)&0xff0000); t+=((((u32)(frame[frame_index++]))<<8)&0xff00); t+=(((u32)(frame[frame_index++]))&0xff); (d)=t;}
-#define u32_to_byte(d) {u32 t; t=d; (frame[frame_index++])=(u8)((t)>>24); (frame[frame_index++])=(u8)((t)>>16); (frame[frame_index++])=(u8)((t)>>8); (frame[frame_index++])=(u8)(t);}
+#define u32_to_byte(d) {u32 t; t=(u32)d; (frame[frame_index++])=(u8)((t)>>24); (frame[frame_index++])=(u8)((t)>>16); (frame[frame_index++])=(u8)((t)>>8); (frame[frame_index++])=(u8)(t);}
 #define byte_to_sb(d) {s64 t; t=((((s64)(msg[msg_index++]))<<56)&0xff00000000000000); t+=((((s64)(msg[msg_index++]))<<48)&0xff000000000000); t+=((((s64)(msg[msg_index++]))<<40)&0xff0000000000); t+=((((s64)(msg[msg_index++]))<<32)&0xff00000000); t+=((((s64)(msg[msg_index++]))<<24)&0xff000000); t+=((((s64)(msg[msg_index++]))<<16)&0xff0000); t+=((((s64)(msg[msg_index++]))<<8)&0xff00); t+=(((s64)(msg[msg_index++]))&0xff); (d)=t;}
-#define sb_to_byte(d) {s64 t; t=d; (msg[msg_index++])=(u8)((t)>>56); (msg[msg_index++])=(u8)((t)>>48); (msg[msg_index++])=(u8)((t)>>40); (msg[msg_index++])=(u8)((t)>>32); (msg[msg_index++])=(u8)((t)>>24); (msg[msg_index++])=(u8)((t)>>16); (msg[msg_index++])=(u8)((t)>>8); (msg[msg_index++])=(u8)(t);}
+#define sb_to_byte(d) {s64 t; t=(sb)d; (msg[msg_index++])=(u8)((t)>>56); (msg[msg_index++])=(u8)((t)>>48); (msg[msg_index++])=(u8)((t)>>40); (msg[msg_index++])=(u8)((t)>>32); (msg[msg_index++])=(u8)((t)>>24); (msg[msg_index++])=(u8)((t)>>16); (msg[msg_index++])=(u8)((t)>>8); (msg[msg_index++])=(u8)(t);}
 #define byte_to_ub(d) {u64 t; t=((((u64)(msg[msg_index++]))<<56)&0xff00000000000000); t+=((((u64)(msg[msg_index++]))<<48)&0xff000000000000); t+=((((u64)(msg[msg_index++]))<<40)&0xff0000000000); t+=((((u64)(msg[msg_index++]))<<32)&0xff00000000); t+=((((u64)(msg[msg_index++]))<<24)&0xff000000); t+=((((u64)(msg[msg_index++]))<<16)&0xff0000); t+=((((u64)(msg[msg_index++]))<<8)&0xff00); t+=(((u64)(msg[msg_index++]))&0xff); (d)=t;}
-#define ub_to_byte(d) {u64 t; t=d; (msg[msg_index++])=(u8)((t)>>56); (msg[msg_index++])=(u8)((t)>>48); (msg[msg_index++])=(u8)((t)>>40); (msg[msg_index++])=(u8)((t)>>32); (msg[msg_index++])=(u8)((t)>>24); (msg[msg_index++])=(u8)((t)>>16); (msg[msg_index++])=(u8)((t)>>8); (msg[msg_index++])=(u8)(t);}
+#define ub_to_byte(d) {u64 t; t=(ub)d; (msg[msg_index++])=(u8)((t)>>56); (msg[msg_index++])=(u8)((t)>>48); (msg[msg_index++])=(u8)((t)>>40); (msg[msg_index++])=(u8)((t)>>32); (msg[msg_index++])=(u8)((t)>>24); (msg[msg_index++])=(u8)((t)>>16); (msg[msg_index++])=(u8)((t)>>8); (msg[msg_index++])=(u8)(t);}
 
 static inline ub
 _sync_ub_packet(u8 *msg, ub msg_len, ub ub_data)
@@ -202,6 +203,67 @@ _sync_bin_unpacket(u8 *frame, ub frame_len, u8 **bin, ub *bin_len)
 }
 
 static inline ub
+_sync_date_packet(u8 *msg, ub msg_len, DateStruct date_data)
+{
+	ub msg_index = 0;
+
+	if(57 > msg_len)
+	{
+		SYNCABNOR("short msg_len:%d", msg_len);
+		return msg_len;
+	}
+
+	msg[msg_index ++] = SyncDataType_date;
+
+	ub_to_byte(date_data.year);
+	ub_to_byte(date_data.month);
+	ub_to_byte(date_data.day);
+	ub_to_byte(date_data.hour);
+	ub_to_byte(date_data.minute);
+	ub_to_byte(date_data.second);
+	ub_to_byte(date_data.week);
+
+	return msg_index;
+}
+
+static inline ub
+_sync_date_unpacket(u8 *msg, ub msg_len, DateStruct *date_data)
+{
+	DateStruct unpacket_date;
+	ub msg_index = 0;
+
+	if(date_data != NULL)
+		dave_memset(date_data, 0x00, sizeof(DateStruct));
+
+	if(msg_len < 57)
+	{
+		SYNCABNOR("short frame_len:%d", msg_len);
+		return msg_len;
+	}
+
+	if(msg[msg_index] != SyncDataType_date)
+	{
+		SYNCABNOR("%x not ub type data! msg_len:%d", msg[msg_index], msg_len);
+		return msg_len;
+	}
+
+	msg_index ++;
+
+	byte_to_ub(unpacket_date.year);
+	byte_to_ub(unpacket_date.month);
+	byte_to_ub(unpacket_date.day);
+	byte_to_ub(unpacket_date.hour);
+	byte_to_ub(unpacket_date.minute);
+	byte_to_ub(unpacket_date.second);
+	byte_to_ub(unpacket_date.week);
+
+	if(date_data != NULL)
+		*date_data = unpacket_date;
+
+	return msg_index;
+}
+
+static inline ub
 _sync_msg_packet_msg_id_up(
 	u8 *frame, ub frame_len,
 	ThreadId route_src, ThreadId route_dst, s8 *src, s8 *dst, ub msg_id)
@@ -276,7 +338,7 @@ sync_str_unpacket(u8 *frame, ub frame_len, s8 *str, ub str_len)
 }
 
 MBUF *
-sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter)
+sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter, DateStruct date)
 {
 	u8 *frame;
 	ub frame_len = 2048;
@@ -290,6 +352,7 @@ sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter)
 	frame_index = 0;
 	frame_index += _sync_ub_packet(&frame[frame_index], frame_len-frame_index, recv_data_counter);
 	frame_index += _sync_ub_packet(&frame[frame_index], frame_len-frame_index, send_data_counter);
+	frame_index += _sync_date_packet(&frame[frame_index], frame_len-frame_index, date);
 
 	snd_buffer->len = snd_buffer->tot_len = frame_index;
 
@@ -297,12 +360,14 @@ sync_heartbeat_packet(ub recv_data_counter, ub send_data_counter)
 }
 
 ub
-sync_heartbeat_unpacket(u8 *frame, ub frame_len, ub *recv_data_counter, ub *send_data_counter)
+sync_heartbeat_unpacket(u8 *frame, ub frame_len, ub *recv_data_counter, ub *send_data_counter, DateStruct *date)
 {
 	ub frame_index = 0;
 
 	frame_index += _sync_ub_unpacket(&frame[frame_index], frame_len-frame_index, recv_data_counter);
 	frame_index += _sync_ub_unpacket(&frame[frame_index], frame_len-frame_index, send_data_counter);
+	if(frame_index < frame_len)
+		frame_index += _sync_date_unpacket(&frame[frame_index], frame_len-frame_index, date);
 
 	return frame_index;
 }

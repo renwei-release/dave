@@ -378,7 +378,7 @@ _sync_server_rx_heartbeat(SyncClient *pClient, ub frame_len, u8 *frame)
 
 	SYNCDEBUG("%s/%s", pClient->globally_identifier, pClient->verno);
 
-	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter);
+	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, NULL);
 
 	sync_server_tx_heartbeat(pClient);
 }

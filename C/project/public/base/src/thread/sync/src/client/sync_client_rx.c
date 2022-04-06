@@ -23,6 +23,7 @@
 #include "sync_client_run.h"
 #include "sync_client_data.h"
 #include "sync_client_link.h"
+#include "sync_client_ntp.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -113,15 +114,26 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 }
 
 static inline void
-_sync_client_rx_heartbeat(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_heartbeat_req(SyncServer *pServer, ub frame_len, u8 *frame)
 {
 	ub recv_data_counter, send_data_counter;
 
-	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter);
+	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, NULL);
 
 	SYNCDEBUG("%d/%s", pServer->server_socket, pServer->verno);
 
 	sync_client_tx_heartbeat(pServer, dave_false);
+}
+
+static inline void
+_sync_client_rx_heartbeat_rsp(SyncServer *pServer, ub frame_len, u8 *frame)
+{
+	ub recv_data_counter, send_data_counter;
+	DateStruct date = t_time_get_date(NULL);
+
+	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, &date);
+
+	sync_client_ntp(pServer, date);
 }
 
 static inline void
@@ -480,9 +492,10 @@ _sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, 
 				_sync_client_rx_verno(pServer, frame_len, frame);
 			break;
 		case ORDER_CODE_HEARTBEAT_REQ:
-				_sync_client_rx_heartbeat(pServer, frame_len, frame);
+				_sync_client_rx_heartbeat_req(pServer, frame_len, frame);
 			break;
 		case ORDER_CODE_HEARTBEAT_RSP:
+				_sync_client_rx_heartbeat_rsp(pServer, frame_len, frame);
 			break;
 		case ORDER_CODE_MODULE_VERNO:
 				_sync_client_rx_module_verno(pServer, frame_len, frame);
