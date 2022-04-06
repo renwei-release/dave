@@ -22,7 +22,7 @@ __concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho, dave_bool concurrency_flag)
 
 	pConcurrencyEcho->concurrency_flag = concurrency_flag;
 
-	remote_msg(dst, MSGID_ECHO, pConcurrencyEcho);
+	name_msg(dst, MSGID_ECHO, pConcurrencyEcho);
 }
 
 static void
@@ -47,7 +47,7 @@ _concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho)
 
 	if(send_normal_echo == dave_false)
 	{
-		remote_msg(dst, MSGID_ECHO, pNewEcho);
+		name_msg(dst, MSGID_ECHO, pNewEcho);
 	}
 	else
 	{
@@ -87,7 +87,7 @@ base_echo(ThreadId src, MsgIdEcho *pEcho)
 					BASETESTLOG("from:%s echo:(%s) %ld/%ld", thread_name(src), pEcho->msg, pEcho->echo_counter, echo_show_interval);
 				}
 
-				remote_msg(thread_name(src), MSGID_ECHO, pNewEcho);
+				name_msg(thread_name(src), MSGID_ECHO, pNewEcho);
 			}
 			else
 			{
@@ -98,7 +98,7 @@ base_echo(ThreadId src, MsgIdEcho *pEcho)
 		{
 			if(pNewEcho->echo_multiple == dave_false)
 			{
-				remote_msg(thread_name(src), MSGID_ECHO, pNewEcho);
+				name_msg(thread_name(src), MSGID_ECHO, pNewEcho);
 			}
 			else
 			{

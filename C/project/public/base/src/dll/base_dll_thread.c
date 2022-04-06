@@ -29,12 +29,12 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 }
 
 int
-dave_dll_thread_local_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
 	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
 		thread_name, msg_id, msg_len, msg_body, fun, line);
 
-	if(base_thread_local_msg(
+	if(base_thread_id_msg(
 		dave_dll_main_thread_id(), (ThreadId)dst_id,
 		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
@@ -50,13 +50,32 @@ dave_dll_thread_local_msg(unsigned long long dst_id, int msg_id, int msg_len, vo
 }
 
 int
-dave_dll_thread_remote_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+dave_dll_thread_name_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
 	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
 		thread_name, msg_id, msg_len, msg_body, fun, line);
 
-	if(base_thread_remote_msg(
+	if(base_thread_name_msg(
 		(s8 *)thread_name, (ub)msg_id, (ub)msg_len, (u8 *)msg_body,
+		(s8 *)fun, (ub)line) == dave_true)
+	{
+		return 0;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+int
+dave_dll_thread_gid_msg(char *gid, char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+{
+	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		thread_name, msg_id, msg_len, msg_body, fun, line);
+
+	if(base_thread_gid_msg(
+		(s8 *)gid, (s8 *)thread_name,
+		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{
 		return 0;

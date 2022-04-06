@@ -78,12 +78,12 @@ typedef struct {
 	dave_bool trace_on;
 } TraceSwitchMsg;
 
-/* for MSGID_REMOTE_MSG_TIMER_OUT message */
+/* for MSGID_PROCESS_MSG_TIMER_OUT message */
 typedef struct {
 	ub msg_id;
 	ub msg_len;
 	void *msg_body;
-} RemoteMsgTimerOutMsg;
+} ProcessMsgTimerOutMsg;
 
 /* for MSGID_TEMPORARILY_DEFINE_MESSAGE message */
 typedef struct {

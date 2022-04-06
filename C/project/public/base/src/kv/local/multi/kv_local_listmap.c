@@ -85,11 +85,15 @@ _kv_local_listmap_del_mid(KVLocalMultiMap *pMultiMap, KVLocalMultiBaseMap *pBase
 {
 	if((pMultiMap->head == NULL) || (pMultiMap->tail == NULL))
 	{
-		KVABNOR("find Arithmetic error! %x/%x", pMultiMap->head, pMultiMap->tail);
+		KVABNOR("find Arithmetic error! %x/%x/%x/%x",
+			pMultiMap->head, pMultiMap->tail,
+			pBaseMap->up_node, pBaseMap->next_node);
 	}
 	if((pBaseMap->up_node == NULL) || (pBaseMap->next_node == NULL))
 	{
-		KVABNOR("find Arithmetic error! %x/%x", pBaseMap->up_node, pBaseMap->next_node);
+		KVABNOR("find Arithmetic error! %x/%x/%x/%x",
+			pMultiMap->head, pMultiMap->tail,
+			pBaseMap->up_node, pBaseMap->next_node);
 	}
 
 	if(pBaseMap->up_node != NULL)

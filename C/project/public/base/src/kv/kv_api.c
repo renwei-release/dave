@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #if defined(__DAVE_BASE__)
 #include "dave_os.h"
+#include "dave_base.h"
 #include "dave_tools.h"
 #include "kv_param.h"
 #include "kv_struct.h"
@@ -35,6 +36,17 @@ dave_bool
 kv_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	dave_bool ret;
+
+	if((key_ptr == NULL) || (key_len == 0))
+	{
+		KVLOG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
+		return dave_false;
+	}
+	if((value_ptr == NULL) || (value_len == 0))
+	{
+		KVLOG("invalid value:%x/%d <%s:%d>", value_ptr, value_len, fun, line);
+		return dave_false;
+	}
 
 	switch(pKV->attrib)
 	{
@@ -100,18 +112,18 @@ kv_del(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun,
 				ret = kv_remote_del(pKV->attrib, pKV, key_ptr, key_len);
 			break;
 		default:
-				ret = dave_false;
+				ret = 0;
 			break;
 	}
 
-	if(pKV->kv_timer.out_times > 0)
+	if((ret != 0) && (pKV->kv_timer.out_times > 0))
 	{
 		kv_timer_del(pKV, key_ptr, key_len, fun, line);
 	}
 
 	if((ret == 0) && (key_ptr != NULL))
 	{
-		KVLTRACE(60,1,"On %s found repeated deletion or negligent deletion of KEY(%x/%x) at position %s:%d",
+		KVTRACE("On %s found repeated deletion or negligent deletion of KEY(%x/%x) at position %s:%d",
 			pKV->name, key_ptr[0], key_ptr[1],
 			fun, line);
 	}

@@ -29,7 +29,7 @@ var system_function_table = map[int]msg_function_define{
     MSGID_REMOTE_THREAD_READY:        fun_None,
     MSGID_REMOTE_THREAD_REMOVE:       fun_None,
     MSGID_TRACE_SWITCH:               fun_None,
-    MSGID_REMOTE_MSG_TIMER_OUT:       fun_None,
+    MSGID_PROCESS_MSG_TIMER_OUT:      fun_None,
     MSGID_TEMPORARILY_DEFINE_MESSAGE: fun_None,
     MSGID_CALL_FUNCTION:              fun_None,
     MSGID_SYSTEM_MOUNT:               fun_None,

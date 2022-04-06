@@ -59,7 +59,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 		}
 	}
 
-	remote_event(thread_name, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+	name_event(thread_name, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
 
 	return ERRCODE_OK;
 }

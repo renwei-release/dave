@@ -39,9 +39,11 @@ API int dave_dll_mfree(void *m, char *func, int line);
 
 API void * dave_dll_thread_msg(int msg_len, char *fun, int line);
 
-API int dave_dll_thread_local_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+API int dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
-API int dave_dll_thread_remote_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+API int dave_dll_thread_name_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
+API int dave_dll_thread_gid_msg(char *gid, char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
 API void * dave_dll_thread_sync_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, int sync_id, int sync_len, void *sync_body, char *fun, int line);
 

@@ -65,7 +65,7 @@ dave: $(OBJS)
 
 pre_build:
 	python ../../../Tools/refresh_version/refresh_version.py "../../../" $(VER_PRODUCT)
-	../../../Tools/rpc/RPC
+	../../../Tools/auto_code/AUTOCODE
 
 end_build:
 	./build-py-go-lib.sh $(MAKE_LEVEL_PRODUCT)

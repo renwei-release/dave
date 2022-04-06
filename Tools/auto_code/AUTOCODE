@@ -1,0 +1,7 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+
+cd $homepath
+
+PYTHONIOENCODING=utf-8 python3 $homepath/autocode_main.py

@@ -195,8 +195,6 @@ _kv_local_basemap_inq(KVLocalMultiBaseMap **ppBaseMap, u8 *key_ptr, ub key_len, 
 				return NULL;
 			}
 
-			KVDEBUG("map_index:%c key_index:%d key_len:%d", map_index, key_index, key_len);
-
 			ppBaseMap[map_index] = _kv_local_basemap_malloc(NULL, 0);
 		}
 

@@ -129,7 +129,11 @@ _kv_local_multimap_del(KVLocalMultiMap *pMultiMap, u8 *key_ptr, ub key_len, void
 	if(pBaseMap == NULL)
 		return 0;
 
-	KVDEBUG("%s", key_ptr);
+	if((pBaseMap->value_ptr == NULL) || (pBaseMap->value_len == 0))
+	{
+		// 一个空的中继节点。
+		return 0;
+	}
 
 	value_len = kv_local_basemap_copy_value_to_user(pBaseMap, value_ptr, value_len);
 

@@ -101,8 +101,8 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_TRACE_SWITCH:
 				pBson = t_rpc_ver3_zip_TraceSwitchMsg((TraceSwitchMsg *)msg_body, msg_len);
 			break;
-		case MSGID_REMOTE_MSG_TIMER_OUT:
-				pBson = t_rpc_ver3_zip_RemoteMsgTimerOutMsg((RemoteMsgTimerOutMsg *)msg_body, msg_len);
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
 			break;
 		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
 				pBson = t_rpc_ver3_zip_TemporarilyDefineMessageMsg((TemporarilyDefineMessageMsg *)msg_body, msg_len);
@@ -266,8 +266,8 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_TRACE_SWITCH:
 				ret = t_rpc_ver3_unzip_TraceSwitchMsg(msg_body, msg_len, pBson);
 			break;
-		case MSGID_REMOTE_MSG_TIMER_OUT:
-				ret = t_rpc_ver3_unzip_RemoteMsgTimerOutMsg(msg_body, msg_len, pBson);
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
 			break;
 		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
 				ret = t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(msg_body, msg_len, pBson);

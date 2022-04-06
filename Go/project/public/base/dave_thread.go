@@ -46,10 +46,10 @@ func Write_msg(dst interface{}, msg_id int, msg_len int, msg_ptr unsafe.Pointer)
 
 	switch dst.(type) {
 	case uint64:
-		ret = C.dave_dll_thread_local_msg(C.ulonglong(dst.(uint64)), C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
+		ret = C.dave_dll_thread_id_msg(C.ulonglong(dst.(uint64)), C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
 	case string:
 		c_thread_name := C.CString(dst.(string))
-		ret = C.dave_dll_thread_remote_msg(c_thread_name, C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
+		ret = C.dave_dll_thread_name_msg(c_thread_name, C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
 		C.free(unsafe.Pointer(c_thread_name))
 	default:
 		fmt.Printf("Write_msg invalid type:%s\n", reflect.TypeOf(dst).Name())

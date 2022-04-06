@@ -16,7 +16,6 @@
 #include "thread_tools.h"
 #include "thread_quit.h"
 #include "thread_statistics.h"
-#include "thread_msg_buffer.h"
 #include "thread_call.h"
 #include "thread_log.h"
 

@@ -157,7 +157,7 @@ type TraceSwitchMsg struct {
 	Trace_on int8
 }
 
-type RemoteMsgTimerOutMsg struct {
+type ProcessMsgTimerOutMsg struct {
 	Msg_id uint64
 	Msg_len uint64
 	Msg_body unsafe.Pointer

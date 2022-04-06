@@ -15,7 +15,6 @@ typedef enum {
 } KVAttrib;
 
 typedef void (* kv_out_callback)(void *kv, s8 *key);
-
 typedef ErrCode (* kv_free_recycle_callback)(void *kv, s8 *key);
 
 void base_kv_init(void);

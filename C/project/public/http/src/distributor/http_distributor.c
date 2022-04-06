@@ -315,7 +315,7 @@ _distributor_recv_req(MSGBODY *msg)
 	pInfo = _distributor_recv_info(msg);
 	if(pInfo != NULL)
 	{
-		remote_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
+		name_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
 
 		msg->mem_state = MsgMemState_captured;
 	}

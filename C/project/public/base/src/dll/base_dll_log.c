@@ -82,7 +82,15 @@ dave_dll_log(char *func, int line, char *log_msg)
 	s8 log_buffer[2048];
 	ub log_len;
 
-	log_len = dave_strcpy(log_buffer, log_msg, sizeof(log_buffer));
+	if(log_msg != NULL)
+	{
+		log_len = dave_strcpy(log_buffer, log_msg, sizeof(log_buffer));
+	}
+	else
+	{
+		log_buffer[0] = '\0';
+		log_len = 0;
+	}
 
 	_dll_log_remove_some_data(log_buffer, log_len);
 

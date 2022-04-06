@@ -230,8 +230,6 @@ _thread_guardian_restart(RESTARTREQMSG *pReq)
 static void
 _thread_guardian_system_check(void)
 {
-	thread_msg_buffer_tick();
-
 	thread_call_sync_check();
 
 	thread_busy_idle_check();
@@ -342,6 +340,30 @@ _thread_guardian_trace_switch(TraceSwitchMsg *pSwitch)
 }
 
 static void
+_thread_guardian_remote_thread_ready(ThreadRemoteReadyMsg *pReady)
+{
+	THREADDEBUG("%s", pReady->remote_thread_name);
+
+	thread_msg_buffer_pop(pReady->remote_thread_name);
+}
+
+static void
+_thread_guardian_remote_thread_id_ready(ThreadRemoteIDReadyMsg *pReady)
+{
+	THREADDEBUG("%s", pReady->remote_thread_name);
+
+	thread_msg_buffer_pop(pReady->remote_thread_name);
+}
+
+static void
+_thread_guardian_local_thread_ready(ThreadLocalReadyMsg *pReady)
+{
+	THREADDEBUG("%s", pReady->local_thread_name);
+
+	thread_msg_buffer_pop(pReady->local_thread_name);
+}
+
+static void
 _thread_guardian_main(MSGBODY *task_msg)
 {
 	switch((ub)(task_msg->msg_id))
@@ -370,6 +392,15 @@ _thread_guardian_main(MSGBODY *task_msg)
 		case MSGID_CFG_UPDATE:
 				thread_busy_idle_cfg_update((CFGUpdate *)(task_msg->msg_body));
 			break;
+		case MSGID_REMOTE_THREAD_READY:
+				_thread_guardian_remote_thread_ready((ThreadRemoteReadyMsg *)(task_msg->msg_body));
+			break;
+		case MSGID_REMOTE_THREAD_ID_READY:
+				_thread_guardian_remote_thread_id_ready((ThreadRemoteIDReadyMsg *)(task_msg->msg_body));
+			break;
+		case MSGID_LOCAL_THREAD_READY:
+				_thread_guardian_local_thread_ready((ThreadLocalReadyMsg *)(task_msg->msg_body));
+			break;
 		default:
 			break;
 	}
@@ -378,6 +409,7 @@ _thread_guardian_main(MSGBODY *task_msg)
 static void
 _thread_guardian_init(MSGBODY *task_msg)
 {
+	thread_msg_buffer_init();
 	thread_remote_id_table_init();
 	thread_gid_table_init();
 	thread_busy_idle_init(_thread);
@@ -391,6 +423,7 @@ _thread_guardian_exit(MSGBODY *task_msg)
 	thread_busy_idle_exit();
 	thread_gid_table_exit();
 	thread_remote_id_table_exit();
+	thread_msg_buffer_exit();
 }
 
 // =====================================================================

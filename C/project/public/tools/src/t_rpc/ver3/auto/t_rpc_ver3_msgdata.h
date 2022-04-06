@@ -90,8 +90,8 @@ dave_bool t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(void **unzip_data, ub *unzip_le
 void * t_rpc_ver3_zip_TraceSwitchMsg(TraceSwitchMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TraceSwitchMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_RemoteMsgTimerOutMsg(RemoteMsgTimerOutMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RemoteMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(void **unzip_data, ub *unzip_len, void *pStructBson);

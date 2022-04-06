@@ -1,7 +1,0 @@
-#!/bin/bash
-
-homepath=$(cd `dirname $0`; pwd)
-
-cd $homepath
-
-PYTHONIOENCODING=utf-8 python $homepath/rpc_main.py

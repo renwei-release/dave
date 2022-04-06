@@ -185,7 +185,7 @@ class TraceSwitchMsg (Structure):
 		("trace_on", c_char),
 ]
 
-class RemoteMsgTimerOutMsg (Structure):
+class ProcessMsgTimerOutMsg (Structure):
 	_fields_ = [
 		("msg_id", c_ulonglong),
 		("msg_len", c_ulonglong),

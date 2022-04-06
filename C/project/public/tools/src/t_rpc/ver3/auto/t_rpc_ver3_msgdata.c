@@ -1129,13 +1129,13 @@ t_rpc_ver3_unzip_TraceSwitchMsg(void **unzip_data, ub *unzip_len, void *pStructB
 }
 
 void *
-t_rpc_ver3_zip_RemoteMsgTimerOutMsg(RemoteMsgTimerOutMsg *zip_data, ub zip_len)
+t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub zip_len)
 {
 	void *pStructBson;
 
-	if(sizeof(RemoteMsgTimerOutMsg) != zip_len)
+	if(sizeof(ProcessMsgTimerOutMsg) != zip_len)
 	{
-	    TOOLSABNOR("Discover this message(RemoteMsgTimerOutMsg) does not match(%d/%d), please contact the message settlers!", sizeof(RemoteMsgTimerOutMsg), zip_len);
+	    TOOLSABNOR("Discover this message(ProcessMsgTimerOutMsg) does not match(%d/%d), please contact the message settlers!", sizeof(ProcessMsgTimerOutMsg), zip_len);
 		return NULL;
 	}
 
@@ -1149,7 +1149,7 @@ t_rpc_ver3_zip_RemoteMsgTimerOutMsg(RemoteMsgTimerOutMsg *zip_data, ub zip_len)
 }
 
 dave_bool
-t_rpc_ver3_unzip_RemoteMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson)
+t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson)
 {
 	dave_bool ret = dave_true;
 
@@ -1162,9 +1162,9 @@ t_rpc_ver3_unzip_RemoteMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pS
 	}
 	else
 	{
-		RemoteMsgTimerOutMsg *pUnzip = thread_msg(pUnzip);
+		ProcessMsgTimerOutMsg *pUnzip = thread_msg(pUnzip);
 		*unzip_data = pUnzip;
-		*unzip_len = sizeof(RemoteMsgTimerOutMsg);
+		*unzip_len = sizeof(ProcessMsgTimerOutMsg);
 
 		t_rpc_ver3_unzip_ub(&(pUnzip->msg_id), t_bson_inq_object(pStructBson, "ub-msg_id"));
 		t_rpc_ver3_unzip_ub(&(pUnzip->msg_len), t_bson_inq_object(pStructBson, "ub-msg_len"));
