@@ -14,6 +14,91 @@ package base
 
 import "unsafe"
 
+type SocketBindReq struct {
+	Netinfo SocNetInfo
+	Ptr unsafe.Pointer
+}
+
+type SocketBindRsp struct {
+	Socket int32
+	Netinfo SocNetInfo
+	Bindinfo int32
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketConnectReq struct {
+	Netinfo SocNetInfo
+	Ptr unsafe.Pointer
+}
+
+type SocketConnectRsp struct {
+	Socket int32
+	Netinfo SocNetInfo
+	Connectinfo int32
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketDisconnectReq struct {
+	Socket int32
+	Ptr unsafe.Pointer
+}
+
+type SocketDisconnectRsp struct {
+	Socket int32
+	Result int32
+	Ptr unsafe.Pointer
+}
+
+type SocketPlugIn struct {
+	Father_socket int32
+	Child_socket int32
+	Netinfo SocNetInfo
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketPlugOut struct {
+	Socket int32
+	Reason int32
+	Netinfo SocNetInfo
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketRead struct {
+	Socket int32
+	Ipinfo IPBaseInfo
+	Data_len uint64
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
+type SocketWrite struct {
+	Socket int32
+	Ipinfo IPBaseInfo
+	Data_len uint64
+	Data *MBUF
+	Close_flag int32
+}
+
+type SocketNotify struct {
+	Socket int32
+	Notify int32
+	Data uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketRawEvent struct {
+	Socket int32
+	Os_socket int32
+	Event int32
+	Netinfo SocNetInfo
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
 type TESTMSG struct {
 	Test_msg [4096] byte
 }
@@ -189,91 +274,6 @@ type MsgBlocksRsp struct {
 
 type MsgOSNotify struct {
 	Notify_info uint64
-}
-
-type SocketBindReq struct {
-	Netinfo SocNetInfo
-	Ptr unsafe.Pointer
-}
-
-type SocketBindRsp struct {
-	Socket int32
-	Netinfo SocNetInfo
-	Bindinfo int32
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketConnectReq struct {
-	Netinfo SocNetInfo
-	Ptr unsafe.Pointer
-}
-
-type SocketConnectRsp struct {
-	Socket int32
-	Netinfo SocNetInfo
-	Connectinfo int32
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketDisconnectReq struct {
-	Socket int32
-	Ptr unsafe.Pointer
-}
-
-type SocketDisconnectRsp struct {
-	Socket int32
-	Result int32
-	Ptr unsafe.Pointer
-}
-
-type SocketPlugIn struct {
-	Father_socket int32
-	Child_socket int32
-	Netinfo SocNetInfo
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketPlugOut struct {
-	Socket int32
-	Reason int32
-	Netinfo SocNetInfo
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketRead struct {
-	Socket int32
-	Ipinfo IPBaseInfo
-	Data_len uint64
-	Data *MBUF
-	Ptr unsafe.Pointer
-}
-
-type SocketWrite struct {
-	Socket int32
-	Ipinfo IPBaseInfo
-	Data_len uint64
-	Data *MBUF
-	Close_flag int32
-}
-
-type SocketNotify struct {
-	Socket int32
-	Notify int32
-	Data uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketRawEvent struct {
-	Socket int32
-	Os_socket int32
-	Event int32
-	Netinfo SocNetInfo
-	Data *MBUF
-	Ptr unsafe.Pointer
 }
 
 type HTTPListenReq struct {

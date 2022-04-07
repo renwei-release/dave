@@ -13,117 +13,6 @@ package base
  */
 
 const (
-	TYPE_SOCK_STREAM = 0 + iota
-	TYPE_SOCK_DGRAM
-	TYPE_SOCK_RAW
-	TYPE_SOCK_SCTP
-	TYPE_SOCK_max
-	TYPE_SOCK_MAX = 0x1fffffff
-)
-
-const (
-	NetAddrIPType = 0 + iota
-	NetAddrIPBroadcastType
-	NetAddrURLType = 0x12345678
-)
-
-const (
-	FixedPort = 0x01234567 + iota
-	NotFixedPort = 0x09abcdef
-)
-
-const (
-	KeepAlive_enable = 0x01234567 + iota
-	KeepAlive_disable = 0x09abcdef
-)
-
-const (
-	NetCardBind_enable = 0x01234567 + iota
-	NetCardBind_disable = 0x09abcdef
-)
-
-const (
-	SOCKETINFO_BIND = 0 + iota
-	SOCKETINFO_BIND_OK
-	SOCKETINFO_BIND_FAIL
-	SOCKETINFO_CONNECT
-	SOCKETINFO_CONNECT_OK
-	SOCKETINFO_CONNECT_FAIL
-	SOCKETINFO_CONNECT_WAIT
-	SOCKETINFO_DISCONNECT
-	SOCKETINFO_DISCONNECT_OK
-	SOCKETINFO_DISCONNECT_FAIL
-	SOCKETINFO_DISCONNECT_WAIT
-	SOCKETINFO_CREAT
-	SOCKETINFO_WAIT_CREAT
-	SOCKETINFO_ACCEPT
-	SOCKETINFO_REV
-	SOCKETINFO_REV_MBUF
-	SOCKETINFO_SND
-	SOCKETINFO_CLOSE
-	SOCKETINFO_SILENCE
-	SOCKETINFO_DEVICE_CONNECT
-	SOCKETINFO_DEVICE_DISCONNECT
-	SOCKETINFO_LINK_LOST
-	SOCKETINFO_SEND_TIMER_OUT
-	SOCKETINFO_PORT_EXIST
-	SOCKETINFO_WRITE_THEN_CLOSE = 0x7857aaeb
-	SOCKETINFO_SND_URG
-	SOCKETINFO_RAW_EVENT_RECV_LENGTH
-	SOCKETINFO_MAX = 0x1fffffff
-)
-
-const (
-	SOC_EVENT_START = 0 + iota
-	SOC_EVENT_WAIT_CREAT
-	SOC_EVENT_CONNECT
-	SOC_EVENT_CONNECT_FAIL
-	SOC_EVENT_WAIT_CONNECT
-	SOC_EVENT_ACCEPT
-	SOC_EVENT_REV
-	SOC_EVENT_SND
-	SOC_EVENT_CLOSE
-	SOC_EVENT_SILENCE
-	SOC_EVENT_MAX
-)
-
-const (
-	IPVER_IPV4 = 4 + iota
-	IPVER_IPV6 = 6
-	IPVER_MAX = 0x1fffffff
-)
-
-const (
-	DM_SOC_PF_INET = 0 + iota
-	DM_SOC_PF_INET6
-	DM_SOC_PF_UART
-	DM_SOC_PF_LOCAL_INET
-	DM_SOC_PF_LOCAL_INET6
-	DM_SOC_PF_RAW
-	DM_SOC_PF_RAW_INET
-	SOCDOMAIN_MAX = 0x1fffffff
-)
-
-const (
-	IPProtocol_ICMP = 1 + iota
-	IPProtocol_TCP = 6
-	IPProtocol_UDP = 17
-	IPProtocol_GRE = 47
-	IPProtocol_MAX
-	IPProtocol_max = 0x1fffffff
-)
-
-const (
-	BuildingBlocksOpt_none int = iota
-	BuildingBlocksOpt_inq
-	BuildingBlocksOpt_mount
-	BuildingBlocksOpt_decoupling
-	BuildingBlocksOpt_State_exchange
-	BuildingBlocksOpt_valve
-	BuildingBlocksOpt_max
-)
-
-const (
 	ErrCode_begin_value = 1 + iota
 	ERRCODE_OK = 0
 	ERRCODE_Memory_full = -1
@@ -391,6 +280,117 @@ const (
 	ERRCODE_data_not_exist = -263
 	ERRCODE_Invalid_length = -264
 	ErrCode_max = 0x1fffffffffffffff
+)
+
+const (
+	TYPE_SOCK_STREAM = 0 + iota
+	TYPE_SOCK_DGRAM
+	TYPE_SOCK_RAW
+	TYPE_SOCK_SCTP
+	TYPE_SOCK_max
+	TYPE_SOCK_MAX = 0x1fffffff
+)
+
+const (
+	NetAddrIPType = 0 + iota
+	NetAddrIPBroadcastType
+	NetAddrURLType = 0x12345678
+)
+
+const (
+	FixedPort = 0x01234567 + iota
+	NotFixedPort = 0x09abcdef
+)
+
+const (
+	KeepAlive_enable = 0x01234567 + iota
+	KeepAlive_disable = 0x09abcdef
+)
+
+const (
+	NetCardBind_enable = 0x01234567 + iota
+	NetCardBind_disable = 0x09abcdef
+)
+
+const (
+	SOCKETINFO_BIND = 0 + iota
+	SOCKETINFO_BIND_OK
+	SOCKETINFO_BIND_FAIL
+	SOCKETINFO_CONNECT
+	SOCKETINFO_CONNECT_OK
+	SOCKETINFO_CONNECT_FAIL
+	SOCKETINFO_CONNECT_WAIT
+	SOCKETINFO_DISCONNECT
+	SOCKETINFO_DISCONNECT_OK
+	SOCKETINFO_DISCONNECT_FAIL
+	SOCKETINFO_DISCONNECT_WAIT
+	SOCKETINFO_CREAT
+	SOCKETINFO_WAIT_CREAT
+	SOCKETINFO_ACCEPT
+	SOCKETINFO_REV
+	SOCKETINFO_REV_MBUF
+	SOCKETINFO_SND
+	SOCKETINFO_CLOSE
+	SOCKETINFO_SILENCE
+	SOCKETINFO_DEVICE_CONNECT
+	SOCKETINFO_DEVICE_DISCONNECT
+	SOCKETINFO_LINK_LOST
+	SOCKETINFO_SEND_TIMER_OUT
+	SOCKETINFO_PORT_EXIST
+	SOCKETINFO_WRITE_THEN_CLOSE = 0x7857aaeb
+	SOCKETINFO_SND_URG
+	SOCKETINFO_RAW_EVENT_RECV_LENGTH
+	SOCKETINFO_MAX = 0x1fffffff
+)
+
+const (
+	SOC_EVENT_START = 0 + iota
+	SOC_EVENT_WAIT_CREAT
+	SOC_EVENT_CONNECT
+	SOC_EVENT_CONNECT_FAIL
+	SOC_EVENT_WAIT_CONNECT
+	SOC_EVENT_ACCEPT
+	SOC_EVENT_REV
+	SOC_EVENT_SND
+	SOC_EVENT_CLOSE
+	SOC_EVENT_SILENCE
+	SOC_EVENT_MAX
+)
+
+const (
+	IPVER_IPV4 = 4 + iota
+	IPVER_IPV6 = 6
+	IPVER_MAX = 0x1fffffff
+)
+
+const (
+	DM_SOC_PF_INET = 0 + iota
+	DM_SOC_PF_INET6
+	DM_SOC_PF_UART
+	DM_SOC_PF_LOCAL_INET
+	DM_SOC_PF_LOCAL_INET6
+	DM_SOC_PF_RAW
+	DM_SOC_PF_RAW_INET
+	SOCDOMAIN_MAX = 0x1fffffff
+)
+
+const (
+	IPProtocol_ICMP = 1 + iota
+	IPProtocol_TCP = 6
+	IPProtocol_UDP = 17
+	IPProtocol_GRE = 47
+	IPProtocol_MAX
+	IPProtocol_max = 0x1fffffff
+)
+
+const (
+	BuildingBlocksOpt_none int = iota
+	BuildingBlocksOpt_inq
+	BuildingBlocksOpt_mount
+	BuildingBlocksOpt_decoupling
+	BuildingBlocksOpt_State_exchange
+	BuildingBlocksOpt_valve
+	BuildingBlocksOpt_max
 )
 
 const (
