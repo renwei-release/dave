@@ -29,16 +29,14 @@ type SocNetInfo struct {
 	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
 }
 
-type IPBaseInfo struct {
-	Protocol int32
-	Ver int32
-	Src_ip [16] byte
-	Src_port uint16
-	Dst_ip [16] byte
-	Dst_port uint16
-	Keepalive_second int64
-	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
-	Fixed_port_flag int32
+type DateStruct struct {
+	Year uint16
+	Month byte
+	Day byte
+	Hour byte
+	Minute byte
+	Second byte
+	Week byte
 }
 
 type MBUF struct {
@@ -50,16 +48,6 @@ type MBUF struct {
 	Alloc_len int64
 }
 
-type DateStruct struct {
-	Year uint16
-	Month byte
-	Day byte
-	Hour byte
-	Minute byte
-	Second byte
-	Week byte
-}
-
 type BuildingBlocks struct {
 	Blocks_id uint64
 	Verno [DAVE_VERNO_STR_LEN] byte
@@ -69,6 +57,18 @@ type BuildingBlocks struct {
 	Blocks_flag int8
 	Client_flag int8
 	Release_quantity uint64
+}
+
+type IPBaseInfo struct {
+	Protocol int32
+	Ver int32
+	Src_ip [16] byte
+	Src_port uint16
+	Dst_ip [16] byte
+	Dst_port uint16
+	Keepalive_second int64
+	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
+	Fixed_port_flag int32
 }
 
 type HttpKeyValue struct {
