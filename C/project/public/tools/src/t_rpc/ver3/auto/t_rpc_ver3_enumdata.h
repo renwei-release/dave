@@ -19,6 +19,9 @@
 #include "http_param.h"
 
 
+void * t_rpc_ver3_zip_ErrCode(ErrCode zip_data);
+dave_bool t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson);
+
 void * t_rpc_ver3_zip_SOCTYPE(SOCTYPE zip_data);
 dave_bool t_rpc_ver3_unzip_SOCTYPE(SOCTYPE *unzip_data, void *pArrayBson);
 
@@ -51,9 +54,6 @@ dave_bool t_rpc_ver3_unzip_IPProtocol(IPProtocol *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_BuildingBlocksOpt(BuildingBlocksOpt zip_data);
 dave_bool t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBson);
-
-void * t_rpc_ver3_zip_ErrCode(ErrCode zip_data);
-dave_bool t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_HTTPListenType(HTTPListenType zip_data);
 dave_bool t_rpc_ver3_unzip_HTTPListenType(HTTPListenType *unzip_data, void *pArrayBson);

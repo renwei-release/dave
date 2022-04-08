@@ -18,6 +18,42 @@
 #include "base_socket.h"
 #include "http_msg.h"
 
+void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketBindRsp(SocketBindRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketBindRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketConnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketConnectRsp(SocketConnectRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketConnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson);
+
 void * t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TESTMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
 
@@ -113,42 +149,6 @@ dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *
 
 void * t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketBindRsp(SocketBindRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketBindRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketConnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketConnectRsp(SocketConnectRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketConnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPListenReq(void **unzip_data, ub *unzip_len, void *pStructBson);
