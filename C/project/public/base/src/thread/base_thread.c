@@ -117,14 +117,14 @@ _thread_reset_all(void)
 	}
 }
 
-static TaskAttribute
+static inline TaskAttribute
 _thread_msg_attrib(ThreadStruct *pThread)
 {
 	return pThread->attrib;
 }
 
 #define _thread_get_id(name) _thread_get_id_(name, (s8 *)__func__, (ub)__LINE__)
-static ThreadId
+static inline ThreadId
 _thread_get_id_(const s8 *name, s8 *fun, ub line)
 {
 	ThreadStruct *pThread;
@@ -158,7 +158,7 @@ _thread_get_id_(const s8 *name, s8 *fun, ub line)
 	return thread_id;
 }
 
-static TaskAttribute
+static inline TaskAttribute
 _thread_attrib(ThreadId thread_id)
 {
 	ub thread_index;
@@ -181,11 +181,13 @@ _thread_attrib(ThreadId thread_id)
 }
 
 #define _thread_get_name(thread_id) _thread_get_name_(thread_id, (s8 *)__func__, (ub)__LINE__)
-static s8 *
+static inline s8 *
 _thread_get_name_(ThreadId thread_id, s8 *fun, ub line)
 {
 	static s8 can_not_find[] = "NULL";
 	ub thread_index;
+
+	thread_id = thread_sync_thread_id(thread_id);
 
 	thread_id = thread_get_local(thread_id);
 
@@ -247,13 +249,13 @@ _thread_wakeup_thread(ThreadStruct *pThread)
 	}
 }
 
-static void
+static inline void
 _thread_sleep(void)
 {
 	_thread_sleep_main();
 }
 
-static void
+static inline void
 _thread_wakeup(ThreadStruct *pThread)
 {
 	if(pThread->thread_flag & THREAD_THREAD_FLAG)
@@ -266,7 +268,7 @@ _thread_wakeup(ThreadStruct *pThread)
 	}
 }
 
-static ErrCode
+static inline ErrCode
 _thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
 	sb queue_index;
@@ -282,7 +284,7 @@ _thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 	return thread_queue_write(pQueue, pMsg);
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _thread_safe_read_seq_queue(ThreadStruct *pThread)
 {
 	ub queue_index, safe_counter;
@@ -308,7 +310,7 @@ _thread_safe_read_seq_queue(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static ErrCode
+static inline ErrCode
 _thread_safe_write_msg_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
 	ub queue_index, safe_counter;
@@ -330,7 +332,7 @@ _thread_safe_write_msg_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 	return ret;
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _thread_safe_read_msg_queue(ThreadStruct *pThread)
 {
 	ub queue_index, safe_counter;
@@ -355,7 +357,7 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _thread_build_msg(
 	ThreadStruct *pThread,
 	ThreadId src_id, ThreadId route_dst_id,
@@ -406,7 +408,7 @@ _thread_build_msg(
 	return task_msg;
 }
 
-static void
+static inline void
 _thread_clean_msg(ThreadMsg *pMsg, dave_bool carried_out)
 {
 	ThreadQueue *pQueue;
@@ -435,7 +437,7 @@ _thread_clean_msg(ThreadMsg *pMsg, dave_bool carried_out)
 	}
 }
 
-static ErrCode
+static inline ErrCode
 _thread_write_msg(
 	ThreadId src_id, ThreadId dst_id,
 	ub dst_thread_index,
@@ -492,7 +494,7 @@ _thread_write_msg(
 	return ret;
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _thread_read_msg(ThreadStruct *pThread)
 {
 	ThreadMsg *pMsg;
@@ -509,7 +511,7 @@ _thread_read_msg(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static ub
+static inline ub
 _thread_num_msg(ThreadStruct *pThread, ub msg_id)
 {
 	ub number;
@@ -525,7 +527,7 @@ _thread_num_msg(ThreadStruct *pThread, ub msg_id)
 	return number;
 }
 
-static void
+static inline void
 _thread_clean_priority(void)
 {
 	ub priority_index;
@@ -538,7 +540,7 @@ _thread_clean_priority(void)
 	}	
 }
 
-static void
+static inline void
 _thread_copy_priority(ThreadPriority *priority, ThreadStruct *task, ub thread_index)
 {
 	priority->thread_id = task->thread_id;
@@ -561,7 +563,7 @@ _thread_copy_priority(ThreadPriority *priority, ThreadStruct *task, ub thread_in
 	}
 }
 
-static void
+static inline void
 _thread_sorting_thread(void)
 {
 	ub index, index2;
@@ -1308,8 +1310,8 @@ _thread_safe_del(ThreadId thread_id)
 	return ret;
 }
 
-static dave_bool
-_thread_safe_local_msg(
+static inline dave_bool
+_thread_safe_id_msg(
 	ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -1894,7 +1896,7 @@ base_thread_id_msg(
 		{
 			_thread_wait_dst_thread_ready(dst_id, msg_id);
 
-			ret  = _thread_safe_local_msg(src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
+			ret  = _thread_safe_id_msg(src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
 

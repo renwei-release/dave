@@ -10,7 +10,7 @@
 #include "dave_tools.h"
 #include "base_tools.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 #define EXTER_ENABLE_BLOCK
 #endif
 

@@ -36,9 +36,9 @@ CC := gcc
 CPLUS := g++
 NVCC := /usr/local/cuda/bin/nvcc
 
-CFLAGS := -m64 -std=gnu99 -Wall -fPIC -mcmodel=large -fopenmp -DDAVE_PRODUCT_$(VER_PRODUCT) -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
-CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -DDAVE_PRODUCT_$(VER_PRODUCT) -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
-NVCCFLAGS := -std=c++11 -DDAVE_PRODUCT_$(VER_PRODUCT) -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CFLAGS := -m64 -std=gnu99 -Wall -fPIC -mcmodel=large -fopenmp -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+NVCCFLAGS := -std=c++11 -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
 
 ifeq ($(LEVEL_PRODUCT), profiling)
 	CFLAGS += -g -fprofile-arcs -ftest-coverage -pg -O3 -lc
@@ -64,7 +64,7 @@ dave: $(OBJS)
 	@$(NVCC) -o $@ -c $< $(NVCCFLAGS) $(INCLUDE)
 
 pre_build:
-	python ../../../Tools/refresh_version/refresh_version.py "../../../" $(VER_PRODUCT)
+	python3 ../../../Tools/refresh_version/refresh_version.py "../../../" $(VER_PRODUCT)
 	../../../Tools/auto_code/AUTOCODE
 
 end_build:

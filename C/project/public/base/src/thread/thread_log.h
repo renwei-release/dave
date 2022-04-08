@@ -9,7 +9,7 @@
 #define __THREAD_LOG_H__
 #include "dave_base.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define THREAD_DEBUG
  #define THREAD_MEM_DEBUG
 // #define THREAD_MEM_TRACE

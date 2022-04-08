@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-action=release
+action=release # debug release test
 
 export LD_PRELOAD="./public/base/lib/libjemalloc.so ./public/base/lib/libjson-c.so"
 

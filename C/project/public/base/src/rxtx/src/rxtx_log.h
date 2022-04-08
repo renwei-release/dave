@@ -10,7 +10,7 @@
 #include "base_macro.h"
 #include "base_log.h"
 
-#if defined(__BASE_ALPHA_VERSION__)
+#if defined(LEVEL_PRODUCT_alpha)
 // #define RXTX_DEBUG
 #endif
 

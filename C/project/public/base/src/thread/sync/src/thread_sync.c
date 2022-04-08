@@ -16,6 +16,7 @@
 #ifdef SYNC_STACK_CLIENT
 extern void sync_client_init(void);
 extern void sync_client_exit(void);
+extern ThreadId sync_client_thread_id(ThreadId thread_id);
 #endif
 #ifdef SYNC_STACK_SERVER
 extern void sync_server_init(void);
@@ -63,6 +64,16 @@ thread_sync_exit(void)
 
 #if defined(SYNC_STACK_CLIENT) || defined(SYNC_STACK_SERVER)
     sync_lock_exit();
+#endif
+}
+
+ThreadId
+thread_sync_thread_id(ThreadId thread_id)
+{
+#ifdef SYNC_STACK_CLIENT
+	return sync_client_thread_id(thread_id);
+#else
+	return thread_id;
 #endif
 }
 

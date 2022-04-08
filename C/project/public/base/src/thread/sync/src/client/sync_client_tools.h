@@ -33,5 +33,11 @@ void sync_client_send_statistics(SyncServer *pServer, s8 *thread);
 
 void sync_client_recv_statistics(SyncServer *pServer, s8 *thread);
 
+ThreadId __sync_client_thread_id_change_to_user__(ThreadId thread_id, ThreadId sync_id, s8 *fun, ub line);
+#define sync_client_thread_id_change_to_user(thread_id, sync_id) __sync_client_thread_id_change_to_user__(thread_id, sync_id, (s8 *)__func__, (ub)__LINE__)
+
+ThreadId __sync_client_thread_id_change_from_user__(ThreadId thread_id, s8 *fun, ub line);
+#define sync_client_thread_id_change_from_user(thread_id) __sync_client_thread_id_change_from_user__(thread_id, (s8 *)__func__, (ub)__LINE__)
+
 #endif
 

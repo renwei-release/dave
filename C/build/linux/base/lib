@@ -8,7 +8,7 @@ LOGFILE=build_lib_log.txt
 HOMEPATH=$(cd `dirname $0`; pwd)
 
 ############## build_lib function ##############
-build_dynamic_lib()
+build_static_lib()
 {
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
@@ -17,9 +17,12 @@ build_dynamic_lib()
    rm -f ${HOMEPATH}/../../../../Go/project/public/base/lib/${BASELIBNAME}.a
    echo lib build ${HOMEPATH}/../../../../Go/project/public/base/lib/${BASELIBNAME}.a
    ar cru ${HOMEPATH}/../../../../Go/project/public/base/lib/${BASELIBNAME}.a ${obj_list}
+
+   echo lib build ${HOMEPATH}/../../../../C/project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
+   ar cru ${HOMEPATH}/../../../../C/project/public/base/lib/${LEVEL}/${BASELIBNAME}.a ${obj_list}
 }
 
-build_static_lib()
+build_dynamic_lib()
 {
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 

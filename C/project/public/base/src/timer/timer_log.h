@@ -9,7 +9,7 @@
 #define __TIMER_LOG_H__
 #include "dave_base.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define TIMER_DEBUG
 #endif
 

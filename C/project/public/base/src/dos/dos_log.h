@@ -9,7 +9,7 @@
 #define __DOS_LOG_H__
 #include "dave_base.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define DOS_DEBUG
 #endif
 

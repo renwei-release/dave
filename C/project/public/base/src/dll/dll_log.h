@@ -9,7 +9,7 @@
 #define __DLL_LOG_H__
 #include "dave_base.h"
 
-#if defined(__BASE_ALPHA_VERSION__)
+#if defined(LEVEL_PRODUCT_alpha)
 // #define DLL_DEBUG
 #endif
 

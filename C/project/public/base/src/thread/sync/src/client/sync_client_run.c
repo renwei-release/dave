@@ -81,6 +81,8 @@ _sync_client_run_thread_msg(
 
 	SYNCDEBUG("%s/%lx->%s/%lx:%d", src, route_src, dst, route_dst, msg_id);
 
+	route_src = sync_client_thread_id_change_to_user(route_src, _sync_client_thread);
+
 	return snd_from_msg(route_src, route_dst, msg_id, msg_len, msg_body);
 }
 

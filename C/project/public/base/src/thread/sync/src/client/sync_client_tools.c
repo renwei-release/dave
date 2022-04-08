@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "thread_tools.h"
 #include "sync_base_package.h"
 #include "sync_param.h"
 #include "sync_client_tools.h"
@@ -217,6 +218,51 @@ sync_client_recv_statistics(SyncServer *pServer, s8 *thread)
 		pThread->thread_recv_message_counter ++;
 		sync_unlock();
 	}
+}
+
+ThreadId
+__sync_client_thread_id_change_to_user__(ThreadId thread_id, ThreadId sync_id, s8 *fun, ub line)
+{
+	ThreadId new_id;
+
+	if(thread_attrib(thread_id) == LOCAL_TASK_ATTRIB)
+	{
+		/*
+		 * 这个线程来自远端，但它有一个本地的亲戚，
+		 * 我们需要把实际发给远端的线程消息都通过SYNC转发，
+		 * 不然，消息都会到达本地线程的消息队列。
+		 */
+		new_id = thread_set_local(thread_id, sync_id);
+
+		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>", thread_id, thread_name(thread_id), new_id, thread_name(new_id), fun, line);
+
+		return new_id;
+	}
+
+	return thread_id;
+}
+
+ThreadId
+__sync_client_thread_id_change_from_user__(ThreadId thread_id, s8 *fun, ub line)
+{
+	LinkThread *pThread;
+	ThreadId new_id;
+
+	if((thread_is_remote(thread_id) == dave_true)
+		&& (thread_attrib(thread_id) == LOCAL_TASK_ATTRIB))
+	{
+		pThread = sync_client_thread(thread_get_thread(thread_id));
+		if((pThread == NULL) || (pThread->thread_name[0] == '\0'))
+			return INVALID_THREAD_ID;
+
+		new_id = thread_set_local(thread_id, thread_id(pThread->thread_name));
+
+		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>", thread_id, thread_name(thread_id), new_id, thread_name(new_id), fun, line);
+
+		return new_id;
+	}
+
+	return INVALID_THREAD_ID;
 }
 
 #endif

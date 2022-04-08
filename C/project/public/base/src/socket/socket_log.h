@@ -10,7 +10,7 @@
 #define __SOCKET_LOG_H__
 #include "base_log.h"
 
-#if defined(__BASE_ALPHA_VERSION__)
+#if defined(LEVEL_PRODUCT_alpha)
 // #define SOCKET_DEBUG
 #endif
 

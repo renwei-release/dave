@@ -12,7 +12,7 @@
 #define KV_NAME_MAX 64
 #define KV_KEY_MAX 512
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 #define kvm_malloc dave_malloc
 #define kvm_malloc_line(len, fun, line) __base_malloc__(len, dave_false, 0x00, fun, line)
 #define kvm_free dave_free

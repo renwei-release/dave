@@ -18,6 +18,7 @@
 #include "sync_client_shadow_index.h"
 #include "sync_base_package.h"
 #include "sync_client_data.h"
+#include "sync_client_tools.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -34,6 +35,7 @@ typedef struct {
 
 static TLock _thread_active_pv;
 static void *_thread_active_kv = NULL;
+static ThreadId _sync_thread_id = INVALID_THREAD_ID;
 
 static void _sync_client_thread_active_timer(void *kv, s8 *key);
 static void _sync_client_thread_kv_empty_check(void);
@@ -86,7 +88,7 @@ _sync_client_thread_active_malloc(dave_bool ready_or_remove_flag, ThreadId threa
 
 	pActive->ready_or_remove_flag = ready_or_remove_flag;
 
-	dave_strcpy(pActive->thread_name, thread_name(thread_id), sizeof(pActive->thread_name));
+	dave_strcpy(pActive->thread_name, pThread->thread_name, sizeof(pActive->thread_name));
 	pActive->thread_id = thread_id;
 	dave_strcpy(pActive->globally_identifier, pServer->globally_identifier, sizeof(pActive->globally_identifier));
 	pActive->pServer = pServer;
@@ -202,6 +204,7 @@ _sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 	dave_bool ret;
 
 	thread_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
+	thread_id = sync_client_thread_id_change_to_user(thread_id, _sync_thread_id);
 	thread_remote_id_table_add(thread_id, pThread->thread_name);
 
 	ret = sync_client_shadow_index_add(pServer, pThread);
@@ -210,6 +213,7 @@ _sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 	if(ret == dave_true)
 	{
 		shadow_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->shadow_index);
+		shadow_id = sync_client_thread_id_change_to_user(shadow_id, _sync_thread_id);
 		thread_remote_id_table_add(shadow_id, pThread->thread_name);
 		thread_gid_table_add(pServer->globally_identifier, pThread->thread_name, shadow_id);
 
@@ -231,6 +235,7 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 	dave_bool ret;
 
 	thread_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
+	thread_id = sync_client_thread_id_change_to_user(thread_id, _sync_thread_id);
 	thread_remote_id_table_del(thread_id, pThread->thread_name);
 
 	ret = sync_client_shadow_index_del(pServer, pThread);
@@ -246,6 +251,7 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 		else
 		{
 			shadow_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, backup_shadow_index);
+			shadow_id = sync_client_thread_id_change_to_user(shadow_id, _sync_thread_id);
 			thread_remote_id_table_del(shadow_id, pThread->thread_name);
 			thread_gid_table_del(pServer->globally_identifier, pThread->thread_name);
 
@@ -336,8 +342,8 @@ void
 sync_client_thread_ready_remove_init(void)
 {
 	sync_client_shadow_index_init();
-
 	t_lock_reset(&_thread_active_pv);
+	_sync_thread_id = thread_id(SYNC_CLIENT_THREAD_NAME);
 
 	reg_msg(MSGID_TEMPORARILY_DEFINE_MESSAGE, _sync_client_thread_temporarily_define_message);
 }

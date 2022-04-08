@@ -10,13 +10,13 @@
 #include "base_macro.h"
 #include "dave_base.h"
 
-#if defined(__BASE_ALPHA_VERSION__)
+#if defined(LEVEL_PRODUCT_alpha)
  #define MEMORY_DEBUG
 // #define MEMORY_TRACE
 // #define MEMORY_TEST
 #endif
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define MEMORY_DEBUG_SHOW_INIT_INFO
 #endif
 

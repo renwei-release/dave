@@ -18,6 +18,103 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
+class SocketBindReq (Structure):
+	_fields_ = [
+		("NetInfo", SocNetInfo),
+		("ptr", c_void_p),
+]
+
+class SocketBindRsp (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("NetInfo", SocNetInfo),
+		("BindInfo", c_int),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketConnectReq (Structure):
+	_fields_ = [
+		("NetInfo", SocNetInfo),
+		("ptr", c_void_p),
+]
+
+class SocketConnectRsp (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("NetInfo", SocNetInfo),
+		("ConnectInfo", c_int),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketDisconnectReq (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("ptr", c_void_p),
+]
+
+class SocketDisconnectRsp (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("result", c_int),
+		("ptr", c_void_p),
+]
+
+class SocketPlugIn (Structure):
+	_fields_ = [
+		("father_socket", c_int),
+		("child_socket", c_int),
+		("NetInfo", SocNetInfo),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketPlugOut (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("reason", c_int),
+		("NetInfo", SocNetInfo),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketRead (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("IPInfo", IPBaseInfo),
+		("data_len", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+class SocketWrite (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("IPInfo", IPBaseInfo),
+		("data_len", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("close_flag", c_int),
+]
+
+class SocketNotify (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("notify", c_int),
+		("data", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketRawEvent (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("os_socket", c_int),
+		("event", c_int),
+		("NetInfo", SocNetInfo),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
 class TESTMSG (Structure):
 	_fields_ = [
 		("test_msg", c_char * 4096),
@@ -225,103 +322,6 @@ class MsgBlocksRsp (Structure):
 class MsgOSNotify (Structure):
 	_fields_ = [
 		("notify_info", c_ulonglong),
-]
-
-class SocketBindReq (Structure):
-	_fields_ = [
-		("NetInfo", SocNetInfo),
-		("ptr", c_void_p),
-]
-
-class SocketBindRsp (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("NetInfo", SocNetInfo),
-		("BindInfo", c_int),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketConnectReq (Structure):
-	_fields_ = [
-		("NetInfo", SocNetInfo),
-		("ptr", c_void_p),
-]
-
-class SocketConnectRsp (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("NetInfo", SocNetInfo),
-		("ConnectInfo", c_int),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketDisconnectReq (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("ptr", c_void_p),
-]
-
-class SocketDisconnectRsp (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("result", c_int),
-		("ptr", c_void_p),
-]
-
-class SocketPlugIn (Structure):
-	_fields_ = [
-		("father_socket", c_int),
-		("child_socket", c_int),
-		("NetInfo", SocNetInfo),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketPlugOut (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("reason", c_int),
-		("NetInfo", SocNetInfo),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketRead (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("IPInfo", IPBaseInfo),
-		("data_len", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("ptr", c_void_p),
-]
-
-class SocketWrite (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("IPInfo", IPBaseInfo),
-		("data_len", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("close_flag", c_int),
-]
-
-class SocketNotify (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("notify", c_int),
-		("data", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketRawEvent (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("os_socket", c_int),
-		("event", c_int),
-		("NetInfo", SocNetInfo),
-		("data", POINTER(MBUF)),
-		("ptr", c_void_p),
 ]
 
 class HTTPListenReq (Structure):

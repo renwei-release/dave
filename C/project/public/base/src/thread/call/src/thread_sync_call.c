@@ -242,7 +242,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 
 	wait_start_time = dave_os_time_us();
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	/*
 	 * 在处理同步消息时，不用做同线程资源竞争检测。
 	 */

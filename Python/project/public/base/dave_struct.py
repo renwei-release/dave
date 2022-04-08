@@ -46,15 +46,17 @@ class SocNetInfo (Structure):
 		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
 ]
 
-class DateStruct (Structure):
+class IPBaseInfo (Structure):
 	_fields_ = [
-		("year", c_ushort),
-		("month", c_char),
-		("day", c_char),
-		("hour", c_char),
-		("minute", c_char),
-		("second", c_char),
-		("week", c_char),
+		("protocol", c_int),
+		("ver", c_int),
+		("src_ip", c_char * 16),
+		("src_port", c_ushort),
+		("dst_ip", c_char * 16),
+		("dst_port", c_ushort),
+		("keepalive_second", c_longlong),
+		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
+		("fixed_port_flag", c_int),
 ]
 
 class MBUF (Structure):
@@ -67,6 +69,17 @@ class MBUF (Structure):
 		("alloc_len", c_longlong),
 ]
 
+class DateStruct (Structure):
+	_fields_ = [
+		("year", c_ushort),
+		("month", c_char),
+		("day", c_char),
+		("hour", c_char),
+		("minute", c_char),
+		("second", c_char),
+		("week", c_char),
+]
+
 class BuildingBlocks (Structure):
 	_fields_ = [
 		("blocks_id", c_ulonglong),
@@ -77,19 +90,6 @@ class BuildingBlocks (Structure):
 		("blocks_flag", c_char),
 		("client_flag", c_char),
 		("release_quantity", c_ulonglong),
-]
-
-class IPBaseInfo (Structure):
-	_fields_ = [
-		("protocol", c_int),
-		("ver", c_int),
-		("src_ip", c_char * 16),
-		("src_port", c_ushort),
-		("dst_ip", c_char * 16),
-		("dst_port", c_ushort),
-		("keepalive_second", c_longlong),
-		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("fixed_port_flag", c_int),
 ]
 
 class HttpKeyValue (Structure):

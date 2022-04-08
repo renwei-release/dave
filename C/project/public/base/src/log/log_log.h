@@ -10,7 +10,7 @@
 #define __LOG_LOG_H__
 #include "dave_base.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define LOG_DEBUG
 #endif
 

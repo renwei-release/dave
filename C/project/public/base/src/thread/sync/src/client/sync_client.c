@@ -588,12 +588,21 @@ _sync_client_cfg_update(CFGUpdate *pUpdate)
 }
 
 static inline void
-_sync_client_broadcast_route(MSGBODY *pMsg)
+_sync_client_route(MSGBODY *pMsg)
 {
-	if((pMsg->msg_type == BaseMsgType_Unicast)
-		|| (pMsg->msg_type == BaseMsgType_Broadcast_local))
+	ThreadId thread_id;
+
+	if(pMsg->msg_type == BaseMsgType_Broadcast_local)
 	{
 		return;
+	}
+
+	if(pMsg->msg_type == BaseMsgType_Unicast)
+	{
+		thread_id = sync_client_thread_id_change_from_user(pMsg->msg_dst);
+		if(thread_id == INVALID_THREAD_ID)
+			return;
+		pMsg->msg_dst = thread_id;
 	}
 
 	sync_client_message_route(pMsg);
@@ -801,7 +810,7 @@ _sync_client_main(MSGBODY *msg)
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
 			break;
 		default:
-				_sync_client_broadcast_route(msg);
+				_sync_client_route(msg);
 			break;
 	}
 }
@@ -838,6 +847,18 @@ sync_client_exit(void)
 	if(_sync_client_thread != INVALID_THREAD_ID)
 		base_thread_del(_sync_client_thread);
 	_sync_client_thread = INVALID_THREAD_ID;
+}
+
+ThreadId
+sync_client_thread_id(ThreadId thread_id)
+{
+	ThreadId new_id;
+
+	new_id = sync_client_thread_id_change_from_user(thread_id);
+	if(new_id == INVALID_THREAD_ID)
+		return thread_id;
+	else
+		return new_id;
 }
 
 #endif

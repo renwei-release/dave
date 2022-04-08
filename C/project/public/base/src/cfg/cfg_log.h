@@ -9,7 +9,7 @@
 #define __CFG_LOG_H__
 #include "base_macro.h"
 
-#ifdef __BASE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define CFG_DEBUG
 #endif
 
