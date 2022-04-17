@@ -32,7 +32,6 @@ static void
 _base_dos_init(MSGBODY *task_msg)
 {
 	dos_tty_init();
-	dos_cmd_init();
 	dos_pop_init();
 	dos_show_init();
 	dos_app_reset();
@@ -59,7 +58,6 @@ _base_dos_main(MSGBODY *task_msg)
 static void
 _base_dos_exit(MSGBODY *task_msg)
 {
-	dos_cmd_exit();
 	dos_pop_exit();
 	dos_show_exit();
 	dos_tty_exit();
@@ -73,11 +71,15 @@ base_dos_init(void)
 	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 255, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG, _base_dos_init, _base_dos_main, _base_dos_exit);
 	if(_dos_thread == INVALID_THREAD_ID)
 		base_restart(DOS_THREAD_NAME);
+
+	dos_cmd_init();
 }
 
 void
 base_dos_exit(void)
 {
+	dos_cmd_exit();
+
 	if(_dos_thread != INVALID_THREAD_ID)
 		base_thread_del(_dos_thread);
 	_dos_thread = INVALID_THREAD_ID;

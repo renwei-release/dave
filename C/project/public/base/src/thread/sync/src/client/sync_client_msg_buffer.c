@@ -270,7 +270,7 @@ _sync_client_msg_buffer_safe_push(
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv3(_sync_client_msg_buffer_pv, {
+	SAFECODEv1(_sync_client_msg_buffer_pv, {
 
 			ret = _sync_client_msg_buffer_push(
 				pServer,
@@ -291,19 +291,19 @@ _sync_client_msg_buffer_safe_push(
 static void
 _sync_client_msg_buffer_safe_pop(void)
 {
-	SAFEZONEv3(_sync_client_msg_buffer_pv, { _sync_client_msg_buffer_pop(); } );
+	SAFECODEv1(_sync_client_msg_buffer_pv, { _sync_client_msg_buffer_pop(); } );
 }
 
 static void
 _sync_client_msg_buffer_safe_reset_all(void)
 {
-	SAFEZONEv3(_sync_client_msg_buffer_pv, _sync_client_msg_buffer_reset_all(););
+	SAFECODEv1(_sync_client_msg_buffer_pv, _sync_client_msg_buffer_reset_all(););
 }
 
 static void
 _sync_client_msg_buffer_safe_clear_all(void)
 {
-	SAFEZONEv3(_sync_client_msg_buffer_pv, _sync_client_msg_buffer_clear_all(););
+	SAFECODEv1(_sync_client_msg_buffer_pv, _sync_client_msg_buffer_clear_all(););
 }
 
 // =====================================================================

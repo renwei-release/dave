@@ -14,88 +14,51 @@ package base
 
 import "unsafe"
 
-type SocketBindReq struct {
-	Netinfo SocNetInfo
+type HTTPListenReq struct {
+	Listen_port uint64
+	Rule int32
+	Type int32
+	Path [DAVE_PATH_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type SocketBindRsp struct {
-	Socket int32
-	Netinfo SocNetInfo
-	Bindinfo int32
-	Thread_id uint64
+type HTTPListenRsp struct {
+	Ret int32
+	Listen_port uint64
+	Path [DAVE_PATH_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type SocketConnectReq struct {
-	Netinfo SocNetInfo
+type HTTPCloseReq struct {
+	Listen_port uint64
+	Path [DAVE_PATH_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type SocketConnectRsp struct {
-	Socket int32
-	Netinfo SocNetInfo
-	Connectinfo int32
-	Thread_id uint64
+type HTTPCloseRsp struct {
+	Ret int32
+	Listen_port uint64
+	Path [DAVE_PATH_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type SocketDisconnectReq struct {
-	Socket int32
+type HTTPRecvReq struct {
+	Listen_port uint64
+	Remote_address [DAVE_URL_LEN] byte
+	Remote_port uint64
+	Method int32
+	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
+	Content_type int32
+	Content *MBUF
+	Local_creat_time uint64
 	Ptr unsafe.Pointer
 }
 
-type SocketDisconnectRsp struct {
-	Socket int32
-	Result int32
-	Ptr unsafe.Pointer
-}
-
-type SocketPlugIn struct {
-	Father_socket int32
-	Child_socket int32
-	Netinfo SocNetInfo
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketPlugOut struct {
-	Socket int32
-	Reason int32
-	Netinfo SocNetInfo
-	Thread_id uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketRead struct {
-	Socket int32
-	Ipinfo IPBaseInfo
-	Data_len uint64
-	Data *MBUF
-	Ptr unsafe.Pointer
-}
-
-type SocketWrite struct {
-	Socket int32
-	Ipinfo IPBaseInfo
-	Data_len uint64
-	Data *MBUF
-	Close_flag int32
-}
-
-type SocketNotify struct {
-	Socket int32
-	Notify int32
-	Data uint64
-	Ptr unsafe.Pointer
-}
-
-type SocketRawEvent struct {
-	Socket int32
-	Os_socket int32
-	Event int32
-	Netinfo SocNetInfo
-	Data *MBUF
+type HTTPRecvRsp struct {
+	Ret int32
+	Content_type int32
+	Content *MBUF
+	Local_creat_time uint64
 	Ptr unsafe.Pointer
 }
 
@@ -241,7 +204,7 @@ type ThreadLocalRemoveMsg struct {
 }
 
 type RPCDebugMsg struct {
-	Ret_debug int64
+	Ret_debug int32
 	S8_debug byte
 	U8_debug byte
 	U16_debug uint16
@@ -266,7 +229,7 @@ type MsgBlocksReq struct {
 }
 
 type MsgBlocksRsp struct {
-	Ret int64
+	Ret int32
 	Opt int32
 	Blocks [DAVE_BUILDING_BLOCKS_MAX] BuildingBlocks
 	Ptr unsafe.Pointer
@@ -276,51 +239,88 @@ type MsgOSNotify struct {
 	Notify_info uint64
 }
 
-type HTTPListenReq struct {
-	Listen_port uint64
-	Rule int32
-	Type int32
-	Path [DAVE_PATH_LEN] byte
+type SocketBindReq struct {
+	Netinfo SocNetInfo
 	Ptr unsafe.Pointer
 }
 
-type HTTPListenRsp struct {
-	Ret int64
-	Listen_port uint64
-	Path [DAVE_PATH_LEN] byte
+type SocketBindRsp struct {
+	Socket int32
+	Netinfo SocNetInfo
+	Bindinfo int32
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
-type HTTPCloseReq struct {
-	Listen_port uint64
-	Path [DAVE_PATH_LEN] byte
+type SocketConnectReq struct {
+	Netinfo SocNetInfo
 	Ptr unsafe.Pointer
 }
 
-type HTTPCloseRsp struct {
-	Ret int64
-	Listen_port uint64
-	Path [DAVE_PATH_LEN] byte
+type SocketConnectRsp struct {
+	Socket int32
+	Netinfo SocNetInfo
+	Connectinfo int32
+	Thread_id uint64
 	Ptr unsafe.Pointer
 }
 
-type HTTPRecvReq struct {
-	Listen_port uint64
-	Remote_address [DAVE_URL_LEN] byte
-	Remote_port uint64
-	Method int32
-	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
-	Content_type int32
-	Content *MBUF
-	Local_creat_time uint64
+type SocketDisconnectReq struct {
+	Socket int32
 	Ptr unsafe.Pointer
 }
 
-type HTTPRecvRsp struct {
-	Ret int64
-	Content_type int32
-	Content *MBUF
-	Local_creat_time uint64
+type SocketDisconnectRsp struct {
+	Socket int32
+	Result int32
+	Ptr unsafe.Pointer
+}
+
+type SocketPlugIn struct {
+	Father_socket int32
+	Child_socket int32
+	Netinfo SocNetInfo
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketPlugOut struct {
+	Socket int32
+	Reason int32
+	Netinfo SocNetInfo
+	Thread_id uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketRead struct {
+	Socket int32
+	Ipinfo IPBaseInfo
+	Data_len uint64
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
+type SocketWrite struct {
+	Socket int32
+	Ipinfo IPBaseInfo
+	Data_len uint64
+	Data *MBUF
+	Close_flag int32
+}
+
+type SocketNotify struct {
+	Socket int32
+	Notify int32
+	Data uint64
+	Ptr unsafe.Pointer
+}
+
+type SocketRawEvent struct {
+	Socket int32
+	Os_socket int32
+	Event int32
+	Netinfo SocNetInfo
+	Data *MBUF
 	Ptr unsafe.Pointer
 }
 

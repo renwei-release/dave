@@ -33,17 +33,15 @@ def __find_define_list(define_list, define_data):
     return find_flag
 
 
-def _find_define_list():
+def _find_define_list(file_list=None):
     define_list = []
     head_list = []
-    file_list = find_file_list()
     for file_name in file_list:
         with open(file_name, encoding="utf-8") as file_id:
             try:
                 file_content = file_id.read()
             except:
-                print(f"file_name:{file_name}")
-                traceback.print_exc()
+                print(f"1 _find_define_list file_name:{file_name}")
                 return define_list, head_list
             try:
                 result = re.findall('(#define [A-Z,a-z,0-9,"_"]+? ["(",")","x","X",0-9]+?)\n', file_content)
@@ -51,8 +49,7 @@ def _find_define_list():
                     if __find_define_list(define_list, result) == 1:
                         head_list.append(file_name)
             except:
-                print(f"file_name:{file_name}")
-                traceback.print_exc()
+                print(f"2 _find_define_list file_name:{file_name}")
                 return define_list, head_list
     return define_list, head_list
 
@@ -60,13 +57,16 @@ def _find_define_list():
 def _find_define_digital_table(define_table, define_list):
     for define_data in define_list:
         define_name_list = re.findall("#define (.*?) .*?", define_data)
-        define_value_list = re.findall("#define .*? ([0-9, *, +]+|0[x,X][a-f, A-F]+)", define_data)
+        define_value_list = re.findall("#define .*? ([0-9,*,+,-]+|0[x,X][a-f,A-F])", define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
-        if define_name != None and define_value != None:
+        if (define_name != None) and (define_value != None):
             define_name.replace(" ", "")
             define_value.replace(" ", "")
-            define_table[define_name] = eval(define_value)
+            if define_value.isdigit() == True:
+                define_table[define_name] = define_value
+            else:
+                define_table[define_name] = eval(define_value)
     return
 
 
@@ -86,9 +86,9 @@ def _find_define_complex_table(define_table, define_list):
 # =====================================================================
 
 
-def find_define_table():
+def find_define_table(file_list):
     define_table = {}
-    define_list, include_list = _find_define_list()
+    define_list, include_list = _find_define_list(file_list)
     _find_define_digital_table(define_table, define_list)
     _find_define_complex_table(define_table, define_list)
     return define_table, include_list

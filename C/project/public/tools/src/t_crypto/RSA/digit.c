@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_os.h"
 
 /* DIGIT.C - digit arithmetic routines  
@@ -118,6 +109,4 @@ void NN_DigitDiv (NN_DIGIT *a, NN_DIGIT b[2], NN_DIGIT c)
      
   *a = TO_HIGH_HALF (aHigh) + aLow;   
 }
-
-#endif
 

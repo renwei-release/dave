@@ -12,7 +12,7 @@ void sync_server_broadcadt_init(void);
 
 void sync_server_broadcadt_exit(void);
 
-ErrCode sync_server_broadcadt(
+RetCode sync_server_broadcadt(
 	SyncClient *pSrcClient,
 	ThreadId route_src, s8 *src,
 	ThreadId route_dst, s8 *dst,

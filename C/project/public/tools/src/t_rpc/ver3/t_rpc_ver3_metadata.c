@@ -6,12 +6,11 @@
  */
 
 #include "dave_base.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "t_rpc_ver3_enumdata.h"
 #include "t_rpc_ver3_msgdata.h"
 #include "t_rpc_ver3_structdata.h"
-#include "t_rpc_ver3_uniondata.h"
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 
@@ -528,6 +527,27 @@ __t_rpc_ver3_unzip_double_d__(double *unzip_data, ub unzip_len, void *pArrayBson
 }
 
 void *
+__t_rpc_ver3_zip_ThreadId__(ThreadId zip_data, s8 *fun, ub line)
+{
+	return _t_rpc_ver3_zip_sb((sb)zip_data);
+}
+
+dave_bool
+__t_rpc_ver3_unzip_ThreadId__(ThreadId *unzip_data, void *pArrayBson, s8 *fun, ub line)
+{
+	sb sb_data;
+
+	if(_t_rpc_ver3_unzip_sb(pArrayBson, &sb_data, fun, line) == dave_false)
+	{
+		*unzip_data = INVALID_THREAD_ID;
+		return dave_false;
+	}
+
+	*unzip_data = (ThreadId)sb_data;
+	return dave_true;
+}
+
+void *
 __t_rpc_ver3_zip_MBUF_ptr__(MBUF *zip_data, s8 *fun, ub line)
 {
 	void *pBson, *pArrayBson;
@@ -664,26 +684,5 @@ dave_bool
 __t_rpc_ver3_unzip_void_ptr__(void **unzip_data, void *pArrayBson, s8 *fun, ub line)
 {
 	return _t_rpc_ver3_unzip_void_ptr(unzip_data, pArrayBson, fun, line);
-}
-
-void *
-__t_rpc_ver3_zip_ThreadId__(ThreadId zip_data, s8 *fun, ub line)
-{
-	return _t_rpc_ver3_zip_sb((sb)zip_data);
-}
-
-dave_bool
-__t_rpc_ver3_unzip_ThreadId__(ThreadId *unzip_data, void *pArrayBson, s8 *fun, ub line)
-{
-	sb sb_data;
-
-	if(_t_rpc_ver3_unzip_sb(pArrayBson, &sb_data, fun, line) == dave_false)
-	{
-		*unzip_data = INVALID_THREAD_ID;
-		return dave_false;
-	}
-
-	*unzip_data = (ThreadId)sb_data;
-	return dave_true;
 }
 

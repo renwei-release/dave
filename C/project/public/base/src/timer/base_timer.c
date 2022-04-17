@@ -89,7 +89,7 @@ _timer_run_function(base_timer_fun fun, base_timer_param_fun param_fun, void *pa
 	}
 }
 
-static ErrCode
+static RetCode
 _timer_hardware_timer_notify(ub notify_id)
 {
 	TIMERMSG *pMsg;
@@ -129,9 +129,9 @@ _timer_hardware_timer_notify(ub notify_id)
 	}
 
 	if(notify_id >= 1)
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	else
-		return ERRCODE_OK;
+		return RetCode_OK;
 }
 
 static ub
@@ -313,7 +313,7 @@ _timer_event(MSGBODY *msg)
 	{
 		pTimer = &_timer[timer_id];
 	
-		SAFEZONEidlev3(pTimer->opt_pv, {
+		SAFECODEidlev1(pTimer->opt_pv, {
 			fun = pTimer->fun;
 			param_fun = pTimer->param_fun;
 			param = pTimer->param;
@@ -324,7 +324,7 @@ _timer_event(MSGBODY *msg)
 		 * 且通过判断_timer[timer_id].fun来
 		 * 确保已经删除的定时器消息不会有机会执行。
 		 */
-		SAFEZONEidlev3(pTimer->run_pv, {
+		SAFECODEidlev1(pTimer->run_pv, {
 			if((fun != NULL) || (param_fun != NULL))
 			{
 				pTimer->time_out_counter ++;
@@ -376,7 +376,7 @@ _timer_creat_timer_(s8 *name, TimerAttrib attrib, ThreadId owner, base_timer_fun
 
 		timer_id = _cur_creat_timer_id;
 
-		SAFEZONEv3(_timer[timer_id].opt_pv, {
+		SAFECODEv1(_timer[timer_id].opt_pv, {
 			if((_timer[timer_id].fun == NULL)
 				&& (_timer[timer_id].param_fun == NULL)
 				&& (_timer[timer_id].owner == INVALID_THREAD_ID))
@@ -418,7 +418,7 @@ _timer_die_timer_(TIMERID timer_id, ThreadId owner)
 {
 	dave_bool unreg_flag = dave_false;
 
-	SAFEZONEv3(_timer[timer_id].opt_pv, {
+	SAFECODEv1(_timer[timer_id].opt_pv, {
 		_timer_reset(&_timer[timer_id]);
 
 		if(_timer_the_thread_has_timer(owner) == dave_false)
@@ -475,16 +475,16 @@ _timer_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun, void
 	return timer_id;
 }
 
-static ErrCode
+static RetCode
 _timer_die_timer(TIMERID timer_id)
 {
 	ThreadId owner = self();
 
 	if(timer_id >= TIMER_MAX)
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 
 	if(_timer[timer_id].owner != owner)
-		return ERRCODE_Invalid_call;
+		return RetCode_Invalid_call;
 
 	_timer_die_timer_(timer_id, owner);
 
@@ -493,7 +493,7 @@ _timer_die_timer(TIMERID timer_id)
 	else
 		_timer_opt_hardware_timer(STOP_TIMER, _timer[timer_id].name);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static dave_bool
@@ -548,17 +548,17 @@ _timer_safe_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun,
 {
 	TIMERID timer_id = INVALID_TIMER_ID;
 
-	SAFEZONEv3(_timer_pv, { timer_id = _timer_creat_timer(name, attrib, owner, fun, param, alarm_ms); } );
+	SAFECODEv1(_timer_pv, { timer_id = _timer_creat_timer(name, attrib, owner, fun, param, alarm_ms); } );
 
 	return timer_id;
 }
 
-static ErrCode
+static RetCode
 _timer_safe_die_timer(TIMERID timer_id)
 {
-	ErrCode ret = ERRCODE_Invalid_parameter;
+	RetCode ret = RetCode_Invalid_parameter;
 
-	SAFEZONEv3( _timer_pv, { ret = _timer_die_timer(timer_id); } );
+	SAFECODEv1( _timer_pv, { ret = _timer_die_timer(timer_id); } );
 
 	return ret;
 }
@@ -568,7 +568,7 @@ _timer_safe_check_timer_is_recreat(s8 *name, base_timer_fun fun, base_timer_para
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv3( _timer_pv, { ret = _timer_check_timer_is_recreat(name, fun, param_fun, time_id); } );
+	SAFECODEv1( _timer_pv, { ret = _timer_check_timer_is_recreat(name, fun, param_fun, time_id); } );
 
 	return ret;
 }
@@ -740,7 +740,7 @@ base_timer_param_creat(char *name, base_timer_param_fun fun, void *param, ub ala
 	return timer_id;
 }
 
-ErrCode
+RetCode
 __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 {
 	ThreadId cur_msg_id;
@@ -748,7 +748,7 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 	if((timer_id >= TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
 	{
 		TIMEABNOR("failed! timer_id:%d (%s:%d)", timer_id, fun, line);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
 	if(_timer[timer_id].attrib == SW_TIMER)

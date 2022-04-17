@@ -10,10 +10,5 @@
 
 ub t_rand(void);
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define dave_rand t_rand
-
-
 #endif
 

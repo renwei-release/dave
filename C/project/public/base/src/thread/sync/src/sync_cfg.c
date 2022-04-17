@@ -11,6 +11,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_os.h"
+#include "sync_cfg.h"
 
 #define SYNC_SERVICE_PORT 6004
 

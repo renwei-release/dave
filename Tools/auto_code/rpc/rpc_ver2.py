@@ -28,10 +28,13 @@ from rpc.ver2.creat_proto_file import creat_proto_file
 from rpc.ver2.creat_c_file import creat_c_file
 
 
-def rpc_ver2():
+def rpc_ver2(param):
     if not os.path.exists(rpc_ver2_auto_dir):
         os.makedirs(rpc_ver2_auto_dir)
 
-    proto_file = creat_proto_file()
+    file_list = param['file_list']
+    all_struct_table = param['all_struct_table']
+
+    proto_file = creat_proto_file(file_list, all_struct_table)
     creat_c_file(proto_file)
     return

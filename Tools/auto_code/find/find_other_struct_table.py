@@ -8,7 +8,6 @@
 import re
 import traceback
 from .find_file_list import find_file_list
-from .find_msg_struct_table import find_msg_struct_table
 from autocode_tools import *
 
 
@@ -18,18 +17,15 @@ def _find_struct_list_from_file(struct_list, file_name):
         try:
             file_content = file_id.read()
         except:
-            print(f"file_name:{file_name}")
-            traceback.print_exc()
+            print(f"1 _find_struct_list_from_file file_name:{file_name}")
             return valid_document
         try:
-            file_content = remove_annotation_data(file_content)
-            result = re.findall("typedef struct.*?\{.*?\}.*?;", file_content)
+            result = get_struct_list(file_content)
             if result:
                 valid_document = True
                 struct_list.extend(result)
         except:
-            print(f"file_name:{file_name}")
-            traceback.print_exc()
+            print(f"2 _find_struct_list_from_file file_name:{file_name}")
             return valid_document      
     return valid_document
 
@@ -70,7 +66,7 @@ def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
 
     for struct_name in msg_struct_table.keys():
         for msg_member in msg_struct_table[struct_name]:
-            struct_name = msg_member['t'].replace('_ptr', '')
+            struct_name = msg_member['t']
             struct_value = other_struct_table.get(struct_name, None)
             if struct_value != None:
                 use_struct_table[struct_name] = struct_value
@@ -93,12 +89,10 @@ def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
 # =====================================================================
 
 
-def find_other_struct_table():
-    file_list = find_file_list()
+def find_other_struct_table(file_list, msg_struct_table):
     other_struct_list, include_list = _find_struct_list_from_file_list(file_list)
     other_struct_table = _find_struct_list_to_table(other_struct_list)
 
-    _, msg_struct_table, _ = find_msg_struct_table()
     _find_remove_the_same_name_on_table(msg_struct_table, other_struct_table)
     other_struct_table = _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table)
 

@@ -229,7 +229,7 @@ sync_client_shadow_index_add(SyncServer *pServer, LinkThread *pThread)
 		return dave_false;
 	}
 
-	SAFEZONEv3( _sync_client_shadow_index_pv, ret = _sync_client_shadow_index_add(pServer, pThread); );
+	SAFECODEv1( _sync_client_shadow_index_pv, ret = _sync_client_shadow_index_add(pServer, pThread); );
 
 	return ret;
 }
@@ -251,7 +251,7 @@ sync_client_shadow_index_del(SyncServer *pServer, LinkThread *pThread)
 		return dave_false;
 	}
 
-	SAFEZONEv3( _sync_client_shadow_index_pv, ret = _sync_client_shadow_index_del(pServer, pThread); );
+	SAFECODEv1( _sync_client_shadow_index_pv, ret = _sync_client_shadow_index_del(pServer, pThread); );
 
 	return ret;
 }

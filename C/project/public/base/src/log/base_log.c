@@ -185,6 +185,24 @@ __base_assert__(int assert_flag, const char *fun, int line, const char *args, ..
 }
 
 dave_bool
+base_log_id_add(s8 *trace_id)
+{
+	return log_trace_add_id(trace_id);
+}
+
+dave_bool
+base_log_id_del(s8 *trace_id)
+{
+	return log_trace_del_id(trace_id);
+}
+
+dave_bool
+base_log_id_enable(s8 *trace_id)
+{
+	return log_trace_id_enable(trace_id);
+}
+
+dave_bool
 base_log_line_enable(s8 *fun, ub line, ub time, ub number)
 {
 	return log_trace_line_enable(fun, line, time, number);

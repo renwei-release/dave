@@ -52,7 +52,7 @@ typedef struct {
 #define BASE_CFG_NAME "config"
 
 static volatile sb _config_init_ = 0;
-static DaveLock _config_option_pv;
+static TLock _config_option_pv;
 static ConfigValueBuf _value_buffer[CONFIG_FILE_VALUE_BUF_NUM];
 
 static void
@@ -298,7 +298,7 @@ _base_cfg_close(sb file_id)
 	}
 }
 
-static ErrCode
+static RetCode
 _base_cfg_read(sb file_id, ConfigFileValue *pValue)
 {
 	sb load_length, decode_length;
@@ -307,26 +307,26 @@ _base_cfg_read(sb file_id, ConfigFileValue *pValue)
 
 	if(file_id < 0)
 	{
-		return ERRCODE_file_open_failed;
+		return RetCode_file_open_failed;
 	}
 
 	load_length = dave_os_file_load(file_id, 0, sizeof(ConfigFileValue), (u8 *)(pValue));
 	if(load_length <= sizeof(ConfigFileValueHead))
 	{
 		CFGDEBUG("empty file:%d/%d", load_length, sizeof(ConfigFileValueHead));
-		return ERRCODE_invalid_file;
+		return RetCode_invalid_file;
 	}
 
 	if(pValue->head.data.magic_data != CONFIG_FILE_MAGIC_DATA)
 	{
 		CFGABNOR("invalid magic:%x", pValue->head.data.magic_data);
-		return ERRCODE_invalid_magic;
+		return RetCode_invalid_magic;
 	}
 
 	if((pValue->head.data.value_len == 0) || (pValue->head.data.value_len > CONFIG_FILE_VALUE_BUF_MAX))
 	{
 		CFGABNOR("invalid length:%d", pValue->head.data.value_len);
-		return ERRCODE_Invalid_data;
+		return RetCode_Invalid_data;
 	}
 
 	if(pValue->head.data.type >= ConfigFileType_max)
@@ -336,7 +336,7 @@ _base_cfg_read(sb file_id, ConfigFileValue *pValue)
 
 	_base_cfg_des_key(des_key);
 
-	decode_length = dave_des_decode(des_key, DAVE_DES_KEY_LEN, pValue->value, pValue->head.data.value_len, dave_true);
+	decode_length = t_crypto_des_decode(des_key, DAVE_DES_KEY_LEN, pValue->value, pValue->head.data.value_len, dave_true);
 
 	crc_check = t_crypto_crc32(pValue->value, decode_length);
 	if((ub)crc_check != pValue->head.data.crc_check)
@@ -345,18 +345,18 @@ _base_cfg_read(sb file_id, ConfigFileValue *pValue)
 			pValue->head.data.name, load_length, pValue->head.data.value_len, decode_length,
 			crc_check, pValue->head.data.crc_check);
 
-		return ERRCODE_Invalid_data_crc_check;
+		return RetCode_Invalid_data_crc_check;
 	}
 
 	pValue->head.data.value_len = decode_length;
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _base_cfg_write(sb file_id, ConfigFileValue *pValue)
 {
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 	s8 *back_value;
 	ub back_value_len;
 	u8 des_key[DAVE_DES_KEY_LEN];
@@ -364,13 +364,13 @@ _base_cfg_write(sb file_id, ConfigFileValue *pValue)
 
 	if(file_id < 0)
 	{
-		return ERRCODE_file_open_failed;
+		return RetCode_file_open_failed;
 	}
 
 	if(pValue->head.data.value_len > CONFIG_FILE_VALUE_BUF_MAX)
 	{
 		CFGABNOR("invalid length:%d", pValue->head.data.value_len);
-		return ERRCODE_Invalid_data;
+		return RetCode_Invalid_data;
 	}
 
 	back_value = dave_malloc(pValue->head.data.value_len);
@@ -388,7 +388,7 @@ _base_cfg_write(sb file_id, ConfigFileValue *pValue)
 
 	_base_cfg_des_key(des_key);
 
-	pValue->head.data.value_len = dave_des_encode(des_key, DAVE_DES_KEY_LEN, pValue->value, pValue->head.data.value_len, dave_true);
+	pValue->head.data.value_len = t_crypto_des_encode(des_key, DAVE_DES_KEY_LEN, pValue->value, pValue->head.data.value_len, dave_true);
 
 	if(pValue->head.data.value_len > CONFIG_FILE_VALUE_BUF_MAX)
 	{
@@ -414,10 +414,10 @@ _base_cfg_write(sb file_id, ConfigFileValue *pValue)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _base_cfg_read_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFileType type)
 {
-	ErrCode ret;
+	RetCode ret;
 	sb file_id;
 
 	file_id = _base_cfg_open(dir, name, type);
@@ -425,12 +425,12 @@ _base_cfg_read_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFileT
 	if(file_id < 0)
 	{
 		CFGABNOR("file:%s open failed:%d!", name, file_id);
-		return ERRCODE_file_open_failed;
+		return RetCode_file_open_failed;
 	}
 
 	ret = _base_cfg_read(file_id, pValue);
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		if(pValue->head.data.type != (ub)type)
 		{
@@ -443,10 +443,10 @@ _base_cfg_read_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFileT
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _base_cfg_write_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFileType type)
 {
-	ErrCode ret;
+	RetCode ret;
 	sb file_id;
 
 	file_id = _base_cfg_open(dir, name, type);
@@ -454,7 +454,7 @@ _base_cfg_write_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFile
 	if(file_id < 0)
 	{
 		CFGABNOR("file:%s open failed:%d!", name, file_id);
-		return ERRCODE_file_open_failed;
+		return RetCode_file_open_failed;
 	}
 
 	pValue->head.data.type = (ub)type;
@@ -468,22 +468,22 @@ _base_cfg_write_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigFile
 	return ret;
 }
 
-static ErrCode
-_base_cfg_setup(s8 *dir, s8 *name, ConfigFileValue *pValue, ErrCode ret)
+static RetCode
+_base_cfg_setup(s8 *dir, s8 *name, ConfigFileValue *pValue, RetCode ret)
 {
-	ErrCode setup_ret;
+	RetCode setup_ret;
 
 	setup_ret = _base_cfg_write_with_type(dir, name, pValue, ConfigFileType_ini);
 
-	if(setup_ret != ERRCODE_OK)
+	if(setup_ret != RetCode_OK)
 		return setup_ret;
 
 	setup_ret = _base_cfg_write_with_type(dir, name, pValue, ConfigFileType_mdf);
 
-	if(setup_ret != ERRCODE_OK)
+	if(setup_ret != RetCode_OK)
 		return setup_ret;
 
-	if(ret == ERRCODE_invalid_file)
+	if(ret == RetCode_invalid_file)
 	{
 		setup_ret = _base_cfg_write_with_type(dir, name, pValue, ConfigFileType_bak);
 	}
@@ -491,35 +491,35 @@ _base_cfg_setup(s8 *dir, s8 *name, ConfigFileValue *pValue, ErrCode ret)
 	return setup_ret;
 }
 
-static ErrCode
+static RetCode
 _base_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	ret = _base_cfg_read_with_type(dir, name, pValue, ConfigFileType_ini);
 
-	if(ret == ERRCODE_invalid_file)
+	if(ret == RetCode_invalid_file)
 	{
 		return ret;
 	}
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
-		CFGABNOR("ini config file:%s was destroyed! <%s>", name, errorstr(ret));
+		CFGABNOR("ini config file:%s was destroyed! <%s>", name, retstr(ret));
 
 		ret = _base_cfg_read_with_type(dir, name, pValue, ConfigFileType_mdf);
 
-		if(ret == ERRCODE_OK)
+		if(ret == RetCode_OK)
 		{
 			_base_cfg_write_with_type(dir, name, pValue, ConfigFileType_ini);
 		}
 		else
 		{
-			CFGABNOR("mdf config file:%s was destroyed! <%s>", name, errorstr(ret));
+			CFGABNOR("mdf config file:%s was destroyed! <%s>", name, retstr(ret));
 
 			ret = _base_cfg_read_with_type(dir, name, pValue, ConfigFileType_bak);
 
-			if(ret == ERRCODE_OK)
+			if(ret == RetCode_OK)
 			{
 				_base_cfg_write_with_type(dir, name, pValue, ConfigFileType_ini);
 
@@ -527,7 +527,7 @@ _base_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 			}
 			else
 			{
-				CFGABNOR("all config file:%s was destroyed! <%s>", name, errorstr(ret));
+				CFGABNOR("all config file:%s was destroyed! <%s>", name, retstr(ret));
 			}
 		}
 	}
@@ -535,12 +535,12 @@ _base_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 __base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
 	ConfigFileValue *pValue;
 	dave_bool from_buffer;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	pValue = _base_cfg_insert_buffer(name, dave_false, NULL);
 	if(pValue == NULL)
@@ -566,9 +566,9 @@ __base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	dave_strcpy(pValue->head.data.name, name, CONFIG_FILE_NAME_LENGTH);
 	dave_memcpy(pValue->value, value_ptr, value_len);
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
-		CFGDEBUG("name:%s ret:%s", name, errorstr(ret));
+		CFGDEBUG("name:%s ret:%s", name, retstr(ret));
 
 		ret = _base_cfg_setup(dir, name, pValue, ret);
 	}
@@ -576,7 +576,7 @@ __base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	{
 		ret = _base_cfg_write_with_type(dir, name, pValue, ConfigFileType_mdf);
 
-		if(ret == ERRCODE_OK)
+		if(ret == RetCode_OK)
 		{
 			ret = _base_cfg_write_with_type(dir, name, pValue, ConfigFileType_ini);
 		}
@@ -592,12 +592,12 @@ __base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 __base_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub *value_len)
 {
 	ConfigFileValue *pValue;
 	dave_bool from_buffer;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	pValue = _base_cfg_insert_buffer(name, dave_false, NULL);
 	if(pValue == NULL)
@@ -612,10 +612,10 @@ __base_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub *value_len)
 	{
 		from_buffer = dave_true;
 
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		if((value_ptr != NULL) && (value_len != NULL) && (*value_len > 0))
 		{
@@ -680,32 +680,32 @@ _base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
 	broadcast_total(MSGID_CFG_UPDATE, pUpdate);
 }
 
-static ErrCode
+static RetCode
 _base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	if((name == NULL) || (value_ptr == NULL))
 	{
 		CFGABNOR("invalid ptr:%x,%x", name, value_ptr);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
 	if((value_len == 0) || (value_len > CONFIG_FILE_VALUE_BUF_MAX))
 	{
 		CFGABNOR("name:%s invalid value_len:%d", name, value_len);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
 	_base_cfg_booting();
 
-	SAFEZONEv3(_config_option_pv, {
+	SAFECODEv1(_config_option_pv, {
 
 		ret = __base_cfg_set(dir, name, value_ptr, value_len);
 
 	} );
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		_base_cfg_update(name, value_ptr, value_len);
 	}
@@ -716,19 +716,19 @@ _base_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 static ub
 _base_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	_base_cfg_booting();
 
-	SAFEZONEv3(_config_option_pv, {
+	SAFECODEv1(_config_option_pv, {
 
 		ret = __base_cfg_get(dir, name, value_ptr, &value_len);
 
 	} );
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
-		CFGDEBUG("name:%s value_len:%d failed:%s!", name, value_len, errorstr(ret));
+		CFGDEBUG("name:%s value_len:%d failed:%s!", name, value_len, retstr(ret));
 		return 0;
 	}
 
@@ -737,7 +737,7 @@ _base_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 
 // =====================================================================
 
-ErrCode
+RetCode
 base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
 	return _base_cfg_set(dir, name, value_ptr, value_len);
@@ -760,7 +760,7 @@ base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	return dave_true;
 }
 
-ErrCode
+RetCode
 base_cfg_set_ub(s8 *cfg_name, ub ub_value)
 {
 	s8 value_ptr[128];

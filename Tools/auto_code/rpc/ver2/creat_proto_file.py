@@ -6,7 +6,6 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 from autocode_cfg import *
-from find.find_all_struct_table import find_all_struct_table
 from find.find_enum_table import find_enum_table
 from find.find_fun_table import find_fun_table
 
@@ -122,12 +121,10 @@ def _creat_proto_file(struct_table, enum_table, fun_table, file_name):
 # =====================================================================
 
 
-def creat_proto_file(struct_table=None):
-    if struct_table == None:
-        struct_table = find_all_struct_table()
-    enum_table, _ = find_enum_table()
-    fun_table, _ = find_fun_table()
+def creat_proto_file(file_list, all_struct_table):
+    enum_table, _ = find_enum_table(file_list, all_struct_table)
+    fun_table, _ = find_fun_table(file_list)
 
-    print(f"{len(struct_table)}\tproto\t\twrite to {rpc_ver2_proto_file_name}")
-    _creat_proto_file(struct_table, enum_table, fun_table, rpc_ver2_proto_file_name)
+    print(f"{len(all_struct_table)}\tproto\t\twrite to {rpc_ver2_proto_file_name}")
+    _creat_proto_file(all_struct_table, enum_table, fun_table, rpc_ver2_proto_file_name)
     return rpc_ver2_proto_file_name

@@ -14,6 +14,20 @@ package base
 
 import "unsafe"
 
+type HttpKeyValue struct {
+	Key [DAVE_HTTP_KEY_LEN] byte
+	Value [DAVE_HTTP_VALUE_LEN] byte
+}
+
+type MBUF struct {
+	Next unsafe.Pointer
+	Payload unsafe.Pointer
+	Tot_len int64
+	Len int64
+	Ref int64
+	Alloc_len int64
+}
+
 type SocNetInfo struct {
 	Domain int32
 	Type int32
@@ -27,27 +41,6 @@ type SocNetInfo struct {
 	Keepalive_second int64
 	Netcard_bind_flag int32
 	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
-}
-
-type IPBaseInfo struct {
-	Protocol int32
-	Ver int32
-	Src_ip [16] byte
-	Src_port uint16
-	Dst_ip [16] byte
-	Dst_port uint16
-	Keepalive_second int64
-	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
-	Fixed_port_flag int32
-}
-
-type MBUF struct {
-	Next unsafe.Pointer
-	Payload unsafe.Pointer
-	Tot_len int64
-	Len int64
-	Ref int64
-	Alloc_len int64
 }
 
 type DateStruct struct {
@@ -71,9 +64,16 @@ type BuildingBlocks struct {
 	Release_quantity uint64
 }
 
-type HttpKeyValue struct {
-	Key [DAVE_HTTP_KEY_LEN] byte
-	Value [DAVE_HTTP_VALUE_LEN] byte
+type IPBaseInfo struct {
+	Protocol int32
+	Ver int32
+	Src_ip [16] byte
+	Src_port uint16
+	Dst_ip [16] byte
+	Dst_port uint16
+	Keepalive_second int64
+	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
+	Fixed_port_flag int32
 }
 
 type SocNetInfoAddr struct {

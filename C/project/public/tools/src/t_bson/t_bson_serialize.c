@@ -321,20 +321,15 @@ _t_bson_serialize_to_int64(tBsonObject *pBson, unsigned char *key_ptr, size_t ke
 static inline size_t
 _t_bson_double_to_serialize(tBsonData *pData, unsigned char *serialize_ptr, size_t serialize_len)
 {
+	u64 *value_ptr = (u64 *)(&(pData->value_ptr.double_value));
+
 	if(serialize_len < 8)
 	{
 		TOOLSABNOR("serialize_len:%d is too short!", serialize_len);
 		return 0;
 	}
 
-	serialize_ptr[0] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 56);
-	serialize_ptr[1] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 48);
-	serialize_ptr[2] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 40);
-	serialize_ptr[3] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 32);
-	serialize_ptr[4] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 24);
-	serialize_ptr[5] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 16);
-	serialize_ptr[6] = (unsigned char)((unsigned long)(pData->value_ptr.double_value) >> 8);
-	serialize_ptr[7] = (unsigned char)((unsigned long)(pData->value_ptr.double_value));
+	*((u64 *)serialize_ptr) = *value_ptr;
 
 	return 8;
 }
@@ -343,6 +338,7 @@ static inline void
 _t_bson_serialize_to_double(tBsonObject *pBson, unsigned char *key_ptr, size_t key_len, unsigned char *serialize_ptr, size_t serialize_len)
 {
 	double value;
+	u64 *value_ptr = (u64 *)(&value);
 
 	if(serialize_len < 8)
 	{
@@ -350,14 +346,7 @@ _t_bson_serialize_to_double(tBsonObject *pBson, unsigned char *key_ptr, size_t k
 		return;
 	}
 
-	value = (double)(((unsigned long)(serialize_ptr[0]) << 56) +
-		((unsigned long)(serialize_ptr[1]) << 48) +
-		((unsigned long)(serialize_ptr[2]) << 40) +
-		((unsigned long)(serialize_ptr[3]) << 32) +
-		((unsigned long)(serialize_ptr[4]) << 24) + 
-		((unsigned long)(serialize_ptr[5]) << 16) +
-		((unsigned long)(serialize_ptr[6]) << 8) +
-		((unsigned long)(serialize_ptr[7])));
+	*value_ptr = *((u64 *)(serialize_ptr));
 
 	if(pBson->type == tBsonType_array)
 		t_bson_array_double_add(pBson, value);

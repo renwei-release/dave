@@ -224,7 +224,7 @@ _rxtx_confirm_check_wait(void)
 			socket = INVALID_SOCKET_ID;
 			order_id = ORDER_CODE_END;
 
-			SAFEZONEv3(pList->pv, {
+			SAFECODEv1(pList->pv, {
 
 				pNote = _rxtx_confirm_transfer_pop(pList);
 				if(pNote != NULL)
@@ -287,7 +287,7 @@ rxtx_confirm_transfer_push(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE or
 
 	pList = &_ct_list[socket % CT_MAX];
 
-	SAFEZONEv3(pList->pv, {
+	SAFECODEv1(pList->pv, {
 
 		pNote = _rxtx_confirm_transfer_malloc(dst_ip, dst_port, socket, order_id, data);
 
@@ -314,7 +314,7 @@ rxtx_confirm_transfer_pop(s32 socket, ORDER_CODE order_id)
 
 	pList = &_ct_list[socket % CT_MAX];
 
-	SAFEZONEv3(pList->pv, {
+	SAFECODEv1(pList->pv, {
 
 		pNote = _rxtx_confirm_transfer_pop(pList);
 
@@ -350,7 +350,7 @@ rxtx_confirm_transfer_out(s32 socket, dave_bool resend)
 
 	pList = &_ct_list[socket % CT_MAX];
 
-	SAFEZONEv3(pList->pv, {
+	SAFECODEv1(pList->pv, {
 
 		pNote = _rxtx_confirm_transfer_cur(pList);
 
@@ -389,7 +389,7 @@ rxtx_confirm_transfer_clean(s32 socket)
 
 	pList = &_ct_list[socket % CT_MAX];
 
-	SAFEZONEv3(pList->pv, { _rxtx_confirm_transfer_free_list(pList); } );
+	SAFECODEv1(pList->pv, { _rxtx_confirm_transfer_free_list(pList); } );
 }
 
 #endif

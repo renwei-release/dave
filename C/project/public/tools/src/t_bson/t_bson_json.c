@@ -7,7 +7,7 @@
 
 #include "dave_base.h"
 #include "dave_tools.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "t_bson_define.h"
 #include "t_bson_json.h"
 #include "json_object_private.h"
@@ -84,7 +84,7 @@ _t_bson_json_bin(json_object *pJson, tBsonData *pData)
 
 	base64_str_index = dave_snprintf((s8 *)base64_str_ptr, base64_str_len, "__BSON_BIN__:%d:", pData->value_len);
 
-	t_base64_encode(
+	t_crypto_base64_encode(
 		(u8 *)(pData->value_ptr.mem_value), pData->value_len,
 		(s8 *)(&base64_str_ptr[base64_str_index]), base64_str_len-base64_str_index);
 

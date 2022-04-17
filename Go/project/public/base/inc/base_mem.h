@@ -28,17 +28,15 @@ ub base_mem_info(s8 *info, ub info_len, dave_bool base_flag);
 #define base_malloc(a) __base_malloc__((ub)(a), dave_false, 0x00, (s8 *)__func__, (ub)__LINE__)
 #define base_falloc(a, b) __base_malloc__((ub)(a), dave_true, (u8)b, (s8 *)__func__, (ub)__LINE__)
 #define base_calloc(a,b) __base_calloc__((ub)(a), (ub)(b), (s8 *)__func__, (ub)__LINE__)
-#define base_free(a) __base_free__((a), (s8 *)__func__, (ub)__LINE__)
+#define base_free(a) __base_free__(a, (s8 *)__func__, (ub)__LINE__)
 #define base_mmalloc(a) __base_mmalloc__((ub)(a), (s8 *)__func__, (ub)__LINE__)
-#define base_mheader(a, b) __base_mheader__((a), (sb)b, (s8 *)__func__, (ub)__LINE__)
-#define base_mfree(a) __base_mfree__((a), (s8 *)__func__, (ub)__LINE__)
-#define base_mref(a) __base_mref__((a), (s8 *)__func__, (ub)__LINE__)
-#define base_mchain(a, b) __base_mchain__((a), (b), (s8 *)__func__, (ub)__LINE__)
-#define base_mdechain(a) __base_mdechain__((a), (s8 *)__func__, (ub)__LINE__)
-#define base_mclone(a) __base_mclone__((a), (s8 *)__func__, (ub)__LINE__)
+#define base_mheader(a, b) __base_mheader__(a, (sb)b, (s8 *)__func__, (ub)__LINE__)
+#define base_mfree(a) __base_mfree__(a, (s8 *)__func__, (ub)__LINE__)
+#define base_mref(a) __base_mref__(a, (s8 *)__func__, (ub)__LINE__)
+#define base_mchain(a, b) __base_mchain__(a, (b), (s8 *)__func__, (ub)__LINE__)
+#define base_mdechain(a) __base_mdechain__(a, (s8 *)__func__, (ub)__LINE__)
+#define base_mclone(a) __base_mclone__(a, (s8 *)__func__, (ub)__LINE__)
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
 #define dave_ralloc base_ralloc
 #define dave_malloc base_malloc
 #define dave_falloc base_falloc
@@ -53,7 +51,6 @@ ub base_mem_info(s8 *info, ub info_len, dave_bool base_flag);
 #define dave_mclone base_mclone
 #define dave_mptr base_mptr
 #define dave_mlnumber base_mlnumber
-
 
 #endif
 

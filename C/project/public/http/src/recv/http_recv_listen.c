@@ -8,7 +8,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_http.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "http_recv.h"
 #include "http_recv_param.h"
 #include "http_fastcgi.h"
@@ -16,6 +16,9 @@
 #include "http_recv_listen.h"
 #include "http_recv_data.h"
 #include "http_log.h"
+
+#define CFG_SSL_CERTIFICATE_PATH "ssl_certificate"
+#define CFG_SSL_CERTIFICATE_KEY_PATH "ssl_certificate_key"
 
 #define RECV_LISTEN_MAX (64)
 #define RECV_CGI_LISTEN_START (10000)
@@ -34,8 +37,8 @@ typedef struct {
 	s8 listen_thread[DAVE_THREAD_NAME_LEN];
 } RecvListen;
 
-static DaveLock _recv_listen_pv;
-static DaveLock _recv_api_pv;
+static TLock _recv_listen_pv;
+static TLock _recv_api_pv;
 static volatile ub _cgi_listen_port = RECV_CGI_LISTEN_START;
 static RecvListen _recv_listen[RECV_LISTEN_MAX];
 static s8 _ssl_certificate_path[256];
@@ -134,22 +137,22 @@ _http_recv_listen_find(ub nginx_port, dave_bool find_new)
 	return NULL;
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
-	ErrCode ret = ERRCODE_Resource_conflicts;
+	RetCode ret = RetCode_Resource_conflicts;
 
-	SAFEZONEv3(_recv_api_pv, { ret = dave_nginx_start(nginx_port, type, cgi_port, nginx_path, pem_path, key_path); } );
+	SAFECODEv1(_recv_api_pv, { ret = dave_nginx_start(nginx_port, type, cgi_port, nginx_path, pem_path, key_path); } );
 
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_stop(ub nginx_port)
 {
-	ErrCode ret = ERRCODE_Resource_conflicts;
+	RetCode ret = RetCode_Resource_conflicts;
 
-	SAFEZONEv3(_recv_api_pv, { ret = dave_nginx_stop(nginx_port); } );
+	SAFECODEv1(_recv_api_pv, { ret = dave_nginx_stop(nginx_port); } );
 
 	return ret;
 }
@@ -159,7 +162,7 @@ _http_recv_listen_bind_rsp(MSGBODY *ptr)
 {
 	SocketBindRsp *pRsp = (SocketBindRsp *)(ptr->msg_body);
 	RecvListen *pListen;
-	ErrCode ret;
+	RetCode ret;
 
 	pListen = _http_recv_listen_port_to_ptr(pRsp->NetInfo.port);
 	if(pListen == NULL)
@@ -175,7 +178,7 @@ _http_recv_listen_bind_rsp(MSGBODY *ptr)
 				ret = _http_recv_listen_start(
 					pListen->nginx_port, pListen->nginx_type, pListen->cgi_listen_port, pListen->nginx_path,
 					_ssl_certificate_path, _ssl_certificate_key_path);
-				if(ret == ERRCODE_OK)
+				if(ret == RetCode_OK)
 				{
 					pListen->nginx_booting = dave_true;
 
@@ -342,15 +345,15 @@ _http_recv_listen_plugout(MSGBODY *msg)
 	}
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_bind(RecvListen *pListen)
 {
 	_http_recv_listen_bind_req(pListen->cgi_listen_port);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_unbind(RecvListen *pListen)
 {
 	s32 cgi_listen_socket = pListen->cgi_listen_socket;
@@ -359,7 +362,7 @@ _http_recv_listen_unbind(RecvListen *pListen)
 
 	_http_recv_listen_disconnect_req(cgi_listen_socket);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
@@ -380,13 +383,13 @@ _http_recv_listen_recycling(void)
 	}
 }
 
-static ErrCode 
+static RetCode 
 _http_recv_location_rule_match(HTTPMathcRule rule, s8 *path, s8 *location)
 {
 	if ((NULL == path) && (rule == LocationMatch_Accurate))
 	{
 		HTTPABNOR("Invalid parameter, rule:%d path:%x", rule, path);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 	
 	switch (rule){
@@ -433,26 +436,26 @@ _http_recv_location_rule_match(HTTPMathcRule rule, s8 *path, s8 *location)
 			break;
 		default:
 				HTTPABNOR("Invalid match rule[%d]!", rule);
-				return ERRCODE_Invalid_parameter;
+				return RetCode_Invalid_parameter;
 			break;
 	}
 	
 	HTTPTRACE("location:%s", location);
 	
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_action(s8 *listen_thread, ub port, HTTPListenType type, HTTPMathcRule rule, s8 *path)
 {
 	s8 location[DAVE_PATH_LEN];
 	RecvListen *pListen;
-	ErrCode ret;
+	RetCode ret;
 
 	if((port == 0) || (port >= 65536))
 	{
 		HTTPABNOR("Invalid parameter, port:%d path:%x", port, path);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
 	dave_memset(location, 0x00, sizeof(location));
@@ -471,7 +474,7 @@ _http_recv_listen_action(s8 *listen_thread, ub port, HTTPListenType type, HTTPMa
 				port, type, path);
 
 			dave_strcpy(pListen->listen_thread, listen_thread, sizeof(pListen->listen_thread));
-			return ERRCODE_repeated_request;
+			return RetCode_repeated_request;
 		}
 	}
 
@@ -479,7 +482,7 @@ _http_recv_listen_action(s8 *listen_thread, ub port, HTTPListenType type, HTTPMa
 	if(pListen == NULL)
 	{
 		HTTPABNOR("limited resources! port:%d", port);
-		return ERRCODE_Limited_resources;
+		return RetCode_Limited_resources;
 	}
 	
 	pListen->nginx_port = port;
@@ -493,22 +496,22 @@ _http_recv_listen_action(s8 *listen_thread, ub port, HTTPListenType type, HTTPMa
 	dave_strcpy(pListen->listen_thread, listen_thread, sizeof(pListen->listen_thread));
 
 	ret = _http_recv_listen_bind(pListen);
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		_http_recv_listen_reset(pListen);
 	}
 
 	HTTPDEBUG("%s port:%d(%s) cgi_listen_port:%d path:%s bind %s",
 		listen_thread,
-		port, t_a2b_httplistentype_str(type),
+		port, t_a2b_HTTPListenType_str(type),
 		pListen->cgi_listen_port,
 		path,
-		errorstr(ret));
+		retstr(ret));
 
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _http_recv_listen_close(ThreadId src, ub port)
 {
 	RecvListen *pListen;
@@ -517,7 +520,7 @@ _http_recv_listen_close(ThreadId src, ub port)
 	if(pListen == NULL)
 	{
 		HTTPTRACE("port:%d already closed!", port);
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 
 	return _http_recv_listen_unbind(pListen);
@@ -528,8 +531,8 @@ _http_recv_listen_close(ThreadId src, ub port)
 void
 http_recv_listen_init(void)
 {
-	dave_lock_reset(&_recv_listen_pv);
-	dave_lock_reset(&_recv_api_pv);
+	t_lock_reset(&_recv_listen_pv);
+	t_lock_reset(&_recv_api_pv);
 	_cgi_listen_port = RECV_CGI_LISTEN_START;
 	_http_recv_listen_reset_all();
 	_http_recv_listen_cfg_load();
@@ -544,11 +547,11 @@ http_recv_listen_exit(void)
 	_http_recv_listen_recycling();
 }
 
-ErrCode
+RetCode
 http_recv_listen_action(ThreadId src, ub port, HTTPListenType type, HTTPMathcRule rule, s8 *path)
 {
 	s8 listen_thread[DAVE_THREAD_NAME_LEN];
-	ErrCode ret = ERRCODE_Resource_conflicts;
+	RetCode ret = RetCode_Resource_conflicts;
 
 	dave_strcpy(listen_thread, thread_name(src), sizeof(listen_thread));
 
@@ -559,24 +562,24 @@ http_recv_listen_action(ThreadId src, ub port, HTTPListenType type, HTTPMathcRul
 		|| (path[0] == '\0'))
 	{
 		HTTPLOG("invalid param! src:%s port:%d type:%d path:%s", thread_name(src), port, type, path);
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
 	HTTPDEBUG("src:%s port:%d", thread_name(src), port);
 
-	SAFEZONEv3(_recv_listen_pv, { ret = _http_recv_listen_action(listen_thread, port, type, rule, path); } );
+	SAFECODEv1(_recv_listen_pv, { ret = _http_recv_listen_action(listen_thread, port, type, rule, path); } );
 
 	return ret;
 }
 
-ErrCode
+RetCode
 http_recv_listen_close(ThreadId src, ub port)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	HTTPDEBUG("src:%s port:%d", thread_name(src), port);
 
-	SAFEZONEv3(_recv_listen_pv, { ret = _http_recv_listen_close(src, port); } );
+	SAFECODEv1(_recv_listen_pv, { ret = _http_recv_listen_close(src, port); } );
 
 	return ret;
 }

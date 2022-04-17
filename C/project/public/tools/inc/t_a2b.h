@@ -18,8 +18,8 @@ ub t_a2b_digital_to_string(s8 *str_ptr, ub str_len, ub digital);
 ub t_a2b_string_to_digital(s8 *str_ptr);
 ub t_a2b_bin_to_hex_string(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len);
 
-s8 * t_a2b_errcode_str(ErrCode code);
-s8 * t_a2b_httplistentype_str(HTTPListenType type);
+s8 * t_a2b_RetCode_str(RetCode code);
+s8 * t_a2b_HTTPListenType_str(HTTPListenType type);
 
 s8 * t_a2b_net_ipv4_to_str(u8 *ip, u16 port);
 s8 * t_a2b_net_ipv4_to_str_2(u8 *ip, u16 port);
@@ -34,7 +34,7 @@ s8 * t_a2b_date_str_4(DateStruct *pDate);
 s8 * t_a2b_date_str_5(DateStruct *pDate);
 s8 * t_a2b_date_str_6(DateStruct *pDate);
 
-#define errorstr t_a2b_errcode_str
+#define retstr t_a2b_RetCode_str
 #define ipv4str t_a2b_net_ipv4_to_str
 #define ipv4str2 t_a2b_net_ipv4_to_str_2
 #define datestr t_a2b_date_str
@@ -44,12 +44,6 @@ s8 * t_a2b_date_str_6(DateStruct *pDate);
 #define macstr t_a2b_net_mac_to_str
 #define digitalstring t_a2b_digital_to_string
 #define stringdigital t_a2b_string_to_digital
-
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define format_ip_v4 t_a2b_net_ipv4_to_str
-#define format_mac t_a2b_net_mac_to_str
-
 
 #endif
 

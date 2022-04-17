@@ -5,11 +5,19 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+from find.find_param import find_param
 from rpc.rpc_main import rpc_main
+from enumstr.enumstr_main import enumstr_main
+
+
+# =====================================================================
 
 
 def autocode_main():
-    rpc_main()
+    param = find_param()
+
+    rpc_main(param)
+    enumstr_main(param)
 
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ http_recv_listen(ThreadId src, HTTPListenReq *pReq)
 	dave_strcpy(pRsp->path, pReq->path, sizeof(pRsp->path));
 	pRsp->ptr = pReq->ptr;
 
-	HTTPLOG("%s listen:%d %s", thread_name(src), pReq->listen_port, errorstr(pRsp->ret));
+	HTTPLOG("%s listen:%d %s", thread_name(src), pReq->listen_port, retstr(pRsp->ret));
 
 	write_msg(src, HTTPMSG_LISTEN_RSP, pRsp);
 }
@@ -59,7 +59,7 @@ http_recv_close(ThreadId src, HTTPCloseReq *pReq)
 	dave_strcpy(pRsp->path, pReq->path, sizeof(pRsp->path));
 	pRsp->ptr = pReq->ptr;
 
-	HTTPLOG("%s close:%d %s", thread_name(src), pReq->listen_port, errorstr(pRsp->ret));
+	HTTPLOG("%s close:%d %s", thread_name(src), pReq->listen_port, retstr(pRsp->ret));
 
 	write_msg(src, HTTPMSG_CLOSE_RSP, pRsp);
 }

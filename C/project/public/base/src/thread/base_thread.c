@@ -268,7 +268,7 @@ _thread_wakeup(ThreadStruct *pThread)
 	}
 }
 
-static inline ErrCode
+static inline RetCode
 _thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
 	sb queue_index;
@@ -277,7 +277,7 @@ _thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 	queue_index = thread_is_seq_msg(pMsg);
 	if(queue_index < 0)
 	{
-		return ERRCODE_not_my_data;
+		return RetCode_not_my_data;
 	}
 	pQueue = &(pThread->seq_queue[queue_index % THREAD_SEQ_QUEUE_NUM]);
 
@@ -310,16 +310,16 @@ _thread_safe_read_seq_queue(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static inline ErrCode
+static inline RetCode
 _thread_safe_write_msg_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
 	ub queue_index, safe_counter;
 	ThreadQueue *pQueue;
-	ErrCode ret = ERRCODE_Send_msg_failed;
+	RetCode ret = RetCode_Send_msg_failed;
 
 	queue_index = (pThread->msg_queue_write_sequence ++) % THREAD_MSG_QUEUE_NUM;
 
-	for(safe_counter=0; (ret!=ERRCODE_OK)&&(safe_counter<THREAD_MSG_QUEUE_NUM); safe_counter++)
+	for(safe_counter=0; (ret!=RetCode_OK)&&(safe_counter<THREAD_MSG_QUEUE_NUM); safe_counter++)
 	{
 		if(queue_index >= THREAD_MSG_QUEUE_NUM)
 			queue_index = 0;
@@ -437,7 +437,7 @@ _thread_clean_msg(ThreadMsg *pMsg, dave_bool carried_out)
 	}
 }
 
-static inline ErrCode
+static inline RetCode
 _thread_write_msg(
 	ThreadId src_id, ThreadId dst_id,
 	ub dst_thread_index,
@@ -448,7 +448,7 @@ _thread_write_msg(
 {
 	ThreadStruct *pDstThread;
 	ThreadMsg *pMsg;
-	ErrCode ret;
+	RetCode ret;
 
 	pDstThread = &_thread[dst_thread_index];
 
@@ -464,15 +464,15 @@ _thread_write_msg(
 		thread_statistics_write_msg_time(pMsg);
 
 		ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
-		if(ret == ERRCODE_not_my_data)
+		if(ret == RetCode_not_my_data)
 		{
 			ret = _thread_safe_write_msg_queue(pDstThread, pMsg);
 		}
 
-		if(ret != ERRCODE_OK)
+		if(ret != RetCode_OK)
 		{
 			THREADLTRACE(60,1,"failed:%s %s->%s %d",
-				errorstr(ret),
+				retstr(ret),
 				_thread_get_name(pMsg->msg_body.msg_src),
 				_thread_get_name(pMsg->msg_body.msg_dst),
 				pMsg->msg_body.msg_id);
@@ -482,7 +482,7 @@ _thread_write_msg(
 	}
 	else
 	{
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 		thread_clean_user_input_data(data, msg_id);
 	}
 
@@ -1318,7 +1318,7 @@ _thread_safe_id_msg(
 {
 	ub thread_index;
 	ThreadId local_dst_id, route_dst_id;
-	ErrCode ret;
+	RetCode ret;
 
 	if(thread_is_remote(dst_id) == dave_true)
 	{
@@ -1375,11 +1375,11 @@ _thread_safe_id_msg(
 		route_dst_id,
 		fun, line);
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		THREADLTRACE(60,1,"%s->%s:%d ret:%s <%s:%d>",
 			_thread_get_name(src_id), _thread_get_name(dst_id), msg_id,
-			errorstr(ret),
+			retstr(ret),
 			fun, line);
 
 		return dave_false;
@@ -1611,7 +1611,7 @@ base_thread_schedule(void)
 	ub safe_counter, while_max;
 	dave_bool all_message_empty;
 
-	SAFEZONEv5R(_system_thread_pv, { _thread_schedule_predecessor_task(); } );
+	SAFECODEv2R(_system_thread_pv, { _thread_schedule_predecessor_task(); } );
 
 	safe_counter = 0;
 
@@ -1635,7 +1635,7 @@ base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun t
 {
 	ThreadId thread_id = INVALID_THREAD_ID;
 
-	SAFEZONEv5W(_system_thread_pv, {
+	SAFECODEv2W(_system_thread_pv, {
 		dave_strcpy(_system_thread_pv_lock_name, name, THREAD_NAME_MAX);
 
 		thread_id = _thread_safe_creat((s8 *)name, level_number, thread_flag, thread_init, thread_main, thread_exit);
@@ -1653,7 +1653,7 @@ base_thread_del(ThreadId thread_id)
 
 	_thread_local_remove(thread_id);
 
-	SAFEZONEv5W(_system_thread_pv, {
+	SAFECODEv2W(_system_thread_pv, {
 		dave_memset(_system_thread_pv_lock_name, 0x00, THREAD_NAME_MAX);
 
 		ret = _thread_safe_del(thread_id);
@@ -1677,7 +1677,7 @@ base_thread_get_id(const s8 *name, s8 *fun, ub line)
 	{
 		if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 		{
-			SAFEZONEv5R(_system_thread_pv, {
+			SAFECODEv2R(_system_thread_pv, {
 
 				thread_id = _thread_get_id_(name, fun, line);
 
@@ -1705,7 +1705,7 @@ base_thread_get_name(ThreadId thread_id, s8 *fun, ub line)
 
 	if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 	{
-		SAFEZONEv5R(_system_thread_pv, {
+		SAFECODEv2R(_system_thread_pv, {
 
 			name = _thread_get_name_(thread_id, fun, line);
 
@@ -1810,7 +1810,7 @@ __base_thread_trace_state__(s8 *fun, ub line)
 	return _thread[thread_index].trace_on;
 }
 
-ErrCode
+RetCode
 base_thread_msg_register(ThreadId src_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
 {
 	if(src_id == INVALID_THREAD_ID)
@@ -1820,11 +1820,11 @@ base_thread_msg_register(ThreadId src_id, ub msg_id, thread_msg_fun msg_fun, voi
 
 	if(thread_call_msg_register(src_id, msg_id, msg_fun, user_ptr) == dave_true)
 	{
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 	else
 	{
-		return ERRCODE_invalid_option;
+		return RetCode_invalid_option;
 	}
 }
 
@@ -1913,7 +1913,7 @@ base_thread_id_event(
 {
 	thread_check_pair_msg(req_id, rsp_id);
 
-	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == ERRCODE_OK)
+	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
 		return base_thread_id_msg(src_id, dst_id, msg_type, req_id, msg_len, msg_body, 0, fun, line);
 	}
@@ -1974,7 +1974,7 @@ base_thread_name_event(
 {
 	thread_check_pair_msg(req_id, rsp_id);
 
-	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == ERRCODE_OK)
+	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
 		if(base_thread_name_msg(thread_name, req_id, msg_len, msg_body, fun, line) == dave_true)
 		{

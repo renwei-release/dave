@@ -24,7 +24,7 @@
 #include "sync_test.h"
 #include "sync_log.h"
 
-static ErrCode
+static RetCode
 _sync_server_broadcadt_the_msg_to_all_client(
 	SyncClient *pSrcClient,
 	ThreadId src_id, TaskAttribute src_attrib, s8 *src_name,
@@ -38,13 +38,13 @@ _sync_server_broadcadt_the_msg_to_all_client(
 	ThreadId dst_id;
 	TaskAttribute dst_attrib;
 	s8 *dst_name;
-	ErrCode ret;
+	RetCode ret;
 
 	pSrcThread = sync_server_find_thread(src_name);
 	if(pSrcThread == NULL)
 	{
 		SYNCLOG("can't find src! %s:%d", src_name, msg_id);
-		return ERRCODE_can_not_find_thread;
+		return RetCode_can_not_find_thread;
 	}
 
 	for(thread_index=0; thread_index<SYNC_THREAD_MAX; thread_index++)
@@ -81,7 +81,7 @@ _sync_server_broadcadt_the_msg_to_all_client(
 						msg_body, msg_len);
 
 					SYNCTRACE("broadcadt (%d %x/%x %x/%x) ret:%s thread:%s->%s client:%s->%s ready:%d/%d %s->%s msg_id:%d msg_type:%d msg_len:%d",
-						errorstr(ret),
+						retstr(ret),
 						client_index,
 						pSrcThread, pDstThread,
 						pSrcClient, pDstClient,
@@ -97,7 +97,7 @@ _sync_server_broadcadt_the_msg_to_all_client(
 		}
 	}
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
@@ -113,7 +113,7 @@ _sync_server_broadcadt_tx_the_thread_all_client(
 {
 	ub client_index;
 	SyncClient *pDstClient;
-	ErrCode ret;
+	RetCode ret;
 
 	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 	{
@@ -136,7 +136,7 @@ _sync_server_broadcadt_tx_the_thread_all_client(
 				msg_body, msg_len);
 
 			SYNCTRACE("broadcadt ret:%s client_index:%d %s->%s %x/%s->%x/%s %s->%s msg_id:%d msg_type:%d msg_len:%d",
-				errorstr(ret),
+				retstr(ret),
 				client_index,
 				pSrcThread->thread_name, pDstThread->thread_name,
 				pSrcClient, pSrcClient->verno, pDstClient, pDstClient->verno,
@@ -150,7 +150,7 @@ _sync_server_broadcadt_tx_the_thread_all_client(
 
 // =====================================================================
 
-ErrCode
+RetCode
 sync_server_broadcadt_tx_the_msg_to_all_client(
 	SyncClient *pSrcClient,
 	ThreadId src_id, TaskAttribute src_attrib, s8 *src_name,
@@ -199,7 +199,7 @@ sync_server_broadcadt_tx_the_msg_to_client(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	src_name = pSrcThread->thread_name;
 	src_id = thread_set_remote(0, thread_get_local(src_id), pSrcThread->thread_index, pSrcClient->client_index);
@@ -220,7 +220,7 @@ sync_server_broadcadt_tx_the_msg_to_client(
 		msg_body, msg_len);
 	
 	SYNCTRACE("broadcadt ret:%s thread:%s->%s client:%s->%s ready:%d/%d %s->%s msg_id:%d msg_type:%d msg_len:%d",
-		errorstr(ret),
+		retstr(ret),
 		pSrcThread->thread_name, pDstThread->thread_name,
 		pSrcClient->verno, pDstClient->verno,
 		pSrcClient->ready_flag, pDstClient->ready_flag,

@@ -156,7 +156,7 @@ dave_os_stop_hardware_timer(void)
 	_linux_timer_notify = NULL;
 }
 
-ErrCode
+RetCode
 dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uint8 minute,sw_uint8 second)
 {
 	struct timeval tv;
@@ -174,12 +174,12 @@ dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uin
 	tv.tv_sec = mktime(&tnow);
 
 	if(settimeofday((const struct timeval *)&tv, NULL) == 0)
-		return ERRCODE_OK;
+		return RetCode_OK;
 	else
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 }
 
-ErrCode
+RetCode
 dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second)
 {
 	time_t now;
@@ -197,7 +197,7 @@ dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second
 	*minute = tnow->tm_min;
 	*second = tnow->tm_sec;
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 void

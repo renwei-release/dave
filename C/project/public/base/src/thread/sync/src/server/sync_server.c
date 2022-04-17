@@ -245,62 +245,62 @@ _sync_server_guard_time(TIMERID timer_id, ub thread_index)
 	{
 		pClient = sync_server_client(client_index);
 
-		SAFEZONEidlev3(pClient->opt_pv, _sync_server_check_client_time(pClient););
+		SAFECODEidlev1(pClient->opt_pv, _sync_server_check_client_time(pClient););
 	}
 }
 
 static void
 _sync_server_safe_guard_time(TIMERID timer_id, ub thread_index)
 {
-	SAFEZONEv5TW(_sync_server_system_lock, _sync_server_guard_time(timer_id, thread_index););
+	SAFECODEv2TW(_sync_server_system_lock, _sync_server_guard_time(timer_id, thread_index););
 }
 
 static void
 _sync_server_safe_reboot(RESTARTREQMSG *pRestart)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_reboot(pRestart););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_reboot(pRestart););
 }
 
 static void
 _sync_server_safe_events(InternalEvents *pEvents)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_events(pEvents););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_events(pEvents););
 }
 
 static void
 _sync_server_safe_client_busy(ClientBusy *pBusy)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_client_busy(pBusy););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_client_busy(pBusy););
 }
 
 static void
 _sync_server_safe_client_idle(ClientIdle *pIdle)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_client_idle(pIdle););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_client_idle(pIdle););
 }
 
 static void
 _sync_server_safe_plugin(SocketPlugIn *pPlugIn)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_plugin(pPlugIn););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_plugin(pPlugIn););
 }
 
 static void
 _sync_server_safe_plugout(SocketPlugOut *pPlugOut)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_plugout(pPlugOut););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_plugout(pPlugOut););
 }
 
 static void
 _sync_server_safe_bind_rsp(SocketBindRsp *pRsp)
 {
-	SAFEZONEv5W(_sync_server_system_lock, _sync_server_bind_rsp(pRsp););
+	SAFECODEv2W(_sync_server_system_lock, _sync_server_bind_rsp(pRsp););
 }
 
 static void
 _sync_server_safe_blocks_command(ThreadId src, MsgBlocksReq *pReq)
 {
-	SAFEZONEv5W(_sync_server_system_lock, sync_server_blocks_command(src, pReq););
+	SAFECODEv2W(_sync_server_system_lock, sync_server_blocks_command(src, pReq););
 }
 
 static void
@@ -315,7 +315,7 @@ _sync_server_safe_rx_read(SocketRead *pRead)
 		return;
 	}
 
-	SAFEZONEv5R(_sync_server_system_lock, sync_server_rx_read(pClient, pRead););
+	SAFECODEv2R(_sync_server_system_lock, sync_server_rx_read(pClient, pRead););
 }
 
 static void
@@ -330,7 +330,7 @@ _sync_server_safe_rx_event(SocketRawEvent *pEvent)
 		return;
 	}
 
-	SAFEZONEv5R(_sync_server_system_lock, sync_server_rx_event(pClient, pEvent););
+	SAFECODEv2R(_sync_server_system_lock, sync_server_rx_event(pClient, pEvent););
 }
 
 static void

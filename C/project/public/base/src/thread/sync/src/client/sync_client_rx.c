@@ -553,14 +553,14 @@ _sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, 
 void
 sync_client_rx_read(SyncServer *pServer, SocketRead *pRead)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	ret = rxtx_input(pRead, _sync_client_rx, pServer);
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		SYNCTRACE("socket:%d read error:%s",
 			pRead->socket,
-			errorstr(ret));
+			retstr(ret));
 
 		_sync_client_rx_disconnect(pRead->socket);
 	}
@@ -569,14 +569,14 @@ sync_client_rx_read(SyncServer *pServer, SocketRead *pRead)
 void
 sync_client_rx_event(SyncServer *pServer, SocketRawEvent *pEvent)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	ret = rxtx_event(pEvent, _sync_client_rx, pServer);
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		SYNCTRACE("socket:%d/%d event error:%s",
 			pEvent->socket, pEvent->os_socket,
-			errorstr(ret));
+			retstr(ret));
 
 		_sync_client_rx_disconnect(pEvent->socket);	
 	}

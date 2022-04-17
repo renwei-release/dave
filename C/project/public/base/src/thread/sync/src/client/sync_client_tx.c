@@ -172,16 +172,16 @@ sync_client_tx_sync_thread_name_rsp(SyncServer *pServer, s8 *thread_name, ub thr
 }
 
 void
-sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, ErrCode ret)
+sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, RetCode ret)
 {
 	/*
 	 * It's just a reminder message,
 	 * you can stop sending this message "ORDER_CODE_RUN_THREAD_MSG_RSP" for the time being.
 	 */
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
-		SYNCLTRACE(60,1,"%s->%s %d ret:%s", src, dst, msg_id, errorstr(ret));
+		SYNCLTRACE(60,1,"%s->%s %d ret:%s", src, dst, msg_id, retstr(ret));
 	}
 
 	sync_client_recv_statistics(pServer, src);

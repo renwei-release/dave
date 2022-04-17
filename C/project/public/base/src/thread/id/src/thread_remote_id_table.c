@@ -18,7 +18,7 @@ static void *_pKV = NULL;
 void
 thread_remote_id_table_init(void)
 {
-	_pKV = base_kv_malloc((s8 *)"threadremoteidtable", KVAttrib_ram, 0, NULL);
+	_pKV = base_ramkv_malloc((s8 *)"threadremoteidtable", KvAttrib_ram, 0, NULL);
 }
 
 void
@@ -26,7 +26,7 @@ thread_remote_id_table_exit(void)
 {
 	if(_pKV != NULL)
 	{
-		base_kv_free(_pKV, NULL);
+		base_ramkv_free(_pKV, NULL);
 		_pKV = NULL;
 	}
 }
@@ -40,7 +40,7 @@ thread_remote_id_table_add(ThreadId remote_id, s8 *remote_name)
 
 	if((thread_is_remote(remote_id) == dave_true) && (_pKV != NULL))
 	{
-		base_kv_add_ub_ptr(_pKV, (ub)(remote_id), _pKV);
+		base_ramkv_add_ub_ptr(_pKV, (ub)(remote_id), _pKV);
 	}
 }
 
@@ -53,9 +53,9 @@ thread_remote_id_table_del(ThreadId remote_id, s8 *remote_name)
 
 	if((thread_is_remote(remote_id) == dave_true) && (_pKV != NULL))
 	{
-		if(base_kv_inq_ub_ptr(_pKV, (ub)remote_id) != NULL)
+		if(base_ramkv_inq_ub_ptr(_pKV, (ub)remote_id) != NULL)
 		{
-			base_kv_del_ub_ptr(_pKV, (ub)(remote_id));
+			base_ramkv_del_ub_ptr(_pKV, (ub)(remote_id));
 		}
 	}
 }
@@ -77,7 +77,7 @@ thread_remote_id_table_inq(ThreadId remote_id)
 
 	remote_id = thread_clean_wakeup(remote_id);
 
-	if(base_kv_inq_ub_ptr(_pKV, (ub)remote_id) == NULL)
+	if(base_ramkv_inq_ub_ptr(_pKV, (ub)remote_id) == NULL)
 	{
 		ret = dave_false;
 	}

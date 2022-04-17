@@ -43,7 +43,7 @@ _thread_queue_reset(ThreadQueue *pQueue_ptr, ub queue_number)
 	{
 		pQueue = &(pQueue_ptr[queue_index]);
 
-		SAFEZONEv5W(pQueue->queue_opt_pv, {
+		SAFECODEv2W(pQueue->queue_opt_pv, {
 
 			pQueue->on_queue_process = dave_false;
 
@@ -68,7 +68,7 @@ _thread_queue_free(ThreadQueue *pQueue_ptr, ub queue_number)
 	{
 		pQueue = &(pQueue_ptr[queue_index]);
 	
-		SAFEZONEv5W(pQueue->queue_opt_pv, {
+		SAFECODEv2W(pQueue->queue_opt_pv, {
 
 			for(list_index=0; list_index<pQueue->list_number; list_index++)
 			{
@@ -107,7 +107,7 @@ _thread_queue_malloc(ThreadQueue *pQueue_ptr, ub queue_number)
 	{
 		pQueue = &(pQueue_ptr[queue_index]);
 	
-		SAFEZONEv5W(pQueue->queue_opt_pv, {
+		SAFECODEv2W(pQueue->queue_opt_pv, {
 
 			pQueue->list_number = 0;
 			pQueue->queue_head = pQueue->queue_tail = NULL;
@@ -199,7 +199,7 @@ _thread_queue_num_msg_id(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 	{
 		pQueue = &(pQueue_ptr[queue_index]);
 
-		SAFEZONEv5TR(pQueue->queue_opt_pv, {
+		SAFECODEv2TR(pQueue->queue_opt_pv, {
 
 			pNext = pQueue->queue_head;
 
@@ -302,12 +302,12 @@ thread_queue_all_malloc(ThreadStruct *pThread)
 	_thread_queue_all_malloc(pThread);
 }
 
-ErrCode
+RetCode
 thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 {
-	SAFEZONEv5W(pQueue->queue_opt_pv, _thread_queue_write(pQueue, pMsg); );
+	SAFECODEv2W(pQueue->queue_opt_pv, _thread_queue_write(pQueue, pMsg); );
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 ThreadMsg *
@@ -317,7 +317,7 @@ thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag)
 
 	if(seq_flag == dave_true)
 	{
-		SAFEZONEv5TW(pQueue->queue_opt_pv, {
+		SAFECODEv2TW(pQueue->queue_opt_pv, {
 	
 			if(pQueue->on_queue_process == dave_false)
 			{
@@ -335,7 +335,7 @@ thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag)
 	}
 	else
 	{
-		SAFEZONEv5TW(pQueue->queue_opt_pv, {
+		SAFECODEv2TW(pQueue->queue_opt_pv, {
 	
 			pMsg = _thread_queue_read(pQueue);
 	
@@ -348,7 +348,7 @@ thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag)
 void
 thread_queue_reset_process(ThreadQueue *pQueue)
 {
-	SAFEZONEv5W(pQueue->queue_opt_pv, { pQueue->on_queue_process = dave_false; } );
+	SAFECODEv2W(pQueue->queue_opt_pv, { pQueue->on_queue_process = dave_false; } );
 }
 
 ub

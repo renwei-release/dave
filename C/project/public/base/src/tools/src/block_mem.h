@@ -7,7 +7,8 @@
 
 #ifndef __BLOCK_MEM_H__
 #define __BLOCK_MEM_H__
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
+#include "dave_os.h"
 
 #if defined(PERFTOOLS_3RDPARTY)
 #define TCMALLOC_ENABLE

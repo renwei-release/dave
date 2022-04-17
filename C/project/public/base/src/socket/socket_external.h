@@ -18,7 +18,7 @@ SocketCore * socket_external_creat_service(ThreadId src, SocNetInfo *pNetInfo, v
 
 SocketCore * socket_external_connect_service(ThreadId src, SocNetInfo *pNetInfo, void *user_ptr, SOCKETINFO *ConnectInfo);
 
-ErrCode socket_external_close(ThreadId src, s32 socket);
+RetCode socket_external_close(ThreadId src, s32 socket);
 
 dave_bool socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, SOCKETINFO snd_flag);
 

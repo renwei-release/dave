@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "tools_log.h"
@@ -312,6 +303,4 @@ t_crypto_md5_str(s8 md5_str[DAVE_MD5_HASH_STR_LEN], u8 *encode_ptr, ub encode_le
 
 	return dave_true;
 }
-
-#endif
 

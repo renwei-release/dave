@@ -9,6 +9,8 @@
 #include "dave_tools.h"
 #include "tools_log.h"
 
+#define CFG_LOCALHOST "LOCALHOST"
+
 // =====================================================================
 
 s8 *

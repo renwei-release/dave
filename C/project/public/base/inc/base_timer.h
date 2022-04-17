@@ -16,7 +16,7 @@ typedef void (* base_timer_param_fun)(TIMERID timer_id, ub thread_index, void *p
 
 TIMERID base_timer_creat(char *name, base_timer_fun fun, ub alarm_ms);
 TIMERID base_timer_param_creat(char *name, base_timer_param_fun fun, void *param, ub alarm_ms);
-ErrCode __base_timer_die__(TIMERID timer_id, s8 *fun, ub line);
+RetCode __base_timer_die__(TIMERID timer_id, s8 *fun, ub line);
 
 void base_timer_init(void);
 void base_timer_exit(void);

@@ -14,18 +14,18 @@
 #include "dos_cmd.h"
 #include "dos_log.h"
 
-static ErrCode
+static RetCode
 _hi_help(void)
 {
 	dos_print("Usage: hi\nGet the version information!");
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _hi_show(s8 *param_ptr, ub param_len)
 {
 	dos_welcome_screen();
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -33,7 +33,7 @@ _hi_show(s8 *param_ptr, ub param_len)
 void
 dos_hi_reset(void)
 {
-	dos_cmd_register("hi", _hi_show, _hi_help);
+	dos_cmd_reg("hi", _hi_show, _hi_help);
 }
 
 #endif

@@ -72,8 +72,8 @@ _sync_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identif
 	encode_index += dave_snprintf(
 		&encode_ptr[encode_index], encode_len-encode_index,
 		"%lx%lx%lx%lx%lx%lx",
-		dave_rand(), dave_rand(), dave_rand(),
-		dave_rand(), dave_rand(), dave_rand());
+		t_rand(), t_rand(), t_rand(),
+		t_rand(), t_rand(), t_rand());
 
 	if(t_crypto_md5_str(md5_str, (u8 *)encode_ptr, encode_index) == dave_false)
 	{

@@ -108,6 +108,11 @@ void * __t_rpc_ver3_zip_double_d__(double *zip_data, ub zip_len, s8 *fun, ub lin
 dave_bool __t_rpc_ver3_unzip_double_d__(double *unzip_data, ub unzip_len, void *pArrayJson, s8 *fun, ub line);
 #define t_rpc_ver3_unzip_double_d(unzip_data, unzip_len, pArrayJson) __t_rpc_ver3_unzip_double_d__(unzip_data, unzip_len, pArrayJson, (s8 *)__func__, (ub)__LINE__)
 
+void * __t_rpc_ver3_zip_ThreadId__(ThreadId zip_data, s8 *fun, ub line);
+#define t_rpc_ver3_zip_ThreadId(zip_data) __t_rpc_ver3_zip_ThreadId__(zip_data, (s8 *)__func__, (ub)__LINE__)
+dave_bool __t_rpc_ver3_unzip_ThreadId__(ThreadId *unzip_data, void *pArrayJson, s8 *fun, ub line);
+#define t_rpc_ver3_unzip_ThreadId(unzip_data, pArrayJson) __t_rpc_ver3_unzip_ThreadId__(unzip_data, pArrayJson, (s8 *)__func__, (ub)__LINE__)
+
 void * __t_rpc_ver3_zip_MBUF_ptr__(MBUF *zip_data, s8 *fun, ub line);
 #define t_rpc_ver3_zip_MBUF_ptr(zip_data) __t_rpc_ver3_zip_MBUF_ptr__(zip_data, (s8 *)__func__, (ub)__LINE__)
 dave_bool __t_rpc_ver3_unzip_MBUF_ptr__(MBUF **unzip_data, void *pJson, s8 *fun, ub line);
@@ -132,11 +137,6 @@ void * __t_rpc_ver3_zip_void_ptr__(void *zip_data, s8 *fun, ub line);
 #define t_rpc_ver3_zip_void_ptr(zip_data) __t_rpc_ver3_zip_void_ptr__(zip_data, (s8 *)__func__, (ub)__LINE__)
 dave_bool __t_rpc_ver3_unzip_void_ptr__(void **unzip_data, void *pArrayJson, s8 *fun, ub line);
 #define t_rpc_ver3_unzip_void_ptr(unzip_data, pArrayJson) __t_rpc_ver3_unzip_void_ptr__(unzip_data, pArrayJson, (s8 *)__func__, (ub)__LINE__)
-
-void * __t_rpc_ver3_zip_ThreadId__(ThreadId zip_data, s8 *fun, ub line);
-#define t_rpc_ver3_zip_ThreadId(zip_data) __t_rpc_ver3_zip_ThreadId__(zip_data, (s8 *)__func__, (ub)__LINE__)
-dave_bool __t_rpc_ver3_unzip_ThreadId__(ThreadId *unzip_data, void *pArrayJson, s8 *fun, ub line);
-#define t_rpc_ver3_unzip_ThreadId(unzip_data, pArrayJson) __t_rpc_ver3_unzip_ThreadId__(unzip_data, pArrayJson, (s8 *)__func__, (ub)__LINE__)
 
 #endif
 

@@ -334,7 +334,7 @@ _sync_client_plugin(SocketPlugIn *pPlugIn)
 		ipv4str(pPlugIn->NetInfo.addr.ip.ip_addr, pPlugIn->NetInfo.port),
 		ipv4str2(pPlugIn->NetInfo.src_ip.ip_addr, pPlugIn->NetInfo.src_port));
 
-	SAFEZONEv5W(pServer->rxtx_pv, _sync_client_plugin_server(pPlugIn, pServer););
+	SAFECODEv2W(pServer->rxtx_pv, _sync_client_plugin_server(pPlugIn, pServer););
 
 	return pServer;
 }
@@ -363,7 +363,7 @@ _sync_client_plugout(SocketPlugOut *pPlugOut)
 			pServer->globally_identifier, pServer->verno,
 			pServer->left_timer, pServer->reconnect_times);
 
-		SAFEZONEv5W(pServer->rxtx_pv, _sync_client_plugout_server(pPlugOut, pServer););
+		SAFECODEv2W(pServer->rxtx_pv, _sync_client_plugout_server(pPlugOut, pServer););
 	}
 }
 
@@ -469,8 +469,8 @@ _sync_client_booting_time(void)
 static void
 _sync_client_guard_time(TIMERID timer_id, ub thread_index)
 {
-	SAFEZONEv5TW(_sync_client_system_lock, {
-		SAFEZONEv5TW(_sync_client_data_pv, {
+	SAFECODEv2TW(_sync_client_system_lock, {
+		SAFECODEv2TW(_sync_client_data_pv, {
 
 			/*
 			 * 用到了sync_client_data_head_server结构体的位置都需要用
@@ -611,7 +611,7 @@ _sync_client_route(MSGBODY *pMsg)
 static void
 _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_index)
 {
-	SAFEZONEv5W(_sync_client_system_lock, {
+	SAFECODEv2W(_sync_client_system_lock, {
 
 		if(_sync_client_reconnect_syncs_logic_flag == dave_false)
 		{
@@ -628,25 +628,25 @@ _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_in
 static void
 _sync_client_safe_system_mount(ThreadId src, SystemMount *pMount)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_system_mount(src, pMount); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_mount(src, pMount); } );
 }
 
 static void
 _sync_client_safe_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_system_decoupling(src, pDecoupling); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_decoupling(src, pDecoupling); } );
 }
 
 static void
 _sync_client_safe_connect_rsp(SocketConnectRsp *pRsp)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_connect_rsp(pRsp); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_connect_rsp(pRsp); } );
 }
 
 static void
 _sync_client_safe_disconnect_rsp(SocketDisconnectRsp *pRsp)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_disconnect_rsp(pRsp); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_disconnect_rsp(pRsp); } );
 }
 
 static void
@@ -659,7 +659,7 @@ _sync_client_safe_plugin(SocketPlugIn *pPlugIn)
 		return;
 	}
 
-	SAFEZONEv5W(_sync_client_system_lock, { pServer = _sync_client_plugin(pPlugIn); });
+	SAFECODEv2W(_sync_client_system_lock, { pServer = _sync_client_plugin(pPlugIn); });
 
 	if(pServer != NULL)
 		sync_client_tx_heartbeat(pServer, dave_true);
@@ -668,7 +668,7 @@ _sync_client_safe_plugin(SocketPlugIn *pPlugIn)
 static void
 _sync_client_safe_plugout(SocketPlugOut *pPlugOut)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_plugout(pPlugOut); });
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_plugout(pPlugOut); });
 }
 
 static void
@@ -694,7 +694,7 @@ _sync_client_safe_rx_read(SocketRead *pRead)
 	}
 	else
 	{
-		SAFEZONEv5R(pServer->rxtx_pv, sync_client_rx_read(pServer, pRead););
+		SAFECODEv2R(pServer->rxtx_pv, sync_client_rx_read(pServer, pRead););
 	}
 }
 
@@ -716,7 +716,7 @@ _sync_client_safe_rx_event(SocketRawEvent *pEvent)
 	}
 	else
 	{
-		SAFEZONEv5TR( pServer->rxtx_pv, sync_client_rx_event(pServer, pEvent); re_event = dave_false; );
+		SAFECODEv2TR( pServer->rxtx_pv, sync_client_rx_event(pServer, pEvent); re_event = dave_false; );
 	}
 
 	if(re_event == dave_true)
@@ -730,13 +730,13 @@ _sync_client_safe_rx_event(SocketRawEvent *pEvent)
 static void
 _sync_client_safe_reboot(RESTARTREQMSG *pRestart)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_reboot(pRestart); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_reboot(pRestart); } );
 }
 
 static void
 _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 {
-	SAFEZONEv5W(_sync_client_system_lock, { _sync_client_cfg_update(pUpdate); } );
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_cfg_update(pUpdate); } );
 }
 
 static void

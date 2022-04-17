@@ -14,12 +14,11 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "t_rpc_ver3_enumdata.h"
 #include "t_rpc_ver3_msgdata.h"
 #include "t_rpc_ver3_rpcdata.h"
 #include "t_rpc_ver3_structdata.h"
-#include "t_rpc_ver3_uniondata.h"
 #include "tools_log.h"
 
 static void *
@@ -29,41 +28,23 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 
 	switch((sb)msg_id)
 	{
-		case SOCKET_BIND_REQ:
-				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
+		case HTTPMSG_LISTEN_REQ:
+				pBson = t_rpc_ver3_zip_HTTPListenReq((HTTPListenReq *)msg_body, msg_len);
 			break;
-		case SOCKET_BIND_RSP:
-				pBson = t_rpc_ver3_zip_SocketBindRsp((SocketBindRsp *)msg_body, msg_len);
+		case HTTPMSG_LISTEN_RSP:
+				pBson = t_rpc_ver3_zip_HTTPListenRsp((HTTPListenRsp *)msg_body, msg_len);
 			break;
-		case SOCKET_CONNECT_REQ:
-				pBson = t_rpc_ver3_zip_SocketConnectReq((SocketConnectReq *)msg_body, msg_len);
+		case HTTPMSG_CLOSE_REQ:
+				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
-		case SOCKET_CONNECT_RSP:
-				pBson = t_rpc_ver3_zip_SocketConnectRsp((SocketConnectRsp *)msg_body, msg_len);
+		case HTTPMSG_CLOSE_RSP:
+				pBson = t_rpc_ver3_zip_HTTPCloseRsp((HTTPCloseRsp *)msg_body, msg_len);
 			break;
-		case SOCKET_DISCONNECT_REQ:
-				pBson = t_rpc_ver3_zip_SocketDisconnectReq((SocketDisconnectReq *)msg_body, msg_len);
+		case HTTPMSG_RECV_REQ:
+				pBson = t_rpc_ver3_zip_HTTPRecvReq((HTTPRecvReq *)msg_body, msg_len);
 			break;
-		case SOCKET_DISCONNECT_RSP:
-				pBson = t_rpc_ver3_zip_SocketDisconnectRsp((SocketDisconnectRsp *)msg_body, msg_len);
-			break;
-		case SOCKET_PLUGIN:
-				pBson = t_rpc_ver3_zip_SocketPlugIn((SocketPlugIn *)msg_body, msg_len);
-			break;
-		case SOCKET_PLUGOUT:
-				pBson = t_rpc_ver3_zip_SocketPlugOut((SocketPlugOut *)msg_body, msg_len);
-			break;
-		case SOCKET_READ:
-				pBson = t_rpc_ver3_zip_SocketRead((SocketRead *)msg_body, msg_len);
-			break;
-		case SOCKET_WRITE:
-				pBson = t_rpc_ver3_zip_SocketWrite((SocketWrite *)msg_body, msg_len);
-			break;
-		case SOCKET_NOTIFY:
-				pBson = t_rpc_ver3_zip_SocketNotify((SocketNotify *)msg_body, msg_len);
-			break;
-		case SOCKET_RAW_EVENT:
-				pBson = t_rpc_ver3_zip_SocketRawEvent((SocketRawEvent *)msg_body, msg_len);
+		case HTTPMSG_RECV_RSP:
+				pBson = t_rpc_ver3_zip_HTTPRecvRsp((HTTPRecvRsp *)msg_body, msg_len);
 			break;
 		case MSGID_TEST:
 				pBson = t_rpc_ver3_zip_TESTMSG((TESTMSG *)msg_body, msg_len);
@@ -161,23 +142,41 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_OS_NOTIFY:
 				pBson = t_rpc_ver3_zip_MsgOSNotify((MsgOSNotify *)msg_body, msg_len);
 			break;
-		case HTTPMSG_LISTEN_REQ:
-				pBson = t_rpc_ver3_zip_HTTPListenReq((HTTPListenReq *)msg_body, msg_len);
+		case SOCKET_BIND_REQ:
+				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
 			break;
-		case HTTPMSG_LISTEN_RSP:
-				pBson = t_rpc_ver3_zip_HTTPListenRsp((HTTPListenRsp *)msg_body, msg_len);
+		case SOCKET_BIND_RSP:
+				pBson = t_rpc_ver3_zip_SocketBindRsp((SocketBindRsp *)msg_body, msg_len);
 			break;
-		case HTTPMSG_CLOSE_REQ:
-				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
+		case SOCKET_CONNECT_REQ:
+				pBson = t_rpc_ver3_zip_SocketConnectReq((SocketConnectReq *)msg_body, msg_len);
 			break;
-		case HTTPMSG_CLOSE_RSP:
-				pBson = t_rpc_ver3_zip_HTTPCloseRsp((HTTPCloseRsp *)msg_body, msg_len);
+		case SOCKET_CONNECT_RSP:
+				pBson = t_rpc_ver3_zip_SocketConnectRsp((SocketConnectRsp *)msg_body, msg_len);
 			break;
-		case HTTPMSG_RECV_REQ:
-				pBson = t_rpc_ver3_zip_HTTPRecvReq((HTTPRecvReq *)msg_body, msg_len);
+		case SOCKET_DISCONNECT_REQ:
+				pBson = t_rpc_ver3_zip_SocketDisconnectReq((SocketDisconnectReq *)msg_body, msg_len);
 			break;
-		case HTTPMSG_RECV_RSP:
-				pBson = t_rpc_ver3_zip_HTTPRecvRsp((HTTPRecvRsp *)msg_body, msg_len);
+		case SOCKET_DISCONNECT_RSP:
+				pBson = t_rpc_ver3_zip_SocketDisconnectRsp((SocketDisconnectRsp *)msg_body, msg_len);
+			break;
+		case SOCKET_PLUGIN:
+				pBson = t_rpc_ver3_zip_SocketPlugIn((SocketPlugIn *)msg_body, msg_len);
+			break;
+		case SOCKET_PLUGOUT:
+				pBson = t_rpc_ver3_zip_SocketPlugOut((SocketPlugOut *)msg_body, msg_len);
+			break;
+		case SOCKET_READ:
+				pBson = t_rpc_ver3_zip_SocketRead((SocketRead *)msg_body, msg_len);
+			break;
+		case SOCKET_WRITE:
+				pBson = t_rpc_ver3_zip_SocketWrite((SocketWrite *)msg_body, msg_len);
+			break;
+		case SOCKET_NOTIFY:
+				pBson = t_rpc_ver3_zip_SocketNotify((SocketNotify *)msg_body, msg_len);
+			break;
+		case SOCKET_RAW_EVENT:
+				pBson = t_rpc_ver3_zip_SocketRawEvent((SocketRawEvent *)msg_body, msg_len);
 			break;
 		default:
 				pBson = NULL;
@@ -194,41 +193,23 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 
 	switch((sb)msg_id)
 	{
-		case SOCKET_BIND_REQ:
-				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
+		case HTTPMSG_LISTEN_REQ:
+				ret = t_rpc_ver3_unzip_HTTPListenReq(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_BIND_RSP:
-				ret = t_rpc_ver3_unzip_SocketBindRsp(msg_body, msg_len, pBson);
+		case HTTPMSG_LISTEN_RSP:
+				ret = t_rpc_ver3_unzip_HTTPListenRsp(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_CONNECT_REQ:
-				ret = t_rpc_ver3_unzip_SocketConnectReq(msg_body, msg_len, pBson);
+		case HTTPMSG_CLOSE_REQ:
+				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_CONNECT_RSP:
-				ret = t_rpc_ver3_unzip_SocketConnectRsp(msg_body, msg_len, pBson);
+		case HTTPMSG_CLOSE_RSP:
+				ret = t_rpc_ver3_unzip_HTTPCloseRsp(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_DISCONNECT_REQ:
-				ret = t_rpc_ver3_unzip_SocketDisconnectReq(msg_body, msg_len, pBson);
+		case HTTPMSG_RECV_REQ:
+				ret = t_rpc_ver3_unzip_HTTPRecvReq(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_DISCONNECT_RSP:
-				ret = t_rpc_ver3_unzip_SocketDisconnectRsp(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_PLUGIN:
-				ret = t_rpc_ver3_unzip_SocketPlugIn(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_PLUGOUT:
-				ret = t_rpc_ver3_unzip_SocketPlugOut(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_READ:
-				ret = t_rpc_ver3_unzip_SocketRead(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_WRITE:
-				ret = t_rpc_ver3_unzip_SocketWrite(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_NOTIFY:
-				ret = t_rpc_ver3_unzip_SocketNotify(msg_body, msg_len, pBson);
-			break;
-		case SOCKET_RAW_EVENT:
-				ret = t_rpc_ver3_unzip_SocketRawEvent(msg_body, msg_len, pBson);
+		case HTTPMSG_RECV_RSP:
+				ret = t_rpc_ver3_unzip_HTTPRecvRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_TEST:
 				ret = t_rpc_ver3_unzip_TESTMSG(msg_body, msg_len, pBson);
@@ -326,23 +307,41 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_OS_NOTIFY:
 				ret = t_rpc_ver3_unzip_MsgOSNotify(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_LISTEN_REQ:
-				ret = t_rpc_ver3_unzip_HTTPListenReq(msg_body, msg_len, pBson);
+		case SOCKET_BIND_REQ:
+				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_LISTEN_RSP:
-				ret = t_rpc_ver3_unzip_HTTPListenRsp(msg_body, msg_len, pBson);
+		case SOCKET_BIND_RSP:
+				ret = t_rpc_ver3_unzip_SocketBindRsp(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_CLOSE_REQ:
-				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
+		case SOCKET_CONNECT_REQ:
+				ret = t_rpc_ver3_unzip_SocketConnectReq(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_CLOSE_RSP:
-				ret = t_rpc_ver3_unzip_HTTPCloseRsp(msg_body, msg_len, pBson);
+		case SOCKET_CONNECT_RSP:
+				ret = t_rpc_ver3_unzip_SocketConnectRsp(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_RECV_REQ:
-				ret = t_rpc_ver3_unzip_HTTPRecvReq(msg_body, msg_len, pBson);
+		case SOCKET_DISCONNECT_REQ:
+				ret = t_rpc_ver3_unzip_SocketDisconnectReq(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_RECV_RSP:
-				ret = t_rpc_ver3_unzip_HTTPRecvRsp(msg_body, msg_len, pBson);
+		case SOCKET_DISCONNECT_RSP:
+				ret = t_rpc_ver3_unzip_SocketDisconnectRsp(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_PLUGIN:
+				ret = t_rpc_ver3_unzip_SocketPlugIn(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_PLUGOUT:
+				ret = t_rpc_ver3_unzip_SocketPlugOut(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_READ:
+				ret = t_rpc_ver3_unzip_SocketRead(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_WRITE:
+				ret = t_rpc_ver3_unzip_SocketWrite(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_NOTIFY:
+				ret = t_rpc_ver3_unzip_SocketNotify(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_RAW_EVENT:
+				ret = t_rpc_ver3_unzip_SocketRawEvent(msg_body, msg_len, pBson);
 			break;
 		default:
 				ret = dave_false;

@@ -24,11 +24,11 @@ t_time_get_date(DateStruct *pDate)
 	return local_date;
 }
 
-ErrCode
+RetCode
 t_time_set_date(DateStruct *pDate)
 {
 	if(pDate == NULL)
-		return ERRCODE_invalid_date;
+		return RetCode_invalid_date;
 
 	return dave_os_set_time(pDate->year, pDate->month, pDate->day, pDate->hour, pDate->minute, pDate->second);
 }

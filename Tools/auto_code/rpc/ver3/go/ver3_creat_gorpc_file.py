@@ -7,28 +7,25 @@
 # */
 from autocode_cfg import *
 from autocode_tools import *
-from find.find_other_struct_table import find_other_struct_table
-from find.find_msg_struct_table import find_msg_struct_table
-from find.find_define_table import find_define_table
-from find.find_all_struct_table import find_all_struct_table
 
 
 def _c_enum_to_go_type(enum_value_array):
     for key in enum_value_array.keys():
-        if enum_value_array[key] != '':
-            if '0x' in enum_value_array[key]:
-                if int(enum_value_array[key], 16) > 4294967295:
+        value = enum_value_array[key]
+        if (value != '') and (value.isdigit() == True):
+            if '0x' in value:
+                if int(value, 16) > 4294967295:
                     return 'int64'
-            elif '0X' in enum_value_array[key]:
-                if int(enum_value_array[key], 16) > 4294967295:
+            elif '0X' in value:
+                if int(value, 16) > 4294967295:
                     return 'int64'
             else:
-                if int(enum_value_array[key]) > 4294967295:
+                if int(value) > 4294967295:
                     return 'int64'            
     return 'int32'
 
 
-def _c_type_to_go_type(c_type, struct_total, enum_table):
+def _c_type_to_go_type(c_type, is_ptr, struct_total, enum_table, fun_table):
     if c_type == 'dave_bool':
         return 'int8'
     elif c_type == 's8':
@@ -53,16 +50,48 @@ def _c_type_to_go_type(c_type, struct_total, enum_table):
         return 'uint64'
     elif c_type == 'ThreadId':
         return 'uint64'
-    elif c_type == 'void_ptr':
-        return 'unsafe.Pointer'
-    elif c_type == 'MBUF_ptr':
-        return '*MBUF'
+    elif c_type == 'char':
+        return 'byte'
+    elif c_type == 'singed char':
+        return 'int8'
+    elif c_type == 'unsigned char':
+        return 'uint8'
+    elif c_type == 'short':
+        return 'int16'
+    elif c_type == 'unsigned short':
+        return 'uint16'
+    elif c_type == 'int':
+        return 'int32'
+    elif c_type == 'unsigned int':
+        return 'uint32'
+    elif c_type == 'long':
+        return 'int32'
+    elif c_type == 'unsigned long':
+        return 'uint32'
+    elif c_type == 'long long int':
+        return 'int64'
+    elif c_type == 'unsigned long long int':
+        return 'uint64'
+    elif c_type == 'float':
+        return 'float32'
+    elif c_type == 'double':
+        return 'float64'
+    elif c_type == 'void':
+        if is_ptr == True:
+            return 'unsafe.Pointer'
+        else:
+            return 'uint64'
     elif enum_table.get(c_type, None) != None:
         return _c_enum_to_go_type(enum_table[c_type])
     elif struct_total.get(c_type, None) != None:
+        if is_ptr == True:
+            return '*' + c_type
+        else:
+            return c_type
+    elif c_type in fun_table:
         return c_type
 
-    print(f'Types:{c_type} that cannot be handled!')
+    print(f'_c_type_to_go_type c_type:{c_type} that cannot be handled!')
     return c_type
 
 
@@ -90,7 +119,7 @@ def _creat_msg_id_file(msg_id_table, file_name):
     return
 
 
-def _creat_struct_file(struct_table, struct_total, enum_table, file_name):
+def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_name):
     print(f'{len(struct_table)}\tstruct\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
         file_id.write('package base\n')
@@ -102,11 +131,12 @@ def _creat_struct_file(struct_table, struct_total, enum_table, file_name):
             for struct_data in struct_table[struct_name]:
                 value_name = struct_data['n'].capitalize()
                 value_type = struct_data['t']
-                value_dimension = struct_data.get('d', None)
+                value_dimension = struct_data['d']
+                is_ptr = struct_data['p']
                 if value_dimension == None:
-                    file_id.write(f'\t{value_name} {_c_type_to_go_type(value_type, struct_total, enum_table)}\n')
+                    file_id.write(f'\t{value_name} {_c_type_to_go_type(value_type, is_ptr, struct_total, enum_table, fun_table)}\n')
                 else:
-                    file_id.write(f'\t{value_name} [{value_dimension}] {_c_type_to_go_type(value_type, struct_total, enum_table)}\n')
+                    file_id.write(f'\t{value_name} [{value_dimension}] {_c_type_to_go_type(value_type, is_ptr, struct_total, enum_table, fun_table)}\n')
             file_id.write(f'{"}"}\n\n')
     return
 
@@ -139,13 +169,18 @@ def _creat_enum_file(enum_table, file_name):
 # =====================================================================
 
 
-def creat_gorpc_file(struct_table, msg_struct_table, msg_id_table, enum_table):
-    define_table, _ = find_define_table()
-    struct_total = find_all_struct_table()
+def creat_gorpc_file(param):
+    all_struct_table = param['all_struct_table']
+    other_struct_table = param['other_struct_table']
+    msg_struct_table = param['msg_struct_table']
+    define_table = param['define_table']
+    msg_id_table = param['msg_id_table']
+    enum_table = param['enum_table']
+    fun_table = param['fun_table']
 
     _creat_define_file(define_table, rpc_ver3_godefine_file_name)
     _creat_msg_id_file(msg_id_table, rpc_ver3_gomsgid_file_name)
-    _creat_struct_file(struct_table, struct_total, enum_table, rpc_ver3_gostruct_file_name)
-    _creat_struct_file(msg_struct_table, struct_total, enum_table, rpc_ver3_gomsgstruct_file_name)
+    _creat_struct_file(other_struct_table, all_struct_table, enum_table, fun_table, rpc_ver3_gostruct_file_name)
+    _creat_struct_file(msg_struct_table, all_struct_table, enum_table, fun_table, rpc_ver3_gomsgstruct_file_name)
     _creat_enum_file(enum_table, rpc_ver3_goenum_file_name)
-    return define_table, struct_total
+    return

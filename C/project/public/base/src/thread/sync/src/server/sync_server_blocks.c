@@ -50,10 +50,10 @@ _sync_server_blocks_id_to_client_index(ub blocks_id)
 	return client_index;
 }
 
-static ErrCode
+static RetCode
 _sync_server_opt_blocks_mount_or_decoupling(BuildingBlocksOpt opt, ub blocks_id)
 {
-	ErrCode ret = ERRCODE_invalid_option;
+	RetCode ret = RetCode_invalid_option;
 	ub client_index;
 	SyncClient *pClient = NULL;
 
@@ -68,7 +68,7 @@ _sync_server_opt_blocks_mount_or_decoupling(BuildingBlocksOpt opt, ub blocks_id)
 			{
 				pClient->blocks_flag = dave_true;
 				pClient->release_quantity = 0;
-				ret = ERRCODE_OK;
+				ret = RetCode_OK;
 			}
 			else if(opt == BuildingBlocksOpt_decoupling)
 			{
@@ -76,7 +76,7 @@ _sync_server_opt_blocks_mount_or_decoupling(BuildingBlocksOpt opt, ub blocks_id)
 				{
 					pClient->blocks_flag = dave_false;
 					pClient->release_quantity = 0;
-					ret = ERRCODE_OK;
+					ret = RetCode_OK;
 				}
 			}
 		}
@@ -84,7 +84,7 @@ _sync_server_opt_blocks_mount_or_decoupling(BuildingBlocksOpt opt, ub blocks_id)
 		SYNCLOG("%s blocks:%d", pClient->verno, pClient->blocks_flag);
 	}
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		sync_server_tx_blocks_state(pClient);
 
@@ -94,14 +94,14 @@ _sync_server_opt_blocks_mount_or_decoupling(BuildingBlocksOpt opt, ub blocks_id)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _sync_server_opt_blocks_exchange(ub blocks_id_1, ub blocks_id_2)
 {
 	ub client1_index, client2_index;
 	SyncClient *pClient1 = NULL;
 	SyncClient *pClient2 = NULL;
 	dave_bool back_flag;
-	ErrCode ret = ERRCODE_invalid_option;
+	RetCode ret = RetCode_invalid_option;
 
 	if((blocks_id_1 > 0) && (blocks_id_1 <= SYNC_CLIENT_MAX)
 		&& (blocks_id_2 > 0) && (blocks_id_2 <= SYNC_CLIENT_MAX))
@@ -125,11 +125,11 @@ _sync_server_opt_blocks_exchange(ub blocks_id_1, ub blocks_id_2)
 			SYNCLOG("%s blocks:%d, %s blocks:%d",
 				pClient1->verno, pClient1->blocks_flag,
 				pClient2->verno, pClient2->blocks_flag);
-			ret = ERRCODE_OK;
+			ret = RetCode_OK;
 		}
 	}
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		sync_server_tx_blocks_state(pClient1);
 		sync_server_tx_blocks_state(pClient2);
@@ -141,10 +141,10 @@ _sync_server_opt_blocks_exchange(ub blocks_id_1, ub blocks_id_2)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _sync_server_opt_blocks_valve(ub blocks_id, ub release_quantity)
 {
-	ErrCode ret = ERRCODE_invalid_option;
+	RetCode ret = RetCode_invalid_option;
 	ub client_index;
 	SyncClient *pClient = NULL;
 
@@ -162,14 +162,14 @@ _sync_server_opt_blocks_valve(ub blocks_id, ub release_quantity)
 					sync_lock();
 					pClient->release_quantity += release_quantity;
 					sync_unlock();
-					ret = ERRCODE_OK;
+					ret = RetCode_OK;
 				}
 				else
 				{
 					SYNCLOG("the release quantity:%d/%d/%d is overflow!",
 						pClient->release_quantity, release_quantity,
 						SYNC_MAX_RELEASE_QUANTITY);
-					ret = ERRCODE_data_overflow;
+					ret = RetCode_data_overflow;
 				}
 			}
 		}
@@ -178,14 +178,14 @@ _sync_server_opt_blocks_valve(ub blocks_id, ub release_quantity)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _sync_server_opt_blocks(BuildingBlocksOpt opt, ub blocks_id_1, ub blocks_id_2)
 {
-	ErrCode ret = ERRCODE_invalid_option;
+	RetCode ret = RetCode_invalid_option;
 
 	if(opt == BuildingBlocksOpt_inq)
 	{
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 	else if((opt == BuildingBlocksOpt_mount) || (opt == BuildingBlocksOpt_decoupling))
 	{

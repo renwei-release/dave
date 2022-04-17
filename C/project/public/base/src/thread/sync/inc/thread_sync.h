@@ -9,9 +9,6 @@
 #define __THREAD_SYNC_H__
 #include "dave_base.h"
 
-#define SYNC_CLIENT_THREAD_NAME "syncc"
-#define SYNC_SERVER_THREAD_NAME "syncs"
-
 #if defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_BASE__)
 #define SYNC_STACK_SERVER
 #endif

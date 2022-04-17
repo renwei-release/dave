@@ -20,7 +20,7 @@ typedef struct {
 
 /* for HTTPMSG_LISTEN_RSP message */
 typedef struct {
-	ErrCode ret;
+	RetCode ret;
 	ub listen_port;
 	s8 path[DAVE_PATH_LEN];
 	void *ptr;
@@ -35,7 +35,7 @@ typedef struct {
 
 /* for HTTPMSG_CLOSE_RSP message */
 typedef struct {
-	ErrCode ret;
+	RetCode ret;
 	ub listen_port;
 	s8 path[DAVE_PATH_LEN];
 	void *ptr;
@@ -56,7 +56,7 @@ typedef struct {
 
 /* for HTTPMSG_RECV_RSP message */
 typedef struct {
-	ErrCode ret;
+	RetCode ret;
 	HttpContentType content_type;
 	MBUF *content;
 	ub local_creat_time;

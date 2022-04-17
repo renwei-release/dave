@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_os.h"
 #include "dave_base.h"
 #include "dave_tools.h"
@@ -36,7 +27,7 @@ _GetCharIndex(char c)
 // =====================================================================
 
 ub
-t_base64_encode(const u8 *in, ub inlen, s8 *out, ub outlen)
+t_crypto_base64_encode(const u8 *in, ub inlen, s8 *out, ub outlen)
 {
 	register ub vLen = 0;
 
@@ -85,7 +76,7 @@ t_base64_encode(const u8 *in, ub inlen, s8 *out, ub outlen)
 }
 
 dave_bool
-t_base64_decode(const s8 *in, ub inlen, u8 *out, ub *outlen)
+t_crypto_base64_decode(const s8 *in, ub inlen, u8 *out, ub *outlen)
 {
 	char lpCode[4];
 	register ub vLen = 0;
@@ -123,6 +114,4 @@ t_base64_decode(const s8 *in, ub inlen, u8 *out, ub *outlen)
 
 	return dave_true;
 }
-
-#endif
 

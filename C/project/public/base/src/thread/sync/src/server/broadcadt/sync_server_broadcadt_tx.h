@@ -8,7 +8,7 @@
 #ifndef __SYNC_SERVER_BROADCADT_TX_H__
 #define __SYNC_SERVER_BROADCADT_TX_H__
 
-ErrCode sync_server_broadcadt_tx_the_msg_to_all_client(
+RetCode sync_server_broadcadt_tx_the_msg_to_all_client(
 	SyncClient *pSrcClient,
 	ThreadId src_id, TaskAttribute src_attrib, s8 *src_name,
 	ub msg_id,

@@ -211,7 +211,7 @@ thread_msg_call_register(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, 
 		return dave_false;
 	}
 
-	SAFEZONEv3(_msg_call[call_index].pv_opt, {
+	SAFECODEv1(_msg_call[call_index].pv_opt, {
 		_msg_call[call_index].thread_id = thread_id;
 
 		pFun = _thread_msg_call(&_msg_call[call_index], msg_id);
@@ -254,7 +254,7 @@ thread_msg_call_unregister(ThreadId thread_id, ub msg_id)
 		return;
 	}
 
-	SAFEZONEv3(_msg_call[call_index].pv_opt, {
+	SAFECODEv1(_msg_call[call_index].pv_opt, {
 		_msg_call[call_index].thread_id = thread_id;
 		
 		_thread_msg_call_unregister(&_msg_call[call_index], msg_id);

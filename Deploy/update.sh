@@ -180,10 +180,6 @@ if [ ! "$PROJECTMAPPING" != "" ]; then
    modify_project_attributes
 fi
 
-if [ -f redis.sh ]; then
-   ./redis.sh
-fi
-
 if [ -f jupyter.sh ]; then
    ./jupyter.sh ${PROJECTNAME} ${JUPYTERPORT}
 fi

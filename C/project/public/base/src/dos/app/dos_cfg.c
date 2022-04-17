@@ -34,11 +34,11 @@ _dos_cfg_dir(s8 *dir_ptr, ub dir_len)
 	return dir_ptr;
 }
 
-static ErrCode
+static RetCode
 _dos_cfg_get_help(void)
 {
 	dos_print("Usage: get [config name]\nGet the configuration information, if the configuration name is empty, it is to get all the configuration information.");
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static ub
@@ -53,7 +53,7 @@ _dos_cfg_get_one(s8 *cmd_ptr, ub cmd_len, s8 *show_ptr, ub show_len)
 
 	while(cmd_index < cmd_len)
 	{
-		cmd_index += dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
+		cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
 		if(cfg_name[0] == '\0')
 			break;
 
@@ -105,14 +105,14 @@ _dos_cfg_get_all(s8 *show_ptr, ub show_len)
 	return show_index;
 }
 
-static ErrCode
+static RetCode
 _dos_cfg_get(s8 *cmd_ptr, ub cmd_len)
 {
 	s8 cfg_name[1024];
 	s8 show_ptr[8192];
 	ub show_len;
 
-	dos_get_str(cmd_ptr, cmd_len, cfg_name, sizeof(cfg_name));
+	dos_load_string(cmd_ptr, cmd_len, cfg_name, sizeof(cfg_name));
 	if(dave_strlen(cfg_name) == 0)
 		show_len = _dos_cfg_get_all(show_ptr, sizeof(show_ptr));
 	else
@@ -125,17 +125,17 @@ _dos_cfg_get(s8 *cmd_ptr, ub cmd_len)
 
 	dos_print("%s", show_ptr);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _dos_cfg_set_help(void)
 {
 	dos_print("Usage: echo [true]|[false] [thread name]\nStart the echo test to test the link connection performance.!");
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index;
@@ -145,15 +145,15 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 
 	cmd_index = 0;
 
-	cmd_index += dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
-	dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
+	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
+	dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
 
 	if((cfg_name[0] == '\0') || (cfg_value[0] == '\0'))
 	{
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 	}
 
-	if(base_cfg_dir_set(_dos_cfg_dir(dir, sizeof(dir)), cfg_name, (u8 *)cfg_value, dave_strlen(cfg_value)) != ERRCODE_OK)
+	if(base_cfg_dir_set(_dos_cfg_dir(dir, sizeof(dir)), cfg_name, (u8 *)cfg_value, dave_strlen(cfg_value)) != RetCode_OK)
 	{
 		dos_print("%s set %s failed!", cfg_name, cfg_value);
 	}
@@ -162,7 +162,7 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 		dos_print("%s set %s success!", cfg_name, cfg_value);
 	}
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -170,8 +170,8 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 void
 dos_cfg_reset(void)
 {
-	dos_cmd_register("get", _dos_cfg_get, _dos_cfg_get_help);
-	dos_cmd_register("set", _dos_cfg_set, _dos_cfg_set_help);
+	dos_cmd_reg("get", _dos_cfg_get, _dos_cfg_get_help);
+	dos_cmd_reg("set", _dos_cfg_set, _dos_cfg_set_help);
 }
 
 #endif

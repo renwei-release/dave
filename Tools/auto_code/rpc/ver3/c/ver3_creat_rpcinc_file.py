@@ -81,8 +81,10 @@ def _creat_rpcinc_file(msg_id_list, file_name):
 # =====================================================================
 
 
-def creat_rpcinc_file():
-    msg_id_list = find_msg_id_list()
+def creat_rpcinc_file(param):
+    file_list = param['file_list']
+
+    msg_id_list = find_msg_id_list(file_list)
     print(f"{len(msg_id_list)}\tmsgid\t\twrite to {rpc_ver3_rpcinc_file_name}")
     msg_id_table = _creat_rpcinc_file(msg_id_list, rpc_ver3_rpcinc_file_name)
     return msg_id_table

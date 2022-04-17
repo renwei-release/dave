@@ -15,12 +15,11 @@ _rpcdata_src_head = "\
 #include \"dave_base.h\"\n\
 #include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
-#include \"dave_third_party.h\"\n\
+#include \"dave_3rdparty.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
 #include \"t_rpc_ver3_msgdata.h\"\n\
 #include \"t_rpc_ver3_rpcdata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
-#include \"t_rpc_ver3_uniondata.h\"\n\
 #include \"tools_log.h\"\n\n"
 
 
@@ -115,7 +114,7 @@ def _creat_rpcdata_unzip_file(file_id):
     return
 
 
-def _creat_rpcdata_src_file(msg_table, file_list, file_name):
+def _creat_rpcdata_src_file(msg_table, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_rpcdata_src_head)
@@ -128,7 +127,7 @@ def _creat_rpcdata_src_file(msg_table, file_list, file_name):
     return
 
 
-def _creat_rpcdata_inc_file(file_list, file_name):
+def _creat_rpcdata_inc_file(file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_rpcdata_inc_head)
@@ -157,11 +156,15 @@ def _check_msg_table_on_the_msg_id_list(msg_table, msg_id_list):
 # =====================================================================
 
 
-def creat_rpcdata_file():
-    msg_table, struct_table, file_list = find_msg_struct_table()
-    msg_id_list = find_msg_id_list()
+def creat_rpcdata_file(param):
+    file_list = param['file_list']
+    msg_table = param['msg_name_table']
+    struct_table = param['msg_struct_table']
+    include_list = param['msg_include_list']
+
+    msg_id_list = find_msg_id_list(file_list)
     msg_table = _check_msg_table_on_the_msg_id_list(msg_table, msg_id_list)
     print(f"{len(struct_table)}\trpcdata\t\twrite to {rpc_ver3_rpcdata_src_file_name}")
-    _creat_rpcdata_src_file(msg_table, file_list, rpc_ver3_rpcdata_src_file_name)
-    _creat_rpcdata_inc_file(file_list, rpc_ver3_rpcdata_inc_file_name)
+    _creat_rpcdata_src_file(msg_table, rpc_ver3_rpcdata_src_file_name)
+    _creat_rpcdata_inc_file(rpc_ver3_rpcdata_inc_file_name)
     return

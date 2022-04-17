@@ -29,7 +29,7 @@ _dos_debug_rsp(MSGBODY *ptr)
 	}
 }
 
-static ErrCode
+static RetCode
 _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index;
@@ -41,7 +41,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 
 	cmd_index = 0;
 
-	cmd_index += dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
+	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
 	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, pReq->msg, sizeof(pReq->msg));
 
 	debug_thread = thread_id(thread_name);
@@ -51,7 +51,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 		{
 			dos_print("invalid thread:%s", thread_name);
 			thread_msg_release(pReq);
-			return ERRCODE_can_not_find_thread;
+			return RetCode_can_not_find_thread;
 		}
 		else
 		{
@@ -61,7 +61,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 
 	name_event(thread_name, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -69,7 +69,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 void
 dos_debug_reset(void)
 {
-	dos_cmd_register("debug", _dos_debug_req, NULL);
+	dos_cmd_reg("debug", _dos_debug_req, NULL);
 }
 
 #endif

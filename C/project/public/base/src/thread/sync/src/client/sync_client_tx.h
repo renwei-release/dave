@@ -18,7 +18,7 @@ dave_bool sync_client_tx_sync_thread_name_req(SyncServer *pServer, s8 *thread_na
 
 dave_bool sync_client_tx_sync_thread_name_rsp(SyncServer *pServer, s8 *thread_name, ub thread_index);
 
-void sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, ErrCode ret);
+void sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, RetCode ret);
 
 dave_bool sync_client_tx_run_thread_msg_req(
 	SyncServer *pServer,

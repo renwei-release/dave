@@ -26,7 +26,7 @@ _thread_gid_key(s8 *key_ptr, ub key_len, s8 *gid, s8 *thread_name)
 void
 thread_gid_table_init(void)
 {
-	_pKV = base_kv_malloc((s8 *)"threadgidtable", KVAttrib_ram, 0, NULL);
+	_pKV = base_ramkv_malloc((s8 *)"threadgidtable", KvAttrib_ram, 0, NULL);
 }
 
 void
@@ -34,7 +34,7 @@ thread_gid_table_exit(void)
 {
 	if(_pKV != NULL)
 	{
-		base_kv_free(_pKV, NULL);
+		base_ramkv_free(_pKV, NULL);
 		_pKV = NULL;
 	}
 }
@@ -44,7 +44,7 @@ thread_gid_table_add(s8 *gid, s8 *thread_name, ThreadId remote_id)
 {
 	s8 key[1024];
 
-	base_kv_add_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name), (void *)remote_id);
+	base_ramkv_add_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name), (void *)remote_id);
 }
 
 void
@@ -52,7 +52,7 @@ thread_gid_table_del(s8 *gid, s8 *thread_name)
 {
 	s8 key[1024];
 
-	base_kv_del_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name));
+	base_ramkv_del_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name));
 }
 
 ThreadId
@@ -61,7 +61,7 @@ thread_gid_table_inq(s8 *gid, s8 *thread_name)
 	s8 key[1024];
 	void *ptr;
 
-	ptr = base_kv_inq_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name));
+	ptr = base_ramkv_inq_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name));
 	if(ptr == NULL)
 	{
 		return INVALID_THREAD_ID;

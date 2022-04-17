@@ -96,7 +96,7 @@ http_load_content_type(HttpContentType type)
 }
 
 s8 *
-http_find_kv(HttpKeyValue *head_ptr, ub head_len, char *key)
+http_find_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key)
 {
 	ub head_index;
 
@@ -112,7 +112,7 @@ http_find_kv(HttpKeyValue *head_ptr, ub head_len, char *key)
 }
 
 dave_bool
-http_build_kv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value)
+http_build_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value)
 {
 	ub empty_index, head_index;
 

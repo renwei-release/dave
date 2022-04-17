@@ -41,7 +41,7 @@ typedef struct {
 
 static ub __init_flag__ = 0x00;
 static TLock _thread_msg_buf_pv;
-static void *_thread_msg_buf_kv = NULL;
+static void *_thread_msg_buf_ramkv = NULL;
 
 static MsgBuffer *
 _thread_msg_buffer_malloc(ThreadId src_id, s8 *dst_thread, BaseMsgType msg_type, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
@@ -78,11 +78,11 @@ _thread_msg_buffer_free(MsgBuffer *pBuffer)
 }
 
 static MsgList *
-_thread_msg_buffer_list_malloc(void *kv, s8 *dst_thread)
+_thread_msg_buffer_list_malloc(void *ramkv, s8 *dst_thread)
 {
 	MsgList *pMsgList = dave_ralloc(sizeof(MsgList));
 
-	base_kv_add_key_ptr(kv, dst_thread, pMsgList);
+	base_ramkv_add_key_ptr(ramkv, dst_thread, pMsgList);
 
 	pMsgList->head = pMsgList->tail = NULL;
 	pMsgList->life = THREAD_MSG_BUFFER_LIFE_MAX;
@@ -92,14 +92,14 @@ _thread_msg_buffer_list_malloc(void *kv, s8 *dst_thread)
 	return pMsgList;
 }
 
-static ErrCode
-_thread_msg_buffer_list_free(void *kv, s8 *dst_thread)
+static RetCode
+_thread_msg_buffer_list_free(void *ramkv, s8 *dst_thread)
 {
-	MsgList *pMsgList = (MsgList *)base_kv_del_key_ptr(kv, dst_thread);
+	MsgList *pMsgList = (MsgList *)base_ramkv_del_key_ptr(ramkv, dst_thread);
 	MsgBuffer *pBuffer, *pNextBuffer;
 
 	if(pMsgList == NULL)
-		return ERRCODE_empty_data;
+		return RetCode_empty_data;
 
 	pBuffer = pMsgList->head;
 
@@ -114,7 +114,7 @@ _thread_msg_buffer_list_free(void *kv, s8 *dst_thread)
 
 	THREADDEBUG("%s", dst_thread);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
@@ -132,14 +132,14 @@ _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 }
 
 static void
-_thread_msg_buffer_tick(void *kv, s8 *dst_thread)
+_thread_msg_buffer_tick(void *ramkv, s8 *dst_thread)
 {
-	MsgList *pMsgList = (MsgList *)base_kv_inq_key_ptr(kv, dst_thread);
+	MsgList *pMsgList = (MsgList *)base_ramkv_inq_key_ptr(ramkv, dst_thread);
 	MsgBuffer *pRecycle;
 
 	if((pMsgList == NULL) || (pMsgList->head == NULL))
 	{
-		_thread_msg_buffer_list_free(kv, dst_thread);
+		_thread_msg_buffer_list_free(ramkv, dst_thread);
 	}
 	else
 	{
@@ -168,13 +168,13 @@ _thread_msg_buffer_tick(void *kv, s8 *dst_thread)
 }
 
 static dave_bool
-_thread_msg_buffer_push(void *kv, MsgBuffer *pBuffer)
+_thread_msg_buffer_push(void *ramkv, MsgBuffer *pBuffer)
 {
-	MsgList *pMsgList = (MsgList *)base_kv_inq_key_ptr(kv, pBuffer->dst_thread);
+	MsgList *pMsgList = (MsgList *)base_ramkv_inq_key_ptr(ramkv, pBuffer->dst_thread);
 
 	if(pMsgList == NULL)
 	{
-		pMsgList = _thread_msg_buffer_list_malloc(kv, pBuffer->dst_thread);
+		pMsgList = _thread_msg_buffer_list_malloc(ramkv, pBuffer->dst_thread);
 	}
 
 	pBuffer->life = pMsgList->life;
@@ -194,9 +194,9 @@ _thread_msg_buffer_push(void *kv, MsgBuffer *pBuffer)
 }
 
 static MsgBuffer *
-_thread_msg_buffer_pop(void *kv, s8 *dst_thread)
+_thread_msg_buffer_pop(void *ramkv, s8 *dst_thread)
 {
-	MsgList *pMsgList = (MsgList *)base_kv_inq_key_ptr(kv, dst_thread);
+	MsgList *pMsgList = (MsgList *)base_ramkv_inq_key_ptr(ramkv, dst_thread);
 	MsgBuffer *pBuffer;
 
 	if(pMsgList == NULL)
@@ -215,23 +215,23 @@ _thread_msg_buffer_pop(void *kv, s8 *dst_thread)
 }
 
 static void
-_thread_msg_buffer_safe_tick(void *kv, s8 *dst_thread)
+_thread_msg_buffer_safe_tick(void *ramkv, s8 *dst_thread)
 {
-	SAFEZONEv3(_thread_msg_buf_pv, _thread_msg_buffer_tick(kv, dst_thread); );
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_tick(ramkv, dst_thread); );
 }
 
 static void
-_thread_msg_buffer_safe_push(void *kv, MsgBuffer *pBuffer)
+_thread_msg_buffer_safe_push(void *ramkv, MsgBuffer *pBuffer)
 {
-	SAFEZONEv3(_thread_msg_buf_pv, _thread_msg_buffer_push(kv, pBuffer); );
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_push(ramkv, pBuffer); );
 }
 
 static MsgBuffer *
-_thread_msg_buffer_safe_pop(void *kv, s8 *dst_thread)
+_thread_msg_buffer_safe_pop(void *ramkv, s8 *dst_thread)
 {
 	MsgBuffer *pBuffer = NULL;
 
-	SAFEZONEv3(_thread_msg_buf_pv, pBuffer = _thread_msg_buffer_pop(kv, dst_thread); );
+	SAFECODEv1(_thread_msg_buf_pv, pBuffer = _thread_msg_buffer_pop(ramkv, dst_thread); );
 
 	return pBuffer;
 }
@@ -254,7 +254,7 @@ thread_msg_buffer_init(void)
 	if(init_flag == dave_true)
 	{
 		t_lock_reset(&_thread_msg_buf_pv);
-		_thread_msg_buf_kv = base_kv_malloc("tmbk", KVAttrib_ram, 3, _thread_msg_buffer_safe_tick);
+		_thread_msg_buf_ramkv = base_ramkv_malloc("tmbk", KvAttrib_ram, 3, _thread_msg_buffer_safe_tick);
 	}
 }
 
@@ -273,8 +273,8 @@ thread_msg_buffer_exit(void)
 
 	if(exit_flag == dave_true)
 	{
-		base_kv_free(_thread_msg_buf_kv, _thread_msg_buffer_list_free);
-		_thread_msg_buf_kv = NULL;
+		base_ramkv_free(_thread_msg_buf_ramkv, _thread_msg_buffer_list_free);
+		_thread_msg_buf_ramkv = NULL;
 	}
 }
 
@@ -287,7 +287,7 @@ thread_msg_buffer_push(ThreadId src_id, s8 *dst_thread, BaseMsgType msg_type, ub
 
 	pBuffer = _thread_msg_buffer_malloc(src_id, dst_thread, msg_type, msg_id, msg_len, msg_body, fun, line);
 
-	_thread_msg_buffer_safe_push(_thread_msg_buf_kv, pBuffer);
+	_thread_msg_buffer_safe_push(_thread_msg_buf_ramkv, pBuffer);
 
 	thread_clean_user_input_data(msg_body, msg_id);
 
@@ -303,7 +303,7 @@ thread_msg_buffer_pop(s8 *dst_thread)
 	thread_msg_buffer_init();
 
 	do {
-		pBuffer = _thread_msg_buffer_safe_pop(_thread_msg_buf_kv, dst_thread);
+		pBuffer = _thread_msg_buffer_safe_pop(_thread_msg_buf_ramkv, dst_thread);
 
 		if(pBuffer != NULL)
 		{
@@ -326,7 +326,7 @@ thread_msg_buffer_pop(s8 *dst_thread)
 
 	} while(pBuffer != NULL);
 
-	_thread_msg_buffer_list_free(_thread_msg_buf_kv, dst_thread);
+	_thread_msg_buffer_list_free(_thread_msg_buf_ramkv, dst_thread);
 }
 
 #endif

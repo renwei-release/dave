@@ -316,7 +316,7 @@ _sync_server_add_client(s32 socket, SocNetInfo *pNetInfo)
 	}
 	else
 	{
-		SAFEZONEv3(pClient->opt_pv, {
+		SAFECODEv1(pClient->opt_pv, {
 			_sync_server_reset_client(pClient);
 			pClient->client_socket = socket;
 			pClient->NetInfo = *pNetInfo;
@@ -341,7 +341,7 @@ _sync_server_add_client(s32 socket, SocNetInfo *pNetInfo)
 static void
 _sync_server_del_client(SyncClient *pClient)
 {
-	SAFEZONEv3(pClient->opt_pv, {
+	SAFECODEv1(pClient->opt_pv, {
 		_sync_server_clean_client_all_thread(pClient);
 		_sync_server_clean_the_client_to_down_flag(pClient);
 		clean_rxtx(pClient->client_socket);
@@ -731,7 +731,7 @@ sync_server_data_init(void)
 void
 sync_server_data_exit(void)
 {
-	SAFEZONEv5W(_sync_server_data_pv, _sync_server_data_client_reboot(););
+	SAFECODEv2W(_sync_server_data_pv, _sync_server_data_client_reboot(););
 }
 
 SyncClient *
@@ -739,7 +739,7 @@ sync_server_add_client(s32 socket, SocNetInfo *pNetInfo)
 {
 	SyncClient *pClient = NULL;
 
-	SAFEZONEv5W(_sync_server_data_pv, pClient = _sync_server_add_client(socket, pNetInfo); );
+	SAFECODEv2W(_sync_server_data_pv, pClient = _sync_server_add_client(socket, pNetInfo); );
 
 	return pClient;
 }
@@ -747,7 +747,7 @@ sync_server_add_client(s32 socket, SocNetInfo *pNetInfo)
 void
 sync_server_del_client(SyncClient *pClient)
 {
-	SAFEZONEv5W(_sync_server_data_pv, _sync_server_del_client(pClient); );
+	SAFECODEv2W(_sync_server_data_pv, _sync_server_del_client(pClient); );
 }
 
 SyncClient *
@@ -762,7 +762,7 @@ sync_server_find_client(s32 socket)
 		return _socket_fast_index[index_index].pClient;
 	}
 
-	SAFEZONEv5R(_sync_server_data_pv, {
+	SAFECODEv2R(_sync_server_data_pv, {
 
 		pClient = _sync_server_find_client(socket, dave_false);
 
@@ -783,7 +783,7 @@ sync_server_add_thread(SyncClient *pClient, s8 *thread_name)
 	ub thread_index = _sync_server_thread_name_to_index(thread_name);
 	SyncThread *pThread = NULL;
 
-	SAFEZONEv5W(_sync_server_data_pv, { pThread = _sync_server_add_thread(pClient, thread_name, thread_index); } );
+	SAFECODEv2W(_sync_server_data_pv, { pThread = _sync_server_add_thread(pClient, thread_name, thread_index); } );
 
 	return pThread;
 }
@@ -793,7 +793,7 @@ sync_server_del_thread(SyncThread *pThread, SyncClient *pClient)
 {
 	ub client_number = SYNC_CLIENT_MAX;
 
-	SAFEZONEv5W(_sync_server_data_pv, { client_number = _sync_server_del_thread(pThread, pClient); } );
+	SAFECODEv2W(_sync_server_data_pv, { client_number = _sync_server_del_thread(pThread, pClient); } );
 
 	return client_number;
 }
@@ -804,7 +804,7 @@ sync_server_find_thread(s8 *thread_name)
 	ub thread_index = _sync_server_thread_name_to_index(thread_name);
 	SyncThread *pThread = NULL;
 
-	SAFEZONEv5R(_sync_server_data_pv, { pThread = _sync_server_find_thread(thread_name, thread_index, dave_false); } );
+	SAFECODEv2R(_sync_server_data_pv, { pThread = _sync_server_find_thread(thread_name, thread_index, dave_false); } );
 
 	return pThread;
 }
@@ -814,7 +814,7 @@ sync_server_client_on_the_thread(SyncThread *pThread, SyncClient *pClient)
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv5R(_sync_server_data_pv, ret = _sync_server_client_on_the_thread(pThread, pClient););
+	SAFECODEv2R(_sync_server_data_pv, ret = _sync_server_client_on_the_thread(pThread, pClient););
 
 	return ret;
 }
@@ -824,7 +824,7 @@ sync_server_find_effective_client(s8 *thread_name)
 {
 	SyncClient *pClient = NULL;
 
-	SAFEZONEv5R(_sync_server_data_pv, pClient = _sync_server_find_effective_client(thread_name););
+	SAFECODEv2R(_sync_server_data_pv, pClient = _sync_server_find_effective_client(thread_name););
 
 	return pClient;
 }
@@ -834,7 +834,7 @@ sync_server_check_globally_identifier_conflict(SyncClient *pClient)
 {
 	SyncClient *pConflictClient = NULL;
 
-	SAFEZONEv5R(_sync_server_data_pv, pConflictClient = _sync_server_check_globally_identifier_conflict(pClient););
+	SAFECODEv2R(_sync_server_data_pv, pConflictClient = _sync_server_check_globally_identifier_conflict(pClient););
 
 	return pConflictClient;
 }
@@ -842,7 +842,7 @@ sync_server_check_globally_identifier_conflict(SyncClient *pClient)
 void
 sync_server_my_verno_to_all_client(SyncClient *pMyClient)
 {
-	SAFEZONEv5R(_sync_server_data_pv, _sync_server_my_verno_to_all_client(pMyClient););
+	SAFECODEv2R(_sync_server_data_pv, _sync_server_my_verno_to_all_client(pMyClient););
 }
 
 void
@@ -854,13 +854,13 @@ sync_server_run_test(SyncClient *pClient,
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	ub msg_len, u8 *msg_body)
 {
-	SAFEZONEv5R(_sync_server_data_pv, _sync_server_run_test(pClient, route_src, route_dst, my_name, other_name, msg_id, msg_type, src_attrib, dst_attrib, msg_len, msg_body););
+	SAFECODEv2R(_sync_server_data_pv, _sync_server_run_test(pClient, route_src, route_dst, my_name, other_name, msg_id, msg_type, src_attrib, dst_attrib, msg_len, msg_body););
 }
 
 void
 sync_server_client_state(SyncClient *pClient, dave_bool idle)
 {
-	SAFEZONEv3(pClient->opt_pv, _sync_server_client_state(pClient, idle););
+	SAFECODEv1(pClient->opt_pv, _sync_server_client_state(pClient, idle););
 }
 
 SyncClient *

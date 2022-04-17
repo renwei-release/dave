@@ -12,7 +12,7 @@
 
 static TLock _t_booting_lock;
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 
 static inline dave_bool
 _t_lock_check(TLock *pLock, s8 *fun, ub line)
@@ -81,15 +81,15 @@ t_lock_reset(TLock *pLock)
 {
 	dave_memset(pLock, 0x00, sizeof(TLock));
 
-#ifdef __TOOLS_ALPHA_VERSION__
-	pLock->magic_data_1 = dave_rand();
+#ifdef LEVEL_PRODUCT_alpha
+	pLock->magic_data_1 = t_rand();
 #endif
 
 	dave_os_spin_lock_init((void *)(pLock->spin_lock));
 	dave_os_rw_lock_init((void *)(pLock->rw_lock));
 	dave_os_mutex_init(&(pLock->m_mutex_t));
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	pLock->thread_id = -1;
 	pLock->file = NULL;
 	pLock->line = 0;
@@ -100,7 +100,7 @@ t_lock_reset(TLock *pLock)
 void
 t_lock_destroy(TLock *pLock)
 {
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
 		TOOLSABNOR("Found an invalid lock!");
@@ -121,7 +121,7 @@ __t_lock_spin__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
 		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
@@ -140,7 +140,7 @@ __t_unlock_spin__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
 		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
@@ -159,11 +159,11 @@ __t_rlock_rw__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 #endif
 		return dave_os_rw_rlock(pLock->rw_lock);
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	else
 		return dave_false;
 #endif
@@ -177,11 +177,11 @@ __t_wlock_rw__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 #endif
 		return dave_os_rw_wlock(pLock->rw_lock);
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	else
 		return dave_false;
 #endif
@@ -197,12 +197,12 @@ __t_trlock_rw__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 	{
 #endif
 		ret = dave_os_rw_tryrlock(pLock->rw_lock);
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 		if(ret == dave_false)
 		{
 			_t_unlock_check(pLock, fun, line);
@@ -227,12 +227,12 @@ __t_twlock_rw__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 	{
 #endif
 		ret = dave_os_rw_trywlock(pLock->rw_lock);
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 		if(ret == dave_false)
 		{
 			_t_unlock_check(pLock, fun, line);
@@ -255,11 +255,11 @@ __t_unlock_rw__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_unlock_check(pLock, fun, line) == dave_true)
 #endif
 		return dave_os_rw_unlock(pLock->rw_lock);
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	else
 		return dave_false;
 #endif
@@ -273,7 +273,7 @@ __t_lock_mutex__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 #endif
 	dave_os_mutex_lock(&(pLock->m_mutex_t));
@@ -289,12 +289,12 @@ __t_trylock_mutex__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 	{
 #endif
 		ret = dave_os_mutex_trylock(&(pLock->m_mutex_t));
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 		if(ret == dave_false)
 		{
 			_t_unlock_check(pLock, fun, line);
@@ -317,7 +317,7 @@ __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line)
 		pLock = &_t_booting_lock;
 	}
 
-#ifdef __TOOLS_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 	if(_t_unlock_check(pLock, fun, line) == dave_true)
 #endif
 	dave_os_mutex_unlock(&(pLock->m_mutex_t));

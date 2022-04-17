@@ -10,8 +10,8 @@
 
 void http_recv_listen_init(void);
 void http_recv_listen_exit(void);
-ErrCode http_recv_listen_action(ThreadId src, ub port, HTTPListenType type, HTTPMathcRule rule, s8 *path);
-ErrCode http_recv_listen_close(ThreadId src, ub port);
+RetCode http_recv_listen_action(ThreadId src, ub port, HTTPListenType type, HTTPMathcRule rule, s8 *path);
+RetCode http_recv_listen_close(ThreadId src, ub port);
 void http_recv_listen_release(s32 socket);
 s8 * http_recv_listen_thread(ub cgi_port);
 ub http_recv_listen_port(ub cgi_port);

@@ -8,16 +8,14 @@
 from autocode_cfg import *
 from autocode_tools import *
 from find.find_other_struct_table import find_other_struct_table
-from find.find_union_table import find_union_table
 
 
 _structdata_src_head = "\
 #include \"dave_base.h\"\n\
 #include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
-#include \"dave_third_party.h\"\n\
+#include \"dave_3rdparty.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
-#include \"t_rpc_ver3_uniondata.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
 #include \"tools_log.h\"\n"
@@ -31,6 +29,13 @@ _structdata_inc_head = "\
 
 _structdata_inc_end = "\
 #endif\n\n"
+
+
+def _struct_type_ptr_at_meta_table(struct_type, meta_table):
+    type = struct_type + '_ptr'
+    if type in meta_table:
+        return True
+    return False
 
 
 def _creat_structdata_zip_fun_dimension_object(file_id, is_struct, struct_type, struct_name, struct_dimension):
@@ -51,26 +56,37 @@ def _creat_structdata_zip_fun_dimension_object(file_id, is_struct, struct_type, 
     return
 
 
-def _creat_structdata_zip_fun_object(file_id, struct_table, union_table, struct_data):
+def _creat_structdata_zip_fun_object(file_id, struct_table, meta_table, struct_data):
     for struct_object in struct_data:
         struct_name = struct_object['n']
         struct_type = struct_object['t']
-        struct_dimension = struct_object.get('d', None)
-        is_struct, has_ptr, struct_type = struct_on_the_table(struct_type, struct_table, union_table)
+        struct_dimension = struct_object['d']
+        has_ptr = struct_object['p']
+        is_struct = struct_on_the_table(struct_type, struct_table)
         if struct_dimension == None:
             if is_struct == False:
-                file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
-                    +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
-                    +"(zip_data->"+struct_name+"));")
+                if has_ptr == False:
+                    file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
+                        +"(zip_data->"+struct_name+"));")
+                else:
+                    file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type+"_ptr"
+                        +"(zip_data->"+struct_name+"));")
             else:
                 if has_ptr == False:
                     file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
                         +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
                         +"(&(zip_data->"+struct_name+")));")
                 else:
-                     file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
-                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
-                        +"(zip_data->"+struct_name+"));")                   
+                    if _struct_type_ptr_at_meta_table(struct_type, meta_table) == True:
+                        file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                            +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type+"_ptr"
+                            +"(zip_data->"+struct_name+"));")
+                    else:
+                        file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                            +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
+                            +"(zip_data->"+struct_name+"));")                        
         else:
             _creat_structdata_zip_fun_dimension_object(file_id, is_struct, struct_type, struct_name, struct_dimension)
     return
@@ -96,40 +112,51 @@ def _creat_structdata_unzip_fun_dimension_object(file_id, is_struct, struct_type
     return
 
 
-def _creat_structdata_unzip_fun_object(file_id, struct_table, union_table, struct_data):
+def _creat_structdata_unzip_fun_object(file_id, struct_table, meta_table, struct_data):
     for struct_object in struct_data:
         struct_name = struct_object['n']
         struct_type = struct_object['t']
-        struct_dimension = struct_object.get('d', None)
-        is_struct, has_ptr, struct_type = struct_on_the_table(struct_type, struct_table, union_table)
+        struct_dimension = struct_object['d']
+        has_ptr = struct_object['p']
+        is_struct = struct_on_the_table(struct_type, struct_table)
         if struct_dimension == None:
             if is_struct == False:
-                file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
-                    +"(&(unzip_data->"+struct_name+"), t_bson_inq_object(pStructBson, \""
-                    +struct_type+"-"+struct_name+"\"));\n")
+                if has_ptr == False:
+                    file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
+                        +"(&(unzip_data->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n")
+                else:
+                    file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type+"_ptr"
+                        +"(&(unzip_data->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n")
             else:
                 if has_ptr == False:
                     file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
                         +"(&(unzip_data->"+struct_name+"), t_bson_inq_object(pStructBson, \""
                         +struct_type+"-"+struct_name+"\"));\n")
                 else:
-                    file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
-                        +"(unzip_data->"+struct_name+", t_bson_inq_object(pStructBson, \""
-                        +struct_type+"-"+struct_name+"\"));\n")
+                    if _struct_type_ptr_at_meta_table(struct_type, meta_table) == True:
+                        file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type+"_ptr"
+                            +"(&(unzip_data->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                            +struct_type+"-"+struct_name+"\"));\n")
+                    else:
+                        file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
+                            +"(unzip_data->"+struct_name+", t_bson_inq_object(pStructBson, \""
+                            +struct_type+"-"+struct_name+"\"));\n")                        
         else:
             _creat_structdata_unzip_fun_dimension_object(file_id, is_struct, struct_type, struct_name, struct_dimension)
     return
 
 
-def _creat_structdata_zip_fun_file(file_id, struct_table, union_table, struct_name, struct_data):
+def _creat_structdata_zip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data):
     file_id.write("void *\nt_rpc_ver3_zip_"+struct_name+"("+struct_name+" *zip_data)\n")
     file_id.write("{\n\tvoid *pStructBson = t_bson_malloc_object();\n")
-    _creat_structdata_zip_fun_object(file_id, struct_table, union_table, struct_data)
+    _creat_structdata_zip_fun_object(file_id, struct_table, meta_table, struct_data)
     file_id.write("\n\n\treturn pStructBson;\n}\n\n")
     return
 
 
-def _creat_structdata_unzip_fun_file(file_id, struct_table, union_table, struct_name, struct_data):
+def _creat_structdata_unzip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data):
     file_id.write("dave_bool\nt_rpc_ver3_unzip_"+struct_name+"("+struct_name+" *unzip_data, void *pStructBson)\n")
     file_id.write("{\n")
     file_id.write("	dave_bool ret;\n")
@@ -142,7 +169,7 @@ def _creat_structdata_unzip_fun_file(file_id, struct_table, union_table, struct_
     file_id.write("	}\n")
     file_id.write("	else\n")
     file_id.write("	{\n")
-    _creat_structdata_unzip_fun_object(file_id, struct_table, union_table, struct_data)
+    _creat_structdata_unzip_fun_object(file_id, struct_table, meta_table, struct_data)
     file_id.write("		ret = dave_true;\n")
     file_id.write("	}\n")
     file_id.write("\n")
@@ -195,23 +222,23 @@ def _creat_structdata_unzip_funs_file(file_id, struct_name):
     return
 
 
-def _creat_structdata_fun_file(file_id, struct_table, union_table):
+def _creat_structdata_fun_file(file_id, struct_table, meta_table):
     for struct_name in struct_table.keys():
         struct_data = struct_table[struct_name]
         if struct_data != None:
-            _creat_structdata_zip_fun_file(file_id, struct_table, union_table, struct_name, struct_data)
-            _creat_structdata_unzip_fun_file(file_id, struct_table, union_table, struct_name, struct_data)
+            _creat_structdata_zip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data)
+            _creat_structdata_unzip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data)
             _creat_structdata_zip_funs_file(file_id, struct_name)
             _creat_structdata_unzip_funs_file(file_id, struct_name)
     return
 
 
-def _creat_structdata_src_file(struct_table, union_table, head_list, file_name):
+def _creat_structdata_src_file(struct_table, meta_table, head_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_structdata_src_head)
         file_id.write("\n// =====================================================================\n\n")
-        _creat_structdata_fun_file(file_id, struct_table, union_table)
+        _creat_structdata_fun_file(file_id, struct_table, meta_table)
     return
 
 
@@ -232,10 +259,12 @@ def _creat_structdata_inc_file(struct_table, head_list, file_name):
 # =====================================================================
 
 
-def creat_structdata_file():
-    struct_table, head_list = find_other_struct_table()
+def creat_structdata_file(param):
+    struct_table = param['other_struct_table']
+    meta_table = param['meta_table']
+    head_list = param['other_include_list']
+
     print(f"{len(struct_table)}\tstructdata\twrite to {rpc_ver3_structdata_src_file_name}")
-    union_table, union_include = find_union_table()
-    _creat_structdata_src_file(struct_table, union_table, head_list, rpc_ver3_structdata_src_file_name)
+    _creat_structdata_src_file(struct_table, meta_table, head_list, rpc_ver3_structdata_src_file_name)
     _creat_structdata_inc_file(struct_table, head_list, rpc_ver3_structdata_inc_file_name)
-    return struct_table
+    return

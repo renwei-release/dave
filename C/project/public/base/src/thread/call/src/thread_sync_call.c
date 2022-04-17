@@ -144,19 +144,19 @@ _thread_sync_set_index(ThreadId thread_id, ub *wakeup_index)
 static inline void
 _thread_sync_call_check_add_safe(ThreadSync *pSync)
 {
-	SAFEZONEv3(_sync_data_for_check_pv, _thread_sync_call_check_add(pSync); );
+	SAFECODEv1(_sync_data_for_check_pv, _thread_sync_call_check_add(pSync); );
 }
 
 static inline void
 _thread_sync_call_check_del_safe(ThreadSync *pSync)
 {
-	SAFEZONEv3(_sync_data_for_check_pv, _thread_sync_call_check_del(pSync); );
+	SAFECODEv1(_sync_data_for_check_pv, _thread_sync_call_check_del(pSync); );
 }
 
 static inline void
 _thread_sync_call_check_safe(void)
 {
-	SAFEZONEv3(_sync_data_for_check_pv, _thread_sync_call_check(); );
+	SAFECODEv1(_sync_data_for_check_pv, _thread_sync_call_check(); );
 }
 
 // =====================================================================
@@ -249,7 +249,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 	pSync->sync_pv.thread_id = -1;
 #endif
 
-	SAFEZONEv3(pSync->sync_pv, {
+	SAFECODEv1(pSync->sync_pv, {
 
 		if(pSync->wait_thread != INVALID_THREAD_ID)
 		{

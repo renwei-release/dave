@@ -12,9 +12,19 @@ from .find_msg_struct_table import find_msg_struct_table
 # =====================================================================
 
 
-def find_all_struct_table():
-    _, msg_struct_table, _ = find_msg_struct_table()
-    other_struct_table, _ = find_other_struct_table()
-    struct_table = msg_struct_table
-    struct_table.update(other_struct_table)
-    return struct_table
+def find_all_struct_table(file_list):
+    msg_name_table, msg_struct_table, msg_include_list = find_msg_struct_table(file_list)
+    other_struct_table, other_include_list = find_other_struct_table(file_list, msg_struct_table)
+
+    all_struct_table = msg_struct_table.copy()
+    all_struct_table.update(other_struct_table)
+
+    param = {}
+    param['all_struct_table'] = all_struct_table
+    param['msg_name_table'] = msg_name_table
+    param['msg_struct_table'] = msg_struct_table
+    param['msg_include_list'] = msg_include_list
+    param['other_struct_table'] = other_struct_table
+    param['other_include_list'] = other_include_list
+
+    return param

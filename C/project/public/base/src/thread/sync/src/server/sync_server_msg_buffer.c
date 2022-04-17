@@ -157,7 +157,7 @@ _sync_server_msg_buffer_pop(void)
 				pBuffer->pClient,
 				pBuffer->frame_len,
 				pBuffer->frame,
-				dave_true) == ERRCODE_OK)
+				dave_true) == RetCode_OK)
 			{
 				SYNCTRACE("%s buffer pop success!", pBuffer->pClient->verno);
 
@@ -200,7 +200,7 @@ _sync_server_msg_buffer_safe_push(
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv3(_sync_server_msg_buffer_pv, {
+	SAFECODEv1(_sync_server_msg_buffer_pv, {
 
 			ret = _sync_server_msg_buffer_push(
 				pClient,
@@ -217,7 +217,7 @@ _sync_server_msg_buffer_safe_push(
 static void
 _sync_server_msg_buffer_safe_pop(void)
 {
-	SAFEZONEidlev3(_sync_server_msg_buffer_pv, { _sync_server_msg_buffer_pop(); } );
+	SAFECODEidlev1(_sync_server_msg_buffer_pv, { _sync_server_msg_buffer_pop(); } );
 }
 
 static void

@@ -8,6 +8,8 @@
 import re
 import traceback
 from autocode_tools import *
+from autocode_cfg import *
+
 
 def _find_meta_list_from_file(file_name):
     meta_table = {}
@@ -20,7 +22,7 @@ def _find_meta_list_from_file(file_name):
             return meta_table
         try:
             file_content = remove_annotation_data(file_content)
-            result = re.findall(".*?t_rpc_ver[0-9]_zip_(.*?)[_,__,___,\(].*?\)", file_content)
+            result = re.findall("__t_rpc_ver[0-9]_zip_(.*?)__\(.*?", file_content)
             if result:
                 for meta in result:
                     meta_table[meta] = meta
@@ -34,5 +36,6 @@ def _find_meta_list_from_file(file_name):
 # =====================================================================
 
 
-def find_meta_table(metadata_src_file_name):
-    return _find_meta_list_from_file(metadata_src_file_name)
+def find_meta_table():
+    meta_table = _find_meta_list_from_file(rpc_ver3_metadata_src_file_name)
+    return list(set(meta_table))

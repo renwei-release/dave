@@ -193,7 +193,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	ub package_len = 0;
 	void *msg_body = NULL;
 	ub msg_len = 0;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	sync_msg_unpacket(
 		frame, frame_len,
@@ -224,19 +224,19 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 			msg_len, msg_body,
 			dave_false) == dave_false)
 		{
-			ret = ERRCODE_msg_queue_is_full;
+			ret = RetCode_msg_queue_is_full;
 		}
 	}
 	else
 	{
-		ret = ERRCODE_Invalid_parameter;
+		ret = RetCode_Invalid_parameter;
 	}
 
 	sync_client_tx_run_thread_msg_rsp(pServer, src, dst, msg_id, ret);
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
-		SYNCLTRACE(60,1,"%s, %s->%s:%d/%d", errorstr(ret), src, dst, msg_id, msg_len);
+		SYNCLTRACE(60,1,"%s, %s->%s:%d/%d", retstr(ret), src, dst, msg_id, msg_len);
 
 		thread_msg_release(msg_body);
 	}

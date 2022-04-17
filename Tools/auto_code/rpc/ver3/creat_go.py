@@ -8,5 +8,5 @@
 from rpc.ver3.go.ver3_creat_gorpc_file import creat_gorpc_file
 
 
-def creat_ver3_go(struct_table, msg_struct_table, msg_id_table, enum_table):
-    return creat_gorpc_file(struct_table, msg_struct_table, msg_id_table, enum_table)
+def creat_ver3_go(param):
+    creat_gorpc_file(param)

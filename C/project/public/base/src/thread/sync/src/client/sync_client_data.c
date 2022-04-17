@@ -871,7 +871,7 @@ sync_client_data_server_inq_on_socket(s32 socket)
 
 	pServer = NULL;
 
-	SAFEZONEv5R(_sync_client_data_pv, pServer = _sync_client_data_build_socket_fast_index(socket); );
+	SAFECODEv2R(_sync_client_data_pv, pServer = _sync_client_data_build_socket_fast_index(socket); );
 
 	return pServer;
 }
@@ -881,7 +881,7 @@ sync_client_data_server_inq_on_net(u8 *ip, u16 port)
 {
 	SyncServer *pServer = NULL;
 
-	SAFEZONEv5R(_sync_client_data_pv, pServer = _sync_client_data_server_inq_on_net(ip, port); );
+	SAFECODEv2R(_sync_client_data_pv, pServer = _sync_client_data_server_inq_on_net(ip, port); );
 
 	return pServer;
 }
@@ -907,7 +907,7 @@ sync_client_data_thread_on_name(s8 *thread_name, ub thread_index)
 		thread_index = sync_client_data_thread_name_to_index(thread_name);
 	}
 
-	SAFEZONEv5R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index); );
+	SAFECODEv2R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index); );
 
 	return pThread;
 }
@@ -917,7 +917,7 @@ sync_client_data_thread_index_on_name(s8 *thread_name)
 {
 	ub thread_index = SYNC_THREAD_INDEX_MAX;
 
-	SAFEZONEv5R(_sync_client_data_pv, thread_index = _sync_client_data_thread_index_on_name(thread_name); );
+	SAFECODEv2R(_sync_client_data_pv, thread_index = _sync_client_data_thread_index_on_name(thread_name); );
 
 	return thread_index;
 }
@@ -959,7 +959,7 @@ sync_client_data_thread_local_index(s8 *thread_name)
 void
 sync_client_data_reset_server(SyncServer *pServer, dave_bool clean_flag)
 {
-	SAFEZONEv5W(_sync_client_data_pv, _sync_client_data_reset_server(pServer, clean_flag); );
+	SAFECODEv2W(_sync_client_data_pv, _sync_client_data_reset_server(pServer, clean_flag); );
 }
 
 SyncServer *
@@ -974,7 +974,7 @@ sync_client_data_server_add_client(s8 *verno, s8 *globally_identifier, u8 *ip, u
 		return NULL;
 	}
 
-	SAFEZONEv5W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_client(verno, globally_identifier, ip, port); } );
+	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_client(verno, globally_identifier, ip, port); } );
 
 	return pServer;
 }
@@ -984,7 +984,7 @@ sync_client_data_server_del_client(s8 *verno, s8 *globally_identifier, u8 *ip, u
 {
 	SyncServer *pServer = NULL;
 
-	SAFEZONEv5W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_client(ip, port); } );
+	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_client(ip, port); } );
 
 	return pServer;
 }
@@ -994,7 +994,7 @@ sync_client_data_server_add_child(s32 socket, u8 *ip, u16 port)
 {
 	SyncServer *pServer = NULL;
 
-	SAFEZONEv5W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_child(socket, ip, port); } );
+	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_child(socket, ip, port); } );
 
 	return pServer;
 }
@@ -1004,7 +1004,7 @@ sync_client_data_server_del_child(s32 socket)
 {
 	SyncServer *pServer = NULL;
 
-	SAFEZONEv5W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_child(socket); } );
+	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_child(socket); } );
 
 	return pServer;
 }
@@ -1015,7 +1015,7 @@ sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name)
 	ub thread_index = sync_client_data_thread_name_to_index(thread_name);
 	LinkThread *pThread = NULL;
 
-	SAFEZONEv5W(_sync_client_data_pv, { pThread = _sync_client_data_thread_add(pServer, thread_name, thread_index); } );
+	SAFECODEv2W(_sync_client_data_pv, { pThread = _sync_client_data_thread_add(pServer, thread_name, thread_index); } );
 
 	_sync_client_data_thread_check();
 
@@ -1030,7 +1030,7 @@ sync_client_data_thread_del(SyncServer *pServer, s8 *thread_name)
 
 	SYNCTRACE("%d/%s thread:%s", pServer->server_type, pServer->verno, thread_name);
 
-	SAFEZONEv5W(_sync_client_data_pv, { pThread = _sync_client_data_thread_del(pServer, thread_name, thread_index); } );
+	SAFECODEv2W(_sync_client_data_pv, { pThread = _sync_client_data_thread_del(pServer, thread_name, thread_index); } );
 
 	return pThread;
 }
@@ -1040,7 +1040,7 @@ sync_client_data_del_server_on_all_thread(SyncServer *pServer)
 {
 	SYNCTRACE("verno:%s server_type:%d", pServer->verno, pServer->server_type);
 
-	SAFEZONEv5W(_sync_client_data_pv, _sync_client_data_del_server_on_all_thread(pServer); );
+	SAFECODEv2W(_sync_client_data_pv, _sync_client_data_del_server_on_all_thread(pServer); );
 }
 
 SyncServer *

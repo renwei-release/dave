@@ -8,6 +8,8 @@
 #ifndef __BASE_THREAD_H__
 #define __BASE_THREAD_H__
 
+#define SYNC_CLIENT_THREAD_NAME "syncc"
+#define SYNC_SERVER_THREAD_NAME "syncs"
 #define GUARDIAN_THREAD_NAME "g"
 
 #define INVALID_THREAD_ID (0xffffffffffffffff)
@@ -74,7 +76,7 @@ dave_bool base_thread_del(ThreadId thread_id);
 ThreadId base_thread_get_self(s8 *fun, ub line);
 ub base_thread_name_array(s8 thread_name[][64], ub thread_number);
 dave_bool __base_thread_trace_state__(s8 *fun, ub line);
-ErrCode base_thread_msg_register(ThreadId src_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr);
+RetCode base_thread_msg_register(ThreadId src_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr);
 void base_thread_msg_unregister(ub msg_id);
 
 ThreadId base_thread_get_local(ThreadId thread_id);

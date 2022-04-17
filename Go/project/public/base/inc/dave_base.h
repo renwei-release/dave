@@ -19,7 +19,7 @@ extern "C"{
 #include "base_thread.h"
 #include "base_timer.h"
 #include "base_socket.h"
-#include "base_kv.h"
+#include "base_ramkv.h"
 #include "base_cfg.h"
 #include "base_msg.h"
 #include "base_main.h"

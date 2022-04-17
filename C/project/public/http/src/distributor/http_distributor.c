@@ -27,7 +27,7 @@ typedef struct {
 
 static ThreadId _distributor_thread = INVALID_THREAD_ID;
 static ThreadId _http_thread = INVALID_THREAD_ID;
-static void *_distributor_kv = NULL;
+static void *_distributor_ramkv = NULL;
 
 static ub
 _distributor_thread_number(void)
@@ -77,9 +77,9 @@ _distributor_http_close_rsp(MSGBODY *ptr)
 {
 	HTTPCloseRsp *pRsp = (HTTPCloseRsp *)(ptr->msg_body);
 
-	if(pRsp->ret != ERRCODE_OK)
+	if(pRsp->ret != RetCode_OK)
 	{
-		HTTPABNOR("error:%s", errorstr(pRsp->ret));
+		HTTPABNOR("error:%s", retstr(pRsp->ret));
 	}
 }
 
@@ -99,9 +99,9 @@ _distributor_http_listen_rsp(MSGBODY *ptr)
 {
 	HTTPListenRsp *pRsp = (HTTPListenRsp *)(ptr->msg_body);
 
-	if(pRsp->ret != ERRCODE_OK)
+	if(pRsp->ret != RetCode_OK)
 	{
-		HTTPABNOR("error:%s", errorstr(pRsp->ret));
+		HTTPABNOR("error:%s", retstr(pRsp->ret));
 	}
 }
 
@@ -146,26 +146,26 @@ _distributor_free_info(HttpDistributorInfo *pInfo)
 	dave_free(pInfo);
 }
 
-static ErrCode
-_distributor_clean_info(void *kv, s8 *key)
+static RetCode
+_distributor_clean_info(void *ramkv, s8 *key)
 {
 	HttpDistributorInfo *pInfo;
 
-	pInfo = base_kv_inq_key_ptr(_distributor_kv, NULL);
+	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, NULL);
 	if(pInfo == NULL)
 	{
-		return ERRCODE_empty_data;
+		return RetCode_empty_data;
 	}
 
-	base_kv_del_key_ptr(kv, pInfo->path);
+	base_ramkv_del_key_ptr(ramkv, pInfo->path);
 
 	_distributor_free_info(pInfo);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
-_distributor_listen_rsp(ThreadId dst, ErrCode ret, s8 *path, void *ptr)
+_distributor_listen_rsp(ThreadId dst, RetCode ret, s8 *path, void *ptr)
 {
 	HTTPListenRsp *pRsp = thread_reset_msg(pRsp);
 
@@ -185,14 +185,14 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 
 	if(t_is_all_show_char((u8 *)(pReq->path), dave_strlen(pReq->path)) == dave_false)
 	{
-		_distributor_listen_rsp(src, ERRCODE_Invalid_parameter, pReq->path, pReq->ptr);
+		_distributor_listen_rsp(src, RetCode_Invalid_parameter, pReq->path, pReq->ptr);
 		return;
 	}
 
 	t_stdio_remove_the_char_on_frist(pReq->path, '/');
 	t_stdio_remove_the_char_on_frist(pReq->path, '\\');
 
-	pInfo = base_kv_inq_key_ptr(_distributor_kv, pReq->path);
+	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, pReq->path);
 	if(pInfo != NULL)
 	{
 		if(dave_strcmp(pInfo->thread_name, thread_name(src)) == dave_false)
@@ -205,7 +205,7 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 	{
 		pInfo = _distributor_malloc_info(src, pReq);
 
-		base_kv_add_key_ptr(_distributor_kv, pInfo->path, pInfo);
+		base_ramkv_add_key_ptr(_distributor_ramkv, pInfo->path, pInfo);
 	}
 
 	HTTPLOG("%s listen on path:%s success! %d/%d/%d/%d",
@@ -214,11 +214,11 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 		pReq->rule, pReq->type,
 		pReq->ptr);
 
-	_distributor_listen_rsp(src, ERRCODE_OK, pReq->path, pReq->ptr);
+	_distributor_listen_rsp(src, RetCode_OK, pReq->path, pReq->ptr);
 }
 
 static void
-_distributor_close_rsp(ThreadId dst, ErrCode ret, void *ptr)
+_distributor_close_rsp(ThreadId dst, RetCode ret, void *ptr)
 {
 	HTTPCloseRsp *pRsp = thread_msg(pRsp);
 
@@ -234,10 +234,10 @@ _distributor_close_req(ThreadId src, HTTPCloseReq *pReq)
 {
 	HttpDistributorInfo *pInfo;
 
-	pInfo = base_kv_inq_key_ptr(_distributor_kv, pReq->path);
+	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, pReq->path);
 	if(pInfo != NULL)
 	{
-		base_kv_del_key_ptr(_distributor_kv, pInfo->path);
+		base_ramkv_del_key_ptr(_distributor_ramkv, pInfo->path);
 
 		_distributor_free_info(pInfo);
 	}
@@ -246,17 +246,17 @@ _distributor_close_req(ThreadId src, HTTPCloseReq *pReq)
 		thread_name(src), pReq->path,
 		pReq->listen_port);
 
-	_distributor_close_rsp(src, ERRCODE_OK, pReq->ptr);
+	_distributor_close_rsp(src, RetCode_OK, pReq->ptr);
 }
 
 static void
-_distributor_recv_error_rsp(ErrCode ret, void *ptr)
+_distributor_recv_error_rsp(RetCode ret, void *ptr)
 {
 	HTTPRecvRsp *pRsp = thread_msg(pRsp);
 
 	pRsp->ret = ret;
 	pRsp->content_type = HttpContentType_json;
-	pRsp->content = t_a2b_param_to_mbuf("{ \"Error_Message\" : \"%s\"}", errorstr(ret));
+	pRsp->content = t_a2b_param_to_mbuf("{ \"Error_Message\" : \"%s\"}", retstr(ret));
 	pRsp->local_creat_time = dave_os_time_us();
 	pRsp->ptr = ptr;
 
@@ -268,12 +268,12 @@ _distributor_process_path(s8 *path, HTTPRecvReq *pReq)
 {
 	s8 get_path[DAVE_URL_LEN];
 
-	dave_strcpy(path, http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"), DAVE_URL_LEN);
+	dave_strcpy(path, http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"), DAVE_URL_LEN);
 	if(pReq->method == HttpMethod_get)
 	{
 		dave_strfind(path, (s8)'?', get_path, DAVE_URL_LEN);
 		dave_strcpy(path, get_path, DAVE_URL_LEN);
-		http_build_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI", path);
+		http_build_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI", path);
 	}
 
 	t_stdio_remove_the_char_on_frist(path, '/');
@@ -289,15 +289,15 @@ _distributor_recv_info(MSGBODY *msg)
 
 	_distributor_process_path(path, pReq);
 
-	pInfo = (HttpDistributorInfo *)base_kv_inq_key_ptr(_distributor_kv, path);
+	pInfo = (HttpDistributorInfo *)base_ramkv_inq_key_ptr(_distributor_ramkv, path);
 	if(pInfo == NULL)
 	{
 		HTTPLOG("remote:%s/%d method:%d can't find the path:%s REQUEST_URI:%s QUERY_STRING:%s content:%s!",
 			pReq->remote_address, pReq->remote_port,
 			pReq->method,
 			path,
-			http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"),
-			http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "QUERY_STRING"),
+			http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"),
+			http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "QUERY_STRING"),
 			pReq->content==NULL ? "NULL" : pReq->content->payload);
 	}
 
@@ -321,7 +321,7 @@ _distributor_recv_req(MSGBODY *msg)
 	}
 	else
 	{
-		_distributor_recv_error_rsp(ERRCODE_Can_not_find_path, pReq->ptr);
+		_distributor_recv_error_rsp(RetCode_Can_not_find_path, pReq->ptr);
 	
 		dave_mfree(pReq->content);
 	}
@@ -349,7 +349,7 @@ _distributor_restart(RESTARTREQMSG *pRestart)
 static void
 _distributor_init(MSGBODY *msg)
 {
-	_distributor_kv = base_kv_malloc("http-distributor", KVAttrib_ram, 0, NULL);
+	_distributor_ramkv = base_ramkv_malloc("http-distributor", KvAttrib_ram, 0, NULL);
 	_http_thread = thread_id(HTTP_THREAD_NAME);
 
 	_distributor_http_listen_req(HTTPS_DISTRIBUTOR_SERVER_PORT);
@@ -384,9 +384,9 @@ _distributor_main(MSGBODY *msg)
 static void
 _distributor_exit(MSGBODY *msg)
 {
-	base_kv_free(_distributor_kv, _distributor_clean_info);
+	base_ramkv_free(_distributor_ramkv, _distributor_clean_info);
 
-	_distributor_kv = NULL;
+	_distributor_ramkv = NULL;
 }
 
 // =====================================================================

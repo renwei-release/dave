@@ -7,14 +7,13 @@
 # */
 from autocode_cfg import *
 from autocode_tools import *
-from find.find_enum_table import find_enum_table
 
 
 _enumdata_src_head = "\
 #include \"dave_base.h\"\n\
 #include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
-#include \"dave_third_party.h\"\n\
+#include \"dave_3rdparty.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
 #include \"tools_log.h\"\n"
 
@@ -97,9 +96,11 @@ def _creat_enumdata_inc_file(enum_table, include_list, file_name):
 # =====================================================================
 
 
-def creat_enumdata_file(struct_table=None):
-    enum_table, include_list = find_enum_table(struct_table)
+def creat_enumdata_file(param):
+    enum_table = param['enum_table']
+    include_list = param['enum_list']
+
     print(f"{len(enum_table)}\tenumdata\twrite to {rpc_ver3_enumdata_src_file_name}")
     _creat_enumdata_src_file(enum_table, include_list, rpc_ver3_enumdata_src_file_name)
     _creat_enumdata_inc_file(enum_table, include_list, rpc_ver3_enumdata_inc_file_name)
-    return enum_table
+    return

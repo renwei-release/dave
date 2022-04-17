@@ -208,7 +208,7 @@ _sync_server_broadcadt_add(s8 *thread_name)
 {
 	SyncServerBroadcadt *pBroadcadt;
 
-	pBroadcadt = base_kv_inq_key_ptr(pSyncServerBroadcadt, thread_name);
+	pBroadcadt = base_ramkv_inq_key_ptr(pSyncServerBroadcadt, thread_name);
 	if(pBroadcadt == NULL)
 	{
 		pBroadcadt = dave_ralloc(sizeof(SyncServerBroadcadt));
@@ -216,7 +216,7 @@ _sync_server_broadcadt_add(s8 *thread_name)
 		dave_strcpy(pBroadcadt->thread_name, thread_name, sizeof(pBroadcadt->thread_name));
 		pBroadcadt->pListHead = NULL;
 
-		base_kv_add_key_ptr(pSyncServerBroadcadt, thread_name, pBroadcadt);
+		base_ramkv_add_key_ptr(pSyncServerBroadcadt, thread_name, pBroadcadt);
 	}
 
 	return pBroadcadt;
@@ -225,28 +225,28 @@ _sync_server_broadcadt_add(s8 *thread_name)
 static SyncServerBroadcadt *
 _sync_server_broadcadt_inq(s8 *thread_name)
 {
-	return (SyncServerBroadcadt *)base_kv_inq_key_ptr(pSyncServerBroadcadt, thread_name);
+	return (SyncServerBroadcadt *)base_ramkv_inq_key_ptr(pSyncServerBroadcadt, thread_name);
 }
 
-static ErrCode
-_sync_server_broadcadt_del(void *kv, s8 *thread_name)
+static RetCode
+_sync_server_broadcadt_del(void *ramkv, s8 *thread_name)
 {
 	SyncServerBroadcadt *pBroadcadt;
 
-	pBroadcadt = base_kv_del_key_ptr(pSyncServerBroadcadt, thread_name);
+	pBroadcadt = base_ramkv_del_key_ptr(pSyncServerBroadcadt, thread_name);
 	if(pBroadcadt == NULL)
 	{
-		return ERRCODE_empty_data;
+		return RetCode_empty_data;
 	}
 
 	_sync_server_broadcadt_list_del(pBroadcadt->pListHead);
 
 	dave_free(pBroadcadt);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _sync_server_broadcadt_list_add_one(
 	SyncClient *pSrcClient,
 	ThreadId src_id, ThreadId dst_id,
@@ -263,13 +263,13 @@ _sync_server_broadcadt_list_add_one(
 	if(pSrcThread == NULL)
 	{
 		SYNCLOG("can't find src! %s->%s:%d", src_name, dst_name, msg_id);
-		return ERRCODE_can_not_find_thread;
+		return RetCode_can_not_find_thread;
 	}
 	pDstThread = sync_server_find_thread(dst_name);
 	if(pDstThread == NULL)
 	{
 		SYNCLOG("can't find dst! %s->%s:%d", src_name, dst_name, msg_id);
-		return ERRCODE_can_not_find_thread;
+		return RetCode_can_not_find_thread;
 	}
 
 	pBroadcadt = _sync_server_broadcadt_add(dst_name);
@@ -295,7 +295,7 @@ _sync_server_broadcadt_list_add_one(
 
 	SYNCTRACE("%s->%s:%d", src_name, dst_name, msg_id);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
@@ -333,7 +333,7 @@ _sync_server_broadcadt_list_del_one(s8 *src_name, s8 *dst_name, ub msg_id)
 	SYNCTRACE("%s->%s:%d", src_name, dst_name, msg_id);
 }
 
-static ErrCode
+static RetCode
 _sync_server_broadcadt(
 	SyncClient *pSrcClient,
 	ThreadId route_src, s8 *src,
@@ -343,7 +343,7 @@ _sync_server_broadcadt(
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	u8 *msg_body, ub msg_len)
 {
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	switch(msg_type)
 	{
@@ -440,16 +440,16 @@ sync_server_broadcadt_init(void)
 {
 	t_lock_reset(&_broadcadt_pv);
 
-	pSyncServerBroadcadt = base_kv_malloc(SERVER_BROADCADT_TABLE_NAME, KVAttrib_ram, 0, NULL);
+	pSyncServerBroadcadt = base_ramkv_malloc(SERVER_BROADCADT_TABLE_NAME, KvAttrib_ram, 0, NULL);
 }
 
 void
 sync_server_broadcadt_exit(void)
 {
-	base_kv_free(pSyncServerBroadcadt, _sync_server_broadcadt_del);
+	base_ramkv_free(pSyncServerBroadcadt, _sync_server_broadcadt_del);
 }
 
-ErrCode
+RetCode
 sync_server_broadcadt(
 	SyncClient *pSrcClient,
 	ThreadId route_src, s8 *src,
@@ -459,11 +459,11 @@ sync_server_broadcadt(
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	u8 *msg_body, ub msg_len)
 {
-	ErrCode ret = ERRCODE_Resource_conflicts;
+	RetCode ret = RetCode_Resource_conflicts;
 
 	SYNCTRACE("%s->%s:%d", src, dst, msg_id);
 
-	SAFEZONEv5W(_broadcadt_pv, ret = _sync_server_broadcadt(
+	SAFECODEv2W(_broadcadt_pv, ret = _sync_server_broadcadt(
 			pSrcClient,
 			route_src, src,
 			route_dst, dst,
@@ -480,7 +480,7 @@ sync_server_broadcadt(
 void
 sync_server_broadcadt_the_thread_has_msg(SyncClient *pDstClient, s8 *thread_name)
 {
-	SAFEZONEv5R(_broadcadt_pv, _sync_server_broadcadt_the_thread_has_msg(pDstClient, thread_name); );
+	SAFECODEv2R(_broadcadt_pv, _sync_server_broadcadt_the_thread_has_msg(pDstClient, thread_name); );
 }
 
 ub
@@ -498,7 +498,7 @@ sync_server_broadcadt_info(s8 *msg_ptr, ub msg_len)
 
 	while(index < 10240000)
 	{
-		pBroadcadt = base_kv_inq_index_ptr(pSyncServerBroadcadt, index);
+		pBroadcadt = base_ramkv_inq_index_ptr(pSyncServerBroadcadt, index);
 		if(pBroadcadt == NULL)
 		{
 			break;

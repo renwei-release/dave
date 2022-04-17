@@ -39,7 +39,7 @@ typedef struct {
 
 	ub recv_index;
 
-	DaveLock opt_pv;
+	TLock opt_pv;
 
 	void *ptr;
 } HTTPRecv;
@@ -48,7 +48,7 @@ static dave_bool _http_recv_req(HTTPRecv *pRecv, s32 socket);
 
 static ThreadId _socket_thread_id = INVALID_SOCKET_ID;
 static HTTPRecv _http_recv[HTTP_RECV_MAX];
-static DaveLock _http_req_serial_pv;
+static TLock _http_req_serial_pv;
 static volatile ub _http_req_serial = 0;
 
 static ub
@@ -56,7 +56,7 @@ _http_recv_serial(void)
 {
 	ub serial = 0;
 
-	dave_spin_lock(&_http_req_serial_pv);
+	t_lock_spin(&_http_req_serial_pv);
 
 	{
 		if(_http_req_serial == HTTP_INVALID_REQ_SERIAL)
@@ -67,7 +67,7 @@ _http_recv_serial(void)
 		serial = _http_req_serial ++;
 	}
 
-	dave_spin_unlock(&_http_req_serial_pv);
+	t_unlock_spin(&_http_req_serial_pv);
 
 	return serial;
 }
@@ -80,7 +80,7 @@ _http_recv_recv_to_ptr(HTTPRecv *pRecv)
 	serial = pRecv->req_serial;
 	recv_index = (pRecv->recv_index) & 0xffffffff;
 
-	SAFEZONEv3(pRecv->opt_pv, {
+	SAFECODEv1(pRecv->opt_pv, {
 
 		if((pRecv->socket == INVALID_SOCKET_ID) && (pRecv->req_serial != HTTP_INVALID_REQ_SERIAL))
 		{
@@ -118,7 +118,7 @@ _http_recv_ptr_to_recv(void *ptr)
 
 	check_error = dave_true;
 
-	SAFEZONEv3(pRecv->opt_pv, {
+	SAFECODEv1(pRecv->opt_pv, {
 
 		if(pRecv->req_serial != serial)
 		{
@@ -190,7 +190,7 @@ _http_recv_data_reset_all(void)
 
 		_http_recv_data_reset(&_http_recv[recv_index]);
 
-		dave_lock_reset(&(_http_recv[recv_index].opt_pv));
+		t_lock_reset(&(_http_recv[recv_index].opt_pv));
 	}
 }
 
@@ -712,7 +712,7 @@ _http_recv_safe_read(MSGBODY *msg)
 
 	pRecv->ptr = _http_recv_recv_to_ptr(pRecv);
 
-	SAFEZONEv3(pRecv->opt_pv, _http_recv_read(pRecv, pRead,  msg->msg_build_serial); );
+	SAFECODEv1(pRecv->opt_pv, _http_recv_read(pRecv, pRead,  msg->msg_build_serial); );
 
 	dave_mfree(pRead->data);
 }
@@ -736,7 +736,7 @@ _http_recv_safe_rsp(MSGBODY *msg)
 	}
 	else
 	{
-		SAFEZONEv3(pRecv->opt_pv, _http_recv_rsp(pRecv, pRsp); );
+		SAFECODEv1(pRecv->opt_pv, _http_recv_rsp(pRecv, pRsp); );
 	}
 
 	dave_mfree(pRsp->content);
@@ -751,7 +751,7 @@ http_recv_data_init(void)
 
 	_http_recv_data_reset_all();
 
-	dave_lock_reset(&_http_req_serial_pv);
+	t_lock_reset(&_http_req_serial_pv);
 	_http_req_serial = 0;
 
 	reg_msg(SOCKET_READ, _http_recv_safe_read);
@@ -774,7 +774,7 @@ http_recv_data_plugin(s32 socket, ub nginx_port, ub msg_serial)
 
 	pRecv = &_http_recv[socket % HTTP_RECV_MAX];
 
-	SAFEZONEv3(pRecv->opt_pv, _http_recv_data_plugin(pRecv, socket, nginx_port, msg_serial); );
+	SAFECODEv1(pRecv->opt_pv, _http_recv_data_plugin(pRecv, socket, nginx_port, msg_serial); );
 }
 
 void
@@ -786,6 +786,6 @@ http_recv_data_plugout(s32 socket)
 
 	pRecv = &_http_recv[socket % HTTP_RECV_MAX];
 
-	SAFEZONEv3(pRecv->opt_pv, _http_recv_data_plugout(pRecv, socket); );
+	SAFECODEv1(pRecv->opt_pv, _http_recv_data_plugout(pRecv, socket); );
 }
 

@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_aes.h"
 #include "dave_aes_i.h"
 
@@ -871,6 +862,4 @@ u32 dave_rotr(u32 val, int bits)
 {
 	return (val >> bits) | (val << (32 - bits));
 }
-
-#endif
 

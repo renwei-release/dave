@@ -17,8 +17,8 @@
 
 typedef struct {
 	s8 cmd[DOS_CMD_LEN + 1];
-	cmd_process_fun fun;
-	help_process_fun help_fun;
+	dos_cmd_fun cmd_fun;
+	dos_help_fun help_fun;
 	sb life_cycle;
 	void *next;
 } DOSCmdStruct;
@@ -183,9 +183,9 @@ _show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 }
 
 static void
-_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, ErrCode ret)
+_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, RetCode ret)
 {
-	dos_print("Sorry(%s), you entered an invalid command:\n%s or param:\n%s", errorstr(ret), cmd_ptr, param);
+	dos_print("Sorry(%s), you entered an invalid command:\n%s or param:\n%s", retstr(ret), cmd_ptr, param);
 }
 
 static void
@@ -198,7 +198,7 @@ static void
 _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len)
 {
 	DOSCmdStruct *pCmd;
-	ErrCode ret;
+	RetCode ret;
 
 	if(_dos_get_cmd_and_param(cmd_ptr, &cmd_len, param, &param_len, input, input_len) == dave_false)
 	{
@@ -215,12 +215,12 @@ _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, u
 
 	DOSLOG("%s %s", cmd_ptr, param);
 
-	ret = ERRCODE_Arithmetic_error;
-	if(pCmd->fun != NULL)
+	ret = RetCode_Arithmetic_error;
+	if(pCmd->cmd_fun != NULL)
 	{
-		ret = (pCmd->fun)(param, param_len);
+		ret = (pCmd->cmd_fun)(param, param_len);
 	}
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		if(pCmd->help_fun == NULL)
 		{
@@ -233,33 +233,33 @@ _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, u
 	}
 }
 
-static ErrCode
-_register_cmd_list(s8 *cmd, cmd_process_fun fun, help_process_fun help_fun, sb life_cycle)
+static RetCode
+_register_cmd_list(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun, sb life_cycle)
 {
 	ub cmd_len = dave_strlen(cmd);
 	DOSCmdStruct *pNewCmd;
 
 	if((cmd_len > DOS_CMD_LEN)
-		|| (fun == NULL))
-		return ERRCODE_Invalid_parameter;
+		|| (cmd_fun == NULL))
+		return RetCode_Invalid_parameter;
 	
 	if(_find_the_cmd(cmd, cmd_len) != NULL)
-		return ERRCODE_Resource_conflicts;
+		return RetCode_Resource_conflicts;
 
 	pNewCmd = dave_malloc(sizeof(DOSCmdStruct));
 	if(pNewCmd == NULL)
-		return ERRCODE_Memory_full;
+		return RetCode_Memory_full;
 
 	dave_memset(pNewCmd->cmd, 0x00, DOS_CMD_LEN + 1);
 	dave_memcpy(pNewCmd->cmd, cmd, cmd_len);
-	pNewCmd->fun = fun;
+	pNewCmd->cmd_fun = cmd_fun;
 	pNewCmd->help_fun = help_fun;
 	pNewCmd->life_cycle = life_cycle;
 	pNewCmd->next = NULL;
 
 	_add_cmd_list(pNewCmd);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -312,7 +312,7 @@ void
 dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 {
 	DOSCmdStruct *pCmd;
-	ErrCode ret;
+	RetCode ret;
 
 	pCmd = _find_the_cmd(cmd_ptr, cmd_len);
 	if(pCmd == NULL)
@@ -324,23 +324,23 @@ dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 	if(pCmd->help_fun != NULL)
 	{
 		ret = (pCmd->help_fun)();
-		if(ret != ERRCODE_OK)
+		if(ret != RetCode_OK)
 		{
 			_show_run_help_failed_screen(cmd_ptr, cmd_len);
 		}
 	}
 }
 
-ErrCode
-dos_cmd_register(char *cmd, cmd_process_fun fun, help_process_fun help_fun)
+RetCode
+dos_cmd_reg(char *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
 {
-	return _register_cmd_list((s8 *)cmd, fun, help_fun, -1);
+	return _register_cmd_list((s8 *)cmd, cmd_fun, help_fun, -1);
 }
 
-ErrCode
-dos_cmd_talk_register(s8 *cmd, cmd_process_fun fun, help_process_fun help_fun)
+RetCode
+dos_cmd_talk_reg(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
 {
-	return _register_cmd_list(cmd, fun, help_fun, 1);
+	return _register_cmd_list(cmd, cmd_fun, help_fun, 1);
 }
 
 MBUF *

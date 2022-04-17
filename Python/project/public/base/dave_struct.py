@@ -18,6 +18,22 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
+class HttpKeyValue (Structure):
+	_fields_ = [
+		("key", c_char * DAVE_HTTP_KEY_LEN),
+		("value", c_char * DAVE_HTTP_VALUE_LEN),
+]
+
+class MBUF (Structure):
+	_fields_ = [
+		("next", c_void_p),
+		("payload", c_void_p),
+		("tot_len", c_longlong),
+		("len", c_longlong),
+		("ref", c_longlong),
+		("alloc_len", c_longlong),
+]
+
 class SocNetInfoIp (Structure):
 	_fields_ = [
 		("ver", c_int),
@@ -46,29 +62,6 @@ class SocNetInfo (Structure):
 		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
 ]
 
-class IPBaseInfo (Structure):
-	_fields_ = [
-		("protocol", c_int),
-		("ver", c_int),
-		("src_ip", c_char * 16),
-		("src_port", c_ushort),
-		("dst_ip", c_char * 16),
-		("dst_port", c_ushort),
-		("keepalive_second", c_longlong),
-		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("fixed_port_flag", c_int),
-]
-
-class MBUF (Structure):
-	_fields_ = [
-		("next", c_void_p),
-		("payload", c_void_p),
-		("tot_len", c_longlong),
-		("len", c_longlong),
-		("ref", c_longlong),
-		("alloc_len", c_longlong),
-]
-
 class DateStruct (Structure):
 	_fields_ = [
 		("year", c_ushort),
@@ -92,9 +85,16 @@ class BuildingBlocks (Structure):
 		("release_quantity", c_ulonglong),
 ]
 
-class HttpKeyValue (Structure):
+class IPBaseInfo (Structure):
 	_fields_ = [
-		("key", c_char * DAVE_HTTP_KEY_LEN),
-		("value", c_char * DAVE_HTTP_VALUE_LEN),
+		("protocol", c_int),
+		("ver", c_int),
+		("src_ip", c_char * 16),
+		("src_port", c_ushort),
+		("dst_ip", c_char * 16),
+		("dst_port", c_ushort),
+		("keepalive_second", c_longlong),
+		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
+		("fixed_port_flag", c_int),
 ]
 

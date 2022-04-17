@@ -625,7 +625,7 @@ thread_thread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub thr
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv3(_thread_thread_pv, {
+	SAFECODEv1(_thread_thread_pv, {
 
 		ret = _thread_safe_creat(thread_name, thread_index, thread_id, thread_number);
 
@@ -637,7 +637,7 @@ thread_thread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub thr
 void
 thread_thread_die(ub thread_index)
 {
-	SAFEZONEv3(_thread_thread_pv, {
+	SAFECODEv1(_thread_thread_pv, {
 
 		_thread_safe_die(thread_index);		
 

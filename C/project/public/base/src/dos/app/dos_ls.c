@@ -13,11 +13,11 @@
 #include "dos_cmd.h"
 #include "dos_log.h"
 
-static ErrCode
+static RetCode
 _dos_show_support_cmd_list(s8 *param_ptr, ub param_len)
 {
 	dos_cmd_list_show();
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -25,7 +25,7 @@ _dos_show_support_cmd_list(s8 *param_ptr, ub param_len)
 void
 dos_ls_reset(void)
 {
-	dos_cmd_register("ls", _dos_show_support_cmd_list, NULL);
+	dos_cmd_reg("ls", _dos_show_support_cmd_list, NULL);
 }
 
 #endif

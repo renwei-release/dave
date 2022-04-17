@@ -63,9 +63,9 @@ def _find_struct_list_from_file_list(file_list):
 # =====================================================================
 
 
-def find_msg_struct_table():
-    file_list = find_msg_file_list()
-    struct_list, include_list = _find_struct_list_from_file_list(file_list)
+def find_msg_struct_table(file_list):
+    msg_file_list = find_msg_file_list(file_list)
+    struct_list, include_list = _find_struct_list_from_file_list(msg_file_list)
 
     struct_table = {}
     msg_table = {}

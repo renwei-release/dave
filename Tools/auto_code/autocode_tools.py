@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import re
+import sys
 
 
 _copyright_message_for_c_and_go = "\
@@ -42,6 +43,7 @@ def _get_struct_body_data(body):
     data_name = ""
     data_dimension = ""
 
+    # get data_types
     body_index = 0
     while body_index < len(body):
         if body[body_index] != ' ':
@@ -58,6 +60,7 @@ def _get_struct_body_data(body):
             data_types = body[:body_index]
             break
 
+    # get data_name
     body = body[body_index:]
     body_index = 0
     while body_index < len(body):
@@ -70,6 +73,7 @@ def _get_struct_body_data(body):
             break
         body_index += 1
 
+    # get data_dimension
     body = body[body_index:]
     body_index = 0
     while body_index < len(body):
@@ -90,21 +94,30 @@ def _get_struct_body_data(body):
 
 def _struct_data_to_dict(data_name, data_types, data_dimension, struct_line):
     if (data_types != "") and (not re.search('[A-Z,a-z,0-9,"_"]+?', data_types)):
-        print(f"data_name:{data_name} / {data_types} / {struct_line}")
+        print(f"1 _struct_data_to_dict data_name:{data_name} data_types:{data_types} struct_line:{struct_line}")
     if data_types == "struct":
-        print(f"data_name:{data_name} / {data_types} / {struct_line}")
+        print(f"2 _struct_data_to_dict data_name:{data_name} data_types:{data_types} struct_line:{struct_line}")
 
     base_data = {}
 
     types_len = len(data_types)
-    if data_types[types_len-1] == '*':
-        data_types = data_types[0:types_len-1]+'_ptr'
+    if types_len == 0:
+        return base_data
 
     base_data["n"] = data_name
+
+    if data_types[types_len-1] == '*':
+        base_data["p"] = True
+        data_types = data_types[0:types_len-1]
+    else:
+        base_data["p"] = False
+
     base_data["t"] = data_types
- 
+
     if data_dimension != "":
         base_data["d"] = data_dimension
+    else:
+        base_data["d"] = None
     return base_data
 
 
@@ -156,6 +169,73 @@ def _struct_sort_by_before_and_after_calls(struct_data):
     return new_struct_data
 
 
+def _leaving_only_the_data_structure_string(string_ptr):
+    new_string = ''
+
+    string_len = len(string_ptr)
+    str_temp_buf = ''
+    find_left_brace = False
+    find_right_brace = False
+    for string_index in range(string_len):
+        str_temp_buf += string_ptr[string_index]
+
+        reset_temp_buf = False
+
+        if len(str_temp_buf) <= 14:
+            if str_temp_buf != 'typedef struct'[0:len(str_temp_buf)]:
+                str_temp_buf = ''
+                find_left_brace = False
+                find_right_brace = False
+        elif len(str_temp_buf) > 14:
+            if string_ptr[string_index] == '{':
+                if find_left_brace == False:
+                    find_left_brace = True
+                else:
+                    reset_temp_buf = True
+            elif string_ptr[string_index] == '}':
+                find_right_brace = True
+            elif string_ptr[string_index] == ';':
+                if find_left_brace == True:
+                    if find_right_brace == True:
+                        if str_temp_buf.count('struct') == 1:
+                            new_string += str_temp_buf + ' '
+                        reset_temp_buf = True
+                else:
+                    reset_temp_buf = True
+            elif string_ptr[string_index] != ' ':
+                if find_left_brace == False:
+                    reset_temp_buf = True
+
+        if reset_temp_buf == True:
+            str_temp_buf = ''
+            find_left_brace = False
+            find_right_brace = False
+
+    return new_string
+
+
+def _remove_annotation_data(data_ptr):
+    data_len = len(data_ptr)
+    new_data = ''
+
+    get_data_flag = True
+    for data_index in range(data_len):
+        if ((data_len - data_index) >= 2)\
+            and (data_ptr[data_index] == '/')\
+            and (data_ptr[data_index + 1] == '*'):
+            get_data_flag = False
+            continue
+        if (get_data_flag == False)\
+            and (data_ptr[data_index - 1] == '*')\
+            and (data_ptr[data_index] == '/'):
+            get_data_flag = True
+            continue
+        if get_data_flag == True:
+            new_data += data_ptr[data_index]
+
+    return new_data
+
+
 # =====================================================================
 
 
@@ -163,13 +243,14 @@ def remove_invalid_data(file_data):
     #
     # 需要按步骤去除
     #
-    file_data = re.sub("//.*?\n", " ", file_data)
+    file_data = re.sub("//.*?\r\n", "", file_data)
+    file_data = re.sub("//.*?\n", "", file_data)
     file_data = re.sub("\n|\r\n|\t", " ", file_data)
     return file_data
 
 
 def remove_annotation_data(file_data):
-    file_data = re.sub("/\*.*?\*/", "", file_data)
+    file_data = _remove_annotation_data(file_data)
     return remove_invalid_data(file_data)
 
 
@@ -201,6 +282,7 @@ def get_struct_data(struct_data):
 
 def get_struct_list(file_data):
     file_data = remove_annotation_data(file_data)
+    file_data = _leaving_only_the_data_structure_string(file_data)
     struct_list = re.findall("typedef struct.*?\{.*?\}.*?;", file_data)
     _check_struct_list_has_invalid_define(struct_list)
     return struct_list
@@ -224,6 +306,13 @@ def copyright_message(file_id, copy_flag='c'):
         file_id.write(_copyright_message_for_c_and_go)
 
 
+def dividing_line(file_id, type_flag='c'):
+    if type_flag == 'c' or type_flag == 'go':
+        file_id.write("// =====================================================================\n")
+    elif type_flag == 'python':
+        file_id.write("# =====================================================================\n")
+
+
 def include_message(file_id, include_list):
     include_list.sort()
     head_list2 = []
@@ -236,25 +325,19 @@ def include_message(file_id, include_list):
     file_id.write("\n")
 
 
-def struct_on_the_table(struct_type, struct_table=None, union_table=None):
-    no_ptr_struct_type = struct_type.replace("_ptr", "")
-    if no_ptr_struct_type == struct_type:
-        has_ptr = False
-    else:
-        has_ptr = True
-    is_struct = True
-    if struct_table != None:
-        if struct_table.get(struct_type, None) != None:
-            return is_struct, has_ptr, struct_type
-        if struct_table.get(no_ptr_struct_type, None) != None:
-            return is_struct, has_ptr, no_ptr_struct_type
-    if union_table != None:
-        if union_table.get(struct_type, None) != None:
-            return is_struct, has_ptr, struct_type
-        if union_table.get(no_ptr_struct_type, None) != None:
-            return is_struct, has_ptr, no_ptr_struct_type
-    is_struct = False
-    return is_struct, has_ptr, struct_type
+def struct_on_the_table(struct_type, struct_table):
+    if struct_table.get(struct_type, None) != None:
+        return True
+    return False
+
+
+def type_on_the_table(type_name, struct_table):
+    for struct_key in struct_table:
+        msg_struct = struct_table[struct_key]
+        for msg_member in msg_struct:
+            if msg_member['t'] == type_name:
+                return True
+    return False
 
 
 def struct_dimension_decomposition(struct_dimension):
@@ -270,3 +353,18 @@ def struct_sort_by_before_and_after_calls(struct_data):
     for loop_multiple_times_to_fully_sort in range(3):
         struct_data = _struct_sort_by_before_and_after_calls(struct_data)
     return struct_data
+
+
+def is_digital_string(string_data):
+    for string_index in range(len(string_data)):
+        find_digital_string = False
+        if ((string_data[string_index] >= '0') and (string_data[string_index] <= '9')) \
+            or ((string_data[string_index] >= 'a') and (string_data[string_index] <= 'f')) \
+            or ((string_data[string_index] >= 'A') and (string_data[string_index] <= 'F')) \
+            or ((string_index == 0) and (string_data[string_index] == '-')) \
+            or (string_data[string_index] == 'x') \
+            or (string_data[string_index] == 'X'):
+            find_digital_string = True
+        if find_digital_string == False:
+            return False
+    return True

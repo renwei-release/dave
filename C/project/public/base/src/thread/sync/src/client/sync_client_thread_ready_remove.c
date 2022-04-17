@@ -34,11 +34,11 @@ typedef struct {
 } ThreadActive;
 
 static TLock _thread_active_pv;
-static void *_thread_active_kv = NULL;
+static void *_thread_active_ramkv = NULL;
 static ThreadId _sync_thread_id = INVALID_THREAD_ID;
 
-static void _sync_client_thread_active_timer(void *kv, s8 *key);
-static void _sync_client_thread_kv_empty_check(void);
+static void _sync_client_thread_active_timer(void *ramkv, s8 *key);
+static void _sync_client_thread_ramkv_empty_check(void);
 
 static void
 _sync_client_thread_ready_msg(s8 *thread_name, ThreadId thread_id, s8 *globally_identifier)
@@ -117,12 +117,12 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 
 	dave_snprintf(active_key, sizeof(active_key), "%lx%lx", pServer, pThread);
 
-	pActive = base_kv_inq_key_ptr(_thread_active_kv, active_key);
+	pActive = base_ramkv_inq_key_ptr(_thread_active_ramkv, active_key);
 	if(pActive == NULL)
 	{
 		pActive = _sync_client_thread_active_malloc(ready_or_remove_flag, thread_id, pServer, pThread);
 
-		base_kv_add_key_ptr(_thread_active_kv, active_key, pActive);
+		base_ramkv_add_key_ptr(_thread_active_ramkv, active_key, pActive);
 	}
 	else
 	{
@@ -149,21 +149,21 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 				pActive->ready_or_remove_flag==dave_true?"ready":"remove",
 				ready_or_remove_flag==dave_true?"ready":"remove");
 
-			_sync_client_thread_active_free(base_kv_del_key_ptr(_thread_active_kv, active_key));
+			_sync_client_thread_active_free(base_ramkv_del_key_ptr(_thread_active_ramkv, active_key));
 		}
 	}
 }
 
 static void
-_sync_client_thread_active_pop(void *kv, s8 *key)
+_sync_client_thread_active_pop(void *ramkv, s8 *key)
 {
-	ThreadActive *pActive = base_kv_inq_key_ptr(_thread_active_kv, key);
+	ThreadActive *pActive = base_ramkv_inq_key_ptr(_thread_active_ramkv, key);
 	dave_bool free_flag = dave_false;
 
 	if(pActive == NULL)
 	{
 		SYNCABNOR("Arithmetic error!");
-		base_kv_del_key_ptr(_thread_active_kv, key);
+		base_ramkv_del_key_ptr(_thread_active_ramkv, key);
 	}
 	else
 	{
@@ -192,7 +192,7 @@ _sync_client_thread_active_pop(void *kv, s8 *key)
 
 		if(free_flag == dave_true)
 		{
-			_sync_client_thread_active_free(base_kv_del_key_ptr(_thread_active_kv, key));
+			_sync_client_thread_active_free(base_ramkv_del_key_ptr(_thread_active_ramkv, key));
 		}
 	}
 }
@@ -266,45 +266,45 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 	}
 }
 
-static ErrCode
-_sync_client_thread_kv_recycle(void *kv, s8 *key)
+static RetCode
+_sync_client_thread_ramkv_recycle(void *ramkv, s8 *key)
 {
-	ThreadActive *pActive = base_kv_del_key_ptr(kv, key);
+	ThreadActive *pActive = base_ramkv_del_key_ptr(ramkv, key);
 
 	if(pActive == NULL)
-		return ERRCODE_empty_data;
+		return RetCode_empty_data;
 
 	_sync_client_thread_active_free(pActive);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static void
 _sync_client_thread_active_timer_malloc(void)
 {
-	if(_thread_active_kv == NULL)
+	if(_thread_active_ramkv == NULL)
 	{
 		SYNCTRACE("");
-		_thread_active_kv = base_kv_malloc((s8 *)"threadactive", KVAttrib_list, 1, _sync_client_thread_active_timer);
+		_thread_active_ramkv = base_ramkv_malloc((s8 *)"threadactive", KvAttrib_list, 1, _sync_client_thread_active_timer);
 	}
 }
 
 static void
 _sync_client_thread_active_timer_free(void)
 {
-	if(_thread_active_kv != NULL)
+	if(_thread_active_ramkv != NULL)
 	{
-		base_kv_free(_thread_active_kv, _sync_client_thread_kv_recycle);
-		_thread_active_kv = NULL;
+		base_ramkv_free(_thread_active_ramkv, _sync_client_thread_ramkv_recycle);
+		_thread_active_ramkv = NULL;
 	}
 }
 
 static void
-_sync_client_thread_kv_empty_check(void)
+_sync_client_thread_ramkv_empty_check(void)
 {
-	if(_thread_active_kv != NULL)
+	if(_thread_active_ramkv != NULL)
 	{
-		if(base_kv_inq_top_ptr(_thread_active_kv) == NULL)
+		if(base_ramkv_inq_top_ptr(_thread_active_ramkv) == NULL)
 		{
 			_sync_client_thread_active_timer_free();
 		}
@@ -314,19 +314,19 @@ _sync_client_thread_kv_empty_check(void)
 static void
 _sync_client_thread_temporarily_define_message(MSGBODY *thread_msg)
 {
-	SAFEZONEv3(_thread_active_pv, _sync_client_thread_kv_empty_check(););
+	SAFECODEv1(_thread_active_pv, _sync_client_thread_ramkv_empty_check(););
 }
 
 static void
-_sync_client_thread_active_timer(void *kv, s8 *key)
+_sync_client_thread_active_timer(void *ramkv, s8 *key)
 {
-	SAFEZONEidlev3(_thread_active_pv, {
+	SAFECODEidlev1(_thread_active_pv, {
 
-		if(_thread_active_kv != NULL)
+		if(_thread_active_ramkv != NULL)
 		{
 			if(base_power_state() == dave_true)
 			{
-				_sync_client_thread_active_pop(kv, key);
+				_sync_client_thread_active_pop(ramkv, key);
 			}
 		}
 
@@ -351,7 +351,7 @@ sync_client_thread_ready_remove_init(void)
 void
 sync_client_thread_ready_remove_exit(void)
 {
-	SAFEZONEv3(_thread_active_pv, _sync_client_thread_active_timer_free(););
+	SAFECODEv1(_thread_active_pv, _sync_client_thread_active_timer_free(););
 
 	unreg_msg(MSGID_TEMPORARILY_DEFINE_MESSAGE);
 
@@ -369,11 +369,11 @@ sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 
 	SYNCTRACE("%s %s", pServer->globally_identifier, pThread->thread_name);
 
-	SAFEZONEv3(_thread_active_pv, {
+	SAFECODEv1(_thread_active_pv, {
 
 		_sync_client_thread_active_timer_malloc();
 		_sync_client_thread_ready(pServer, pThread);
-		_sync_client_thread_kv_empty_check();
+		_sync_client_thread_ramkv_empty_check();
 
 	} );
 }
@@ -394,11 +394,11 @@ sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 		pThread->shadow_index_ready_remove_counter[pServer->shadow_index],
 		pThread->shadow_index_ready_remove_counter[pServer->server_index]);
 
-	SAFEZONEv3(_thread_active_pv, {
+	SAFECODEv1(_thread_active_pv, {
 
 		_sync_client_thread_active_timer_malloc();
 		_sync_client_thread_remove(pServer, pThread);
-		_sync_client_thread_kv_empty_check();
+		_sync_client_thread_ramkv_empty_check();
 
 	} );
 }

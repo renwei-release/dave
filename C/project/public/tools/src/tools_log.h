@@ -7,10 +7,9 @@
 
 #ifndef __TOOLS_LOG_H__
 #define __TOOLS_LOG_H__
-#include "tools_macro.h"
 #include "dave_base.h"
 
-#if defined(__TOOLS_ALPHA_VERSION__)
+#if defined(LEVEL_PRODUCT_alpha)
 // #define TOOLS_DEBUG
 #endif
 

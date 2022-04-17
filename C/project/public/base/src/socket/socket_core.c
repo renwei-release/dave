@@ -24,7 +24,7 @@ typedef struct {
 static volatile s32 _malloc_socket_index = 0;
 static TLock _socket_opt_pv;
 static SocketCore _socket_core[SOCKET_MAX];
-static void *_socket_map_kv = NULL;
+static void *_socket_map_ramkv = NULL;
 
 static inline ub
 _socket_core_total_number(s8 *page_thread)
@@ -61,7 +61,7 @@ _socket_core_map_number(s8 *page_thread)
 
 	for(index=0; index<SOCKET_MAX*2; index++)
 	{
-		pMap = base_kv_inq_index_ptr(_socket_map_kv, index);
+		pMap = base_ramkv_inq_index_ptr(_socket_map_ramkv, index);
 		if(pMap == NULL)
 			break;
 
@@ -111,10 +111,10 @@ _socket_core_map_free(s32 os_socket, SocketCore *pCore)
 
 	if(os_socket >= 0)
 	{
-		pMap = base_kv_inq_ub_ptr(_socket_map_kv, (ub)os_socket);
+		pMap = base_ramkv_inq_ub_ptr(_socket_map_ramkv, (ub)os_socket);
 		if((pMap != NULL) && ((pMap->pCore == pCore) || (pCore == NULL)))
 		{
-			pMap = base_kv_del_ub_ptr(_socket_map_kv, (ub)os_socket);
+			pMap = base_ramkv_del_ub_ptr(_socket_map_ramkv, (ub)os_socket);
 			if(pMap != NULL)
 			{
 				dave_free(pMap);
@@ -130,7 +130,7 @@ _socket_core_map_malloc(s32 os_socket, SocketCore *pCore)
 
 	if(os_socket >= 0)
 	{
-		pMap = base_kv_inq_ub_ptr(_socket_map_kv, (ub)os_socket);
+		pMap = base_ramkv_inq_ub_ptr(_socket_map_ramkv, (ub)os_socket);
 		if(pMap != NULL)
 		{
 			/*
@@ -158,7 +158,7 @@ _socket_core_map_malloc(s32 os_socket, SocketCore *pCore)
 
 		pCore->os_socket = os_socket;
 
-		base_kv_add_ub_ptr(_socket_map_kv, (ub)os_socket, pMap);
+		base_ramkv_add_ub_ptr(_socket_map_ramkv, (ub)os_socket, pMap);
 	}
 }
 
@@ -168,22 +168,22 @@ _socket_core_map_find(s32 os_socket)
 	if(os_socket < 0)
 		return NULL;
 
-	return (SocketMap *)base_kv_inq_ub_ptr(_socket_map_kv, (ub)os_socket);
+	return (SocketMap *)base_ramkv_inq_ub_ptr(_socket_map_ramkv, (ub)os_socket);
 }
 
-static inline ErrCode
-_socket_core_map_clean(void *kv, s8 *key)
+static inline RetCode
+_socket_core_map_clean(void *ramkv, s8 *key)
 {
-	SocketMap *pMap = base_kv_del_key_ptr(_socket_map_kv, NULL);
+	SocketMap *pMap = base_ramkv_del_key_ptr(_socket_map_ramkv, NULL);
 
 	if(pMap == NULL)
 	{
-		return ERRCODE_empty_data;
+		return RetCode_empty_data;
 	}
 
 	dave_free(pMap);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static inline SocketCore *
@@ -217,7 +217,7 @@ _socket_core_malloc(ThreadId owner, SOCKETTYPE type, SocNetInfo *pNetInfo, void 
 		return NULL;
 	}
 
-	SAFEZONEv5W(pCore->opt_pv, {
+	SAFECODEv2W(pCore->opt_pv, {
 
 		pCore->use_flag = dave_true;
 
@@ -354,7 +354,7 @@ _socket_core_safe_malloc(ThreadId owner, SOCKETTYPE type, SocNetInfo *pNetInfo, 
 {
 	SocketCore *pCore = NULL;
 
-	SAFEZONEv5W(_socket_opt_pv, { pCore = _socket_core_malloc(owner, type, pNetInfo, user_ptr, os_socket, fun, line); } );
+	SAFECODEv2W(_socket_opt_pv, { pCore = _socket_core_malloc(owner, type, pNetInfo, user_ptr, os_socket, fun, line); } );
 
 	return pCore;
 }
@@ -362,7 +362,7 @@ _socket_core_safe_malloc(ThreadId owner, SOCKETTYPE type, SocNetInfo *pNetInfo, 
 static inline void
 _socket_core_safe_free(SocketCore *pCore, s8 *fun, ub line)
 {
-	SAFEZONEv5W(_socket_opt_pv, { _socket_core_free(pCore, fun, line); } );
+	SAFECODEv2W(_socket_opt_pv, { _socket_core_free(pCore, fun, line); } );
 }
 
 static inline SocketCore *
@@ -376,7 +376,7 @@ _socket_core_safe_find(s32 socket_external_index)
 		return NULL;
 	}
 
-	SAFEZONEv5R(_socket_opt_pv, { pCore = _socket_core_find(socket_external_index); } );
+	SAFECODEv2R(_socket_opt_pv, { pCore = _socket_core_find(socket_external_index); } );
 
 	return pCore;
 }
@@ -386,7 +386,7 @@ _socket_core_external_safe_find(s32 socket_external_index, s32 os_socket)
 {
 	SocketCore *pCore = NULL;
 
-	SAFEZONEv5R(_socket_opt_pv, { pCore = _socket_core_external_find(socket_external_index, os_socket); } );
+	SAFECODEv2R(_socket_opt_pv, { pCore = _socket_core_external_find(socket_external_index, os_socket); } );
 
 	return pCore;
 }
@@ -414,7 +414,7 @@ socket_core_init(void)
 		_socket_core_reset(&_socket_core[socket_internal_index]);
 	}
 
-	_socket_map_kv = base_kv_malloc((s8 *)"socketmap", KVAttrib_list, 0, NULL);
+	_socket_map_ramkv = base_ramkv_malloc((s8 *)"socketmap", KvAttrib_list, 0, NULL);
 }
 
 void
@@ -422,7 +422,7 @@ socket_core_exit(void)
 {
 	s32 socket_internal_index;
 
-	SAFEZONEv5W(_socket_opt_pv, {
+	SAFECODEv2W(_socket_opt_pv, {
 
 		for(socket_internal_index=0; socket_internal_index<SOCKET_MAX; socket_internal_index++)
 		{
@@ -431,9 +431,9 @@ socket_core_exit(void)
 
 	} );
 
-	base_kv_free(_socket_map_kv, _socket_core_map_clean);
+	base_ramkv_free(_socket_map_ramkv, _socket_core_map_clean);
 
-	_socket_map_kv = NULL;
+	_socket_map_ramkv = NULL;
 }
 
 SocketCore *

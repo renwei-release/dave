@@ -14,5 +14,10 @@
 void base_dos_init(void);
 void base_dos_exit(void);
 
+typedef RetCode (* dos_cmd_fun)(s8 *param_ptr, ub param_len);
+typedef RetCode (* dos_help_fun)(void);
+RetCode dos_cmd_reg(char *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun);
+void dos_print(const char *fmt, ...);
+
 #endif
 

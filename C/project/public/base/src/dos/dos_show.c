@@ -56,28 +56,6 @@ dos_show_exit(void)
 }
 
 void
-dos_view(s8 *msg)
-{
-	ub msg_len;
-	s8 *data;
-	ub data_index;
-
-	msg_len = dave_strlen(msg);
-	data = dave_malloc(msg_len + 64);
-	if(data != NULL)
-	{
-		data_index = 0;
-		dave_memcpy(&data[data_index], msg, msg_len);
-		data_index += msg_len;
-		data[data_index ++] = '\r';
-		data[data_index ++] = '\n';
-		data[data_index ++] = '\0';
-		dos_tty_write((u8 *)data, data_index);
-		dave_free(data);
-	}
-}
-
-void
 dos_print(const char *fmt, ...)
 {
 	#define MAXSHOWBUF 16384

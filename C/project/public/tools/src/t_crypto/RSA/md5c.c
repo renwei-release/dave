@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
-
 /* MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm  
  */   
    
@@ -341,6 +331,4 @@ unsigned int len)
   for (i = 0; i < len; i++)   
     ((char *)output)[i] = (char)value;   
 }
-
-#endif
 

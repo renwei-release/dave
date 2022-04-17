@@ -41,24 +41,24 @@ static dave_bool _ip_flag = dave_false;
 static s8 _hostname[64];
 static dave_bool _hostname_flag = dave_false;
 
-static ErrCode
+static RetCode
 _os_load_one_netcard_mac(char *netcard_name, u8 *mac)
 {
 	int sock;
 	struct ifreq ifr;
-	ErrCode ret;
+	RetCode ret;
 
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1)
 	{
-		return ERRCODE_invalid_option;
+		return RetCode_invalid_option;
 	}
 
 	strcpy(ifr.ifr_name, netcard_name);
 
 	if (ioctl(sock, SIOCGIFHWADDR, &ifr) < 0)
 	{
-		ret = ERRCODE_invalid_option;
+		ret = RetCode_invalid_option;
 	}
 	else
 	{
@@ -69,7 +69,7 @@ _os_load_one_netcard_mac(char *netcard_name, u8 *mac)
 		mac[4] = (u8)ifr.ifr_hwaddr.sa_data[4];
 		mac[5] = (u8)ifr.ifr_hwaddr.sa_data[5];
 
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 
 	close(sock);
@@ -77,22 +77,22 @@ _os_load_one_netcard_mac(char *netcard_name, u8 *mac)
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _os_load_some_netcard_mac(u8 *mac)
 {
-	if(_os_load_one_netcard_mac("eth0", mac) == ERRCODE_OK)
-		return ERRCODE_OK;
+	if(_os_load_one_netcard_mac("eth0", mac) == RetCode_OK)
+		return RetCode_OK;
 
-	if(_os_load_one_netcard_mac("ens33", mac) == ERRCODE_OK)
-		return ERRCODE_OK;
+	if(_os_load_one_netcard_mac("ens33", mac) == RetCode_OK)
+		return RetCode_OK;
 
-	if(_os_load_one_netcard_mac("em3", mac) == ERRCODE_OK)
-		return ERRCODE_OK;
+	if(_os_load_one_netcard_mac("em3", mac) == RetCode_OK)
+		return RetCode_OK;
 
-	return ERRCODE_invalid_option;
+	return RetCode_invalid_option;
 }
 
-static ErrCode
+static RetCode
 _os_load_on_loop_mac(u8 *mac)
 {
 	int sock;
@@ -104,7 +104,7 @@ _os_load_on_loop_mac(u8 *mac)
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1)
 	{
-		return ERRCODE_invalid_option;
+		return RetCode_invalid_option;
 	}
 
 	for (index = 1; index < 64; index++)
@@ -146,42 +146,42 @@ _os_load_on_loop_mac(u8 *mac)
 			{
 				close(sock);
 
-				return ERRCODE_OK;
+				return RetCode_OK;
 			}
 		}
 	}
 
 	close(sock);
 
-	return ERRCODE_Can_not_find_node;
+	return RetCode_Can_not_find_node;
 }
 
-static ErrCode
+static RetCode
 _os_load_mac(u8 *mac)
 {
-	if(_os_load_some_netcard_mac(mac) != ERRCODE_OK)
+	if(_os_load_some_netcard_mac(mac) != RetCode_OK)
 	{
-		if(_os_load_on_loop_mac(mac) != ERRCODE_OK)
+		if(_os_load_on_loop_mac(mac) != RetCode_OK)
 		{
 			OSABNOR("Can't find MAC address!");
 		
-			return ERRCODE_Can_not_find_node;
+			return RetCode_Can_not_find_node;
 		}
 	}
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 /*
  * 可以从这个文件<include/linux/sockios.h>，获取ioctl能传输的标记。
  */
 
-static ErrCode
+static RetCode
 _os_load_ip(u8 ip_v4[DAVE_IP_V4_ADDR_LEN], u8 ip_v6[DAVE_IP_V6_ADDR_LEN])
 {
 	int index, sock;
 	struct ifreq ifr;
-	ErrCode ret = ERRCODE_Can_not_find_node;
+	RetCode ret = RetCode_Can_not_find_node;
 
 	dave_memset(ip_v4, 0x00, DAVE_IP_V4_ADDR_LEN);
 	dave_memset(ip_v6, 0x00, DAVE_IP_V6_ADDR_LEN);
@@ -189,7 +189,7 @@ _os_load_ip(u8 ip_v4[DAVE_IP_V4_ADDR_LEN], u8 ip_v6[DAVE_IP_V6_ADDR_LEN])
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1)
 	{
-		return ERRCODE_invalid_option;
+		return RetCode_invalid_option;
 	}
 
 	for (index = 1; index < 16; index++)
@@ -238,47 +238,47 @@ _os_load_ip(u8 ip_v4[DAVE_IP_V4_ADDR_LEN], u8 ip_v6[DAVE_IP_V6_ADDR_LEN])
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _os_load_host_name(s8 *hostname, ub hostname_len)
 {
 	dave_memset(hostname, 0x00, hostname_len);
 
 	if(hostname_len <= 1)
 	{
-		return ERRCODE_Invalid_data_too_short;
+		return RetCode_Invalid_data_too_short;
 	}
 
 	hostname_len --;
 
 	if(gethostname((char *)hostname, hostname_len) == 0)
 	{
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 	else
 	{
-		return ERRCODE_Invalid_data;
+		return RetCode_Invalid_data;
 	}
 }
 
 // =====================================================================
 
-ErrCode
+RetCode
 dave_os_load_mac(u8 *mac)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	if(_mac_flag == dave_false)
 	{
 		ret = _os_load_mac(_mac);
 
-		if(ret == ERRCODE_OK)
+		if(ret == RetCode_OK)
 		{
 			_mac_flag = dave_true;
 		}
 	}
 	else
 	{
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 
 	dave_memcpy(mac, _mac, DAVE_MAC_ADDR_LEN);
@@ -286,23 +286,23 @@ dave_os_load_mac(u8 *mac)
 	return ret;
 }
 
-ErrCode
+RetCode
 dave_os_load_ip(u8 ip_v4[DAVE_IP_V4_ADDR_LEN], u8 ip_v6[DAVE_IP_V6_ADDR_LEN])
 {
-	ErrCode ret;
+	RetCode ret;
 
 	if(_ip_flag == dave_false)
 	{
 		ret = _os_load_ip(_ip_v4, _ip_v6);
 
-		if(ret == ERRCODE_OK)
+		if(ret == RetCode_OK)
 		{
 			_ip_flag = dave_true;
 		}
 	}
 	else
 	{
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 
 	if(ip_v4 != NULL)
@@ -317,23 +317,23 @@ dave_os_load_ip(u8 ip_v4[DAVE_IP_V4_ADDR_LEN], u8 ip_v6[DAVE_IP_V6_ADDR_LEN])
 	return ret;
 }
 
-ErrCode
+RetCode
 dave_os_load_host_name(s8 *hostname, ub hostname_len)
 {
-	ErrCode ret;
+	RetCode ret;
 
 	if(_hostname_flag == dave_false)
 	{
 		ret = _os_load_host_name(_hostname, sizeof(_hostname));
 
-		if(ret == ERRCODE_OK)
+		if(ret == RetCode_OK)
 		{
 			_hostname_flag = dave_true;
 		}
 	}
 	else
 	{
-		ret = ERRCODE_OK;	
+		ret = RetCode_OK;	
 	}
 
 	dave_strcpy(hostname, _hostname, hostname_len);

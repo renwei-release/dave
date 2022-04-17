@@ -7,7 +7,6 @@
 
 #ifndef __DAVE_TOOLS_H__
 #define __DAVE_TOOLS_H__
-#include "tools_macro.h"
 #include "dave_base.h"
 
 #ifdef __cplusplus

@@ -147,14 +147,14 @@ dos_pop_analysis(s8 *input, ub input_len)
 	return dave_true;
 }
 
-ErrCode
+RetCode
 dos_pop_confirm(char *msg, pop_process_fun yes, pop_process_fun no)
 {
 	s8 comfirm_msg[] = {"\r\nYou can choose \"yes\" or \"no\": "};
 
 	if(_pop_type != DOS_POP_TYPE_MAX)
 	{
-		return ERRCODE_Resource_conflicts;
+		return RetCode_Resource_conflicts;
 	}
 	else
 	{
@@ -163,16 +163,16 @@ dos_pop_confirm(char *msg, pop_process_fun yes, pop_process_fun no)
 		_pop_fun2 = no;
 		dos_tty_write((u8 *)msg, dave_strlen(msg));
 		dos_tty_write((u8 *)comfirm_msg, dave_strlen(comfirm_msg));
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 }
 
-ErrCode
+RetCode
 dos_pop_input_request(s8 *msg, pop_process_fun process_fun)
 {
 	if(_pop_type != DOS_POP_TYPE_MAX)
 	{
-		return ERRCODE_Resource_conflicts;
+		return RetCode_Resource_conflicts;
 	}
 	else
 	{
@@ -180,7 +180,7 @@ dos_pop_input_request(s8 *msg, pop_process_fun process_fun)
 		_pop_fun1 = process_fun;
 		_pop_fun2 = NULL;
 		dos_tty_write((u8 *)msg, dave_strlen(msg));
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 }
 

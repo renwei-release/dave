@@ -8,17 +8,14 @@
 from autocode_cfg import *
 from autocode_tools import *
 from find.find_msg_struct_table import find_msg_struct_table
-from find.find_other_struct_table import find_other_struct_table
-from find.find_union_table import find_union_table
 
 
 _msgdata_src_head = "\
 #include \"dave_base.h\"\n\
 #include \"dave_os.h\"\n\
 #include \"dave_tools.h\"\n\
-#include \"dave_third_party.h\"\n\
+#include \"dave_3rdparty.h\"\n\
 #include \"t_rpc_ver3_enumdata.h\"\n\
-#include \"t_rpc_ver3_uniondata.h\"\n\
 #include \"t_rpc_ver3_metadata.h\"\n\
 #include \"t_rpc_ver3_structdata.h\"\n\
 #include \"tools_log.h\"\n"
@@ -32,13 +29,6 @@ _msgdata_inc_head = "\
 
 _msgdata_inc_end = "\
 #endif\n\n"
-
-
-def _creat_msgdata_struct_table():
-    struct_table, head_list = find_other_struct_table()
-    union_table, union_include = find_union_table()
-    struct_table.update(union_table)
-    return struct_table
 
 
 def _creat_msgdata_zip_fun_dimension_object(file_id, struct_type, struct_name, struct_dimension):
@@ -58,13 +48,19 @@ def _creat_msgdata_zip_fun_object(file_id, msg_struct_data, struct_table):
     for msg_struct_object in msg_struct_data:
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
-        struct_dimension = msg_struct_object.get('d', None)
-        is_struct, has_ptr, _ = struct_on_the_table(struct_type, struct_table=struct_table)
+        struct_dimension = msg_struct_object['d']
+        has_ptr = msg_struct_object['p']
+        is_struct = struct_on_the_table(struct_type, struct_table)
         if struct_dimension == None:
             if is_struct == False:
-                file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
-                    +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
-                    +"(zip_data->"+struct_name+"));")
+                if has_ptr == False:
+                    file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
+                        +"(zip_data->"+struct_name+"));")
+                else:
+                    file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
+                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type+"_ptr"
+                        +"(zip_data->"+struct_name+"));")                    
             else:
                 if has_ptr == False:
                     file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
@@ -72,7 +68,7 @@ def _creat_msgdata_zip_fun_object(file_id, msg_struct_data, struct_table):
                         +"(&(zip_data->"+struct_name+")));")
                 else:
                     file_id.write("\n\tt_bson_add_object(pStructBson, \""+struct_type
-                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type
+                        +"-"+struct_name+"\", t_rpc_ver3_zip_"+struct_type+"_ptr"
                         +"(zip_data->"+struct_name+"));")
         else:
             _creat_msgdata_zip_fun_dimension_object(file_id, struct_type, struct_name, struct_dimension)
@@ -98,12 +94,28 @@ def _creat_msgdata_unzip_fun_object(file_id, msg_struct_data, struct_table):
     for msg_struct_object in msg_struct_data:
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
-        struct_dimension = msg_struct_object.get('d', None)
-        is_struct, has_ptr, _ = struct_on_the_table(struct_type, struct_table=struct_table)
+        struct_dimension = msg_struct_object['d']
+        has_ptr = msg_struct_object['p']
+        is_struct = struct_on_the_table(struct_type, struct_table)
         if struct_dimension == None:
-            file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
-                +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
-                +struct_type+"-"+struct_name+"\"));\n")
+            if is_struct == False:
+                if has_ptr == False:
+                    file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
+                        +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n")
+                else:
+                     file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type+"_ptr"
+                        +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n")                   
+            else:
+                if has_ptr == False:
+                    file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type
+                        +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n")
+                else:
+                     file_id.write("\t\tt_rpc_ver3_unzip_"+struct_type+"_ptr"
+                        +"(&(pUnzip->"+struct_name+"), t_bson_inq_object(pStructBson, \""
+                        +struct_type+"-"+struct_name+"\"));\n") 
         else:
             _creat_msgdata_unzip_fun_dimension_object(file_id, struct_type, struct_name, struct_dimension)
     return
@@ -157,14 +169,13 @@ def _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table):
     return
 
 
-def _creat_msgdata_src_file(msg_struct_table, include_list, file_name):
-    struct_table = _creat_msgdata_struct_table()
+def _creat_msgdata_src_file(file_list, msg_struct_table, other_struct_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_msgdata_src_head)
         include_message(file_id, include_list)
         file_id.write("// =====================================================================\n\n")
-        _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table)
+        _creat_msgdata_fun_file(file_id, msg_struct_table, other_struct_table)
     return
 
 
@@ -184,9 +195,13 @@ def _creat_msgdata_inc_file(msg_struct_table, include_list, file_name):
 # =====================================================================
 
 
-def creat_msgdata_file():
-    _, msg_struct_table, include_list = find_msg_struct_table()
+def creat_msgdata_file(param):
+    file_list = param['file_list']
+    msg_struct_table = param['msg_struct_table']
+    include_list = param['msg_include_list']
+    other_struct_table = param['other_struct_table']
+
     print(f"{len(msg_struct_table)}\tmsgdata\t\twrite to {rpc_ver3_msgdata_src_file_name}")
-    _creat_msgdata_src_file(msg_struct_table, include_list, rpc_ver3_msgdata_src_file_name)
+    _creat_msgdata_src_file(file_list, msg_struct_table, other_struct_table, include_list, rpc_ver3_msgdata_src_file_name)
     _creat_msgdata_inc_file(msg_struct_table, include_list, rpc_ver3_msgdata_inc_file_name)
-    return msg_struct_table
+    return

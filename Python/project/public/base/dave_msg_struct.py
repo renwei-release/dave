@@ -18,100 +18,57 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
-class SocketBindReq (Structure):
+class HTTPListenReq (Structure):
 	_fields_ = [
-		("NetInfo", SocNetInfo),
+		("listen_port", c_ulonglong),
+		("rule", c_int),
+		("type", c_int),
+		("path", c_char * DAVE_PATH_LEN),
 		("ptr", c_void_p),
 ]
 
-class SocketBindRsp (Structure):
+class HTTPListenRsp (Structure):
 	_fields_ = [
-		("socket", c_int),
-		("NetInfo", SocNetInfo),
-		("BindInfo", c_int),
-		("thread_id", c_ulonglong),
+		("ret", c_int),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
 		("ptr", c_void_p),
 ]
 
-class SocketConnectReq (Structure):
+class HTTPCloseReq (Structure):
 	_fields_ = [
-		("NetInfo", SocNetInfo),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
 		("ptr", c_void_p),
 ]
 
-class SocketConnectRsp (Structure):
+class HTTPCloseRsp (Structure):
 	_fields_ = [
-		("socket", c_int),
-		("NetInfo", SocNetInfo),
-		("ConnectInfo", c_int),
-		("thread_id", c_ulonglong),
+		("ret", c_int),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
 		("ptr", c_void_p),
 ]
 
-class SocketDisconnectReq (Structure):
+class HTTPRecvReq (Structure):
 	_fields_ = [
-		("socket", c_int),
+		("listen_port", c_ulonglong),
+		("remote_address", c_char * DAVE_URL_LEN),
+		("remote_port", c_ulonglong),
+		("method", c_int),
+		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
+		("content_type", c_int),
+		("content", POINTER(MBUF)),
+		("local_creat_time", c_ulonglong),
 		("ptr", c_void_p),
 ]
 
-class SocketDisconnectRsp (Structure):
+class HTTPRecvRsp (Structure):
 	_fields_ = [
-		("socket", c_int),
-		("result", c_int),
-		("ptr", c_void_p),
-]
-
-class SocketPlugIn (Structure):
-	_fields_ = [
-		("father_socket", c_int),
-		("child_socket", c_int),
-		("NetInfo", SocNetInfo),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketPlugOut (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("reason", c_int),
-		("NetInfo", SocNetInfo),
-		("thread_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketRead (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("IPInfo", IPBaseInfo),
-		("data_len", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("ptr", c_void_p),
-]
-
-class SocketWrite (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("IPInfo", IPBaseInfo),
-		("data_len", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("close_flag", c_int),
-]
-
-class SocketNotify (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("notify", c_int),
-		("data", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class SocketRawEvent (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("os_socket", c_int),
-		("event", c_int),
-		("NetInfo", SocNetInfo),
-		("data", POINTER(MBUF)),
+		("ret", c_int),
+		("content_type", c_int),
+		("content", POINTER(MBUF)),
+		("local_creat_time", c_ulonglong),
 		("ptr", c_void_p),
 ]
 
@@ -285,7 +242,7 @@ class ThreadLocalRemoveMsg (Structure):
 
 class RPCDebugMsg (Structure):
 	_fields_ = [
-		("ret_debug", c_ulonglong),
+		("ret_debug", c_int),
 		("s8_debug", c_char),
 		("u8_debug", c_char),
 		("u16_debug", c_ushort),
@@ -313,7 +270,7 @@ class MsgBlocksReq (Structure):
 
 class MsgBlocksRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_int),
 		("opt", c_int),
 		("blocks", BuildingBlocks * DAVE_BUILDING_BLOCKS_MAX),
 		("ptr", c_void_p),
@@ -324,57 +281,100 @@ class MsgOSNotify (Structure):
 		("notify_info", c_ulonglong),
 ]
 
-class HTTPListenReq (Structure):
+class SocketBindReq (Structure):
 	_fields_ = [
-		("listen_port", c_ulonglong),
-		("rule", c_int),
-		("type", c_int),
-		("path", c_char * DAVE_PATH_LEN),
+		("NetInfo", SocNetInfo),
 		("ptr", c_void_p),
 ]
 
-class HTTPListenRsp (Structure):
+class SocketBindRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
-		("listen_port", c_ulonglong),
-		("path", c_char * DAVE_PATH_LEN),
+		("socket", c_int),
+		("NetInfo", SocNetInfo),
+		("BindInfo", c_int),
+		("thread_id", c_ulonglong),
 		("ptr", c_void_p),
 ]
 
-class HTTPCloseReq (Structure):
+class SocketConnectReq (Structure):
 	_fields_ = [
-		("listen_port", c_ulonglong),
-		("path", c_char * DAVE_PATH_LEN),
+		("NetInfo", SocNetInfo),
 		("ptr", c_void_p),
 ]
 
-class HTTPCloseRsp (Structure):
+class SocketConnectRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
-		("listen_port", c_ulonglong),
-		("path", c_char * DAVE_PATH_LEN),
+		("socket", c_int),
+		("NetInfo", SocNetInfo),
+		("ConnectInfo", c_int),
+		("thread_id", c_ulonglong),
 		("ptr", c_void_p),
 ]
 
-class HTTPRecvReq (Structure):
+class SocketDisconnectReq (Structure):
 	_fields_ = [
-		("listen_port", c_ulonglong),
-		("remote_address", c_char * DAVE_URL_LEN),
-		("remote_port", c_ulonglong),
-		("method", c_int),
-		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
-		("content_type", c_int),
-		("content", POINTER(MBUF)),
-		("local_creat_time", c_ulonglong),
+		("socket", c_int),
 		("ptr", c_void_p),
 ]
 
-class HTTPRecvRsp (Structure):
+class SocketDisconnectRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
-		("content_type", c_int),
-		("content", POINTER(MBUF)),
-		("local_creat_time", c_ulonglong),
+		("socket", c_int),
+		("result", c_int),
+		("ptr", c_void_p),
+]
+
+class SocketPlugIn (Structure):
+	_fields_ = [
+		("father_socket", c_int),
+		("child_socket", c_int),
+		("NetInfo", SocNetInfo),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketPlugOut (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("reason", c_int),
+		("NetInfo", SocNetInfo),
+		("thread_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketRead (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("IPInfo", IPBaseInfo),
+		("data_len", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+class SocketWrite (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("IPInfo", IPBaseInfo),
+		("data_len", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("close_flag", c_int),
+]
+
+class SocketNotify (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("notify", c_int),
+		("data", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+class SocketRawEvent (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("os_socket", c_int),
+		("event", c_int),
+		("NetInfo", SocNetInfo),
+		("data", POINTER(MBUF)),
 		("ptr", c_void_p),
 ]
 

@@ -21,15 +21,15 @@ static ThreadId _tty_my_self;
 static u8 _tty_buf[TTY_BUF_MAX + 1];
 static ub _tty_buf_write_index;
 
-static ErrCode
+static RetCode
 _tty_hardware_sync_notify(ub notify_id)
 {
 	MsgOSNotify *pNotify = thread_msg(pNotify);
 
 	if(snd_from_msg(_tty_my_self, _tty_my_self, MSGID_OS_NOTIFY, sizeof(MsgOSNotify), pNotify) == dave_true)
-		return ERRCODE_OK;
+		return RetCode_OK;
 	else
-		return ERRCODE_Send_msg_failed;
+		return RetCode_Send_msg_failed;
 }
 
 static void

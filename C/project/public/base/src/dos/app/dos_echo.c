@@ -41,29 +41,29 @@ _dos_echo(dave_bool echo_multiple, s8 *thread_name)
 	write_msg(echo_id, MSGID_ECHO, pEcho);
 }
 
-static ErrCode
+static RetCode
 _dos_echo_help(void)
 {
 	dos_print("Usage: echo [true]|[false] [thread name]\nStart the echo test to test the link connection performance.!");
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
-static ErrCode
+static RetCode
 _dos_echo_cmd(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index = 0;
 	dave_bool echo_multiple;
 	s8 thread_name[128];
 
-	cmd_index += dos_get_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &echo_multiple);
-	dos_get_str(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
+	cmd_index += dos_load_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &echo_multiple);
+	dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
 
 	if(thread_name[0] == '\0')
-		return ERRCODE_Invalid_parameter;
+		return RetCode_Invalid_parameter;
 
 	_dos_echo(echo_multiple, thread_name);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -71,7 +71,7 @@ _dos_echo_cmd(s8 *cmd_ptr, ub cmd_len)
 void
 dos_echo_reset(void)
 {
-	dos_cmd_register("echo", _dos_echo_cmd, _dos_echo_help);
+	dos_cmd_reg("echo", _dos_echo_cmd, _dos_echo_help);
 }
 
 #endif

@@ -15,12 +15,12 @@
 #define _T_RPC_ENUMDATA_H__
 #include "dave_base.h"
 #include "base_enum.h"
-#include "base_error_code.h"
+#include "base_retcode.h"
 #include "http_param.h"
 
 
-void * t_rpc_ver3_zip_ErrCode(ErrCode zip_data);
-dave_bool t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson);
+void * t_rpc_ver3_zip_RetCode(RetCode zip_data);
+dave_bool t_rpc_ver3_unzip_RetCode(RetCode *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_SOCTYPE(SOCTYPE zip_data);
 dave_bool t_rpc_ver3_unzip_SOCTYPE(SOCTYPE *unzip_data, void *pArrayBson);

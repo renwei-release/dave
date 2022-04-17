@@ -14,7 +14,7 @@ void thread_queue_all_free(ThreadStruct *pThread);
 
 void thread_queue_all_malloc(ThreadStruct *pThread);
 
-ErrCode thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg);
+RetCode thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg);
 
 ThreadMsg * thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag);
 

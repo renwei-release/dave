@@ -8,7 +8,7 @@
 #ifndef __SYNC_SERVER_TX_H__
 #define __SYNC_SERVER_TX_H__
 
-ErrCode sync_server_tx_run_thread_msg_req(
+RetCode sync_server_tx_run_thread_msg_req(
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	SyncClient *pSrcClient, SyncClient *pDstClient,
 	ThreadId route_src, ThreadId route_dst,

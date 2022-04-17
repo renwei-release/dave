@@ -9,21 +9,23 @@
 #define __BASE_KV_H__
 
 typedef enum {
-	KVAttrib_ram,		/* A memory KV, if there are not many storage nodes, you can use it, the fastest, but it takes up a lot of memory */
-	KVAttrib_list,		/* A memory KV, if there are many storage nodes, you can use it, the speed is slower than ram, and it takes up less memory */
-	KVAttrib_remote,	/* A remote KV can realize clustering */
-} KVAttrib;
+	KvAttrib_ram,		/* A memory KV, if there are not many storage nodes, you can use it, the fastest, but it takes up a lot of memory */
+	KvAttrib_list,		/* A memory KV, if there are many storage nodes, you can use it, the speed is slower than ram, and it takes up less memory */
+	KvAttrib_remote,	/* A remote KV can realize clustering */
+} KvAttrib;
 
-typedef void (* kv_out_callback)(void *kv, s8 *key);
-typedef ErrCode (* kv_free_recycle_callback)(void *kv, s8 *key);
+typedef void (* kv_time_callback)(void *kv, s8 *key);
+typedef RetCode (* kv_recycle_callback)(void *kv, s8 *key);
 
 void base_kv_init(void);
 void base_kv_exit(void);
 
-void * __base_kv_malloc__(dave_bool external_call, s8 *name, KVAttrib attrib, ub out_second, kv_out_callback callback_fun, s8 *fun, ub line);
-void __base_kv_free__(dave_bool external_call, void *kv, kv_free_recycle_callback callback_fun, s8 *fun, ub line);
-
 dave_bool base_kv_check(void *kv);
+ub base_kv_info(void *kv, s8 *info_ptr, ub info_len);
+void base_kv_test(s8 *cmd);
+
+void * __base_kv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, kv_time_callback callback_fun, s8 *fun, ub line);
+void __base_kv_free__(dave_bool external_call, void *kv, kv_recycle_callback callback_fun, s8 *fun, ub line);
 
 dave_bool __base_kv_add_key_ptr__(void *kv, s8 *key, void *ptr, s8 *fun, ub line);
 void * __base_kv_inq_key_ptr__(void *kv, s8 *key, s8 *fun, ub line);

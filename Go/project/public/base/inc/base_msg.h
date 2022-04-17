@@ -178,7 +178,7 @@ typedef struct {
 
 /* for MSGID_RPC_DEBUG_MSG message */
 typedef struct {
-	ErrCode ret_debug;
+	RetCode ret_debug;
 	s8 s8_debug;
 	u8 u8_debug;
 	u16 u16_debug;
@@ -206,7 +206,7 @@ typedef struct {
 
 /* for MSGID_BLOCKS_RSP message */
 typedef struct {
-	ErrCode ret;
+	RetCode ret;
 	BuildingBlocksOpt opt;
 	BuildingBlocks blocks[DAVE_BUILDING_BLOCKS_MAX];
 	void *ptr;

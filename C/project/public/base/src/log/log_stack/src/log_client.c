@@ -15,6 +15,8 @@
 #include "base_rxtx.h"
 #include "log_log.h"
 
+#define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
+
 #define NUM_LOG_ONCE_SEND      (2048)
 #define LOG_ONCE_SEND_BYTE_MAX (1500)
 #define LOG_SEND_INTVL         (1000)
@@ -403,7 +405,7 @@ _log_stack_client_exit(MSGBODY *msg)
 void
 log_stack_client_init(void)
 {
-	_log_stack_client_thread = base_thread_creat("logclient", 71, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG, _log_stack_client_init, _log_stack_client_main, _log_stack_client_exit);
+	_log_stack_client_thread = base_thread_creat("logclient", 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_client_init, _log_stack_client_main, _log_stack_client_exit);
 	if(_log_stack_client_thread == INVALID_THREAD_ID)
 		base_restart("logclient");
 }

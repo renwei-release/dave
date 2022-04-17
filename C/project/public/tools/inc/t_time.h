@@ -9,7 +9,7 @@
 #define __T_TIME_H__
 
 DateStruct t_time_get_date(DateStruct *pDate);
-ErrCode t_time_set_date(DateStruct *pDate);
+RetCode t_time_set_date(DateStruct *pDate);
 
 
 // $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$

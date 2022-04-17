@@ -8,8 +8,8 @@
 from rpc.rpc_ver3 import *
 
 
-def rpc_main():
-    rpc_ver3()
+def rpc_main(param):
+    rpc_ver3(param)
 
 
 if __name__ == '__main__':

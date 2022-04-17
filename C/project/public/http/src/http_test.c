@@ -24,7 +24,7 @@ _http_test_recv_req(MSGBODY *msg)
 
 	HTTPLOG("%s:%d method:%d type:%d", pReq->remote_address, pReq->remote_port, pReq->method, pReq->content_type);
 
-	pRsp->ret = ERRCODE_OK;
+	pRsp->ret = RetCode_OK;
 	pRsp->content_type = pReq->content_type;
 	pRsp->content = pReq->content;
 	pRsp->local_creat_time = dave_os_time_us();
@@ -38,9 +38,9 @@ _http_test_listen_rsp(MSGBODY *ptr)
 {
 	HTTPListenRsp *pRsp = (HTTPListenRsp *)(ptr->msg_body);
 
-	HTTPLOG("%s", errorstr(pRsp->ret));
+	HTTPLOG("%s", retstr(pRsp->ret));
 
-	if(pRsp->ret == ERRCODE_OK)
+	if(pRsp->ret == RetCode_OK)
 	{
 		reg_msg(HTTPMSG_RECV_REQ, _http_test_recv_req);
 	}

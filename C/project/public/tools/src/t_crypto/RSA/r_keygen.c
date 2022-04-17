@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
-
 /* R_KEYGEN.C - key-pair generation for RSAREF  
  */   
    
@@ -287,4 +277,3 @@ static int RelativelyPrime (NN_DIGIT *a, unsigned int aDigits, NN_DIGIT *b, unsi
   return (status);   
 }
 
-#endif

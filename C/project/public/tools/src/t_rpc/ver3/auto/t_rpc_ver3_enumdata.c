@@ -14,11 +14,11 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 #include "base_enum.h"
-#include "base_error_code.h"
+#include "base_retcode.h"
 #include "http_param.h"
 
 
@@ -39,20 +39,20 @@ _t_rpc_unzip_enumdata(sb *unzip_data, void *pArrayBson)
 // =====================================================================
 
 void *
-t_rpc_ver3_zip_ErrCode(ErrCode zip_data)
+t_rpc_ver3_zip_RetCode(RetCode zip_data)
 {
 	return _t_rpc_zip_enumdata((sb)zip_data);
 }
 
 dave_bool
-t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson)
+t_rpc_ver3_unzip_RetCode(RetCode *unzip_data, void *pArrayBson)
 {
 	sb sb_unzip_data;
 	dave_bool ret;
 
 	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
 
-	*unzip_data = (ErrCode)sb_unzip_data;
+	*unzip_data = (RetCode)sb_unzip_data;
 
 	return ret;
 }

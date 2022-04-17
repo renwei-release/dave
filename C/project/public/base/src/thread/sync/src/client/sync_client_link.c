@@ -157,7 +157,7 @@ sync_client_link_init(void)
 
 	_link_server_socket = INVALID_SOCKET_ID;
 
-	_link_server_port = SYNC_LINK_PORT +  (dave_rand() % 999);
+	_link_server_port = SYNC_LINK_PORT +  (t_rand() % 999);
 	_link_server_real_cfg_my_ip = sync_cfg_get_local_ip(_link_server_cfg_my_ip);
 	dave_memset(_link_server_detect_my_ip, 0x00, sizeof(_link_server_detect_my_ip));
 

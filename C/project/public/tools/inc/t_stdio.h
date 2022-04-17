@@ -18,9 +18,9 @@ ub t_stdio_sscanf(const s8 *buf, const char *fmt, ...);
 ub t_stdio_snprintf(s8 *buf_ptr, ub buf_len, const char *fmt, ...);
 ub t_stdio_snscanf(const s8 *buf_ptr, ub buf_len, const char *fmt, ...);
 ub __t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line);
-#define t_stdio_strcpy(dst, src, max_length) __t_stdio_strcpy__((s8 *)dst, (const s8 *)src, (ub)max_length, (s8 *)__func__, (ub)__LINE__)
+#define t_stdio_strcpy(dst, src, max_length) __t_stdio_strcpy__((s8 *)(dst), (const s8 *)(src), (ub)(max_length), (s8 *)__func__, (ub)__LINE__)
 dave_bool __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line);
-#define t_stdio_strcmp(cmp1, cmp2) __t_stdio_strcmp__((s8 *)cmp1, (s8 *)cmp2, (s8 *)__func__, (ub)__LINE__)
+#define t_stdio_strcmp(cmp1, cmp2) __t_stdio_strcmp__((s8 *)(cmp1), (s8 *)(cmp2), (s8 *)__func__, (ub)__LINE__)
 s8 * t_stdio_strfind(s8 *str, s8 end_char, s8 *find_ptr, ub find_len);
 s8 * t_stdio_tolowers(s8 *str);
 s8 * t_stdio_touppers(s8 *str);

@@ -618,7 +618,7 @@ static inline SocketCore *
 _socket_external_creat_service(ThreadId src, SocNetInfo *pNetInfo, void *user_ptr)
 {
 	s32 os_socket;
-	ErrCode ret = ERRCODE_invalid_option;
+	RetCode ret = RetCode_invalid_option;
 	SocketCore *pCore = NULL;
 
 	os_socket = dave_os_socket(pNetInfo->domain, pNetInfo->type, pNetInfo->addr_type, pNetInfo->netcard_bind_flag==NetCardBind_enable?pNetInfo->netcard_name:NULL);
@@ -632,17 +632,17 @@ _socket_external_creat_service(ThreadId src, SocNetInfo *pNetInfo, void *user_pt
 			{
 				if(dave_os_listen(os_socket, 8192) == dave_true)
 				{
-					ret = ERRCODE_OK;
+					ret = RetCode_OK;
 				}
 			}
 			else
 			{
-				ret = ERRCODE_OK;
+				ret = RetCode_OK;
 			}
 		}
 	}
 
-	if((ret != ERRCODE_OK) || (pCore == NULL))
+	if((ret != RetCode_OK) || (pCore == NULL))
 	{
 		SOCKETTRACE("%s/%s",
 			ipv4str(pNetInfo->addr.ip.ip_addr, pNetInfo->port),
@@ -686,7 +686,7 @@ _socket_external_connect_service(ThreadId src, SocNetInfo *pNetInfo, void *user_
 		{
 			case SOC_CNT_OK:
 					*ConnectInfo = SOCKETINFO_CONNECT_OK;
-					SAFEZONEv5W(pCore->opt_pv, { pCore->type = SOCKET_TYPE_CLIENT; } );
+					SAFECODEv2W(pCore->opt_pv, { pCore->type = SOCKET_TYPE_CLIENT; } );
 				break;
 			case SOC_CNT_FAIL:
 					*ConnectInfo = SOCKETINFO_CONNECT_FAIL;
@@ -848,7 +848,7 @@ _socket_external_send_event(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, 
 {
 	dave_bool ret = dave_false;
 
-	SAFEZONEv5R(pCore->opt_pv, {
+	SAFECODEv2R(pCore->opt_pv, {
 		if((pCore->use_flag == dave_true) && (pCore->wait_close == dave_false))
 		{
 			ret = dave_true;
@@ -870,7 +870,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 	{
 		if(pCore->NetInfo.type == TYPE_SOCK_STREAM)
 		{
-			SAFEZONEv5R(pCore->opt_pv,
+			SAFECODEv2R(pCore->opt_pv,
 				if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 				{
 					_socket_external_accept(pCore);
@@ -879,7 +879,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 		}
 		else if(pCore->NetInfo.type == TYPE_SOCK_DGRAM)
 		{
-			SAFEZONEv5W(pCore->opt_pv,
+			SAFECODEv2W(pCore->opt_pv,
 				if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 				{
 					_socket_external_recv(pCore, pEvent);
@@ -898,7 +898,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 		|| (pCore->type == SOCKET_TYPE_CLIENT)
 		|| (pCore->type == SOCKET_TYPE_CLIENT_WAIT))
 	{
-		SAFEZONEv5R(pCore->opt_pv,
+		SAFECODEv2R(pCore->opt_pv,
 			if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 			{
 				_socket_external_recv(pCore, pEvent);
@@ -916,7 +916,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 static inline void
 _socket_external_list_event(SocketCore *pCore, SocketRawEvent *pEvent)
 {
-	SAFEZONEv5R(pCore->opt_pv,
+	SAFECODEv2R(pCore->opt_pv,
 		if((pCore->use_flag == dave_true)
 			&& (pCore->wait_close == dave_false)
 			&& ((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket)))
@@ -938,7 +938,7 @@ _socket_external_link_event(SocketCore *pCore, SocketRawEvent *pEvent)
 	switch(pEvent->event)
 	{
 		case SOC_EVENT_CONNECT:
-				SAFEZONEv5W(pCore->opt_pv,
+				SAFECODEv2W(pCore->opt_pv,
 					if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 					{
 						_socket_external_connect_event(pCore);
@@ -946,7 +946,7 @@ _socket_external_link_event(SocketCore *pCore, SocketRawEvent *pEvent)
 				);
 			break;
 		case SOC_EVENT_CONNECT_FAIL:
-				SAFEZONEv5W(pCore->opt_pv,
+				SAFECODEv2W(pCore->opt_pv,
 					if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 					{
 						_socket_external_connect_failed_event(pCore);
@@ -954,7 +954,7 @@ _socket_external_link_event(SocketCore *pCore, SocketRawEvent *pEvent)
 				);
 			break;
 		case SOC_EVENT_CLOSE:
-				SAFEZONEv5W(pCore->opt_pv,
+				SAFECODEv2W(pCore->opt_pv,
 					if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 					{
 						_socket_external_close_event(pCore);
@@ -1005,7 +1005,7 @@ socket_external_connect_service(ThreadId src, SocNetInfo *pNetInfo, void *user_p
 	return pCore;
 }
 
-ErrCode
+RetCode
 socket_external_close(ThreadId src, s32 socket)
 {
 	SocketCore *pCore;
@@ -1016,7 +1016,7 @@ socket_external_close(ThreadId src, s32 socket)
 		_socket_external_core_event(SOC_EVENT_CLOSE, pCore);
 	}
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 dave_bool

@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_tools.h"
 
 /* R_STDLIB.C - platform-specific C library routines for RSAREF  
@@ -61,4 +52,3 @@ unsigned int len                                       /* length of blocks */)
     return (0);   
 }
 
-#endif

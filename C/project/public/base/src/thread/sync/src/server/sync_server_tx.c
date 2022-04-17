@@ -148,7 +148,7 @@ _sync_server_tx_blocks_state(SyncClient *pClient)
 
 // =====================================================================
 
-ErrCode
+RetCode
 sync_server_tx_run_thread_msg_req(
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	SyncClient *pSrcClient, SyncClient *pDstClient,
@@ -159,7 +159,7 @@ sync_server_tx_run_thread_msg_req(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len)
 {
-	ErrCode ret = ERRCODE_not_access;
+	RetCode ret = RetCode_not_access;
 	ub src_thread_index, dst_thread_index;
 
 	if(pSrcThread != NULL)
@@ -193,22 +193,22 @@ sync_server_tx_run_thread_msg_req(
 				msg_type,
 				msg_len, msg_body) == dave_true)
 		{
-			ret = ERRCODE_OK;
+			ret = RetCode_OK;
 		}
 		else
 		{
-			ret = ERRCODE_Send_failed;
+			ret = RetCode_Send_failed;
 		}
 	}
 	else
 	{
-		ret = ERRCODE_Invalid_parameter;
+		ret = RetCode_Invalid_parameter;
 	}
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		SYNCLOG("ret:%s %s/%lx->%s/%lx msg_id:%d msg_type:%d msg_len:%d client:%d/%d/%s->%d/%d/%s",
-			errorstr(ret),
+			retstr(ret),
 			src, route_src, dst, route_dst,
 			msg_id, msg_type, msg_len,
 			src_thread_index, pSrcClient->client_index, pSrcClient->verno,

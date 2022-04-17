@@ -8,7 +8,7 @@
 #ifndef __SYNC_SERVER_MSG_BUFFER_H__
 #define __SYNC_SERVER_MSG_BUFFER_H__
 
-typedef ErrCode (* sync_server_run_thread_fun)(SyncClient *pClient, ub frame_len, u8 *frame, dave_bool buffer_pop);
+typedef RetCode (* sync_server_run_thread_fun)(SyncClient *pClient, ub frame_len, u8 *frame, dave_bool buffer_pop);
 
 void sync_server_msg_buffer_init(void);
 

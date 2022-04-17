@@ -474,7 +474,7 @@ _base_rxtx_output_bin_ct(u8 dst_ip[4], u16 dst_port, s32 socket, CTNote *pNote)
 	return ret;
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_input_data_decode(RXTX *pRxTx, BinStackMsgHead *message, stack_receive_fun receive_fun)
 {
 	u8 *package;
@@ -488,7 +488,7 @@ _base_rxtx_input_data_decode(RXTX *pRxTx, BinStackMsgHead *message, stack_receiv
 
 		rxtx_simple_decode_release(package);
 
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 	else
 	{
@@ -497,11 +497,11 @@ _base_rxtx_input_data_decode(RXTX *pRxTx, BinStackMsgHead *message, stack_receiv
 			message->order_id, message->frame_len,
 			pRxTx->owner_file_name, pRxTx->owner_file_line);
 
-		return ERRCODE_decode_failed;
+		return RetCode_decode_failed;
 	}
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_input_data(RXTX *pRxTx, BinStackMsgHead *pMessage, stack_receive_fun receive_fun)
 {
 	u8 *package = pMessage->frame;
@@ -512,22 +512,22 @@ _base_rxtx_input_data(RXTX *pRxTx, BinStackMsgHead *pMessage, stack_receive_fun 
 	package_len = rxtx_check_crc(pMessage->frame, pMessage->frame_len);
 	if(package_len == 0)
 	{
-		return ERRCODE_Invalid_data_crc_check;
+		return RetCode_Invalid_data_crc_check;
 	}
 
 	receive_fun(pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), CT_DATA_FRAME, (ORDER_CODE)(pMessage->order_id), package_len, package);
 
-	return ERRCODE_OK;
+	return RetCode_OK;
 }
 
 static inline ub
-_base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
+_base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
 {
 	stack_receive_fun receive_fun;
 	u8 *package = pMessage->frame;
 	ub package_len;
 
-	*ret = ERRCODE_OK;
+	*ret = RetCode_OK;
 
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
@@ -539,7 +539,7 @@ _base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
 	package_len = rxtx_check_crc(pMessage->frame, pMessage->frame_len);
 	if(package_len == 0)
 	{
-		*ret = ERRCODE_Invalid_data_crc_check;
+		*ret = RetCode_Invalid_data_crc_check;
 		RTLOG("invalid check crc! order_id:%x frame_len:%d frame:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
 			pMessage->order_id, pMessage->frame_len,
 			pMessage->frame[0], pMessage->frame[1], pMessage->frame[2],
@@ -555,13 +555,13 @@ _base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
 }
 
 static inline ub
-_base_rxtx_input_decode(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
+_base_rxtx_input_decode(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
 {
 	stack_receive_fun receive_fun;
 
 	RTDEBUG("order_id:%x frame_len:%d", pMessage->order_id, pMessage->frame_len);
 
-	*ret = ERRCODE_OK;
+	*ret = RetCode_OK;
 
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
@@ -571,30 +571,30 @@ _base_rxtx_input_decode(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
 	}
 
 	*ret = _base_rxtx_input_data_decode(pRxTx, pMessage, receive_fun);
-	if(*ret != ERRCODE_OK)
+	if(*ret != RetCode_OK)
 	{
-		RTLOG("process error:%s", errorstr(*ret));
+		RTLOG("process error:%s", retstr(*ret));
 	}
 
-	if(*ret == ERRCODE_OK)
+	if(*ret == RetCode_OK)
 	{
 		return (STACK_HEAD_LENver2 + pMessage->frame_len);
 	}
 	else
 	{
-		RTLOG("invalid check crc! ret:%s", errorstr(*ret));
+		RTLOG("invalid check crc! ret:%s", retstr(*ret));
 		return 1;
 	}
 }
 
 static inline ub
-_base_rxtx_input_ct(dave_bool decode, RXTX *pRxTx, BinStackMsgHead *pMessage, ub process_index, ub data_len, ErrCode *ret)
+_base_rxtx_input_ct(dave_bool decode, RXTX *pRxTx, BinStackMsgHead *pMessage, ub process_index, ub data_len, RetCode *ret)
 {
 	stack_receive_fun receive_fun;
 
 	RTDEBUG("decode:%d data_len:%d", decode, data_len);
 
-	*ret = ERRCODE_OK;
+	*ret = RetCode_OK;
 
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
@@ -612,34 +612,34 @@ _base_rxtx_input_ct(dave_bool decode, RXTX *pRxTx, BinStackMsgHead *pMessage, ub
 		*ret = _base_rxtx_input_data(pRxTx, pMessage, receive_fun);
 	}
 
-	if(*ret != ERRCODE_OK)
+	if(*ret != RetCode_OK)
 	{
-		RTLOG("process error:%s data len:%d/%d", errorstr(*ret), process_index, data_len);
+		RTLOG("process error:%s data len:%d/%d", retstr(*ret), process_index, data_len);
 
 		_base_rxtx_output_sync(pRxTx, pMessage->order_id);
 
-		*ret = ERRCODE_OK;
+		*ret = RetCode_OK;
 	}
 	else
 	{
 		_base_rxtx_output_ack(pRxTx, pMessage->order_id);
 	}
 
-	if(*ret == ERRCODE_OK)
+	if(*ret == RetCode_OK)
 	{
 		return (STACK_HEAD_LENver2 + pMessage->frame_len);
 	}
 	else
 	{
-		RTLOG("invalid check crc! ret:%s", errorstr(*ret));
+		RTLOG("invalid check crc! ret:%s", retstr(*ret));
 		return 1;
 	}
 }
 
 static inline ub
-_base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
+_base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
 {
-	*ret = ERRCODE_OK;
+	*ret = RetCode_OK;
 
 	if(rxtx_confirm_transfer_pop(pRxTx->socket, pMessage->order_id) == dave_false)
 	{
@@ -654,9 +654,9 @@ _base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
 }
 
 static inline ub
-_base_rxtx_input_sync(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
+_base_rxtx_input_sync(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
 {
-	*ret = ERRCODE_OK;
+	*ret = RetCode_OK;
 
 	rxtx_confirm_transfer_out(pRxTx->socket, dave_true);
 
@@ -664,13 +664,13 @@ _base_rxtx_input_sync(RXTX *pRxTx, BinStackMsgHead *pMessage, ErrCode *ret)
 }
 
 static inline ub
-_base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, ErrCode *result)
+_base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
 {
 	ub process_index;
 	FRAMETYPE type;
 	BinStackMsgHead message;
 	stack_receive_fun receive_fun;
-	ErrCode ret;
+	RetCode ret;
 	dave_bool bad_frame_detected;
 	ub bad_frame_index;
 
@@ -678,7 +678,7 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, ErrCode *result)
 		thread_name(pRxTx->owner_thread), pRxTx->socket,
 		pRxTx->rx_buffer_len);
 
-	*result = ERRCODE_OK;
+	*result = RetCode_OK;
 
 	if((data == NULL) || (data_len == 0))
 	{
@@ -700,7 +700,7 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, ErrCode *result)
 
 	while(process_index < data_len)
 	{
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 
 		type = _base_rxtx_msgtype(&message, &data[process_index], data_len - process_index);
 
@@ -744,7 +744,7 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, ErrCode *result)
 				break;
 		}
 
-		if(ret != ERRCODE_OK)
+		if(ret != RetCode_OK)
 		{
 			*result = ret;
 
@@ -758,7 +758,7 @@ rxtx_input_end:
 	{
 		_base_rxtx_has_bad_frame(pRxTx, bad_frame_detected, bad_frame_index, data, data_len);
 
-		*result = ERRCODE_Invalid_data;
+		*result = RetCode_Invalid_data;
 	}
 
 	RTDEBUG("%s socket:%d rx_buffer_len:%d process_index:%d",
@@ -768,11 +768,11 @@ rxtx_input_end:
 	return process_index;
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
 {
 	ub process_len;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	if((pRxTx->rx_buffer_len == 0) && (data != NULL) && (data_len > 0))
 	{
@@ -785,7 +785,7 @@ _base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
 				RTABNOR("data buffer overflow! %d/%d", pRxTx->rx_buffer_len, data_len);
 
 				pRxTx->rx_buffer_len = 0;
-				ret = ERRCODE_data_overflow;
+				ret = RetCode_data_overflow;
 			}
 
 			dave_memcpy(pRxTx->rx_buffer_ptr, &data[process_len], pRxTx->rx_buffer_len);
@@ -804,7 +804,7 @@ _base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
 				pRxTx->rx_buffer_len, data_len);
 
 			pRxTx->rx_buffer_len = 0;
-			ret = ERRCODE_data_overflow;
+			ret = RetCode_data_overflow;
 		}
 
 		if((data != NULL) && (data_len > 0))
@@ -848,7 +848,7 @@ _base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
 	return ret;
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_read(SocketRead *pRead, RXTX *pRxTx, stack_receive_fun result_fun, void *param)
 {
 	u8 *data;
@@ -881,7 +881,7 @@ _base_rxtx_read(SocketRead *pRead, RXTX *pRxTx, stack_receive_fun result_fun, vo
 static inline void
 _base_rxtx_safe_build(RXTX *pRxTx, SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
 {
-	SAFEZONEv3(pRxTx->opt_pv, {
+	SAFECODEv1(pRxTx->opt_pv, {
 
 		_base_rxtx_reset(pRxTx);
 		
@@ -900,7 +900,7 @@ _base_rxtx_safe_clean(RXTX *pRxTx, s8 *file, ub line)
 {
 	u8 *rx_buffer_ptr = NULL;
 
-	SAFEZONEv3(pRxTx->opt_pv, {
+	SAFECODEv1(pRxTx->opt_pv, {
 
 		rx_buffer_ptr = pRxTx->rx_buffer_ptr;
 
@@ -928,11 +928,11 @@ _base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
 	write_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEvent, SocketRead *pRead)
 {
 	ub rx_buffer_len;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	rx_buffer_len = RX_TX_BUF_MAX - pRxTx->rx_buffer_len;
 	if(rx_buffer_len < RX_TX_BUF_MIN)
@@ -947,13 +947,13 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	if(dave_os_recv(pEvent->os_socket, &(pEvent->NetInfo),
 		&(pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len]), &rx_buffer_len) == dave_false)
 	{
-		ret = ERRCODE_Channel_closed;
+		ret = RetCode_Channel_closed;
 
 		RTTRACE("socket:%d os_socket:%d event:%d domain:%d type:%d ret:%s/%s",
 			pEvent->socket, pEvent->os_socket,
 			pEvent->event,
 			pEvent->NetInfo.domain, pEvent->NetInfo.type,
-			errorstr(ret), dave_os_errno(NULL));
+			retstr(ret), dave_os_errno(NULL));
 	}
 	else
 	{
@@ -994,7 +994,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 			rx_buffer_len);
 	}
 
-	if(ret == ERRCODE_OK)
+	if(ret == RetCode_OK)
 	{
 		*recv_total_length += rx_buffer_len;
 
@@ -1025,10 +1025,10 @@ _base_rxtx_buffer_free(RXTX *pRxTx)
 	}
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_input_action(SocketRead *pRead, stack_receive_fun result_fun, void *param)
 {
-	ErrCode ret = ERRCODE_msg_competition_for_resources;
+	RetCode ret = RetCode_msg_competition_for_resources;
 	RXTX *pRxTx;
 
 	pRxTx = _base_rxtx_find_busy(pRead->socket);
@@ -1036,10 +1036,10 @@ _base_rxtx_input_action(SocketRead *pRead, stack_receive_fun result_fun, void *p
 	{
 		RTLOG("socket:%d close! <%d>", pRead->socket, pRead->data_len);
 		dave_mfree(pRead->data);
-		return ERRCODE_lost_link;
+		return RetCode_lost_link;
 	}
 
-	SAFEZONEv3(pRxTx->opt_pv, {
+	SAFECODEv1(pRxTx->opt_pv, {
 
 		_base_rxtx_buffer_malloc(pRxTx);
 
@@ -1050,17 +1050,17 @@ _base_rxtx_input_action(SocketRead *pRead, stack_receive_fun result_fun, void *p
 		else
 		{
 			RTLOG("socket:%d close! <%d>", pRead->socket, pRead->data_len);
-			ret = ERRCODE_lost_link;
+			ret = RetCode_lost_link;
 		}
 
 		_base_rxtx_buffer_free(pRxTx);
 
 	} );
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		RTABNOR("%s socket:%d input data failed:%s! data_len:%d rx_buffer_len:%d",
-			thread_name(self()), pRead->socket, errorstr(ret),
+			thread_name(self()), pRead->socket, retstr(ret),
 			pRead->data_len, pRxTx->rx_buffer_len);
 	}
 
@@ -1069,21 +1069,21 @@ _base_rxtx_input_action(SocketRead *pRead, stack_receive_fun result_fun, void *p
 	return ret;
 }
 
-static inline ErrCode
+static inline RetCode
 _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
 {
 	RXTX *pRxTx = NULL;
 	SocketRead read;
 	ub safe_counter;
 	ub backup_rx_buf_len;
-	ErrCode ret = ERRCODE_OK;
+	RetCode ret = RetCode_OK;
 
 	pRxTx = _base_rxtx_find_busy(pEvent->socket);
 	if(pRxTx == NULL)
 	{
 		RTLOG("socket:%d close or not ready!", pEvent->socket);
 		dave_mfree(pEvent->data);
-		return ERRCODE_lost_link;
+		return RetCode_lost_link;
 	}
 
 	dave_memset(&read, 0x00, sizeof(SocketRead));
@@ -1092,7 +1092,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 	safe_counter = 0;
 
-	SAFEZONEidlev3(pRxTx->opt_pv, {
+	SAFECODEidlev1(pRxTx->opt_pv, {
 
 		_base_rxtx_buffer_malloc(pRxTx);
 
@@ -1103,7 +1103,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 				backup_rx_buf_len = pRxTx->rx_buffer_len;
 
 				ret = _base_rxtx_event_receive(recv_total_length, pRxTx, pEvent, &read);
-				if(ret != ERRCODE_OK)
+				if(ret != RetCode_OK)
 				{
 					break;
 				}
@@ -1116,14 +1116,14 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 				if(pRxTx->rx_buffer_len > backup_rx_buf_len)
 				{
 					ret = _base_rxtx_read(&read, pRxTx, result_fun, param);
-					if(ret != ERRCODE_OK)
+					if(ret != RetCode_OK)
 					{
 						break;
 					}
 				}
 				else
 				{
-					ret = ERRCODE_OK;
+					ret = RetCode_OK;
 					break;
 				}
 			}
@@ -1134,7 +1134,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 	} );
 
 	RTDEBUG("socket:%d port:%d ret:%s rx_buffer_len:%d safe_counter:%d",
-		pRxTx->socket, pRxTx->port, errorstr(ret),
+		pRxTx->socket, pRxTx->port, retstr(ret),
 		pRxTx->rx_buffer_len,
 		safe_counter);
 
@@ -1216,7 +1216,7 @@ __base_rxtx_build__(SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
 
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 
-	SAFEZONEv3(_opt_pv, {
+	SAFECODEv1(_opt_pv, {
 
 		pRxTx = _base_rxtx_find_free(socket);
 		if(pRxTx == NULL)
@@ -1248,7 +1248,7 @@ __base_rxtx_clean__(s32 socket, s8 *file, ub line)
 {
 	RXTX *pRxTx;
 
-	SAFEZONEv3(_opt_pv, {
+	SAFECODEv1(_opt_pv, {
 
 		rxtx_confirm_transfer_clean(socket);
 
@@ -1311,16 +1311,16 @@ base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF
 	return dave_true;
 }
 
-ErrCode
+RetCode
 base_rxtx_input(SocketRead *pRead, stack_receive_fun result_fun, void *param)
 {
 	return _base_rxtx_input_action(pRead, result_fun, param);
 }
 
-ErrCode
+RetCode
 base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
 {
-	ErrCode ret;
+	RetCode ret;
 	ub recv_total_length = 0;
 
 	if(pEvent->data == NULL)

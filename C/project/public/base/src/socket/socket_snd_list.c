@@ -155,7 +155,7 @@ socket_snd_list_reset(SocketCore *pCore)
 {
 	SocketCoreSndList *pList = &(pCore->snd_list);
 
-	SAFEZONEv3(pList->opt_pv_for_snd, _socket_snd_list_reset(&(pCore->snd_list)););
+	SAFECODEv1(pList->opt_pv_for_snd, _socket_snd_list_reset(&(pCore->snd_list)););
 }
 
 void
@@ -164,7 +164,7 @@ socket_snd_list_init(SocketCore *pCore)
 	SocketCoreSndList *pList = &(pCore->snd_list);
 	ub clean_counter = 0;
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { clean_counter = _socket_snd_list_clean(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { clean_counter = _socket_snd_list_clean(pList); });
 	
 	if(clean_counter > SND_LIST_DEPTH_MAX)
 	{
@@ -183,7 +183,7 @@ socket_snd_list_exit(SocketCore *pCore)
 	SocketCoreSndList *pList = &(pCore->snd_list);
 	ub clean_counter = 0;
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { clean_counter = _socket_snd_list_clean(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { clean_counter = _socket_snd_list_clean(pList); });
 
 	if(clean_counter > SND_LIST_DEPTH_MAX)
 	{
@@ -201,7 +201,7 @@ socket_snd_list_clean(SocketCore *pCore)
 {
 	SocketCoreSndList *pList = &(pCore->snd_list);
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { _socket_snd_list_clean(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { _socket_snd_list_clean(pList); });
 }
 
 dave_bool
@@ -213,7 +213,7 @@ socket_snd_list_catch_snd_token(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *da
 
 	pNewList = _socket_snd_list_malloc(pIPInfo, data, snd_flag);
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { snd_token = _socket_snd_list_catch_snd_token(pList, pNewList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { snd_token = _socket_snd_list_catch_snd_token(pList, pNewList); });
 
 	if(pList->snd_list_depth >= SND_LIST_DEPTH_MAX)
 	{
@@ -231,7 +231,7 @@ socket_snd_list_release_snd_token(SocketCore *pCore)
 {
 	SocketCoreSndList *pList = &(pCore->snd_list);
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { _socket_snd_list_release_snd_token(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { _socket_snd_list_release_snd_token(pList); });
 }
 
 SokcetSndList *
@@ -240,7 +240,7 @@ socket_snd_list_catch_data(SocketCore *pCore)
 	SocketCoreSndList *pList = &(pCore->snd_list);
 	SokcetSndList *pSndData = NULL;
 
-	SAFEZONEv3(pList->opt_pv_for_snd, { pSndData = _socket_snd_list_catch_data(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { pSndData = _socket_snd_list_catch_data(pList); });
 
 	return pSndData;
 }

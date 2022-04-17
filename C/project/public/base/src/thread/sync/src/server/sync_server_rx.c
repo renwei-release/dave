@@ -269,7 +269,7 @@ _sync_server_rx_build_run_req_param(
 	return dave_true;
 }
 
-static ErrCode
+static RetCode
 _sync_server_rx_run_alone_thread_msg(
 	SyncThread *pSrcThread, SyncClient *pSrcClient,
 	ThreadId route_src, s8 *src,
@@ -279,7 +279,7 @@ _sync_server_rx_run_alone_thread_msg(
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	u8 *msg_body, ub msg_len)
 {
-	ErrCode ret;
+	RetCode ret;
 	SyncThread *pDstThread;
 	SyncClient *pDstClient;
 
@@ -287,7 +287,7 @@ _sync_server_rx_run_alone_thread_msg(
 	{
 		SYNCLTRACE(60,10,"lllegal routing of messages, maybe the service receiving this message has been disconnected! %s(%lx)->%s(%lx):%d",
 			src, route_src, dst, route_dst, msg_id);
-		return ERRCODE_OK;
+		return RetCode_OK;
 	}
 
 	if((pDstThread != NULL) && (pDstClient != NULL))
@@ -306,18 +306,18 @@ _sync_server_rx_run_alone_thread_msg(
 	{
 		if(pDstThread == NULL)
 		{
-			ret = ERRCODE_can_not_find_thread;
+			ret = RetCode_can_not_find_thread;
 		}
 		else
 		{
-			ret = ERRCODE_can_not_find_client;
+			ret = RetCode_can_not_find_client;
 		}
 	}
 
 	return ret;
 }
 
-static ErrCode
+static RetCode
 _sync_server_rx_run_broadcadt_thread_msg(
 	SyncThread *pSrcThread, SyncClient *pSrcClient,
 	ThreadId route_src, s8 *src,
@@ -481,7 +481,7 @@ _sync_server_rx_del_remote_thread_rsp(SyncClient *pClient, ub frame_len, u8 *fra
 	SYNCDEBUG("verno:%s del thread:%s success!", pClient->verno, thread_name);
 }
 
-static ErrCode
+static RetCode
 _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame, dave_bool buffer_pop)
 {
 	ThreadId route_src, route_dst;
@@ -493,7 +493,7 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame,
 	ub msg_len;
 	u8 *msg_body;
 	SyncThread *pSrcThread = NULL;
-	ErrCode ret;
+	RetCode ret;
 
 	sync_msg_unpacket(
 		frame, frame_len,
@@ -533,14 +533,14 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame,
 					msg_body, msg_len);
 		}
 
-		if(ret != ERRCODE_OK)
+		if(ret != RetCode_OK)
 		{
 			SYNCDEBUG("%s %s/%x/%lx/%d/%d->%s/%x/%lx/%d/%d id:%d len:%d ret:%s",
 				buffer_pop == dave_false ? "push buffer" : "pop buffer",
 				src, src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 				dst, dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 				msg_id, msg_len,
-				errorstr(ret));
+				retstr(ret));
 
 			if(buffer_pop == dave_false)
 			{
@@ -555,7 +555,7 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame,
 						src, src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 						dst, dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 						msg_id, msg_len,
-						errorstr(ret));
+						retstr(ret));
 				}
 			}
 		}
@@ -565,7 +565,7 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame,
 		SYNCABNOR("find invalid parameter, src:%s dst:%s msg_id:%d msg_len:%d buffer_pop:%d",
 			src, dst, msg_id, msg_len, buffer_pop);
 
-		ret = ERRCODE_OK;
+		ret = RetCode_OK;
 	}
 
 	return ret;
@@ -865,17 +865,17 @@ _sync_server_rx_input(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_
 static void
 _sync_server_rx_read_process(SyncClient *pClient, SocketRead *pRead)
 {
-	ErrCode ret = ERRCODE_Parameter_conflicts;
+	RetCode ret = RetCode_Parameter_conflicts;
 
 	if(pClient->client_socket != INVALID_SOCKET_ID)
 	{
 		ret = rxtx_input(pRead, _sync_server_rx_input, pClient);
 	}
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		SYNCLOG("%s socket:%d read error:%s",
-			pClient->verno, pRead->socket, errorstr(ret));
+			pClient->verno, pRead->socket, retstr(ret));
 
 		_sync_server_rx_disconnect(pRead->socket);
 	}
@@ -884,14 +884,14 @@ _sync_server_rx_read_process(SyncClient *pClient, SocketRead *pRead)
 static void
 _sync_server_rx_event_process(SyncClient *pClient, SocketRawEvent *pEvent)
 {
-	ErrCode ret = ERRCODE_Parameter_conflicts;
+	RetCode ret = RetCode_Parameter_conflicts;
 
 	if(pClient->client_socket != INVALID_SOCKET_ID)
 	{
 		ret = rxtx_event(pEvent, _sync_server_rx_input, pClient);
 	}
 
-	if(ret != ERRCODE_OK)
+	if(ret != RetCode_OK)
 	{
 		SYNCTRACE("%s socket:%d/%d/%s event:%d domain:%d type:%d error:%s",
 			pClient->verno,
@@ -899,9 +899,9 @@ _sync_server_rx_event_process(SyncClient *pClient, SocketRawEvent *pEvent)
 			ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 			pEvent->event,
 			pEvent->NetInfo.domain, pEvent->NetInfo.type,
-			errorstr(ret));
+			retstr(ret));
 
-		if(ret != ERRCODE_Invalid_data)
+		if(ret != RetCode_Invalid_data)
 		{
 			_sync_server_rx_disconnect(pEvent->socket);
 		}
@@ -940,31 +940,31 @@ _sync_server_rx_version_process(void *ptr)
 void
 sync_server_rx_read(SyncClient *pClient, SocketRead *pRead)
 {
-	SAFEZONEv3(pClient->opt_pv, _sync_server_rx_read_process(pClient, pRead););
+	SAFECODEv1(pClient->opt_pv, _sync_server_rx_read_process(pClient, pRead););
 }
 
 void
 sync_server_rx_event(SyncClient *pClient, SocketRawEvent *pEvent)
 {
-	SAFEZONEidlev3(pClient->opt_pv, _sync_server_rx_event_process(pClient, pEvent););
+	SAFECODEidlev1(pClient->opt_pv, _sync_server_rx_event_process(pClient, pEvent););
 }
 
 void
 sync_server_rx_version(SyncClient *pClient)
 {
-	SAFEZONEv3(pClient->opt_pv, _sync_server_rx_version_process(pClient););
+	SAFECODEv1(pClient->opt_pv, _sync_server_rx_version_process(pClient););
 }
 
 void
 sync_server_rx_link_up(SyncClient *pClient)
 {
-	SAFEZONEv3(pClient->opt_pv, sync_server_sync_link(pClient, dave_true););
+	SAFECODEv1(pClient->opt_pv, sync_server_sync_link(pClient, dave_true););
 }
 
 void
 sync_server_rx_link_down(SyncClient *pClient)
 {
-	SAFEZONEv3(pClient->opt_pv, sync_server_sync_link(pClient, dave_false););
+	SAFECODEv1(pClient->opt_pv, sync_server_sync_link(pClient, dave_false););
 }
 
 #endif

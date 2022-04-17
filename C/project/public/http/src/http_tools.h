@@ -14,9 +14,9 @@ void http_copy_head(HttpKeyValue *pDstHead, HttpKeyValue *pSrcHead);
 
 s8 * http_load_content_type(HttpContentType type);
 
-s8 * http_find_kv(HttpKeyValue *head_ptr, ub head_len, char *key);
+s8 * http_find_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key);
 
-dave_bool http_build_kv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value);
+dave_bool http_build_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value);
 
 #endif
 

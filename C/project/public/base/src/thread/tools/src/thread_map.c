@@ -137,7 +137,7 @@ __thread_map_name_add__(s8 *thread_name, ThreadStruct *pThread, s8 *fun, ub line
 		return dave_false;
 	}
 
-	SAFEZONEv3(_thread_map_pv, {
+	SAFECODEv1(_thread_map_pv, {
 		pMap = _thread_map_name_find(thread_name, pThread, dave_true);
 		if(pMap == NULL)
 		{
@@ -160,7 +160,7 @@ __thread_map_name_del__(s8 *thread_name, s8 *fun, ub line)
 		return;
 	}
 
-	SAFEZONEv3(_thread_map_pv, {
+	SAFECODEv1(_thread_map_pv, {
 		pMap = _thread_map_name_find(thread_name, NULL, dave_false);
 		if(pMap != NULL)
 		{

@@ -1,12 +1,3 @@
-/*
- * Copyright (c) 2022 Renwei
- *
- * This is a free software; you can redistribute it and/or modify
- * it under the terms of the MIT license. See LICENSE for details.
- */
-
-#include "tools_macro.h"
-#ifdef __DAVE_TOOLS__
 #include "dave_tools.h"
 #include "dave_aes.h"
 #include "dave_aes_i.h"
@@ -166,6 +157,4 @@ void dave_aes_decrypt_deinit(void *ctx)
 	dave_memset(ctx, 0, AES_PRIV_SIZE);
 	dave_free(ctx);
 }
-
-#endif
 

@@ -89,7 +89,7 @@ sync_client_message_route(MSGBODY *pMsg)
 
 	if(pServer != NULL)
 	{
-		SAFEZONEv5R(pServer->rxtx_pv, _sync_client_message_route_to_remote(pServer, pMsg););
+		SAFECODEv2R(pServer->rxtx_pv, _sync_client_message_route_to_remote(pServer, pMsg););
 	}
 	else
 	{

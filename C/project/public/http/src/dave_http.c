@@ -9,7 +9,7 @@
 #include "dave_tools.h"
 #include "dave_http.h"
 #include "dave_os.h"
-#include "dave_third_party.h"
+#include "dave_3rdparty.h"
 #include "http_recv.h"
 #include "http_distributor.h"
 #include "http_test.h"

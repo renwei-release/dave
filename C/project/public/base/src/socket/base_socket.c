@@ -106,7 +106,7 @@ _socket_bing_rsp(SocketCore *pCore, ThreadId src, SocketBindReq *pReq)
 
 	if(pCore != NULL)
 	{
-		SAFEZONEv5W(pCore->opt_pv, pCore->bind_or_connect_rsp_flag = dave_true; );
+		SAFECODEv2W(pCore->opt_pv, pCore->bind_or_connect_rsp_flag = dave_true; );
 	}
 }
 
@@ -152,7 +152,7 @@ _socket_connect_rsp(SocketCore *pCore, SOCKETINFO info, ThreadId src, SocketConn
 
 	if(pCore != NULL)
 	{
-		SAFEZONEv5W(pCore->opt_pv, pCore->bind_or_connect_rsp_flag = dave_true; );
+		SAFECODEv2W(pCore->opt_pv, pCore->bind_or_connect_rsp_flag = dave_true; );
 	}
 }
 

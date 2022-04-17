@@ -277,6 +277,8 @@ typedef enum {
 	ERRCODE_Blacklist_intercept = -262,
 	ERRCODE_data_not_exist = -263,
 	ERRCODE_Invalid_length = -264,
+	ERRCODE_Route_Direct = -265,
+	ERRCODE_Can_not_find_isp = -266,
 
 	ErrCode_max = 0x1fffffffffffffff
 } ErrCode;

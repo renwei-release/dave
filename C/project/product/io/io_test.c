@@ -5,7 +5,6 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#include "product_macro.h"
 #ifdef __DAVE_PRODUCT_IO__
 #include "dave_base.h"
 #include "dave_os.h"
@@ -28,7 +27,7 @@ __concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho, dave_bool concurrency_flag)
 static void
 _concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho)
 {
-	sb concurrency_number = (sb)(dave_rand() % 4096);
+	sb concurrency_number = (sb)(t_rand() % 4096);
 	dave_bool send_normal_echo = dave_false;
 
 	while((concurrency_number --) > 0)
