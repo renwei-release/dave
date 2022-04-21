@@ -10,7 +10,7 @@ import sys
 import inspect
 from ctypes import *
 from .dave_dll import dave_dll
-from .dave_struct import *
+from ..auto import *
 from ..tools import *
 
 

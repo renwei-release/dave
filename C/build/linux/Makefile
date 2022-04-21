@@ -51,7 +51,7 @@ else
 	CPLUSFLAGS += -g -O0
 endif
 
-dave: $(OBJS)
+$(VER_PRODUCT)-BIN: $(OBJS)
 	@$(CC) -o $@ $^ $(CFLAGS) $(LIB)
 %.o: %.c
 	@echo $<
@@ -68,19 +68,8 @@ pre_build:
 	../../../Tools/auto_code/AUTOCODE
 
 end_build:
-	./build-py-go-lib.sh $(MAKE_LEVEL_PRODUCT)
-
-running_bin:
-	../../../Tools/running_bin/running_bin ../../build/linux/dave NULL
-	cp dave $(VER_PRODUCT)-BIN
 	$(shell if [ ! -d $(DEPLOYPATH) ]; then mkdir -p $(DEPLOYPATH); fi)
-	cp dave $(DEPLOYPATH)/$(VER_PRODUCT)-BIN
+	cp $(VER_PRODUCT)-BIN $(DEPLOYPATH)/$(VER_PRODUCT)-BIN
 
 clean:
-	rm $(OBJS) $(VER_PRODUCT).* -f
-
-clean_gcno_gcda:
-	rm $(GCNO) $(GCDA) -f
-
-clean_bin:
-	rm $(VER_PRODUCT).* -f
+	rm $(OBJS) $(GCNO) $(GCDA) $(VER_PRODUCT).* -f

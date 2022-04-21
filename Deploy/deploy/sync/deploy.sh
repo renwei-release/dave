@@ -12,7 +12,7 @@ if [ "$1" == "" ]; then
 else
    HOMEPATH=$1
 fi
-IMAGE="base_docker_image"
+IMAGE="sync_docker_image"
 TAG="latest"
 EXTEND=""
 

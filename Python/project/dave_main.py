@@ -7,7 +7,6 @@
 # */
 import sys
 import public
-from product.dave_product import *
 
 
 # =====================================================================
@@ -16,12 +15,7 @@ from product.dave_product import *
 def main():
    product_name = sys.argv[1]
 
-   product = dave_product(product_name)
-
-   if product != None:
-      public.dave_python_init(product.dave_product_init, product.dave_product_exit)
-   else:
-      public.dave_python_init(None, None)
+   public.dave_python_init(product_name)
    public.dave_python_running()
    public.dave_python_exit()
    return

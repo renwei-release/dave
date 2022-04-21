@@ -84,7 +84,7 @@ _base_thread_exit(MSGBODY *msg)
 void
 dave_product_init(void)
 {
-	_base_thread = dave_thread_creat(dave_verno_my_product(), 1, THREAD_THREAD_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
+	_base_thread = base_thread_creat(dave_verno_my_product(), 1, THREAD_THREAD_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
 	if(_base_thread == INVALID_THREAD_ID)
 		dave_restart(dave_verno_my_product());
 }
@@ -93,7 +93,7 @@ void
 dave_product_exit(void)
 {
 	if(_base_thread != INVALID_THREAD_ID)
-		dave_thread_del(_base_thread);
+		base_thread_del(_base_thread);
 	_base_thread = INVALID_THREAD_ID;
 }
 

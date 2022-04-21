@@ -8,24 +8,16 @@
 import importlib
 import traceback
 import sys
-import public
-
-
-def _setup_product(product_name):
-   public.dave_product(product_name)
-   return
 
 
 # =====================================================================
 
 
-def dave_product(product_name):
-    _setup_product(product_name)
-
+def dave_import_product(product_name):
     try:
         sys.path.append("/project/product")
-        return importlib.import_module(f'{product_name}.{product_name}_function')
+        return importlib.import_module(f'{product_name}.{product_name}_product')
     except:
-        print(f"{product_name} does not exist or has wrong!!!!!! the sys.path:{sys.path}")
+        print(f"{product_name} does not exist or has wrong!!!!!!")
         traceback.print_exc()
-        return None        
+        return None

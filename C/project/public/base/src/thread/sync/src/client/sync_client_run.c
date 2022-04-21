@@ -236,7 +236,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 
 	if(ret != RetCode_OK)
 	{
-		SYNCLTRACE(60,1,"%s, %s->%s:%d/%d", retstr(ret), src, dst, msg_id, msg_len);
+		SYNCLTRACE(60,1,"%s, %s->%s:%s/%d", retstr(ret), src, dst, msgstr(msg_id), msg_len);
 
 		thread_msg_release(msg_body);
 	}

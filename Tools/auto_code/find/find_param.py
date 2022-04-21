@@ -23,7 +23,7 @@ def find_param():
 
     param.update(find_all_struct_table(file_list))
 
-    define_table, _ = find_define_table(file_list)
+    define_table, _ = find_define_table(file_list, param['all_struct_table'])
     param['define_table'] = define_table
 
     param['meta_table'] = find_meta_table()

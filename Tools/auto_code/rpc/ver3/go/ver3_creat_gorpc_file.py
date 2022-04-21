@@ -8,6 +8,7 @@
 from autocode_cfg import *
 from autocode_tools import *
 
+go_package_name = 'package auto\n'
 
 def _c_enum_to_go_type(enum_value_array):
     for key in enum_value_array.keys():
@@ -98,7 +99,7 @@ def _c_type_to_go_type(c_type, is_ptr, struct_total, enum_table, fun_table):
 def _creat_define_file(define_table, file_name):
     print(f"{len(define_table)}\tdefine\t\twrite to {file_name}")
     with open(file_name, "w+", encoding="utf-8") as file_id:
-        file_id.write('package base\n')
+        file_id.write(go_package_name)
         copyright_message(file_id)
 
         for key in define_table.keys():
@@ -109,7 +110,7 @@ def _creat_define_file(define_table, file_name):
 def _creat_msg_id_file(msg_id_table, file_name):
     print(f'{len(msg_id_table)}\tmsgid\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
-        file_id.write('package base\n')
+        file_id.write(go_package_name)
         copyright_message(file_id)
 
         file_id.write('const (\n')
@@ -122,7 +123,7 @@ def _creat_msg_id_file(msg_id_table, file_name):
 def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_name):
     print(f'{len(struct_table)}\tstruct\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
-        file_id.write('package base\n')
+        file_id.write(go_package_name)
         copyright_message(file_id)
         file_id.write('import "unsafe"\n\n')
 
@@ -144,7 +145,7 @@ def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_n
 def _creat_enum_file(enum_table, file_name):
     print(f'{len(enum_table)}\tenum\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
-        file_id.write('package base\n')
+        file_id.write(go_package_name)
         copyright_message(file_id)
 
         for enum_name in enum_table.keys():

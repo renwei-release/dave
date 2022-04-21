@@ -11,9 +11,13 @@ PROJECT=$2
 PROJECTNAME=$3
 JUPYTERPORT=$4
 PROJECTMAPPING=$5
-HOMEPRJDIR=${HOMEPATH}/../../project
+PROGRAMMERPRJDIR=${HOMEPATH}/../../project
+HOMEPRJDIR=${PROGRAMMERPRJDIR}
 HOMEBUILDDIR=${HOMEPATH}/../../build
 
+if [ ! -d ${HOMEPRJDIR} ]; then
+   HOMEPRJDIR=${HOMEPATH}/project
+fi
 if [ ! -d ${HOMEPRJDIR} ]; then
    HOMEPRJDIR=${HOMEPATH}/../../../project
 fi
@@ -24,91 +28,55 @@ fi
 ############## copy_project_file function ##############
 copy_python_project_to_container()
 {
-   if [ -d ${PRJPYFILE} ]; then
-      echo update.sh copy ${PRJPYFILE} to ${PROJECTNAME}
+   if [ -d ${HOMEPRJDIR} ]; then
+      echo update.sh copy ${HOMEPRJDIR} to ${PROJECTNAME}
 
       docker exec -it ${PROJECTNAME} mkdir -p /project/public
       docker exec -it ${PROJECTNAME} mkdir -p /project/product
 
-      docker cp ${PRJPYFILE}/dave_main.py ${PROJECTNAME}:/project
-      docker cp ${PRJPYFILE}/public/__init__.py ${PROJECTNAME}:/project/public
+      docker cp ${HOMEPRJDIR}/dave_main.py ${PROJECTNAME}:/project
+      docker cp ${HOMEPRJDIR}/public ${PROJECTNAME}:/project
 
-      docker cp ${PRJPYFILE}/public/base ${PROJECTNAME}:/project/public
-      docker cp ${PRJPYFILE}/public/tools ${PROJECTNAME}:/project/public
-
-      if [ -d ${PRJPYFILE}/product/${PROJECT} ]; then
-         docker cp ${PRJPYFILE}/product/dave_product.py ${PROJECTNAME}:/project/product
-         docker cp ${PRJPYFILE}/product/${PROJECT} ${PROJECTNAME}:/project/product
+      if [ -d ${HOMEPRJDIR}/product/${PROJECT} ]; then
+         docker cp ${HOMEPRJDIR}/product/dave_product.py ${PROJECTNAME}:/project/product
+         docker cp ${HOMEPRJDIR}/product/${PROJECT} ${PROJECTNAME}:/project/product
       fi
+   fi
+}
+
+backup_python_project_from_container()
+{
+   if [ ${PROGRAMMERPRJDIR} == ${HOMEPRJDIR} ]; then
+      DEPLOYPRJDIR=${HOMEPATH}/../../../Deploy/deploy/${PROJECT}
+      echo update.sh backup project from ${PROJECTNAME}
+      if [ -d ${DEPLOYPRJDIR}/project ]; then
+         rm -rf ${DEPLOYPRJDIR}/project
+      fi
+      docker cp ${PROJECTNAME}:/project ${DEPLOYPRJDIR}
    fi
 }
 
 copy_python_project_file()
 {
-   PRJPYFILE=${HOMEPRJDIR}
-
    copy_python_project_to_container
-}
-
-copy_ai_project_to_container()
-{
-   if [ -d ${PRJAIFILE} ]; then
-      echo update.sh copy ${PRJAIFILE} to ${PROJECTNAME}:/project/public
-      docker exec -it ${PROJECTNAME} mkdir -p /project/public
-      docker cp ${PRJAIFILE} ${PROJECTNAME}:/project/public
-   fi
-}
-
-copy_ai_project_file()
-{
-   if [ ${PROJECT} == "aesthetics" ] \
-      || [ ${PROJECT} == "aip" ] \
-      || [ ${PROJECT} == "bagword" ] \
-      || [ ${PROJECT} == "sculptures" ] \
-      || [ ${PROJECT} == "style" ]; then
-      PRJAIFILE=${HOMEPRJDIR}/public/neural_network
-
-      copy_ai_project_to_container
-   fi
-}
-
-copy_bin_project_container()
-{
-   if [ -f ${BINFILE} ]; then
-      echo update.sh copy ${BINFILE} to ${PROJECTNAME}:/project ...
-      chmod a+x ${BINFILE}
-      docker cp ${BINFILE} ${PROJECTNAME}:/project
-   fi
-}
-
-backup_bin_project_file()
-{
-   if [ ${BINFILE} != ${DEPLOYBINFILE} ]; then
-      echo update.sh backup ${BINFILE} to ${DEPLOYBINFILE}
-      cp -r ${BINFILE} ${DEPLOYBINFILE}
-   fi
+   backup_python_project_from_container
 }
 
 copy_bin_project_file()
 {
-   DEPLOYBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/${PROJECT^^}-BIN
-   BINFILE=${HOMEBUILDDIR}/linux/${PROJECT}/${PROJECT^^}-BIN
-   if [ ! -f ${BINFILE} ]; then
-      BINFILE=${HOMEBUILDDIR}/${PROJECT}/${PROJECT^^}-BIN
-   fi
-   if [ ! -f ${BINFILE} ]; then
-      BINFILE=${DEPLOYBINFILE}
-   fi
+   PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/${PROJECT^^}-BIN
 
-   copy_bin_project_container
-   backup_bin_project_file
+   if [ -f ${PRJBINFILE} ]; then
+      echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
+      chmod a+x ${PRJBINFILE}
+      docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
+   fi
 }
 
 copy_project_file()
 {
    if [ -f ${HOMEPRJDIR}/dave_main.py ]; then
       copy_python_project_file
-      copy_ai_project_file
    else
       copy_bin_project_file
    fi
@@ -121,9 +89,9 @@ __copy_sh_file__()
    if [ -f ${SHFILE} ]; then   
       chmod a+x $SHFILE
 
-      SHCMDLINE=`cat -n $SHFILE | grep '___FLAG_FOR_UPDATE.SH___' | awk '{print $1}'`
+      SHCMDLINE=`cat -n $SHFILE | grep 'goto_debug #___FLAG_FOR_UPDATE.SH___' | awk '{print $1}'`
       if [ "$SHCMDLINE" == "" ]; then
-         SHCMDLINE=`cat -n $SHFILE | grep 'python ./dave_main.py' | awk '{print $1}'`
+         SHCMDLINE=`cat -n $SHFILE | grep 'python3 ./dave_main.py' | awk '{print $1}'`
       fi
       if [ "$SHCMDLINE" == "" ]; then
          SHCMDLINE=`cat -n $SHFILE | grep '-BIN' | awk '{print $1}'`
@@ -143,21 +111,29 @@ __copy_sh_file__()
             docker cp $SHFILE ${PROJECTNAME}:/project
          fi
 
-         sed -i "${SHCMDLINE}c ___FLAG_FOR_UPDATE.SH___" $SHFILE
+         sed -i "${SHCMDLINE}c goto_debug #___FLAG_FOR_UPDATE.SH___" $SHFILE
       else
          echo update.sh empty $SHFILE !!!
       fi
+   else
+      echo update.sh where is $SHFILE ???
    fi
 }
 
 copy_sh_file()
 {
    # running file
-   SHFILE=${HOMEPRJDIR}/dave-running.sh
+   SHFILE=${HOMEPATH}/../../../Deploy/dave-running.sh
+   if [ ! -f ${SHFILE} ]; then
+      SHFILE=${HOMEPATH}/../../../../Deploy/dave-running.sh
+   fi
    __copy_sh_file__
 
    # debug file
-   SHFILE=${HOMEPRJDIR}/dave-debug.sh
+   SHFILE=${HOMEPATH}/../../../Deploy/dave-debug.sh
+   if [ ! -f ${SHFILE} ]; then
+      SHFILE=${HOMEPATH}/../../../../Deploy/dave-debug.sh
+   fi
    __copy_sh_file__
 }
 ############## copy_sh_file function ##############

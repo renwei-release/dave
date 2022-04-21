@@ -15,6 +15,8 @@ void dos_hi_reset(void);
 void dos_debug_reset(void);
 void dos_echo_reset(void);
 void dos_cfg_reset(void);
+void dos_sync_reset(void);
+void dos_log_reset(void);
 
 // =====================================================================
 
@@ -27,6 +29,8 @@ dos_app_reset(void)
 	dos_debug_reset();
 	dos_echo_reset();
 	dos_cfg_reset();
+	dos_sync_reset();
+	dos_log_reset();
 }
 
 #endif

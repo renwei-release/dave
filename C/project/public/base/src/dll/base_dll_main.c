@@ -122,7 +122,7 @@ dave_dll_main_init(dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun,
 	_dll_main_fun = dll_main_fun;
 	_dll_exit_fun = dll_exit_fun;
 
-	_main_thread = dave_thread_creat(_dll_main_name(), _dll_main_number(), THREAD_THREAD_FLAG, _dll_main_init, _dll_main_main, _dll_main_exit);
+	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), THREAD_THREAD_FLAG, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)
 		dave_restart(_dll_main_name());
 }
@@ -131,7 +131,7 @@ void
 dave_dll_main_exit(void)
 {
 	if(_main_thread != INVALID_THREAD_ID)
-		dave_thread_del(_main_thread);
+		base_thread_del(_main_thread);
 	_main_thread = INVALID_THREAD_ID;
 }
 

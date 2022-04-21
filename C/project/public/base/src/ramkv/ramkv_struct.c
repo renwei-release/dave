@@ -47,7 +47,7 @@ ___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback
 
 	dave_strcpy(pKV->thread_name, thread_name(self()), DAVE_THREAD_NAME_LEN);
 
-	dave_strcpy(pKV->name, name, KV_NAME_MAX);
+	dave_strcpy(pKV->name, name, RAMKV_NAME_MAX);
 	pKV->attrib = attrib;
 
 	switch(pKV->attrib)

@@ -48,8 +48,8 @@ def _write_exist_enum(msg_id_exist_table, file_id):
 
     if key == None:
         return 1
-    msg_id_value = msg_id_exist_table[key]
-    return int(msg_id_value) + 1
+    msg_value = msg_id_exist_table[key]
+    return int(msg_value) + 1
 
 
 def _creat_rpcinc_file(msg_id_list, file_name):
@@ -63,19 +63,36 @@ def _creat_rpcinc_file(msg_id_list, file_name):
         file_id.write('\tMSGID_RESERVED = 0x0000000000000000,\n\n')
         msg_id_table['MSGID_RESERVED'] = 0x0000000000000000
 
-        msg_id_value = _write_exist_enum(msg_id_exist_table, file_id)
+        msg_value = _write_exist_enum(msg_id_exist_table, file_id)
         for msg_id in msg_id_list:
             msg_id_exist = msg_id_exist_table.get(msg_id, None)
             if msg_id_exist == None:
-                file_id.write(f'\t{msg_id} = {msg_id_value},\n')
-                msg_id_table[msg_id] = msg_id_value
-                msg_id_value += 1
+                file_id.write(f'\t{msg_id} = {msg_value},\n')
+                msg_id_table[msg_id] = msg_value
+                msg_value += 1
 
         file_id.write('\n\tMSGID_INVALID = 0xffffffffffffffff\n')
         msg_id_table['MSGID_INVALID'] = 0xffffffffffffffff
         file_id.write('} RPCMSG;\n\n')
         file_id.write(_rpcinc_end)
     return msg_id_table
+
+
+def __check_if_the_table_has_the_same_value(msg_id_table, check_msg_id, check_msg_value):
+    for msg_id in msg_id_table.keys():
+        if msg_id == check_msg_id:
+            continue
+        msg_value = msg_id_table[msg_id]
+        if msg_value == check_msg_value:
+            print(f'\033[93mNote that the value:{msg_value} of these two messages:{check_msg_id}/{msg_id} is the same!!!\033[0m')
+    return
+
+
+def _check_if_the_table_has_the_same_value(msg_id_table):
+    for msg_id in msg_id_table.keys():
+        msg_value = msg_id_table[msg_id]
+        __check_if_the_table_has_the_same_value(msg_id_table, msg_id, msg_value)
+    return
 
 
 # =====================================================================
@@ -86,5 +103,7 @@ def creat_rpcinc_file(param):
 
     msg_id_list = find_msg_id_list(file_list)
     print(f"{len(msg_id_list)}\tmsgid\t\twrite to {rpc_ver3_rpcinc_file_name}")
+
     msg_id_table = _creat_rpcinc_file(msg_id_list, rpc_ver3_rpcinc_file_name)
+    _check_if_the_table_has_the_same_value(msg_id_table)
     return msg_id_table

@@ -8,10 +8,7 @@
 from ctypes import *
 from .dave_dll import dave_dll
 from .dave_log import *
-from .dave_struct import *
-from .dave_msg_struct import *
 from .dave_verno import *
-from .dave_define import *
 from ..tools import *
 
 

@@ -102,14 +102,14 @@ _ramkv_list_data_clean(KVValue *pValue)
 static inline void
 _ramkv_list_data_key_malloc(KVKey *pKey, u8 *key_ptr, ub key_len)
 {
-	if(key_len >= KV_KEY_MAX)
+	if(key_len >= RAMKV_KEY_MAX)
 	{
 		KVLOG("too longer key:%d/%s", key_len);
-		key_len = (KV_KEY_MAX - 1);
+		key_len = (RAMKV_KEY_MAX - 1);
 	}
 	pKey->key_len = key_len;
 	dave_memcpy(pKey->key_ptr, key_ptr, pKey->key_len);
-	pKey->key_ptr[KV_KEY_MAX - 1] = '\0';
+	pKey->key_ptr[RAMKV_KEY_MAX - 1] = '\0';
 }
 
 static inline void

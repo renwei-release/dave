@@ -176,10 +176,10 @@ ramkv_local_multimap_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub v
 
 	KVDEBUG("key:%s value_ptr:%lx value_len:%d", key_ptr, *((ub *)value_ptr), value_len);
 
-	if(key_len >= KV_KEY_MAX)
+	if(key_len >= RAMKV_KEY_MAX)
 	{
 		KVABNOR("The index KEY(%d/%d) should not be too long to avoid deep recursive calls!",
-			key_len, KV_KEY_MAX);
+			key_len, RAMKV_KEY_MAX);
 		return dave_false;
 	}
 

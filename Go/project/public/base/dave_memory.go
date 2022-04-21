@@ -1,4 +1,5 @@
 package base
+
 /*
  * Copyright (c) 2022 Renwei
  *
@@ -13,15 +14,16 @@ package base
 */
 import "C"
 import (
+	"dave/public/auto"
+	"dave/public/tools"
 	"runtime"
 	"strings"
 	"unsafe"
-	"dave/public/tools"
 )
 
 // =====================================================================
 
-func Dave_mmalloc(data_len int) * MBUF{
+func Dave_mmalloc(data_len int) *auto.MBUF {
 	pc, _, __LINE__, _ := runtime.Caller(2)
 	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
 	__func__ := funcNamearray[len(funcNamearray)-1]
@@ -30,10 +32,10 @@ func Dave_mmalloc(data_len int) * MBUF{
 
 	mbuf_ptr := C.dave_dll_mmalloc(C.int(data_len), c_func, C.int(__LINE__))
 
-	return (* MBUF)(mbuf_ptr)
+	return (*auto.MBUF)(mbuf_ptr)
 }
 
-func Dave_mfree(ptr * MBUF) {
+func Dave_mfree(ptr *auto.MBUF) {
 	pc, _, __LINE__, _ := runtime.Caller(2)
 	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
 	__func__ := funcNamearray[len(funcNamearray)-1]

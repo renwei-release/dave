@@ -9,6 +9,7 @@ import os
 from ctypes import *
 from .dave_verno import *
 from .dave_msg_function import *
+from product.dave_product import *
 
 
 class DllMsgBody(Structure):
@@ -28,9 +29,28 @@ path=os.path.dirname(os.path.abspath(__file__))
 davelib=cdll.LoadLibrary(path+"/lib/liblinuxBASE.so")
 
 
+_my_product_name = None
 _product_init_fun = None
+_product_exit_fun = None
+
+
+def _python_import_product(product_name):
+   global _my_product_name
+   global _product_init_fun
+   global _product_exit_fun
+
+   if _product_init_fun == None:
+      product = dave_import_product(_my_product_name)
+      if product != None:
+         _product_init_fun = product.dave_product_init
+         _product_exit_fun = product.dave_product_exit
+   return
+
+
 INITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_init(NULL_DATA):
+   _python_import_product(_my_product_name)
+
    if _product_init_fun != None:
       _product_init_fun()
    return
@@ -42,7 +62,6 @@ def _python_main(msg):
    return
 
 
-_product_exit_fun = None
 EXITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_exit(NULL_DATA):
    if _product_exit_fun != None:
@@ -67,6 +86,11 @@ def _dll_python_self_check():
    return False
 
 
+def _dll_setup_product_verno_name(product_name):
+   dave_product(product_name)
+   return
+
+
 # =====================================================================
 
 
@@ -74,12 +98,12 @@ def dave_dll():
    return davelib
 
 
-def dave_python_init(init_fun, exit_fun):
-   global _product_init_fun
-   global _product_exit_fun
+def dave_python_init(product_name):
+   global _my_product_name
 
-   _product_init_fun = init_fun
-   _product_exit_fun = exit_fun
+   _my_product_name = str(product_name)
+
+   _dll_setup_product_verno_name(_my_product_name)
 
    davelib.dave_dll_init(c_char_p(dave_verno()), c_char_p(b'Outer Loop'), _c_python_init, _c_python_main, _c_python_exit)
    return

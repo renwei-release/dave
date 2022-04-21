@@ -25,9 +25,9 @@ _ramkv_timer_key_malloc(u8 *key_ptr, ub key_len)
 {
 	KVTimerKeyList *pKeyList;
 
-	if(key_len >= KV_KEY_MAX)
+	if(key_len >= RAMKV_KEY_MAX)
 	{
-		KVLOG("too longer key_len:%d(%d)", key_len, KV_KEY_MAX);
+		KVLOG("too longer key_len:%d(%d)", key_len, RAMKV_KEY_MAX);
 		return NULL;
 	}
 

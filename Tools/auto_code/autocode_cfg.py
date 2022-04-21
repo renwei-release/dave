@@ -14,9 +14,9 @@ project_path_list = [
 
 forgettable_path_list = [
     "../../C/project/public/os",
-    "../../C/project/public/third_party",
+    "../../C/project/public/3rdparty",
     "../../C/project/public/tools",
-    "../../C/project/public/verno"
+    "../../C/project/public/verno",
 ]
 
 
@@ -39,17 +39,17 @@ rpc_ver3_rpcdata_inc_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_rpcdata.h"
 rpc_ver3_fundata_src_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_fundata.c"
 rpc_ver3_fundata_inc_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_fundata.h"
 
-rpc_ver3_gomsgid_file_name = "../../Go/project/public/base/dave_msg_id.go"
-rpc_ver3_godefine_file_name = "../../Go/project/public/base/dave_define.go"
-rpc_ver3_gostruct_file_name = "../../Go/project/public/base/dave_struct.go"
-rpc_ver3_gomsgstruct_file_name = "../../Go/project/public/base/dave_msg_struct.go"
-rpc_ver3_goenum_file_name = "../../Go/project/public/base/dave_enum.go"
+rpc_ver3_gomsgid_file_name = "../../Go/project/public/auto/dave_msg_id.go"
+rpc_ver3_godefine_file_name = "../../Go/project/public/auto/dave_define.go"
+rpc_ver3_gostruct_file_name = "../../Go/project/public/auto/dave_struct.go"
+rpc_ver3_gomsgstruct_file_name = "../../Go/project/public/auto/dave_msg_struct.go"
+rpc_ver3_goenum_file_name = "../../Go/project/public/auto/dave_enum.go"
 
-rpc_ver3_pymsgid_file_name = "../../Python/project/public/base/dave_msg_id.py"
-rpc_ver3_pydefine_file_name = "../../Python/project/public/base/dave_define.py"
-rpc_ver3_pystruct_file_name = "../../Python/project/public/base/dave_struct.py"
-rpc_ver3_pymsgstruct_file_name = "../../Python/project/public/base/dave_msg_struct.py"
-rpc_ver3_pyenum_file_name = "../../Python/project/public/base/dave_enum.py"
+rpc_ver3_pymsgid_file_name = "../../Python/project/public/auto/dave_msg_id.py"
+rpc_ver3_pydefine_file_name = "../../Python/project/public/auto/dave_define.py"
+rpc_ver3_pystruct_file_name = "../../Python/project/public/auto/dave_struct.py"
+rpc_ver3_pymsgstruct_file_name = "../../Python/project/public/auto/dave_msg_struct.py"
+rpc_ver3_pyenum_file_name = "../../Python/project/public/auto/dave_enum.py"
 
 
 c_enumstr_file_name = "../../C/project/public/tools/src/t_a2b/t_a2b_enumstr.c"

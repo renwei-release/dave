@@ -262,6 +262,19 @@ _register_cmd_list(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun, sb life_
 	return RetCode_OK;
 }
 
+static void
+_dos_cmd_reset(void)
+{
+	DOSCmdStruct *temp;
+
+	while(_cmd_list_head != NULL)
+	{
+		temp = (DOSCmdStruct *)(_cmd_list_head->next);
+		dave_free(_cmd_list_head);
+		_cmd_list_head = temp;
+	}
+}
+
 // =====================================================================
 
 void
@@ -273,20 +286,7 @@ dos_cmd_init(void)
 void
 dos_cmd_exit(void)
 {
-	dos_cmd_reset();
-}
-
-void
-dos_cmd_reset(void)
-{
-	DOSCmdStruct *temp;
-
-	while(_cmd_list_head != NULL)
-	{
-		temp = (DOSCmdStruct *)(_cmd_list_head->next);
-		dave_free(_cmd_list_head);
-		_cmd_list_head = temp;
-	}
+	_dos_cmd_reset();
 }
 
 void

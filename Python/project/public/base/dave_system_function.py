@@ -5,7 +5,7 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
-from .dave_msg_id import *
+from ..auto import *
 
 
 def fun_None(src_name, src_id, msg_len, msg_body):
@@ -43,10 +43,17 @@ system_function_table = {
 
 
 def dave_system_function_table_add(msg_id, msg_function):
+    global system_function_table
     system_function_table[msg_id] = msg_function
     return
 
 
 def dave_system_function_table_del(msg_id):
+    global system_function_table
     del system_function_table[msg_id]
     return
+
+
+def dave_system_function_table_inq(msg_id):
+    global system_function_table
+    return system_function_table.get(msg_id, None)

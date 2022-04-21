@@ -28,7 +28,7 @@
 
 #define DAVE_BUILDING_BLOCKS_MAX (255)
 
-#define DAVE_HTTP_CONTENT_LEN (3 * 1024 * 1024)
+#define DAVE_HTTP_CONTENT_LEN (3*1024*1024)
 
 #endif
 

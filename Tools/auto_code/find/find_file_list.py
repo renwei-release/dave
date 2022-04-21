@@ -69,7 +69,7 @@ def _remove_invalid_file(file_list):
             except:
                 print(f'file_name:{file_name} read failed!')
 
-    for Loop_multiple_times_to_get_nested_structures in range(3):
+    for Loop_multiple_times_to_get_nested_files in range(3):
         inc_file_list = list(set(inc_file_list))
         new_inc_file_list = []
         for inc_file in inc_file_list:

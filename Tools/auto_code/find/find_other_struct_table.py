@@ -63,7 +63,6 @@ def _find_remove_the_same_name_on_table(msg_struct_table, other_struct_table):
 
 def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
     use_struct_table = {}
-
     for struct_name in msg_struct_table.keys():
         for msg_member in msg_struct_table[struct_name]:
             struct_name = msg_member['t']
@@ -71,19 +70,23 @@ def _find_other_struct_use_in_msg_struct(msg_struct_table, other_struct_table):
             if struct_value != None:
                 use_struct_table[struct_name] = struct_value
 
+    new_struct_table = {}
+    tmp_struct_table = use_struct_table.copy()
     for Loop_multiple_times_to_get_nested_structures in range(6):
         detected_new_struct = []
-        for struct_name in use_struct_table.keys():
-            for msg_member in use_struct_table[struct_name]:
+        for struct_name in tmp_struct_table.keys():
+            for msg_member in tmp_struct_table[struct_name]:
                 struct_name = msg_member['t']
-                if use_struct_table.get(struct_name, None) == None:
+                if tmp_struct_table.get(struct_name, None) == None:
                     if other_struct_table.get(struct_name, None) != None:
                         detected_new_struct.append(struct_name)
 
         for struct_name in detected_new_struct:
-            use_struct_table[struct_name] = other_struct_table[struct_name]
+            tmp_struct_table[struct_name] = other_struct_table[struct_name]
+            new_struct_table[struct_name] = other_struct_table[struct_name]
 
-    return use_struct_table
+    new_struct_table.update(use_struct_table)
+    return new_struct_table
 
 
 # =====================================================================

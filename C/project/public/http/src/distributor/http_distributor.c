@@ -396,7 +396,7 @@ http_distributor_init(void)
 {
 	ub thread_number = _distributor_thread_number();
 
-	_distributor_thread = dave_thread_creat(DISTRIBUTOR_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _distributor_init, _distributor_main, _distributor_exit);
+	_distributor_thread = base_thread_creat(DISTRIBUTOR_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _distributor_init, _distributor_main, _distributor_exit);
 	if(_distributor_thread == INVALID_THREAD_ID)
 		dave_restart(DISTRIBUTOR_THREAD_NAME);
 }
@@ -405,7 +405,7 @@ void
 http_distributor_exit(void)
 {
 	if(_distributor_thread != INVALID_THREAD_ID)
-		dave_thread_del(_distributor_thread);
+		base_thread_del(_distributor_thread);
 	_distributor_thread = INVALID_THREAD_ID;
 }
 

@@ -57,7 +57,7 @@ void
 __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback callback_fun, s8 *fun, ub line)
 {
 	ub safe_counter;
-	u8 key_ptr[KV_KEY_MAX];
+	u8 key_ptr[RAMKV_KEY_MAX];
 	RetCode ret;
 
 	if(callback_fun != NULL)
@@ -237,7 +237,7 @@ __base_ramkv_del_bin_ptr__(void *ramkv, u8 *bin_data, ub bin_len, s8 *fun, ub li
 void *
 __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line)
 {
-	u8 key[KV_KEY_MAX];
+	u8 key[RAMKV_KEY_MAX];
 
 	if(ramkv_top((KV *)ramkv, key, sizeof(key)) == dave_false)
 	{

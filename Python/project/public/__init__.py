@@ -1,12 +1,8 @@
 import ctypes
 import struct
-import traceback
-from .base import *
-from .tools import *
+import os
 
-
-if t_path_or_file_exists('/project/public/neural_network'):
-    try:
-        from public.neural_network import *
-    except:
-        print(traceback.print_exc())
+dirs = [e for e in os.listdir('/project/public') if not e.startswith('__')]
+for model_name in dirs:
+    exec_str = f'from .{model_name} import *'
+    exec(exec_str)

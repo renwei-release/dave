@@ -9,8 +9,8 @@
 #define __RAMKV_PARAM_H__
 #include "dave_3rdparty.h"
 
-#define KV_NAME_MAX 64
-#define KV_KEY_MAX 512
+#define RAMKV_NAME_MAX 64
+#define RAMKV_KEY_MAX 512
 
 #ifdef LEVEL_PRODUCT_alpha
 #define ramkvm_malloc dave_malloc
@@ -39,7 +39,7 @@ typedef struct {
 
 typedef struct {
 	ub key_len;
-	u8 key_data[KV_KEY_MAX];
+	u8 key_data[RAMKV_KEY_MAX];
 
 	void *pTimerLine;
 
@@ -75,7 +75,7 @@ typedef struct {
 
 	KVTimer ramkv_timer;
 
-	s8 name[KV_NAME_MAX];
+	s8 name[RAMKV_NAME_MAX];
 	KvAttrib attrib;
 
 	KVLocal local;

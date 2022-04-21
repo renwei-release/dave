@@ -17,7 +17,7 @@
 
 #define KV_DATA_DEPTH_MAX 2048
 #define KV_DATA_DEPTH_WARNING KV_DATA_DEPTH_MAX
-#define KV_BLOOM_FILTER_MAX (KV_DATA_DEPTH_MAX / (sizeof(u64) * 8))
+#define KV_BLOOM_FILTER_MAX (KV_DATA_DEPTH_MAX / 64)
 
 #define KV_SLOT_MAGIC_DATA 0xad3964bc123
 #define KV_DATA_MAGIC_DATA 0xad3ADD4bc12AD
@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
 	ub key_len;
-	u8 key_ptr[KV_KEY_MAX];
+	u8 key_ptr[RAMKV_KEY_MAX];
 } KVKey;
 
 typedef struct {

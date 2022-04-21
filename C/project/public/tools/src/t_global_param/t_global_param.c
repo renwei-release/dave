@@ -28,15 +28,6 @@ t_gp_localhost(void)
 		TOOLSABNOR("find invalid localhost:%s!", localhost);
 	}
 
-	if(dave_os_on_docker() == dave_true)
-	{
-		// 在docker中默认连接到宿主机上。 "172.17.0.1"
-		// 如果--network host模式，那么这里需要修改成"localhost"
-		return "172.17.0.1";
-	}
-	else
-	{
-		return "localhost";
-	}
+	return "127.0.0.1";
 }
 

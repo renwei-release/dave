@@ -20,6 +20,7 @@ ub t_a2b_bin_to_hex_string(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len);
 
 s8 * t_a2b_RetCode_str(RetCode code);
 s8 * t_a2b_HTTPListenType_str(HTTPListenType type);
+s8 * t_a2b_RPCMSG_str(RPCMSG enum_value);
 
 s8 * t_a2b_net_ipv4_to_str(u8 *ip, u16 port);
 s8 * t_a2b_net_ipv4_to_str_2(u8 *ip, u16 port);
@@ -35,6 +36,7 @@ s8 * t_a2b_date_str_5(DateStruct *pDate);
 s8 * t_a2b_date_str_6(DateStruct *pDate);
 
 #define retstr t_a2b_RetCode_str
+#define msgstr t_a2b_RPCMSG_str
 #define ipv4str t_a2b_net_ipv4_to_str
 #define ipv4str2 t_a2b_net_ipv4_to_str_2
 #define datestr t_a2b_date_str

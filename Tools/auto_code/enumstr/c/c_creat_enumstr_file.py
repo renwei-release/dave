@@ -17,11 +17,15 @@ def _creat_c_enumstr_body_table(body_table, file_id):
         # no need to automatically generate code, 
         # such as: __ErrCode_last_xxxx__
         #
+        body_value = body_table[body_name]
         if body_name[0] != '_':
-            if (body_table[body_name] == '') \
-                or (is_digital_string(body_table[body_name]) == True):
+            if (body_value == '') \
+                or (is_digital_string(body_value) == True):
                 file_id.write(f'\t\tcase {body_name}:\n')
-                file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}\'";\n')
+                if body_value == '':
+                    file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}\'";\n')
+                else:
+                    file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}:{body_value}\'";\n')
                 file_id.write(f'\t\t\tbreak;\n')
     file_id.write(f'\t\tdefault:\n')
     file_id.write(f'\t\t\t\tvalue_str = "\'NULL\'";\n')

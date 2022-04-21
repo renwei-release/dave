@@ -201,26 +201,15 @@ _log_stack_server_close_log_file_timer_fun(TIMERID timer_id, ub thread_index)
 	_log_stack_server_close_log_file();
 }
 
-static void
-_log_stack_server_build_record_file_name(s8 *file_name, ub file_name_len, s8 *log_verno, s8 *device_name)
+static inline void
+_log_stack_server_build_record_file_name(s8 *file_name_ptr, ub file_name_len, s8 *log_verno, s8 *device_name)
 {
-	ub index;
-	DateStruct date;
+	DateStruct date = t_time_get_date(NULL);
 
-	t_time_get_date(&date);
-
-	index = 0;
-
-	index += dave_strcpy(&file_name[index], log_verno, file_name_len-index);	
-	file_name[index ++] = '/';
-	index += dave_strcpy(&file_name[index], device_name, file_name_len-index);	
-	file_name[index ++] = '/';
-
-	index += dave_sprintf(&file_name[index], "%04d%02d%02d", date.year, date.month, date.day);
-
-	file_name[index ++] = '\0';
-	
-	LOGDEBUG("file_name:%s log_verno:%s device_name:%s", file_name, log_verno, device_name);
+	dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s",
+		log_verno,
+		date.year, date.month, date.day,
+		device_name);
 }
 
 static void
@@ -358,7 +347,7 @@ _log_stack_server_bind_rsp(MSGBODY *ptr)
 	switch(pRsp->BindInfo)
 	{
 		case SOCKETINFO_BIND_OK:
-				LOGLOG("server log bind OK! (port:%d socket: %d)", pRsp->NetInfo.port, pRsp->socket);
+				LOGDEBUG("server log bind OK! (port:%d socket: %d)", pRsp->NetInfo.port, pRsp->socket);
 			break;
 		default:
 				LOGABNOR("server log bind failed! (%d)", pRsp->BindInfo);
@@ -488,9 +477,11 @@ _log_stack_server_exit(MSGBODY *msg)
 void
 log_stack_server_init(void)
 {
-	_log_stack_server_thread = base_thread_creat("logserver", 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_server_init, _log_stack_server_main, _log_stack_server_exit);
+	ub thread_number = dave_os_cpu_process_number();
+
+	_log_stack_server_thread = base_thread_creat("LOGSERVER", thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_server_init, _log_stack_server_main, _log_stack_server_exit);
 	if(_log_stack_server_thread == INVALID_THREAD_ID)
-		base_restart("logserver");
+		base_restart("LOGSERVER");
 }
 
 void

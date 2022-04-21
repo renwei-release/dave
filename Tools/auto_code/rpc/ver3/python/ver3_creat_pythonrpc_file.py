@@ -137,7 +137,7 @@ def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_n
                 if value_dimension == None:
                     file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)}),\n')
                 else:
-                    file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)} * {value_dimension}),\n')
+                    file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)} * ({value_dimension})),\n')
             file_id.write(f'{"]"}\n\n')
     return
 

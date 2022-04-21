@@ -13,7 +13,7 @@ if [ "$PROJECT" == "" ]; then
 fi
 projectnameforbuild=projectname${PROJECT}
 
-python ../../Tools/refresh_version/refresh_version.py "../../" $PROJECT
+python ../../Tools/refresh_version/refresh_version.py "../../" ${PROJECT^^}
 
 if [ -f $PROJECT ]; then
    rm -rf $PROJECT
@@ -24,10 +24,11 @@ cd ../project
 GOOS=linux GOARCH=amd64 go build -tags __DAVE_PRODUCT_${PROJECT^^}__ -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
-   echo build.sh copy $projectnameforbuild to ../../Deploy/deploy/${PROJECT,,}/${PROJECT^^}-BIN
    if [ ! -d ../../Deploy/deploy/${PROJECT,,} ]; then
       mkdir -p ../../Deploy/deploy/${PROJECT,,}
    fi
+   echo build.sh copy $projectnameforbuild to ../../Deploy/deploy/${PROJECT,,}/${PROJECT^^}-BIN
    cp $projectnameforbuild ../../Deploy/deploy/${PROJECT,,}/${PROJECT^^}-BIN
-   mv $projectnameforbuild $homepath/$PROJECT
+   echo build.sh copy $projectnameforbuild to $homepath/${PROJECT,,}/${PROJECT^^}-BIN
+   mv $projectnameforbuild $homepath/${PROJECT,,}/${PROJECT^^}-BIN
 fi

@@ -405,9 +405,9 @@ _log_stack_client_exit(MSGBODY *msg)
 void
 log_stack_client_init(void)
 {
-	_log_stack_client_thread = base_thread_creat("logclient", 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_client_init, _log_stack_client_main, _log_stack_client_exit);
+	_log_stack_client_thread = base_thread_creat("LOGCLIENT", 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_client_init, _log_stack_client_main, _log_stack_client_exit);
 	if(_log_stack_client_thread == INVALID_THREAD_ID)
-		base_restart("logclient");
+		base_restart("LOGCLIENT");
 }
 
 void

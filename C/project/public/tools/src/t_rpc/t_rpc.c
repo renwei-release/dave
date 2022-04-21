@@ -15,12 +15,14 @@ dave_bool t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_p
 static void *
 _t_rpc_zip_ver1(ub msg_id, void *msg_body, ub msg_len)
 {
+	TOOLSLOG("unsupport ver1 msg_id:%s msg_len:%d", msgstr(msg_id), msg_len);
 	return NULL;
 }
 
 static dave_bool
 _t_rpc_unzip_ver1(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {
+	TOOLSLOG("unsupport ver1 msg_id:%s packet_len:%d", msgstr(msg_id), packet_len);
 	return dave_false;
 }
 

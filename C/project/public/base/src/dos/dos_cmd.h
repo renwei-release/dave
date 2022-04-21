@@ -13,8 +13,6 @@ void dos_cmd_init(void);
 
 void dos_cmd_exit(void);
 
-void dos_cmd_reset(void);
-
 void dos_cmd_analysis(s8 *input_ptr, ub input_len);
 
 void dos_help_analysis(s8 *cmd_ptr, ub cmd_len);

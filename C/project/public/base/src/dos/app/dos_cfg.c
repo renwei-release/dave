@@ -146,7 +146,7 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 	cmd_index = 0;
 
 	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
-	dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
+	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
 
 	if((cfg_name[0] == '\0') || (cfg_value[0] == '\0'))
 	{

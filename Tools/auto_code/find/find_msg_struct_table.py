@@ -20,6 +20,8 @@ def _find_struct_table_from_struct_data(msg_table, struct_table, struct_data):
     struct_name, base_array = get_struct_data(get_array_data(struct_data, 0))
 
     if msg_name != None:
+        if msg_table.get(msg_name, None) != None:
+            print(f'\033[93mWarning: This message:{msg_name} repeat is defined twice!\033[0m')
         msg_table[msg_name] = struct_name
         struct_table[struct_name] = base_array
     return

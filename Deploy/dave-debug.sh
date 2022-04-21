@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-action=release
+export LD_PRELOAD="./public/base/lib/libjemalloc.so ./public/base/lib/libjson-c.so"
 
 function loop_notify()
 {
@@ -22,8 +22,10 @@ function loop_notify()
     done
 }
 
-if [ "$action" = "release" ];then
-___FLAG_FOR_UPDATE.SH___
-else
-loop_notify "This is an empty container!"
-fi
+function goto_debug()
+{
+    jupyter_booting
+    loop_notify "This is an empty container!"
+}
+
+goto_debug #___FLAG_FOR_UPDATE.SH___

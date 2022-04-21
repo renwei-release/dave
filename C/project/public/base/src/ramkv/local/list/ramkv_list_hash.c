@@ -38,7 +38,7 @@ ramkv_hash(KV *pKV, KVHash *pHash, u8 *key_ptr, ub key_len, s8 *fun, ub line)
 {
 	ub hash_stride, hash_tail_stride, key_index, hash_index, slot_loop;
 
-	if(key_len >= KV_KEY_MAX)
+	if(key_len >= RAMKV_KEY_MAX)
 	{
 		KVLOG("invalid key_len:%d thread:%s name:%s <%s:%d>",
 			key_len, pKV->thread_name, pKV->name, fun, line);
@@ -64,7 +64,7 @@ ramkv_hash(KV *pKV, KVHash *pHash, u8 *key_ptr, ub key_len, s8 *fun, ub line)
 		slot_loop = KV_SLOT_DEPTH - 1;
 	}
 
-	if((hash_stride > KV_KEY_MAX) || (hash_tail_stride > KV_KEY_MAX))
+	if((hash_stride > RAMKV_KEY_MAX) || (hash_tail_stride > RAMKV_KEY_MAX))
 	{
 		KVLOG("invalid key_len:%d hash_stride:%d hash_tail_stride:%d slot_depth:%d",
 			key_len, hash_stride, hash_tail_stride, slot_loop);		

@@ -73,14 +73,7 @@ fi
 #
 ./booting.sh $PROJECTNAME
 
-if [ -f load.sh ]; then
-   ./load.sh ${IMAGE} ${TAG}
-elif [ -f dockerimage.sh ]; then
-   ./dockerimage.sh $PROJECT ${IMAGE} ${TAG}
-fi
-if [ $? != 0 ]; then
-   exit $?
-fi
+./load.sh $PROJECT ${IMAGE} ${TAG}
 
 ./remove.sh $PROJECTNAME $PROJECT ${IMAGE} ${TAG}
 

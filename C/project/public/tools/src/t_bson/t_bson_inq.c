@@ -18,6 +18,9 @@ _t_bson_key_inq(tBsonObject *pBson, char *key_ptr, size_t key_len)
 	u64 bloom_filter;
 	tBsonData *pInq;
 
+	if(pBson == NULL)
+		return NULL;
+
 	if(key_len <= 0)
 		key_len = strlen(key_ptr);
 

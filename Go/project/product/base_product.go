@@ -1,6 +1,8 @@
+//go:build __DAVE_PRODUCT_BASE__
 // +build __DAVE_PRODUCT_BASE__
 
 package product
+
 /*
  * Copyright (c) 2022 Renwei
  *
@@ -8,7 +10,9 @@ package product
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-import "dave/product/base"
+import (
+	"dave/product/base"
+)
 
 // =====================================================================
 

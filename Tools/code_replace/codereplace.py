@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #/*
 # * Copyright (c) 2022 Renwei
 # *

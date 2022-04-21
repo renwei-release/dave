@@ -11,26 +11,110 @@ from .find_file_list import *
 from autocode_tools import *
 
 
-def _find_define_valid_string(string_data):
-    if re.search('[A-Z,a-z,0-9,"_"]+?', string_data):
+def _is_invalid_name_char(end_char):
+    if (end_char == '#') \
+        or (end_char == '(') \
+        or (end_char == ')') :
         return True
-    return False
+    else:
+        return False
 
 
-def __find_define_list(define_list, define_data):
-    find_flag = 0
-    for define_string in define_data:
-        define_string = define_string.rsplit('//')[0].strip()
-        define_string = define_string.replace('\t', ' ')
-        end_string = define_string.split(' ', 2)[-1].strip()
-        end_string = end_string.replace('(', '').replace(')', '').replace(' ', '').replace('*', '').replace('+', '')
-        if _find_define_valid_string(end_string):
-            find_flag = 1
-            define_string = define_string.replace("(", "").replace(")", "").replace("\r", "").replace("\n", "")
-            define_list.append(define_string)
-        else:
-            print(f"end_string:{end_string} define_string:{define_string}")
-    return find_flag
+def _is_define_name_end(end_char):
+    if (((end_char >= 'a') and (end_char <= 'z')) \
+        or ((end_char >= 'A') and (end_char <= 'Z')) \
+        or ((end_char >= '0') and (end_char <= '9')) \
+        or (end_char == '_')):
+        return False
+    else:
+        return True
+
+
+def _is_invalid_value_char(end_char):
+    if end_char == '#':
+        return True
+    else:
+        return False
+
+
+def _is_define_value_joiner(end_char):
+    if (end_char == '+') \
+        or (end_char == '-') \
+        or (end_char == '*') \
+        or (end_char == '/') \
+        or (end_char == ' '):
+        return True
+    else:
+        return False
+
+
+def _is_invalid_value(define_value):
+    if (define_value == 'void') \
+        or (define_value == 'typedef'):
+        return True
+    else:
+        return False
+
+
+def _load_define_list(define_list, content_ptr):
+    content_ptr = ' '.join(content_ptr.split())
+    content_len = len(content_ptr)
+
+    load_buffer = ''
+
+    find_define_head = False
+    find_define_name = False
+    find_define_value = False
+
+    define_name = ''
+    define_value = ''
+
+    for content_index in range(content_len):
+        load_buffer += content_ptr[content_index]
+
+        if find_define_head == False:
+            if len(load_buffer) <= 8:
+                if load_buffer == '#define '[0:len(load_buffer)]:
+                    if len(load_buffer) == 8:
+                        find_define_head = True
+                        load_buffer = ''
+                else:
+                    load_buffer = ''
+        elif find_define_name == False:
+            if _is_invalid_name_char(content_ptr[content_index]) == True:
+                load_buffer = content_ptr[content_index]
+                find_define_head = False
+                find_define_name = False
+                find_define_value = False
+            elif _is_define_name_end(content_ptr[content_index]) == True:
+                define_name = load_buffer[0:len(load_buffer)-1]
+                load_buffer = ''
+                find_define_name = True
+        elif find_define_value == False:
+            if _is_invalid_value_char(content_ptr[content_index]) == True:
+                load_buffer = content_ptr[content_index]
+                find_define_head = False
+                find_define_name = False
+                find_define_value = False
+            elif content_ptr[content_index] == ' ' or content_ptr[content_index] == ')':
+                if (content_index + 1) < content_len:
+                    if _is_define_value_joiner(content_ptr[content_index + 1]) == False:
+                        if _is_define_value_joiner(content_ptr[content_index - 1]) == False:
+                            find_define_value = True
+                else:
+                    find_define_value = True
+
+        if find_define_value == True:
+            find_define_head = False
+            find_define_name = False
+            find_define_value = False
+            define_value = load_buffer[0:-1]
+            load_buffer = ''
+            define_name = define_name.replace(' ', '')
+            define_value = define_value.replace(' ', '').replace('(', '').replace(')', '')
+            if _is_invalid_value(define_value) == False:
+                define_list.append(f'#define {define_name} {define_value}')
+    return
 
 
 def _find_define_list(file_list=None):
@@ -44,10 +128,10 @@ def _find_define_list(file_list=None):
                 print(f"1 _find_define_list file_name:{file_name}")
                 return define_list, head_list
             try:
-                result = re.findall('(#define [A-Z,a-z,0-9,"_"]+? ["(",")","x","X",0-9]+?)\n', file_content)
-                if result:
-                    if __find_define_list(define_list, result) == 1:
-                        head_list.append(file_name)
+                file_content = remove_annotation_data(file_content)
+
+                if _load_define_list(define_list, file_content) == True:
+                    head_list.append(file_name)
             except:
                 print(f"2 _find_define_list file_name:{file_name}")
                 return define_list, head_list
@@ -56,39 +140,87 @@ def _find_define_list(file_list=None):
 
 def _find_define_digital_table(define_table, define_list):
     for define_data in define_list:
-        define_name_list = re.findall("#define (.*?) .*?", define_data)
-        define_value_list = re.findall("#define .*? ([0-9,*,+,-]+|0[x,X][a-f,A-F])", define_data)
+        define_name_list = re.findall('#define +([a-z,A-Z,0-9,_]+) +[0-9,*]+', define_data)
+        define_value_list = re.findall('#define +[a-z,A-Z,0-9,_]+ +([0-9,*]+)', define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
         if (define_name != None) and (define_value != None):
-            define_name.replace(" ", "")
-            define_value.replace(" ", "")
-            if define_value.isdigit() == True:
-                define_table[define_name] = define_value
-            else:
-                define_table[define_name] = eval(define_value)
+            define_table[define_name] = define_value
+    return
+
+
+def _find_define_hex_table(define_table, define_list):
+    for define_data in define_list:
+        define_name_list = re.findall('#define +([a-z,A-Z,0-9,_]+) 0x[0-9,a-f,A-F]+', define_data)
+        define_value_list = re.findall('#define +[a-z,A-Z,0-9,_]+ (0x[0-9,a-f,A-F]+)', define_data)
+        define_name = get_array_data(define_name_list, 0)
+        define_value = get_array_data(define_value_list, 0)
+        if (define_name != None) and (define_value != None):
+            define_table[define_name] = define_value
     return
 
 
 def _find_define_complex_table(define_table, define_list):
     for define_data in define_list:
-        define_name_list = re.findall("#define (.*?) .*?", define_data)
-        define_value_list = re.findall("#define .*? ([a-z, A-Z, _]+[0-9, a-z, A-Z, _]+)", define_data)
+        define_name_list = re.findall("#define +([a-z,A-Z,0-9,_]+) +[0-9,a-z,A-Z,+,-,*,/, ,_]+", define_data)
+        define_value_list = re.findall("#define +[a-z,A-Z,0-9,_]+ +([0-9,a-z,A-Z,+,-,*,/, ,_]+)", define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
-        if define_name != None and define_value != None:
-            define_name.replace(" ", "")
-            define_value.replace(" ", "")
-            define_table[define_name] = define_table.get(define_value, 0)
+        if (define_name != None) and (define_value != None):
+            define_table[define_name] = define_value
     return
+
+
+def _the_define_value_has_define_name(define_value, define_table, new_define_table):
+    sub_define_value = ''
+    for value_index in range(len(define_value)):
+        if (define_value[value_index] == '*') \
+            or (define_value[value_index] == '+') \
+            or (define_value[value_index] == '-') \
+            or (define_value[value_index] == '/') \
+            or ((value_index + 1) >= len(define_value)):
+
+            if (value_index + 1) >= len(define_value):
+                sub_define_value += define_value[value_index]
+
+            if define_table.get(sub_define_value, None) != None:
+                new_define_table[sub_define_value] = define_table.get(sub_define_value, None)
+            sub_define_value = ''
+        else:
+            sub_define_value += define_value[value_index]
+    return
+
+
+def _remove_struct_unuse_define(define_table, all_struct_table):
+    base_define_table = {}
+    for define_name in define_table.keys():
+        if define_on_the_table(define_name, all_struct_table) == True:
+            base_define_table[define_name] = define_table[define_name]
+
+    new_define_table = {}
+    for Loop_multiple_times_to_get_nested_define in range(3):
+        loop_define_table = {}
+        for base_define_name in base_define_table.keys():
+            base_define_value = base_define_table[base_define_name]
+            if base_define_value != '':
+                _the_define_value_has_define_name(base_define_value, define_table, loop_define_table)
+        new_define_table.update(loop_define_table)
+
+    new_define_table.update(base_define_table)
+    return new_define_table
 
 
 # =====================================================================
 
 
-def find_define_table(file_list):
+def find_define_table(file_list, all_struct_table):
     define_table = {}
     define_list, include_list = _find_define_list(file_list)
+
     _find_define_digital_table(define_table, define_list)
+    _find_define_hex_table(define_table, define_list)
     _find_define_complex_table(define_table, define_list)
+
+    define_table = _remove_struct_unuse_define(define_table, all_struct_table)
+
     return define_table, include_list
