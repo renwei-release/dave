@@ -64,7 +64,7 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 }
 
 static dave_bool
-_thread_broadcast_remote_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
+_thread_broadcast_name_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
 {
 	ThreadId syncc_id;
 	ub broadcast_len;
@@ -153,7 +153,7 @@ thread_broadcast_msg(
 
 	_thread_broadcast_thread_msg(type, self_id, dst_name, msg_id, msg_len, msg_body, fun, line);
 
-	_thread_broadcast_remote_msg(type, self_id, msg_id, msg_len, msg_body, fun, line);
+	_thread_broadcast_name_msg(type, self_id, msg_id, msg_len, msg_body, fun, line);
 
 	_thread_broadcast_local_msg(type, self_id, msg_id, msg_len, msg_body, fun, line);
 

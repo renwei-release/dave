@@ -11,19 +11,19 @@ PROJECT=$2
 PROJECTNAME=$3
 JUPYTERPORT=$4
 PROJECTMAPPING=$5
-PROGRAMMERPRJDIR=${HOMEPATH}/../../project
-HOMEPRJDIR=${PROGRAMMERPRJDIR}
-HOMEBUILDDIR=${HOMEPATH}/../../build
 
+HOMEPRJDIR=${HOMEPATH}/project
+DEPLOYMODE='operation'
 if [ ! -d ${HOMEPRJDIR} ]; then
-   HOMEPRJDIR=${HOMEPATH}/project
+   HOMEPRJDIR=${HOMEPATH}/../../project
+   DEPLOYMODE='develop'
 fi
 if [ ! -d ${HOMEPRJDIR} ]; then
    HOMEPRJDIR=${HOMEPATH}/../../../project
+   DEPLOYMODE='develop'
 fi
-if [ ! -d ${HOMEBUILDDIR} ]; then
-   HOMEBUILDDIR=${HOMEPATH}/../../../build
-fi
+
+echo -e "update.sh deploy mode:\033[35m${DEPLOYMODE}\033[0m"
 
 ############## copy_project_file function ##############
 copy_python_project_to_container()
@@ -33,6 +33,8 @@ copy_python_project_to_container()
 
       docker exec -it ${PROJECTNAME} mkdir -p /project/public
       docker exec -it ${PROJECTNAME} mkdir -p /project/product
+
+      docker exec -it ${PROJECTNAME} rm -rf /project/*
 
       docker cp ${HOMEPRJDIR}/dave_main.py ${PROJECTNAME}:/project
       docker cp ${HOMEPRJDIR}/public ${PROJECTNAME}:/project
@@ -46,7 +48,7 @@ copy_python_project_to_container()
 
 backup_python_project_from_container()
 {
-   if [ ${PROGRAMMERPRJDIR} == ${HOMEPRJDIR} ]; then
+   if [ ${DEPLOYMODE} == 'develop' ]; then
       DEPLOYPRJDIR=${HOMEPATH}/../../../Deploy/deploy/${PROJECT}
       echo update.sh backup project from ${PROJECTNAME}
       if [ -d ${DEPLOYPRJDIR}/project ]; then
@@ -64,7 +66,7 @@ copy_python_project_file()
 
 copy_bin_project_file()
 {
-   PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/${PROJECT^^}-BIN
+   PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/project/${PROJECT^^}-BIN
 
    if [ -f ${PRJBINFILE} ]; then
       echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
@@ -142,19 +144,16 @@ copy_sh_file()
 modify_project_attributes()
 {
    echo update.sh chown -R root:root /project
-   docker exec -it ${PROJECTNAME} bash -c "cd / && chown -R root:root /dave && chown -R root:root /project"
+   docker exec -it ${PROJECTNAME} bash -c "cd / && chown -R root:root /project"
 }
 ############## modify_project_attributes function ##############
 
 if [ ! "$PROJECTMAPPING" != "" ]; then
    copy_project_file
+   modify_project_attributes
 fi
 
 copy_sh_file
-
-if [ ! "$PROJECTMAPPING" != "" ]; then
-   modify_project_attributes
-fi
 
 if [ -f jupyter.sh ]; then
    ./jupyter.sh ${PROJECTNAME} ${JUPYTERPORT}

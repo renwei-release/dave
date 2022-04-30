@@ -14,183 +14,53 @@ package auto
 
 import "unsafe"
 
-type TESTMSG struct {
-	Test_msg [4096] byte
-}
-
-type TIMERMSG struct {
-	Timer_id int64
-}
-
-type WAKEUPMSG struct {
-	Null_msg unsafe.Pointer
-	Some_msg uint32
-}
-
-type RUNFUNCTIONMSG struct {
-	Thread_fun unsafe.Pointer
-	Last_fun unsafe.Pointer
-	Thread_dst uint64
-	Initialization_flag int8
-}
-
-type DebugReq struct {
-	Msg [4096] byte
-	Ptr unsafe.Pointer
-}
-
-type DebugRsp struct {
-	Msg [16384] byte
-	Ptr unsafe.Pointer
-}
-
-type RESTARTREQMSG struct {
-	Reason [128] byte
-	Times uint64
-}
-
-type RESTARTRSPMSG struct {
-	Wait_flag int8
-}
-
-type POWEROFFMSG struct {
-	Reason [128] byte
-}
-
-type ThreadRemoteReadyMsg struct {
-	Remote_thread_id uint64
-	Remote_thread_name [128] byte
-}
-
-type ThreadRemoteRemoveMsg struct {
-	Remote_thread_id uint64
-	Remote_thread_name [128] byte
-}
-
-type TraceSwitchMsg struct {
-	Thread_id uint64
-	Trace_on int8
-}
-
-type ProcessMsgTimerOutMsg struct {
-	Msg_id uint64
-	Msg_len uint64
-	Msg_body unsafe.Pointer
-}
-
-type TemporarilyDefineMessageMsg struct {
-	Parameter unsafe.Pointer
-}
-
-type SystemMount struct {
-	Socket int32
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Netinfo SocNetInfo
-}
-
-type SystemDecoupling struct {
-	Socket int32
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Netinfo SocNetInfo
-}
-
-type MemoryWarning struct {
-	Used_percentage uint64
-}
-
-type MsgIdEcho struct {
-	Echo_counter uint64
-	Echo_time uint64
-	Echo_multiple int8
-	Concurrency_flag int8
-	Msg [256] byte
-}
-
-type InternalEvents struct {
-	Event_id uint64
-	Ptr unsafe.Pointer
-}
-
-type ThreadBusy struct {
-	Thread_id uint64
-	Thread_name [DAVE_THREAD_NAME_LEN] byte
-	Msg_id uint64
-	Msg_number uint64
-}
-
-type ThreadIdle struct {
-	Thread_id uint64
-	Thread_name [DAVE_THREAD_NAME_LEN] byte
-}
-
-type ClientBusy struct {
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ptr unsafe.Pointer
-}
-
-type ClientIdle struct {
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ptr unsafe.Pointer
-}
-
-type ThreadRemoteIDReadyMsg struct {
-	Remote_thread_id uint64
-	Remote_thread_name [128] byte
-	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
-}
-
-type ThreadRemoteIDRemoveMsg struct {
-	Remote_thread_id uint64
-	Remote_thread_name [128] byte
-	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
-}
-
-type ThreadLocalReadyMsg struct {
-	Local_thread_id uint64
-	Local_thread_name [128] byte
-}
-
-type ThreadLocalRemoveMsg struct {
-	Local_thread_id uint64
-	Local_thread_name [128] byte
-}
-
-type RPCDebugMsg struct {
-	Ret_debug int32
-	S8_debug byte
-	U8_debug byte
-	U16_debug uint16
-	S32_debug int32
-	U32_debug uint32
-	Void_debug unsafe.Pointer
-	Date_debug DateStruct
-	Mbuf_debug *MBUF
-}
-
+/* for MSGID_CFG_UPDATE message */
 type CFGUpdate struct {
 	Cfg_name [DAVE_NORMAL_NAME_LEN] byte
 	Cfg_length uint64
 	Cfg_value [8196] byte
 }
 
-type MsgBlocksReq struct {
-	Opt int32
-	Blocks_id_1 uint64
-	Blocks_id_2 uint64
+/* for MSGID_CLIENT_BUSY message */
+type ClientBusy struct {
+	Verno [DAVE_VERNO_STR_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type MsgBlocksRsp struct {
+/* for MSGID_CLIENT_IDLE message */
+type ClientIdle struct {
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_DEBUG_REQ message */
+type DebugReq struct {
+	Msg [4096] byte
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_DEBUG_RSP message */
+type DebugRsp struct {
+	Msg [1048576] byte
+	Ptr unsafe.Pointer
+}
+
+/* for HTTPMSG_CLOSE_REQ message */
+type HTTPCloseReq struct {
+	Listen_port uint64
+	Path [DAVE_PATH_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for HTTPMSG_CLOSE_RSP message */
+type HTTPCloseRsp struct {
 	Ret int32
-	Opt int32
-	Blocks [DAVE_BUILDING_BLOCKS_MAX] BuildingBlocks
+	Listen_port uint64
+	Path [DAVE_PATH_LEN] byte
 	Ptr unsafe.Pointer
 }
 
-type MsgOSNotify struct {
-	Notify_info uint64
-}
-
+/* for HTTPMSG_LISTEN_REQ message */
 type HTTPListenReq struct {
 	Listen_port uint64
 	Rule int32
@@ -199,6 +69,7 @@ type HTTPListenReq struct {
 	Ptr unsafe.Pointer
 }
 
+/* for HTTPMSG_LISTEN_RSP message */
 type HTTPListenRsp struct {
 	Ret int32
 	Listen_port uint64
@@ -206,19 +77,24 @@ type HTTPListenRsp struct {
 	Ptr unsafe.Pointer
 }
 
-type HTTPCloseReq struct {
-	Listen_port uint64
-	Path [DAVE_PATH_LEN] byte
+/* for HTTPMSG_POST_REQ message */
+type HTTPPostReq struct {
+	Url [DAVE_URL_LEN] byte
+	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
+	Content_type int32
+	Content *MBUF
 	Ptr unsafe.Pointer
 }
 
-type HTTPCloseRsp struct {
+/* for HTTPMSG_POST_RSP message */
+type HTTPPostRsp struct {
 	Ret int32
-	Listen_port uint64
-	Path [DAVE_PATH_LEN] byte
+	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
+	Content *MBUF
 	Ptr unsafe.Pointer
 }
 
+/* for HTTPMSG_RECV_REQ message */
 type HTTPRecvReq struct {
 	Listen_port uint64
 	Remote_address [DAVE_URL_LEN] byte
@@ -231,6 +107,7 @@ type HTTPRecvReq struct {
 	Ptr unsafe.Pointer
 }
 
+/* for HTTPMSG_RECV_RSP message */
 type HTTPRecvRsp struct {
 	Ret int32
 	Content_type int32
@@ -239,11 +116,98 @@ type HTTPRecvRsp struct {
 	Ptr unsafe.Pointer
 }
 
+/* for MSGID_INTERNAL_EVENTS message */
+type InternalEvents struct {
+	Event_id uint64
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_MEMORY_WARNING message */
+type MemoryWarning struct {
+	Used_percentage uint64
+}
+
+/* for MSGID_BLOCKS_REQ message */
+type MsgBlocksReq struct {
+	Opt int32
+	Blocks_id_1 uint64
+	Blocks_id_2 uint64
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_BLOCKS_RSP message */
+type MsgBlocksRsp struct {
+	Ret int32
+	Opt int32
+	Blocks [DAVE_BUILDING_BLOCKS_MAX] BuildingBlocks
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_ECHO message */
+type MsgIdEcho struct {
+	Echo_counter uint64
+	Echo_time uint64
+	Echo_multiple int8
+	Concurrency_flag int8
+	Msg [256] byte
+}
+
+/* for MSGID_OS_NOTIFY message */
+type MsgOSNotify struct {
+	Notify_info uint64
+}
+
+/* for MSGID_POWER_OFF message */
+type POWEROFFMSG struct {
+	Reason [128] byte
+}
+
+/* for MSGID_PROCESS_MSG_TIMER_OUT message */
+type ProcessMsgTimerOutMsg struct {
+	Msg_id uint64
+	Msg_len uint64
+	Msg_body unsafe.Pointer
+}
+
+/* for MSGID_RESTART_REQ message */
+type RESTARTREQMSG struct {
+	Reason [128] byte
+	Times uint64
+}
+
+/* for MSGID_RESTART_RSP message */
+type RESTARTRSPMSG struct {
+	Wait_flag int8
+}
+
+/* for MSGID_RPC_DEBUG_MSG message */
+type RPCDebugMsg struct {
+	Ret_debug int32
+	S8_debug byte
+	U8_debug byte
+	U16_debug uint16
+	S32_debug int32
+	U32_debug uint32
+	Void_debug unsafe.Pointer
+	Date_debug DateStruct
+	Mbuf_debug *MBUF
+}
+
+/* for MSGID_RUN_FUNCTION message */
+type RUNFUNCTIONMSG struct {
+	Thread_fun unsafe.Pointer
+	Last_fun unsafe.Pointer
+	Thread_dst uint64
+	Initialization_flag int8
+}
+
+/* for SOCKET_BIND_REQ message */
 type SocketBindReq struct {
 	Netinfo SocNetInfo
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_BIND_RSP message */
 type SocketBindRsp struct {
 	Socket int32
 	Netinfo SocNetInfo
@@ -252,11 +216,13 @@ type SocketBindRsp struct {
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_CONNECT_REQ message */
 type SocketConnectReq struct {
 	Netinfo SocNetInfo
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_CONNECT_RSP message */
 type SocketConnectRsp struct {
 	Socket int32
 	Netinfo SocNetInfo
@@ -265,17 +231,28 @@ type SocketConnectRsp struct {
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_DISCONNECT_REQ message */
 type SocketDisconnectReq struct {
 	Socket int32
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_DISCONNECT_RSP message */
 type SocketDisconnectRsp struct {
 	Socket int32
 	Result int32
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_NOTIFY message */
+type SocketNotify struct {
+	Socket int32
+	Notify int32
+	Data uint64
+	Ptr unsafe.Pointer
+}
+
+/* for SOCKET_PLUGIN message */
 type SocketPlugIn struct {
 	Father_socket int32
 	Child_socket int32
@@ -284,6 +261,7 @@ type SocketPlugIn struct {
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_PLUGOUT message */
 type SocketPlugOut struct {
 	Socket int32
 	Reason int32
@@ -292,6 +270,17 @@ type SocketPlugOut struct {
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_RAW_EVENT message */
+type SocketRawEvent struct {
+	Socket int32
+	Os_socket int32
+	Event int32
+	Netinfo SocNetInfo
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
+/* for SOCKET_READ message */
 type SocketRead struct {
 	Socket int32
 	Ipinfo IPBaseInfo
@@ -300,6 +289,7 @@ type SocketRead struct {
 	Ptr unsafe.Pointer
 }
 
+/* for SOCKET_WRITE message */
 type SocketWrite struct {
 	Socket int32
 	Ipinfo IPBaseInfo
@@ -308,19 +298,161 @@ type SocketWrite struct {
 	Close_flag int32
 }
 
-type SocketNotify struct {
+/* for MSGID_SYSTEM_DECOUPLING message */
+type SystemDecoupling struct {
 	Socket int32
-	Notify int32
-	Data uint64
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Netinfo SocNetInfo
+}
+
+/* for MSGID_SYSTEM_MOUNT message */
+type SystemMount struct {
+	Socket int32
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Netinfo SocNetInfo
+}
+
+/* for MSGID_TEST message */
+type TESTMSG struct {
+	Test_msg [4096] byte
+}
+
+/* for MSGID_TIMER message */
+type TIMERMSG struct {
+	Timer_id int64
+}
+
+/* for MSGID_TEMPORARILY_DEFINE_MESSAGE message */
+type TemporarilyDefineMessageMsg struct {
+	Parameter unsafe.Pointer
+}
+
+/* for MSGID_THREAD_BUSY message */
+type ThreadBusy struct {
+	Thread_id uint64
+	Thread_name [DAVE_THREAD_NAME_LEN] byte
+	Msg_id uint64
+	Msg_number uint64
+}
+
+/* for MSGID_THREAD_IDLE message */
+type ThreadIdle struct {
+	Thread_id uint64
+	Thread_name [DAVE_THREAD_NAME_LEN] byte
+}
+
+/* for MSGID_LOCAL_THREAD_READY message */
+type ThreadLocalReadyMsg struct {
+	Local_thread_id uint64
+	Local_thread_name [128] byte
+}
+
+/* for MSGID_LOCAL_THREAD_REMOVE message */
+type ThreadLocalRemoveMsg struct {
+	Local_thread_id uint64
+	Local_thread_name [128] byte
+}
+
+/* for MSGID_REMOTE_THREAD_ID_READY message */
+type ThreadRemoteIDReadyMsg struct {
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+}
+
+/* for MSGID_REMOTE_THREAD_ID_REMOVE message */
+type ThreadRemoteIDRemoveMsg struct {
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+}
+
+/* for MSGID_REMOTE_THREAD_READY message */
+type ThreadRemoteReadyMsg struct {
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+}
+
+/* for MSGID_REMOTE_THREAD_REMOVE message */
+type ThreadRemoteRemoveMsg struct {
+	Remote_thread_id uint64
+	Remote_thread_name [128] byte
+}
+
+/* for MSGID_TRACE_SWITCH message */
+type TraceSwitchMsg struct {
+	Thread_id uint64
+	Trace_on int8
+}
+
+/* for UIP_DATA_RECV_REQ message */
+type UIPDataRecvReq struct {
+	Remote_address [DAVE_URL_LEN] byte
+	Remote_port uint64
+	Uip_type int32
+	Channel [DAVE_NORMAL_NAME_LEN] byte
+	Method [DAVE_UIP_METHOD_MAX_LEN] byte
+	Customer_body *MBUF
+	Data *MBUF
 	Ptr unsafe.Pointer
 }
 
-type SocketRawEvent struct {
-	Socket int32
-	Os_socket int32
-	Event int32
-	Netinfo SocNetInfo
+/* for UIP_DATA_RECV_RSP message */
+type UIPDataRecvRsp struct {
+	Ret int32
+	Method [DAVE_UIP_METHOD_MAX_LEN] byte
 	Data *MBUF
 	Ptr unsafe.Pointer
+}
+
+/* for UIP_DATA_SEND_REQ message */
+type UIPDataSendReq struct {
+	Remote_url [DAVE_URL_LEN] byte
+	Channel [DAVE_NORMAL_NAME_LEN] byte
+	Method [DAVE_UIP_METHOD_MAX_LEN] byte
+	Customer_head *MBUF
+	Customer_body *MBUF
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
+/* for UIP_DATA_SEND_RSP message */
+type UIPDataSendRsp struct {
+	Ret int32
+	Method [DAVE_UIP_METHOD_MAX_LEN] byte
+	Data *MBUF
+	Ptr unsafe.Pointer
+}
+
+/* for UIP_REGISTER_REQ message */
+type UIPRegisterReq struct {
+	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for UIP_REGISTER_RSP message */
+type UIPRegisterRsp struct {
+	Ret int32
+	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for UIP_UNREGISTER_REQ message */
+type UIPUnregisterReq struct {
+	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for UIP_UNREGISTER_RSP message */
+type UIPUnregisterRsp struct {
+	Ret int32
+	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
+	Ptr unsafe.Pointer
+}
+
+/* for MSGID_WAKEUP message */
+type WAKEUPMSG struct {
+	Null_msg unsafe.Pointer
+	Some_msg uint32
 }
 

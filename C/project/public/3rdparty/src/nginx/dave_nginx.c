@@ -94,7 +94,7 @@ dave_nginx_start(ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path
 	}
 
 	PARTYLOG("[NGINX]booting, nginx-port:%d listen-type:%s cgi-port:%d nginx-path:%s work-process:%d",
-		nginx_port, t_a2b_HTTPListenType_str(type), cgi_port, nginx_path,
+		nginx_port, t_auto_HTTPListenType_str(type), cgi_port, nginx_path,
 		work_process);
 
 	return ret;

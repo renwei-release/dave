@@ -22,9 +22,9 @@ def cfg_set(key, value):
 def cfg_get(key, default_value=None):
     key = bytes(key, encoding="utf8")
     value = bytes(2048)
-    davelib.dave_dll_cfg_get.restype = c_bool
+    davelib.dave_dll_cfg_get.restype = c_int
     ret = davelib.dave_dll_cfg_get(c_char_p(key), c_char_p(value), c_int(len(value)))
-    if ret == False:
+    if ret < 0:
         return default_value
     value = str(value, encoding="utf8").replace("\0", "")
     return value

@@ -33,7 +33,11 @@ def _find_enum_name_and_body(enum_table, name_array, body_array, type_array):
     for index in range(len(name_array)):
         enum_name = name_array[index].replace(' ', '')
         enum_body = body_array[index].replace(' ', '')
-        if enum_name in type_array:
+        if type_array != None:
+            if enum_name in type_array:
+                enum_table[enum_name] = _find_enum_body(enum_body)
+                is_valid_enum_data = True
+        else:
             enum_table[enum_name] = _find_enum_body(enum_body)
             is_valid_enum_data = True
     return is_valid_enum_data
@@ -70,7 +74,7 @@ def _find_enum_list_from_file_list(type_array, file_list):
 def _find_struct_type_array(struct_table):
     type_array = []
     for struct_key in struct_table:
-        msg_struct = struct_table[struct_key]
+        msg_struct = struct_table_get(struct_table[struct_key])
         for msg_member in msg_struct:
             type_array.append(msg_member['t'])
     return type_array
@@ -88,4 +92,9 @@ def find_enum_table(param, file_list=None, struct_table=None):
     type_array = _find_struct_type_array(struct_table)
     enum_table, include_list = _find_enum_list_from_file_list(type_array, file_list)
 
-    return enum_table, include_list
+    total_enum_table, total_include_list = _find_enum_list_from_file_list(None, file_list)
+
+    enum_table = struct_sorted(enum_table)
+    total_enum_table = struct_sorted(total_enum_table)
+
+    return enum_table, include_list, total_enum_table, total_include_list

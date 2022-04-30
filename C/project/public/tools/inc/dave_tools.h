@@ -23,6 +23,7 @@ extern "C"{
 #include "t_a2b.h"
 #include "t_is.h"
 #include "t_time.h"
+#include "t_auto.h"
 
 #ifdef __cplusplus
 } //extern "C"

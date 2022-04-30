@@ -28,101 +28,11 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 
 	switch((sb)msg_id)
 	{
-		case MSGID_TEST:
-				pBson = t_rpc_ver3_zip_TESTMSG((TESTMSG *)msg_body, msg_len);
+		case HTTPMSG_CLOSE_REQ:
+				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
-		case MSGID_TIMER:
-				pBson = t_rpc_ver3_zip_TIMERMSG((TIMERMSG *)msg_body, msg_len);
-			break;
-		case MSGID_WAKEUP:
-				pBson = t_rpc_ver3_zip_WAKEUPMSG((WAKEUPMSG *)msg_body, msg_len);
-			break;
-		case MSGID_RUN_FUNCTION:
-				pBson = t_rpc_ver3_zip_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, msg_len);
-			break;
-		case MSGID_DEBUG_REQ:
-				pBson = t_rpc_ver3_zip_DebugReq((DebugReq *)msg_body, msg_len);
-			break;
-		case MSGID_DEBUG_RSP:
-				pBson = t_rpc_ver3_zip_DebugRsp((DebugRsp *)msg_body, msg_len);
-			break;
-		case MSGID_RESTART_REQ:
-				pBson = t_rpc_ver3_zip_RESTARTREQMSG((RESTARTREQMSG *)msg_body, msg_len);
-			break;
-		case MSGID_RESTART_RSP:
-				pBson = t_rpc_ver3_zip_RESTARTRSPMSG((RESTARTRSPMSG *)msg_body, msg_len);
-			break;
-		case MSGID_POWER_OFF:
-				pBson = t_rpc_ver3_zip_POWEROFFMSG((POWEROFFMSG *)msg_body, msg_len);
-			break;
-		case MSGID_REMOTE_THREAD_READY:
-				pBson = t_rpc_ver3_zip_ThreadRemoteReadyMsg((ThreadRemoteReadyMsg *)msg_body, msg_len);
-			break;
-		case MSGID_REMOTE_THREAD_REMOVE:
-				pBson = t_rpc_ver3_zip_ThreadRemoteRemoveMsg((ThreadRemoteRemoveMsg *)msg_body, msg_len);
-			break;
-		case MSGID_TRACE_SWITCH:
-				pBson = t_rpc_ver3_zip_TraceSwitchMsg((TraceSwitchMsg *)msg_body, msg_len);
-			break;
-		case MSGID_PROCESS_MSG_TIMER_OUT:
-				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
-			break;
-		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
-				pBson = t_rpc_ver3_zip_TemporarilyDefineMessageMsg((TemporarilyDefineMessageMsg *)msg_body, msg_len);
-			break;
-		case MSGID_SYSTEM_MOUNT:
-				pBson = t_rpc_ver3_zip_SystemMount((SystemMount *)msg_body, msg_len);
-			break;
-		case MSGID_SYSTEM_DECOUPLING:
-				pBson = t_rpc_ver3_zip_SystemDecoupling((SystemDecoupling *)msg_body, msg_len);
-			break;
-		case MSGID_MEMORY_WARNING:
-				pBson = t_rpc_ver3_zip_MemoryWarning((MemoryWarning *)msg_body, msg_len);
-			break;
-		case MSGID_ECHO:
-				pBson = t_rpc_ver3_zip_MsgIdEcho((MsgIdEcho *)msg_body, msg_len);
-			break;
-		case MSGID_INTERNAL_EVENTS:
-				pBson = t_rpc_ver3_zip_InternalEvents((InternalEvents *)msg_body, msg_len);
-			break;
-		case MSGID_THREAD_BUSY:
-				pBson = t_rpc_ver3_zip_ThreadBusy((ThreadBusy *)msg_body, msg_len);
-			break;
-		case MSGID_THREAD_IDLE:
-				pBson = t_rpc_ver3_zip_ThreadIdle((ThreadIdle *)msg_body, msg_len);
-			break;
-		case MSGID_CLIENT_BUSY:
-				pBson = t_rpc_ver3_zip_ClientBusy((ClientBusy *)msg_body, msg_len);
-			break;
-		case MSGID_CLIENT_IDLE:
-				pBson = t_rpc_ver3_zip_ClientIdle((ClientIdle *)msg_body, msg_len);
-			break;
-		case MSGID_REMOTE_THREAD_ID_READY:
-				pBson = t_rpc_ver3_zip_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body, msg_len);
-			break;
-		case MSGID_REMOTE_THREAD_ID_REMOVE:
-				pBson = t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg((ThreadRemoteIDRemoveMsg *)msg_body, msg_len);
-			break;
-		case MSGID_LOCAL_THREAD_READY:
-				pBson = t_rpc_ver3_zip_ThreadLocalReadyMsg((ThreadLocalReadyMsg *)msg_body, msg_len);
-			break;
-		case MSGID_LOCAL_THREAD_REMOVE:
-				pBson = t_rpc_ver3_zip_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body, msg_len);
-			break;
-		case MSGID_RPC_DEBUG_MSG:
-				pBson = t_rpc_ver3_zip_RPCDebugMsg((RPCDebugMsg *)msg_body, msg_len);
-			break;
-		case MSGID_CFG_UPDATE:
-				pBson = t_rpc_ver3_zip_CFGUpdate((CFGUpdate *)msg_body, msg_len);
-			break;
-		case MSGID_BLOCKS_REQ:
-				pBson = t_rpc_ver3_zip_MsgBlocksReq((MsgBlocksReq *)msg_body, msg_len);
-			break;
-		case MSGID_BLOCKS_RSP:
-				pBson = t_rpc_ver3_zip_MsgBlocksRsp((MsgBlocksRsp *)msg_body, msg_len);
-			break;
-		case MSGID_OS_NOTIFY:
-				pBson = t_rpc_ver3_zip_MsgOSNotify((MsgOSNotify *)msg_body, msg_len);
+		case HTTPMSG_CLOSE_RSP:
+				pBson = t_rpc_ver3_zip_HTTPCloseRsp((HTTPCloseRsp *)msg_body, msg_len);
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				pBson = t_rpc_ver3_zip_HTTPListenReq((HTTPListenReq *)msg_body, msg_len);
@@ -130,17 +40,113 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case HTTPMSG_LISTEN_RSP:
 				pBson = t_rpc_ver3_zip_HTTPListenRsp((HTTPListenRsp *)msg_body, msg_len);
 			break;
-		case HTTPMSG_CLOSE_REQ:
-				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
+		case HTTPMSG_POST_REQ:
+				pBson = t_rpc_ver3_zip_HTTPPostReq((HTTPPostReq *)msg_body, msg_len);
 			break;
-		case HTTPMSG_CLOSE_RSP:
-				pBson = t_rpc_ver3_zip_HTTPCloseRsp((HTTPCloseRsp *)msg_body, msg_len);
+		case HTTPMSG_POST_RSP:
+				pBson = t_rpc_ver3_zip_HTTPPostRsp((HTTPPostRsp *)msg_body, msg_len);
 			break;
 		case HTTPMSG_RECV_REQ:
 				pBson = t_rpc_ver3_zip_HTTPRecvReq((HTTPRecvReq *)msg_body, msg_len);
 			break;
 		case HTTPMSG_RECV_RSP:
 				pBson = t_rpc_ver3_zip_HTTPRecvRsp((HTTPRecvRsp *)msg_body, msg_len);
+			break;
+		case MSGID_BLOCKS_REQ:
+				pBson = t_rpc_ver3_zip_MsgBlocksReq((MsgBlocksReq *)msg_body, msg_len);
+			break;
+		case MSGID_BLOCKS_RSP:
+				pBson = t_rpc_ver3_zip_MsgBlocksRsp((MsgBlocksRsp *)msg_body, msg_len);
+			break;
+		case MSGID_CFG_UPDATE:
+				pBson = t_rpc_ver3_zip_CFGUpdate((CFGUpdate *)msg_body, msg_len);
+			break;
+		case MSGID_CLIENT_BUSY:
+				pBson = t_rpc_ver3_zip_ClientBusy((ClientBusy *)msg_body, msg_len);
+			break;
+		case MSGID_CLIENT_IDLE:
+				pBson = t_rpc_ver3_zip_ClientIdle((ClientIdle *)msg_body, msg_len);
+			break;
+		case MSGID_DEBUG_REQ:
+				pBson = t_rpc_ver3_zip_DebugReq((DebugReq *)msg_body, msg_len);
+			break;
+		case MSGID_DEBUG_RSP:
+				pBson = t_rpc_ver3_zip_DebugRsp((DebugRsp *)msg_body, msg_len);
+			break;
+		case MSGID_ECHO:
+				pBson = t_rpc_ver3_zip_MsgIdEcho((MsgIdEcho *)msg_body, msg_len);
+			break;
+		case MSGID_INTERNAL_EVENTS:
+				pBson = t_rpc_ver3_zip_InternalEvents((InternalEvents *)msg_body, msg_len);
+			break;
+		case MSGID_LOCAL_THREAD_READY:
+				pBson = t_rpc_ver3_zip_ThreadLocalReadyMsg((ThreadLocalReadyMsg *)msg_body, msg_len);
+			break;
+		case MSGID_LOCAL_THREAD_REMOVE:
+				pBson = t_rpc_ver3_zip_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body, msg_len);
+			break;
+		case MSGID_MEMORY_WARNING:
+				pBson = t_rpc_ver3_zip_MemoryWarning((MemoryWarning *)msg_body, msg_len);
+			break;
+		case MSGID_OS_NOTIFY:
+				pBson = t_rpc_ver3_zip_MsgOSNotify((MsgOSNotify *)msg_body, msg_len);
+			break;
+		case MSGID_POWER_OFF:
+				pBson = t_rpc_ver3_zip_POWEROFFMSG((POWEROFFMSG *)msg_body, msg_len);
+			break;
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
+			break;
+		case MSGID_REMOTE_THREAD_ID_READY:
+				pBson = t_rpc_ver3_zip_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body, msg_len);
+			break;
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+				pBson = t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg((ThreadRemoteIDRemoveMsg *)msg_body, msg_len);
+			break;
+		case MSGID_REMOTE_THREAD_READY:
+				pBson = t_rpc_ver3_zip_ThreadRemoteReadyMsg((ThreadRemoteReadyMsg *)msg_body, msg_len);
+			break;
+		case MSGID_REMOTE_THREAD_REMOVE:
+				pBson = t_rpc_ver3_zip_ThreadRemoteRemoveMsg((ThreadRemoteRemoveMsg *)msg_body, msg_len);
+			break;
+		case MSGID_RESTART_REQ:
+				pBson = t_rpc_ver3_zip_RESTARTREQMSG((RESTARTREQMSG *)msg_body, msg_len);
+			break;
+		case MSGID_RESTART_RSP:
+				pBson = t_rpc_ver3_zip_RESTARTRSPMSG((RESTARTRSPMSG *)msg_body, msg_len);
+			break;
+		case MSGID_RPC_DEBUG_MSG:
+				pBson = t_rpc_ver3_zip_RPCDebugMsg((RPCDebugMsg *)msg_body, msg_len);
+			break;
+		case MSGID_RUN_FUNCTION:
+				pBson = t_rpc_ver3_zip_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, msg_len);
+			break;
+		case MSGID_SYSTEM_DECOUPLING:
+				pBson = t_rpc_ver3_zip_SystemDecoupling((SystemDecoupling *)msg_body, msg_len);
+			break;
+		case MSGID_SYSTEM_MOUNT:
+				pBson = t_rpc_ver3_zip_SystemMount((SystemMount *)msg_body, msg_len);
+			break;
+		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
+				pBson = t_rpc_ver3_zip_TemporarilyDefineMessageMsg((TemporarilyDefineMessageMsg *)msg_body, msg_len);
+			break;
+		case MSGID_TEST:
+				pBson = t_rpc_ver3_zip_TESTMSG((TESTMSG *)msg_body, msg_len);
+			break;
+		case MSGID_THREAD_BUSY:
+				pBson = t_rpc_ver3_zip_ThreadBusy((ThreadBusy *)msg_body, msg_len);
+			break;
+		case MSGID_THREAD_IDLE:
+				pBson = t_rpc_ver3_zip_ThreadIdle((ThreadIdle *)msg_body, msg_len);
+			break;
+		case MSGID_TIMER:
+				pBson = t_rpc_ver3_zip_TIMERMSG((TIMERMSG *)msg_body, msg_len);
+			break;
+		case MSGID_TRACE_SWITCH:
+				pBson = t_rpc_ver3_zip_TraceSwitchMsg((TraceSwitchMsg *)msg_body, msg_len);
+			break;
+		case MSGID_WAKEUP:
+				pBson = t_rpc_ver3_zip_WAKEUPMSG((WAKEUPMSG *)msg_body, msg_len);
 			break;
 		case SOCKET_BIND_REQ:
 				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
@@ -160,11 +166,17 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case SOCKET_DISCONNECT_RSP:
 				pBson = t_rpc_ver3_zip_SocketDisconnectRsp((SocketDisconnectRsp *)msg_body, msg_len);
 			break;
+		case SOCKET_NOTIFY:
+				pBson = t_rpc_ver3_zip_SocketNotify((SocketNotify *)msg_body, msg_len);
+			break;
 		case SOCKET_PLUGIN:
 				pBson = t_rpc_ver3_zip_SocketPlugIn((SocketPlugIn *)msg_body, msg_len);
 			break;
 		case SOCKET_PLUGOUT:
 				pBson = t_rpc_ver3_zip_SocketPlugOut((SocketPlugOut *)msg_body, msg_len);
+			break;
+		case SOCKET_RAW_EVENT:
+				pBson = t_rpc_ver3_zip_SocketRawEvent((SocketRawEvent *)msg_body, msg_len);
 			break;
 		case SOCKET_READ:
 				pBson = t_rpc_ver3_zip_SocketRead((SocketRead *)msg_body, msg_len);
@@ -172,14 +184,33 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case SOCKET_WRITE:
 				pBson = t_rpc_ver3_zip_SocketWrite((SocketWrite *)msg_body, msg_len);
 			break;
-		case SOCKET_NOTIFY:
-				pBson = t_rpc_ver3_zip_SocketNotify((SocketNotify *)msg_body, msg_len);
+		case UIP_DATA_RECV_REQ:
+				pBson = t_rpc_ver3_zip_UIPDataRecvReq((UIPDataRecvReq *)msg_body, msg_len);
 			break;
-		case SOCKET_RAW_EVENT:
-				pBson = t_rpc_ver3_zip_SocketRawEvent((SocketRawEvent *)msg_body, msg_len);
+		case UIP_DATA_RECV_RSP:
+				pBson = t_rpc_ver3_zip_UIPDataRecvRsp((UIPDataRecvRsp *)msg_body, msg_len);
+			break;
+		case UIP_DATA_SEND_REQ:
+				pBson = t_rpc_ver3_zip_UIPDataSendReq((UIPDataSendReq *)msg_body, msg_len);
+			break;
+		case UIP_DATA_SEND_RSP:
+				pBson = t_rpc_ver3_zip_UIPDataSendRsp((UIPDataSendRsp *)msg_body, msg_len);
+			break;
+		case UIP_REGISTER_REQ:
+				pBson = t_rpc_ver3_zip_UIPRegisterReq((UIPRegisterReq *)msg_body, msg_len);
+			break;
+		case UIP_REGISTER_RSP:
+				pBson = t_rpc_ver3_zip_UIPRegisterRsp((UIPRegisterRsp *)msg_body, msg_len);
+			break;
+		case UIP_UNREGISTER_REQ:
+				pBson = t_rpc_ver3_zip_UIPUnregisterReq((UIPUnregisterReq *)msg_body, msg_len);
+			break;
+		case UIP_UNREGISTER_RSP:
+				pBson = t_rpc_ver3_zip_UIPUnregisterRsp((UIPUnregisterRsp *)msg_body, msg_len);
 			break;
 		default:
-				pBson = NULL;
+				TOOLSLOG("msg_id:%d zip failed!", msg_id);
+ 				pBson = NULL;
 			break;
 	}
 
@@ -193,101 +224,11 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 
 	switch((sb)msg_id)
 	{
-		case MSGID_TEST:
-				ret = t_rpc_ver3_unzip_TESTMSG(msg_body, msg_len, pBson);
+		case HTTPMSG_CLOSE_REQ:
+				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
 			break;
-		case MSGID_TIMER:
-				ret = t_rpc_ver3_unzip_TIMERMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_WAKEUP:
-				ret = t_rpc_ver3_unzip_WAKEUPMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_RUN_FUNCTION:
-				ret = t_rpc_ver3_unzip_RUNFUNCTIONMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_DEBUG_REQ:
-				ret = t_rpc_ver3_unzip_DebugReq(msg_body, msg_len, pBson);
-			break;
-		case MSGID_DEBUG_RSP:
-				ret = t_rpc_ver3_unzip_DebugRsp(msg_body, msg_len, pBson);
-			break;
-		case MSGID_RESTART_REQ:
-				ret = t_rpc_ver3_unzip_RESTARTREQMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_RESTART_RSP:
-				ret = t_rpc_ver3_unzip_RESTARTRSPMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_POWER_OFF:
-				ret = t_rpc_ver3_unzip_POWEROFFMSG(msg_body, msg_len, pBson);
-			break;
-		case MSGID_REMOTE_THREAD_READY:
-				ret = t_rpc_ver3_unzip_ThreadRemoteReadyMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_REMOTE_THREAD_REMOVE:
-				ret = t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_TRACE_SWITCH:
-				ret = t_rpc_ver3_unzip_TraceSwitchMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_PROCESS_MSG_TIMER_OUT:
-				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
-				ret = t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_SYSTEM_MOUNT:
-				ret = t_rpc_ver3_unzip_SystemMount(msg_body, msg_len, pBson);
-			break;
-		case MSGID_SYSTEM_DECOUPLING:
-				ret = t_rpc_ver3_unzip_SystemDecoupling(msg_body, msg_len, pBson);
-			break;
-		case MSGID_MEMORY_WARNING:
-				ret = t_rpc_ver3_unzip_MemoryWarning(msg_body, msg_len, pBson);
-			break;
-		case MSGID_ECHO:
-				ret = t_rpc_ver3_unzip_MsgIdEcho(msg_body, msg_len, pBson);
-			break;
-		case MSGID_INTERNAL_EVENTS:
-				ret = t_rpc_ver3_unzip_InternalEvents(msg_body, msg_len, pBson);
-			break;
-		case MSGID_THREAD_BUSY:
-				ret = t_rpc_ver3_unzip_ThreadBusy(msg_body, msg_len, pBson);
-			break;
-		case MSGID_THREAD_IDLE:
-				ret = t_rpc_ver3_unzip_ThreadIdle(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CLIENT_BUSY:
-				ret = t_rpc_ver3_unzip_ClientBusy(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CLIENT_IDLE:
-				ret = t_rpc_ver3_unzip_ClientIdle(msg_body, msg_len, pBson);
-			break;
-		case MSGID_REMOTE_THREAD_ID_READY:
-				ret = t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_REMOTE_THREAD_ID_REMOVE:
-				ret = t_rpc_ver3_unzip_ThreadRemoteIDRemoveMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_LOCAL_THREAD_READY:
-				ret = t_rpc_ver3_unzip_ThreadLocalReadyMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_LOCAL_THREAD_REMOVE:
-				ret = t_rpc_ver3_unzip_ThreadLocalRemoveMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_RPC_DEBUG_MSG:
-				ret = t_rpc_ver3_unzip_RPCDebugMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CFG_UPDATE:
-				ret = t_rpc_ver3_unzip_CFGUpdate(msg_body, msg_len, pBson);
-			break;
-		case MSGID_BLOCKS_REQ:
-				ret = t_rpc_ver3_unzip_MsgBlocksReq(msg_body, msg_len, pBson);
-			break;
-		case MSGID_BLOCKS_RSP:
-				ret = t_rpc_ver3_unzip_MsgBlocksRsp(msg_body, msg_len, pBson);
-			break;
-		case MSGID_OS_NOTIFY:
-				ret = t_rpc_ver3_unzip_MsgOSNotify(msg_body, msg_len, pBson);
+		case HTTPMSG_CLOSE_RSP:
+				ret = t_rpc_ver3_unzip_HTTPCloseRsp(msg_body, msg_len, pBson);
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				ret = t_rpc_ver3_unzip_HTTPListenReq(msg_body, msg_len, pBson);
@@ -295,17 +236,113 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case HTTPMSG_LISTEN_RSP:
 				ret = t_rpc_ver3_unzip_HTTPListenRsp(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_CLOSE_REQ:
-				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
+		case HTTPMSG_POST_REQ:
+				ret = t_rpc_ver3_unzip_HTTPPostReq(msg_body, msg_len, pBson);
 			break;
-		case HTTPMSG_CLOSE_RSP:
-				ret = t_rpc_ver3_unzip_HTTPCloseRsp(msg_body, msg_len, pBson);
+		case HTTPMSG_POST_RSP:
+				ret = t_rpc_ver3_unzip_HTTPPostRsp(msg_body, msg_len, pBson);
 			break;
 		case HTTPMSG_RECV_REQ:
 				ret = t_rpc_ver3_unzip_HTTPRecvReq(msg_body, msg_len, pBson);
 			break;
 		case HTTPMSG_RECV_RSP:
 				ret = t_rpc_ver3_unzip_HTTPRecvRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_BLOCKS_REQ:
+				ret = t_rpc_ver3_unzip_MsgBlocksReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_BLOCKS_RSP:
+				ret = t_rpc_ver3_unzip_MsgBlocksRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_CFG_UPDATE:
+				ret = t_rpc_ver3_unzip_CFGUpdate(msg_body, msg_len, pBson);
+			break;
+		case MSGID_CLIENT_BUSY:
+				ret = t_rpc_ver3_unzip_ClientBusy(msg_body, msg_len, pBson);
+			break;
+		case MSGID_CLIENT_IDLE:
+				ret = t_rpc_ver3_unzip_ClientIdle(msg_body, msg_len, pBson);
+			break;
+		case MSGID_DEBUG_REQ:
+				ret = t_rpc_ver3_unzip_DebugReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_DEBUG_RSP:
+				ret = t_rpc_ver3_unzip_DebugRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_ECHO:
+				ret = t_rpc_ver3_unzip_MsgIdEcho(msg_body, msg_len, pBson);
+			break;
+		case MSGID_INTERNAL_EVENTS:
+				ret = t_rpc_ver3_unzip_InternalEvents(msg_body, msg_len, pBson);
+			break;
+		case MSGID_LOCAL_THREAD_READY:
+				ret = t_rpc_ver3_unzip_ThreadLocalReadyMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_LOCAL_THREAD_REMOVE:
+				ret = t_rpc_ver3_unzip_ThreadLocalRemoveMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_MEMORY_WARNING:
+				ret = t_rpc_ver3_unzip_MemoryWarning(msg_body, msg_len, pBson);
+			break;
+		case MSGID_OS_NOTIFY:
+				ret = t_rpc_ver3_unzip_MsgOSNotify(msg_body, msg_len, pBson);
+			break;
+		case MSGID_POWER_OFF:
+				ret = t_rpc_ver3_unzip_POWEROFFMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_REMOTE_THREAD_ID_READY:
+				ret = t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+				ret = t_rpc_ver3_unzip_ThreadRemoteIDRemoveMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_REMOTE_THREAD_READY:
+				ret = t_rpc_ver3_unzip_ThreadRemoteReadyMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_REMOTE_THREAD_REMOVE:
+				ret = t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_RESTART_REQ:
+				ret = t_rpc_ver3_unzip_RESTARTREQMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_RESTART_RSP:
+				ret = t_rpc_ver3_unzip_RESTARTRSPMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_RPC_DEBUG_MSG:
+				ret = t_rpc_ver3_unzip_RPCDebugMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_RUN_FUNCTION:
+				ret = t_rpc_ver3_unzip_RUNFUNCTIONMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_SYSTEM_DECOUPLING:
+				ret = t_rpc_ver3_unzip_SystemDecoupling(msg_body, msg_len, pBson);
+			break;
+		case MSGID_SYSTEM_MOUNT:
+				ret = t_rpc_ver3_unzip_SystemMount(msg_body, msg_len, pBson);
+			break;
+		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
+				ret = t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_TEST:
+				ret = t_rpc_ver3_unzip_TESTMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_THREAD_BUSY:
+				ret = t_rpc_ver3_unzip_ThreadBusy(msg_body, msg_len, pBson);
+			break;
+		case MSGID_THREAD_IDLE:
+				ret = t_rpc_ver3_unzip_ThreadIdle(msg_body, msg_len, pBson);
+			break;
+		case MSGID_TIMER:
+				ret = t_rpc_ver3_unzip_TIMERMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_TRACE_SWITCH:
+				ret = t_rpc_ver3_unzip_TraceSwitchMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_WAKEUP:
+				ret = t_rpc_ver3_unzip_WAKEUPMSG(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_BIND_REQ:
 				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
@@ -325,11 +362,17 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case SOCKET_DISCONNECT_RSP:
 				ret = t_rpc_ver3_unzip_SocketDisconnectRsp(msg_body, msg_len, pBson);
 			break;
+		case SOCKET_NOTIFY:
+				ret = t_rpc_ver3_unzip_SocketNotify(msg_body, msg_len, pBson);
+			break;
 		case SOCKET_PLUGIN:
 				ret = t_rpc_ver3_unzip_SocketPlugIn(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_PLUGOUT:
 				ret = t_rpc_ver3_unzip_SocketPlugOut(msg_body, msg_len, pBson);
+			break;
+		case SOCKET_RAW_EVENT:
+				ret = t_rpc_ver3_unzip_SocketRawEvent(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_READ:
 				ret = t_rpc_ver3_unzip_SocketRead(msg_body, msg_len, pBson);
@@ -337,15 +380,34 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case SOCKET_WRITE:
 				ret = t_rpc_ver3_unzip_SocketWrite(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_NOTIFY:
-				ret = t_rpc_ver3_unzip_SocketNotify(msg_body, msg_len, pBson);
+		case UIP_DATA_RECV_REQ:
+				ret = t_rpc_ver3_unzip_UIPDataRecvReq(msg_body, msg_len, pBson);
 			break;
-		case SOCKET_RAW_EVENT:
-				ret = t_rpc_ver3_unzip_SocketRawEvent(msg_body, msg_len, pBson);
+		case UIP_DATA_RECV_RSP:
+				ret = t_rpc_ver3_unzip_UIPDataRecvRsp(msg_body, msg_len, pBson);
+			break;
+		case UIP_DATA_SEND_REQ:
+				ret = t_rpc_ver3_unzip_UIPDataSendReq(msg_body, msg_len, pBson);
+			break;
+		case UIP_DATA_SEND_RSP:
+				ret = t_rpc_ver3_unzip_UIPDataSendRsp(msg_body, msg_len, pBson);
+			break;
+		case UIP_REGISTER_REQ:
+				ret = t_rpc_ver3_unzip_UIPRegisterReq(msg_body, msg_len, pBson);
+			break;
+		case UIP_REGISTER_RSP:
+				ret = t_rpc_ver3_unzip_UIPRegisterRsp(msg_body, msg_len, pBson);
+			break;
+		case UIP_UNREGISTER_REQ:
+				ret = t_rpc_ver3_unzip_UIPUnregisterReq(msg_body, msg_len, pBson);
+			break;
+		case UIP_UNREGISTER_RSP:
+				ret = t_rpc_ver3_unzip_UIPUnregisterRsp(msg_body, msg_len, pBson);
 			break;
 		default:
-				ret = dave_false;
-			break;
+ 				TOOLSLOG("msg_id:%d unzip failed!", msg_id);
+ 				ret = dave_false;
+ 			break;
 	}
 
 	return ret;

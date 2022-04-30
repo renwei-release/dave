@@ -115,6 +115,11 @@ def _creat_msg_id_file(msg_id_table, file_name):
     return
 
 
+def _creat_msg_id_information(file_id, msg_name):
+    file_id.write(f'#* for {msg_name} message *#\n')
+    return
+
+
 def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_name):
     print(f'{len(struct_table)}\tstruct\t\twrite to {file_name}')
     with open(file_name, "w+", encoding="utf-8") as file_id:
@@ -127,9 +132,10 @@ def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_n
         file_id.write('from .dave_define import *\n\n')
 
         for struct_name in struct_table.keys():
+            _creat_msg_id_information(file_id, struct_table_get(struct_table[struct_name], 'msg_name'))
             file_id.write(f'class {struct_name} (Structure):\n')
             file_id.write(f'\t_fields_ = [\n')
-            for struct_data in struct_table[struct_name]:
+            for struct_data in struct_table_get(struct_table[struct_name]):
                 value_name = struct_data['n']
                 value_type = struct_data['t']
                 value_dimension = struct_data['d']
@@ -137,7 +143,10 @@ def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_n
                 if value_dimension == None:
                     file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)}),\n')
                 else:
-                    file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)} * ({value_dimension})),\n')
+                    if ('+' in value_dimension) or ('-' in value_dimension):
+                        file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)} * ({value_dimension})),\n')
+                    else:
+                        file_id.write(f'\t\t("{value_name}", {_c_type_to_python_type(value_type, is_ptr, struct_total, enum_table, fun_table)} * {value_dimension}),\n')    
             file_id.write(f'{"]"}\n\n')
     return
 

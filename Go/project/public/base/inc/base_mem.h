@@ -52,5 +52,7 @@ ub base_mem_info(s8 *info, ub info_len, dave_bool base_flag);
 #define dave_mptr base_mptr
 #define dave_mlnumber base_mlnumber
 
+#define ms8ptr(mbuf_ptr) (s8 *)base_mptr(mbuf_ptr)
+
 #endif
 

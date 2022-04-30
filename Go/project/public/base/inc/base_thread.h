@@ -125,13 +125,5 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define reg_msgptr(msg_id, msg_fun, user_ptr) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, user_ptr)
 #define unreg_msg(msg_id) base_thread_msg_unregister((ub)msg_id)
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define dave_thread_creat base_thread_creat
-#define dave_thread_del base_thread_del
-#define remote_msg name_msg
-#define remote_event name_event
-
-
 #endif
 

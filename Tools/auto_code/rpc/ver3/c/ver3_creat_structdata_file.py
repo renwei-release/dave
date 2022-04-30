@@ -24,7 +24,7 @@ _structdata_src_head = "\
 _structdata_inc_head = "\
 #ifndef _T_RPC_STRUCTDATA_H__\n\
 #define _T_RPC_STRUCTDATA_H__\n\
-#include \"dave_base.h\"\n\n"\
+#include \"dave_base.h\"\n"\
 
 
 _structdata_inc_end = "\
@@ -224,7 +224,7 @@ def _creat_structdata_unzip_funs_file(file_id, struct_name):
 
 def _creat_structdata_fun_file(file_id, struct_table, meta_table):
     for struct_name in struct_table.keys():
-        struct_data = struct_table[struct_name]
+        struct_data = struct_table_get(struct_table[struct_name])
         if struct_data != None:
             _creat_structdata_zip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data)
             _creat_structdata_unzip_fun_file(file_id, struct_table, meta_table, struct_name, struct_data)
@@ -237,7 +237,8 @@ def _creat_structdata_src_file(struct_table, meta_table, head_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_structdata_src_head)
-        file_id.write("\n// =====================================================================\n\n")
+        include_message(file_id, head_list)
+        file_id.write("// =====================================================================\n\n")
         _creat_structdata_fun_file(file_id, struct_table, meta_table)
     return
 
@@ -246,6 +247,7 @@ def _creat_structdata_inc_file(struct_table, head_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_structdata_inc_head)
+        include_message(file_id, head_list)
         for struct_name in struct_table.keys():
             struct_name = struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver3_zip_"+struct_name+"("+struct_name+" *zip_data);\n")

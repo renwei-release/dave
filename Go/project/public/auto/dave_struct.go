@@ -14,16 +14,58 @@ package auto
 
 import "unsafe"
 
+/* for None message */
 type SocNetInfoAddr struct {
 	Ip SocNetInfoIp
 	Url [DAVE_URL_LEN] byte
 }
 
+/* for None message */
 type SocNetInfoIp struct {
 	Ver int32
 	Ip_addr [16] byte
 }
 
+/* for None message */
+type HttpKeyValue struct {
+	Key [DAVE_HTTP_KEY_LEN] byte
+	Value [DAVE_HTTP_VALUE_LEN] byte
+}
+
+/* for None message */
+type MBUF struct {
+	Next unsafe.Pointer
+	Payload unsafe.Pointer
+	Tot_len int64
+	Len int64
+	Ref int64
+	Alloc_len int64
+}
+
+/* for None message */
+type BuildingBlocks struct {
+	Blocks_id uint64
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Ip_addr [16] byte
+	Port uint16
+	Ready_flag int8
+	Blocks_flag int8
+	Client_flag int8
+	Release_quantity uint64
+}
+
+/* for None message */
+type DateStruct struct {
+	Year uint16
+	Month byte
+	Day byte
+	Hour byte
+	Minute byte
+	Second byte
+	Week byte
+}
+
+/* for None message */
 type SocNetInfo struct {
 	Domain int32
 	Type int32
@@ -39,41 +81,7 @@ type SocNetInfo struct {
 	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
 }
 
-type DateStruct struct {
-	Year uint16
-	Month byte
-	Day byte
-	Hour byte
-	Minute byte
-	Second byte
-	Week byte
-}
-
-type MBUF struct {
-	Next unsafe.Pointer
-	Payload unsafe.Pointer
-	Tot_len int64
-	Len int64
-	Ref int64
-	Alloc_len int64
-}
-
-type BuildingBlocks struct {
-	Blocks_id uint64
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ip_addr [16] byte
-	Port uint16
-	Ready_flag int8
-	Blocks_flag int8
-	Client_flag int8
-	Release_quantity uint64
-}
-
-type HttpKeyValue struct {
-	Key [DAVE_HTTP_KEY_LEN] byte
-	Value [DAVE_HTTP_VALUE_LEN] byte
-}
-
+/* for None message */
 type IPBaseInfo struct {
 	Protocol int32
 	Ver int32

@@ -10,9 +10,6 @@
 #include "http_param.h"
 #include "http_msg.h"
 
-#define HTTP_THREAD_NAME "http"
-#define DISTRIBUTOR_THREAD_NAME "distributor"
-
 void dave_http_init(void);
 void dave_http_exit(void);
 

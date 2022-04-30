@@ -1,11 +1,13 @@
-FROM centos:centos7.9.2009
+FROM nginx:latest
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN chmod 777 /tmp
 
-RUN yum update -y
-RUN yum -y install libgomp
+RUN apt update -y
+RUN apt -y install libgomp1
+RUN apt -y install procps
+RUN apt -y install vim
 
 RUN mkdir /dave
 WORKDIR /project

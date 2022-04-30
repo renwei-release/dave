@@ -7,7 +7,7 @@
 
 VER_PRODUCT=dave    # SYNC LOG ...
 LEVEL_PRODUCT=alpha	# profiling alpha beta
-DEPLOYPATH=../../../Deploy/deploy/$(shell echo $(VER_PRODUCT) | tr A-Z a-z)
+DEPLOYPATH=../../../Deploy/deploy/$(shell echo $(VER_PRODUCT) | tr A-Z a-z)/project
 
 ifeq ($(LEVEL_PRODUCT), profiling)
 	MAKE_LEVEL_PRODUCT=alpha
@@ -36,9 +36,12 @@ CC := gcc
 CPLUS := g++
 NVCC := /usr/local/cuda/bin/nvcc
 
-CFLAGS := -m64 -std=gnu99 -Wall -fPIC -mcmodel=large -fopenmp -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
-CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
-NVCCFLAGS := -std=c++11 -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CFLAGS := -m64 -std=gnu99 -Wall -fPIC -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+CFLAGS += -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+CPLUSFLAGS += -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+NVCCFLAGS := -std=c++11
+NVCCFLAGS += -D__DAVE_PRODUCT_$(VER_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
 
 ifeq ($(LEVEL_PRODUCT), profiling)
 	CFLAGS += -g -fprofile-arcs -ftest-coverage -pg -O3 -lc
@@ -54,13 +57,10 @@ endif
 $(VER_PRODUCT)-BIN: $(OBJS)
 	@$(CC) -o $@ $^ $(CFLAGS) $(LIB)
 %.o: %.c
-	@echo $<
 	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 %.o: %.cpp
-	@echo $<
 	@$(CPLUS) -o $@ -c $< $(CPLUSFLAGS) $(INCLUDE)
 %.o: %.cu
-	@echo $<
 	@$(NVCC) -o $@ -c $< $(NVCCFLAGS) $(INCLUDE)
 
 pre_build:

@@ -18,9 +18,9 @@ func Dave_msg_process(pMsg * DllMsgBody) {
 
 	msg_id := int(pMsg.msg_id)
 
-	msg_id_process_function, exists := system_function_table[msg_id]
+	fun, exists := Dave_system_function_table_inq(msg_id)
 	if exists {
-		msg_id_process_function(msg_src_name, pMsg.msg_src, pMsg.msg_len, pMsg.msg_body)
+		fun(msg_src_name, pMsg.msg_src, pMsg.msg_len, pMsg.msg_body)
 	} else {
 		DAVELOG("unprocess msg, %s->%s:%d", msg_src_name, msg_dst_name, pMsg.msg_id)
 	}

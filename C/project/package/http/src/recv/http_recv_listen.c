@@ -503,7 +503,7 @@ _http_recv_listen_action(s8 *listen_thread, ub port, HTTPListenType type, HTTPMa
 
 	HTTPDEBUG("%s port:%d(%s) cgi_listen_port:%d path:%s bind %s",
 		listen_thread,
-		port, t_a2b_HTTPListenType_str(type),
+		port, t_auto_HTTPListenType_str(type),
 		pListen->cgi_listen_port,
 		path,
 		retstr(ret));

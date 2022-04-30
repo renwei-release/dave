@@ -28,8 +28,10 @@ def find_param():
 
     param['meta_table'] = find_meta_table()
 
-    enum_table, enum_list = find_enum_table(param)
+    enum_table, enum_list, total_enum_table, total_include_list = find_enum_table(param)
     param['enum_table'] = enum_table
     param['enum_list'] = enum_list
+    param['total_enum_table'] = total_enum_table
+    param['total_enum_list'] = total_include_list
 
     return param

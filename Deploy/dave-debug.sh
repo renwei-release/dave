@@ -6,7 +6,9 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-export LD_PRELOAD="./public/base/lib/libjemalloc.so ./public/base/lib/libjson-c.so"
+if [ -f "/project/public/base/lib/libjemalloc.so" ]; then
+   export LD_PRELOAD="/project/public/base/lib/libjemalloc.so /project/public/base/lib/libjson-c.so"
+fi
 
 function loop_notify()
 {
@@ -25,7 +27,7 @@ function loop_notify()
 function goto_debug()
 {
     jupyter_booting
-    loop_notify "This is an empty container!"
+    loop_notify "container on debug mode!"
 }
 
 goto_debug #___FLAG_FOR_UPDATE.SH___

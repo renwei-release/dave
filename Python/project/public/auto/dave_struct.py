@@ -18,18 +18,64 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
+#* for None message *#
 class SocNetInfoIp (Structure):
 	_fields_ = [
 		("ver", c_int),
-		("ip_addr", c_char * (16)),
+		("ip_addr", c_char * 16),
 ]
 
+#* for None message *#
 class SocNetInfoAddr (Structure):
 	_fields_ = [
 		("ip", SocNetInfoIp),
-		("url", c_char * (DAVE_URL_LEN)),
+		("url", c_char * DAVE_URL_LEN),
 ]
 
+#* for None message *#
+class HttpKeyValue (Structure):
+	_fields_ = [
+		("key", c_char * DAVE_HTTP_KEY_LEN),
+		("value", c_char * DAVE_HTTP_VALUE_LEN),
+]
+
+#* for None message *#
+class MBUF (Structure):
+	_fields_ = [
+		("next", c_void_p),
+		("payload", c_void_p),
+		("tot_len", c_longlong),
+		("len", c_longlong),
+		("ref", c_longlong),
+		("alloc_len", c_longlong),
+]
+
+#* for None message *#
+class BuildingBlocks (Structure):
+	_fields_ = [
+		("blocks_id", c_ulonglong),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("ip_addr", c_char * 16),
+		("port", c_ushort),
+		("ready_flag", c_char),
+		("blocks_flag", c_char),
+		("client_flag", c_char),
+		("release_quantity", c_ulonglong),
+]
+
+#* for None message *#
+class DateStruct (Structure):
+	_fields_ = [
+		("year", c_ushort),
+		("month", c_char),
+		("day", c_char),
+		("hour", c_char),
+		("minute", c_char),
+		("second", c_char),
+		("week", c_char),
+]
+
+#* for None message *#
 class SocNetInfo (Structure):
 	_fields_ = [
 		("domain", c_int),
@@ -43,58 +89,20 @@ class SocNetInfo (Structure):
 		("enable_keepalive_flag", c_int),
 		("keepalive_second", c_longlong),
 		("netcard_bind_flag", c_int),
-		("netcard_name", c_char * (DAVE_NORMAL_NAME_LEN)),
+		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
 ]
 
-class DateStruct (Structure):
-	_fields_ = [
-		("year", c_ushort),
-		("month", c_char),
-		("day", c_char),
-		("hour", c_char),
-		("minute", c_char),
-		("second", c_char),
-		("week", c_char),
-]
-
-class MBUF (Structure):
-	_fields_ = [
-		("next", c_void_p),
-		("payload", c_void_p),
-		("tot_len", c_longlong),
-		("len", c_longlong),
-		("ref", c_longlong),
-		("alloc_len", c_longlong),
-]
-
-class BuildingBlocks (Structure):
-	_fields_ = [
-		("blocks_id", c_ulonglong),
-		("verno", c_char * (DAVE_VERNO_STR_LEN)),
-		("ip_addr", c_char * (16)),
-		("port", c_ushort),
-		("ready_flag", c_char),
-		("blocks_flag", c_char),
-		("client_flag", c_char),
-		("release_quantity", c_ulonglong),
-]
-
-class HttpKeyValue (Structure):
-	_fields_ = [
-		("key", c_char * (DAVE_HTTP_KEY_LEN)),
-		("value", c_char * (DAVE_HTTP_VALUE_LEN)),
-]
-
+#* for None message *#
 class IPBaseInfo (Structure):
 	_fields_ = [
 		("protocol", c_int),
 		("ver", c_int),
-		("src_ip", c_char * (16)),
+		("src_ip", c_char * 16),
 		("src_port", c_ushort),
-		("dst_ip", c_char * (16)),
+		("dst_ip", c_char * 16),
 		("dst_port", c_ushort),
 		("keepalive_second", c_longlong),
-		("netcard_name", c_char * (DAVE_NORMAL_NAME_LEN)),
+		("netcard_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("fixed_port_flag", c_int),
 ]
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #/*
 # * Copyright (c) 2022 Renwei
 # *
@@ -12,7 +12,6 @@ def _cleanedup_del_dir(path_full, path_name):
     if path_name == '__pycache__':
         os.system(f'rm -rf {path_full}')
         return True
-
     return False
 
 
@@ -20,7 +19,6 @@ def _cleanedup_del_file(file_path, file_name):
     if '-BIN' in file_name:
         os.system(f'rm -rf {file_path}')
         return True
-
     return False
 
 

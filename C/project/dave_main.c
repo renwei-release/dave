@@ -45,7 +45,9 @@ _linux_parse_the_command_line(int argc, char **argv)
 	if(argc < 2)
 		return boot_main_flag;
 
-	if(dave_strcmp(argv[1], "-v") || dave_strcmp(argv[1], "-ver"))
+	if(dave_strcmp(argv[1], "-v")
+		|| dave_strcmp(argv[1], "-ver")
+		|| dave_strcmp(argv[1], "-version"))
 	{
 		boot_main_flag = dave_false;
 		fprintf(stdout, "%s\n", dave_verno());

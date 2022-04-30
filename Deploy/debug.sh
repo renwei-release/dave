@@ -8,7 +8,7 @@
 
 PROJECTNAME=$1
 RUNNINGFILE=/project/dave-running.sh
-DEBUGBIN=./deploy/debug/DEBUG-BIN
+DEBUGBIN=./deploy/debug/project/DEBUG-BIN
 
 ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=release' | awk '{print $1}'`
 if [ -n "$ACTIONLINE" ]; then

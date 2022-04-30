@@ -12,13 +12,15 @@ package auto
  * ================================================================================
  */
 
-const DAVE_THREAD_NAME_LEN = 32
-const DAVE_GLOBALLY_IDENTIFIER_LEN = 33
-const DAVE_VERNO_STR_LEN = 64
-const DAVE_NORMAL_NAME_LEN = 128
-const DAVE_URL_LEN = 128
 const DAVE_BUILDING_BLOCKS_MAX = 255
-const DAVE_PATH_LEN = 256
+const DAVE_GLOBALLY_IDENTIFIER_LEN = 33
+const DAVE_HTTP_HEAD_MAX = 16
 const DAVE_HTTP_KEY_LEN = 128
 const DAVE_HTTP_VALUE_LEN = 512
-const DAVE_HTTP_HEAD_MAX = 16
+const DAVE_NORMAL_NAME_LEN = 128
+const DAVE_PATH_LEN = 256
+const DAVE_THREAD_NAME_LEN = 32
+const DAVE_UIP_METHOD_MAX_LEN = 64
+const DAVE_UIP_METHOD_MAX_NUM = 256
+const DAVE_URL_LEN = 128
+const DAVE_VERNO_STR_LEN = 64

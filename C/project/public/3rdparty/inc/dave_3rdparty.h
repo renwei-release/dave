@@ -17,6 +17,8 @@ extern "C"{
 #include "dave_jemalloc.h"
 #include "dave_json.h"
 #include "dave_nginx.h"
+#include "dave_mongoc.h"
+#include "dave_libiconv.h"
 
 #ifdef __cplusplus
 }

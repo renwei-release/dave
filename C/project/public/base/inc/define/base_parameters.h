@@ -30,5 +30,11 @@
 
 #define DAVE_HTTP_CONTENT_LEN (3*1024*1024)
 
+#define DAVE_USER_NAME_LEN (128)
+
+#define DAVE_PASSWORD_LEN (64)
+
+#define DAVE_UUID_LEN (64)
+
 #endif
 

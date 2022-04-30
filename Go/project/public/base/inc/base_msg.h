@@ -40,7 +40,7 @@ typedef struct {
 
 /* for MSGID_DEBUG_RSP message */
 typedef struct {
-	s8 msg[16384];
+	s8 msg[1048576];
 	void *ptr;
 } DebugRsp;
 

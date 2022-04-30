@@ -37,30 +37,12 @@
 #include "nginx_conf.h"
 #include "party_log.h"
 
-#define PCRE_LIB_DIR (s8 *)"/dave/tools/pcre/lib"
-#define NGINX_BIN_DIR (s8 *)"/dave/tools/nginx/sbin"
-#define NGINX_BIN_NAME (s8 *)"davenginx"
+#define NGINX_BIN_NAME (s8 *)"/usr/sbin/nginx"
+#define NGINX_CONF_NAME (s8 *)"/etc/nginx/nginx.conf"
 
 static TLock _nginx_action_pv;
 static dave_bool _nginx_working = dave_false;
 static TIMERID _nginx_action_timer = INVALID_TIMER_ID;
-
-static void
-_nginx_copy_nginx(void)
-{
-	// 这是为了防止同一台机器上还有其他服务也启动了nginx.
-	s8 cmd[512];
-	int ret;
-
-	dave_snprintf(cmd, sizeof(cmd), "cp -rf %s/%s %s/%s", NGINX_BIN_DIR, "nginx", NGINX_BIN_DIR, NGINX_BIN_NAME);
-
-	ret = system((const char *)cmd);
-
-	if(ret != 0)
-	{
-		PARTYABNOR("system run %s failed:%d", cmd, ret);
-	}
-}
 
 static RetCode
 _nginx_action_start(void)
@@ -70,11 +52,11 @@ _nginx_action_start(void)
 
 	if(dave_os_process_exist(NGINX_BIN_NAME) == dave_false)
 	{
-		dave_sprintf(cmd, "export LD_LIBRARY_PATH=%s; %s/%s", PCRE_LIB_DIR, NGINX_BIN_DIR, NGINX_BIN_NAME);
+		dave_snprintf(cmd, sizeof(cmd), "%s -c %s", NGINX_BIN_NAME, NGINX_CONF_NAME);
 	}
 	else
 	{
-		dave_sprintf(cmd, "%s/%s -s reload", NGINX_BIN_DIR, NGINX_BIN_NAME);
+		dave_snprintf(cmd, sizeof(cmd), "%s -s reload -c %s", NGINX_BIN_NAME, NGINX_CONF_NAME);
 	}
 
 	ret = dave_os_system((char *)cmd, NULL, 0);
@@ -142,7 +124,7 @@ _nginx_action_safe_conf_add(ub work_process, ub nginx_port, HTTPListenType type,
 {
 	dave_bool ret = dave_false;
 
-	SAFECODEv1( _nginx_action_pv, ret = nginx_conf_add(work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path); );
+	SAFECODEv1( _nginx_action_pv, ret = nginx_conf_add(NGINX_CONF_NAME, work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path); );
 
 	return ret;
 }
@@ -152,7 +134,7 @@ _nginx_action_safe_conf_del(ub work_process, ub nginx_port)
 {
 	ub has_server_number = 0;
 
-	SAFECODEv1( _nginx_action_pv, has_server_number = nginx_conf_del(work_process, nginx_port); );
+	SAFECODEv1( _nginx_action_pv, has_server_number = nginx_conf_del(NGINX_CONF_NAME, work_process, nginx_port); );
 
 	return has_server_number;
 }
@@ -183,14 +165,12 @@ nginx_action_init(void)
 	_nginx_working = dave_false;
 
 	_nginx_action_timer = INVALID_TIMER_ID;
-
-	_nginx_copy_nginx();
 }
 
 void
 nginx_action_exit(void)
 {
-	if(nginx_conf_number() == 0)
+	if(nginx_conf_number(NGINX_CONF_NAME) == 0)
 	{
 		_nginx_action_safe_stop();
 	}

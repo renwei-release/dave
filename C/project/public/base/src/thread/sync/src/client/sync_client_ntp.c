@@ -24,18 +24,32 @@
 static void
 _sync_client_ntp(DateStruct *remote_date, DateStruct *local_date)
 {
+	dave_bool update_flag = dave_false;
+
 	SYNCDEBUG("ntp local:%s remote:%s", datestr(local_date), datestr2(remote_date));
 
 	if((remote_date->year != local_date->year)
 		|| (remote_date->month != local_date->month)
 		|| (remote_date->day != local_date->day)
 		|| (remote_date->hour != local_date->hour)
-		|| (remote_date->minute != local_date->minute)
-		|| (remote_date->second != local_date->second))
+		|| (remote_date->minute != local_date->minute))
 	{
-		SYNCLOG("date update %s->%s", datestr(local_date), datestr2(remote_date));
-	
-		t_time_set_date(remote_date);
+		if(remote_date->second >= local_date->second)
+		{
+			if((remote_date->second - local_date->second) >= 2)
+				update_flag = dave_true;
+		}
+		else
+		{
+			if((local_date->second - remote_date->second) >= 2)
+				update_flag = dave_true;
+		}
+
+		if(update_flag == dave_true)
+		{
+			SYNCLOG("date update %s->%s", datestr(local_date), datestr2(remote_date));
+			t_time_set_date(remote_date);
+		}
 	}
 }
 

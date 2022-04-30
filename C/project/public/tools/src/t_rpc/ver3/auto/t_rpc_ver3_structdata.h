@@ -14,6 +14,8 @@
 #ifndef _T_RPC_STRUCTDATA_H__
 #define _T_RPC_STRUCTDATA_H__
 #include "dave_base.h"
+#include "http_param.h"
+#include "base_struct.h"
 
 void * t_rpc_ver3_zip_SocNetInfoAddr(SocNetInfoAddr *zip_data);
 dave_bool t_rpc_ver3_unzip_SocNetInfoAddr(SocNetInfoAddr *unzip_data, void *pStructBson);
@@ -27,17 +29,11 @@ dave_bool t_rpc_ver3_unzip_SocNetInfoIp(SocNetInfoIp *unzip_data, void *pStructB
 void * t_rpc_ver3_zip_SocNetInfoIp_d(SocNetInfoIp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocNetInfoIp_d(SocNetInfoIp *unzip_data, ub unzip_len, void *pArrayBson);
 
-void * t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data);
-dave_bool t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson);
+void * t_rpc_ver3_zip_HttpKeyValue(HttpKeyValue *zip_data);
+dave_bool t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructBson);
 
-void * t_rpc_ver3_zip_SocNetInfo_d(SocNetInfo *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocNetInfo_d(SocNetInfo *unzip_data, ub unzip_len, void *pArrayBson);
-
-void * t_rpc_ver3_zip_DateStruct(DateStruct *zip_data);
-dave_bool t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson);
-
-void * t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson);
+void * t_rpc_ver3_zip_HttpKeyValue_d(HttpKeyValue *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pArrayBson);
 
 void * t_rpc_ver3_zip_MBUF(MBUF *zip_data);
 dave_bool t_rpc_ver3_unzip_MBUF(MBUF *unzip_data, void *pStructBson);
@@ -51,11 +47,17 @@ dave_bool t_rpc_ver3_unzip_BuildingBlocks(BuildingBlocks *unzip_data, void *pStr
 void * t_rpc_ver3_zip_BuildingBlocks_d(BuildingBlocks *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BuildingBlocks_d(BuildingBlocks *unzip_data, ub unzip_len, void *pArrayBson);
 
-void * t_rpc_ver3_zip_HttpKeyValue(HttpKeyValue *zip_data);
-dave_bool t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructBson);
+void * t_rpc_ver3_zip_DateStruct(DateStruct *zip_data);
+dave_bool t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson);
 
-void * t_rpc_ver3_zip_HttpKeyValue_d(HttpKeyValue *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pArrayBson);
+void * t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson);
+
+void * t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data);
+dave_bool t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocNetInfo_d(SocNetInfo *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocNetInfo_d(SocNetInfo *unzip_data, ub unzip_len, void *pArrayBson);
 
 void * t_rpc_ver3_zip_IPBaseInfo(IPBaseInfo *zip_data);
 dave_bool t_rpc_ver3_unzip_IPBaseInfo(IPBaseInfo *unzip_data, void *pStructBson);

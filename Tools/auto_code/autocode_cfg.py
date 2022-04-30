@@ -15,7 +15,8 @@ project_path_list = [
 forgettable_path_list = [
     "../../C/project/public/os",
     "../../C/project/public/3rdparty",
-    "../../C/project/public/tools",
+    "../../C/project/public/tools/inc/t_rpc.h",
+    "../../C/project/public/tools/src",
     "../../C/project/public/verno",
 ]
 
@@ -52,4 +53,5 @@ rpc_ver3_pymsgstruct_file_name = "../../Python/project/public/auto/dave_msg_stru
 rpc_ver3_pyenum_file_name = "../../Python/project/public/auto/dave_enum.py"
 
 
-c_enumstr_file_name = "../../C/project/public/tools/src/t_a2b/t_a2b_enumstr.c"
+c_enumstr_src_file_name = "../../C/project/public/tools/src/t_auto/t_auto_enumstr.c"
+c_enumstr_inc_file_name = "../../C/project/public/tools/src/t_auto/t_auto_enumstr.h"

@@ -14,6 +14,65 @@
 
 from ctypes import *
 
+BuildingBlocksOpt_none = 0
+BuildingBlocksOpt_inq = BuildingBlocksOpt_none + 1
+BuildingBlocksOpt_mount = BuildingBlocksOpt_inq + 1
+BuildingBlocksOpt_decoupling = BuildingBlocksOpt_mount + 1
+BuildingBlocksOpt_State_exchange = BuildingBlocksOpt_decoupling + 1
+BuildingBlocksOpt_valve = BuildingBlocksOpt_State_exchange + 1
+BuildingBlocksOpt_max = BuildingBlocksOpt_valve + 1
+
+KeepAlive_enable = 0x01234567
+KeepAlive_disable = 0x09abcdef
+
+NetCardBind_enable = 0x01234567
+NetCardBind_disable = 0x09abcdef
+
+FixedPort = 0x01234567
+NotFixedPort = 0x09abcdef
+
+ListenHttp = 0
+ListenHttps = ListenHttp + 1
+ListenWeb = ListenHttps + 1
+ListenMax = ListenWeb + 1
+
+LocationMatch_Accurate = 0
+LocationMatch_Prefix = LocationMatch_Accurate + 1
+LocationMatch_CaseRegular = LocationMatch_Prefix + 1
+LocationMatch_Regular = LocationMatch_CaseRegular + 1
+LocationMatch_CaseRegularExcl = LocationMatch_Regular + 1
+LocationMatch_RegularExcl = LocationMatch_CaseRegularExcl + 1
+LocationMatch_Wildcard = LocationMatch_RegularExcl + 1
+LocationMatch_Max = LocationMatch_Wildcard + 1
+
+HttpContentType_json = 0
+HttpContentType_text = HttpContentType_json + 1
+HttpContentType_xml = HttpContentType_text + 1
+HttpContentType_xwww = HttpContentType_xml + 1
+HttpContentType_max = HttpContentType_xwww + 1
+
+HttpMethod_post = 0
+HttpMethod_get = HttpMethod_post + 1
+HttpMethod_put = HttpMethod_get + 1
+HttpMethod_options = HttpMethod_put + 1
+HttpMethod_delete = HttpMethod_options + 1
+HttpMethod_max = HttpMethod_delete + 1
+
+IPProtocol_ICMP = 1
+IPProtocol_TCP = 6
+IPProtocol_UDP = 17
+IPProtocol_GRE = 47
+IPProtocol_MAX = IPProtocol_GRE + 1
+IPProtocol_max = 0x1fffffff
+
+IPVER_IPV4 = 4
+IPVER_IPV6 = 6
+IPVER_MAX = 0x1fffffff
+
+NetAddrIPType = 0
+NetAddrIPBroadcastType = NetAddrIPType + 1
+NetAddrURLType = 0x12345678
+
 RetCode_begin_value = 1
 RetCode_OK = 0
 RetCode_Memory_full = -1
@@ -30,7 +89,7 @@ RetCode_Parameter_conflicts = -11
 RetCode_Invalid_device = -12
 RetCode_Invalid_Event = -13
 RetCode_Heartbeat_timeout = -14
-RetCode_Invalid_password = -15
+RetCode_invalid_content = -15
 RetCode_save_failed = -16
 RetCode_Invalid_data_too_short = -17
 RetCode_Invalid_data_too_long = -18
@@ -67,7 +126,7 @@ RetCode_Invalid_db_store = -48
 RetCode_version_mismatch = -49
 RetCode_invalid_version_file = -50
 RetCode_version_identical = -51
-RetCode_db_sql_failed = -52
+RetCode_channel_not_exist = -52
 RetCode_invalid_option = -53
 RetCode_Invalid_domain = -54
 RetCode_Invalid_auth_key = -55
@@ -135,25 +194,26 @@ RetCode_invalid_year = -116
 RetCode_invalid_date = -117
 RetCode_max = 0x1fffffffffffffff
 
-TYPE_SOCK_STREAM = 0
-TYPE_SOCK_DGRAM = TYPE_SOCK_STREAM + 1
-TYPE_SOCK_RAW = TYPE_SOCK_DGRAM + 1
-TYPE_SOCK_SCTP = TYPE_SOCK_RAW + 1
-TYPE_SOCK_max = TYPE_SOCK_SCTP + 1
-TYPE_SOCK_MAX = 0x1fffffff
+DM_SOC_PF_INET = 0
+DM_SOC_PF_INET6 = DM_SOC_PF_INET + 1
+DM_SOC_PF_UART = DM_SOC_PF_INET6 + 1
+DM_SOC_PF_LOCAL_INET = DM_SOC_PF_UART + 1
+DM_SOC_PF_LOCAL_INET6 = DM_SOC_PF_LOCAL_INET + 1
+DM_SOC_PF_RAW = DM_SOC_PF_LOCAL_INET6 + 1
+DM_SOC_PF_RAW_INET = DM_SOC_PF_RAW + 1
+SOCDOMAIN_MAX = 0x1fffffff
 
-NetAddrIPType = 0
-NetAddrIPBroadcastType = NetAddrIPType + 1
-NetAddrURLType = 0x12345678
-
-FixedPort = 0x01234567
-NotFixedPort = 0x09abcdef
-
-KeepAlive_enable = 0x01234567
-KeepAlive_disable = 0x09abcdef
-
-NetCardBind_enable = 0x01234567
-NetCardBind_disable = 0x09abcdef
+SOC_EVENT_START = 0
+SOC_EVENT_WAIT_CREAT = SOC_EVENT_START + 1
+SOC_EVENT_CONNECT = SOC_EVENT_WAIT_CREAT + 1
+SOC_EVENT_CONNECT_FAIL = SOC_EVENT_CONNECT + 1
+SOC_EVENT_WAIT_CONNECT = SOC_EVENT_CONNECT_FAIL + 1
+SOC_EVENT_ACCEPT = SOC_EVENT_WAIT_CONNECT + 1
+SOC_EVENT_REV = SOC_EVENT_ACCEPT + 1
+SOC_EVENT_SND = SOC_EVENT_REV + 1
+SOC_EVENT_CLOSE = SOC_EVENT_SND + 1
+SOC_EVENT_SILENCE = SOC_EVENT_CLOSE + 1
+SOC_EVENT_MAX = SOC_EVENT_SILENCE + 1
 
 SOCKETINFO_BIND = 0
 SOCKETINFO_BIND_OK = SOCKETINFO_BIND + 1
@@ -184,70 +244,15 @@ SOCKETINFO_SND_URG = SOCKETINFO_WRITE_THEN_CLOSE + 1
 SOCKETINFO_RAW_EVENT_RECV_LENGTH = SOCKETINFO_SND_URG + 1
 SOCKETINFO_MAX = 0x1fffffff
 
-SOC_EVENT_START = 0
-SOC_EVENT_WAIT_CREAT = SOC_EVENT_START + 1
-SOC_EVENT_CONNECT = SOC_EVENT_WAIT_CREAT + 1
-SOC_EVENT_CONNECT_FAIL = SOC_EVENT_CONNECT + 1
-SOC_EVENT_WAIT_CONNECT = SOC_EVENT_CONNECT_FAIL + 1
-SOC_EVENT_ACCEPT = SOC_EVENT_WAIT_CONNECT + 1
-SOC_EVENT_REV = SOC_EVENT_ACCEPT + 1
-SOC_EVENT_SND = SOC_EVENT_REV + 1
-SOC_EVENT_CLOSE = SOC_EVENT_SND + 1
-SOC_EVENT_SILENCE = SOC_EVENT_CLOSE + 1
-SOC_EVENT_MAX = SOC_EVENT_SILENCE + 1
+TYPE_SOCK_STREAM = 0
+TYPE_SOCK_DGRAM = TYPE_SOCK_STREAM + 1
+TYPE_SOCK_RAW = TYPE_SOCK_DGRAM + 1
+TYPE_SOCK_SCTP = TYPE_SOCK_RAW + 1
+TYPE_SOCK_max = TYPE_SOCK_SCTP + 1
+TYPE_SOCK_MAX = 0x1fffffff
 
-IPVER_IPV4 = 4
-IPVER_IPV6 = 6
-IPVER_MAX = 0x1fffffff
-
-DM_SOC_PF_INET = 0
-DM_SOC_PF_INET6 = DM_SOC_PF_INET + 1
-DM_SOC_PF_UART = DM_SOC_PF_INET6 + 1
-DM_SOC_PF_LOCAL_INET = DM_SOC_PF_UART + 1
-DM_SOC_PF_LOCAL_INET6 = DM_SOC_PF_LOCAL_INET + 1
-DM_SOC_PF_RAW = DM_SOC_PF_LOCAL_INET6 + 1
-DM_SOC_PF_RAW_INET = DM_SOC_PF_RAW + 1
-SOCDOMAIN_MAX = 0x1fffffff
-
-IPProtocol_ICMP = 1
-IPProtocol_TCP = 6
-IPProtocol_UDP = 17
-IPProtocol_GRE = 47
-IPProtocol_MAX = IPProtocol_GRE + 1
-IPProtocol_max = 0x1fffffff
-
-BuildingBlocksOpt_none = 0
-BuildingBlocksOpt_inq = BuildingBlocksOpt_none + 1
-BuildingBlocksOpt_mount = BuildingBlocksOpt_inq + 1
-BuildingBlocksOpt_decoupling = BuildingBlocksOpt_mount + 1
-BuildingBlocksOpt_State_exchange = BuildingBlocksOpt_decoupling + 1
-BuildingBlocksOpt_valve = BuildingBlocksOpt_State_exchange + 1
-BuildingBlocksOpt_max = BuildingBlocksOpt_valve + 1
-
-ListenHttp = 0
-ListenHttps = ListenHttp + 1
-ListenWeb = ListenHttps + 1
-ListenMax = ListenWeb + 1
-
-LocationMatch_Accurate = 0
-LocationMatch_Prefix = LocationMatch_Accurate + 1
-LocationMatch_CaseRegular = LocationMatch_Prefix + 1
-LocationMatch_Regular = LocationMatch_CaseRegular + 1
-LocationMatch_CaseRegularExcl = LocationMatch_Regular + 1
-LocationMatch_RegularExcl = LocationMatch_CaseRegularExcl + 1
-LocationMatch_Wildcard = LocationMatch_RegularExcl + 1
-LocationMatch_Max = LocationMatch_Wildcard + 1
-
-HttpMethod_post = 0
-HttpMethod_get = HttpMethod_post + 1
-HttpMethod_put = HttpMethod_get + 1
-HttpMethod_options = HttpMethod_put + 1
-HttpMethod_delete = HttpMethod_options + 1
-HttpMethod_max = HttpMethod_delete + 1
-
-HttpContentType_json = 0
-HttpContentType_text = HttpContentType_json + 1
-HttpContentType_xml = HttpContentType_text + 1
-HttpContentType_xwww = HttpContentType_xml + 1
-HttpContentType_max = HttpContentType_xwww + 1
+UIPType_uip = 0
+UIPType_json = UIPType_uip + 1
+UIPType_h5_form = UIPType_json + 1
+UIPType_weichat_form = UIPType_h5_form + 1
 

@@ -13,6 +13,87 @@ package auto
  */
 
 const (
+	BuildingBlocksOpt_none int = iota
+	BuildingBlocksOpt_inq
+	BuildingBlocksOpt_mount
+	BuildingBlocksOpt_decoupling
+	BuildingBlocksOpt_State_exchange
+	BuildingBlocksOpt_valve
+	BuildingBlocksOpt_max
+)
+
+const (
+	KeepAlive_enable = 0x01234567 + iota
+	KeepAlive_disable = 0x09abcdef
+)
+
+const (
+	NetCardBind_enable = 0x01234567 + iota
+	NetCardBind_disable = 0x09abcdef
+)
+
+const (
+	FixedPort = 0x01234567 + iota
+	NotFixedPort = 0x09abcdef
+)
+
+const (
+	ListenHttp int = iota
+	ListenHttps
+	ListenWeb
+	ListenMax
+)
+
+const (
+	LocationMatch_Accurate = 0 + iota
+	LocationMatch_Prefix
+	LocationMatch_CaseRegular
+	LocationMatch_Regular
+	LocationMatch_CaseRegularExcl
+	LocationMatch_RegularExcl
+	LocationMatch_Wildcard
+	LocationMatch_Max
+)
+
+const (
+	HttpContentType_json int = iota
+	HttpContentType_text
+	HttpContentType_xml
+	HttpContentType_xwww
+	HttpContentType_max
+)
+
+const (
+	HttpMethod_post int = iota
+	HttpMethod_get
+	HttpMethod_put
+	HttpMethod_options
+	HttpMethod_delete
+	HttpMethod_max
+)
+
+const (
+	IPProtocol_ICMP = 1 + iota
+	IPProtocol_TCP = 6
+	IPProtocol_UDP = 17
+	IPProtocol_GRE = 47
+	IPProtocol_MAX
+	IPProtocol_max = 0x1fffffff
+)
+
+const (
+	IPVER_IPV4 = 4 + iota
+	IPVER_IPV6 = 6
+	IPVER_MAX = 0x1fffffff
+)
+
+const (
+	NetAddrIPType = 0 + iota
+	NetAddrIPBroadcastType
+	NetAddrURLType = 0x12345678
+)
+
+const (
 	RetCode_begin_value = 1 + iota
 	RetCode_OK = 0
 	RetCode_Memory_full = -1
@@ -29,7 +110,7 @@ const (
 	RetCode_Invalid_device = -12
 	RetCode_Invalid_Event = -13
 	RetCode_Heartbeat_timeout = -14
-	RetCode_Invalid_password = -15
+	RetCode_invalid_content = -15
 	RetCode_save_failed = -16
 	RetCode_Invalid_data_too_short = -17
 	RetCode_Invalid_data_too_long = -18
@@ -66,7 +147,7 @@ const (
 	RetCode_version_mismatch = -49
 	RetCode_invalid_version_file = -50
 	RetCode_version_identical = -51
-	RetCode_db_sql_failed = -52
+	RetCode_channel_not_exist = -52
 	RetCode_invalid_option = -53
 	RetCode_Invalid_domain = -54
 	RetCode_Invalid_auth_key = -55
@@ -136,33 +217,28 @@ const (
 )
 
 const (
-	TYPE_SOCK_STREAM = 0 + iota
-	TYPE_SOCK_DGRAM
-	TYPE_SOCK_RAW
-	TYPE_SOCK_SCTP
-	TYPE_SOCK_max
-	TYPE_SOCK_MAX = 0x1fffffff
+	DM_SOC_PF_INET = 0 + iota
+	DM_SOC_PF_INET6
+	DM_SOC_PF_UART
+	DM_SOC_PF_LOCAL_INET
+	DM_SOC_PF_LOCAL_INET6
+	DM_SOC_PF_RAW
+	DM_SOC_PF_RAW_INET
+	SOCDOMAIN_MAX = 0x1fffffff
 )
 
 const (
-	NetAddrIPType = 0 + iota
-	NetAddrIPBroadcastType
-	NetAddrURLType = 0x12345678
-)
-
-const (
-	FixedPort = 0x01234567 + iota
-	NotFixedPort = 0x09abcdef
-)
-
-const (
-	KeepAlive_enable = 0x01234567 + iota
-	KeepAlive_disable = 0x09abcdef
-)
-
-const (
-	NetCardBind_enable = 0x01234567 + iota
-	NetCardBind_disable = 0x09abcdef
+	SOC_EVENT_START = 0 + iota
+	SOC_EVENT_WAIT_CREAT
+	SOC_EVENT_CONNECT
+	SOC_EVENT_CONNECT_FAIL
+	SOC_EVENT_WAIT_CONNECT
+	SOC_EVENT_ACCEPT
+	SOC_EVENT_REV
+	SOC_EVENT_SND
+	SOC_EVENT_CLOSE
+	SOC_EVENT_SILENCE
+	SOC_EVENT_MAX
 )
 
 const (
@@ -197,87 +273,18 @@ const (
 )
 
 const (
-	SOC_EVENT_START = 0 + iota
-	SOC_EVENT_WAIT_CREAT
-	SOC_EVENT_CONNECT
-	SOC_EVENT_CONNECT_FAIL
-	SOC_EVENT_WAIT_CONNECT
-	SOC_EVENT_ACCEPT
-	SOC_EVENT_REV
-	SOC_EVENT_SND
-	SOC_EVENT_CLOSE
-	SOC_EVENT_SILENCE
-	SOC_EVENT_MAX
+	TYPE_SOCK_STREAM = 0 + iota
+	TYPE_SOCK_DGRAM
+	TYPE_SOCK_RAW
+	TYPE_SOCK_SCTP
+	TYPE_SOCK_max
+	TYPE_SOCK_MAX = 0x1fffffff
 )
 
 const (
-	IPVER_IPV4 = 4 + iota
-	IPVER_IPV6 = 6
-	IPVER_MAX = 0x1fffffff
-)
-
-const (
-	DM_SOC_PF_INET = 0 + iota
-	DM_SOC_PF_INET6
-	DM_SOC_PF_UART
-	DM_SOC_PF_LOCAL_INET
-	DM_SOC_PF_LOCAL_INET6
-	DM_SOC_PF_RAW
-	DM_SOC_PF_RAW_INET
-	SOCDOMAIN_MAX = 0x1fffffff
-)
-
-const (
-	IPProtocol_ICMP = 1 + iota
-	IPProtocol_TCP = 6
-	IPProtocol_UDP = 17
-	IPProtocol_GRE = 47
-	IPProtocol_MAX
-	IPProtocol_max = 0x1fffffff
-)
-
-const (
-	BuildingBlocksOpt_none int = iota
-	BuildingBlocksOpt_inq
-	BuildingBlocksOpt_mount
-	BuildingBlocksOpt_decoupling
-	BuildingBlocksOpt_State_exchange
-	BuildingBlocksOpt_valve
-	BuildingBlocksOpt_max
-)
-
-const (
-	ListenHttp int = iota
-	ListenHttps
-	ListenWeb
-	ListenMax
-)
-
-const (
-	LocationMatch_Accurate = 0 + iota
-	LocationMatch_Prefix
-	LocationMatch_CaseRegular
-	LocationMatch_Regular
-	LocationMatch_CaseRegularExcl
-	LocationMatch_RegularExcl
-	LocationMatch_Wildcard
-	LocationMatch_Max
-)
-
-const (
-	HttpMethod_post int = iota
-	HttpMethod_get
-	HttpMethod_put
-	HttpMethod_options
-	HttpMethod_delete
-	HttpMethod_max
-)
-
-const (
-	HttpContentType_json int = iota
-	HttpContentType_text
-	HttpContentType_xml
-	HttpContentType_xwww
-	HttpContentType_max
+	UIPType_uip int = iota
+	UIPType_json
+	UIPType_h5_form
+	UIPType_weichat_form
 )
 

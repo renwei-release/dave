@@ -24,11 +24,14 @@ cd ../project
 GOOS=linux GOARCH=amd64 go build -tags __DAVE_PRODUCT_${PROJECT^^}__ -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
-   if [ ! -d ../../Deploy/deploy/${PROJECT,,} ]; then
-      mkdir -p ../../Deploy/deploy/${PROJECT,,}
+   PROJECTDIR=../../Deploy/deploy/${PROJECT,,}/project
+   PRIJECTFILE=${PROJECTDIR}/${PROJECT^^}-BIN
+
+   if [ ! -d ${PROJECTDIR} ]; then
+      mkdir -p ${PROJECTDIR}
    fi
-   echo build.sh copy $projectnameforbuild to ../../Deploy/deploy/${PROJECT,,}/${PROJECT^^}-BIN
-   cp $projectnameforbuild ../../Deploy/deploy/${PROJECT,,}/${PROJECT^^}-BIN
+   echo build.sh copy $projectnameforbuild to ${PRIJECTFILE}
+   cp $projectnameforbuild ${PRIJECTFILE}
    echo build.sh copy $projectnameforbuild to $homepath/${PROJECT,,}/${PROJECT^^}-BIN
    mv $projectnameforbuild $homepath/${PROJECT,,}/${PROJECT^^}-BIN
 fi

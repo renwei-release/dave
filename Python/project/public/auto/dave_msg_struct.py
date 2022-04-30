@@ -18,76 +18,175 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
-class TESTMSG (Structure):
+#* for MSGID_CFG_UPDATE message *#
+class CFGUpdate (Structure):
 	_fields_ = [
-		("test_msg", c_char * (4096)),
+		("cfg_name", c_char * DAVE_NORMAL_NAME_LEN),
+		("cfg_length", c_ulonglong),
+		("cfg_value", c_char * 8196),
 ]
 
-class TIMERMSG (Structure):
+#* for MSGID_CLIENT_BUSY message *#
+class ClientBusy (Structure):
 	_fields_ = [
-		("timer_id", c_longlong),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("ptr", c_void_p),
 ]
 
-class WAKEUPMSG (Structure):
+#* for MSGID_CLIENT_IDLE message *#
+class ClientIdle (Structure):
 	_fields_ = [
-		("null_msg", c_void_p),
-		("some_msg", c_uint),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("ptr", c_void_p),
 ]
 
-class RUNFUNCTIONMSG (Structure):
-	_fields_ = [
-		("thread_fun", c_void_p),
-		("last_fun", c_void_p),
-		("thread_dst", c_ulonglong),
-		("initialization_flag", c_char),
-]
-
+#* for MSGID_DEBUG_REQ message *#
 class DebugReq (Structure):
 	_fields_ = [
-		("msg", c_char * (4096)),
+		("msg", c_char * 4096),
 		("ptr", c_void_p),
 ]
 
+#* for MSGID_DEBUG_RSP message *#
 class DebugRsp (Structure):
 	_fields_ = [
-		("msg", c_char * (16384)),
+		("msg", c_char * 1048576),
 		("ptr", c_void_p),
 ]
 
-class RESTARTREQMSG (Structure):
+#* for HTTPMSG_CLOSE_REQ message *#
+class HTTPCloseReq (Structure):
 	_fields_ = [
-		("reason", c_char * (128)),
-		("times", c_ulonglong),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
+		("ptr", c_void_p),
 ]
 
-class RESTARTRSPMSG (Structure):
+#* for HTTPMSG_CLOSE_RSP message *#
+class HTTPCloseRsp (Structure):
 	_fields_ = [
-		("wait_flag", c_char),
+		("ret", c_int),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
+		("ptr", c_void_p),
 ]
 
+#* for HTTPMSG_LISTEN_REQ message *#
+class HTTPListenReq (Structure):
+	_fields_ = [
+		("listen_port", c_ulonglong),
+		("rule", c_int),
+		("type", c_int),
+		("path", c_char * DAVE_PATH_LEN),
+		("ptr", c_void_p),
+]
+
+#* for HTTPMSG_LISTEN_RSP message *#
+class HTTPListenRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("listen_port", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
+		("ptr", c_void_p),
+]
+
+#* for HTTPMSG_POST_REQ message *#
+class HTTPPostReq (Structure):
+	_fields_ = [
+		("url", c_char * DAVE_URL_LEN),
+		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
+		("content_type", c_int),
+		("content", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+#* for HTTPMSG_POST_RSP message *#
+class HTTPPostRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
+		("content", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+#* for HTTPMSG_RECV_REQ message *#
+class HTTPRecvReq (Structure):
+	_fields_ = [
+		("listen_port", c_ulonglong),
+		("remote_address", c_char * DAVE_URL_LEN),
+		("remote_port", c_ulonglong),
+		("method", c_int),
+		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
+		("content_type", c_int),
+		("content", POINTER(MBUF)),
+		("local_creat_time", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+#* for HTTPMSG_RECV_RSP message *#
+class HTTPRecvRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("content_type", c_int),
+		("content", POINTER(MBUF)),
+		("local_creat_time", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+#* for MSGID_INTERNAL_EVENTS message *#
+class InternalEvents (Structure):
+	_fields_ = [
+		("event_id", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+#* for MSGID_MEMORY_WARNING message *#
+class MemoryWarning (Structure):
+	_fields_ = [
+		("used_percentage", c_ulonglong),
+]
+
+#* for MSGID_BLOCKS_REQ message *#
+class MsgBlocksReq (Structure):
+	_fields_ = [
+		("opt", c_int),
+		("blocks_id_1", c_ulonglong),
+		("blocks_id_2", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+#* for MSGID_BLOCKS_RSP message *#
+class MsgBlocksRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("opt", c_int),
+		("blocks", BuildingBlocks * DAVE_BUILDING_BLOCKS_MAX),
+		("ptr", c_void_p),
+]
+
+#* for MSGID_ECHO message *#
+class MsgIdEcho (Structure):
+	_fields_ = [
+		("echo_counter", c_ulonglong),
+		("echo_time", c_ulonglong),
+		("echo_multiple", c_char),
+		("concurrency_flag", c_char),
+		("msg", c_char * 256),
+]
+
+#* for MSGID_OS_NOTIFY message *#
+class MsgOSNotify (Structure):
+	_fields_ = [
+		("notify_info", c_ulonglong),
+]
+
+#* for MSGID_POWER_OFF message *#
 class POWEROFFMSG (Structure):
 	_fields_ = [
-		("reason", c_char * (128)),
+		("reason", c_char * 128),
 ]
 
-class ThreadRemoteReadyMsg (Structure):
-	_fields_ = [
-		("remote_thread_id", c_ulonglong),
-		("remote_thread_name", c_char * (128)),
-]
-
-class ThreadRemoteRemoveMsg (Structure):
-	_fields_ = [
-		("remote_thread_id", c_ulonglong),
-		("remote_thread_name", c_char * (128)),
-]
-
-class TraceSwitchMsg (Structure):
-	_fields_ = [
-		("thread_id", c_ulonglong),
-		("trace_on", c_char),
-]
-
+#* for MSGID_PROCESS_MSG_TIMER_OUT message *#
 class ProcessMsgTimerOutMsg (Structure):
 	_fields_ = [
 		("msg_id", c_ulonglong),
@@ -95,97 +194,20 @@ class ProcessMsgTimerOutMsg (Structure):
 		("msg_body", c_void_p),
 ]
 
-class TemporarilyDefineMessageMsg (Structure):
+#* for MSGID_RESTART_REQ message *#
+class RESTARTREQMSG (Structure):
 	_fields_ = [
-		("parameter", c_void_p),
+		("reason", c_char * 128),
+		("times", c_ulonglong),
 ]
 
-class SystemMount (Structure):
+#* for MSGID_RESTART_RSP message *#
+class RESTARTRSPMSG (Structure):
 	_fields_ = [
-		("socket", c_int),
-		("verno", c_char * (DAVE_VERNO_STR_LEN)),
-		("NetInfo", SocNetInfo),
+		("wait_flag", c_char),
 ]
 
-class SystemDecoupling (Structure):
-	_fields_ = [
-		("socket", c_int),
-		("verno", c_char * (DAVE_VERNO_STR_LEN)),
-		("NetInfo", SocNetInfo),
-]
-
-class MemoryWarning (Structure):
-	_fields_ = [
-		("used_percentage", c_ulonglong),
-]
-
-class MsgIdEcho (Structure):
-	_fields_ = [
-		("echo_counter", c_ulonglong),
-		("echo_time", c_ulonglong),
-		("echo_multiple", c_char),
-		("concurrency_flag", c_char),
-		("msg", c_char * (256)),
-]
-
-class InternalEvents (Structure):
-	_fields_ = [
-		("event_id", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class ThreadBusy (Structure):
-	_fields_ = [
-		("thread_id", c_ulonglong),
-		("thread_name", c_char * (DAVE_THREAD_NAME_LEN)),
-		("msg_id", c_ulonglong),
-		("msg_number", c_ulonglong),
-]
-
-class ThreadIdle (Structure):
-	_fields_ = [
-		("thread_id", c_ulonglong),
-		("thread_name", c_char * (DAVE_THREAD_NAME_LEN)),
-]
-
-class ClientBusy (Structure):
-	_fields_ = [
-		("verno", c_char * (DAVE_VERNO_STR_LEN)),
-		("ptr", c_void_p),
-]
-
-class ClientIdle (Structure):
-	_fields_ = [
-		("verno", c_char * (DAVE_VERNO_STR_LEN)),
-		("ptr", c_void_p),
-]
-
-class ThreadRemoteIDReadyMsg (Structure):
-	_fields_ = [
-		("remote_thread_id", c_ulonglong),
-		("remote_thread_name", c_char * (128)),
-		("globally_identifier", c_char * (DAVE_GLOBALLY_IDENTIFIER_LEN)),
-]
-
-class ThreadRemoteIDRemoveMsg (Structure):
-	_fields_ = [
-		("remote_thread_id", c_ulonglong),
-		("remote_thread_name", c_char * (128)),
-		("globally_identifier", c_char * (DAVE_GLOBALLY_IDENTIFIER_LEN)),
-]
-
-class ThreadLocalReadyMsg (Structure):
-	_fields_ = [
-		("local_thread_id", c_ulonglong),
-		("local_thread_name", c_char * (128)),
-]
-
-class ThreadLocalRemoveMsg (Structure):
-	_fields_ = [
-		("local_thread_id", c_ulonglong),
-		("local_thread_name", c_char * (128)),
-]
-
+#* for MSGID_RPC_DEBUG_MSG message *#
 class RPCDebugMsg (Structure):
 	_fields_ = [
 		("ret_debug", c_int),
@@ -199,94 +221,23 @@ class RPCDebugMsg (Structure):
 		("mbuf_debug", POINTER(MBUF)),
 ]
 
-class CFGUpdate (Structure):
+#* for MSGID_RUN_FUNCTION message *#
+class RUNFUNCTIONMSG (Structure):
 	_fields_ = [
-		("cfg_name", c_char * (DAVE_NORMAL_NAME_LEN)),
-		("cfg_length", c_ulonglong),
-		("cfg_value", c_char * (8196)),
+		("thread_fun", c_void_p),
+		("last_fun", c_void_p),
+		("thread_dst", c_ulonglong),
+		("initialization_flag", c_char),
 ]
 
-class MsgBlocksReq (Structure):
-	_fields_ = [
-		("opt", c_int),
-		("blocks_id_1", c_ulonglong),
-		("blocks_id_2", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class MsgBlocksRsp (Structure):
-	_fields_ = [
-		("ret", c_int),
-		("opt", c_int),
-		("blocks", BuildingBlocks * (DAVE_BUILDING_BLOCKS_MAX)),
-		("ptr", c_void_p),
-]
-
-class MsgOSNotify (Structure):
-	_fields_ = [
-		("notify_info", c_ulonglong),
-]
-
-class HTTPListenReq (Structure):
-	_fields_ = [
-		("listen_port", c_ulonglong),
-		("rule", c_int),
-		("type", c_int),
-		("path", c_char * (DAVE_PATH_LEN)),
-		("ptr", c_void_p),
-]
-
-class HTTPListenRsp (Structure):
-	_fields_ = [
-		("ret", c_int),
-		("listen_port", c_ulonglong),
-		("path", c_char * (DAVE_PATH_LEN)),
-		("ptr", c_void_p),
-]
-
-class HTTPCloseReq (Structure):
-	_fields_ = [
-		("listen_port", c_ulonglong),
-		("path", c_char * (DAVE_PATH_LEN)),
-		("ptr", c_void_p),
-]
-
-class HTTPCloseRsp (Structure):
-	_fields_ = [
-		("ret", c_int),
-		("listen_port", c_ulonglong),
-		("path", c_char * (DAVE_PATH_LEN)),
-		("ptr", c_void_p),
-]
-
-class HTTPRecvReq (Structure):
-	_fields_ = [
-		("listen_port", c_ulonglong),
-		("remote_address", c_char * (DAVE_URL_LEN)),
-		("remote_port", c_ulonglong),
-		("method", c_int),
-		("head", HttpKeyValue * (DAVE_HTTP_HEAD_MAX)),
-		("content_type", c_int),
-		("content", POINTER(MBUF)),
-		("local_creat_time", c_ulonglong),
-		("ptr", c_void_p),
-]
-
-class HTTPRecvRsp (Structure):
-	_fields_ = [
-		("ret", c_int),
-		("content_type", c_int),
-		("content", POINTER(MBUF)),
-		("local_creat_time", c_ulonglong),
-		("ptr", c_void_p),
-]
-
+#* for SOCKET_BIND_REQ message *#
 class SocketBindReq (Structure):
 	_fields_ = [
 		("NetInfo", SocNetInfo),
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_BIND_RSP message *#
 class SocketBindRsp (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -296,12 +247,14 @@ class SocketBindRsp (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_CONNECT_REQ message *#
 class SocketConnectReq (Structure):
 	_fields_ = [
 		("NetInfo", SocNetInfo),
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_CONNECT_RSP message *#
 class SocketConnectRsp (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -311,12 +264,14 @@ class SocketConnectRsp (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_DISCONNECT_REQ message *#
 class SocketDisconnectReq (Structure):
 	_fields_ = [
 		("socket", c_int),
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_DISCONNECT_RSP message *#
 class SocketDisconnectRsp (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -324,6 +279,16 @@ class SocketDisconnectRsp (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_NOTIFY message *#
+class SocketNotify (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("notify", c_int),
+		("data", c_ulonglong),
+		("ptr", c_void_p),
+]
+
+#* for SOCKET_PLUGIN message *#
 class SocketPlugIn (Structure):
 	_fields_ = [
 		("father_socket", c_int),
@@ -333,6 +298,7 @@ class SocketPlugIn (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_PLUGOUT message *#
 class SocketPlugOut (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -342,6 +308,18 @@ class SocketPlugOut (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_RAW_EVENT message *#
+class SocketRawEvent (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("os_socket", c_int),
+		("event", c_int),
+		("NetInfo", SocNetInfo),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+#* for SOCKET_READ message *#
 class SocketRead (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -351,6 +329,7 @@ class SocketRead (Structure):
 		("ptr", c_void_p),
 ]
 
+#* for SOCKET_WRITE message *#
 class SocketWrite (Structure):
 	_fields_ = [
 		("socket", c_int),
@@ -360,21 +339,184 @@ class SocketWrite (Structure):
 		("close_flag", c_int),
 ]
 
-class SocketNotify (Structure):
+#* for MSGID_SYSTEM_DECOUPLING message *#
+class SystemDecoupling (Structure):
 	_fields_ = [
 		("socket", c_int),
-		("notify", c_int),
-		("data", c_ulonglong),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("NetInfo", SocNetInfo),
+]
+
+#* for MSGID_SYSTEM_MOUNT message *#
+class SystemMount (Structure):
+	_fields_ = [
+		("socket", c_int),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("NetInfo", SocNetInfo),
+]
+
+#* for MSGID_TEST message *#
+class TESTMSG (Structure):
+	_fields_ = [
+		("test_msg", c_char * 4096),
+]
+
+#* for MSGID_TIMER message *#
+class TIMERMSG (Structure):
+	_fields_ = [
+		("timer_id", c_longlong),
+]
+
+#* for MSGID_TEMPORARILY_DEFINE_MESSAGE message *#
+class TemporarilyDefineMessageMsg (Structure):
+	_fields_ = [
+		("parameter", c_void_p),
+]
+
+#* for MSGID_THREAD_BUSY message *#
+class ThreadBusy (Structure):
+	_fields_ = [
+		("thread_id", c_ulonglong),
+		("thread_name", c_char * DAVE_THREAD_NAME_LEN),
+		("msg_id", c_ulonglong),
+		("msg_number", c_ulonglong),
+]
+
+#* for MSGID_THREAD_IDLE message *#
+class ThreadIdle (Structure):
+	_fields_ = [
+		("thread_id", c_ulonglong),
+		("thread_name", c_char * DAVE_THREAD_NAME_LEN),
+]
+
+#* for MSGID_LOCAL_THREAD_READY message *#
+class ThreadLocalReadyMsg (Structure):
+	_fields_ = [
+		("local_thread_id", c_ulonglong),
+		("local_thread_name", c_char * 128),
+]
+
+#* for MSGID_LOCAL_THREAD_REMOVE message *#
+class ThreadLocalRemoveMsg (Structure):
+	_fields_ = [
+		("local_thread_id", c_ulonglong),
+		("local_thread_name", c_char * 128),
+]
+
+#* for MSGID_REMOTE_THREAD_ID_READY message *#
+class ThreadRemoteIDReadyMsg (Structure):
+	_fields_ = [
+		("remote_thread_id", c_ulonglong),
+		("remote_thread_name", c_char * 128),
+		("globally_identifier", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+]
+
+#* for MSGID_REMOTE_THREAD_ID_REMOVE message *#
+class ThreadRemoteIDRemoveMsg (Structure):
+	_fields_ = [
+		("remote_thread_id", c_ulonglong),
+		("remote_thread_name", c_char * 128),
+		("globally_identifier", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+]
+
+#* for MSGID_REMOTE_THREAD_READY message *#
+class ThreadRemoteReadyMsg (Structure):
+	_fields_ = [
+		("remote_thread_id", c_ulonglong),
+		("remote_thread_name", c_char * 128),
+]
+
+#* for MSGID_REMOTE_THREAD_REMOVE message *#
+class ThreadRemoteRemoveMsg (Structure):
+	_fields_ = [
+		("remote_thread_id", c_ulonglong),
+		("remote_thread_name", c_char * 128),
+]
+
+#* for MSGID_TRACE_SWITCH message *#
+class TraceSwitchMsg (Structure):
+	_fields_ = [
+		("thread_id", c_ulonglong),
+		("trace_on", c_char),
+]
+
+#* for UIP_DATA_RECV_REQ message *#
+class UIPDataRecvReq (Structure):
+	_fields_ = [
+		("remote_address", c_char * DAVE_URL_LEN),
+		("remote_port", c_ulonglong),
+		("uip_type", c_int),
+		("channel", c_char * DAVE_NORMAL_NAME_LEN),
+		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
+		("customer_body", POINTER(MBUF)),
+		("data", POINTER(MBUF)),
 		("ptr", c_void_p),
 ]
 
-class SocketRawEvent (Structure):
+#* for UIP_DATA_RECV_RSP message *#
+class UIPDataRecvRsp (Structure):
 	_fields_ = [
-		("socket", c_int),
-		("os_socket", c_int),
-		("event", c_int),
-		("NetInfo", SocNetInfo),
+		("ret", c_int),
+		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
 		("data", POINTER(MBUF)),
 		("ptr", c_void_p),
+]
+
+#* for UIP_DATA_SEND_REQ message *#
+class UIPDataSendReq (Structure):
+	_fields_ = [
+		("remote_url", c_char * DAVE_URL_LEN),
+		("channel", c_char * DAVE_NORMAL_NAME_LEN),
+		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
+		("customer_head", POINTER(MBUF)),
+		("customer_body", POINTER(MBUF)),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+#* for UIP_DATA_SEND_RSP message *#
+class UIPDataSendRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
+		("data", POINTER(MBUF)),
+		("ptr", c_void_p),
+]
+
+#* for UIP_REGISTER_REQ message *#
+class UIPRegisterReq (Structure):
+	_fields_ = [
+		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
+		("ptr", c_void_p),
+]
+
+#* for UIP_REGISTER_RSP message *#
+class UIPRegisterRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
+		("ptr", c_void_p),
+]
+
+#* for UIP_UNREGISTER_REQ message *#
+class UIPUnregisterReq (Structure):
+	_fields_ = [
+		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
+		("ptr", c_void_p),
+]
+
+#* for UIP_UNREGISTER_RSP message *#
+class UIPUnregisterRsp (Structure):
+	_fields_ = [
+		("ret", c_int),
+		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
+		("ptr", c_void_p),
+]
+
+#* for MSGID_WAKEUP message *#
+class WAKEUPMSG (Structure):
+	_fields_ = [
+		("null_msg", c_void_p),
+		("some_msg", c_uint),
 ]
 

@@ -15,6 +15,13 @@ from ..tools import *
 davelib = dave_dll()
 
 
+def thread_self():
+    __func__, __LINE__ = t_sys_myline(2)
+    self_id = davelib.base_thread_get_self(c_char_p(__func__), c_int(__LINE__))
+    davelib.base_thread_get_name.restype = c_char_p
+    return davelib.base_thread_get_name(c_longlong(self_id), c_char_p(__func__), c_int(__LINE__))
+
+
 def thread_msg(class_struct):
     __func__, __LINE__ = t_sys_myline(2)
     davelib.dave_dll_thread_msg.restype = POINTER(class_struct)
@@ -27,7 +34,7 @@ def write_msg(dst, msg_id, class_instance):
     if isinstance(dst, c_char) or isinstance(dst, c_char_p) or isinstance(dst, str) or isinstance(dst, bytes):
         davelib.dave_dll_thread_name_msg(c_char_p(dst), c_longlong(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
     else:
-        davelib.dave_dll_thread_id_msg(c_uint64(-1), c_uint64(dst), c_int(0), c_longlong(msg_id), c_uint64(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
+        davelib.dave_dll_thread_id_msg(c_uint64(dst), c_longlong(msg_id), c_uint64(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
     return
 
 

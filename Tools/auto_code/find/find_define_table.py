@@ -223,4 +223,6 @@ def find_define_table(file_list, all_struct_table):
 
     define_table = _remove_struct_unuse_define(define_table, all_struct_table)
 
+    define_table = struct_sorted(define_table)
+
     return define_table, include_list

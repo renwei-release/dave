@@ -9,6 +9,10 @@
 #define __HTTP_MSG_H__
 #include "http_param.h"
 
+#define HTTP_THREAD_NAME "http"
+#define DISTRIBUTOR_THREAD_NAME "distributor"
+#define POST_THREAD_NAME "post"
+
 /* for HTTPMSG_LISTEN_REQ message */
 typedef struct {
 	ub listen_port;
@@ -62,6 +66,23 @@ typedef struct {
 	ub local_creat_time;
 	void *ptr;
 } HTTPRecvRsp;
+
+/* for HTTPMSG_POST_REQ message */
+typedef struct {
+	s8 url[DAVE_URL_LEN];
+	HttpKeyValue head[DAVE_HTTP_HEAD_MAX];
+	HttpContentType content_type;
+	MBUF *content;
+	void *ptr;
+} HTTPPostReq;
+
+/* for HTTPMSG_POST_RSP message */
+typedef struct {
+	RetCode ret;
+	HttpKeyValue head[DAVE_HTTP_HEAD_MAX];
+	MBUF *content;
+	void *ptr;
+} HTTPPostRsp;
 
 #endif
 

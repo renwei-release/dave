@@ -14,72 +14,13 @@
 #ifndef _T_RPC_MSGDATA_H__
 #define _T_RPC_MSGDATA_H__
 #include "dave_base.h"
+#include "http_msg.h"
+#include "uip_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
-#include "http_msg.h"
 
-void * t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_TESTMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_TIMERMSG(TIMERMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_TIMERMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_WAKEUPMSG(WAKEUPMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_WAKEUPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_DebugReq(DebugReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DebugReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_DebugRsp(DebugRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_RESTARTREQMSG(RESTARTREQMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RESTARTREQMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_RESTARTRSPMSG(RESTARTRSPMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RESTARTRSPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_POWEROFFMSG(POWEROFFMSG *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_POWEROFFMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadRemoteReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_TraceSwitchMsg(TraceSwitchMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_TraceSwitchMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SystemMount(SystemMount *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SystemMount(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_MemoryWarning(MemoryWarning *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MemoryWarning(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_InternalEvents(InternalEvents *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_InternalEvents(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadBusy(ThreadBusy *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadIdle(ThreadIdle *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_CFGUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_ClientBusy(ClientBusy *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ClientBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -87,38 +28,11 @@ dave_bool t_rpc_ver3_unzip_ClientBusy(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_zip_ClientIdle(ClientIdle *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ClientIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_DebugReq(DebugReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_DebugReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadRemoteIDRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadLocalReadyMsg(ThreadLocalReadyMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadLocalReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ThreadLocalRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_RPCDebugMsg(RPCDebugMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RPCDebugMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_CFGUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_MsgBlocksReq(MsgBlocksReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgBlocksReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_MsgBlocksRsp(MsgBlocksRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_HTTPListenReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-
-void * t_rpc_ver3_zip_HTTPListenRsp(HTTPListenRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_HTTPListenRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_DebugRsp(DebugRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_DebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_HTTPCloseReq(HTTPCloseReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPCloseReq(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -126,11 +40,59 @@ dave_bool t_rpc_ver3_unzip_HTTPCloseReq(void **unzip_data, ub *unzip_len, void *
 void * t_rpc_ver3_zip_HTTPCloseRsp(HTTPCloseRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPCloseRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 
+void * t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPListenReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_HTTPListenRsp(HTTPListenRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPListenRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_HTTPPostReq(HTTPPostReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPPostReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_HTTPPostRsp(HTTPPostRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPPostRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
 void * t_rpc_ver3_zip_HTTPRecvReq(HTTPRecvReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPRecvReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_HTTPRecvRsp(HTTPRecvRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPRecvRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_InternalEvents(InternalEvents *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_InternalEvents(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_MemoryWarning(MemoryWarning *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MemoryWarning(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_MsgBlocksReq(MsgBlocksReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgBlocksReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_MsgBlocksRsp(MsgBlocksRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_POWEROFFMSG(POWEROFFMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_POWEROFFMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_RESTARTREQMSG(RESTARTREQMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RESTARTREQMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_RESTARTRSPMSG(RESTARTRSPMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RESTARTRSPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_RPCDebugMsg(RPCDebugMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RPCDebugMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -150,11 +112,17 @@ dave_bool t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len,
 void * t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 
+void * t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
+
 void * t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -162,11 +130,74 @@ dave_bool t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_SystemMount(SystemMount *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SystemMount(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_TESTMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_TIMERMSG(TIMERMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_TIMERMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadBusy(ThreadBusy *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadIdle(ThreadIdle *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadLocalReadyMsg(ThreadLocalReadyMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadLocalReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadLocalRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadRemoteIDRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadRemoteReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_TraceSwitchMsg(TraceSwitchMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_TraceSwitchMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPDataRecvReq(UIPDataRecvReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPDataRecvReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPDataRecvRsp(UIPDataRecvRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPDataRecvRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPDataSendReq(UIPDataSendReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPDataSendReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPDataSendRsp(UIPDataSendRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPDataSendRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPRegisterReq(UIPRegisterReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPRegisterReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPRegisterRsp(UIPRegisterRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPRegisterRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPUnregisterReq(UIPUnregisterReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPUnregisterReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_UIPUnregisterRsp(UIPUnregisterRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_UIPUnregisterRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_WAKEUPMSG(WAKEUPMSG *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_WAKEUPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 #endif
 

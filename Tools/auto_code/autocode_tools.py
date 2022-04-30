@@ -159,7 +159,7 @@ def _struct_sort_by_before_and_after_calls(struct_data):
     new_struct_data = {}
 
     for struct_name in struct_data.keys():
-        for struct_member in struct_data[struct_name]:
+        for struct_member in struct_table_get(struct_data[struct_name]):
             member_name = struct_member['t']
             member_data = struct_data.get(member_name, None)
             if member_data != None:
@@ -325,15 +325,31 @@ def include_message(file_id, include_list):
     file_id.write("\n")
 
 
-def struct_on_the_table(struct_type, struct_table):
-    if struct_table.get(struct_type, None) != None:
+def struct_table_set(msg_name, base_array):
+    return { 'msg_name': msg_name, 'base_array': base_array }
+
+
+def struct_table_get(struct_table, get_who='base_array'):
+    return struct_table.get(get_who, None)
+
+
+def struct_on_the_table(struct_name, struct_table):
+    if struct_table.get(struct_name, None) != None:
         return True
     return False
 
 
+def struct_sorted(struct_data):  
+    sorted_keys = sorted(struct_data)
+    new_struct_data = {}
+    for sorted_key in sorted_keys:
+        new_struct_data[sorted_key] = struct_data[sorted_key]
+    return new_struct_data
+
+
 def type_on_the_table(type_name, struct_table):
     for struct_key in struct_table:
-        msg_struct = struct_table[struct_key]
+        msg_struct = struct_table_get(struct_table[struct_key])
         for msg_member in msg_struct:
             if msg_member['t'] == type_name:
                 return True
@@ -342,7 +358,7 @@ def type_on_the_table(type_name, struct_table):
 
 def define_on_the_table(define_name, struct_table):
     for struct_key in struct_table:
-        msg_struct = struct_table[struct_key]
+        msg_struct = struct_table_get(struct_table[struct_key])
         for msg_member in msg_struct:
             if msg_member['d'] != None:
                 if define_name in msg_member['d']:

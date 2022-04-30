@@ -11,9 +11,9 @@ import traceback
 from autocode_cfg import *
 
 
-def __is_disable_path(current_dir):
+def _is_disable_file_or_dir(file_or_dir):
     for disable_path in forgettable_path_list:
-        if disable_path == current_dir:
+        if disable_path == file_or_dir:
             return True
     return False
 
@@ -25,9 +25,9 @@ def __find_file_list(dir_path:str, file_list:list, rules=None):
     current_file_or_dir_list = os.listdir(dir_path)
     for current_file_or_dir in current_file_or_dir_list:
         current_file_or_dir = dir_path + '/' + current_file_or_dir
+        if _is_disable_file_or_dir(current_file_or_dir):
+            continue
         if os.path.isdir(current_file_or_dir):
-            if __is_disable_path(current_file_or_dir):
-                continue
             __find_file_list(current_file_or_dir, file_list, rules)
         else:
             if rules != None:

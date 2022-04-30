@@ -12,6 +12,9 @@ def fun_None(src_name, src_id, msg_len, msg_body):
     return
 
 
+# =====================================================================
+
+
 system_function_table = {
     MSGID_TEST: fun_None,
     MSGID_TIMER: fun_None,

@@ -10,6 +10,7 @@
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_http.h"
+#include "dave_uip.h"
 #include "dave_verno.h"
 #include "io_test.h"
 
@@ -19,6 +20,7 @@ static void
 _io_thread_init(MSGBODY *msg)
 {
 	dave_http_init();
+	dave_uip_init();
 }
 
 static void
@@ -40,6 +42,7 @@ _io_thread_main(MSGBODY *msg)
 static void
 _io_thread_exit(MSGBODY *msg)
 {
+	dave_uip_exit();
 	dave_http_exit();
 }
 

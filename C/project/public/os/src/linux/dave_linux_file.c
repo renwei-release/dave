@@ -196,11 +196,11 @@ dave_os_file_open(FileOptFlag flag, s8 *file_name)
 
 	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
 
-    _linux_file_creat_dir(file_full_name);
     oflag = O_RDWR;
     if((flag & CREAT_FLAG) == CREAT_FLAG)
+		_linux_file_creat_dir(file_full_name);
         oflag |= O_CREAT;
-    
+
     return (sb)open((char *)file_full_name, oflag, 0777);
 }
 
@@ -278,8 +278,24 @@ dave_os_file_save(sb file_id, ub pos, ub data_len, u8 *data)
 dave_bool
 dave_os_file_close(sb file_id)
 {
-    close((int)file_id);
+	if(file_id >= 0)
+    	close((int)file_id);
     return dave_true;
+}
+
+dave_bool
+dave_os_file_valid(s8 *file_name)
+{
+	FileOptFlag flag = READ_FLAG | DIRECT_FLAG;
+	sb file_id;
+
+	file_id = dave_os_file_open(flag, file_name);
+	if(file_id < 0)
+		return dave_false;
+
+	dave_os_file_close(file_id);
+
+	return dave_true;
 }
 
 ub

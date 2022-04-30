@@ -11,11 +11,5 @@
 DateStruct t_time_get_date(DateStruct *pDate);
 RetCode t_time_set_date(DateStruct *pDate);
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define dave_timer_get_date t_time_get_date
-#define dave_timer_set_date t_time_set_date
-
-
 #endif
 

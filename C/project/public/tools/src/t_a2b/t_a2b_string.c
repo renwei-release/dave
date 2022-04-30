@@ -100,6 +100,12 @@ t_a2b_string_to_digital(s8 *str_ptr)
 }
 
 ub
+t_a2b_stringhex_to_digital(s8 *str_ptr)
+{
+	return _t_a2b_string_to_digital(str_ptr, dave_strlen(str_ptr), 16);
+}
+
+ub
 t_a2b_bin_to_hex_string(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len)
 {
 	return _t_a2b_bin_to_hex_str(buf_ptr, buf_len, bin_ptr, bin_len);

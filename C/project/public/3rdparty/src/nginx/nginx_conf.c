@@ -37,9 +37,8 @@
 #include "nginx_conf.h"
 #include "party_log.h"
 
-#define NGINX_CONF_MAX (16384)
+#define NGINX_CONF_MAX (32768)
 #define NGINX_SERVER_CONF_FLAG (s8 *)"#########"
-#define NGINX_CONF_NAME (s8 *)"/dave/tools/nginx/conf/nginx.conf"
 
 static dave_bool
 _nginx_conf_write(s8 *name, s8 *conf, ub conf_len)
@@ -99,7 +98,7 @@ _nginx_conf_head(s8 *conf, ub conf_len, ub work_process)
 	ub conf_index;
 	DateStruct date;
 
-	dave_timer_get_date(&date);
+	t_time_get_date(&date);
 
 	conf_index = 0;
 
@@ -185,6 +184,17 @@ _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port
 {
 	ub conf_index;
 
+	if(dave_os_file_valid(pem_path) == dave_false)
+	{
+		PARTYLOG("can't find pem file:%s, the server %d/%s not start!", pem_path, https_port, nginx_path);
+		return 0;
+	}
+	if(dave_os_file_valid(key_path) == dave_false)
+	{
+		PARTYLOG("can't find key file:%s, the server %d/%s not start!", key_path, https_port, nginx_path);
+		return 0;
+	}
+
 	conf_index = 0;
 
 	if(https_port != 0)
@@ -207,7 +217,7 @@ _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   location %s {\n", nginx_path);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 		   fastcgi_pass   127.0.0.1:%d;\n", cgi_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 		   fastcgi_index   index.cgi;\n");
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 		   include	 fastcgi.conf;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 		   include	 fastcgi_params;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   }\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   access_log off;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    }\n\n");
@@ -234,7 +244,7 @@ _nginx_conf_write_http_server(s8 *conf, ub conf_len, ub http_port, ub cgi_port, 
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location %s {\n", nginx_path);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_pass   127.0.0.1:%d;\n", cgi_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_index   index.cgi;\n");
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            include   fastcgi.conf;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            include   fastcgi_params;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        }\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        access_log off;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    }\n\n");
@@ -264,7 +274,7 @@ _nginx_conf_write_web_server(s8 *conf, ub conf_len, ub web_port, ub cgi_port, s8
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location %s {\n", nginx_path);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_pass   127.0.0.1:%d;\n", cgi_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_index   index.cgi;\n");
-		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            include   fastcgi.conf;\n");
+		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            include   fastcgi_params;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        }\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        access_log off;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "    }\n\n");
@@ -354,10 +364,10 @@ _nginx_conf_read_server(s8 *conf, ub conf_len, s8 *server, ub server_len, ub *se
 // =====================================================================
 
 dave_bool
-nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
+nginx_conf_add(s8 *cfg_file, ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	s8 *old_conf, *new_conf, *server_conf;
-	ub old_conf_len, old_conf_index, new_conf_index;
+	ub old_conf_len, old_conf_index, new_conf_index, get_conf_len;
 	ub server_port;
 	dave_bool ret;
 
@@ -365,7 +375,7 @@ nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port,
 	new_conf = dave_malloc(NGINX_CONF_MAX);
 	server_conf = dave_malloc(NGINX_CONF_MAX);
 
-	old_conf_len = _nginx_conf_read(NGINX_CONF_NAME, old_conf, NGINX_CONF_MAX);
+	old_conf_len = _nginx_conf_read(cfg_file, old_conf, NGINX_CONF_MAX);
 
 	old_conf_index = new_conf_index = 0;
 
@@ -387,22 +397,26 @@ nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port,
 
 	switch (type){
 		case ListenHttps:
-				new_conf_index += _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path, pem_path, key_path);
+				get_conf_len = _nginx_conf_write_https_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path, pem_path, key_path);
 			break;
 		case ListenHttp:
-				new_conf_index += _nginx_conf_write_http_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				get_conf_len = _nginx_conf_write_http_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
 			break;
 		case ListenWeb:
-				new_conf_index += _nginx_conf_write_web_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
+				get_conf_len = _nginx_conf_write_web_server(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index, nginx_port, cgi_port, nginx_path);
 			break;
 		default:
 				PARTYABNOR("Invalid listen type[%d]", type);
+				get_conf_len = 0;
 			break;
 	}
+	if(get_conf_len == 0)
+		return dave_false;
+	new_conf_index += get_conf_len;
 
 	new_conf_index += _nginx_conf_end(&new_conf[new_conf_index], NGINX_CONF_MAX-new_conf_index);
 
-	ret = _nginx_conf_write(NGINX_CONF_NAME, new_conf, new_conf_index);
+	ret = _nginx_conf_write(cfg_file, new_conf, new_conf_index);
 
 	dave_free(old_conf);
 	dave_free(new_conf);
@@ -412,7 +426,7 @@ nginx_conf_add(ub work_process, ub nginx_port, HTTPListenType type, ub cgi_port,
 }
 
 ub
-nginx_conf_del(ub work_process, ub nginx_port)
+nginx_conf_del(s8 *cfg_file, ub work_process, ub nginx_port)
 {
 	dave_bool has_modify;
 	ub has_server_number;
@@ -428,7 +442,7 @@ nginx_conf_del(ub work_process, ub nginx_port)
 	new_conf = dave_malloc(NGINX_CONF_MAX);
 	server_conf = dave_malloc(NGINX_CONF_MAX);
 
-	old_conf_len = _nginx_conf_read(NGINX_CONF_NAME, old_conf, NGINX_CONF_MAX);
+	old_conf_len = _nginx_conf_read(cfg_file, old_conf, NGINX_CONF_MAX);
 
 	old_conf_index = new_conf_index = 0;
 
@@ -458,7 +472,7 @@ nginx_conf_del(ub work_process, ub nginx_port)
 
 	if(has_modify == dave_true)
 	{
-		_nginx_conf_write(NGINX_CONF_NAME, new_conf, new_conf_index);
+		_nginx_conf_write(cfg_file, new_conf, new_conf_index);
 	}
 
 	dave_free(old_conf);
@@ -469,7 +483,7 @@ nginx_conf_del(ub work_process, ub nginx_port)
 }
 
 ub
-nginx_conf_number(void)
+nginx_conf_number(s8 *cfg_file)
 {
 	ub has_server_number;
 	s8 *old_conf, *server_conf;
@@ -481,7 +495,7 @@ nginx_conf_number(void)
 	old_conf = dave_malloc(NGINX_CONF_MAX);
 	server_conf = dave_malloc(NGINX_CONF_MAX);
 
-	old_conf_len = _nginx_conf_read(NGINX_CONF_NAME, old_conf, NGINX_CONF_MAX);
+	old_conf_len = _nginx_conf_read(cfg_file, old_conf, NGINX_CONF_MAX);
 
 	old_conf_index = 0;
 

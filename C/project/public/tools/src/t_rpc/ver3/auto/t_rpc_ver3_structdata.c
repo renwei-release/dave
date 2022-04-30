@@ -19,6 +19,8 @@
 #include "t_rpc_ver3_metadata.h"
 #include "t_rpc_ver3_structdata.h"
 #include "tools_log.h"
+#include "http_param.h"
+#include "base_struct.h"
 
 // =====================================================================
 
@@ -167,51 +169,31 @@ t_rpc_ver3_unzip_SocNetInfoIp_d(SocNetInfoIp *unzip_data, ub unzip_len, void *pA
 }
 
 void *
-t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data)
+t_rpc_ver3_zip_HttpKeyValue(HttpKeyValue *zip_data)
 {
 	void *pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "SOCDOMAIN-domain", t_rpc_ver3_zip_SOCDOMAIN(zip_data->domain));
-	t_bson_add_object(pStructBson, "SOCTYPE-type", t_rpc_ver3_zip_SOCTYPE(zip_data->type));
-	t_bson_add_object(pStructBson, "NetAddrType-addr_type", t_rpc_ver3_zip_NetAddrType(zip_data->addr_type));
-	t_bson_add_object(pStructBson, "SocNetInfoAddr-addr", t_rpc_ver3_zip_SocNetInfoAddr(&(zip_data->addr)));
-	t_bson_add_object(pStructBson, "u16-port", t_rpc_ver3_zip_u16(zip_data->port));
-	t_bson_add_object(pStructBson, "FixedPortFlag-fixed_src_flag", t_rpc_ver3_zip_FixedPortFlag(zip_data->fixed_src_flag));
-	t_bson_add_object(pStructBson, "SocNetInfoIp-src_ip", t_rpc_ver3_zip_SocNetInfoIp(&(zip_data->src_ip)));
-	t_bson_add_object(pStructBson, "u16-src_port", t_rpc_ver3_zip_u16(zip_data->src_port));
-	t_bson_add_object(pStructBson, "EnableKeepAliveFlag-enable_keepalive_flag", t_rpc_ver3_zip_EnableKeepAliveFlag(zip_data->enable_keepalive_flag));
-	t_bson_add_object(pStructBson, "sb-keepalive_second", t_rpc_ver3_zip_sb(zip_data->keepalive_second));
-	t_bson_add_object(pStructBson, "EnableNetCardBindFlag-netcard_bind_flag", t_rpc_ver3_zip_EnableNetCardBindFlag(zip_data->netcard_bind_flag));
-	t_bson_add_object(pStructBson, "s8-netcard_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->netcard_name), 1, DAVE_NORMAL_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-key", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->key), 1, DAVE_HTTP_KEY_LEN));
+	t_bson_add_object(pStructBson, "s8-value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->value), 1, DAVE_HTTP_VALUE_LEN));
 
 	return pStructBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson)
+t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructBson)
 {
 	dave_bool ret;
 
 	if(pStructBson == NULL)
 	{
-		TOOLSLTRACE(360,1,"the pBson is NULL on SocNetInfo");
-		dave_memset(unzip_data, 0x00, sizeof(SocNetInfo));
+		TOOLSLTRACE(360,1,"the pBson is NULL on HttpKeyValue");
+		dave_memset(unzip_data, 0x00, sizeof(HttpKeyValue));
 		ret = dave_false;
 	}
 	else
 	{
-		t_rpc_ver3_unzip_SOCDOMAIN(&(unzip_data->domain), t_bson_inq_object(pStructBson, "SOCDOMAIN-domain"));
-		t_rpc_ver3_unzip_SOCTYPE(&(unzip_data->type), t_bson_inq_object(pStructBson, "SOCTYPE-type"));
-		t_rpc_ver3_unzip_NetAddrType(&(unzip_data->addr_type), t_bson_inq_object(pStructBson, "NetAddrType-addr_type"));
-		t_rpc_ver3_unzip_SocNetInfoAddr(&(unzip_data->addr), t_bson_inq_object(pStructBson, "SocNetInfoAddr-addr"));
-		t_rpc_ver3_unzip_u16(&(unzip_data->port), t_bson_inq_object(pStructBson, "u16-port"));
-		t_rpc_ver3_unzip_FixedPortFlag(&(unzip_data->fixed_src_flag), t_bson_inq_object(pStructBson, "FixedPortFlag-fixed_src_flag"));
-		t_rpc_ver3_unzip_SocNetInfoIp(&(unzip_data->src_ip), t_bson_inq_object(pStructBson, "SocNetInfoIp-src_ip"));
-		t_rpc_ver3_unzip_u16(&(unzip_data->src_port), t_bson_inq_object(pStructBson, "u16-src_port"));
-		t_rpc_ver3_unzip_EnableKeepAliveFlag(&(unzip_data->enable_keepalive_flag), t_bson_inq_object(pStructBson, "EnableKeepAliveFlag-enable_keepalive_flag"));
-		t_rpc_ver3_unzip_sb(&(unzip_data->keepalive_second), t_bson_inq_object(pStructBson, "sb-keepalive_second"));
-		t_rpc_ver3_unzip_EnableNetCardBindFlag(&(unzip_data->netcard_bind_flag), t_bson_inq_object(pStructBson, "EnableNetCardBindFlag-netcard_bind_flag"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->netcard_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-netcard_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->key), 1, DAVE_HTTP_KEY_LEN, t_bson_inq_object(pStructBson, "s8-key"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->value), 1, DAVE_HTTP_VALUE_LEN, t_bson_inq_object(pStructBson, "s8-value"));
 		ret = dave_true;
 	}
 
@@ -219,25 +201,25 @@ t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson)
 }
 
 void *
-t_rpc_ver3_zip_SocNetInfo_d(SocNetInfo *zip_data, ub zip_len)
+t_rpc_ver3_zip_HttpKeyValue_d(HttpKeyValue *zip_data, ub zip_len)
 {
 	void *pArrayBson = t_bson_malloc_array();
 	ub zip_index;
 
 	for(zip_index=0; zip_index<zip_len; zip_index++)
 	{
-		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_SocNetInfo(&(zip_data[zip_index])));
+		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_HttpKeyValue(&(zip_data[zip_index])));
 	}
 
 	return pArrayBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_SocNetInfo_d(SocNetInfo *unzip_data, ub unzip_len, void *pArrayBson)
+t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pArrayBson)
 {
 	sb array_len, array_index;
 
-	dave_memset(unzip_data, 0x00, unzip_len * sizeof(SocNetInfo));
+	dave_memset(unzip_data, 0x00, unzip_len * sizeof(HttpKeyValue));
 
 	if(pArrayBson == NULL)
 	{
@@ -252,89 +234,7 @@ t_rpc_ver3_unzip_SocNetInfo_d(SocNetInfo *unzip_data, ub unzip_len, void *pArray
 
 	for(array_index=0; array_index<array_len; array_index++)
 	{
-		t_rpc_ver3_unzip_SocNetInfo(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
-	}
-
-	return dave_true;
-}
-
-void *
-t_rpc_ver3_zip_DateStruct(DateStruct *zip_data)
-{
-	void *pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "u16-year", t_rpc_ver3_zip_u16(zip_data->year));
-	t_bson_add_object(pStructBson, "u8-month", t_rpc_ver3_zip_u8(zip_data->month));
-	t_bson_add_object(pStructBson, "u8-day", t_rpc_ver3_zip_u8(zip_data->day));
-	t_bson_add_object(pStructBson, "u8-hour", t_rpc_ver3_zip_u8(zip_data->hour));
-	t_bson_add_object(pStructBson, "u8-minute", t_rpc_ver3_zip_u8(zip_data->minute));
-	t_bson_add_object(pStructBson, "u8-second", t_rpc_ver3_zip_u8(zip_data->second));
-	t_bson_add_object(pStructBson, "u8-week", t_rpc_ver3_zip_u8(zip_data->week));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson)
-{
-	dave_bool ret;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL on DateStruct");
-		dave_memset(unzip_data, 0x00, sizeof(DateStruct));
-		ret = dave_false;
-	}
-	else
-	{
-		t_rpc_ver3_unzip_u16(&(unzip_data->year), t_bson_inq_object(pStructBson, "u16-year"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->month), t_bson_inq_object(pStructBson, "u8-month"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->day), t_bson_inq_object(pStructBson, "u8-day"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->hour), t_bson_inq_object(pStructBson, "u8-hour"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->minute), t_bson_inq_object(pStructBson, "u8-minute"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->second), t_bson_inq_object(pStructBson, "u8-second"));
-		t_rpc_ver3_unzip_u8(&(unzip_data->week), t_bson_inq_object(pStructBson, "u8-week"));
-		ret = dave_true;
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len)
-{
-	void *pArrayBson = t_bson_malloc_array();
-	ub zip_index;
-
-	for(zip_index=0; zip_index<zip_len; zip_index++)
-	{
-		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_DateStruct(&(zip_data[zip_index])));
-	}
-
-	return pArrayBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson)
-{
-	sb array_len, array_index;
-
-	dave_memset(unzip_data, 0x00, unzip_len * sizeof(DateStruct));
-
-	if(pArrayBson == NULL)
-	{
-		return dave_false;
-	}
-
-	array_len = t_bson_array_number(pArrayBson);
-	if(array_len > (sb)unzip_len)
-	{
-		array_len = (sb)unzip_len;
-	}
-
-	for(array_index=0; array_index<array_len; array_index++)
-	{
-		t_rpc_ver3_unzip_DateStruct(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
+		t_rpc_ver3_unzip_HttpKeyValue(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
 	}
 
 	return dave_true;
@@ -505,31 +405,41 @@ t_rpc_ver3_unzip_BuildingBlocks_d(BuildingBlocks *unzip_data, ub unzip_len, void
 }
 
 void *
-t_rpc_ver3_zip_HttpKeyValue(HttpKeyValue *zip_data)
+t_rpc_ver3_zip_DateStruct(DateStruct *zip_data)
 {
 	void *pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "s8-key", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->key), 1, DAVE_HTTP_KEY_LEN));
-	t_bson_add_object(pStructBson, "s8-value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->value), 1, DAVE_HTTP_VALUE_LEN));
+	t_bson_add_object(pStructBson, "u16-year", t_rpc_ver3_zip_u16(zip_data->year));
+	t_bson_add_object(pStructBson, "u8-month", t_rpc_ver3_zip_u8(zip_data->month));
+	t_bson_add_object(pStructBson, "u8-day", t_rpc_ver3_zip_u8(zip_data->day));
+	t_bson_add_object(pStructBson, "u8-hour", t_rpc_ver3_zip_u8(zip_data->hour));
+	t_bson_add_object(pStructBson, "u8-minute", t_rpc_ver3_zip_u8(zip_data->minute));
+	t_bson_add_object(pStructBson, "u8-second", t_rpc_ver3_zip_u8(zip_data->second));
+	t_bson_add_object(pStructBson, "u8-week", t_rpc_ver3_zip_u8(zip_data->week));
 
 	return pStructBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructBson)
+t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson)
 {
 	dave_bool ret;
 
 	if(pStructBson == NULL)
 	{
-		TOOLSLTRACE(360,1,"the pBson is NULL on HttpKeyValue");
-		dave_memset(unzip_data, 0x00, sizeof(HttpKeyValue));
+		TOOLSLTRACE(360,1,"the pBson is NULL on DateStruct");
+		dave_memset(unzip_data, 0x00, sizeof(DateStruct));
 		ret = dave_false;
 	}
 	else
 	{
-		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->key), 1, DAVE_HTTP_KEY_LEN, t_bson_inq_object(pStructBson, "s8-key"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->value), 1, DAVE_HTTP_VALUE_LEN, t_bson_inq_object(pStructBson, "s8-value"));
+		t_rpc_ver3_unzip_u16(&(unzip_data->year), t_bson_inq_object(pStructBson, "u16-year"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->month), t_bson_inq_object(pStructBson, "u8-month"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->day), t_bson_inq_object(pStructBson, "u8-day"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->hour), t_bson_inq_object(pStructBson, "u8-hour"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->minute), t_bson_inq_object(pStructBson, "u8-minute"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->second), t_bson_inq_object(pStructBson, "u8-second"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->week), t_bson_inq_object(pStructBson, "u8-week"));
 		ret = dave_true;
 	}
 
@@ -537,25 +447,25 @@ t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructBson)
 }
 
 void *
-t_rpc_ver3_zip_HttpKeyValue_d(HttpKeyValue *zip_data, ub zip_len)
+t_rpc_ver3_zip_DateStruct_d(DateStruct *zip_data, ub zip_len)
 {
 	void *pArrayBson = t_bson_malloc_array();
 	ub zip_index;
 
 	for(zip_index=0; zip_index<zip_len; zip_index++)
 	{
-		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_HttpKeyValue(&(zip_data[zip_index])));
+		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_DateStruct(&(zip_data[zip_index])));
 	}
 
 	return pArrayBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pArrayBson)
+t_rpc_ver3_unzip_DateStruct_d(DateStruct *unzip_data, ub unzip_len, void *pArrayBson)
 {
 	sb array_len, array_index;
 
-	dave_memset(unzip_data, 0x00, unzip_len * sizeof(HttpKeyValue));
+	dave_memset(unzip_data, 0x00, unzip_len * sizeof(DateStruct));
 
 	if(pArrayBson == NULL)
 	{
@@ -570,7 +480,99 @@ t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pA
 
 	for(array_index=0; array_index<array_len; array_index++)
 	{
-		t_rpc_ver3_unzip_HttpKeyValue(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
+		t_rpc_ver3_unzip_DateStruct(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
+	}
+
+	return dave_true;
+}
+
+void *
+t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data)
+{
+	void *pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "SOCDOMAIN-domain", t_rpc_ver3_zip_SOCDOMAIN(zip_data->domain));
+	t_bson_add_object(pStructBson, "SOCTYPE-type", t_rpc_ver3_zip_SOCTYPE(zip_data->type));
+	t_bson_add_object(pStructBson, "NetAddrType-addr_type", t_rpc_ver3_zip_NetAddrType(zip_data->addr_type));
+	t_bson_add_object(pStructBson, "SocNetInfoAddr-addr", t_rpc_ver3_zip_SocNetInfoAddr(&(zip_data->addr)));
+	t_bson_add_object(pStructBson, "u16-port", t_rpc_ver3_zip_u16(zip_data->port));
+	t_bson_add_object(pStructBson, "FixedPortFlag-fixed_src_flag", t_rpc_ver3_zip_FixedPortFlag(zip_data->fixed_src_flag));
+	t_bson_add_object(pStructBson, "SocNetInfoIp-src_ip", t_rpc_ver3_zip_SocNetInfoIp(&(zip_data->src_ip)));
+	t_bson_add_object(pStructBson, "u16-src_port", t_rpc_ver3_zip_u16(zip_data->src_port));
+	t_bson_add_object(pStructBson, "EnableKeepAliveFlag-enable_keepalive_flag", t_rpc_ver3_zip_EnableKeepAliveFlag(zip_data->enable_keepalive_flag));
+	t_bson_add_object(pStructBson, "sb-keepalive_second", t_rpc_ver3_zip_sb(zip_data->keepalive_second));
+	t_bson_add_object(pStructBson, "EnableNetCardBindFlag-netcard_bind_flag", t_rpc_ver3_zip_EnableNetCardBindFlag(zip_data->netcard_bind_flag));
+	t_bson_add_object(pStructBson, "s8-netcard_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->netcard_name), 1, DAVE_NORMAL_NAME_LEN));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocNetInfo(SocNetInfo *unzip_data, void *pStructBson)
+{
+	dave_bool ret;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL on SocNetInfo");
+		dave_memset(unzip_data, 0x00, sizeof(SocNetInfo));
+		ret = dave_false;
+	}
+	else
+	{
+		t_rpc_ver3_unzip_SOCDOMAIN(&(unzip_data->domain), t_bson_inq_object(pStructBson, "SOCDOMAIN-domain"));
+		t_rpc_ver3_unzip_SOCTYPE(&(unzip_data->type), t_bson_inq_object(pStructBson, "SOCTYPE-type"));
+		t_rpc_ver3_unzip_NetAddrType(&(unzip_data->addr_type), t_bson_inq_object(pStructBson, "NetAddrType-addr_type"));
+		t_rpc_ver3_unzip_SocNetInfoAddr(&(unzip_data->addr), t_bson_inq_object(pStructBson, "SocNetInfoAddr-addr"));
+		t_rpc_ver3_unzip_u16(&(unzip_data->port), t_bson_inq_object(pStructBson, "u16-port"));
+		t_rpc_ver3_unzip_FixedPortFlag(&(unzip_data->fixed_src_flag), t_bson_inq_object(pStructBson, "FixedPortFlag-fixed_src_flag"));
+		t_rpc_ver3_unzip_SocNetInfoIp(&(unzip_data->src_ip), t_bson_inq_object(pStructBson, "SocNetInfoIp-src_ip"));
+		t_rpc_ver3_unzip_u16(&(unzip_data->src_port), t_bson_inq_object(pStructBson, "u16-src_port"));
+		t_rpc_ver3_unzip_EnableKeepAliveFlag(&(unzip_data->enable_keepalive_flag), t_bson_inq_object(pStructBson, "EnableKeepAliveFlag-enable_keepalive_flag"));
+		t_rpc_ver3_unzip_sb(&(unzip_data->keepalive_second), t_bson_inq_object(pStructBson, "sb-keepalive_second"));
+		t_rpc_ver3_unzip_EnableNetCardBindFlag(&(unzip_data->netcard_bind_flag), t_bson_inq_object(pStructBson, "EnableNetCardBindFlag-netcard_bind_flag"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->netcard_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-netcard_name"));
+		ret = dave_true;
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_SocNetInfo_d(SocNetInfo *zip_data, ub zip_len)
+{
+	void *pArrayBson = t_bson_malloc_array();
+	ub zip_index;
+
+	for(zip_index=0; zip_index<zip_len; zip_index++)
+	{
+		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_SocNetInfo(&(zip_data[zip_index])));
+	}
+
+	return pArrayBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SocNetInfo_d(SocNetInfo *unzip_data, ub unzip_len, void *pArrayBson)
+{
+	sb array_len, array_index;
+
+	dave_memset(unzip_data, 0x00, unzip_len * sizeof(SocNetInfo));
+
+	if(pArrayBson == NULL)
+	{
+		return dave_false;
+	}
+
+	array_len = t_bson_array_number(pArrayBson);
+	if(array_len > (sb)unzip_len)
+	{
+		array_len = (sb)unzip_len;
+	}
+
+	for(array_index=0; array_index<array_len; array_index++)
+	{
+		t_rpc_ver3_unzip_SocNetInfo(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
 	}
 
 	return dave_true;

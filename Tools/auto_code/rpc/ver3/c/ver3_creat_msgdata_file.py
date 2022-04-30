@@ -45,7 +45,7 @@ def _creat_msgdata_zip_fun_dimension_object(file_id, struct_type, struct_name, s
 
 
 def _creat_msgdata_zip_fun_object(file_id, msg_struct_data, struct_table):
-    for msg_struct_object in msg_struct_data:
+    for msg_struct_object in struct_table_get(msg_struct_data):
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
         struct_dimension = msg_struct_object['d']
@@ -91,7 +91,7 @@ def _creat_msgdata_unzip_fun_dimension_object(file_id, struct_type, struct_name,
 
 
 def _creat_msgdata_unzip_fun_object(file_id, msg_struct_data, struct_table):
-    for msg_struct_object in msg_struct_data:
+    for msg_struct_object in struct_table_get(msg_struct_data):
         struct_name = msg_struct_object['n']
         struct_type = msg_struct_object['t']
         struct_dimension = msg_struct_object['d']

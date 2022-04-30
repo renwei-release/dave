@@ -122,7 +122,7 @@ def _creat_proto_file(struct_table, enum_table, fun_table, file_name):
 
 
 def creat_proto_file(file_list, all_struct_table):
-    enum_table, _ = find_enum_table(file_list, all_struct_table)
+    enum_table, _, _, _ = find_enum_table(file_list, all_struct_table)
     fun_table, _ = find_fun_table(file_list)
 
     print(f"{len(all_struct_table)}\tproto\t\twrite to {rpc_ver2_proto_file_name}")

@@ -6,9 +6,11 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-action=release # debug release test
+action=release # release debug test
 
-export LD_PRELOAD="./public/base/lib/libjemalloc.so ./public/base/lib/libjson-c.so"
+if [ -f "/project/public/base/lib/libjemalloc.so" ]; then
+   export LD_PRELOAD="/project/public/base/lib/libjemalloc.so /project/public/base/lib/libjson-c.so"
+fi
 
 function loop_notify()
 {
@@ -34,7 +36,7 @@ function jupyter_booting()
 function goto_debug()
 {
     jupyter_booting
-    loop_notify "This is an empty container!"
+    loop_notify "container on $action mode!"
 }
 
 hasflagnum=$(grep -c "FLAG_FOR_UPDATE" ${0##*/})

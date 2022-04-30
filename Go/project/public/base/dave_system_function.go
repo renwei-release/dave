@@ -58,3 +58,8 @@ func Dave_system_function_table_add(msg_id int, msg_function msg_function_define
 func Dave_system_function_table_del(msg_id int) {
 	delete(system_function_table, msg_id)
 }
+
+func Dave_system_function_table_inq(msg_id int) (msg_function_define, bool) {
+	fun, exists := system_function_table[msg_id]
+	return fun, exists
+}

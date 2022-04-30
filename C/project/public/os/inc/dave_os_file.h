@@ -24,6 +24,8 @@ sb dave_os_file_len(s8 *file_name, sb file_id);
 
 dave_bool dave_os_file_close(sb file_id);
 
+dave_bool dave_os_file_valid(s8 *file_name);
+
 dave_bool dave_os_file_delete(FileOptFlag flag, s8 * file_name);
 
 void * dave_os_dir_open(s8 *dir_path, ub *file_number);
