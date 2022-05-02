@@ -198,8 +198,10 @@ dave_os_file_open(FileOptFlag flag, s8 *file_name)
 
     oflag = O_RDWR;
     if((flag & CREAT_FLAG) == CREAT_FLAG)
+    {
 		_linux_file_creat_dir(file_full_name);
         oflag |= O_CREAT;
+    }
 
     return (sb)open((char *)file_full_name, oflag, 0777);
 }

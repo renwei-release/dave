@@ -18,7 +18,10 @@ extern "C"{
 #include "dave_json.h"
 #include "dave_nginx.h"
 #include "dave_mongoc.h"
+#include "dave_fastdfs.h"
 #include "dave_libiconv.h"
+#include "dave_opencv.h"
+#include "dave_tensorflow.h"
 
 #ifdef __cplusplus
 }

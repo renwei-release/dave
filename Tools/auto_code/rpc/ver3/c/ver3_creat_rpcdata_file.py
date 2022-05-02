@@ -104,7 +104,7 @@ def _creat_rpcdata_unzip_file(file_id):
     file_id.write("\n\ts64 rpc_time;")
     file_id.write("\n\tif(t_bson_inq_int64(pBson, \"rpc_time\", (u64 *)(&rpc_time)) == true) {")
     file_id.write("\n\t\trpc_time = (s64)dave_os_time_us() - rpc_time;")
-    file_id.write("\n\t\tif(rpc_time > 1000000)")
+    file_id.write("\n\t\tif(rpc_time > 3000000)")
     file_id.write("\n\t\t\tTOOLSLOG(\"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.\", msgstr(msg_id), rpc_time);")
     file_id.write("\n\t}")
     file_id.write("\n\t#endif\n")

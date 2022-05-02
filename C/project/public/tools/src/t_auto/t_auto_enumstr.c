@@ -13,8 +13,16 @@
 
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "database_msg.h"
+#include "cv_param.h"
+#include "dave_enum.h"
+#include "dave_error_code.h"
+#include "dave_mcard.h"
+#include "nlp_param.h"
 #include "http_param.h"
 #include "uip_msg.h"
+#include "talk_param.h"
+#include "bbs_param.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -26,6 +34,429 @@
 #include "sync_type.h"
 
 // =====================================================================
+
+s8 *
+t_auto_AESKeyBin_str(AESKeyBin enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case AES_KEY_128:
+				value_str = "'AES_KEY_128:128'";
+			break;
+		case AES_KEY_192:
+				value_str = "'AES_KEY_192:192'";
+			break;
+		case AES_KEY_256:
+				value_str = "'AES_KEY_256:256'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_AIPlaceType_str(AIPlaceType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case AIPlaceType_accounting:
+				value_str = "'AIPlaceType_accounting'";
+			break;
+		case AIPlaceType_airport:
+				value_str = "'AIPlaceType_airport'";
+			break;
+		case AIPlaceType_amusement_park:
+				value_str = "'AIPlaceType_amusement_park'";
+			break;
+		case AIPlaceType_aquarium:
+				value_str = "'AIPlaceType_aquarium'";
+			break;
+		case AIPlaceType_art_gallery:
+				value_str = "'AIPlaceType_art_gallery'";
+			break;
+		case AIPlaceType_atm:
+				value_str = "'AIPlaceType_atm'";
+			break;
+		case AIPlaceType_bakery:
+				value_str = "'AIPlaceType_bakery'";
+			break;
+		case AIPlaceType_bank:
+				value_str = "'AIPlaceType_bank'";
+			break;
+		case AIPlaceType_bar:
+				value_str = "'AIPlaceType_bar'";
+			break;
+		case AIPlaceType_beauty_salon:
+				value_str = "'AIPlaceType_beauty_salon'";
+			break;
+		case AIPlaceType_bicycle_store:
+				value_str = "'AIPlaceType_bicycle_store'";
+			break;
+		case AIPlaceType_book_store:
+				value_str = "'AIPlaceType_book_store'";
+			break;
+		case AIPlaceType_bowling_alley:
+				value_str = "'AIPlaceType_bowling_alley'";
+			break;
+		case AIPlaceType_bus_station:
+				value_str = "'AIPlaceType_bus_station'";
+			break;
+		case AIPlaceType_cafe:
+				value_str = "'AIPlaceType_cafe'";
+			break;
+		case AIPlaceType_campground:
+				value_str = "'AIPlaceType_campground'";
+			break;
+		case AIPlaceType_car_dealer:
+				value_str = "'AIPlaceType_car_dealer'";
+			break;
+		case AIPlaceType_car_rental:
+				value_str = "'AIPlaceType_car_rental'";
+			break;
+		case AIPlaceType_car_repair:
+				value_str = "'AIPlaceType_car_repair'";
+			break;
+		case AIPlaceType_car_wash:
+				value_str = "'AIPlaceType_car_wash'";
+			break;
+		case AIPlaceType_casino:
+				value_str = "'AIPlaceType_casino'";
+			break;
+		case AIPlaceType_cemetery:
+				value_str = "'AIPlaceType_cemetery'";
+			break;
+		case AIPlaceType_church:
+				value_str = "'AIPlaceType_church'";
+			break;
+		case AIPlaceType_city_hall:
+				value_str = "'AIPlaceType_city_hall'";
+			break;
+		case AIPlaceType_clothing_store:
+				value_str = "'AIPlaceType_clothing_store'";
+			break;
+		case AIPlaceType_convenience_store:
+				value_str = "'AIPlaceType_convenience_store'";
+			break;
+		case AIPlaceType_courthouse:
+				value_str = "'AIPlaceType_courthouse'";
+			break;
+		case AIPlaceType_dentist:
+				value_str = "'AIPlaceType_dentist'";
+			break;
+		case AIPlaceType_department_store:
+				value_str = "'AIPlaceType_department_store'";
+			break;
+		case AIPlaceType_doctor:
+				value_str = "'AIPlaceType_doctor'";
+			break;
+		case AIPlaceType_electrician:
+				value_str = "'AIPlaceType_electrician'";
+			break;
+		case AIPlaceType_electronics_store:
+				value_str = "'AIPlaceType_electronics_store'";
+			break;
+		case AIPlaceType_embassy:
+				value_str = "'AIPlaceType_embassy'";
+			break;
+		case AIPlaceType_fire_station:
+				value_str = "'AIPlaceType_fire_station'";
+			break;
+		case AIPlaceType_florist:
+				value_str = "'AIPlaceType_florist'";
+			break;
+		case AIPlaceType_funeral_home:
+				value_str = "'AIPlaceType_funeral_home'";
+			break;
+		case AIPlaceType_furniture_store:
+				value_str = "'AIPlaceType_furniture_store'";
+			break;
+		case AIPlaceType_gas_station:
+				value_str = "'AIPlaceType_gas_station'";
+			break;
+		case AIPlaceType_gym:
+				value_str = "'AIPlaceType_gym'";
+			break;
+		case AIPlaceType_hair_care:
+				value_str = "'AIPlaceType_hair_care'";
+			break;
+		case AIPlaceType_hardware_store:
+				value_str = "'AIPlaceType_hardware_store'";
+			break;
+		case AIPlaceType_hindu_temple:
+				value_str = "'AIPlaceType_hindu_temple'";
+			break;
+		case AIPlaceType_home_goods_store:
+				value_str = "'AIPlaceType_home_goods_store'";
+			break;
+		case AIPlaceType_hospital:
+				value_str = "'AIPlaceType_hospital'";
+			break;
+		case AIPlaceType_insurance_agency:
+				value_str = "'AIPlaceType_insurance_agency'";
+			break;
+		case AIPlaceType_jewelry_store:
+				value_str = "'AIPlaceType_jewelry_store'";
+			break;
+		case AIPlaceType_laundry:
+				value_str = "'AIPlaceType_laundry'";
+			break;
+		case AIPlaceType_lawyer:
+				value_str = "'AIPlaceType_lawyer'";
+			break;
+		case AIPlaceType_library:
+				value_str = "'AIPlaceType_library'";
+			break;
+		case AIPlaceType_liquor_store:
+				value_str = "'AIPlaceType_liquor_store'";
+			break;
+		case AIPlaceType_local_government_office:
+				value_str = "'AIPlaceType_local_government_office'";
+			break;
+		case AIPlaceType_locksmith:
+				value_str = "'AIPlaceType_locksmith'";
+			break;
+		case AIPlaceType_lodging:
+				value_str = "'AIPlaceType_lodging'";
+			break;
+		case AIPlaceType_meal_delivery:
+				value_str = "'AIPlaceType_meal_delivery'";
+			break;
+		case AIPlaceType_meal_takeaway:
+				value_str = "'AIPlaceType_meal_takeaway'";
+			break;
+		case AIPlaceType_mosque:
+				value_str = "'AIPlaceType_mosque'";
+			break;
+		case AIPlaceType_movie_rental:
+				value_str = "'AIPlaceType_movie_rental'";
+			break;
+		case AIPlaceType_movie_theater:
+				value_str = "'AIPlaceType_movie_theater'";
+			break;
+		case AIPlaceType_moving_company:
+				value_str = "'AIPlaceType_moving_company'";
+			break;
+		case AIPlaceType_museum:
+				value_str = "'AIPlaceType_museum'";
+			break;
+		case AIPlaceType_night_club:
+				value_str = "'AIPlaceType_night_club'";
+			break;
+		case AIPlaceType_painter:
+				value_str = "'AIPlaceType_painter'";
+			break;
+		case AIPlaceType_park:
+				value_str = "'AIPlaceType_park'";
+			break;
+		case AIPlaceType_parking:
+				value_str = "'AIPlaceType_parking'";
+			break;
+		case AIPlaceType_pet_store:
+				value_str = "'AIPlaceType_pet_store'";
+			break;
+		case AIPlaceType_pharmacy:
+				value_str = "'AIPlaceType_pharmacy'";
+			break;
+		case AIPlaceType_physiotherapist:
+				value_str = "'AIPlaceType_physiotherapist'";
+			break;
+		case AIPlaceType_plumber:
+				value_str = "'AIPlaceType_plumber'";
+			break;
+		case AIPlaceType_police:
+				value_str = "'AIPlaceType_police'";
+			break;
+		case AIPlaceType_post_office:
+				value_str = "'AIPlaceType_post_office'";
+			break;
+		case AIPlaceType_real_estate_agency:
+				value_str = "'AIPlaceType_real_estate_agency'";
+			break;
+		case AIPlaceType_restaurant:
+				value_str = "'AIPlaceType_restaurant'";
+			break;
+		case AIPlaceType_roofing_contractor:
+				value_str = "'AIPlaceType_roofing_contractor'";
+			break;
+		case AIPlaceType_rv_park:
+				value_str = "'AIPlaceType_rv_park'";
+			break;
+		case AIPlaceType_school:
+				value_str = "'AIPlaceType_school'";
+			break;
+		case AIPlaceType_shoe_store:
+				value_str = "'AIPlaceType_shoe_store'";
+			break;
+		case AIPlaceType_shopping_mall:
+				value_str = "'AIPlaceType_shopping_mall'";
+			break;
+		case AIPlaceType_spa:
+				value_str = "'AIPlaceType_spa'";
+			break;
+		case AIPlaceType_stadium:
+				value_str = "'AIPlaceType_stadium'";
+			break;
+		case AIPlaceType_storage:
+				value_str = "'AIPlaceType_storage'";
+			break;
+		case AIPlaceType_store:
+				value_str = "'AIPlaceType_store'";
+			break;
+		case AIPlaceType_subway_station:
+				value_str = "'AIPlaceType_subway_station'";
+			break;
+		case AIPlaceType_synagogue:
+				value_str = "'AIPlaceType_synagogue'";
+			break;
+		case AIPlaceType_taxi_stand:
+				value_str = "'AIPlaceType_taxi_stand'";
+			break;
+		case AIPlaceType_train_station:
+				value_str = "'AIPlaceType_train_station'";
+			break;
+		case AIPlaceType_transit_station:
+				value_str = "'AIPlaceType_transit_station'";
+			break;
+		case AIPlaceType_travel_agency:
+				value_str = "'AIPlaceType_travel_agency'";
+			break;
+		case AIPlaceType_university:
+				value_str = "'AIPlaceType_university'";
+			break;
+		case AIPlaceType_veterinary_care:
+				value_str = "'AIPlaceType_veterinary_care'";
+			break;
+		case AIPlaceType_zoo:
+				value_str = "'AIPlaceType_zoo'";
+			break;
+		case AIPlaceType_max:
+				value_str = "'AIPlaceType_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_AIVisionType_str(AIVisionType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case AIVisionType_TYPE_UNSPECIFIED:
+				value_str = "'AIVisionType_TYPE_UNSPECIFIED:0x0000000000000001'";
+			break;
+		case AIVisionType_FACE_DETECTION:
+				value_str = "'AIVisionType_FACE_DETECTION:0x0000000000000002'";
+			break;
+		case AIVisionType_LANDMARK_DETECTION:
+				value_str = "'AIVisionType_LANDMARK_DETECTION:0x0000000000000004'";
+			break;
+		case AIVisionType_LOGO_DETECTION:
+				value_str = "'AIVisionType_LOGO_DETECTION:0x0000000000000008'";
+			break;
+		case AIVisionType_LABEL_DETECTION:
+				value_str = "'AIVisionType_LABEL_DETECTION:0x0000000000000010'";
+			break;
+		case AIVisionType_TEXT_DETECTION:
+				value_str = "'AIVisionType_TEXT_DETECTION:0x0000000000000020'";
+			break;
+		case AIVisionType_DOCUMENT_TEXT_DETECTION:
+				value_str = "'AIVisionType_DOCUMENT_TEXT_DETECTION:0x0000000000000040'";
+			break;
+		case AIVisionType_SAFE_SEARCH_DETECTION:
+				value_str = "'AIVisionType_SAFE_SEARCH_DETECTION:0x0000000000000080'";
+			break;
+		case AIVisionType_IMAGE_PROPERTIES:
+				value_str = "'AIVisionType_IMAGE_PROPERTIES:0x0000000000000100'";
+			break;
+		case AIVisionType_CROP_HINTS:
+				value_str = "'AIVisionType_CROP_HINTS:0x0000000000000200'";
+			break;
+		case AIVisionType_WEB_DETECTION:
+				value_str = "'AIVisionType_WEB_DETECTION:0x0000000000000400'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_AudioCodec_str(AudioCodec enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case AudioCodec_G711:
+				value_str = "'AudioCodec_G711:0'";
+			break;
+		case AudioCodec_G722:
+				value_str = "'AudioCodec_G722'";
+			break;
+		case AudioCodec_G7221:
+				value_str = "'AudioCodec_G7221'";
+			break;
+		case AudioCodec_G729:
+				value_str = "'AudioCodec_G729'";
+			break;
+		case AudioCodec_iLBC:
+				value_str = "'AudioCodec_iLBC'";
+			break;
+		case AudioCodec_GSM:
+				value_str = "'AudioCodec_GSM'";
+			break;
+		case AudioCodec_H263:
+				value_str = "'AudioCodec_H263'";
+			break;
+		case AudioCodec_H264:
+				value_str = "'AudioCodec_H264'";
+			break;
+		case AudioCodec_max:
+				value_str = "'AudioCodec_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_AuthType_str(AuthType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case AuthType_sha1:
+				value_str = "'AuthType_sha1'";
+			break;
+		case AuthType_max:
+				value_str = "'AuthType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
 
 s8 *
 t_auto_BaseMsgType_str(BaseMsgType enum_value)
@@ -51,6 +482,330 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 			break;
 		case BaseMsgType_Broadcast_dismiss:
 				value_str = "'BaseMsgType_Broadcast_dismiss'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingAddressType_str(BillingAddressType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingAddressType_reserve:
+				value_str = "'BillingAddressType_reserve:0'";
+			break;
+		case BillingAddressType_sip:
+				value_str = "'BillingAddressType_sip:1'";
+			break;
+		case BillingAddressType_tel:
+				value_str = "'BillingAddressType_tel:2'";
+			break;
+		case BillingAddressType_ip:
+				value_str = "'BillingAddressType_ip:3'";
+			break;
+		case BillingAddressType_url:
+				value_str = "'BillingAddressType_url:4'";
+			break;
+		case BillingAddressType_all:
+				value_str = "'BillingAddressType_all:5'";
+			break;
+		case BillingAddressType_sip_or_tel:
+				value_str = "'BillingAddressType_sip_or_tel:6'";
+			break;
+		case BillingAddressType_max:
+				value_str = "'BillingAddressType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingEvent_str(BillingEvent enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingEvent_Idle:
+				value_str = "'BillingEvent_Idle:0'";
+			break;
+		case BillingEvent_Initial:
+				value_str = "'BillingEvent_Initial'";
+			break;
+		case BillingEvent_Update:
+				value_str = "'BillingEvent_Update'";
+			break;
+		case BillingEvent_Termination:
+				value_str = "'BillingEvent_Termination'";
+			break;
+		case BillingEvent_Total:
+				value_str = "'BillingEvent_Total'";
+			break;
+		case BillingEvent_max:
+				value_str = "'BillingEvent_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingMeasurementUnit_str(BillingMeasurementUnit enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingMeasurementUnit_reserve:
+				value_str = "'BillingMeasurementUnit_reserve:0'";
+			break;
+		case BillingMeasurementUnit_seconds:
+				value_str = "'BillingMeasurementUnit_seconds:1'";
+			break;
+		case BillingMeasurementUnit_byte:
+				value_str = "'BillingMeasurementUnit_byte:2'";
+			break;
+		case BillingMeasurementUnit_server:
+				value_str = "'BillingMeasurementUnit_server:3'";
+			break;
+		case BillingMeasurementUnit_max:
+				value_str = "'BillingMeasurementUnit_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingRechargeType_str(BillingRechargeType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingRechargeType_add:
+				value_str = "'BillingRechargeType_add'";
+			break;
+		case BillingRechargeType_del:
+				value_str = "'BillingRechargeType_del'";
+			break;
+		case BillingRechargeType_inq:
+				value_str = "'BillingRechargeType_inq'";
+			break;
+		case BillingRechargeType_add_value:
+				value_str = "'BillingRechargeType_add_value'";
+			break;
+		case BillingRechargeType_del_value:
+				value_str = "'BillingRechargeType_del_value'";
+			break;
+		case BillingRechargeType_del_all:
+				value_str = "'BillingRechargeType_del_all'";
+			break;
+		case BillingRechargeType_inq_all:
+				value_str = "'BillingRechargeType_inq_all'";
+			break;
+		case BillingRechargeType_max:
+				value_str = "'BillingRechargeType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingRulesAttrib_str(BillingRulesAttrib enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingRulesAttrib_reserve:
+				value_str = "'BillingRulesAttrib_reserve:0'";
+			break;
+		case BillingRulesAttrib_share:
+				value_str = "'BillingRulesAttrib_share:1'";
+			break;
+		case BillingRulesAttrib_private:
+				value_str = "'BillingRulesAttrib_private:2'";
+			break;
+		case BillingRulesAttrib_max:
+				value_str = "'BillingRulesAttrib_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingRulesPriority_str(BillingRulesPriority enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingRulesPriority_reserve:
+				value_str = "'BillingRulesPriority_reserve:0'";
+			break;
+		case BillingRulesPriority_added_value:
+				value_str = "'BillingRulesPriority_added_value:1'";
+			break;
+		case BillingRulesPriority_free:
+				value_str = "'BillingRulesPriority_free:2'";
+			break;
+		case BillingRulesPriority_preferential:
+				value_str = "'BillingRulesPriority_preferential:3'";
+			break;
+		case BillingRulesPriority_toll:
+				value_str = "'BillingRulesPriority_toll:4'";
+			break;
+		case BillingRulesPriority_max:
+				value_str = "'BillingRulesPriority_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingRulesType_str(BillingRulesType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingRulesType_reserve:
+				value_str = "'BillingRulesType_reserve:0'";
+			break;
+		case BillingRulesType_atomic:
+				value_str = "'BillingRulesType_atomic:1'";
+			break;
+		case BillingRulesType_reserved1:
+				value_str = "'BillingRulesType_reserved1:2'";
+			break;
+		case BillingRulesType_period_day:
+				value_str = "'BillingRulesType_period_day:3'";
+			break;
+		case BillingRulesType_reserved2:
+				value_str = "'BillingRulesType_reserved2:4'";
+			break;
+		case BillingRulesType_period_month:
+				value_str = "'BillingRulesType_period_month:5'";
+			break;
+		case BillingRulesType_reserved3:
+				value_str = "'BillingRulesType_reserved3:6'";
+			break;
+		case BillingRulesType_oveylay:
+				value_str = "'BillingRulesType_oveylay:7'";
+			break;
+		case BillingRulesType_oveylay_user_customized_time:
+				value_str = "'BillingRulesType_oveylay_user_customized_time:8'";
+			break;
+		case BillingRulesType_group_user_customized_value:
+				value_str = "'BillingRulesType_group_user_customized_value:9'";
+			break;
+		case BillingRulesType_oveylay_user_customized_time_and_value:
+				value_str = "'BillingRulesType_oveylay_user_customized_time_and_value:10'";
+			break;
+		case BillingRulesType_oveylay_user_customized_time_and_oveylay_value:
+				value_str = "'BillingRulesType_oveylay_user_customized_time_and_oveylay_value:11'";
+			break;
+		case BillingRulesType_conference_oveylay_user_customized_time:
+				value_str = "'BillingRulesType_conference_oveylay_user_customized_time:12'";
+			break;
+		case BillingRulesType_conference_oveylay_user_customized_time_and_oveylay_value:
+				value_str = "'BillingRulesType_conference_oveylay_user_customized_time_and_oveylay_value:13'";
+			break;
+		case BillingRulesType_group_period_month_user_customized_time:
+				value_str = "'BillingRulesType_group_period_month_user_customized_time:14'";
+			break;
+		case BillingRulesType_oveylay_user_customized_and_free_time:
+				value_str = "'BillingRulesType_oveylay_user_customized_and_free_time:15'";
+			break;
+		case BillingRulesType_oveylay_self_customized_time:
+				value_str = "'BillingRulesType_oveylay_self_customized_time:16'";
+			break;
+		case BillingRulesType_oveylay_self_customized_time_and_free_time:
+				value_str = "'BillingRulesType_oveylay_self_customized_time_and_free_time:17'";
+			break;
+		case BillingRulesType_group_period_month_self_customized_time:
+				value_str = "'BillingRulesType_group_period_month_self_customized_time:18'";
+			break;
+		case BillingRulesType_max:
+				value_str = "'BillingRulesType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BillingType_str(BillingType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case BillingType_reserve:
+				value_str = "'BillingType_reserve:0'";
+			break;
+		case BillingType_Caller:
+				value_str = "'BillingType_Caller:1'";
+			break;
+		case BillingType_Called:
+				value_str = "'BillingType_Called:2'";
+			break;
+		case BillingType_Multi_Party:
+				value_str = "'BillingType_Multi_Party:3'";
+			break;
+		case BillingType_Strange:
+				value_str = "'BillingType_Strange:4'";
+			break;
+		case BillingType_Failure_Account:
+				value_str = "'BillingType_Failure_Account:5'";
+			break;
+		case BillingType_VtoV:
+				value_str = "'BillingType_VtoV:6'";
+			break;
+		case BillingType_CtoC:
+				value_str = "'BillingType_CtoC:7'";
+			break;
+		case BillingType_anonymous:
+				value_str = "'BillingType_anonymous:8'";
+			break;
+		case BillingType_call_forwarding:
+				value_str = "'BillingType_call_forwarding:9'";
+			break;
+		case BillingType_max:
+				value_str = "'BillingType_max'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -97,6 +852,924 @@ t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value)
 }
 
 s8 *
+t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CVSearchOpt_0:
+				value_str = "'CVSearchOpt_0'";
+			break;
+		case CVSearchOpt_1:
+				value_str = "'CVSearchOpt_1'";
+			break;
+		case CVSearchOpt_2:
+				value_str = "'CVSearchOpt_2'";
+			break;
+		case CVSearchOpt_max:
+				value_str = "'CVSearchOpt_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CallFunctionType_str(CallFunctionType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CallFunctionType_1:
+				value_str = "'CallFunctionType_1'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CallingNumberFlag_str(CallingNumberFlag enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CallingNumberFlag_OPEN:
+				value_str = "'CallingNumberFlag_OPEN:1'";
+			break;
+		case CallingNumberFlag_CLOSE:
+				value_str = "'CallingNumberFlag_CLOSE:2'";
+			break;
+		case CallingNumberFlag_max:
+				value_str = "'CallingNumberFlag_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CommentAttributes_str(CommentAttributes enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CommentAttributes_NULL:
+				value_str = "'CommentAttributes_NULL:0'";
+			break;
+		case CommentAttributes_POST:
+				value_str = "'CommentAttributes_POST:1'";
+			break;
+		case CommentAttributes_REPLY:
+				value_str = "'CommentAttributes_REPLY:2'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CountryCode_str(CountryCode enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CountryCode_reserve:
+				value_str = "'CountryCode_reserve:0'";
+			break;
+		case CountryCode_Angola:
+				value_str = "'CountryCode_Angola:1'";
+			break;
+		case CountryCode_Afghanistan:
+				value_str = "'CountryCode_Afghanistan:2'";
+			break;
+		case CountryCode_Canada_or_USA:
+				value_str = "'CountryCode_Canada_or_USA:3'";
+			break;
+		case CountryCode_China:
+				value_str = "'CountryCode_China:4'";
+			break;
+		case CountryCode_Hongkong:
+				value_str = "'CountryCode_Hongkong:5'";
+			break;
+		case CountryCode_Albania:
+				value_str = "'CountryCode_Albania:6'";
+			break;
+		case CountryCode_Algeria:
+				value_str = "'CountryCode_Algeria:7'";
+			break;
+		case CountryCode_Andorra:
+				value_str = "'CountryCode_Andorra:8'";
+			break;
+		case CountryCode_Anguilla:
+				value_str = "'CountryCode_Anguilla:9'";
+			break;
+		case CountryCode_Antigua_and_Barbuda:
+				value_str = "'CountryCode_Antigua_and_Barbuda:10'";
+			break;
+		case CountryCode_Argentina:
+				value_str = "'CountryCode_Argentina:11'";
+			break;
+		case CountryCode_Armenia:
+				value_str = "'CountryCode_Armenia:12'";
+			break;
+		case CountryCode_Ascension:
+				value_str = "'CountryCode_Ascension:13'";
+			break;
+		case CountryCode_Australia:
+				value_str = "'CountryCode_Australia:14'";
+			break;
+		case CountryCode_Austria:
+				value_str = "'CountryCode_Austria:15'";
+			break;
+		case CountryCode_Azerbaijan:
+				value_str = "'CountryCode_Azerbaijan:16'";
+			break;
+		case CountryCode_Bahamas:
+				value_str = "'CountryCode_Bahamas:17'";
+			break;
+		case CountryCode_Bahrain:
+				value_str = "'CountryCode_Bahrain:18'";
+			break;
+		case CountryCode_Bangladesh:
+				value_str = "'CountryCode_Bangladesh:19'";
+			break;
+		case CountryCode_Barbados:
+				value_str = "'CountryCode_Barbados:20'";
+			break;
+		case CountryCode_Belarus:
+				value_str = "'CountryCode_Belarus:21'";
+			break;
+		case CountryCode_Belgium:
+				value_str = "'CountryCode_Belgium:22'";
+			break;
+		case CountryCode_Belize:
+				value_str = "'CountryCode_Belize:23'";
+			break;
+		case CountryCode_Benin:
+				value_str = "'CountryCode_Benin:24'";
+			break;
+		case CountryCode_Bermuda:
+				value_str = "'CountryCode_Bermuda:25'";
+			break;
+		case CountryCode_Bolivia:
+				value_str = "'CountryCode_Bolivia:26'";
+			break;
+		case CountryCode_Botswana:
+				value_str = "'CountryCode_Botswana:27'";
+			break;
+		case CountryCode_Brazil:
+				value_str = "'CountryCode_Brazil:28'";
+			break;
+		case CountryCode_Brunei:
+				value_str = "'CountryCode_Brunei:29'";
+			break;
+		case CountryCode_Bulgaria:
+				value_str = "'CountryCode_Bulgaria:30'";
+			break;
+		case CountryCode_Burkina_faso:
+				value_str = "'CountryCode_Burkina_faso:31'";
+			break;
+		case CountryCode_Burma:
+				value_str = "'CountryCode_Burma:32'";
+			break;
+		case CountryCode_Burundi:
+				value_str = "'CountryCode_Burundi:33'";
+			break;
+		case CountryCode_Cameroon:
+				value_str = "'CountryCode_Cameroon:34'";
+			break;
+		case CountryCode_Cayman:
+				value_str = "'CountryCode_Cayman:35'";
+			break;
+		case CountryCode_Central_African:
+				value_str = "'CountryCode_Central_African:36'";
+			break;
+		case CountryCode_Chad:
+				value_str = "'CountryCode_Chad:37'";
+			break;
+		case CountryCode_Chile:
+				value_str = "'CountryCode_Chile:38'";
+			break;
+		case CountryCode_Colombia:
+				value_str = "'CountryCode_Colombia:39'";
+			break;
+		case CountryCode_Congo:
+				value_str = "'CountryCode_Congo:40'";
+			break;
+		case CountryCode_Cook:
+				value_str = "'CountryCode_Cook:41'";
+			break;
+		case CountryCode_Costa_Rica:
+				value_str = "'CountryCode_Costa_Rica:42'";
+			break;
+		case CountryCode_Cuba:
+				value_str = "'CountryCode_Cuba:43'";
+			break;
+		case CountryCode_Cyprus:
+				value_str = "'CountryCode_Cyprus:44'";
+			break;
+		case CountryCode_Czech:
+				value_str = "'CountryCode_Czech:45'";
+			break;
+		case CountryCode_Denmark:
+				value_str = "'CountryCode_Denmark:46'";
+			break;
+		case CountryCode_Djibouti:
+				value_str = "'CountryCode_Djibouti:47'";
+			break;
+		case CountryCode_Dominica:
+				value_str = "'CountryCode_Dominica:48'";
+			break;
+		case CountryCode_Ecuador:
+				value_str = "'CountryCode_Ecuador:49'";
+			break;
+		case CountryCode_Egypt:
+				value_str = "'CountryCode_Egypt:50'";
+			break;
+		case CountryCode_Salvador:
+				value_str = "'CountryCode_Salvador:51'";
+			break;
+		case CountryCode_Estonia:
+				value_str = "'CountryCode_Estonia:52'";
+			break;
+		case CountryCode_Ethiopia:
+				value_str = "'CountryCode_Ethiopia:53'";
+			break;
+		case CountryCode_Fiji:
+				value_str = "'CountryCode_Fiji:54'";
+			break;
+		case CountryCode_Finland:
+				value_str = "'CountryCode_Finland:55'";
+			break;
+		case CountryCode_France:
+				value_str = "'CountryCode_France:56'";
+			break;
+		case CountryCode_French_Guiana:
+				value_str = "'CountryCode_French_Guiana:57'";
+			break;
+		case CountryCode_Gabon:
+				value_str = "'CountryCode_Gabon:58'";
+			break;
+		case CountryCode_Gambia:
+				value_str = "'CountryCode_Gambia:59'";
+			break;
+		case CountryCode_Georgia:
+				value_str = "'CountryCode_Georgia:60'";
+			break;
+		case CountryCode_Germany:
+				value_str = "'CountryCode_Germany:61'";
+			break;
+		case CountryCode_Ghana:
+				value_str = "'CountryCode_Ghana:62'";
+			break;
+		case CountryCode_Gibraltar:
+				value_str = "'CountryCode_Gibraltar:63'";
+			break;
+		case CountryCode_Greece:
+				value_str = "'CountryCode_Greece:64'";
+			break;
+		case CountryCode_Grenada:
+				value_str = "'CountryCode_Grenada:65'";
+			break;
+		case CountryCode_Guam:
+				value_str = "'CountryCode_Guam:66'";
+			break;
+		case CountryCode_Guatemala:
+				value_str = "'CountryCode_Guatemala:67'";
+			break;
+		case CountryCode_Guinea:
+				value_str = "'CountryCode_Guinea:68'";
+			break;
+		case CountryCode_Guyana:
+				value_str = "'CountryCode_Guyana:69'";
+			break;
+		case CountryCode_Haiti:
+				value_str = "'CountryCode_Haiti:70'";
+			break;
+		case CountryCode_Honduras:
+				value_str = "'CountryCode_Honduras:71'";
+			break;
+		case CountryCode_Hungary:
+				value_str = "'CountryCode_Hungary:72'";
+			break;
+		case CountryCode_Iceland:
+				value_str = "'CountryCode_Iceland:73'";
+			break;
+		case CountryCode_India:
+				value_str = "'CountryCode_India:74'";
+			break;
+		case CountryCode_Indonesia:
+				value_str = "'CountryCode_Indonesia:75'";
+			break;
+		case CountryCode_Iran:
+				value_str = "'CountryCode_Iran:76'";
+			break;
+		case CountryCode_Iraq:
+				value_str = "'CountryCode_Iraq:77'";
+			break;
+		case CountryCode_Ireland:
+				value_str = "'CountryCode_Ireland:78'";
+			break;
+		case CountryCode_Israel:
+				value_str = "'CountryCode_Israel:79'";
+			break;
+		case CountryCode_Italy:
+				value_str = "'CountryCode_Italy:80'";
+			break;
+		case CountryCode_Ivory_Coast:
+				value_str = "'CountryCode_Ivory_Coast:81'";
+			break;
+		case CountryCode_Jamaica:
+				value_str = "'CountryCode_Jamaica:82'";
+			break;
+		case CountryCode_Japan:
+				value_str = "'CountryCode_Japan:83'";
+			break;
+		case CountryCode_Jordan:
+				value_str = "'CountryCode_Jordan:84'";
+			break;
+		case CountryCode_Cambodia:
+				value_str = "'CountryCode_Cambodia:85'";
+			break;
+		case CountryCode_Kazakstan:
+				value_str = "'CountryCode_Kazakstan:86'";
+			break;
+		case CountryCode_Kenya:
+				value_str = "'CountryCode_Kenya:87'";
+			break;
+		case CountryCode_South_Korea:
+				value_str = "'CountryCode_South_Korea:88'";
+			break;
+		case CountryCode_Kuwait:
+				value_str = "'CountryCode_Kuwait:89'";
+			break;
+		case CountryCode_Kyrgyzstan:
+				value_str = "'CountryCode_Kyrgyzstan:90'";
+			break;
+		case CountryCode_Laos:
+				value_str = "'CountryCode_Laos:91'";
+			break;
+		case CountryCode_Latvia:
+				value_str = "'CountryCode_Latvia:92'";
+			break;
+		case CountryCode_Lebanon:
+				value_str = "'CountryCode_Lebanon:93'";
+			break;
+		case CountryCode_Lesotho:
+				value_str = "'CountryCode_Lesotho:94'";
+			break;
+		case CountryCode_Liberia:
+				value_str = "'CountryCode_Liberia:95'";
+			break;
+		case CountryCode_Libya:
+				value_str = "'CountryCode_Libya:96'";
+			break;
+		case CountryCode_Liechtenstein:
+				value_str = "'CountryCode_Liechtenstein:97'";
+			break;
+		case CountryCode_Lithuania:
+				value_str = "'CountryCode_Lithuania:98'";
+			break;
+		case CountryCode_Luxembourg:
+				value_str = "'CountryCode_Luxembourg:99'";
+			break;
+		case CountryCode_Macao:
+				value_str = "'CountryCode_Macao:100'";
+			break;
+		case CountryCode_Madagascar:
+				value_str = "'CountryCode_Madagascar:101'";
+			break;
+		case CountryCode_Malawi:
+				value_str = "'CountryCode_Malawi:102'";
+			break;
+		case CountryCode_Malaysia:
+				value_str = "'CountryCode_Malaysia:103'";
+			break;
+		case CountryCode_Maldives:
+				value_str = "'CountryCode_Maldives:104'";
+			break;
+		case CountryCode_Mali:
+				value_str = "'CountryCode_Mali:105'";
+			break;
+		case CountryCode_Malta:
+				value_str = "'CountryCode_Malta:106'";
+			break;
+		case CountryCode_Mariana:
+				value_str = "'CountryCode_Mariana:107'";
+			break;
+		case CountryCode_Martinique:
+				value_str = "'CountryCode_Martinique:108'";
+			break;
+		case CountryCode_Mauritius:
+				value_str = "'CountryCode_Mauritius:109'";
+			break;
+		case CountryCode_Mexico:
+				value_str = "'CountryCode_Mexico:110'";
+			break;
+		case CountryCode_Moldova:
+				value_str = "'CountryCode_Moldova:111'";
+			break;
+		case CountryCode_Monaco:
+				value_str = "'CountryCode_Monaco:112'";
+			break;
+		case CountryCode_Mongolia:
+				value_str = "'CountryCode_Mongolia:113'";
+			break;
+		case CountryCode_Montserrat:
+				value_str = "'CountryCode_Montserrat:114'";
+			break;
+		case CountryCode_Morocco:
+				value_str = "'CountryCode_Morocco:115'";
+			break;
+		case CountryCode_Mozambique:
+				value_str = "'CountryCode_Mozambique:116'";
+			break;
+		case CountryCode_Namibia:
+				value_str = "'CountryCode_Namibia:117'";
+			break;
+		case CountryCode_Nauru:
+				value_str = "'CountryCode_Nauru:118'";
+			break;
+		case CountryCode_Nepal:
+				value_str = "'CountryCode_Nepal:119'";
+			break;
+		case CountryCode_Netheriands_Antilles:
+				value_str = "'CountryCode_Netheriands_Antilles:120'";
+			break;
+		case CountryCode_Netherlands:
+				value_str = "'CountryCode_Netherlands:121'";
+			break;
+		case CountryCode_New_Zealand:
+				value_str = "'CountryCode_New_Zealand:122'";
+			break;
+		case CountryCode_Nicaragua:
+				value_str = "'CountryCode_Nicaragua:123'";
+			break;
+		case CountryCode_Niger:
+				value_str = "'CountryCode_Niger:124'";
+			break;
+		case CountryCode_Nigeria:
+				value_str = "'CountryCode_Nigeria:125'";
+			break;
+		case CountryCode_North_Korea:
+				value_str = "'CountryCode_North_Korea:126'";
+			break;
+		case CountryCode_Norway:
+				value_str = "'CountryCode_Norway:127'";
+			break;
+		case CountryCode_Oman:
+				value_str = "'CountryCode_Oman:128'";
+			break;
+		case CountryCode_Pakistan:
+				value_str = "'CountryCode_Pakistan:129'";
+			break;
+		case CountryCode_Panama:
+				value_str = "'CountryCode_Panama:130'";
+			break;
+		case CountryCode_Papua_New_Cuinea:
+				value_str = "'CountryCode_Papua_New_Cuinea:131'";
+			break;
+		case CountryCode_Paraguay:
+				value_str = "'CountryCode_Paraguay:132'";
+			break;
+		case CountryCode_Peru:
+				value_str = "'CountryCode_Peru:133'";
+			break;
+		case CountryCode_Philippines:
+				value_str = "'CountryCode_Philippines:134'";
+			break;
+		case CountryCode_Poland:
+				value_str = "'CountryCode_Poland:135'";
+			break;
+		case CountryCode_French_Polynesia:
+				value_str = "'CountryCode_French_Polynesia:136'";
+			break;
+		case CountryCode_Portugal:
+				value_str = "'CountryCode_Portugal:137'";
+			break;
+		case CountryCode_Puerto_Rico:
+				value_str = "'CountryCode_Puerto_Rico:138'";
+			break;
+		case CountryCode_Qatar:
+				value_str = "'CountryCode_Qatar:139'";
+			break;
+		case CountryCode_Reunion:
+				value_str = "'CountryCode_Reunion:140'";
+			break;
+		case CountryCode_Romania:
+				value_str = "'CountryCode_Romania:141'";
+			break;
+		case CountryCode_Russia:
+				value_str = "'CountryCode_Russia:142'";
+			break;
+		case CountryCode_Saint_Lueia:
+				value_str = "'CountryCode_Saint_Lueia:143'";
+			break;
+		case CountryCode_Saint_Vincent:
+				value_str = "'CountryCode_Saint_Vincent:144'";
+			break;
+		case CountryCode_Samoa_Eastern:
+				value_str = "'CountryCode_Samoa_Eastern:145'";
+			break;
+		case CountryCode_Samoa_Western:
+				value_str = "'CountryCode_Samoa_Western:146'";
+			break;
+		case CountryCode_San_Marino:
+				value_str = "'CountryCode_San_Marino:147'";
+			break;
+		case CountryCode_Sao_Tome_and_Principe:
+				value_str = "'CountryCode_Sao_Tome_and_Principe:148'";
+			break;
+		case CountryCode_Saudi_Arabia:
+				value_str = "'CountryCode_Saudi_Arabia:149'";
+			break;
+		case CountryCode_Senegal:
+				value_str = "'CountryCode_Senegal:150'";
+			break;
+		case CountryCode_Seychelles:
+				value_str = "'CountryCode_Seychelles:151'";
+			break;
+		case CountryCode_Sierra_Leone:
+				value_str = "'CountryCode_Sierra_Leone:152'";
+			break;
+		case CountryCode_Singapore:
+				value_str = "'CountryCode_Singapore:153'";
+			break;
+		case CountryCode_Slovakia:
+				value_str = "'CountryCode_Slovakia:154'";
+			break;
+		case CountryCode_Slovenia:
+				value_str = "'CountryCode_Slovenia:155'";
+			break;
+		case CountryCode_Solomon:
+				value_str = "'CountryCode_Solomon:156'";
+			break;
+		case CountryCode_Somali:
+				value_str = "'CountryCode_Somali:157'";
+			break;
+		case CountryCode_South_Africa:
+				value_str = "'CountryCode_South_Africa:158'";
+			break;
+		case CountryCode_Spain:
+				value_str = "'CountryCode_Spain:159'";
+			break;
+		case CountryCode_Sri_Lanka:
+				value_str = "'CountryCode_Sri_Lanka:160'";
+			break;
+		case CountryCode_St_Lucia:
+				value_str = "'CountryCode_St_Lucia:161'";
+			break;
+		case CountryCode_St_Vincent:
+				value_str = "'CountryCode_St_Vincent:162'";
+			break;
+		case CountryCode_Sudan:
+				value_str = "'CountryCode_Sudan:163'";
+			break;
+		case CountryCode_Suriname:
+				value_str = "'CountryCode_Suriname:164'";
+			break;
+		case CountryCode_Swaziland:
+				value_str = "'CountryCode_Swaziland:165'";
+			break;
+		case CountryCode_Sweden:
+				value_str = "'CountryCode_Sweden:166'";
+			break;
+		case CountryCode_Switzerland:
+				value_str = "'CountryCode_Switzerland:167'";
+			break;
+		case CountryCode_Syria:
+				value_str = "'CountryCode_Syria:168'";
+			break;
+		case CountryCode_Taiwan:
+				value_str = "'CountryCode_Taiwan:169'";
+			break;
+		case CountryCode_Tajikstan:
+				value_str = "'CountryCode_Tajikstan:170'";
+			break;
+		case CountryCode_Tanzania:
+				value_str = "'CountryCode_Tanzania:171'";
+			break;
+		case CountryCode_Thailand:
+				value_str = "'CountryCode_Thailand:172'";
+			break;
+		case CountryCode_Togo:
+				value_str = "'CountryCode_Togo:173'";
+			break;
+		case CountryCode_Tonga:
+				value_str = "'CountryCode_Tonga:174'";
+			break;
+		case CountryCode_Trinidad_and_Tobago:
+				value_str = "'CountryCode_Trinidad_and_Tobago:175'";
+			break;
+		case CountryCode_Tunisia:
+				value_str = "'CountryCode_Tunisia:176'";
+			break;
+		case CountryCode_Turkey:
+				value_str = "'CountryCode_Turkey:177'";
+			break;
+		case CountryCode_Turkmenistan:
+				value_str = "'CountryCode_Turkmenistan:178'";
+			break;
+		case CountryCode_Uganda:
+				value_str = "'CountryCode_Uganda:179'";
+			break;
+		case CountryCode_Ukraine:
+				value_str = "'CountryCode_Ukraine:180'";
+			break;
+		case CountryCode_United_Arab_Emirates:
+				value_str = "'CountryCode_United_Arab_Emirates:181'";
+			break;
+		case CountryCode_United_Kingdom:
+				value_str = "'CountryCode_United_Kingdom:182'";
+			break;
+		case CountryCode_Uruguay:
+				value_str = "'CountryCode_Uruguay:183'";
+			break;
+		case CountryCode_Uzbekistan:
+				value_str = "'CountryCode_Uzbekistan:184'";
+			break;
+		case CountryCode_Venezuela:
+				value_str = "'CountryCode_Venezuela:185'";
+			break;
+		case CountryCode_Vietnam:
+				value_str = "'CountryCode_Vietnam:186'";
+			break;
+		case CountryCode_Yemen:
+				value_str = "'CountryCode_Yemen:187'";
+			break;
+		case CountryCode_Yugoslavia:
+				value_str = "'CountryCode_Yugoslavia:188'";
+			break;
+		case CountryCode_Zimbabwe:
+				value_str = "'CountryCode_Zimbabwe:189'";
+			break;
+		case CountryCode_Zaire:
+				value_str = "'CountryCode_Zaire:190'";
+			break;
+		case CountryCode_Zambia:
+				value_str = "'CountryCode_Zambia:191'";
+			break;
+		case CountryCode_Canada:
+				value_str = "'CountryCode_Canada:192'";
+			break;
+		case CountryCode_USA:
+				value_str = "'CountryCode_USA:193'";
+			break;
+		case CountryCode_Kampuchea:
+				value_str = "'CountryCode_Kampuchea:194'";
+			break;
+		case CountryCode_any:
+				value_str = "'CountryCode_any'";
+			break;
+		case CountryCode_unknown:
+				value_str = "'CountryCode_unknown'";
+			break;
+		case CountryCode_error:
+				value_str = "'CountryCode_error'";
+			break;
+		case CountryCode_max:
+				value_str = "'CountryCode_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CurrencyType_str(CurrencyType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CurrencyType_reserve:
+				value_str = "'CurrencyType_reserve:0'";
+			break;
+		case CurrencyType_audio:
+				value_str = "'CurrencyType_audio:1'";
+			break;
+		case CurrencyType_video:
+				value_str = "'CurrencyType_video:2'";
+			break;
+		case CurrencyType_RMB:
+				value_str = "'CurrencyType_RMB:3'";
+			break;
+		case CurrencyType_USD:
+				value_str = "'CurrencyType_USD:4'";
+			break;
+		case CurrencyType_GBP:
+				value_str = "'CurrencyType_GBP:5'";
+			break;
+		case CurrencyType_JPY:
+				value_str = "'CurrencyType_JPY:6'";
+			break;
+		case CurrencyType_EUR:
+				value_str = "'CurrencyType_EUR:7'";
+			break;
+		case CurrencyType_AUD:
+				value_str = "'CurrencyType_AUD:8'";
+			break;
+		case CurrencyType_DEM:
+				value_str = "'CurrencyType_DEM:9'";
+			break;
+		case CurrencyType_CHF:
+				value_str = "'CurrencyType_CHF:10'";
+			break;
+		case CurrencyType_FRF:
+				value_str = "'CurrencyType_FRF:11'";
+			break;
+		case CurrencyType_CAD:
+				value_str = "'CurrencyType_CAD:12'";
+			break;
+		case CurrencyType_HKD:
+				value_str = "'CurrencyType_HKD:13'";
+			break;
+		case CurrencyType_ATS:
+				value_str = "'CurrencyType_ATS:14'";
+			break;
+		case CurrencyType_FIM:
+				value_str = "'CurrencyType_FIM:15'";
+			break;
+		case CurrencyType_BEF:
+				value_str = "'CurrencyType_BEF:16'";
+			break;
+		case CurrencyType_NZD:
+				value_str = "'CurrencyType_NZD:17'";
+			break;
+		case CurrencyType_SGD:
+				value_str = "'CurrencyType_SGD:18'";
+			break;
+		case CurrencyType_KRW:
+				value_str = "'CurrencyType_KRW:19'";
+			break;
+		case CurrencyType_IEP:
+				value_str = "'CurrencyType_IEP:20'";
+			break;
+		case CurrencyType_ITL:
+				value_str = "'CurrencyType_ITL:21'";
+			break;
+		case CurrencyType_LUF:
+				value_str = "'CurrencyType_LUF:22'";
+			break;
+		case CurrencyType_NLG:
+				value_str = "'CurrencyType_NLG:23'";
+			break;
+		case CurrencyType_PTE:
+				value_str = "'CurrencyType_PTE:24'";
+			break;
+		case CurrencyType_ESP:
+				value_str = "'CurrencyType_ESP:25'";
+			break;
+		case CurrencyType_IDR:
+				value_str = "'CurrencyType_IDR:26'";
+			break;
+		case CurrencyType_MYR:
+				value_str = "'CurrencyType_MYR:27'";
+			break;
+		case CurrencyType_PHP:
+				value_str = "'CurrencyType_PHP:28'";
+			break;
+		case CurrencyType_SUR:
+				value_str = "'CurrencyType_SUR:29'";
+			break;
+		case CurrencyType_THB:
+				value_str = "'CurrencyType_THB:30'";
+			break;
+		case CurrencyType_reserve1:
+				value_str = "'CurrencyType_reserve1:31'";
+			break;
+		case CurrencyType_max:
+				value_str = "'CurrencyType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_DBInqType_str(DBInqType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case DBInqType_BillingUserInfo:
+				value_str = "'DBInqType_BillingUserInfo:1'";
+			break;
+		case DBInqType_NumberInfo:
+				value_str = "'DBInqType_NumberInfo:2'";
+			break;
+		case DBInqType_RnmInfo:
+				value_str = "'DBInqType_RnmInfo:3'";
+			break;
+		case DBInqType_BasicUserInfo:
+				value_str = "'DBInqType_BasicUserInfo:4'";
+			break;
+		case DBInqType_All:
+				value_str = "'DBInqType_All:5'";
+			break;
+		case DBInqType_max:
+				value_str = "'DBInqType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_DaveDataType_str(DaveDataType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case DaveDataType_char:
+				value_str = "'DaveDataType_char'";
+			break;
+		case DaveDataType_int:
+				value_str = "'DaveDataType_int'";
+			break;
+		case DaveDataType_float:
+				value_str = "'DaveDataType_float'";
+			break;
+		case DaveDataType_double:
+				value_str = "'DaveDataType_double'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_DaveJsonType_str(DaveJsonType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case JsonType_Null:
+				value_str = "'JsonType_Null'";
+			break;
+		case JsonType_Boolean:
+				value_str = "'JsonType_Boolean'";
+			break;
+		case JsonType_Double:
+				value_str = "'JsonType_Double'";
+			break;
+		case JsonType_Int:
+				value_str = "'JsonType_Int'";
+			break;
+		case JsonType_Object:
+				value_str = "'JsonType_Object'";
+			break;
+		case JsonType_Array:
+				value_str = "'JsonType_Array'";
+			break;
+		case JsonType_String:
+				value_str = "'JsonType_String'";
+			break;
+		case JsonType_Invalid:
+				value_str = "'JsonType_Invalid'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value)
 {
 	s8 *value_str = NULL;
@@ -129,6 +1802,855 @@ t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value)
 			break;
 		case NetCardBind_disable:
 				value_str = "'NetCardBind_disable:0x09abcdef'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_EnvironmentFlag_str(EnvironmentFlag enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case EnvironmentFlag_test:
+				value_str = "'EnvironmentFlag_test'";
+			break;
+		case EnvironmentFlag_STG:
+				value_str = "'EnvironmentFlag_STG'";
+			break;
+		case EnvironmentFlag_Product:
+				value_str = "'EnvironmentFlag_Product'";
+			break;
+		case EnvironmentFlag_max:
+				value_str = "'EnvironmentFlag_max:0x100000000'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ErrCode_str(ErrCode enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case ErrCode_begin_value:
+				value_str = "'ErrCode_begin_value:1'";
+			break;
+		case ERRCODE_OK:
+				value_str = "'ERRCODE_OK:0'";
+			break;
+		case ERRCODE_Memory_full:
+				value_str = "'ERRCODE_Memory_full:-1'";
+			break;
+		case ERRCODE_Limited_resources:
+				value_str = "'ERRCODE_Limited_resources:-2'";
+			break;
+		case ERRCODE_Arithmetic_error:
+				value_str = "'ERRCODE_Arithmetic_error:-3'";
+			break;
+		case ERRCODE_Unknown_error:
+				value_str = "'ERRCODE_Unknown_error:-4'";
+			break;
+		case ERRCODE_Can_not_find_node:
+				value_str = "'ERRCODE_Can_not_find_node:-5'";
+			break;
+		case ERRCODE_Send_failed:
+				value_str = "'ERRCODE_Send_failed:-6'";
+			break;
+		case ERRCODE_Recv_failed:
+				value_str = "'ERRCODE_Recv_failed:-7'";
+			break;
+		case ERRCODE_Invalid_data:
+				value_str = "'ERRCODE_Invalid_data:-8'";
+			break;
+		case ERRCODE_Unsupported_type:
+				value_str = "'ERRCODE_Unsupported_type:-9'";
+			break;
+		case ERRCODE_Invalid_user_name:
+				value_str = "'ERRCODE_Invalid_user_name:-10'";
+			break;
+		case ERRCODE_Parameter_conflicts:
+				value_str = "'ERRCODE_Parameter_conflicts:-11'";
+			break;
+		case ERRCODE_Invalid_device:
+				value_str = "'ERRCODE_Invalid_device:-12'";
+			break;
+		case ERRCODE_Invalid_Event:
+				value_str = "'ERRCODE_Invalid_Event:-13'";
+			break;
+		case ERRCODE_Heartbeat_timeout:
+				value_str = "'ERRCODE_Heartbeat_timeout:-14'";
+			break;
+		case ERRCODE_Invalid_password:
+				value_str = "'ERRCODE_Invalid_password:-15'";
+			break;
+		case ERRCODE_save_failed:
+				value_str = "'ERRCODE_save_failed:-16'";
+			break;
+		case ERRCODE_Invalid_data_too_short:
+				value_str = "'ERRCODE_Invalid_data_too_short:-17'";
+			break;
+		case ERRCODE_Invalid_data_too_long:
+				value_str = "'ERRCODE_Invalid_data_too_long:-18'";
+			break;
+		case ERRCODE_Invalid_data_crc_check:
+				value_str = "'ERRCODE_Invalid_data_crc_check:-19'";
+			break;
+		case ERRCODE_Invalid_parameter:
+				value_str = "'ERRCODE_Invalid_parameter:-20'";
+			break;
+		case ERRCODE_Send_msg_failed:
+				value_str = "'ERRCODE_Send_msg_failed:-21'";
+			break;
+		case ERRCODE_Resource_conflicts:
+				value_str = "'ERRCODE_Resource_conflicts:-22'";
+			break;
+		case ERRCODE_CREDIT_LIMIT_REACHED:
+				value_str = "'ERRCODE_CREDIT_LIMIT_REACHED:-23'";
+			break;
+		case ERRCODE_Exceeded_number:
+				value_str = "'ERRCODE_Exceeded_number:-24'";
+			break;
+		case ERRCODE_do_not_free:
+				value_str = "'ERRCODE_do_not_free:-25'";
+			break;
+		case ERRCODE_Request_failed:
+				value_str = "'ERRCODE_Request_failed:-26'";
+			break;
+		case ERRCODE_can_not_find_ret_code:
+				value_str = "'ERRCODE_can_not_find_ret_code:-27'";
+			break;
+		case ERRCODE_user_is_registered:
+				value_str = "'ERRCODE_user_is_registered:-28'";
+			break;
+		case ERRCODE_connect_error:
+				value_str = "'ERRCODE_connect_error:-29'";
+			break;
+		case ERRCODE_function_not_supported:
+				value_str = "'ERRCODE_function_not_supported:-30'";
+			break;
+		case ERRCODE_msg_queue_is_full:
+				value_str = "'ERRCODE_msg_queue_is_full:-31'";
+			break;
+		case ERRCODE_msg_can_not_resend_wakeup:
+				value_str = "'ERRCODE_msg_can_not_resend_wakeup:-32'";
+			break;
+		case ERRCODE_msg_memory_if_full:
+				value_str = "'ERRCODE_msg_memory_if_full:-33'";
+			break;
+		case ERRCODE_msg_competition_for_resources:
+				value_str = "'ERRCODE_msg_competition_for_resources:-34'";
+			break;
+		case ERRCODE_wait:
+				value_str = "'ERRCODE_wait:-35'";
+			break;
+		case ERRCODE_Invalid_state:
+				value_str = "'ERRCODE_Invalid_state:-36'";
+			break;
+		case ERRCODE_usr_default:
+				value_str = "'ERRCODE_usr_default:-37'";
+			break;
+		case ERRCODE_timer_out:
+				value_str = "'ERRCODE_timer_out:-38'";
+			break;
+		case ERRCODE_invalid_type:
+				value_str = "'ERRCODE_invalid_type:-39'";
+			break;
+		case ERRCODE_user_does_not_exist:
+				value_str = "'ERRCODE_user_does_not_exist:-40'";
+			break;
+		case ERRCODE_version_new:
+				value_str = "'ERRCODE_version_new:-41'";
+			break;
+		case ERRCODE_version_old:
+				value_str = "'ERRCODE_version_old:-42'";
+			break;
+		case ERRCODE_ptr_null:
+				value_str = "'ERRCODE_ptr_null:-43'";
+			break;
+		case ERRCODE_record_not_exist:
+				value_str = "'ERRCODE_record_not_exist:-44'";
+			break;
+		case ERRCODE_db_store_failed:
+				value_str = "'ERRCODE_db_store_failed:-45'";
+			break;
+		case ERRCODE_db_not_find:
+				value_str = "'ERRCODE_db_not_find:-46'";
+			break;
+		case ERRCODE_Invalid_channel_name:
+				value_str = "'ERRCODE_Invalid_channel_name:-47'";
+			break;
+		case ERRCODE_Invalid_db_store:
+				value_str = "'ERRCODE_Invalid_db_store:-48'";
+			break;
+		case ERRCODE_version_mismatch:
+				value_str = "'ERRCODE_version_mismatch:-49'";
+			break;
+		case ERRCODE_invalid_version_file:
+				value_str = "'ERRCODE_invalid_version_file:-50'";
+			break;
+		case ERRCODE_version_identical:
+				value_str = "'ERRCODE_version_identical:-51'";
+			break;
+		case ERRCODE_db_sql_failed:
+				value_str = "'ERRCODE_db_sql_failed:-52'";
+			break;
+		case ERRCODE_invalid_option:
+				value_str = "'ERRCODE_invalid_option:-53'";
+			break;
+		case ERRCODE_Invalid_domain:
+				value_str = "'ERRCODE_Invalid_domain:-54'";
+			break;
+		case ERRCODE_Invalid_auth_key:
+				value_str = "'ERRCODE_Invalid_auth_key:-55'";
+			break;
+		case ERRCODE_invalid_key:
+				value_str = "'ERRCODE_invalid_key:-56'";
+			break;
+		case ERRCODE_no_account_found:
+				value_str = "'ERRCODE_no_account_found:-57'";
+			break;
+		case ERRCODE_invalid_phone_number:
+				value_str = "'ERRCODE_invalid_phone_number:-58'";
+			break;
+		case ERRCODE_not_match_domain:
+				value_str = "'ERRCODE_not_match_domain:-59'";
+			break;
+		case ERRCODE_invalid_account:
+				value_str = "'ERRCODE_invalid_account:-60'";
+			break;
+		case ERRCODE_please_help_free:
+				value_str = "'ERRCODE_please_help_free:-61'";
+			break;
+		case ERRCODE_db_init_failed:
+				value_str = "'ERRCODE_db_init_failed:-62'";
+			break;
+		case ERRCODE_update_fail:
+				value_str = "'ERRCODE_update_fail:-63'";
+			break;
+		case ERRCODE_maybe_have_data:
+				value_str = "'ERRCODE_maybe_have_data:-64'";
+			break;
+		case ERRCODE_do_not_restart:
+				value_str = "'ERRCODE_do_not_restart:-65'";
+			break;
+		case ERRCODE_lost_auth_key:
+				value_str = "'ERRCODE_lost_auth_key:-66'";
+			break;
+		case ERRCODE_lost_serial:
+				value_str = "'ERRCODE_lost_serial:-67'";
+			break;
+		case ERRCODE_lost_time:
+				value_str = "'ERRCODE_lost_time:-68'";
+			break;
+		case ERRCODE_lost_uuid:
+				value_str = "'ERRCODE_lost_uuid:-69'";
+			break;
+		case ERRCODE_lost_user:
+				value_str = "'ERRCODE_lost_user:-70'";
+			break;
+		case ERRCODE_can_not_find_record:
+				value_str = "'ERRCODE_can_not_find_record:-71'";
+			break;
+		case ERRCODE_lost_dial_number:
+				value_str = "'ERRCODE_lost_dial_number:-72'";
+			break;
+		case ERRCODE_call_prohibition:
+				value_str = "'ERRCODE_call_prohibition:-73'";
+			break;
+		case ERRCODE_lost_link:
+				value_str = "'ERRCODE_lost_link:-74'";
+			break;
+		case ERRCODE_record_not_found:
+				value_str = "'ERRCODE_record_not_found:-75'";
+			break;
+		case ERRCODE_ims_account_incorrect:
+				value_str = "'ERRCODE_ims_account_incorrect:-76'";
+			break;
+		case ERRCODE_invalid_dial_number:
+				value_str = "'ERRCODE_invalid_dial_number:-77'";
+			break;
+		case ERRCODE_Invalid_balance:
+				value_str = "'ERRCODE_Invalid_balance:-78'";
+			break;
+		case ERRCODE_user_exist:
+				value_str = "'ERRCODE_user_exist:-79'";
+			break;
+		case ERRCODE_store_data_failed:
+				value_str = "'ERRCODE_store_data_failed:-80'";
+			break;
+		case ERRCODE_Invalid_user_type:
+				value_str = "'ERRCODE_Invalid_user_type:-81'";
+			break;
+		case ERRCODE_invalid_user:
+				value_str = "'ERRCODE_invalid_user:-82'";
+			break;
+		case ERRCODE_unsupport:
+				value_str = "'ERRCODE_unsupport:-83'";
+			break;
+		case ERRCODE_unpackage_failed:
+				value_str = "'ERRCODE_unpackage_failed:-84'";
+			break;
+		case ERRCODE_creat_db_failed:
+				value_str = "'ERRCODE_creat_db_failed:-85'";
+			break;
+		case ERRCODE_Invalid_channel:
+				value_str = "'ERRCODE_Invalid_channel:-86'";
+			break;
+		case ERRCODE_heartbeat_timer_out:
+				value_str = "'ERRCODE_heartbeat_timer_out:-87'";
+			break;
+		case ERRCODE_Invalid_package:
+				value_str = "'ERRCODE_Invalid_package:-88'";
+			break;
+		case ERRCODE_Invalid_rules:
+				value_str = "'ERRCODE_Invalid_rules:-89'";
+			break;
+		case ERRCODE_busy:
+				value_str = "'ERRCODE_busy:-90'";
+			break;
+		case ERRCODE_data_overflow:
+				value_str = "'ERRCODE_data_overflow:-91'";
+			break;
+		case ERRCODE_invalid_account_name:
+				value_str = "'ERRCODE_invalid_account_name:-92'";
+			break;
+		case ERRCODE_Account_in_use:
+				value_str = "'ERRCODE_Account_in_use:-93'";
+			break;
+		case ERRCODE_invalid_address:
+				value_str = "'ERRCODE_invalid_address:-94'";
+			break;
+		case ERRCODE_can_not_find_rules:
+				value_str = "'ERRCODE_can_not_find_rules:-95'";
+			break;
+		case ERRCODE_refuse_call_self:
+				value_str = "'ERRCODE_refuse_call_self:-96'";
+			break;
+		case ERRCODE_Invalid_call:
+				value_str = "'ERRCODE_Invalid_call:-97'";
+			break;
+		case ERRCODE_mismatch:
+				value_str = "'ERRCODE_mismatch:-98'";
+			break;
+		case ERRCODE_Invalid_call_type:
+				value_str = "'ERRCODE_Invalid_call_type:-99'";
+			break;
+		case ERRCODE_Invalid_billing:
+				value_str = "'ERRCODE_Invalid_billing:-100'";
+			break;
+		case ERRCODE_invalid_magic:
+				value_str = "'ERRCODE_invalid_magic:-101'";
+			break;
+		case ERRCODE_create_thread_failed:
+				value_str = "'ERRCODE_create_thread_failed:-102'";
+			break;
+		case ERRCODE_execute_sql_failed:
+				value_str = "'ERRCODE_execute_sql_failed:-103'";
+			break;
+		case ERRCODE_decode_failed:
+				value_str = "'ERRCODE_decode_failed:-104'";
+			break;
+		case ERRCODE_encode_failed:
+				value_str = "'ERRCODE_encode_failed:-105'";
+			break;
+		case ERRCODE_invalid_file:
+				value_str = "'ERRCODE_invalid_file:-106'";
+			break;
+		case ERRCODE_file_open_failed:
+				value_str = "'ERRCODE_file_open_failed:-107'";
+			break;
+		case ERRCODE_process_now:
+				value_str = "'ERRCODE_process_now:-108'";
+			break;
+		case ERRCODE_queue_too_large:
+				value_str = "'ERRCODE_queue_too_large:-109'";
+			break;
+		case ERRCODE_add_user_name_failed:
+				value_str = "'ERRCODE_add_user_name_failed:-110'";
+			break;
+		case ERRCODE_call_time_limited:
+				value_str = "'ERRCODE_call_time_limited:-111'";
+			break;
+		case ERRCODE_invalid_hour:
+				value_str = "'ERRCODE_invalid_hour:-112'";
+			break;
+		case ERRCODE_invalid_day:
+				value_str = "'ERRCODE_invalid_day:-113'";
+			break;
+		case ERRCODE_invalid_week:
+				value_str = "'ERRCODE_invalid_week:-114'";
+			break;
+		case ERRCODE_invalid_month:
+				value_str = "'ERRCODE_invalid_month:-115'";
+			break;
+		case ERRCODE_invalid_year:
+				value_str = "'ERRCODE_invalid_year:-116'";
+			break;
+		case ERRCODE_invalid_unit:
+				value_str = "'ERRCODE_invalid_unit:-117'";
+			break;
+		case ERRCODE_invalid_rules_number:
+				value_str = "'ERRCODE_invalid_rules_number:-118'";
+			break;
+		case ERRCODE_invalid_package_private:
+				value_str = "'ERRCODE_invalid_package_private:-119'";
+			break;
+		case ERRCODE_rules_id_mismatch:
+				value_str = "'ERRCODE_rules_id_mismatch:-120'";
+			break;
+		case ERRCODE_channel_not_exist:
+				value_str = "'ERRCODE_channel_not_exist:-121'";
+			break;
+		case ERRCODE_invalid_donation_account:
+				value_str = "'ERRCODE_invalid_donation_account:-122'";
+			break;
+		case ERRCODE_channel_exist:
+				value_str = "'ERRCODE_channel_exist:-123'";
+			break;
+		case ERRCODE_invalid_date:
+				value_str = "'ERRCODE_invalid_date:-124'";
+			break;
+		case ERRCODE_not_my_data:
+				value_str = "'ERRCODE_not_my_data:-125'";
+			break;
+		case ERRCODE_only_share_user_pwd_can_modify:
+				value_str = "'ERRCODE_only_share_user_pwd_can_modify:-126'";
+			break;
+		case ERRCODE_can_not_find_thread:
+				value_str = "'ERRCODE_can_not_find_thread:-127'";
+			break;
+		case ERRCODE_lost_register_e164_number:
+				value_str = "'ERRCODE_lost_register_e164_number:-128'";
+			break;
+		case ERRCODE_lost_modify_impu_flag:
+				value_str = "'ERRCODE_lost_modify_impu_flag:-129'";
+			break;
+		case ERRCODE_lost_country_code_of_e164_number:
+				value_str = "'ERRCODE_lost_country_code_of_e164_number:-130'";
+			break;
+		case ERRCODE_lost_sip_password:
+				value_str = "'ERRCODE_lost_sip_password:-131'";
+			break;
+		case ERRCODE_invalid_modify_impu_flag:
+				value_str = "'ERRCODE_invalid_modify_impu_flag:-132'";
+			break;
+		case ERRCODE_invalid_country_code_of_e164_number:
+				value_str = "'ERRCODE_invalid_country_code_of_e164_number:-133'";
+			break;
+		case ERRCODE_invalid_register_e164_number:
+				value_str = "'ERRCODE_invalid_register_e164_number:-134'";
+			break;
+		case ERRCODE_modify_impu_failed:
+				value_str = "'ERRCODE_modify_impu_failed:-135'";
+			break;
+		case ERRCODE_impu_not_existed:
+				value_str = "'ERRCODE_impu_not_existed:-136'";
+			break;
+		case ERRCODE_script_execution_error:
+				value_str = "'ERRCODE_script_execution_error:-137'";
+			break;
+		case ERRCODE_invalid_share_ram:
+				value_str = "'ERRCODE_invalid_share_ram:-138'";
+			break;
+		case ERRCODE_Duplicate_MSISDN:
+				value_str = "'ERRCODE_Duplicate_MSISDN:-139'";
+			break;
+		case ERRCODE_Duplicate_IMSI:
+				value_str = "'ERRCODE_Duplicate_IMSI:-140'";
+			break;
+		case ERRCODE_Duplicate_VOIP_MSISDN:
+				value_str = "'ERRCODE_Duplicate_VOIP_MSISDN:-141'";
+			break;
+		case ERRCODE_Not_found:
+				value_str = "'ERRCODE_Not_found:-142'";
+			break;
+		case ERRCODE_Failure_to_be_actived:
+				value_str = "'ERRCODE_Failure_to_be_actived:-143'";
+			break;
+		case ERRCODE_Other_errors:
+				value_str = "'ERRCODE_Other_errors:-144'";
+			break;
+		case ERRCODE_lost_result_code:
+				value_str = "'ERRCODE_lost_result_code:-145'";
+			break;
+		case ERRCODE_invalid_imsi:
+				value_str = "'ERRCODE_invalid_imsi:-146'";
+			break;
+		case ERRCODE_invalid_msisdn:
+				value_str = "'ERRCODE_invalid_msisdn:-147'";
+			break;
+		case ERRCODE_invalid_voip_msisdn:
+				value_str = "'ERRCODE_invalid_voip_msisdn:-148'";
+			break;
+		case ERRCODE_processing_is_complete:
+				value_str = "'ERRCODE_processing_is_complete:-149'";
+			break;
+		case ERRCODE_secondary_number_ass_repeated:
+				value_str = "'ERRCODE_secondary_number_ass_repeated:-150'";
+			break;
+		case ERRCODE_secondary_number_not_available:
+				value_str = "'ERRCODE_secondary_number_not_available:-151'";
+			break;
+		case ERRCODE_secondary_number_ret_failed:
+				value_str = "'ERRCODE_secondary_number_ret_failed:-152'";
+			break;
+		case ERRCODE_secondary_number_inquiry_failed:
+				value_str = "'ERRCODE_secondary_number_inquiry_failed:-153'";
+			break;
+		case ERRCODE_lost_secondary_number:
+				value_str = "'ERRCODE_lost_secondary_number:-154'";
+			break;
+		case ERRCODE_invalid_e164_number_type:
+				value_str = "'ERRCODE_invalid_e164_number_type:-155'";
+			break;
+		case ERRCODE_lost_number_request_type:
+				value_str = "'ERRCODE_lost_number_request_type:-156'";
+			break;
+		case ERRCODE_secondary_number_not_existed:
+				value_str = "'ERRCODE_secondary_number_not_existed:-157'";
+			break;
+		case ERRCODE_invalid_content:
+				value_str = "'ERRCODE_invalid_content:-158'";
+			break;
+		case ERRCODE_invalid_email:
+				value_str = "'ERRCODE_invalid_email:-159'";
+			break;
+		case ERRCODE_repeated_request:
+				value_str = "'ERRCODE_repeated_request:-160'";
+			break;
+		case ERRCODE_rules_exist:
+				value_str = "'ERRCODE_rules_exist:-161'";
+			break;
+		case ERRCODE_lack_of_donor:
+				value_str = "'ERRCODE_lack_of_donor:-162'";
+			break;
+		case ERRCODE_lost_im_user_name:
+				value_str = "'ERRCODE_lost_im_user_name:-163'";
+			break;
+		case ERRCODE_lost_im_password:
+				value_str = "'ERRCODE_lost_im_password:-164'";
+			break;
+		case ERRCODE_invalid_im_nickname:
+				value_str = "'ERRCODE_invalid_im_nickname:-165'";
+			break;
+		case ERRCODE_im_user_dereg_failed:
+				value_str = "'ERRCODE_im_user_dereg_failed:-166'";
+			break;
+		case ERRCODE_im_user_not_existed:
+				value_str = "'ERRCODE_im_user_not_existed:-167'";
+			break;
+		case ERRCODE_im_user_reg_failed:
+				value_str = "'ERRCODE_im_user_reg_failed:-168'";
+			break;
+		case ERRCODE_invalid_im_user_name:
+				value_str = "'ERRCODE_invalid_im_user_name:-169'";
+			break;
+		case ERRCODE_invalid_im_password:
+				value_str = "'ERRCODE_invalid_im_password:-170'";
+			break;
+		case ERRCODE_lost_imsi:
+				value_str = "'ERRCODE_lost_imsi:-171'";
+			break;
+		case ERRCODE_lost_binding_status:
+				value_str = "'ERRCODE_lost_binding_status:-172'";
+			break;
+		case ERRCODE_invalid_binding_status:
+				value_str = "'ERRCODE_invalid_binding_status:-173'";
+			break;
+		case ERRCODE_package_exist:
+				value_str = "'ERRCODE_package_exist:-174'";
+			break;
+		case ERRCODE_invalid_billing_user_data:
+				value_str = "'ERRCODE_invalid_billing_user_data:-175'";
+			break;
+		case ERRCODE_Failure_to_activate_validity:
+				value_str = "'ERRCODE_Failure_to_activate_validity:-176'";
+			break;
+		case ERRCODE_Time_lapse:
+				value_str = "'ERRCODE_Time_lapse:-177'";
+			break;
+		case ERRCODE_Billing_reached_the_limit:
+				value_str = "'ERRCODE_Billing_reached_the_limit:-178'";
+			break;
+		case ERRCODE_invalid_recharge:
+				value_str = "'ERRCODE_invalid_recharge:-179'";
+			break;
+		case ERRCODE_Date_expired:
+				value_str = "'ERRCODE_Date_expired:-180'";
+			break;
+		case ERRCODE_lost_package_info:
+				value_str = "'ERRCODE_lost_package_info:-181'";
+			break;
+		case ERRCODE_not_access:
+				value_str = "'ERRCODE_not_access:-182'";
+			break;
+		case ERRCODE_invalid_minute:
+				value_str = "'ERRCODE_invalid_minute:-183'";
+			break;
+		case ERRCODE_invalid_second:
+				value_str = "'ERRCODE_invalid_second:-184'";
+			break;
+		case ERRCODE_not_do_anything:
+				value_str = "'ERRCODE_not_do_anything:-185'";
+			break;
+		case ERRCODE_empty_data:
+				value_str = "'ERRCODE_empty_data:-186'";
+			break;
+		case ERRCODE_not_group_rules:
+				value_str = "'ERRCODE_not_group_rules:-187'";
+			break;
+		case ERRCODE_on_billing_operation_not_allowed:
+				value_str = "'ERRCODE_on_billing_operation_not_allowed:-188'";
+			break;
+		case ERRCODE_roaming_not_allowed:
+				value_str = "'ERRCODE_roaming_not_allowed:-189'";
+			break;
+		case ERRCODE_invalid_mcard:
+				value_str = "'ERRCODE_invalid_mcard:-190'";
+			break;
+		case ERRCODE_Too_many_packages:
+				value_str = "'ERRCODE_Too_many_packages:-191'";
+			break;
+		case ERRCODE_Too_many_rules:
+				value_str = "'ERRCODE_Too_many_rules:-192'";
+			break;
+		case ERRCODE_can_not_find_mcard:
+				value_str = "'ERRCODE_can_not_find_mcard:-193'";
+			break;
+		case ERRCODE_Failure_to_be_deactived:
+				value_str = "'ERRCODE_Failure_to_be_deactived:-194'";
+			break;
+		case ERRCODE_operating_end:
+				value_str = "'ERRCODE_operating_end:-195'";
+			break;
+		case ERRCODE_invalid_voip_setting:
+				value_str = "'ERRCODE_invalid_voip_setting:-196'";
+			break;
+		case ERRCODE_Call_barring:
+				value_str = "'ERRCODE_Call_barring:-197'";
+			break;
+		case ERRCODE_add_forbidden_user_failed:
+				value_str = "'ERRCODE_add_forbidden_user_failed:-198'";
+			break;
+		case ERRCODE_forbidden_register_user:
+				value_str = "'ERRCODE_forbidden_register_user:-199'";
+			break;
+		case ERRCODE_Unauthorized:
+				value_str = "'ERRCODE_Unauthorized:-200'";
+			break;
+		case ERRCODE_is_rnm_user:
+				value_str = "'ERRCODE_is_rnm_user:-201'";
+			break;
+		case ERRCODE_table_exist:
+				value_str = "'ERRCODE_table_exist:-202'";
+			break;
+		case ERRCODE_record_empty:
+				value_str = "'ERRCODE_record_empty:-203'";
+			break;
+		case ERRCODE_impu_existed:
+				value_str = "'ERRCODE_impu_existed:-204'";
+			break;
+		case ERRCODE_invalid_context:
+				value_str = "'ERRCODE_invalid_context:-205'";
+			break;
+		case ERRCODE_authorized_failed:
+				value_str = "'ERRCODE_authorized_failed:-206'";
+			break;
+		case ERRCODE_logout:
+				value_str = "'ERRCODE_logout:-207'";
+			break;
+		case ERRCODE_mute_set_failed:
+				value_str = "'ERRCODE_mute_set_failed:-208'";
+			break;
+		case ERRCODE_invalid_url:
+				value_str = "'ERRCODE_invalid_url:-209'";
+			break;
+		case ERRCODE_Threshold_limit:
+				value_str = "'ERRCODE_Threshold_limit:-210'";
+			break;
+		case ERRCODE_Channel_closed:
+				value_str = "'ERRCODE_Channel_closed:-211'";
+			break;
+		case ERRCODE_invalid_request:
+				value_str = "'ERRCODE_invalid_request:-212'";
+			break;
+		case ERRCODE_Duplicate_name:
+				value_str = "'ERRCODE_Duplicate_name:-213'";
+			break;
+		case ERRCODE_lost_parameter:
+				value_str = "'ERRCODE_lost_parameter:-214'";
+			break;
+		case ERRCODE_lost_protocol:
+				value_str = "'ERRCODE_lost_protocol:-215'";
+			break;
+		case ERRCODE_system_not_ready:
+				value_str = "'ERRCODE_system_not_ready:-216'";
+			break;
+		case ERRCODE_package_check:
+				value_str = "'ERRCODE_package_check:-217'";
+			break;
+		case ERRCODE_package_discard:
+				value_str = "'ERRCODE_package_discard:-218'";
+			break;
+		case ERRCODE_resend:
+				value_str = "'ERRCODE_resend:-219'";
+			break;
+		case ERRCODE_Invalid_object:
+				value_str = "'ERRCODE_Invalid_object:-220'";
+			break;
+		case ERRCODE_over_max_package_types:
+				value_str = "'ERRCODE_over_max_package_types:-221'";
+			break;
+		case ERRCODE_over_max_package_numbers:
+				value_str = "'ERRCODE_over_max_package_numbers:-222'";
+			break;
+		case ERRCODE_wait_more_data:
+				value_str = "'ERRCODE_wait_more_data:-223'";
+			break;
+		case ERRCODE_unregister:
+				value_str = "'ERRCODE_unregister:-224'";
+			break;
+		case ERRCODE_maximum_intents:
+				value_str = "'ERRCODE_maximum_intents:-225'";
+			break;
+		case ERRCODE_intercept:
+				value_str = "'ERRCODE_intercept:-226'";
+			break;
+		case ERRCODE_repetitive_operation:
+				value_str = "'ERRCODE_repetitive_operation:-227'";
+			break;
+		case ERRCODE_Failed_to_identify:
+				value_str = "'ERRCODE_Failed_to_identify:-228'";
+			break;
+		case ERRCODE_Failed_to_features:
+				value_str = "'ERRCODE_Failed_to_features:-229'";
+			break;
+		case ERRCODE_No_clear_intention:
+				value_str = "'ERRCODE_No_clear_intention:-230'";
+			break;
+		case ERRCODE_db_no_data:
+				value_str = "'ERRCODE_db_no_data:-231'";
+			break;
+		case ERRCODE_insufficient_balance:
+				value_str = "'ERRCODE_insufficient_balance:-232'";
+			break;
+		case ERRCODE_lost_lock:
+				value_str = "'ERRCODE_lost_lock:-233'";
+			break;
+		case ERRCODE_lost_req_type:
+				value_str = "'ERRCODE_lost_req_type:-234'";
+			break;
+		case ERRCODE_can_not_find_client:
+				value_str = "'ERRCODE_can_not_find_client:-235'";
+			break;
+		case ERRCODE_out_of_bounds:
+				value_str = "'ERRCODE_out_of_bounds:-236'";
+			break;
+		case ERRCODE_valuation:
+				value_str = "'ERRCODE_valuation:-237'";
+			break;
+		case ERRCODE_Invalid_version:
+				value_str = "'ERRCODE_Invalid_version:-238'";
+			break;
+		case ERRCODE_auth_key_exist:
+				value_str = "'ERRCODE_auth_key_exist:-239'";
+			break;
+		case ERRCODE_predict_failed:
+				value_str = "'ERRCODE_predict_failed:-240'";
+			break;
+		case ERRCODE_internal_server_error:
+				value_str = "'ERRCODE_internal_server_error:-241'";
+			break;
+		case ERRCODE_update:
+				value_str = "'ERRCODE_update:-242'";
+			break;
+		case ERRCODE_lost_atom_ptl:
+				value_str = "'ERRCODE_lost_atom_ptl:-243'";
+			break;
+		case ERRCODE_bs_repeat:
+				value_str = "'ERRCODE_bs_repeat:-244'";
+			break;
+		case ERRCODE_can_not_find_user:
+				value_str = "'ERRCODE_can_not_find_user:-245'";
+			break;
+		case ERRCODE_name_already_exist:
+				value_str = "'ERRCODE_name_already_exist:-246'";
+			break;
+		case ERRCODE_can_not_find_cost_price:
+				value_str = "'ERRCODE_can_not_find_cost_price:-247'";
+			break;
+		case ERRCODE_can_not_find_unit_price:
+				value_str = "'ERRCODE_can_not_find_unit_price:-248'";
+			break;
+		case ERRCODE_cfg_already_exists:
+				value_str = "'ERRCODE_cfg_already_exists:-249'";
+			break;
+		case ERRCODE_storage:
+				value_str = "'ERRCODE_storage:-250'";
+			break;
+		case ERRCODE_Can_not_find_path:
+				value_str = "'ERRCODE_Can_not_find_path:-251'";
+			break;
+		case ERRCODE_over_time:
+				value_str = "'ERRCODE_over_time:-252'";
+			break;
+		case ERRCODE_soft_delete:
+				value_str = "'ERRCODE_soft_delete:-253'";
+			break;
+		case ERRCODE_Not_found_ptl_name:
+				value_str = "'ERRCODE_Not_found_ptl_name:-254'";
+			break;
+		case ERRCODE_RELEASE:
+				value_str = "'ERRCODE_RELEASE:-255'";
+			break;
+		case ERRCODE_Not_found_billing:
+				value_str = "'ERRCODE_Not_found_billing:-256'";
+			break;
+		case ERRCODE_Can_not_find_area:
+				value_str = "'ERRCODE_Can_not_find_area:-257'";
+			break;
+		case ERRCODE_User_Unregister:
+				value_str = "'ERRCODE_User_Unregister:-258'";
+			break;
+		case ERRCODE_Stateless_Sending:
+				value_str = "'ERRCODE_Stateless_Sending:-259'";
+			break;
+		case ERRCODE_Can_not_find_business_rules:
+				value_str = "'ERRCODE_Can_not_find_business_rules:-260'";
+			break;
+		case ERRCODE_reconnect:
+				value_str = "'ERRCODE_reconnect:-261'";
+			break;
+		case ERRCODE_Blacklist_intercept:
+				value_str = "'ERRCODE_Blacklist_intercept:-262'";
+			break;
+		case ERRCODE_data_not_exist:
+				value_str = "'ERRCODE_data_not_exist:-263'";
+			break;
+		case ERRCODE_Invalid_length:
+				value_str = "'ERRCODE_Invalid_length:-264'";
+			break;
+		case ERRCODE_Route_Direct:
+				value_str = "'ERRCODE_Route_Direct:-265'";
+			break;
+		case ERRCODE_Can_not_find_isp:
+				value_str = "'ERRCODE_Can_not_find_isp:-266'";
+			break;
+		case ErrCode_max:
+				value_str = "'ErrCode_max:0x1fffffffffffffff'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -277,6 +2799,57 @@ t_auto_FixedPortFlag_str(FixedPortFlag enum_value)
 }
 
 s8 *
+t_auto_GPSBaseLocation_str(GPSBaseLocation enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case GPSBaseLocation_East:
+				value_str = "'GPSBaseLocation_East'";
+			break;
+		case GPSBaseLocation_West:
+				value_str = "'GPSBaseLocation_West'";
+			break;
+		case GPSBaseLocation_North:
+				value_str = "'GPSBaseLocation_North'";
+			break;
+		case GPSBaseLocation_South:
+				value_str = "'GPSBaseLocation_South'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_GuardianMailLevel_str(GuardianMailLevel enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case GuardianMailLevel_Developer:
+				value_str = "'GuardianMailLevel_Developer:0'";
+			break;
+		case GuardianMailLevel_Statistician:
+				value_str = "'GuardianMailLevel_Statistician'";
+			break;
+		case GuardianMailLevel_max:
+				value_str = "'GuardianMailLevel_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_HTTPListenType_str(HTTPListenType enum_value)
 {
 	s8 *value_str = NULL;
@@ -406,6 +2979,36 @@ t_auto_HttpMethod_str(HttpMethod enum_value)
 }
 
 s8 *
+t_auto_IOStackType_str(IOStackType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case IOStackType_uip:
+				value_str = "'IOStackType_uip'";
+			break;
+		case IOStackType_uip2:
+				value_str = "'IOStackType_uip2'";
+			break;
+		case IOStackType_json:
+				value_str = "'IOStackType_json'";
+			break;
+		case IOStackType_h5_form:
+				value_str = "'IOStackType_h5_form'";
+			break;
+		case IOStackType_weichat_form:
+				value_str = "'IOStackType_weichat_form'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_IPProtocol_str(IPProtocol enum_value)
 {
 	s8 *value_str = NULL;
@@ -463,6 +3066,60 @@ t_auto_IPVER_str(IPVER enum_value)
 }
 
 s8 *
+t_auto_JuphoonBindingStatus_str(JuphoonBindingStatus enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case JUPHOON_BINDING_STATUS_OPEN:
+				value_str = "'JUPHOON_BINDING_STATUS_OPEN:2'";
+			break;
+		case JUPHOON_BINDING_STATUS_CLOSE:
+				value_str = "'JUPHOON_BINDING_STATUS_CLOSE:3'";
+			break;
+		case JUPHOON_BINDING_STATUS_TEMP_CLOSE:
+				value_str = "'JUPHOON_BINDING_STATUS_TEMP_CLOSE:4'";
+			break;
+		case JUPHOON_BINDING_STATUS_MAX:
+				value_str = "'JUPHOON_BINDING_STATUS_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_JuphoonNoticeType_str(JuphoonNoticeType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case JUPHOON_NOTICE_TYPE_REG_USER:
+				value_str = "'JUPHOON_NOTICE_TYPE_REG_USER:1'";
+			break;
+		case JUPHOON_NOTICE_TYPE_DEREG_USER:
+				value_str = "'JUPHOON_NOTICE_TYPE_DEREG_USER:2'";
+			break;
+		case JUPHOON_NOTICE_TYPE_BIND_STATUS:
+				value_str = "'JUPHOON_NOTICE_TYPE_BIND_STATUS:3'";
+			break;
+		case JUPHOON_NOTICE_TYPE_MAX:
+				value_str = "'JUPHOON_NOTICE_TYPE_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_KvAttrib_str(KvAttrib enum_value)
 {
 	s8 *value_str = NULL;
@@ -477,6 +3134,495 @@ t_auto_KvAttrib_str(KvAttrib enum_value)
 			break;
 		case KvAttrib_remote:
 				value_str = "'KvAttrib_remote'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_LanguageCode_str(LanguageCode enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case LanguageCode_Abkhazian:
+				value_str = "'LanguageCode_Abkhazian'";
+			break;
+		case LanguageCode_Afar:
+				value_str = "'LanguageCode_Afar'";
+			break;
+		case LanguageCode_Afrikaans:
+				value_str = "'LanguageCode_Afrikaans'";
+			break;
+		case LanguageCode_Akan:
+				value_str = "'LanguageCode_Akan'";
+			break;
+		case LanguageCode_Albanian:
+				value_str = "'LanguageCode_Albanian'";
+			break;
+		case LanguageCode_Amharic:
+				value_str = "'LanguageCode_Amharic'";
+			break;
+		case LanguageCode_Arabic:
+				value_str = "'LanguageCode_Arabic'";
+			break;
+		case LanguageCode_Aragonese:
+				value_str = "'LanguageCode_Aragonese'";
+			break;
+		case LanguageCode_Armenian:
+				value_str = "'LanguageCode_Armenian'";
+			break;
+		case LanguageCode_Assamese:
+				value_str = "'LanguageCode_Assamese'";
+			break;
+		case LanguageCode_Avaric:
+				value_str = "'LanguageCode_Avaric'";
+			break;
+		case LanguageCode_Avestan:
+				value_str = "'LanguageCode_Avestan'";
+			break;
+		case LanguageCode_Aymara:
+				value_str = "'LanguageCode_Aymara'";
+			break;
+		case LanguageCode_Chinese:
+				value_str = "'LanguageCode_Chinese'";
+			break;
+		case LanguageCode_Chuvash:
+				value_str = "'LanguageCode_Chuvash'";
+			break;
+		case LanguageCode_Cornish:
+				value_str = "'LanguageCode_Cornish'";
+			break;
+		case LanguageCode_Corsican:
+				value_str = "'LanguageCode_Corsican'";
+			break;
+		case LanguageCode_English:
+				value_str = "'LanguageCode_English'";
+			break;
+		case LanguageCode_French:
+				value_str = "'LanguageCode_French'";
+			break;
+		case LanguageCode_German:
+				value_str = "'LanguageCode_German'";
+			break;
+		case LanguageCode_Italian:
+				value_str = "'LanguageCode_Italian'";
+			break;
+		case LanguageCode_Japanese:
+				value_str = "'LanguageCode_Japanese'";
+			break;
+		case LanguageCode_Korean:
+				value_str = "'LanguageCode_Korean'";
+			break;
+		case LanguageCode_Russian:
+				value_str = "'LanguageCode_Russian'";
+			break;
+		case LanguageCode_Spanish_Castilian:
+				value_str = "'LanguageCode_Spanish_Castilian'";
+			break;
+		case LanguageCode_Sundanese:
+				value_str = "'LanguageCode_Sundanese'";
+			break;
+		case LanguageCode_Swahili:
+				value_str = "'LanguageCode_Swahili'";
+			break;
+		case LanguageCode_Swati:
+				value_str = "'LanguageCode_Swati'";
+			break;
+		case LanguageCode_Swedish:
+				value_str = "'LanguageCode_Swedish'";
+			break;
+		case LanguageCode_Tamil:
+				value_str = "'LanguageCode_Tamil'";
+			break;
+		case LanguageCode_Telugu:
+				value_str = "'LanguageCode_Telugu'";
+			break;
+		case LanguageCode_Tajik:
+				value_str = "'LanguageCode_Tajik'";
+			break;
+		case LanguageCode_Thai:
+				value_str = "'LanguageCode_Thai'";
+			break;
+		case LanguageCode_Traditional_Chinese:
+				value_str = "'LanguageCode_Traditional_Chinese'";
+			break;
+		case LanguageCode_Dutch:
+				value_str = "'LanguageCode_Dutch'";
+			break;
+		case LanguageCode_max:
+				value_str = "'LanguageCode_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardContentType_str(MCardContentType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardContentType_begin:
+				value_str = "'MCardContentType_begin'";
+			break;
+		case MCardContentType_utf8:
+				value_str = "'MCardContentType_utf8'";
+			break;
+		case MCardContentType_json:
+				value_str = "'MCardContentType_json'";
+			break;
+		case MCardContentType_xml:
+				value_str = "'MCardContentType_xml'";
+			break;
+		case MCardContentType_login:
+				value_str = "'MCardContentType_login'";
+			break;
+		case MCardContentType_jpg_cropped_bin:
+				value_str = "'MCardContentType_jpg_cropped_bin'";
+			break;
+		case MCardContentType_jpg_uncropped_bin:
+				value_str = "'MCardContentType_jpg_uncropped_bin'";
+			break;
+		case MCardContentType_image_sha1_id:
+				value_str = "'MCardContentType_image_sha1_id'";
+			break;
+		case MCardContentType_face_matching:
+				value_str = "'MCardContentType_face_matching'";
+			break;
+		case MCardContentType_poster_generate:
+				value_str = "'MCardContentType_poster_generate'";
+			break;
+		case MCardContentType_start_up:
+				value_str = "'MCardContentType_start_up'";
+			break;
+		case MCardContentType_museum_page:
+				value_str = "'MCardContentType_museum_page'";
+			break;
+		case MCardContentType_painter_page:
+				value_str = "'MCardContentType_painter_page'";
+			break;
+		case MCardContentType_bbs_comment:
+				value_str = "'MCardContentType_bbs_comment'";
+			break;
+		case MCardContentType_bbs_load:
+				value_str = "'MCardContentType_bbs_load'";
+			break;
+		case MCardContentType_painting_recommend:
+				value_str = "'MCardContentType_painting_recommend'";
+			break;
+		case MCardContentType_portrait_transfer_list:
+				value_str = "'MCardContentType_portrait_transfer_list'";
+			break;
+		case MCardContentType_portrait_transfer_action:
+				value_str = "'MCardContentType_portrait_transfer_action'";
+			break;
+		case MCardContentType_landscape_transfer_list:
+				value_str = "'MCardContentType_landscape_transfer_list'";
+			break;
+		case MCardContentType_landscape_transfer_action:
+				value_str = "'MCardContentType_landscape_transfer_action'";
+			break;
+		case MCardContentType_image_search_cropped_bin:
+				value_str = "'MCardContentType_image_search_cropped_bin'";
+			break;
+		case MCardContentType_image_search_uncropped_bin:
+				value_str = "'MCardContentType_image_search_uncropped_bin'";
+			break;
+		case MCardContentType_sculptures_search_cropped_bin:
+				value_str = "'MCardContentType_sculptures_search_cropped_bin'";
+			break;
+		case MCardContentType_sculptures_search_uncropped_bin:
+				value_str = "'MCardContentType_sculptures_search_uncropped_bin'";
+			break;
+		case MCardContentType_menu_recognition:
+				value_str = "'MCardContentType_menu_recognition'";
+			break;
+		case MCardContentType_tourism_image_search:
+				value_str = "'MCardContentType_tourism_image_search'";
+			break;
+		case MCardContentType_bagword:
+				value_str = "'MCardContentType_bagword'";
+			break;
+		case MCardContentType_museum_recommend:
+				value_str = "'MCardContentType_museum_recommend'";
+			break;
+		case MCardContentType_painting_recommend_page:
+				value_str = "'MCardContentType_painting_recommend_page'";
+			break;
+		case MCardContentType_museum_recommend_page:
+				value_str = "'MCardContentType_museum_recommend_page'";
+			break;
+		case MCardContentType_museum_sha1_id:
+				value_str = "'MCardContentType_museum_sha1_id'";
+			break;
+		case MCardContentType_refresh_recommend_cache:
+				value_str = "'MCardContentType_refresh_recommend_cache'";
+			break;
+		case MCardContentType_end:
+				value_str = "'MCardContentType_end'";
+			break;
+		case MCardContentType_max:
+				value_str = "'MCardContentType_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardIdentityType_str(MCardIdentityType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardIdentityType_none:
+				value_str = "'MCardIdentityType_none'";
+			break;
+		case MCardIdentityType_initialization:
+				value_str = "'MCardIdentityType_initialization'";
+			break;
+		case MCardIdentityType_user:
+				value_str = "'MCardIdentityType_user'";
+			break;
+		case MCardIdentityType_AI:
+				value_str = "'MCardIdentityType_AI'";
+			break;
+		case MCardIdentityType_max:
+				value_str = "'MCardIdentityType_max'";
+			break;
+		case MCardIdentityType_MAX:
+				value_str = "'MCardIdentityType_MAX:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardSource_str(MCardSource enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardSource_aia:
+				value_str = "'MCardSource_aia'";
+			break;
+		case MCardSource_google:
+				value_str = "'MCardSource_google'";
+			break;
+		case MCardSource_aws:
+				value_str = "'MCardSource_aws'";
+			break;
+		case MCardSource_aic:
+				value_str = "'MCardSource_aic'";
+			break;
+		case MCardSource_aib:
+				value_str = "'MCardSource_aib'";
+			break;
+		case MCardSource_aib_io:
+				value_str = "'MCardSource_aib_io'";
+			break;
+		case MCardSource_bbs:
+				value_str = "'MCardSource_bbs'";
+			break;
+		case MCardSource_max:
+				value_str = "'MCardSource_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardTimeType_str(MCardTimeType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardTimeType_Permanent:
+				value_str = "'MCardTimeType_Permanent'";
+			break;
+		case MCardTimeType_Normal:
+				value_str = "'MCardTimeType_Normal'";
+			break;
+		case MCardTimeType_max:
+				value_str = "'MCardTimeType_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardType_str(MCardType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardType_Private_Message_Board:
+				value_str = "'MCardType_Private_Message_Board:0'";
+			break;
+		case MCardType_Public_Message_Board:
+				value_str = "'MCardType_Public_Message_Board:1'";
+			break;
+		case MCardType_POI:
+				value_str = "'MCardType_POI'";
+			break;
+		case MCardType_TALK:
+				value_str = "'MCardType_TALK'";
+			break;
+		case MCardType_weichat_talk:
+				value_str = "'MCardType_weichat_talk'";
+			break;
+		case MCardType_h5_talk:
+				value_str = "'MCardType_h5_talk'";
+			break;
+		case MCardType_max:
+				value_str = "'MCardType_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MCardVer_str(MCardVer enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MCardVer_reserve:
+				value_str = "'MCardVer_reserve:0'";
+			break;
+		case MCardVer_text:
+				value_str = "'MCardVer_text:1'";
+			break;
+		case MCardVer_media:
+				value_str = "'MCardVer_media'";
+			break;
+		case MCardVer_talk:
+				value_str = "'MCardVer_talk'";
+			break;
+		case MCardVer_comment:
+				value_str = "'MCardVer_comment'";
+			break;
+		case MCardVer_max:
+				value_str = "'MCardVer_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MainReqSrcType_str(MainReqSrcType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MainReqSrcType_FromUI:
+				value_str = "'MainReqSrcType_FromUI:1'";
+			break;
+		case MainReqSrcType_FromUIP:
+				value_str = "'MainReqSrcType_FromUIP:2'";
+			break;
+		case MainReqSrcType_max:
+				value_str = "'MainReqSrcType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_MatrixOpt_str(MatrixOpt enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MatrixOpt_none:
+				value_str = "'MatrixOpt_none'";
+			break;
+		case MatrixOpt_base:
+				value_str = "'MatrixOpt_base'";
+			break;
+		case MatrixOpt_vgg:
+				value_str = "'MatrixOpt_vgg'";
+			break;
+		case MatrixOpt_centernet:
+				value_str = "'MatrixOpt_centernet'";
+			break;
+		case MatrixOpt_unet:
+				value_str = "'MatrixOpt_unet'";
+			break;
+		case MatrixOpt_traffic:
+				value_str = "'MatrixOpt_traffic'";
+			break;
+		case MatrixOpt_max:
+				value_str = "'MatrixOpt_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ModImpuFlag_str(ModImpuFlag enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MOD_IMPU_FLAG_OPEN:
+				value_str = "'MOD_IMPU_FLAG_OPEN:1'";
+			break;
+		case MOD_IMPU_FLAG_CLOSE:
+				value_str = "'MOD_IMPU_FLAG_CLOSE:2'";
+			break;
+		case MOD_IMPU_FLAG_max:
+				value_str = "'MOD_IMPU_FLAG_max'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -508,6 +3654,441 @@ t_auto_MsgMemState_str(MsgMemState enum_value)
 }
 
 s8 *
+t_auto_MsisdnOperator_str(MsisdnOperator enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case MsisdnUnknown:
+				value_str = "'MsisdnUnknown'";
+			break;
+		case ChinaMobile:
+				value_str = "'ChinaMobile'";
+			break;
+		case ChinaUnicom:
+				value_str = "'ChinaUnicom'";
+			break;
+		case ChinaTelecom:
+				value_str = "'ChinaTelecom'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NLPDependencySyntax_str(NLPDependencySyntax enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NLPDependencySyntax_none:
+				value_str = "'NLPDependencySyntax_none'";
+			break;
+		case NLPDependencySyntax_SBV:
+				value_str = "'NLPDependencySyntax_SBV'";
+			break;
+		case NLPDependencySyntax_VOB:
+				value_str = "'NLPDependencySyntax_VOB'";
+			break;
+		case NLPDependencySyntax_IOB:
+				value_str = "'NLPDependencySyntax_IOB'";
+			break;
+		case NLPDependencySyntax_FOB:
+				value_str = "'NLPDependencySyntax_FOB'";
+			break;
+		case NLPDependencySyntax_DBL:
+				value_str = "'NLPDependencySyntax_DBL'";
+			break;
+		case NLPDependencySyntax_ATT:
+				value_str = "'NLPDependencySyntax_ATT'";
+			break;
+		case NLPDependencySyntax_ADV:
+				value_str = "'NLPDependencySyntax_ADV'";
+			break;
+		case NLPDependencySyntax_CMP:
+				value_str = "'NLPDependencySyntax_CMP'";
+			break;
+		case NLPDependencySyntax_COO:
+				value_str = "'NLPDependencySyntax_COO'";
+			break;
+		case NLPDependencySyntax_POB:
+				value_str = "'NLPDependencySyntax_POB'";
+			break;
+		case NLPDependencySyntax_LAD:
+				value_str = "'NLPDependencySyntax_LAD'";
+			break;
+		case NLPDependencySyntax_RAD:
+				value_str = "'NLPDependencySyntax_RAD'";
+			break;
+		case NLPDependencySyntax_IS:
+				value_str = "'NLPDependencySyntax_IS'";
+			break;
+		case NLPDependencySyntax_HED:
+				value_str = "'NLPDependencySyntax_HED'";
+			break;
+		case NLPDependencySyntax_WP:
+				value_str = "'NLPDependencySyntax_WP'";
+			break;
+		case NLPDependencySyntax_max:
+				value_str = "'NLPDependencySyntax_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NLPIRLabel_str(NLPIRLabel enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NLPIRLabel_none:
+				value_str = "'NLPIRLabel_none:0'";
+			break;
+		case NLPIRLabel_ROOT:
+				value_str = "'NLPIRLabel_ROOT'";
+			break;
+		case NLPIRLabel_Greetings:
+				value_str = "'NLPIRLabel_Greetings'";
+			break;
+		case NLPIRLabel_Purposeless_communication:
+				value_str = "'NLPIRLabel_Purposeless_communication'";
+			break;
+		case NLPIRLabel_DataService:
+				value_str = "'NLPIRLabel_DataService'";
+			break;
+		case NLPIRLabel_DataService_buy:
+				value_str = "'NLPIRLabel_DataService_buy'";
+			break;
+		case NLPIRLabel_DataService_unsubscribe:
+				value_str = "'NLPIRLabel_DataService_unsubscribe'";
+			break;
+		case NLPIRLabel_DataService_advisory:
+				value_str = "'NLPIRLabel_DataService_advisory'";
+			break;
+		case NLPIRLabel_DataService_complaint:
+				value_str = "'NLPIRLabel_DataService_complaint'";
+			break;
+		case NLPIRLabel_DataService_inquire:
+				value_str = "'NLPIRLabel_DataService_inquire'";
+			break;
+		case NLPIRLabel_DataService_inquire_traffic:
+				value_str = "'NLPIRLabel_DataService_inquire_traffic'";
+			break;
+		case NLPIRLabel_DataService_inquire_traffic_limit:
+				value_str = "'NLPIRLabel_DataService_inquire_traffic_limit'";
+			break;
+		case NLPIRLabel_DataService_inquire_traffic_expired:
+				value_str = "'NLPIRLabel_DataService_inquire_traffic_expired'";
+			break;
+		case NLPIRLabel_DataService_inquire_sharing_hot_spots:
+				value_str = "'NLPIRLabel_DataService_inquire_sharing_hot_spots'";
+			break;
+		case NLPIRLabel_VoiceService:
+				value_str = "'NLPIRLabel_VoiceService'";
+			break;
+		case NLPIRLabel_VoiceService_buy:
+				value_str = "'NLPIRLabel_VoiceService_buy'";
+			break;
+		case NLPIRLabel_VoiceService_unsubscribe:
+				value_str = "'NLPIRLabel_VoiceService_unsubscribe'";
+			break;
+		case NLPIRLabel_VoiceService_advisory:
+				value_str = "'NLPIRLabel_VoiceService_advisory'";
+			break;
+		case NLPIRLabel_VoiceService_complaint:
+				value_str = "'NLPIRLabel_VoiceService_complaint'";
+			break;
+		case NLPIRLabel_Process_date:
+				value_str = "'NLPIRLabel_Process_date'";
+			break;
+		case NLPIRLabel_Process_location:
+				value_str = "'NLPIRLabel_Process_location'";
+			break;
+		case NLPIRLabel_Process_person:
+				value_str = "'NLPIRLabel_Process_person'";
+			break;
+		case NLPIRLabel_Process_business:
+				value_str = "'NLPIRLabel_Process_business'";
+			break;
+		case NLPIRLabel_UnrecognizedIntent:
+				value_str = "'NLPIRLabel_UnrecognizedIntent'";
+			break;
+		case NLPIRLabel_MAX:
+				value_str = "'NLPIRLabel_MAX'";
+			break;
+		case NLPIRLabel_max:
+				value_str = "'NLPIRLabel_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NLPNEREntity_str(NLPNEREntity enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NLPNEREntity_none:
+				value_str = "'NLPNEREntity_none'";
+			break;
+		case NLPNEREntity_location:
+				value_str = "'NLPNEREntity_location'";
+			break;
+		case NLPNEREntity_time:
+				value_str = "'NLPNEREntity_time'";
+			break;
+		case NLPNEREntity_company:
+				value_str = "'NLPNEREntity_company'";
+			break;
+		case NLPNEREntity_person:
+				value_str = "'NLPNEREntity_person'";
+			break;
+		case NLPNEREntity_business_word:
+				value_str = "'NLPNEREntity_business_word'";
+			break;
+		case NLPNEREntity_Net:
+				value_str = "'NLPNEREntity_Net'";
+			break;
+		case NLPNEREntity_Day:
+				value_str = "'NLPNEREntity_Day'";
+			break;
+		case NLPNEREntity_Destination:
+				value_str = "'NLPNEREntity_Destination'";
+			break;
+		case NLPNEREntity_max:
+				value_str = "'NLPNEREntity_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NLPPartOfSpeech_none:
+				value_str = "'NLPPartOfSpeech_none'";
+			break;
+		case NLPPartOfSpeech_adjective:
+				value_str = "'NLPPartOfSpeech_adjective'";
+			break;
+		case NLPPartOfSpeech_other_noun_modifier:
+				value_str = "'NLPPartOfSpeech_other_noun_modifier'";
+			break;
+		case NLPPartOfSpeech_conjunction:
+				value_str = "'NLPPartOfSpeech_conjunction'";
+			break;
+		case NLPPartOfSpeech_adverb:
+				value_str = "'NLPPartOfSpeech_adverb'";
+			break;
+		case NLPPartOfSpeech_exclamation:
+				value_str = "'NLPPartOfSpeech_exclamation'";
+			break;
+		case NLPPartOfSpeech_morpheme:
+				value_str = "'NLPPartOfSpeech_morpheme'";
+			break;
+		case NLPPartOfSpeech_prefix:
+				value_str = "'NLPPartOfSpeech_prefix'";
+			break;
+		case NLPPartOfSpeech_idiom:
+				value_str = "'NLPPartOfSpeech_idiom'";
+			break;
+		case NLPPartOfSpeech_abbreviation:
+				value_str = "'NLPPartOfSpeech_abbreviation'";
+			break;
+		case NLPPartOfSpeech_suffix:
+				value_str = "'NLPPartOfSpeech_suffix'";
+			break;
+		case NLPPartOfSpeech_number:
+				value_str = "'NLPPartOfSpeech_number'";
+			break;
+		case NLPPartOfSpeech_general_noun:
+				value_str = "'NLPPartOfSpeech_general_noun'";
+			break;
+		case NLPPartOfSpeech_direction_noun:
+				value_str = "'NLPPartOfSpeech_direction_noun'";
+			break;
+		case NLPPartOfSpeech_person_name:
+				value_str = "'NLPPartOfSpeech_person_name'";
+			break;
+		case NLPPartOfSpeech_organization_name:
+				value_str = "'NLPPartOfSpeech_organization_name'";
+			break;
+		case NLPPartOfSpeech_location_noun:
+				value_str = "'NLPPartOfSpeech_location_noun'";
+			break;
+		case NLPPartOfSpeech_geographical_name:
+				value_str = "'NLPPartOfSpeech_geographical_name'";
+			break;
+		case NLPPartOfSpeech_temporal_noun:
+				value_str = "'NLPPartOfSpeech_temporal_noun'";
+			break;
+		case NLPPartOfSpeech_other_proper_noun:
+				value_str = "'NLPPartOfSpeech_other_proper_noun'";
+			break;
+		case NLPPartOfSpeech_onomatopoeia:
+				value_str = "'NLPPartOfSpeech_onomatopoeia'";
+			break;
+		case NLPPartOfSpeech_preposition:
+				value_str = "'NLPPartOfSpeech_preposition'";
+			break;
+		case NLPPartOfSpeech_quantity:
+				value_str = "'NLPPartOfSpeech_quantity'";
+			break;
+		case NLPPartOfSpeech_pronoun:
+				value_str = "'NLPPartOfSpeech_pronoun'";
+			break;
+		case NLPPartOfSpeech_auxiliary:
+				value_str = "'NLPPartOfSpeech_auxiliary'";
+			break;
+		case NLPPartOfSpeech_verb:
+				value_str = "'NLPPartOfSpeech_verb'";
+			break;
+		case NLPPartOfSpeech_punctuation:
+				value_str = "'NLPPartOfSpeech_punctuation'";
+			break;
+		case NLPPartOfSpeech_foreign_words:
+				value_str = "'NLPPartOfSpeech_foreign_words'";
+			break;
+		case NLPPartOfSpeech_non_lexeme:
+				value_str = "'NLPPartOfSpeech_non_lexeme'";
+			break;
+		case NLPPartOfSpeech_descriptive_words:
+				value_str = "'NLPPartOfSpeech_descriptive_words'";
+			break;
+		case NLPPartOfSpeech_Customary_word:
+				value_str = "'NLPPartOfSpeech_Customary_word'";
+			break;
+		case NLPPartOfSpeech_time:
+				value_str = "'NLPPartOfSpeech_time'";
+			break;
+		case NLPPartOfSpeech_verb_noun:
+				value_str = "'NLPPartOfSpeech_verb_noun'";
+			break;
+		case NLPPartOfSpeech_Modal:
+				value_str = "'NLPPartOfSpeech_Modal'";
+			break;
+		case NLPPartOfSpeech_verb_shi:
+				value_str = "'NLPPartOfSpeech_verb_shi'";
+			break;
+		case NLPPartOfSpeech_verb_you:
+				value_str = "'NLPPartOfSpeech_verb_you'";
+			break;
+		case NLPPartOfSpeech_auxiliary_de:
+				value_str = "'NLPPartOfSpeech_auxiliary_de'";
+			break;
+		case NLPPartOfSpeech_person_unkonwn:
+				value_str = "'NLPPartOfSpeech_person_unkonwn'";
+			break;
+		case NLPPartOfSpeech_total:
+				value_str = "'NLPPartOfSpeech_total'";
+			break;
+		case NLPPartOfSpeech_MAX:
+				value_str = "'NLPPartOfSpeech_MAX:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NLPSemanticRole_none:
+				value_str = "'NLPSemanticRole_none'";
+			break;
+		case NLPSemanticRole_ADV:
+				value_str = "'NLPSemanticRole_ADV'";
+			break;
+		case NLPSemanticRole_BNE:
+				value_str = "'NLPSemanticRole_BNE'";
+			break;
+		case NLPSemanticRole_CND:
+				value_str = "'NLPSemanticRole_CND'";
+			break;
+		case NLPSemanticRole_DIR:
+				value_str = "'NLPSemanticRole_DIR'";
+			break;
+		case NLPSemanticRole_DGR:
+				value_str = "'NLPSemanticRole_DGR'";
+			break;
+		case NLPSemanticRole_EXT:
+				value_str = "'NLPSemanticRole_EXT'";
+			break;
+		case NLPSemanticRole_FRQ:
+				value_str = "'NLPSemanticRole_FRQ'";
+			break;
+		case NLPSemanticRole_LOC:
+				value_str = "'NLPSemanticRole_LOC'";
+			break;
+		case NLPSemanticRole_MNR:
+				value_str = "'NLPSemanticRole_MNR'";
+			break;
+		case NLPSemanticRole_PRP:
+				value_str = "'NLPSemanticRole_PRP'";
+			break;
+		case NLPSemanticRole_TMP:
+				value_str = "'NLPSemanticRole_TMP'";
+			break;
+		case NLPSemanticRole_TPC:
+				value_str = "'NLPSemanticRole_TPC'";
+			break;
+		case NLPSemanticRole_CRD:
+				value_str = "'NLPSemanticRole_CRD'";
+			break;
+		case NLPSemanticRole_PRD:
+				value_str = "'NLPSemanticRole_PRD'";
+			break;
+		case NLPSemanticRole_PSR:
+				value_str = "'NLPSemanticRole_PSR'";
+			break;
+		case NLPSemanticRole_PSE:
+				value_str = "'NLPSemanticRole_PSE'";
+			break;
+		case NLPSemanticRole_max:
+				value_str = "'NLPSemanticRole_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_NetAddrType_str(NetAddrType enum_value)
 {
 	s8 *value_str = NULL;
@@ -522,6 +4103,84 @@ t_auto_NetAddrType_str(NetAddrType enum_value)
 			break;
 		case NetAddrURLType:
 				value_str = "'NetAddrURLType:0x12345678'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NumberReqType_str(NumberReqType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NumberReqType_PURCHASE_E164_NUMBER:
+				value_str = "'NumberReqType_PURCHASE_E164_NUMBER:1'";
+			break;
+		case NumberReqType_CANCEL_PURCHASE_E164_NUMBER:
+				value_str = "'NumberReqType_CANCEL_PURCHASE_E164_NUMBER:2'";
+			break;
+		case NumberReqType_SET_REG_NUMBER_AS_CALLING_NUMBER:
+				value_str = "'NumberReqType_SET_REG_NUMBER_AS_CALLING_NUMBER:3'";
+			break;
+		case NumberReqType_SET_E164_NUMBER_AS_CALLING_NUMBER:
+				value_str = "'NumberReqType_SET_E164_NUMBER_AS_CALLING_NUMBER:4'";
+			break;
+		case NumberReqType_ASS_E164_NUMBER:
+				value_str = "'NumberReqType_ASS_E164_NUMBER:5'";
+			break;
+		case NumberReqType_INQ_RECORD:
+				value_str = "'NumberReqType_INQ_RECORD:6'";
+			break;
+		case NumberReqType_RET_NUMBER:
+				value_str = "'NumberReqType_RET_NUMBER:7'";
+			break;
+		case NumberReqType_FIRST_PURCHASE_E164_NUMBER:
+				value_str = "'NumberReqType_FIRST_PURCHASE_E164_NUMBER:8'";
+			break;
+		case NumberReqType_RE_PURCHASE_E164_NUMBER:
+				value_str = "'NumberReqType_RE_PURCHASE_E164_NUMBER:9'";
+			break;
+		case NumberReqType_PRE_PURCHASE_AUX_NUMBER:
+				value_str = "'NumberReqType_PRE_PURCHASE_AUX_NUMBER:10'";
+			break;
+		case NumberReqType_max:
+				value_str = "'NumberReqType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_NumberType_str(NumberType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case NumberType_HOST_NUMBER:
+				value_str = "'NumberType_HOST_NUMBER:1'";
+			break;
+		case NumberType_AUXILIARY_NUMBER:
+				value_str = "'NumberType_AUXILIARY_NUMBER:2'";
+			break;
+		case NumberType_VIRTUAL_CALLING_NUMBER:
+				value_str = "'NumberType_VIRTUAL_CALLING_NUMBER:3'";
+			break;
+		case NumberType_VOIP_NUMBER:
+				value_str = "'NumberType_VOIP_NUMBER:4'";
+			break;
+		case NumberType_max:
+				value_str = "'NumberType_max'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -615,6 +4274,540 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 			break;
 		case ORDER_CODE_END:
 				value_str = "'ORDER_CODE_END:0x8000'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_PRODUC_str(PRODUC enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case PRODUC_DEBUG:
+				value_str = "'PRODUC_DEBUG:0'";
+			break;
+		case PRODUC_VOIP:
+				value_str = "'PRODUC_VOIP'";
+			break;
+		case PRODUC_OCS:
+				value_str = "'PRODUC_OCS'";
+			break;
+		case PRODUC_JEGOM:
+				value_str = "'PRODUC_JEGOM'";
+			break;
+		case PRODUC_LOG:
+				value_str = "'PRODUC_LOG'";
+			break;
+		case PRODUC_SYNC:
+				value_str = "'PRODUC_SYNC'";
+			break;
+		case PRODUC_BDATA:
+				value_str = "'PRODUC_BDATA'";
+			break;
+		case PRODUC_AA:
+				value_str = "'PRODUC_AA'";
+			break;
+		case PRODUC_IMB:
+				value_str = "'PRODUC_IMB'";
+			break;
+		case PRODUC_SMS:
+				value_str = "'PRODUC_SMS'";
+			break;
+		case PRODUC_AIA:
+				value_str = "'PRODUC_AIA'";
+			break;
+		case PRODUC_AIB:
+				value_str = "'PRODUC_AIB'";
+			break;
+		case PRODUC_AIC:
+				value_str = "'PRODUC_AIC'";
+			break;
+		case PRODUC_IO:
+				value_str = "'PRODUC_IO'";
+			break;
+		case PRODUC_DBA:
+				value_str = "'PRODUC_DBA'";
+			break;
+		case PRODUC_MNR:
+				value_str = "'PRODUC_MNR'";
+			break;
+		case PRODUC_AIX:
+				value_str = "'PRODUC_AIX'";
+			break;
+		case PRODUC_CSCF:
+				value_str = "'PRODUC_CSCF'";
+			break;
+		case PRODUC_BLB:
+				value_str = "'PRODUC_BLB'";
+			break;
+		case PRODUC_AID:
+				value_str = "'PRODUC_AID'";
+			break;
+		case PRODUC_JEGOR:
+				value_str = "'PRODUC_JEGOR'";
+			break;
+		case PRODUC_reserve_1:
+				value_str = "'PRODUC_reserve_1'";
+			break;
+		case PRODUC_BBS:
+				value_str = "'PRODUC_BBS'";
+			break;
+		case PRODUC_reserve_2:
+				value_str = "'PRODUC_reserve_2'";
+			break;
+		case PRODUC_BASE:
+				value_str = "'PRODUC_BASE'";
+			break;
+		case PRODUC_SMPPDOCK:
+				value_str = "'PRODUC_SMPPDOCK'";
+			break;
+		case PRODUC_IOPOST:
+				value_str = "'PRODUC_IOPOST'";
+			break;
+		case PRODUC_SMSHTTP:
+				value_str = "'PRODUC_SMSHTTP'";
+			break;
+		case PRODUC_SMPPS:
+				value_str = "'PRODUC_SMPPS'";
+			break;
+		case PRODUC_AUDIOOCS:
+				value_str = "'PRODUC_AUDIOOCS'";
+			break;
+		case PRODUC_SMSOCS:
+				value_str = "'PRODUC_SMSOCS'";
+			break;
+		case PRODUC_MAX:
+				value_str = "'PRODUC_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_PackageStatus_str(PackageStatus enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case PACKAGE_STATUS_ACTIVE:
+				value_str = "'PACKAGE_STATUS_ACTIVE:1'";
+			break;
+		case PACKAGE_STATUS_FINISHED:
+				value_str = "'PACKAGE_STATUS_FINISHED:2'";
+			break;
+		case PACKAGE_STATUS_EXPIRED:
+				value_str = "'PACKAGE_STATUS_EXPIRED:3'";
+			break;
+		case PACKAGE_STATUS_MAX:
+				value_str = "'PACKAGE_STATUS_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_PhoneNumberType_str(PhoneNumberType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case PhoneNumberType_unkonw:
+				value_str = "'PhoneNumberType_unkonw:0'";
+			break;
+		case PhoneNumberType_sip:
+				value_str = "'PhoneNumberType_sip:1'";
+			break;
+		case PhoneNumberType_tel:
+				value_str = "'PhoneNumberType_tel:2'";
+			break;
+		case PhoneNumberType_empty:
+				value_str = "'PhoneNumberType_empty:3'";
+			break;
+		case PhoneNumberType_max:
+				value_str = "'PhoneNumberType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_PowerMode_str(PowerMode enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case POWERMODE_KEYPAD:
+				value_str = "'POWERMODE_KEYPAD:0'";
+			break;
+		case POWERMODE_ALARM:
+				value_str = "'POWERMODE_ALARM'";
+			break;
+		case POWERMODE_CHARGER_IN:
+				value_str = "'POWERMODE_CHARGER_IN'";
+			break;
+		case POWERMODE_EXCEPTION:
+				value_str = "'POWERMODE_EXCEPTION'";
+			break;
+		case POWERMODE_USB:
+				value_str = "'POWERMODE_USB'";
+			break;
+		case POWERMODE_UNINIT:
+				value_str = "'POWERMODE_UNINIT'";
+			break;
+		case POWERMODE_MAX:
+				value_str = "'POWERMODE_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_PythonFun_str(PythonFun enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case PythonFun_painting_aesthetics:
+				value_str = "'PythonFun_painting_aesthetics:0'";
+			break;
+		case PythonFun_image_search_engine:
+				value_str = "'PythonFun_image_search_engine'";
+			break;
+		case PythonFun_painting_recommend:
+				value_str = "'PythonFun_painting_recommend'";
+			break;
+		case PythonFun_style_transfer:
+				value_str = "'PythonFun_style_transfer'";
+			break;
+		case PythonFun_sculptures_search_engine:
+				value_str = "'PythonFun_sculptures_search_engine'";
+			break;
+		case PythonFun_menu_recognition:
+				value_str = "'PythonFun_menu_recognition'";
+			break;
+		case PythonFun_travel_aesthetics:
+				value_str = "'PythonFun_travel_aesthetics'";
+			break;
+		case PythonFun_weichat_openid:
+				value_str = "'PythonFun_weichat_openid'";
+			break;
+		case PythonFun_poster:
+				value_str = "'PythonFun_poster'";
+			break;
+		case PythonFun_bagword:
+				value_str = "'PythonFun_bagword'";
+			break;
+		case PythonFun_museum_recommend:
+				value_str = "'PythonFun_museum_recommend'";
+			break;
+		case PythonFun_painting_recommend_page:
+				value_str = "'PythonFun_painting_recommend_page'";
+			break;
+		case PythonFun_museum_recommend_page:
+				value_str = "'PythonFun_museum_recommend_page'";
+			break;
+		case PythonFun_refresh_recommend_cache:
+				value_str = "'PythonFun_refresh_recommend_cache'";
+			break;
+		case PythonFun_max:
+				value_str = "'PythonFun_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_RESTPushEventType_str(RESTPushEventType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case RESTPushEventType_power_on:
+				value_str = "'RESTPushEventType_power_on:1'";
+			break;
+		case RESTPushEventType_kick_off:
+				value_str = "'RESTPushEventType_kick_off:2'";
+			break;
+		case RESTPushEventType_others:
+				value_str = "'RESTPushEventType_others:3'";
+			break;
+		case RESTPushEventType_max:
+				value_str = "'RESTPushEventType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_RNMBusinessType_str(RNMBusinessType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case RNMBusinessType_add:
+				value_str = "'RNMBusinessType_add:0'";
+			break;
+		case RNMBusinessType_del:
+				value_str = "'RNMBusinessType_del'";
+			break;
+		case RNMBusinessType_active:
+				value_str = "'RNMBusinessType_active'";
+			break;
+		case RNMBusinessType_deactive:
+				value_str = "'RNMBusinessType_deactive'";
+			break;
+		case RNMBusinessType_inquire:
+				value_str = "'RNMBusinessType_inquire'";
+			break;
+		case RNMBusinessType_notify:
+				value_str = "'RNMBusinessType_notify'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_RNMQueryType_str(RNMQueryType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case RNMQueryType_all:
+				value_str = "'RNMQueryType_all:0'";
+			break;
+		case RNMQueryType_register:
+				value_str = "'RNMQueryType_register'";
+			break;
+		case RNMQueryType_unregister:
+				value_str = "'RNMQueryType_unregister'";
+			break;
+		case RNMQueryType_max:
+				value_str = "'RNMQueryType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_RegINAttrib_str(RegINAttrib enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case RegINAttrib_FAQ:
+				value_str = "'RegINAttrib_FAQ'";
+			break;
+		case RegINAttrib_TASK:
+				value_str = "'RegINAttrib_TASK'";
+			break;
+		case RegINAttrib_max:
+				value_str = "'RegINAttrib_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ReportMsgType_str(ReportMsgType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case ReportMsgType_USER_CREAT:
+				value_str = "'ReportMsgType_USER_CREAT:1'";
+			break;
+		case ReportMsgType_AUX_NUMBER_ASS:
+				value_str = "'ReportMsgType_AUX_NUMBER_ASS:2'";
+			break;
+		case ReportMsgType_NUMBER_INQ:
+				value_str = "'ReportMsgType_NUMBER_INQ:3'";
+			break;
+		case ReportMsgType_max:
+				value_str = "'ReportMsgType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ReqType_str(ReqType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case REQ_TYPE_ADD:
+				value_str = "'REQ_TYPE_ADD:1'";
+			break;
+		case REQ_TYPE_DEL:
+				value_str = "'REQ_TYPE_DEL:2'";
+			break;
+		case REQ_TYPE_INQ:
+				value_str = "'REQ_TYPE_INQ:3'";
+			break;
+		case REQ_TYPE_UPDATE:
+				value_str = "'REQ_TYPE_UPDATE:4'";
+			break;
+		case REQ_TYPE_PROVIDER_ADD:
+				value_str = "'REQ_TYPE_PROVIDER_ADD:5'";
+			break;
+		case REQ_TYPE_PROVIDER_DEL:
+				value_str = "'REQ_TYPE_PROVIDER_DEL:6'";
+			break;
+		case REQ_TYPE_PROVIDER_INQ:
+				value_str = "'REQ_TYPE_PROVIDER_INQ:7'";
+			break;
+		case REQ_TYPE_PROVIDER_UPDATE:
+				value_str = "'REQ_TYPE_PROVIDER_UPDATE:8'";
+			break;
+		case REQ_TYPE_ELASTIC_BULK_SEND:
+				value_str = "'REQ_TYPE_ELASTIC_BULK_SEND:50'";
+			break;
+		case REQ_TYPE_ELASTIC_QUANTITY:
+				value_str = "'REQ_TYPE_ELASTIC_QUANTITY:51'";
+			break;
+		case REQ_TYPE_ELASTIC_RECORD:
+				value_str = "'REQ_TYPE_ELASTIC_RECORD:52'";
+			break;
+		case REQ_TYPE_ELASTIC_TRANSACTE:
+				value_str = "'REQ_TYPE_ELASTIC_TRANSACTE:53'";
+			break;
+		case REQ_TYPE_ELASTIC_SMS_COST_SALSE:
+				value_str = "'REQ_TYPE_ELASTIC_SMS_COST_SALSE:54'";
+			break;
+		case REQ_TYPE_GENERAL_1:
+				value_str = "'REQ_TYPE_GENERAL_1:101'";
+			break;
+		case REQ_TYPE_GENERAL_2:
+				value_str = "'REQ_TYPE_GENERAL_2:102'";
+			break;
+		case REQ_TYPE_GENERAL_3:
+				value_str = "'REQ_TYPE_GENERAL_3:103'";
+			break;
+		case REQ_TYPE_GENERAL_4:
+				value_str = "'REQ_TYPE_GENERAL_4:104'";
+			break;
+		case REQ_TYPE_GENERAL_5:
+				value_str = "'REQ_TYPE_GENERAL_5:105'";
+			break;
+		case REQ_TYPE_GENERAL_6:
+				value_str = "'REQ_TYPE_GENERAL_6:106'";
+			break;
+		case REQ_TYPE_INQ_VOIP_SIP:
+				value_str = "'REQ_TYPE_INQ_VOIP_SIP:107'";
+			break;
+		case REQ_TYPE_SMPP_CUSTOM:
+				value_str = "'REQ_TYPE_SMPP_CUSTOM:1000'";
+			break;
+		case REQ_TYPE_SMPP_END:
+				value_str = "'REQ_TYPE_SMPP_END:1199'";
+			break;
+		case REQ_TYPE_SMS_CUSTOM:
+				value_str = "'REQ_TYPE_SMS_CUSTOM:1200'";
+			break;
+		case REQ_TYPE_SMS_END:
+				value_str = "'REQ_TYPE_SMS_END:1399'";
+			break;
+		case REQ_TYPE_CUST_CUSTOM:
+				value_str = "'REQ_TYPE_CUST_CUSTOM:1400'";
+			break;
+		case REQ_TYPE_CUST_END:
+				value_str = "'REQ_TYPE_CUST_END:1599'";
+			break;
+		case REQ_TYPE_SMSGATE_CUSTOM:
+				value_str = "'REQ_TYPE_SMSGATE_CUSTOM:1600'";
+			break;
+		case REQ_TYPE_SMSGATE_END:
+				value_str = "'REQ_TYPE_SMSGATE_END:1699'";
+			break;
+		case REQ_TYPE_SMS_REG_START:
+				value_str = "'REQ_TYPE_SMS_REG_START:2000'";
+			break;
+		case REQ_TYPE_SMS_REG_SMSGATE:
+				value_str = "'REQ_TYPE_SMS_REG_SMSGATE:2001'";
+			break;
+		case REQ_TYPE_SMS_REG_ALISMS:
+				value_str = "'REQ_TYPE_SMS_REG_ALISMS:2002'";
+			break;
+		case REQ_TYPE_SMS_REG_CUST:
+				value_str = "'REQ_TYPE_SMS_REG_CUST:2003'";
+			break;
+		case REQ_TYPE_SMS_REG_SMPP:
+				value_str = "'REQ_TYPE_SMS_REG_SMPP:2004'";
+			break;
+		case REQ_TYPE_SMS_REG_MDM:
+				value_str = "'REQ_TYPE_SMS_REG_MDM:2005'";
+			break;
+		case REQ_TYPE_SMS_REG_BROADCAST:
+				value_str = "'REQ_TYPE_SMS_REG_BROADCAST:2006'";
+			break;
+		case REQ_TYPE_SMS_ROUTEID_BROADCAST:
+				value_str = "'REQ_TYPE_SMS_ROUTEID_BROADCAST:2007'";
+			break;
+		case REQ_TYPE_JEJOM_ADD_END_SEND:
+				value_str = "'REQ_TYPE_JEJOM_ADD_END_SEND:2020'";
+			break;
+		case REQ_TYPE_JEJOM_DEL_END_SEND:
+				value_str = "'REQ_TYPE_JEJOM_DEL_END_SEND:2021'";
+			break;
+		case REQ_TYPE_MAX:
+				value_str = "'REQ_TYPE_MAX:0x1fffffff'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -1000,6 +5193,330 @@ t_auto_RetCode_str(RetCode enum_value)
 }
 
 s8 *
+t_auto_SIPCallType_str(SIPCallType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SIPCallType_caller:
+				value_str = "'SIPCallType_caller'";
+			break;
+		case SIPCallType_called:
+				value_str = "'SIPCallType_called'";
+			break;
+		case SIPCallType_conf:
+				value_str = "'SIPCallType_conf'";
+			break;
+		case SIPCallType_message:
+				value_str = "'SIPCallType_message'";
+			break;
+		case SIPCallType_max:
+				value_str = "'SIPCallType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SIPConfType_str(SIPConfType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SIPConfType_direct_conf_room:
+				value_str = "'SIPConfType_direct_conf_room:0'";
+			break;
+		case SIPConfType_hold_call_conf_room_CSBA:
+				value_str = "'SIPConfType_hold_call_conf_room_CSBA'";
+			break;
+		case SIPConfType_hold_call_conf_room_CSBT:
+				value_str = "'SIPConfType_hold_call_conf_room_CSBT'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SIPTransportType_str(SIPTransportType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SIPTransportType_udp:
+				value_str = "'SIPTransportType_udp'";
+			break;
+		case SIPTransportType_tcp:
+				value_str = "'SIPTransportType_tcp'";
+			break;
+		case SIPTransportType_tls:
+				value_str = "'SIPTransportType_tls'";
+			break;
+		case SIPTransportType_max:
+				value_str = "'SIPTransportType_max:0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSCodingType_str(SMSCodingType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SMSCoding_idle:
+				value_str = "'SMSCoding_idle:0'";
+			break;
+		case SMSCoding_utf8_to_asscii:
+				value_str = "'SMSCoding_utf8_to_asscii'";
+			break;
+		case SMSCoding_utf8_to_ucs2:
+				value_str = "'SMSCoding_utf8_to_ucs2'";
+			break;
+		case SMSCoding_ucse_to_utf8:
+				value_str = "'SMSCoding_ucse_to_utf8'";
+			break;
+		case SMSCoding_unchanged:
+				value_str = "'SMSCoding_unchanged'";
+			break;
+		case SMSCoding_latin1_to_utf8:
+				value_str = "'SMSCoding_latin1_to_utf8'";
+			break;
+		case SMSCoding_utf8_to_latin1:
+				value_str = "'SMSCoding_utf8_to_latin1'";
+			break;
+		case SMSCoding_gsm_to_utf8:
+				value_str = "'SMSCoding_gsm_to_utf8'";
+			break;
+		case SMSCoding_utf8_to_gsm:
+				value_str = "'SMSCoding_utf8_to_gsm'";
+			break;
+		case SMSCoding_Jis_x_0208_1990_to_utf8:
+				value_str = "'SMSCoding_Jis_x_0208_1990_to_utf8'";
+			break;
+		case SMSCoding_Cyrillic_to_utf8:
+				value_str = "'SMSCoding_Cyrillic_to_utf8'";
+			break;
+		case SMSCoding_iso_8859_8_to_utf8:
+				value_str = "'SMSCoding_iso_8859_8_to_utf8'";
+			break;
+		case SMSCoding_iso_2022_jp_to_utf8:
+				value_str = "'SMSCoding_iso_2022_jp_to_utf8'";
+			break;
+		case SMSCoding_jis_x0212_1990_to_utf8:
+				value_str = "'SMSCoding_jis_x0212_1990_to_utf8'";
+			break;
+		case SMSCoding_jis_ksc_5601_to_utf8:
+				value_str = "'SMSCoding_jis_ksc_5601_to_utf8'";
+			break;
+		case SMSCoding_Max:
+				value_str = "'SMSCoding_Max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSMsgState_str(SMSMsgState enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SMSMsgState_Init:
+				value_str = "'SMSMsgState_Init:0'";
+			break;
+		case SMSMsgState_ENROUTE:
+				value_str = "'SMSMsgState_ENROUTE:1'";
+			break;
+		case SMSMsgState_DELIVERED:
+				value_str = "'SMSMsgState_DELIVERED:2'";
+			break;
+		case SMSMsgState_EXPIRED:
+				value_str = "'SMSMsgState_EXPIRED:3'";
+			break;
+		case SMSMsgState_DELETED:
+				value_str = "'SMSMsgState_DELETED:4'";
+			break;
+		case SMSMsgState_UNDELIVERABLE:
+				value_str = "'SMSMsgState_UNDELIVERABLE:5'";
+			break;
+		case SMSMsgState_ACCEPTED:
+				value_str = "'SMSMsgState_ACCEPTED:6'";
+			break;
+		case SMSMsgState_UNKNOWN:
+				value_str = "'SMSMsgState_UNKNOWN:7'";
+			break;
+		case SMSMsgState_REJECTED:
+				value_str = "'SMSMsgState_REJECTED:8'";
+			break;
+		case SMSMsgState_LOCAL_REJECTED:
+				value_str = "'SMSMsgState_LOCAL_REJECTED:60'";
+			break;
+		case SMSMsgState_TIMEOUT:
+				value_str = "'SMSMsgState_TIMEOUT:99'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSOperatorCode_str(SMSOperatorCode enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SMSOTCODE_IDLE:
+				value_str = "'SMSOTCODE_IDLE'";
+			break;
+		case SMSOTCODE_CN_mobile:
+				value_str = "'SMSOTCODE_CN_mobile:46000'";
+			break;
+		case SMSOTCODE_CN_unicom:
+				value_str = "'SMSOTCODE_CN_unicom:46001'";
+			break;
+		case SMSOTCODE_CN_telecom:
+				value_str = "'SMSOTCODE_CN_telecom:46003'";
+			break;
+		case SMSOTCODE_CN_unmobile:
+				value_str = "'SMSOTCODE_CN_unmobile:46080'";
+			break;
+		case SMSOTCODE_CN_overseas:
+				value_str = "'SMSOTCODE_CN_overseas:46081'";
+			break;
+		case SMSOTCODE_CN_unknow:
+				value_str = "'SMSOTCODE_CN_unknow:46090'";
+			break;
+		case SMSOTCODE_MAX:
+				value_str = "'SMSOTCODE_MAX:0x1fffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSPriority_str(SMSPriority enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SMSLowPriority:
+				value_str = "'SMSLowPriority:0'";
+			break;
+		case SMSHigherPriority:
+				value_str = "'SMSHigherPriority'";
+			break;
+		case SMSFirstPriority:
+				value_str = "'SMSFirstPriority'";
+			break;
+		case SMSPriority_MAX:
+				value_str = "'SMSPriority_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSSignatureType_str(SMSSignatureType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case singature_type_idle:
+				value_str = "'singature_type_idle:0'";
+			break;
+		case head_boldface_square:
+				value_str = "'head_boldface_square:1'";
+			break;
+		case tail_boldface_square:
+				value_str = "'tail_boldface_square:2'";
+			break;
+		case head_square_brackets:
+				value_str = "'head_square_brackets:3'";
+			break;
+		case tail_square_brackets:
+				value_str = "'tail_square_brackets:4'";
+			break;
+		case stay_the_same:
+				value_str = "'stay_the_same:5'";
+			break;
+		case singature_type_max:
+				value_str = "'singature_type_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SMSType_str(SMSType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SMSType_MKT:
+				value_str = "'SMSType_MKT:0'";
+			break;
+		case SMSType_NOTIFY:
+				value_str = "'SMSType_NOTIFY'";
+			break;
+		case SMSType_OTP:
+				value_str = "'SMSType_OTP'";
+			break;
+		case SMSTypeMax:
+				value_str = "'SMSTypeMax'";
+			break;
+		case SMSTypeInvalid:
+				value_str = "'SMSTypeInvalid:0x1fffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value)
 {
 	s8 *value_str = NULL;
@@ -1300,6 +5817,42 @@ t_auto_SYNCType_str(SYNCType enum_value)
 }
 
 s8 *
+t_auto_SyncNotifyEnum_str(SyncNotifyEnum enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case SyncNotify_read:
+				value_str = "'SyncNotify_read'";
+			break;
+		case SyncNotify_write_free:
+				value_str = "'SyncNotify_write_free'";
+			break;
+		case SyncNotify_dma_read:
+				value_str = "'SyncNotify_dma_read'";
+			break;
+		case SyncNotify_dma_write_free:
+				value_str = "'SyncNotify_dma_write_free'";
+			break;
+		case SyncNotify_device_plugin:
+				value_str = "'SyncNotify_device_plugin'";
+			break;
+		case SyncNotify_device_plugout:
+				value_str = "'SyncNotify_device_plugout'";
+			break;
+		case SyncNotifyEnum_max:
+				value_str = "'SyncNotifyEnum_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_SyncServerType_str(SyncServerType enum_value)
 {
 	s8 *value_str = NULL;
@@ -1354,6 +5907,93 @@ t_auto_TaskAttribute_str(TaskAttribute enum_value)
 }
 
 s8 *
+t_auto_TextCoding_str(TextCoding enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case TextCoding_SMSC_Default_Alphabet:
+				value_str = "'TextCoding_SMSC_Default_Alphabet:0x00'";
+			break;
+		case TextCoding_Ascii:
+				value_str = "'TextCoding_Ascii:0x01'";
+			break;
+		case TextCoding_Latin1:
+				value_str = "'TextCoding_Latin1:0x03'";
+			break;
+		case TextCoding_Jis_x_0208_1990:
+				value_str = "'TextCoding_Jis_x_0208_1990:0x05'";
+			break;
+		case TextCoding_Cyrillic:
+				value_str = "'TextCoding_Cyrillic:0x06'";
+			break;
+		case TextCoding_iso_8859_8:
+				value_str = "'TextCoding_iso_8859_8:0x07'";
+			break;
+		case TextCoding_UCS2:
+				value_str = "'TextCoding_UCS2:0x08'";
+			break;
+		case TextCoding_iso_2022_jp:
+				value_str = "'TextCoding_iso_2022_jp:0x0A'";
+			break;
+		case TextCoding_jis_x0212_1990:
+				value_str = "'TextCoding_jis_x0212_1990:0x0D'";
+			break;
+		case TextCoding_jis_ksc_5601:
+				value_str = "'TextCoding_jis_ksc_5601:0x0E'";
+			break;
+		case TextCoding_UTF8:
+				value_str = "'TextCoding_UTF8:0x0f'";
+			break;
+		case TextCoding_max:
+				value_str = "'TextCoding_max:0xff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_TimeType_str(TimeType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case TIME_TYPE_INIT:
+				value_str = "'TIME_TYPE_INIT:0'";
+			break;
+		case TIME_TYPE_MINUTE:
+				value_str = "'TIME_TYPE_MINUTE:1'";
+			break;
+		case TIME_TYPE_HOUR:
+				value_str = "'TIME_TYPE_HOUR:2'";
+			break;
+		case TIME_TYPE_DAY:
+				value_str = "'TIME_TYPE_DAY:3'";
+			break;
+		case TIME_TYPE_WEEK:
+				value_str = "'TIME_TYPE_WEEK:4'";
+			break;
+		case TIME_TYPE_MONTH:
+				value_str = "'TIME_TYPE_MONTH:5'";
+			break;
+		case TIME_TYPE_MAX:
+				value_str = "'TIME_TYPE_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_TraceLevel_str(TraceLevel enum_value)
 {
 	s8 *value_str = NULL;
@@ -1390,6 +6030,30 @@ t_auto_TraceLevel_str(TraceLevel enum_value)
 }
 
 s8 *
+t_auto_UIPSocketType_str(UIPSocketType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case UIPSocketType_binding_client:
+				value_str = "'UIPSocketType_binding_client'";
+			break;
+		case UIPSocketType_sms_client:
+				value_str = "'UIPSocketType_sms_client'";
+			break;
+		case UIPSocketType_max:
+				value_str = "'UIPSocketType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_UIPType_str(UIPType enum_value)
 {
 	s8 *value_str = NULL;
@@ -1407,6 +6071,108 @@ t_auto_UIPType_str(UIPType enum_value)
 			break;
 		case UIPType_weichat_form:
 				value_str = "'UIPType_weichat_form'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_UserType_str(UserType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case UserType_reserve:
+				value_str = "'UserType_reserve:0'";
+			break;
+		case UserType_share:
+				value_str = "'UserType_share:1'";
+			break;
+		case UserType_private:
+				value_str = "'UserType_private:2'";
+			break;
+		case UserType_jegoboss:
+				value_str = "'UserType_jegoboss:3'";
+			break;
+		case UserType_NIM:
+				value_str = "'UserType_NIM:4'";
+			break;
+		case UserType_RNM:
+				value_str = "'UserType_RNM:5'";
+			break;
+		case UserType_AUX:
+				value_str = "'UserType_AUX:6'";
+			break;
+		case UserType_ENT:
+				value_str = "'UserType_ENT:7'";
+			break;
+		case UserType_max:
+				value_str = "'UserType_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_VERLEVEL_str(VERLEVEL enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case VER_ALPHA:
+				value_str = "'VER_ALPHA:0'";
+			break;
+		case VER_BETA:
+				value_str = "'VER_BETA'";
+			break;
+		case VER_RC:
+				value_str = "'VER_RC'";
+			break;
+		case VER_RELEASE:
+				value_str = "'VER_RELEASE'";
+			break;
+		case VER_MAX:
+				value_str = "'VER_MAX'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_VoIPForwardSettingType_str(VoIPForwardSettingType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case VoIPForwardSetting_Call_Only:
+				value_str = "'VoIPForwardSetting_Call_Only:1'";
+			break;
+		case VoIPForwardSetting_SMS_Only:
+				value_str = "'VoIPForwardSetting_SMS_Only:2'";
+			break;
+		case VoIPForwardSetting_Call_And_SMS:
+				value_str = "'VoIPForwardSetting_Call_And_SMS:3'";
+			break;
+		case VoIPForwardSetting_CLOSE:
+				value_str = "'VoIPForwardSetting_CLOSE:4'";
+			break;
+		case VoIPForwardSetting_max:
+				value_str = "'VoIPForwardSetting_max'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -1561,6 +6327,261 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case SOCKET_RAW_EVENT:
 				value_str = "'SOCKET_RAW_EVENT:1011'";
 			break;
+		case APPMSG_MCARD_REQ:
+				value_str = "'APPMSG_MCARD_REQ:2053'";
+			break;
+		case APPMSG_MCARD_RSP:
+				value_str = "'APPMSG_MCARD_RSP:2054'";
+			break;
+		case APPMSG_TALK_MCARD_REQ:
+				value_str = "'APPMSG_TALK_MCARD_REQ:2085'";
+			break;
+		case APPMSG_TALK_MCARD_RSP:
+				value_str = "'APPMSG_TALK_MCARD_RSP:2086'";
+			break;
+		case UIP_REGISTER_REQ:
+				value_str = "'UIP_REGISTER_REQ:2110'";
+			break;
+		case UIP_REGISTER_RSP:
+				value_str = "'UIP_REGISTER_RSP:2111'";
+			break;
+		case UIP_UNREGISTER_REQ:
+				value_str = "'UIP_UNREGISTER_REQ:2112'";
+			break;
+		case UIP_UNREGISTER_RSP:
+				value_str = "'UIP_UNREGISTER_RSP:2113'";
+			break;
+		case UIP_DATA_RECV_REQ:
+				value_str = "'UIP_DATA_RECV_REQ:2114'";
+			break;
+		case UIP_DATA_RECV_RSP:
+				value_str = "'UIP_DATA_RECV_RSP:2115'";
+			break;
+		case UIP_DATA_SEND_REQ:
+				value_str = "'UIP_DATA_SEND_REQ:2130'";
+			break;
+		case UIP_DATA_SEND_RSP:
+				value_str = "'UIP_DATA_SEND_RSP:2131'";
+			break;
+		case APPMSG_FUNCTION_REGISTER_REQ:
+				value_str = "'APPMSG_FUNCTION_REGISTER_REQ:2132'";
+			break;
+		case APPMSG_FUNCTION_REGISTER_RSP:
+				value_str = "'APPMSG_FUNCTION_REGISTER_RSP:2133'";
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_REQ:
+				value_str = "'APPMSG_FUNCTION_UNREGISTER_REQ:2134'";
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_RSP:
+				value_str = "'APPMSG_FUNCTION_UNREGISTER_RSP:2135'";
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_REQ:
+				value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ:4029'";
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_RSP:
+				value_str = "'DBMSG_SYS_INQ_CHANNEL_RSP:4030'";
+			break;
+		case DBMSG_SYS_INQ_IMAGE_REQ:
+				value_str = "'DBMSG_SYS_INQ_IMAGE_REQ:4212'";
+			break;
+		case DBMSG_SYS_INQ_IMAGE_RSP:
+				value_str = "'DBMSG_SYS_INQ_IMAGE_RSP:4213'";
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_REQ:
+				value_str = "'DBMSG_SYS_INQ_MUSEUM_REQ:4214'";
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_RSP:
+				value_str = "'DBMSG_SYS_INQ_MUSEUM_RSP:4215'";
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
+				value_str = "'DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:4226'";
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
+				value_str = "'DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:4227'";
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_REQ:
+				value_str = "'DBMSG_SYS_ADD_WEICHAT_REQ:4222'";
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_RSP:
+				value_str = "'DBMSG_SYS_ADD_WEICHAT_RSP:4223'";
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_REQ:
+				value_str = "'DBMSG_SYS_INQ_WEICHAT_REQ:4224'";
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_RSP:
+				value_str = "'DBMSG_SYS_INQ_WEICHAT_RSP:4225'";
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
+				value_str = "'DBMSG_SYS_INQ_PAINTER_PAGE_REQ:4230'";
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
+				value_str = "'DBMSG_SYS_INQ_PAINTER_PAGE_RSP:4231'";
+			break;
+		case DBMSG_NOSQL_ADD_TALK_REQ:
+				value_str = "'DBMSG_NOSQL_ADD_TALK_REQ:4175'";
+			break;
+		case DBMSG_NOSQL_ADD_TALK_RSP:
+				value_str = "'DBMSG_NOSQL_ADD_TALK_RSP:4176'";
+			break;
+		case DBMSG_REDIS_DEL_TABLE_REQ:
+				value_str = "'DBMSG_REDIS_DEL_TABLE_REQ:4131'";
+			break;
+		case DBMSG_REDIS_DEL_TABLE_RSP:
+				value_str = "'DBMSG_REDIS_DEL_TABLE_RSP:4132'";
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
+				value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:4190'";
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
+				value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:4191'";
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
+				value_str = "'DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:4192'";
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
+				value_str = "'DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:4193'";
+			break;
+		case DBMSG_HYBRID_ADD_LIST_REQ:
+				value_str = "'DBMSG_HYBRID_ADD_LIST_REQ:4077'";
+			break;
+		case DBMSG_HYBRID_ADD_LIST_RSP:
+				value_str = "'DBMSG_HYBRID_ADD_LIST_RSP:4078'";
+			break;
+		case DBMSG_HYBRID_INQ_LIST_REQ:
+				value_str = "'DBMSG_HYBRID_INQ_LIST_REQ:4079'";
+			break;
+		case DBMSG_HYBRID_INQ_LIST_RSP:
+				value_str = "'DBMSG_HYBRID_INQ_LIST_RSP:4080'";
+			break;
+		case MAINMSG_IM_USER_REG_REQ:
+				value_str = "'MAINMSG_IM_USER_REG_REQ:5034'";
+			break;
+		case MAINMSG_IM_USER_REG_RSP:
+				value_str = "'MAINMSG_IM_USER_REG_RSP:5035'";
+			break;
+		case MAINMSG_IM_USER_DEREG_REQ:
+				value_str = "'MAINMSG_IM_USER_DEREG_REQ:5036'";
+			break;
+		case MAINMSG_IM_USER_DEREG_RSP:
+				value_str = "'MAINMSG_IM_USER_DEREG_RSP:5037'";
+			break;
+		case MAINMSG_IM_USER_INQ_REQ:
+				value_str = "'MAINMSG_IM_USER_INQ_REQ:5038'";
+			break;
+		case MAINMSG_IM_USER_INQ_RSP:
+				value_str = "'MAINMSG_IM_USER_INQ_RSP:5039'";
+			break;
+		case MAINMSG_ADD_CHANNEL_REQ:
+				value_str = "'MAINMSG_ADD_CHANNEL_REQ:5013'";
+			break;
+		case MAINMSG_ADD_CHANNEL_RSP:
+				value_str = "'MAINMSG_ADD_CHANNEL_RSP:5014'";
+			break;
+		case MAINMSG_DEL_CHANNEL_REQ:
+				value_str = "'MAINMSG_DEL_CHANNEL_REQ:5015'";
+			break;
+		case MAINMSG_DEL_CHANNEL_RSP:
+				value_str = "'MAINMSG_DEL_CHANNEL_RSP:5016'";
+			break;
+		case MAINMSG_INQ_CHANNEL_REQ:
+				value_str = "'MAINMSG_INQ_CHANNEL_REQ:5017'";
+			break;
+		case MAINMSG_INQ_CHANNEL_RSP:
+				value_str = "'MAINMSG_INQ_CHANNEL_RSP:5018'";
+			break;
+		case MAINMSG_REC_CHANNEL_REQ:
+				value_str = "'MAINMSG_REC_CHANNEL_REQ:5019'";
+			break;
+		case MAINMSG_REC_CHANNEL_RSP:
+				value_str = "'MAINMSG_REC_CHANNEL_RSP:5020'";
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_REQ:
+				value_str = "'MAINMSG_ADD_CHANNEL_CMD_REQ:5040'";
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_RSP:
+				value_str = "'MAINMSG_ADD_CHANNEL_CMD_RSP:5041'";
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_REQ:
+				value_str = "'MAINMSG_DEL_CHANNEL_CMD_REQ:5042'";
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_RSP:
+				value_str = "'MAINMSG_DEL_CHANNEL_CMD_RSP:5043'";
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_REQ:
+				value_str = "'MAINMSG_INQ_CHANNEL_CMD_REQ:5044'";
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_RSP:
+				value_str = "'MAINMSG_INQ_CHANNEL_CMD_RSP:5045'";
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_REQ:
+				value_str = "'MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_REQ:5129'";
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_RSP:
+				value_str = "'MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_RSP:5130'";
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_REQ:
+				value_str = "'MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_REQ:5131'";
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_RSP:
+				value_str = "'MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_RSP:5132'";
+			break;
+		case MAINMSG_INQ_CHANNEL_FORBIDDEN_CMD_REQ:
+				value_str = "'MAINMSG_INQ_CHANNEL_FORBIDDEN_CMD_REQ:5133'";
+			break;
+		case MAINMSG_TALK_MCARD_REQ:
+				value_str = "'MAINMSG_TALK_MCARD_REQ:5106'";
+			break;
+		case MAINMSG_TALK_MCARD_RSP:
+				value_str = "'MAINMSG_TALK_MCARD_RSP:5107'";
+			break;
+		case MAINMSG_PYTHON_REQ:
+				value_str = "'MAINMSG_PYTHON_REQ:5135'";
+			break;
+		case MAINMSG_PYTHON_RSP:
+				value_str = "'MAINMSG_PYTHON_RSP:5136'";
+			break;
+		case BDATAMSG_TRACE_RECORD:
+				value_str = "'BDATAMSG_TRACE_RECORD:7002'";
+			break;
+		case BDATAMSG_CHANNEL_RECORD:
+				value_str = "'BDATAMSG_CHANNEL_RECORD:7003'";
+			break;
+		case BDATAMSG_DEVICE_RECORD:
+				value_str = "'BDATAMSG_DEVICE_RECORD:7004'";
+			break;
+		case BDATAMSG_BS_RECORD:
+				value_str = "'BDATAMSG_BS_RECORD:7006'";
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				value_str = "'BDATAMSG_MCARD_RECORD:7017'";
+			break;
+		case BDATAMSG_TALK_RECORD:
+				value_str = "'BDATAMSG_TALK_RECORD:7024'";
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				value_str = "'CVMSG_IMAGE_SEARCH_REQ:10001'";
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				value_str = "'CVMSG_IMAGE_SEARCH_RSP:10002'";
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				value_str = "'CVMSG_FEATURES_DETECTED_REQ:10003'";
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				value_str = "'CVMSG_FEATURES_DETECTED_RSP:10004'";
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				value_str = "'CVMSG_PAINTING_AESTHETICS_REQ:10005'";
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				value_str = "'CVMSG_PAINTING_AESTHETICS_RSP:10006'";
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				value_str = "'CVMSG_SCULPTURES_SEARCH_REQ:10007'";
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				value_str = "'CVMSG_SCULPTURES_SEARCH_RSP:10008'";
+			break;
 		case HTTPMSG_LISTEN_REQ:
 				value_str = "'HTTPMSG_LISTEN_REQ:11002'";
 			break;
@@ -1580,112 +6601,34 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 				value_str = "'HTTPMSG_RECV_RSP:11007'";
 			break;
 		case HTTPMSG_POST_REQ:
-				value_str = "'HTTPMSG_POST_REQ:11008'";
+				value_str = "'HTTPMSG_POST_REQ:11000'";
 			break;
 		case HTTPMSG_POST_RSP:
-				value_str = "'HTTPMSG_POST_RSP:11009'";
+				value_str = "'HTTPMSG_POST_RSP:11001'";
 			break;
-		case UIP_REGISTER_REQ:
-				value_str = "'UIP_REGISTER_REQ:11010'";
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				value_str = "'AIXMSG_IMAGE_CLASSIFICATION_REQ:12001'";
 			break;
-		case UIP_REGISTER_RSP:
-				value_str = "'UIP_REGISTER_RSP:11011'";
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				value_str = "'AIXMSG_IMAGE_CLASSIFICATION_RSP:12002'";
 			break;
-		case UIP_UNREGISTER_REQ:
-				value_str = "'UIP_UNREGISTER_REQ:11012'";
+		case AIXMSG_AESTHETICS_REQ:
+				value_str = "'AIXMSG_AESTHETICS_REQ:12003'";
 			break;
-		case UIP_UNREGISTER_RSP:
-				value_str = "'UIP_UNREGISTER_RSP:11013'";
+		case AIXMSG_AESTHETICS_RSP:
+				value_str = "'AIXMSG_AESTHETICS_RSP:12004'";
 			break;
-		case UIP_DATA_RECV_REQ:
-				value_str = "'UIP_DATA_RECV_REQ:11014'";
+		case BBSMSG_ADD_COMMENT_REQ:
+				value_str = "'BBSMSG_ADD_COMMENT_REQ:15001'";
 			break;
-		case UIP_DATA_RECV_RSP:
-				value_str = "'UIP_DATA_RECV_RSP:11015'";
+		case BBSMSG_ADD_COMMENT_RSP:
+				value_str = "'BBSMSG_ADD_COMMENT_RSP:15002'";
 			break;
-		case UIP_DATA_SEND_REQ:
-				value_str = "'UIP_DATA_SEND_REQ:11016'";
+		case BBSMSG_INQ_COMMENT_REQ:
+				value_str = "'BBSMSG_INQ_COMMENT_REQ:15003'";
 			break;
-		case UIP_DATA_SEND_RSP:
-				value_str = "'UIP_DATA_SEND_RSP:11017'";
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ:11018'";
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				value_str = "'DBMSG_SYS_INQ_CHANNEL_RSP:11019'";
-			break;
-		case DBMSG_SYS_INQ_IMAGE_REQ:
-				value_str = "'DBMSG_SYS_INQ_IMAGE_REQ:11020'";
-			break;
-		case DBMSG_SYS_INQ_IMAGE_RSP:
-				value_str = "'DBMSG_SYS_INQ_IMAGE_RSP:11021'";
-			break;
-		case DBMSG_SYS_INQ_MUSEUM_REQ:
-				value_str = "'DBMSG_SYS_INQ_MUSEUM_REQ:11022'";
-			break;
-		case DBMSG_SYS_INQ_MUSEUM_RSP:
-				value_str = "'DBMSG_SYS_INQ_MUSEUM_RSP:11023'";
-			break;
-		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
-				value_str = "'DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:11024'";
-			break;
-		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
-				value_str = "'DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:11025'";
-			break;
-		case DBMSG_SYS_ADD_WEICHAT_REQ:
-				value_str = "'DBMSG_SYS_ADD_WEICHAT_REQ:11026'";
-			break;
-		case DBMSG_SYS_ADD_WEICHAT_RSP:
-				value_str = "'DBMSG_SYS_ADD_WEICHAT_RSP:11027'";
-			break;
-		case DBMSG_SYS_INQ_WEICHAT_REQ:
-				value_str = "'DBMSG_SYS_INQ_WEICHAT_REQ:11028'";
-			break;
-		case DBMSG_SYS_INQ_WEICHAT_RSP:
-				value_str = "'DBMSG_SYS_INQ_WEICHAT_RSP:11029'";
-			break;
-		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
-				value_str = "'DBMSG_SYS_INQ_PAINTER_PAGE_REQ:11030'";
-			break;
-		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
-				value_str = "'DBMSG_SYS_INQ_PAINTER_PAGE_RSP:11031'";
-			break;
-		case DBMSG_NOSQL_ADD_TALK_REQ:
-				value_str = "'DBMSG_NOSQL_ADD_TALK_REQ:11032'";
-			break;
-		case DBMSG_NOSQL_ADD_TALK_RSP:
-				value_str = "'DBMSG_NOSQL_ADD_TALK_RSP:11033'";
-			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				value_str = "'DBMSG_REDIS_DEL_TABLE_REQ:11034'";
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				value_str = "'DBMSG_REDIS_DEL_TABLE_RSP:11035'";
-			break;
-		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
-				value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:11036'";
-			break;
-		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
-				value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:11037'";
-			break;
-		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
-				value_str = "'DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:11038'";
-			break;
-		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
-				value_str = "'DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:11039'";
-			break;
-		case DBMSG_HYBRID_ADD_LIST_REQ:
-				value_str = "'DBMSG_HYBRID_ADD_LIST_REQ:11040'";
-			break;
-		case DBMSG_HYBRID_ADD_LIST_RSP:
-				value_str = "'DBMSG_HYBRID_ADD_LIST_RSP:11041'";
-			break;
-		case DBMSG_HYBRID_INQ_LIST_REQ:
-				value_str = "'DBMSG_HYBRID_INQ_LIST_REQ:11042'";
-			break;
-		case DBMSG_HYBRID_INQ_LIST_RSP:
-				value_str = "'DBMSG_HYBRID_INQ_LIST_RSP:11043'";
+		case BBSMSG_INQ_COMMENT_RSP:
+				value_str = "'BBSMSG_INQ_COMMENT_RSP:15004'";
 			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID:0xffffffffffffffff'";

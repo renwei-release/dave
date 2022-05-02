@@ -97,7 +97,7 @@ static dave_bool
 _bson_dll_init(void)
 {
 	static const char dll_file_table[][256] = {
-		{"/dave/tools//dave/tools/mongodb-c/lib64/libbson-1.0.so"},
+		{"/dave/tools/mongodb-c/lib64/libbson-1.0.so"},
 		{""}
 	};
 	sb dll_file_table_index;
@@ -197,7 +197,7 @@ static dave_bool
 _mongoc_dll_init(void)
 {
 	static const char dll_file_table[][256] = {
-		{"/dave/tools//dave/tools/mongodb-c/lib64/libmongoc-1.0.so"},
+		{"/dave/tools/mongodb-c/lib64/libmongoc-1.0.so"},
 		{""}
 	};
 	sb dll_file_table_index;

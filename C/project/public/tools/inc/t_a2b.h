@@ -18,6 +18,8 @@ ub t_a2b_digital_to_string(s8 *str_ptr, ub str_len, ub digital);
 ub t_a2b_string_to_digital(s8 *str_ptr);
 ub t_a2b_stringhex_to_digital(s8 *str_ptr);
 ub t_a2b_bin_to_hex_string(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len);
+double t_a2b_string_to_double(s8 *string);
+ub t_a2b_double_to_string(s8 *string_ptr, ub string_len, double double_data);
 
 s8 * t_a2b_net_ipv4_to_str(u8 *ip, u16 port);
 s8 * t_a2b_net_ipv4_to_str_2(u8 *ip, u16 port);
@@ -42,6 +44,8 @@ s8 * t_a2b_date_str_6(DateStruct *pDate);
 #define digitalstring t_a2b_digital_to_string
 #define stringdigital t_a2b_string_to_digital
 #define stringhexdigital t_a2b_stringhex_to_digital
+#define stringdouble t_a2b_string_to_double
+#define doublestring t_a2b_double_to_string
 
 #endif
 

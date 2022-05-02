@@ -31,15 +31,16 @@ copy_python_project_to_container()
    if [ -d ${HOMEPRJDIR} ]; then
       echo update.sh copy ${HOMEPRJDIR} to ${PROJECTNAME}
 
-      docker exec -it ${PROJECTNAME} mkdir -p /project/public
-      docker exec -it ${PROJECTNAME} mkdir -p /project/product
-
-      docker exec -it ${PROJECTNAME} rm -rf /project/*
+      chmod a+x rm-project.sh
+      docker cp rm-project.sh ${PROJECTNAME}:/
+      docker exec -it ${PROJECTNAME} bash -c "cd / && ./rm-project.sh && rm -rf rm-project.sh"
 
       docker cp ${HOMEPRJDIR}/dave_main.py ${PROJECTNAME}:/project
+      docker cp ${HOMEPRJDIR}/components ${PROJECTNAME}:/project
       docker cp ${HOMEPRJDIR}/public ${PROJECTNAME}:/project
 
       if [ -d ${HOMEPRJDIR}/product/${PROJECT} ]; then
+         docker exec -it ${PROJECTNAME} mkdir -p /project/product
          docker cp ${HOMEPRJDIR}/product/dave_product.py ${PROJECTNAME}:/project/product
          docker cp ${HOMEPRJDIR}/product/${PROJECT} ${PROJECTNAME}:/project/product
       fi
@@ -50,10 +51,11 @@ backup_python_project_from_container()
 {
    if [ ${DEPLOYMODE} == 'develop' ]; then
       DEPLOYPRJDIR=${HOMEPATH}/../../../Deploy/deploy/${PROJECT}
-      echo update.sh backup project from ${PROJECTNAME}
+      echo update.sh backup project from ${PROJECTNAME} to ${DEPLOYPRJDIR}
       if [ -d ${DEPLOYPRJDIR}/project ]; then
          rm -rf ${DEPLOYPRJDIR}/project
       fi
+      mkdir -p ${DEPLOYPRJDIR}/project
       docker cp ${PROJECTNAME}:/project ${DEPLOYPRJDIR}
    fi
 }
@@ -150,10 +152,11 @@ modify_project_attributes()
 
 if [ ! "$PROJECTMAPPING" != "" ]; then
    copy_project_file
+   copy_sh_file
    modify_project_attributes
+else
+   copy_sh_file
 fi
-
-copy_sh_file
 
 if [ -f jupyter.sh ]; then
    ./jupyter.sh ${PROJECTNAME} ${JUPYTERPORT}

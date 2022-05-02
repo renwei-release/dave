@@ -13,7 +13,7 @@ go_package_name = 'package auto\n'
 def _c_enum_to_go_type(enum_value_array):
     for key in enum_value_array.keys():
         value = enum_value_array[key]
-        if (value != '') and (value.isdigit() == True):
+        if (value != '') and (is_digital_string(value) == True):
             if '0x' in value:
                 if int(value, 16) > 4294967295:
                     return 'int64'

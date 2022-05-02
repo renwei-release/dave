@@ -12,7 +12,7 @@ from autocode_tools import *
 def _c_enum_to_python_type(enum_value_array):
     for key in enum_value_array.keys():
         value = enum_value_array[key]
-        if (value != '') and (value.isdigit() == True):
+        if (value != '') and (is_digital_string(value) == True):
             if '0x' in value:
                 if int(enum_value_array[key], 16) > 4294967295:
                     return 'c_ulonglong'

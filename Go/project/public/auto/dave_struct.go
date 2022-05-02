@@ -15,6 +15,138 @@ package auto
 import "unsafe"
 
 /* for None message */
+type MCardVerText struct {
+	Version int64
+	Type int64
+	User [DAVE_USER_NAME_LEN] byte
+	Location MCardLocation
+	Time MCardTime
+	Utf8_txt *MBUF
+}
+
+/* for None message */
+type MCardVerMedia struct {
+	Version int64
+	Type int64
+	Source int64
+	Poi MCardPOI
+	Author_name [DAVE_USER_NAME_LEN] byte
+	Author_url [DAVE_URL_LEN] byte
+	Language int32
+	Author_photo_url [DAVE_URL_LEN] byte
+	Rating float64
+	Utf8_txt *MBUF
+	Second uint64
+}
+
+/* for None message */
+type MCardVerComment struct {
+	Version int64
+	Head MCardCommentHead
+	Content MCardContent
+}
+
+/* for None message */
+type MCardLocation struct {
+	Latitude float64
+	Longitude float64
+	Altitude float64
+	Course float64
+	Slope float64
+}
+
+/* for None message */
+type MCardTime struct {
+	Write_time DateStruct
+	Failure_type int64
+	Failure_time DateStruct
+}
+
+/* for None message */
+type MCardContent struct {
+	Id int64
+	Content_type int64
+	Content_language int32
+	Pcontent *MBUF
+}
+
+/* for None message */
+type CVModelResult struct {
+	Search_opt int32
+	Content_type int64
+	Language_code int32
+	Image_local_path [DAVE_PATH_LEN] byte
+	Image_url_path [DAVE_PATH_LEN] byte
+	Opt_number uint64
+	Face_number uint64
+	Vgg_id [DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID] byte
+	Vgg_score [DAVE_KEY_OPT_MAX] float32
+	Rectangle [DAVE_KEY_OPT_MAX] Rectangle
+	Image_title [DAVE_KEY_OPT_MAX*DAVE_IMAGE_TITLE_LEN] byte
+	Image_painter [DAVE_KEY_OPT_MAX*DAVE_USER_NAME_LEN] byte
+	Inliners_num [DAVE_KEY_OPT_MAX] uint64
+	Inliners_score [DAVE_KEY_OPT_MAX] float32
+	Keypoints_num [DAVE_KEY_OPT_MAX] uint64
+	Keypoints_score [DAVE_KEY_OPT_MAX] float32
+	Confidence int8
+	Label [DAVE_LABEL_STR_MAX] byte
+	Score float32
+	Cnn_model_work_time uint64
+	Features_db_req_time uint64
+	Features_db_rsp_time uint64
+	Features_db_process_time uint64
+	Introduce_db_req_time uint64
+	Introduce_db_rsp_time uint64
+	Model_raw_data *MBUF
+}
+
+/* for None message */
+type TerminalInformation struct {
+	Language [64] byte
+	Country [64] byte
+	Province [64] byte
+	City [64] byte
+	Nickname [64] byte
+	Gender [64] byte
+	Brand [64] byte
+	Model [64] byte
+	Version [64] byte
+	System [64] byte
+	Platform [64] byte
+	Sdkversion [64] byte
+}
+
+/* for None message */
+type BillingRulesPrivate struct {
+	Rules_id uint64
+	Measurement_activity int8
+	Measurement_activity_date DateStruct
+	Measurement_inactive_date DateStruct
+	Measurement_value uint64
+	Expand_business_id uint64
+	Max_measurement_value uint64
+	From_package_id uint64
+	Bs [DAVE_BILLING_BUSINESS_SERIAL_LEN] byte
+	Start_use_time DateStruct
+	End_use_time DateStruct
+	Sub_activity_date DateStruct
+	Sub_inactive_date DateStruct
+}
+
+/* for None message */
+type PainterIntroduction struct {
+	Table_id uint64
+	Painter_name [128] byte
+	Painter_birth [128] byte
+	Painter_death [128] byte
+	Painter_introduction [16384] byte
+	Painter_avatar_id [DAVE_SHA1_IMAGE_ID] byte
+	Painter_avatar_url [512] byte
+	Painter_related_painting [DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID] byte
+	Total_painting_number uint64
+}
+
+/* for None message */
 type SocNetInfoAddr struct {
 	Ip SocNetInfoIp
 	Url [DAVE_URL_LEN] byte
@@ -27,9 +159,68 @@ type SocNetInfoIp struct {
 }
 
 /* for None message */
-type HttpKeyValue struct {
-	Key [DAVE_HTTP_KEY_LEN] byte
-	Value [DAVE_HTTP_VALUE_LEN] byte
+type MCardPOI struct {
+	Location MCardLocation
+	Type int64
+	Name [DAVE_POI_NAME_MAX] byte
+	Phone_number [DAVE_MSISDN_LEN] byte
+	Address [DAVE_POI_ADDRESS_MAX] byte
+	Rating float64
+}
+
+/* for None message */
+type MCardCommentHead struct {
+	Nosql_head NoSQLHead
+	Comment_head MCardCommentHeadData
+	Reserve_data [DAVE_MACRD_HEAD_MAX-2976] byte
+}
+
+/* for None message */
+type Rectangle struct {
+	X1 float32
+	Y1 float32
+	X2 float32
+	Y2 float32
+	W float32
+	H float32
+}
+
+/* for None message */
+type NoSQLHead struct {
+	Key_str [DAVE_NOSQL_KEY_STR_MAX] byte
+	Reserve_data [512-DAVE_NOSQL_KEY_STR_MAX] byte
+}
+
+/* for None message */
+type MCardCommentHeadData struct {
+	Type int64
+	Post_id [DAVE_KEY_LEN_MAX] byte
+	Reply_comment_id [DAVE_KEY_LEN_MAX] byte
+	Src_uuid [DAVE_UUID_LEN] byte
+	Dst_uuid [DAVE_UUID_LEN] byte
+	Src_user [DAVE_USER_NAME_LEN] byte
+	Dst_user [DAVE_USER_NAME_LEN] byte
+	Location MCardLocation
+	Time MCardTime
+	Ti TerminalInformation
+	User UserInformation
+	Comment_attributes uint64
+}
+
+/* for None message */
+type UserInformation struct {
+	Language [64] byte
+	Country [64] byte
+	Province [64] byte
+	City [64] byte
+	Nickname [64] byte
+	Gender [16] byte
+	Phone_number_1 [64] byte
+	Phone_number_2 [64] byte
+	Email_1 [64] byte
+	Email_2 [64] byte
+	Home_address [128] byte
+	Avatar_url [256] byte
 }
 
 /* for None message */
@@ -43,15 +234,114 @@ type MBUF struct {
 }
 
 /* for None message */
-type BuildingBlocks struct {
-	Blocks_id uint64
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ip_addr [16] byte
-	Port uint16
-	Ready_flag int8
-	Blocks_flag int8
-	Client_flag int8
-	Release_quantity uint64
+type GPSLocation struct {
+	Latitude float64
+	Longitude float64
+	Altitude float64
+	Course float64
+}
+
+/* for None message */
+type MCard struct {
+	Version int64
+	Text MCardVerText
+	Media MCardVerMedia
+	Talk MCardVerTalk
+	Comment MCardVerComment
+}
+
+/* for None message */
+type Account struct {
+	Account_name [DAVE_NORMAL_NAME_LEN] byte
+	Account_password [DAVE_PASSWORD_LEN] byte
+	Balance_type int32
+	Balance float64
+	Account_id uint64
+}
+
+/* for None message */
+type DeviceInfo struct {
+	Name [DAVE_DEVICE_NAME_LEN] byte
+	Wifi_mac_address [DAVE_DEVICE_MAC_LEN] byte
+	Bt_mac_address [DAVE_DEVICE_MAC_LEN] byte
+	Version [DAVE_NORMAL_NAME_LEN] byte
+	Imei [DAVE_DEVICE_IMEI_LEN] byte
+	Imsi [DAVE_DEVICE_IMSI_LEN] byte
+	Model [DAVE_DEVICE_MODEL_LEN] byte
+	Ip [DAVE_DEVICE_IP_LEN] byte
+	Mcc [DAVE_DEVICE_MCC_LEN] byte
+	Mnc [DAVE_DEVICE_MNC_LEN] byte
+	Lac uint64
+	Cid uint64
+	Gps_longitude [DAVE_NORMAL_NAME_LEN] byte
+	Gps_latitude [DAVE_NORMAL_NAME_LEN] byte
+}
+
+/* for None message */
+type MCardVerTalk struct {
+	Version int64
+	Type int64
+	Channel [DAVE_NORMAL_NAME_LEN] byte
+	Uuid [DAVE_UUID_LEN] byte
+	App_id uint64
+	Src_user [DAVE_USER_NAME_LEN] byte
+	Dst_user [DAVE_USER_NAME_LEN] byte
+	Location MCardLocation
+	Time MCardTime
+	Main_serial uint64
+	Sub_serial uint64
+	Total_sub_serial uint64
+	Content MCardContent
+}
+
+/* for None message */
+type UniversalLabel struct {
+	Label_extra_information [DAVE_LABEL_EXTRA_INFO_MAX] byte
+	Label_id uint64
+	Label_str [DAVE_LABEL_STR_MAX] byte
+	Label_score float32
+}
+
+/* for None message */
+type CVResult struct {
+	Model_result CVModelResult
+	Image_introduction ImageIntroduction
+}
+
+/* for None message */
+type CVKeyPoint struct {
+	Width int32
+	Height int32
+	Size int32
+	_keypoint_ *MBUF
+}
+
+/* for None message */
+type OpenCVMat struct {
+	Type int32
+	Flags int32
+	Dims int32
+	Rows int32
+	Cols int32
+	Mat *MBUF
+}
+
+/* for None message */
+type WeiChatUserInfo struct {
+	Uuid [64] byte
+	Openid [64] byte
+	Code [64] byte
+	User_id [64] byte
+	Session_key [64] byte
+	Share_uuid [64] byte
+	Ti TerminalInformation
+}
+
+/* for None message */
+type ChannelInfo struct {
+	Domain [DAVE_DOMAIN_LEN] byte
+	Tenant_name [DAVE_TENANT_NAME_LEN] byte
+	Tenant_id uint64
 }
 
 /* for None message */
@@ -63,6 +353,63 @@ type DateStruct struct {
 	Minute byte
 	Second byte
 	Week byte
+}
+
+/* for None message */
+type BillingUser struct {
+	User_id uint64
+	Billing_user_id uint64
+	Package_number uint64
+	Package_id [DAVE_BILLING_MAX_PACKAGE_IN_USER] uint64
+	Rules_number uint64
+	Rules_private [DAVE_BILLING_MAX_RULES_IN_USER] BillingRulesPrivate
+}
+
+/* for None message */
+type ImageIntroduction struct {
+	Image_id [DAVE_SHA1_IMAGE_ID] byte
+	Painter PainterIntroduction
+	Museum MuseumIntroduction
+	Creat_time [128] byte
+	Dimensions [128] byte
+	Title [DAVE_IMAGE_TITLE_LEN] byte
+	Medium [128] byte
+	Image_introduction [16384] byte
+	Image_url [DAVE_URL_LEN] byte
+	Page_url [DAVE_URL_LEN] byte
+	Collection_location [512] byte
+	Audio_url [DAVE_URL_LEN] byte
+}
+
+/* for None message */
+type MuseumIntroduction struct {
+	Table_id uint64
+	Museum_id [DAVE_SHA1_IMAGE_ID] byte
+	Museum_name [128] byte
+	Address [1024] byte
+	Ticket [256] byte
+	Phone [128] byte
+	Web_url [256] byte
+	Opening_hours [256] byte
+	Museum_introduction [16384] byte
+}
+
+/* for None message */
+type HttpKeyValue struct {
+	Key [DAVE_HTTP_KEY_LEN] byte
+	Value [DAVE_HTTP_VALUE_LEN] byte
+}
+
+/* for None message */
+type BuildingBlocks struct {
+	Blocks_id uint64
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Ip_addr [16] byte
+	Port uint16
+	Ready_flag int8
+	Blocks_flag int8
+	Client_flag int8
+	Release_quantity uint64
 }
 
 /* for None message */

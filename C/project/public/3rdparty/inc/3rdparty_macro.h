@@ -9,13 +9,28 @@
 #define __3RDPARTY_MACRO_H__
 
 #define JEMALLOC_3RDPARTY
+
 #define JSON_3RDPARTY
+
 #define NGINX_3RDPARTY
+
 #define MONGO_3RDPARTY
-#define FASTDFS_3RDPARTY
+
+#ifdef __DAVE_PRODUCT_AIB__
 #define ICONV_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_AIB__
+#define FASTDFS_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_AIX__
 #define OPENCV_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_AIX__
 #define TENSORFLOW_3RDPARTY
+#endif
 
 #endif
 

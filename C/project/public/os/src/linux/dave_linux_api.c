@@ -192,22 +192,6 @@ dave_os_errno(sb *ret_errno)
 dave_bool
 dave_os_on_docker(void)
 {
-	sb docker_env_file_id;
-	dave_bool ret;
-
-	docker_env_file_id = dave_os_file_open(DIRECT_FLAG|READ_FLAG, (s8 *)"/.dockerenv");
-
-	if(docker_env_file_id >= 0)
-	{
-		ret = dave_true;
-
-		dave_os_file_close(docker_env_file_id);
-	}
-	else
-	{
-		ret = dave_false;
-	}
-
-	return ret;
+	return dave_os_file_valid("/.dockerenv");
 }
 
