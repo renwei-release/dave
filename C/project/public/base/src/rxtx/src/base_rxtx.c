@@ -137,6 +137,20 @@ _base_rxtx_check_magic_data(u8 *magic_data)
 	}
 }
 
+static inline void
+_base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
+{	
+	SocketRawEvent *pEvent = thread_msg(pEvent);
+
+	pEvent->socket = pUpEvent->socket;
+	pEvent->os_socket = pUpEvent->os_socket;
+	pEvent->event = SOC_EVENT_REV;
+	T_CopyNetInfo(&(pEvent->NetInfo), &(pUpEvent->NetInfo));
+	pEvent->data = NULL;
+
+	write_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
+}
+
 static inline FRAMETYPE
 _base_rxtx_to_type(u8 data_type)
 {
@@ -144,22 +158,22 @@ _base_rxtx_to_type(u8 data_type)
 
 	switch(data_type)
 	{
-		case RXTX_STACK_REL_VERTYPE_ver2:
+		case RXTX_STACK_REL_VERTYPE:
 				type = REL_FRAME;
 			break;
-		case RXTX_STACK_REL_SECRET_VERTYPE_ver2:
+		case RXTX_STACK_REL_SECRET_VERTYPE:
 				type = ENCRYPT_REL_FRAME;
 			break;
-		case RXTX_STACK_CT_DATA_SECRET_VERTYPE_ver2:
+		case RXTX_STACK_CT_DATA_SECRET_VERTYPE:
 				type = CT_ENCRYPT_DATA_FRAME;
 			break;
-		case RXTX_STACK_CT_ACK_VERTYPE_ver2:
+		case RXTX_STACK_CT_ACK_VERTYPE:
 				type = CT_ACK_FRAME;
 			break;
-		case RXTX_STACK_CT_SYNC_VERTYPE_ver2:
+		case RXTX_STACK_CT_SYNC_VERTYPE:
 				type = CT_SYNC_FRAME;
 			break;
-		case RXTX_STACK_CT_DATA_VERTYPE_ver2:
+		case RXTX_STACK_CT_DATA_VERTYPE:
 				type = CT_DATA_FRAME;
 			break;
 		default:
@@ -226,12 +240,12 @@ _base_rxtx_msgtype(BinStackMsgHead *message, u8 *data, ub len)
 
 	switch(data[0])
 	{
-		case RXTX_STACK_REL_VERTYPE_ver2:
-		case RXTX_STACK_REL_SECRET_VERTYPE_ver2:
-		case RXTX_STACK_CT_DATA_SECRET_VERTYPE_ver2:
-		case RXTX_STACK_CT_ACK_VERTYPE_ver2:
-		case RXTX_STACK_CT_SYNC_VERTYPE_ver2:
-		case RXTX_STACK_CT_DATA_VERTYPE_ver2:
+		case RXTX_STACK_REL_VERTYPE:
+		case RXTX_STACK_REL_SECRET_VERTYPE:
+		case RXTX_STACK_CT_DATA_SECRET_VERTYPE:
+		case RXTX_STACK_CT_ACK_VERTYPE:
+		case RXTX_STACK_CT_SYNC_VERTYPE:
+		case RXTX_STACK_CT_DATA_VERTYPE:
 				type = _base_rxtx_msgtype_(message, data, len);
 			break;
 		default:
@@ -287,7 +301,7 @@ _base_rxtx_build_head(u8 *head_data, u8 ver_type, ORDER_CODE order_id, ub data_l
 	ub head_index = 0;
 
 	ver_type &= 0x0f;
-	ver_type |= (RXTX_STACK_VERSION2<<4);
+	ver_type |= (RXTX_STACK_VERSION << 4);
 
 	head_data[head_index ++] = ver_type;
 	dave_byte_8(head_data[head_index ++], head_data[head_index ++], order_id);
@@ -360,13 +374,13 @@ _base_rxtx_output_ack(RXTX *pRxTx, ORDER_CODE order_id)
 {
 	RTDEBUG("order_id:%x port:%d", order_id, pRxTx->port);
 
-	_base_rxtx_output(RXTX_STACK_CT_ACK_VERTYPE_ver2, pRxTx, pRxTx->IPInfo.src_ip, pRxTx->IPInfo.src_port, order_id, NULL);
+	_base_rxtx_output(RXTX_STACK_CT_ACK_VERTYPE, pRxTx, pRxTx->IPInfo.src_ip, pRxTx->IPInfo.src_port, order_id, NULL);
 }
 
 static inline void
 _base_rxtx_output_sync(RXTX *pRxTx, ORDER_CODE order_id)
 {
-	_base_rxtx_output(RXTX_STACK_CT_SYNC_VERTYPE_ver2, pRxTx, pRxTx->IPInfo.src_ip, pRxTx->IPInfo.src_port, order_id, NULL);
+	_base_rxtx_output(RXTX_STACK_CT_SYNC_VERTYPE, pRxTx, pRxTx->IPInfo.src_ip, pRxTx->IPInfo.src_port, order_id, NULL);
 }
 
 static inline dave_bool
@@ -437,22 +451,22 @@ _base_rxtx_output_normal(dave_bool ct, u8 *dst_ip, u16 dst_port, s32 socket, ORD
 	{
 		if(ct == dave_true)
 		{
-			return _base_rxtx_output_data_encode(pRxTx, dst_ip, dst_port, RXTX_STACK_CT_DATA_SECRET_VERTYPE_ver2, order_id, data);
+			return _base_rxtx_output_data_encode(pRxTx, dst_ip, dst_port, RXTX_STACK_CT_DATA_SECRET_VERTYPE, order_id, data);
 		}
 		else
 		{
-			return _base_rxtx_output_data_encode(pRxTx, dst_ip, dst_port, RXTX_STACK_REL_SECRET_VERTYPE_ver2, order_id, data);
+			return _base_rxtx_output_data_encode(pRxTx, dst_ip, dst_port, RXTX_STACK_REL_SECRET_VERTYPE, order_id, data);
 		}
 	}
 	else
 	{
 		if(ct == dave_true)
 		{
-			return _base_rxtx_output_data(pRxTx, dst_ip, dst_port, RXTX_STACK_CT_DATA_VERTYPE_ver2, order_id, data);
+			return _base_rxtx_output_data(pRxTx, dst_ip, dst_port, RXTX_STACK_CT_DATA_VERTYPE, order_id, data);
 		}
 		else
 		{
-			return _base_rxtx_output_data(pRxTx, dst_ip, dst_port, RXTX_STACK_REL_VERTYPE_ver2, order_id, data);
+			return _base_rxtx_output_data(pRxTx, dst_ip, dst_port, RXTX_STACK_REL_VERTYPE, order_id, data);
 		}
 	}
 }
@@ -769,79 +783,38 @@ rxtx_input_end:
 }
 
 static inline RetCode
-_base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
+_base_rxtx_event_process(RXTX *pRxTx)
 {
 	ub process_len;
 	RetCode ret = RetCode_OK;
 
-	if((pRxTx->rx_buffer_len == 0) && (data != NULL) && (data_len > 0))
+	if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
 	{
-		process_len = _base_rxtx_input(pRxTx, data, data_len, &ret);
-		if(process_len < data_len)
-		{
-			pRxTx->rx_buffer_len = data_len - process_len;
-			if(pRxTx->rx_buffer_len > RX_TX_BUF_MAX)
-			{
-				RTABNOR("data buffer overflow! %d/%d", pRxTx->rx_buffer_len, data_len);
-
-				pRxTx->rx_buffer_len = 0;
-				ret = RetCode_data_overflow;
-			}
-
-			dave_memcpy(pRxTx->rx_buffer_ptr, &data[process_len], pRxTx->rx_buffer_len);
-
-			if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
-			{
-				pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
-			}
-		}
+		pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 	}
-	else
+
+	process_len = _base_rxtx_input(pRxTx, pRxTx->rx_buffer_ptr, pRxTx->rx_buffer_len, &ret);
+
+	if(process_len > pRxTx->rx_buffer_len)
 	{
-		if((pRxTx->rx_buffer_len + data_len) > RX_TX_BUF_MAX)
-		{
-			RTABNOR("data buffer overflow! <%d/%d>",
-				pRxTx->rx_buffer_len, data_len);
+		RTABNOR("process_len:%d > rx_buffer_len:%d why?",
+			process_len, pRxTx->rx_buffer_len);
 
-			pRxTx->rx_buffer_len = 0;
-			ret = RetCode_data_overflow;
-		}
+		pRxTx->rx_buffer_len = 0;
+	}
+	else if(process_len == pRxTx->rx_buffer_len)
+	{
+		pRxTx->rx_buffer_len = 0;
+	}
+	else if(process_len > 0)
+	{
+		pRxTx->rx_buffer_len = pRxTx->rx_buffer_len - process_len;
 
-		if((data != NULL) && (data_len > 0))
-		{
-			dave_memcpy(&(pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len]), data, data_len);
-
-			pRxTx->rx_buffer_len += data_len;
-		}
+		dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
 
 		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
-		}
-
-		process_len = _base_rxtx_input(pRxTx, pRxTx->rx_buffer_ptr, pRxTx->rx_buffer_len, &ret);
-
-		if(process_len > pRxTx->rx_buffer_len)
-		{
-			RTABNOR("process_len:%d > rx_buffer_len:%d why?",
-				process_len, pRxTx->rx_buffer_len);
-
-			pRxTx->rx_buffer_len = 0;
-		}
-		else if(process_len == pRxTx->rx_buffer_len)
-		{
-			pRxTx->rx_buffer_len = 0;
-		}
-		else if(process_len > 0)
-		{
-			pRxTx->rx_buffer_len = pRxTx->rx_buffer_len - process_len;
-
-			dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
-
-			if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
-			{
-				pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
-			}
 		}
 	}
 
@@ -849,87 +822,7 @@ _base_rxtx_read_process(RXTX *pRxTx, u8 *data, ub data_len)
 }
 
 static inline RetCode
-_base_rxtx_read(SocketRead *pRead, RXTX *pRxTx, stack_receive_fun result_fun, void *param)
-{
-	u8 *data;
-	ub data_len;
-
-	if(pRead->data != NULL)
-	{
-		data = (u8 *)(pRead->data->payload);
-		data_len = pRead->data->tot_len;
-	}
-	else
-	{
-		data = NULL;
-		data_len = 0;
-	}
-
-	pRxTx->receive_fun = result_fun;
-	pRxTx->param = param;
-
-	RTDEBUG("%s read data:%d/%d",
-		thread_name(pRxTx->owner_thread),
-		pRead->data_len,
-		pRxTx->rx_buffer_len);
-
-	pRxTx->IPInfo = pRead->IPInfo;
-
-	return _base_rxtx_read_process(pRxTx, data, data_len);
-}
-
-static inline void
-_base_rxtx_safe_build(RXTX *pRxTx, SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
-{
-	SAFECODEv1(pRxTx->opt_pv, {
-
-		_base_rxtx_reset(pRxTx);
-		
-		pRxTx->type = type;
-		pRxTx->socket = socket;
-		pRxTx->port = port;
-		pRxTx->owner_thread = self();
-		pRxTx->owner_file_name = file;
-		pRxTx->owner_file_line = line;
-
-	} );
-}
-
-static inline void
-_base_rxtx_safe_clean(RXTX *pRxTx, s8 *file, ub line)
-{
-	u8 *rx_buffer_ptr = NULL;
-
-	SAFECODEv1(pRxTx->opt_pv, {
-
-		rx_buffer_ptr = pRxTx->rx_buffer_ptr;
-
-		_base_rxtx_reset(pRxTx);
-
-	} );
-
-	if(rx_buffer_ptr != NULL)
-	{
-		dave_free(rx_buffer_ptr);
-	}
-}
-
-static inline void
-_base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
-{	
-	SocketRawEvent *pEvent = thread_msg(pEvent);
-
-	pEvent->socket = pUpEvent->socket;
-	pEvent->os_socket = pUpEvent->os_socket;
-	pEvent->event = SOC_EVENT_REV;
-	T_CopyNetInfo(&(pEvent->NetInfo), &(pUpEvent->NetInfo));
-	pEvent->data = NULL;
-
-	write_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
-}
-
-static inline RetCode
-_base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEvent, SocketRead *pRead)
+_base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEvent)
 {
 	ub rx_buffer_len;
 	RetCode ret = RetCode_OK;
@@ -959,38 +852,38 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	{
 		if(pRxTx->type == TYPE_SOCK_STREAM)
 		{
-			pRead->IPInfo.protocol = IPProtocol_TCP;
+			pRxTx->IPInfo.protocol = IPProtocol_TCP;
 
-			pRead->IPInfo.dst_ip[0] = pEvent->NetInfo.src_ip.ip_addr[0];
-			pRead->IPInfo.dst_ip[1] = pEvent->NetInfo.src_ip.ip_addr[1];
-			pRead->IPInfo.dst_ip[2] = pEvent->NetInfo.src_ip.ip_addr[2];
-			pRead->IPInfo.dst_ip[3] = pEvent->NetInfo.src_ip.ip_addr[3];
-			pRead->IPInfo.dst_port = pEvent->NetInfo.src_port;
-			pRead->IPInfo.src_ip[0] = 127;
-			pRead->IPInfo.src_ip[1] = 0;
-			pRead->IPInfo.src_ip[2] = 0;
-			pRead->IPInfo.src_ip[3] = 1;
-			pRead->IPInfo.src_port = pRxTx->port;
+			pRxTx->IPInfo.dst_ip[0] = pEvent->NetInfo.src_ip.ip_addr[0];
+			pRxTx->IPInfo.dst_ip[1] = pEvent->NetInfo.src_ip.ip_addr[1];
+			pRxTx->IPInfo.dst_ip[2] = pEvent->NetInfo.src_ip.ip_addr[2];
+			pRxTx->IPInfo.dst_ip[3] = pEvent->NetInfo.src_ip.ip_addr[3];
+			pRxTx->IPInfo.dst_port = pEvent->NetInfo.src_port;
+			pRxTx->IPInfo.src_ip[0] = 127;
+			pRxTx->IPInfo.src_ip[1] = 0;
+			pRxTx->IPInfo.src_ip[2] = 0;
+			pRxTx->IPInfo.src_ip[3] = 1;
+			pRxTx->IPInfo.src_port = pRxTx->port;
 		}
 		else
 		{
-			pRead->IPInfo.protocol = IPProtocol_UDP;
+			pRxTx->IPInfo.protocol = IPProtocol_UDP;
 
-			pRead->IPInfo.src_ip[0] = pEvent->NetInfo.src_ip.ip_addr[0];
-			pRead->IPInfo.src_ip[1] = pEvent->NetInfo.src_ip.ip_addr[1];
-			pRead->IPInfo.src_ip[2] = pEvent->NetInfo.src_ip.ip_addr[2];
-			pRead->IPInfo.src_ip[3] = pEvent->NetInfo.src_ip.ip_addr[3];
-			pRead->IPInfo.src_port = pEvent->NetInfo.src_port;
-			pRead->IPInfo.dst_ip[0] = 127;
-			pRead->IPInfo.dst_ip[1] = 0;
-			pRead->IPInfo.dst_ip[2] = 0;
-			pRead->IPInfo.dst_ip[3] = 1;
-			pRead->IPInfo.dst_port = pRxTx->port;
+			pRxTx->IPInfo.src_ip[0] = pEvent->NetInfo.src_ip.ip_addr[0];
+			pRxTx->IPInfo.src_ip[1] = pEvent->NetInfo.src_ip.ip_addr[1];
+			pRxTx->IPInfo.src_ip[2] = pEvent->NetInfo.src_ip.ip_addr[2];
+			pRxTx->IPInfo.src_ip[3] = pEvent->NetInfo.src_ip.ip_addr[3];
+			pRxTx->IPInfo.src_port = pEvent->NetInfo.src_port;
+			pRxTx->IPInfo.dst_ip[0] = 127;
+			pRxTx->IPInfo.dst_ip[1] = 0;
+			pRxTx->IPInfo.dst_ip[2] = 0;
+			pRxTx->IPInfo.dst_ip[3] = 1;
+			pRxTx->IPInfo.dst_port = pRxTx->port;
 		}
 
 		RTDEBUG("%s->%s len:%d",
-			ipv4str(pRead->IPInfo.src_ip, pRead->IPInfo.src_port),
-			ipv4str2(pRead->IPInfo.dst_ip, pRead->IPInfo.dst_port),
+			ipv4str(pRxTx->IPInfo.src_ip, pRxTx->IPInfo.src_port),
+			ipv4str2(pRxTx->IPInfo.dst_ip, pRxTx->IPInfo.dst_port),
 			rx_buffer_len);
 	}
 
@@ -1026,54 +919,9 @@ _base_rxtx_buffer_free(RXTX *pRxTx)
 }
 
 static inline RetCode
-_base_rxtx_input_action(SocketRead *pRead, stack_receive_fun result_fun, void *param)
-{
-	RetCode ret = RetCode_msg_competition_for_resources;
-	RXTX *pRxTx;
-
-	pRxTx = _base_rxtx_find_busy(pRead->socket);
-	if(pRxTx == NULL)
-	{
-		RTLOG("socket:%d close! <%d>", pRead->socket, pRead->data_len);
-		dave_mfree(pRead->data);
-		return RetCode_lost_link;
-	}
-
-	SAFECODEv1(pRxTx->opt_pv, {
-
-		_base_rxtx_buffer_malloc(pRxTx);
-
-		if((pRxTx->socket != INVALID_SOCKET_ID) && (pRxTx->socket >= 0))
-		{
-			ret = _base_rxtx_read(pRead, pRxTx, result_fun, param);
-		}
-		else
-		{
-			RTLOG("socket:%d close! <%d>", pRead->socket, pRead->data_len);
-			ret = RetCode_lost_link;
-		}
-
-		_base_rxtx_buffer_free(pRxTx);
-
-	} );
-
-	if(ret != RetCode_OK)
-	{
-		RTABNOR("%s socket:%d input data failed:%s! data_len:%d rx_buffer_len:%d",
-			thread_name(self()), pRead->socket, retstr(ret),
-			pRead->data_len, pRxTx->rx_buffer_len);
-	}
-
-	dave_mfree(pRead->data);
-
-	return ret;
-}
-
-static inline RetCode
 _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
 {
 	RXTX *pRxTx = NULL;
-	SocketRead read;
 	ub safe_counter;
 	ub backup_rx_buf_len;
 	RetCode ret = RetCode_OK;
@@ -1085,10 +933,6 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 		dave_mfree(pEvent->data);
 		return RetCode_lost_link;
 	}
-
-	dave_memset(&read, 0x00, sizeof(SocketRead));
-
-	read.socket = pRxTx->socket;
 
 	safe_counter = 0;
 
@@ -1102,20 +946,17 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 			{
 				backup_rx_buf_len = pRxTx->rx_buffer_len;
 
-				ret = _base_rxtx_event_receive(recv_total_length, pRxTx, pEvent, &read);
+				ret = _base_rxtx_event_receive(recv_total_length, pRxTx, pEvent);
 				if(ret != RetCode_OK)
 				{
 					break;
 				}
 
-				RTDEBUG("%s socket:%d rx_buffer_len:%d",
-					thread_name(pRxTx->owner_thread),
-					pRxTx->socket,
-					pRxTx->rx_buffer_len);
-
 				if(pRxTx->rx_buffer_len > backup_rx_buf_len)
 				{
-					ret = _base_rxtx_read(&read, pRxTx, result_fun, param);
+					pRxTx->receive_fun = result_fun;
+					pRxTx->param = param;
+					ret = _base_rxtx_event_process(pRxTx);
 					if(ret != RetCode_OK)
 					{
 						break;
@@ -1159,6 +1000,42 @@ _base_rxtx_event_notify_recv_length(s32 socket, ub recv_total_length, void *ptr)
 	pNotify->ptr = ptr;
 
 	write_msg(_socket_thread, SOCKET_NOTIFY, pNotify);
+}
+
+static inline void
+_base_rxtx_safe_build(RXTX *pRxTx, SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
+{
+	SAFECODEv1(pRxTx->opt_pv, {
+
+		_base_rxtx_reset(pRxTx);
+		
+		pRxTx->type = type;
+		pRxTx->socket = socket;
+		pRxTx->port = port;
+		pRxTx->owner_thread = self();
+		pRxTx->owner_file_name = file;
+		pRxTx->owner_file_line = line;
+
+	} );
+}
+
+static inline void
+_base_rxtx_safe_clean(RXTX *pRxTx, s8 *file, ub line)
+{
+	u8 *rx_buffer_ptr = NULL;
+
+	SAFECODEv1(pRxTx->opt_pv, {
+
+		rx_buffer_ptr = pRxTx->rx_buffer_ptr;
+
+		_base_rxtx_reset(pRxTx);
+
+	} );
+
+	if(rx_buffer_ptr != NULL)
+	{
+		dave_free(rx_buffer_ptr);
+	}
 }
 
 static inline void
@@ -1312,34 +1189,12 @@ base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF
 }
 
 RetCode
-base_rxtx_input(SocketRead *pRead, stack_receive_fun result_fun, void *param)
-{
-	return _base_rxtx_input_action(pRead, result_fun, param);
-}
-
-RetCode
 base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
 {
 	RetCode ret;
 	ub recv_total_length = 0;
 
-	if(pEvent->data == NULL)
-	{
-		ret = _base_rxtx_event_action(&recv_total_length, pEvent, result_fun, param);
-	}
-	else
-	{
-		SocketRead read;
-
-		read.socket = pEvent->socket;
-		T_NetToIPInfo(&(read.IPInfo), &(pEvent->NetInfo));
-		read.data_len = pEvent->data->len;
-		read.data = pEvent->data;
-
-		recv_total_length += pEvent->data->len;
-
-		ret = _base_rxtx_input_action(&read, result_fun, param);
-	}
+	ret = _base_rxtx_event_action(&recv_total_length, pEvent, result_fun, param);
 
 	_base_rxtx_event_notify_recv_length(pEvent->socket, recv_total_length, pEvent->ptr);
 

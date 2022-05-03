@@ -672,33 +672,6 @@ _sync_client_safe_plugout(SocketPlugOut *pPlugOut)
 }
 
 static void
-_sync_client_safe_rx_read(SocketRead *pRead)
-{
-	SyncServer *pServer = sync_client_data_server_inq_on_socket(pRead->socket);
-
-	if((pServer == NULL) || (pServer->server_socket == INVALID_SOCKET_ID))
-	{
-		dave_mfree(pRead->data);
-		return;
-	}
-
-	if(pServer->server_cnt == dave_false)
-	{
-		SocketRead *pNewRead = thread_msg(pNewRead);
-
-		*pNewRead = *pRead;
-
-		dave_os_sleep(1000);
-
-		write_msg(self(), SOCKET_READ, pNewRead);
-	}
-	else
-	{
-		SAFECODEv2R(pServer->rxtx_pv, sync_client_rx_read(pServer, pRead););
-	}
-}
-
-static void
 _sync_client_safe_rx_event(SocketRawEvent *pEvent)
 {
 	SyncServer *pServer = sync_client_data_server_inq_on_socket(pEvent->socket);
@@ -716,7 +689,7 @@ _sync_client_safe_rx_event(SocketRawEvent *pEvent)
 	}
 	else
 	{
-		SAFECODEv2TR( pServer->rxtx_pv, sync_client_rx_event(pServer, pEvent); re_event = dave_false; );
+		SAFECODEv2TR( pServer->rxtx_pv, sync_client_rx(pServer, pEvent); re_event = dave_false; );
 	}
 
 	if(re_event == dave_true)
@@ -802,9 +775,6 @@ _sync_client_main(MSGBODY *msg)
 			break;
 		case SOCKET_PLUGOUT:
 				_sync_client_safe_plugout((SocketPlugOut *)(msg->msg_body));
-			break;
-		case SOCKET_READ:
-				_sync_client_safe_rx_read((SocketRead *)(msg->msg_body));
 			break;
 		case SOCKET_RAW_EVENT:
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));

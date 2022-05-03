@@ -74,7 +74,6 @@ void __base_rxtx_clean__(s32 socket, s8 *file, ub line);
 dave_bool base_rxtx_writes(s32 socket, ORDER_CODE order_id, MBUF *data);
 dave_bool base_rxtx_send_ct(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF *data);
 dave_bool base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF *data);
-RetCode base_rxtx_input(SocketRead *pRead, stack_receive_fun result_fun, void *param);
 RetCode base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param);
 
 #define build_rxtx(type, socket, port) __base_rxtx_build__(type, socket, port, (s8 *)__func__, (ub)__LINE__)
@@ -82,7 +81,6 @@ RetCode base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun result_fun, vo
 #define rxtx_writes base_rxtx_writes
 #define rxtx_send_ct base_rxtx_send_ct
 #define rxtx_send base_rxtx_send
-#define rxtx_input base_rxtx_input
 #define rxtx_event base_rxtx_event
 
 #endif

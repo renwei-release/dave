@@ -65,7 +65,7 @@ $(VER_PRODUCT)-BIN: $(OBJS)
 
 pre_build:
 	python3 ../../../Tools/refresh_version/refresh_version.py "../../../" $(VER_PRODUCT)
-	../../../Tools/auto_code/AUTOCODE
+	../../../Tools/auto_code/AUTOCODE > /dev/null
 
 end_build:
 	$(shell if [ ! -d $(DEPLOYPATH) ]; then mkdir -p $(DEPLOYPATH); fi)

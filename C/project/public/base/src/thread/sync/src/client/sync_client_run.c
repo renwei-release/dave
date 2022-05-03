@@ -24,7 +24,7 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
-// #define SYNC_RUN_THREAD_ON_EVENTS
+#define SYNC_RUN_THREAD_ON_EVENTS
 
 typedef struct {
 	SyncServer *pServer;

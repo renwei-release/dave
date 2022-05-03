@@ -8,9 +8,7 @@
 #ifndef __SYNC_CLIENT_RX_H__
 #define __SYNC_CLIENT_RX_H__
 
-void sync_client_rx_read(SyncServer *pServer, SocketRead *pRead);
-
-void sync_client_rx_event(SyncServer *pServer, SocketRawEvent *pEvent);
+void sync_client_rx(SyncServer *pServer, SocketRawEvent *pEvent);
 
 #endif
 

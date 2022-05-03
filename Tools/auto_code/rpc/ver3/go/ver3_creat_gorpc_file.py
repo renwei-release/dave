@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2022 Renwei zhaojie chenxiaomin
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+# *
+# * 20220430 --- zhaojie chenxiaomin
+# * Fix the error in the type judgment of the enumeration processing
+# * function:_c_enum_to_go_type
+# *
 from autocode_cfg import *
 from autocode_tools import *
 

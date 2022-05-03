@@ -33,6 +33,12 @@ static u8 _link_server_detect_my_ip[DAVE_IP_V6_ADDR_LEN];
 static u16 _link_server_port = SYNC_LINK_PORT;
 static dave_bool _link_online_flag = dave_false;
 
+static u16
+_sync_client_link_port_generator(void)
+{
+	return (u16)(SYNC_LINK_PORT +  ((t_rand() + _link_server_port) % 9999));
+}
+
 static u8 *
 _sync_client_link_my_ip(void)
 {
@@ -87,7 +93,7 @@ _sync_client_link_server_bind_rsp(MSGBODY *pMsg)
 	{
 		SYNCTRACE("socket:%d info:%d", bind_rsp->socket, bind_rsp->BindInfo);
 
-		_link_server_port ++;
+		_link_server_port = _sync_client_link_port_generator();
 
 		_sync_client_link_server_bind_req();
 	}
@@ -157,7 +163,7 @@ sync_client_link_init(void)
 
 	_link_server_socket = INVALID_SOCKET_ID;
 
-	_link_server_port = SYNC_LINK_PORT +  (t_rand() % 999);
+	_link_server_port = _sync_client_link_port_generator();
 	_link_server_real_cfg_my_ip = sync_cfg_get_local_ip(_link_server_cfg_my_ip);
 	dave_memset(_link_server_detect_my_ip, 0x00, sizeof(_link_server_detect_my_ip));
 

@@ -551,23 +551,7 @@ _sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, 
 // =====================================================================
 
 void
-sync_client_rx_read(SyncServer *pServer, SocketRead *pRead)
-{
-	RetCode ret;
-
-	ret = rxtx_input(pRead, _sync_client_rx, pServer);
-	if(ret != RetCode_OK)
-	{
-		SYNCTRACE("socket:%d read error:%s",
-			pRead->socket,
-			retstr(ret));
-
-		_sync_client_rx_disconnect(pRead->socket);
-	}
-}
-
-void
-sync_client_rx_event(SyncServer *pServer, SocketRawEvent *pEvent)
+sync_client_rx(SyncServer *pServer, SocketRawEvent *pEvent)
 {
 	RetCode ret;
 

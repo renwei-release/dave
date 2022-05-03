@@ -40,7 +40,7 @@ _sync_server_info_show_client(SyncClient *pClient, s8 *info, ub info_len)
 		work_on_second = current_second - pClient->work_start_second;
 	
 	info_index += dave_snprintf(&info[info_index], info_len-info_index,
-		" B:%02d %d%d%d%d%d T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%d %s/%s %d/%d\n",
+		" B:%02d %d%d%d%d%d T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%d C:%s L:%s %d/%d\n",
 		sync_server_blocks_index_to_blocks_id(pClient->client_index),
 		pClient->receive_thread_done, pClient->sync_thread_flag, pClient->ready_flag, pClient->blocks_flag, pClient->client_flag,
 		sync_work_start_second_str(work_on_second, second_str, sizeof(second_str)),

@@ -44,9 +44,10 @@ _sync_client_shadow_index_find_other(SyncServer *pMyServer)
 				}
 				else
 				{
-					SYNCABNOR("A systemic error has occurred. This system has two identical global identifiers. %lx/%s %lx/%s",
-						pOtherServer, pOtherServer->verno,
-						&pHeadServer[server_index], pHeadServer[server_index].verno);
+					SYNCABNOR("A systemic error has occurred. This system has two identical global identifiers. %lx/%s/%s %lx/%s/%s %lx/%s/%s",
+						pMyServer, pMyServer->verno, pMyServer->globally_identifier,
+						pOtherServer, pOtherServer->verno, pOtherServer->globally_identifier,
+						&pHeadServer[server_index], pHeadServer[server_index].verno, pHeadServer[server_index].globally_identifier);
 				}
 			}
 		}

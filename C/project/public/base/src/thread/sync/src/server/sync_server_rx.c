@@ -863,25 +863,6 @@ _sync_server_rx_input(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_
 }
 
 static void
-_sync_server_rx_read_process(SyncClient *pClient, SocketRead *pRead)
-{
-	RetCode ret = RetCode_Parameter_conflicts;
-
-	if(pClient->client_socket != INVALID_SOCKET_ID)
-	{
-		ret = rxtx_input(pRead, _sync_server_rx_input, pClient);
-	}
-
-	if(ret != RetCode_OK)
-	{
-		SYNCLOG("%s socket:%d read error:%s",
-			pClient->verno, pRead->socket, retstr(ret));
-
-		_sync_server_rx_disconnect(pRead->socket);
-	}
-}
-
-static void
 _sync_server_rx_event_process(SyncClient *pClient, SocketRawEvent *pEvent)
 {
 	RetCode ret = RetCode_Parameter_conflicts;
@@ -938,15 +919,9 @@ _sync_server_rx_version_process(void *ptr)
 // =====================================================================
 
 void
-sync_server_rx_read(SyncClient *pClient, SocketRead *pRead)
-{
-	SAFECODEv1(pClient->opt_pv, _sync_server_rx_read_process(pClient, pRead););
-}
-
-void
 sync_server_rx_event(SyncClient *pClient, SocketRawEvent *pEvent)
 {
-	SAFECODEidlev1(pClient->opt_pv, _sync_server_rx_event_process(pClient, pEvent););
+	SAFECODEv1(pClient->opt_pv, _sync_server_rx_event_process(pClient, pEvent););
 }
 
 void

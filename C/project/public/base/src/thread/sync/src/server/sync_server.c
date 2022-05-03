@@ -304,21 +304,6 @@ _sync_server_safe_blocks_command(ThreadId src, MsgBlocksReq *pReq)
 }
 
 static void
-_sync_server_safe_rx_read(SocketRead *pRead)
-{
-	SyncClient *pClient;
-
-	pClient = sync_server_find_client(pRead->socket);
-	if(pClient == NULL)
-	{
-		dave_mfree(pRead->data);
-		return;
-	}
-
-	SAFECODEv2R(_sync_server_system_lock, sync_server_rx_read(pClient, pRead););
-}
-
-static void
 _sync_server_safe_rx_event(SocketRawEvent *pEvent)
 {
 	SyncClient *pClient;
@@ -386,9 +371,6 @@ _sync_server_main(MSGBODY *msg)
 			break;
 		case MSGID_BLOCKS_REQ:
 				_sync_server_safe_blocks_command(msg->msg_src, (MsgBlocksReq *)msg->msg_body);
-			break;
-		case SOCKET_READ:
-				_sync_server_safe_rx_read((SocketRead *)msg->msg_body);
 			break;
 		case SOCKET_RAW_EVENT:
 				_sync_server_safe_rx_event((SocketRawEvent *)(msg->msg_body));
