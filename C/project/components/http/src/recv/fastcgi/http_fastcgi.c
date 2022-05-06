@@ -500,7 +500,7 @@ http_fastcgi_parse(u8 *data, ub data_len, Fcgi *pFcgi)
 		if(parse_len == 0)
 		{
 			HTTPABNOR("parse zero!");
-			dave_printf_hex("hex", data, data_len);
+			t_stdio_print_hex("hex", data, data_len);
 			break;
 		}
 

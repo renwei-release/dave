@@ -63,7 +63,7 @@ _iconv_error(u8 *in, ub in_len)
 				PARTYABNOR("errno:%d", errno);
 			break;
 	}
-	dave_printf_hex("iconv_error", (u8 *)in, in_len);
+	t_stdio_print_hex("iconv_error", (u8 *)in, in_len);
 }
 
 static void

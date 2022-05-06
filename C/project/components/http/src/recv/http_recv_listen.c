@@ -211,7 +211,7 @@ _http_recv_listen_bind_req(ub port)
 		return;
 	}
 
-	if(dave_power_state() == dave_false)
+	if(base_power_state() == dave_false)
 	{
 		return;
 	}
@@ -233,7 +233,7 @@ _http_recv_listen_bind_req(ub port)
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
 
-	write_event(thread_id(SOCKET_THREAD_NAME), SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _http_recv_listen_bind_rsp);
+	id_event(thread_id(SOCKET_THREAD_NAME), SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _http_recv_listen_bind_rsp);
 }
 
 static void
@@ -264,7 +264,7 @@ _http_recv_listen_disconnect_req(s32 socket)
 
 	pReq->socket = socket;
 
-	write_event(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP, _http_recv_listen_disconnect_rsp);
+	id_event(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP, _http_recv_listen_disconnect_rsp);
 }
 
 static void

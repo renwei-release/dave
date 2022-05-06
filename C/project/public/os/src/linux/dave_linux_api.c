@@ -38,18 +38,6 @@
 
 // =====================================================================
 
-void
-dave_os_init(void)
-{
-	umask(0);
-}
-
-void
-dave_os_exit(void)
-{
-
-}
-
 void *
 dave_os_malloc(ub len)
 {

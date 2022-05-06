@@ -66,6 +66,6 @@ uip_debug(ThreadId src, DebugReq *pReq)
 
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_DEBUG_RSP, pRsp);
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 

@@ -583,6 +583,12 @@ type InternalEvents struct {
 	Ptr unsafe.Pointer
 }
 
+/* for MSGID_INTERNAL_LOOP message */
+type InternalLoop struct {
+	Event_id uint64
+	Ptr unsafe.Pointer
+}
+
 /* for MAINMSG_ADD_CHANNEL_CMD_REQ message */
 type MainMsgAddChannelCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
@@ -875,6 +881,8 @@ type RPCDebugMsg struct {
 	U16_debug uint16
 	S32_debug int32
 	U32_debug uint32
+	Float_debug float32
+	Double_debug float64
 	Void_debug unsafe.Pointer
 	Date_debug DateStruct
 	Mbuf_debug *MBUF

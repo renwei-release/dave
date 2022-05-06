@@ -10,10 +10,6 @@
 
 typedef RetCode (* sync_notify_fun)(ub notify_id);
 
-void dave_os_init(void);
-
-void dave_os_exit(void);
-
 void *dave_os_malloc(ub len);
 
 void dave_os_free(void *ptr);

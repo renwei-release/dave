@@ -25,7 +25,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 
 	pDebug->u32_debug = 1234567890;
 
-	write_msg(pReady->remote_thread_id, MSGID_RPC_DEBUG_MSG, pDebug);
+	id_msg(pReady->remote_thread_id, MSGID_RPC_DEBUG_MSG, pDebug);
 }
 
 static void
@@ -86,7 +86,7 @@ dave_product_init(void)
 {
 	_base_thread = base_thread_creat(dave_verno_my_product(), 1, THREAD_THREAD_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
 	if(_base_thread == INVALID_THREAD_ID)
-		dave_restart(dave_verno_my_product());
+		base_restart(dave_verno_my_product());
 }
 
 void

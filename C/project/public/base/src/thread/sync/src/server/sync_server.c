@@ -71,7 +71,7 @@ _sync_server_bind_req(void)
 
 	SYNCTRACE("%s", ipv4str(pReq->NetInfo.addr.ip.ip_addr, pReq->NetInfo.port));
 
-	write_msg(_socket_thread, SOCKET_BIND_REQ, pReq);
+	id_msg(_socket_thread, SOCKET_BIND_REQ, pReq);
 }
 
 static void
@@ -91,7 +91,7 @@ _sync_server_disconnect(s32 socket)
 	pReq->socket = socket;
 	pReq->ptr = NULL;
 
-	write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+	id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
 }
 
 static void

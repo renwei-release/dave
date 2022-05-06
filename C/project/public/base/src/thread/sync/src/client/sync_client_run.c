@@ -24,8 +24,6 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
-#define SYNC_RUN_THREAD_ON_EVENTS
-
 typedef struct {
 	SyncServer *pServer;
 	MBUF *frame_mbuf;
@@ -64,8 +62,8 @@ _sync_client_run_thread_msg(
 		{
 			net_index = pServer->server_index;
 			SYNCLTRACE(60, 1,
-				"The shadow index should be used at this time, but the shadow index has not been established! %s->%s:%d",
-				src, dst, msg_id);
+				"The shadow index should be used at this time, but the shadow index has not been established! %s->%s:%s",
+				src, dst, msgstr(msg_id));
 		}
 		else
 		{
@@ -79,7 +77,7 @@ _sync_client_run_thread_msg(
 		route_dst = thread_set_remote(0, route_dst, INVALID_THREAD_ID, net_index);
 	}
 
-	SYNCDEBUG("%s/%lx->%s/%lx:%d", src, route_src, dst, route_dst, msg_id);
+	SYNCDEBUG("%s/%lx->%s/%lx:%s", src, route_src, dst, route_dst, msgstr(msg_id));
 
 	route_src = sync_client_thread_id_change_to_user(route_src, _sync_client_thread);
 
@@ -144,8 +142,8 @@ _sync_client_run_thread(
 	}
 	else
 	{
-		SYNCABNOR("get %s invalid attrib:%d->%d or thread:%s<%d>->%s<%d>:%d buffer_pop:%d",
-			pServer->verno, src_attrib, dst_attrib, src, src_thread, dst, dst_thread, msg_id,
+		SYNCABNOR("get %s invalid attrib:%d->%d or thread:%s<%d>->%s<%d>:%s buffer_pop:%d",
+			pServer->verno, src_attrib, dst_attrib, src, src_thread, dst, dst_thread, msgstr(msg_id),
 			buffer_pop);
 
 		ret = dave_false;
@@ -154,7 +152,7 @@ _sync_client_run_thread(
 	return ret;
 }
 
-static void
+static inline void
 _sync_client_run_internal(
 	s8 *src, s8 *dst,
 	ub msg_id,
@@ -173,11 +171,11 @@ _sync_client_run_internal(
 		dst_thread = thread_id(SYNC_CLIENT_THREAD_NAME);
 	}
 
-	SYNCTRACE("%s->%s:%d msg_len:%d", src, dst, msg_id, msg_len);
+	SYNCTRACE("%s->%s:%s msg_len:%d", src, dst, msgstr(msg_id), msg_len);
 
 	if(snd_from_msg(src_thread, dst_thread, msg_id, msg_len, msg_body) == dave_false)
 	{
-		SYNCABNOR("%s->%s msg_id:%d msg_len:%d failed!", src, dst, msg_id, msg_len);
+		SYNCABNOR("%s->%s:%s msg_len:%d failed!", src, dst, msgstr(msg_id), msg_len);
 	}
 }
 
@@ -203,10 +201,10 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 
 	if(t_rpc_unzip(&msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{
-		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%d packet_len:%d",
+		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 			dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-			msg_type, msg_id, package_len);
+			msg_type, msgstr(msg_id), package_len);
 
 		dave_memset(msg_body, 0x00, msg_len);
 	}
@@ -259,43 +257,7 @@ sync_client_run_exit(void)
 void
 sync_client_run_thread(SyncServer *pServer, ub frame_len, u8 *frame)
 {
-#ifdef SYNC_RUN_THREAD_ON_EVENTS
-
-	SyncClientRunThreadEvents *pRunThread;
-	InternalEvents *pEvents;
-
-	pRunThread = dave_malloc(sizeof(SyncClientRunThreadEvents));
-	pRunThread->pServer = pServer;
-	pRunThread->frame_mbuf = dave_mmalloc(frame_len);
-	dave_memcpy(dave_mptr(pRunThread->frame_mbuf), frame, frame_len);
-
-	pEvents = thread_msg(pEvents);
-	pEvents->event_id = 0;
-	pEvents->ptr = pRunThread;
-
-	if(write_msg(_sync_client_thread, MSGID_INTERNAL_EVENTS, pEvents) == dave_false)
-	{
-		SYNCLTRACE(60,1,"MSGID_INTERNAL_EVENTS failed! _sync_client_thread:%lx", _sync_client_thread);
-		sync_client_run_thread_events(pRunThread);
-	}
-
-#else
-
 	_sync_client_run_thread_frame(pServer, frame_len, frame);
-
-#endif
-}
-
-void
-sync_client_run_thread_events(void *ptr)
-{
-	SyncClientRunThreadEvents *pRunThread = (SyncClientRunThreadEvents *)ptr;
-
-	_sync_client_run_thread_frame(pRunThread->pServer, (ub)(pRunThread->frame_mbuf->len), (u8 *)(pRunThread->frame_mbuf->payload));
-
-	dave_mfree(pRunThread->frame_mbuf);
-
-	dave_free(pRunThread);
 }
 
 void

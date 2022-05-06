@@ -131,7 +131,7 @@ _sync_client_link_server_bind_req(void)
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
 
-	write_event(_socket_thread, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _sync_client_link_server_bind_rsp);
+	id_event(_socket_thread, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _sync_client_link_server_bind_rsp);
 }
 
 static void
@@ -151,7 +151,7 @@ _sync_client_link_server_ubind_req(void)
 	pReq->socket = _link_server_socket;
 	pReq->ptr = NULL;
 
-	write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+	id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
 }
 
 // =====================================================================

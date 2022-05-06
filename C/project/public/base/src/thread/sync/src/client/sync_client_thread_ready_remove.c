@@ -333,7 +333,7 @@ _sync_client_thread_active_timer(void *ramkv, s8 *key)
 	} );
 
 	TemporarilyDefineMessageMsg *pTemp = thread_msg(pTemp);
-	write_msg(self(), MSGID_TEMPORARILY_DEFINE_MESSAGE, pTemp);
+	id_msg(self(), MSGID_TEMPORARILY_DEFINE_MESSAGE, pTemp);
 }
 
 // =====================================================================

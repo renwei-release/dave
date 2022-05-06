@@ -29,7 +29,7 @@ _dos_restart_user(s8 *param_ptr, ub param_len)
 	const char *msg = "User exit the system!";
 
 	dos_print(msg);
-	dave_restart(msg);
+	base_restart(msg);
 
 	return RetCode_OK;
 }

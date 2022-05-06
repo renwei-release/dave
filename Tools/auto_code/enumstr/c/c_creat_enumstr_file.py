@@ -25,7 +25,7 @@ def _creat_c_enumstr_body_table(body_table, file_id):
                 if body_value == '':
                     file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}\'";\n')
                 else:
-                    file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}:{body_value}\'";\n')
+                    file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}-{body_value}\'";\n')
                 file_id.write(f'\t\t\tbreak;\n')
     file_id.write(f'\t\tdefault:\n')
     file_id.write(f'\t\t\t\tvalue_str = "\'NULL\'";\n')

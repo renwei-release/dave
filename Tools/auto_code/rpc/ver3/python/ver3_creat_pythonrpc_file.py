@@ -79,7 +79,7 @@ def _c_type_to_python_type(c_type, is_ptr, struct_total, enum_table, fun_table):
         return 'c_double'
     elif c_type == 'void':
         if is_ptr == True:
-            return 'c_void_p'
+            return 'POINTER(c_char)'
         else:
             return 'c_ulonglong'
     elif enum_table.get(c_type, None) != None:

@@ -184,6 +184,8 @@ typedef struct {
 	u16 u16_debug;
 	s32 s32_debug;
 	u32 u32_debug;
+	float float_debug;
+	double double_debug;
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
@@ -216,6 +218,12 @@ typedef struct {
 typedef struct {
 	ub notify_info;
 } MsgOSNotify;
+
+/* for MSGID_INTERNAL_LOOP message */
+typedef struct {
+	ub event_id;
+	void *ptr;
+} InternalLoop;
 
 #endif
 

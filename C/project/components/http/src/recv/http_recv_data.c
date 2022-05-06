@@ -339,7 +339,7 @@ _http_recv_write(s32 socket, MBUF *pMbuf)
 		_socket_thread_id = thread_id(SOCKET_THREAD_NAME);
 	}
 
-	if(write_msg(_socket_thread_id, SOCKET_WRITE, pWrite) == dave_false)
+	if(id_msg(_socket_thread_id, SOCKET_WRITE, pWrite) == dave_false)
 	{
 		dave_mfree(pMbuf);
 	}

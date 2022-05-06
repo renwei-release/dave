@@ -15,12 +15,5 @@ void base_restart(const char *args, ...);
 dave_bool base_power_state(void);
 void base_power_off(s8 *reason);
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define dave_restart base_restart
-#define dave_power_off base_power_off
-#define dave_power_state base_power_state
-
-
 #endif
 

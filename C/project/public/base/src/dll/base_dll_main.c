@@ -124,7 +124,7 @@ dave_dll_main_init(dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun,
 
 	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), THREAD_THREAD_FLAG, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)
-		dave_restart(_dll_main_name());
+		base_restart(_dll_main_name());
 }
 
 void

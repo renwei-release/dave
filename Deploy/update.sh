@@ -110,10 +110,8 @@ __copy_sh_file__()
             sed -i "${SHCMDLINE}c ./${PROJECT^^}-BIN" $SHFILE
          fi
 
-         if [ ! "$PROJECTMAPPING" != "" ]; then
-            echo update.sh copy $SHFILE to ${PROJECTNAME}/project
-            docker cp $SHFILE ${PROJECTNAME}:/project
-         fi
+         echo update.sh copy $SHFILE to ${PROJECTNAME}/project
+         docker cp $SHFILE ${PROJECTNAME}:/project
 
          sed -i "${SHCMDLINE}c goto_debug #___FLAG_FOR_UPDATE.SH___" $SHFILE
       else

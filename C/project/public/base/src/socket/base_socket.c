@@ -60,7 +60,7 @@ _socket_debug(ThreadId src, DebugReq *pReq, ub wakeup_index)
 	}
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_DEBUG_RSP, pRsp);
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 
 static void
@@ -74,7 +74,7 @@ _socket_plugin(ThreadId dst, s32 father_socket, s32 socket, SocNetInfo *pNetInfo
 	pPlugin->thread_id = _socket_thread;
 	pPlugin->ptr = user_ptr;
 
-	write_msg(dst, SOCKET_PLUGIN, pPlugin);
+	id_msg(dst, SOCKET_PLUGIN, pPlugin);
 }
 
 static void
@@ -102,7 +102,7 @@ _socket_bing_rsp(SocketCore *pCore, ThreadId src, SocketBindReq *pReq)
 	pRsp->thread_id = _socket_thread;
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, SOCKET_BIND_RSP, pRsp);
+	id_msg(src, SOCKET_BIND_RSP, pRsp);
 
 	if(pCore != NULL)
 	{
@@ -148,7 +148,7 @@ _socket_connect_rsp(SocketCore *pCore, SOCKETINFO info, ThreadId src, SocketConn
 	pRsp->thread_id = _socket_thread;
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, SOCKET_CONNECT_RSP, pRsp);
+	id_msg(src, SOCKET_CONNECT_RSP, pRsp);
 
 	if(pCore != NULL)
 	{
@@ -181,7 +181,7 @@ _socket_disconnect_rsp(ThreadId src, SocketDisconnectReq *pReq)
 	pRsp->result = SOCKETINFO_DISCONNECT_OK;
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, SOCKET_DISCONNECT_RSP, pRsp);
+	id_msg(src, SOCKET_DISCONNECT_RSP, pRsp);
 }
 
 static void

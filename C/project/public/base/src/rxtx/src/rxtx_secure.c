@@ -25,7 +25,7 @@ rxtx_simple_encode_request(MBUF *data)
 
 	encode_package->len = encode_package->tot_len = t_a2b_mbuf_to_buf(data, dave_mptr(encode_package), encode_package->len);
 
-	encode_package->len = encode_package->tot_len = rxtx_build_crc(dave_mptr(encode_package), encode_package->len);
+	encode_package->len = encode_package->tot_len = rxtx_build_crc_on_buf(dave_mptr(encode_package), encode_package->len);
 
 	encode_package->len = encode_package->tot_len =
 		t_crypto_des_encode(_stack_simple_secure_key, DAVE_DES_KEY_LEN, dave_mptr(encode_package), encode_package->len, dave_true);

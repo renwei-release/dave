@@ -538,7 +538,7 @@ _timer_msg(TIMERMSG *pTimerMsg)
 
 			pMsg->timer_id = timer_id;
 
-			write_msg(_timer[timer_id].owner, MSGID_TIMER, pMsg);
+			id_msg(_timer[timer_id].owner, MSGID_TIMER, pMsg);
 		}
 	}
 }
@@ -639,7 +639,7 @@ _timer_debug(ThreadId src, DebugReq *pReq)
 	}
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_DEBUG_RSP, pRsp);
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 
 static void

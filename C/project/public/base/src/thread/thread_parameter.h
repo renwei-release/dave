@@ -22,5 +22,9 @@
  */
 #define ENABLE_THREAD_REMOTE_NOTIFY
 
+#ifdef LEVEL_PRODUCT_alpha
+#define ENABLE_THREAD_STATISTICS
+#endif
+
 #endif
 

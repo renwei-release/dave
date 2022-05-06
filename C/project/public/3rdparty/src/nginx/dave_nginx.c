@@ -112,7 +112,7 @@ dave_nginx_stop(ub nginx_port)
 	PARTYLOG("[NGINX]stopping nginx-port:%d has-server-number:%d",
 		nginx_port, has_server_number);
 
-	if((has_server_number > 0) && (dave_power_state() == dave_true))
+	if((has_server_number > 0) && (base_power_state() == dave_true))
 	{
 		ret = nginx_action_start();
 		if(ret != RetCode_OK)

@@ -87,7 +87,7 @@ _dave_dll_inner_loop(void *arg)
 			}
 			else if (sig == KILL_SIG)
 			{
-				dave_restart("KILL");
+				base_restart("KILL");
 			}
 			else if (sig == QUIT_SIG)
 			{
@@ -135,7 +135,7 @@ _dave_dll_init(
 	_dave_main_thread_id = dave_os_create_thread("dave", _dave_dll_main_thread, NULL);
 	if(_dave_main_thread_id == NULL)
 	{
-		dave_restart("main reboot");
+		base_restart("main reboot");
 	}
 	else
 	{
@@ -188,9 +188,9 @@ dave_dll_running(void)
 void
 dave_dll_exit(void)
 {
-	if(dave_power_state() == dave_true)
+	if(base_power_state() == dave_true)
 	{
-		dave_restart("dll exit");
+		base_restart("dll exit");
 	}
 
 	_dave_dll_exit();

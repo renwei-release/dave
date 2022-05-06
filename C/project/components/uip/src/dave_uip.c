@@ -84,7 +84,7 @@ dave_uip_init(void)
 
 	_uip_thread = base_thread_creat(UIP_THREAD_NAME, _uip_thread_number, THREAD_THREAD_FLAG, _uip_init, _uip_main, _uip_exit);
 	if(_uip_thread == INVALID_THREAD_ID)
-		dave_restart(UIP_THREAD_NAME);
+		base_restart(UIP_THREAD_NAME);
 }
 
 void

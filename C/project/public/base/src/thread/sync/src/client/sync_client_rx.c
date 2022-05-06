@@ -89,7 +89,7 @@ _sync_client_rx_disconnect(s32 socket)
 	pReq->socket = socket;
 	pReq->ptr = NULL;
 
-	write_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
+	id_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
 }
 
 static inline void
@@ -467,8 +467,72 @@ _sync_client_rx_record_processing(SyncServer *pServer)
 	sync_unlock();
 }
 
+static inline void
+_sync_client_rx_order(SyncServer *pServer, ORDER_CODE order_id, ub frame_len, u8 *frame_ptr)
+{
+	switch(order_id)
+	{
+		case ORDER_CODE_MY_VERNO:
+				_sync_client_rx_verno(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_HEARTBEAT_REQ:
+				_sync_client_rx_heartbeat_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_HEARTBEAT_RSP:
+				_sync_client_rx_heartbeat_rsp(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_MODULE_VERNO:
+				_sync_client_rx_module_verno(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_SYNC_THREAD_NAME_REQ:
+				_sync_client_rx_sync_thread_name_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_SYNC_THREAD_NAME_RSP:
+				_sync_client_rx_sync_thread_name_rsp(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_ADD_REMOTE_THREAD_REQ:
+				_sync_client_rx_add_remote_thread_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_DEL_REMOTE_THREAD_REQ:
+				_sync_client_rx_del_remote_thread_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_RUN_THREAD_MSG_REQ:
+				_sync_client_rx_run_thread_msg_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_RUN_THREAD_MSG_RSP:
+				_sync_client_rx_run_thread_msg_rsp(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_TEST_RUN_THREAD_MSG_REQ:
+				_sync_client_rx_test_run_thread_msg_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_RUN_INTERNAL_MSG_REQ:
+				_sync_client_rx_run_internal_msg_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_LINK_UP_REQ:
+				_sync_client_rx_link_up_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_LINK_UP_RSP:
+				_sync_client_rx_link_up_rsp(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_LINK_DOWN_REQ:
+				_sync_client_rx_link_down_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_LINK_DOWN_RSP:
+				_sync_client_rx_link_down_rsp(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_RPCVER_REQ:
+				_sync_client_rx_rpcver_req(pServer, frame_len, frame_ptr);
+			break;
+		case ORDER_CODE_RPCVER_RSP:
+				_sync_client_rx_rpcver_rsp(pServer, frame_len, frame_ptr);
+			break;
+		default:
+			break;
+	}
+}
+
 static void
-_sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame)
+_sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame_ptr)
 {
 	SyncServer *pServer = (SyncServer *)param;
 
@@ -486,66 +550,7 @@ _sync_client_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, 
 	SYNCDEBUG("socket:%d order_id:%x %s left_timer:%d",
 		socket, order_id, pServer->verno, pServer->left_timer);
 
-	switch(order_id)
-	{
-		case ORDER_CODE_MY_VERNO:
-				_sync_client_rx_verno(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_HEARTBEAT_REQ:
-				_sync_client_rx_heartbeat_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_HEARTBEAT_RSP:
-				_sync_client_rx_heartbeat_rsp(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_MODULE_VERNO:
-				_sync_client_rx_module_verno(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_SYNC_THREAD_NAME_REQ:
-				_sync_client_rx_sync_thread_name_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_SYNC_THREAD_NAME_RSP:
-				_sync_client_rx_sync_thread_name_rsp(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_ADD_REMOTE_THREAD_REQ:
-				_sync_client_rx_add_remote_thread_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_DEL_REMOTE_THREAD_REQ:
-				_sync_client_rx_del_remote_thread_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_RUN_THREAD_MSG_REQ:
-				_sync_client_rx_run_thread_msg_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_RUN_THREAD_MSG_RSP:
-				_sync_client_rx_run_thread_msg_rsp(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_TEST_RUN_THREAD_MSG_REQ:
-				_sync_client_rx_test_run_thread_msg_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_RUN_INTERNAL_MSG_REQ:
-				_sync_client_rx_run_internal_msg_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_LINK_UP_REQ:
-				_sync_client_rx_link_up_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_LINK_UP_RSP:
-				_sync_client_rx_link_up_rsp(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_LINK_DOWN_REQ:
-				_sync_client_rx_link_down_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_LINK_DOWN_RSP:
-				_sync_client_rx_link_down_rsp(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_RPCVER_REQ:
-				_sync_client_rx_rpcver_req(pServer, frame_len, frame);
-			break;
-		case ORDER_CODE_RPCVER_RSP:
-				_sync_client_rx_rpcver_rsp(pServer, frame_len, frame);
-			break;
-		default:
-				SYNCLOG("can't process order_id:%x", order_id);
-			break;
-	}
+	_sync_client_rx_order(pServer, order_id, frame_len, frame_ptr);
 }
 
 // =====================================================================

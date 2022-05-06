@@ -323,7 +323,7 @@ _ramkv_test_check_timer(TIMERID timer_id, ub thread_index)
 
 	if(_timer_ramkv == NULL)
 	{
-		dave_timer_die(timer_id);
+		base_timer_die(timer_id);
 	}
 }
 
@@ -366,7 +366,7 @@ _ramkv_test_timer_start(s8 *out_second_str)
 		_timer_ramkv = base_ramkv_malloc((s8 *)"testramkv", KvAttrib_list, out_second, _ramkv_test_timer_out);
 		t_lock_reset(&_timer_pv);
 
-		dave_timer_creat("testramkv_check_timer", _ramkv_test_check_timer, 1000);
+		base_timer_creat("testramkv_check_timer", _ramkv_test_check_timer, 1000);
 
 		KVLOG("ramkv database timer start! out_second:%d", out_second);
 	}
@@ -426,7 +426,7 @@ _ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
 			inq_ptr = base_ramkv_inq_key_ptr(_timer_ramkv, str_key);
 			if(inq_ptr != str_ptr)
 			{
-				dave_restart("test failed on str_key:%s inq! %lx/%lx", str_key, inq_ptr, str_ptr);
+				base_restart("test failed on str_key:%s inq! %lx/%lx", str_key, inq_ptr, str_ptr);
 			}
 		}
 
@@ -439,7 +439,7 @@ _ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
 		{
 			if(base_ramkv_inq_ub_ptr(_timer_ramkv, ub_key) != ub_ptr)
 			{
-				dave_restart("test failed on ub_key:%ld inq!", ub_key);
+				base_restart("test failed on ub_key:%ld inq!", ub_key);
 			}
 		}
 	}

@@ -12,7 +12,7 @@
 
 #define RXTX_MAX (DAVE_SERVER_SUPPORT_SOCKET_MAX)
 
-#define RX_TX_BUF_MAX (32*1024*1024)
+#define RX_TX_BUF_MAX (8*1024*1024)
 #define RX_TX_BUF_MIN (2048)
 
 #define RXTX_STACK_VERSION	(0x02)
@@ -46,6 +46,8 @@ typedef struct {
 	ThreadId owner_thread;
 	s8 *owner_file_name;
 	ub owner_file_line;
+
+	dave_bool enable_data_crc;
 
 	ub rxtx_index;
 

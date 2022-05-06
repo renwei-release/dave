@@ -99,7 +99,7 @@ _broadcast_system_quit_message(void)
 			dave_strcpy(pRestart->reason, _msg_quit.reason, sizeof(pRestart->reason));
 			pRestart->times = times;
 
-			write_msg(_msg_quit.task[task_index].thread_id, MSGID_RESTART_REQ, pRestart);
+			id_msg(_msg_quit.task[task_index].thread_id, MSGID_RESTART_REQ, pRestart);
 		}
 	}
 }

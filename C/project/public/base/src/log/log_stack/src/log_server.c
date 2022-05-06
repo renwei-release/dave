@@ -372,7 +372,7 @@ _log_stack_server_bind_req(void)
 
 	LOGDEBUG("%s", ipv4str(pReq->NetInfo.addr.ip.ip_addr, pReq->NetInfo.port));
 
-	write_event(_socket_thread, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _log_stack_server_bind_rsp);
+	id_event(_socket_thread, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _log_stack_server_bind_rsp);
 }
 
 static void
@@ -405,7 +405,7 @@ _log_stack_server_reboot(RESTARTREQMSG *pRestart)
 		{
 			disconnect.socket = _log_stack_server_socket;
 
-			write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, &disconnect);
+			id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, &disconnect);
 		}
 	}
 }

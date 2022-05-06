@@ -47,7 +47,7 @@ _sync_server_rx_disconnect(s32 socket)
 	pReq->socket = socket;
 	pReq->ptr = NULL;
 
-	write_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
+	id_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
 }
 
 static void
@@ -345,7 +345,7 @@ _sync_server_rx_snd_events(SyncServerEvents events, void *ptr)
 	pEvents->event_id = (ub)events;
 	pEvents->ptr = ptr;
 
-	write_msg(self(), MSGID_INTERNAL_EVENTS, pEvents);
+	id_msg(self(), MSGID_INTERNAL_EVENTS, pEvents);
 }
 
 static void

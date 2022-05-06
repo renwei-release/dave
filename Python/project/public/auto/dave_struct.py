@@ -51,8 +51,8 @@ class MCardTime (Structure):
 #* for None message *#
 class MBUF (Structure):
 	_fields_ = [
-		("next", c_void_p),
-		("payload", c_void_p),
+		("next", POINTER(c_char)),
+		("payload", POINTER(c_char)),
 		("tot_len", c_longlong),
 		("len", c_longlong),
 		("ref", c_longlong),

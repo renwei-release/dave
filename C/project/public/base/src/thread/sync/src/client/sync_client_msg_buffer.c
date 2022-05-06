@@ -231,7 +231,9 @@ _sync_client_msg_buffer_pop(void)
 					pBuffer->msg_len, pBuffer->msg_body,
 					dave_true) == dave_true)
 				{
-					SYNCDEBUG("%s->%s %d buffer pop success!", pBuffer->src, pBuffer->dst, pBuffer->msg_id);
+					SYNCDEBUG("%s->%s:%s buffer pop success!",
+						pBuffer->src, pBuffer->dst,
+						msgstr(pBuffer->msg_id));
 
 					pBuffer->msg_body = NULL;
 
@@ -242,8 +244,8 @@ _sync_client_msg_buffer_pop(void)
 			}
 			else if((-- pBuffer->msg_left) < 0)
 			{
-				SYNCLOG("%s->%s:%d buffer remove! fun:%x",
-					pBuffer->src, pBuffer->dst, pBuffer->msg_id,
+				SYNCLOG("%s->%s:%s buffer remove! fun:%x",
+					pBuffer->src, pBuffer->dst, msgstr(pBuffer->msg_id),
 					pBuffer->fun);
 
 				_sync_client_msg_buffer_clear(pBuffer);
@@ -341,7 +343,7 @@ sync_client_msg_buffer_push(
 		msg_len, msg_body,
 		fun) == dave_false)
 	{
-		SYNCABNOR("%s->%s %d buffer push failed! shadow_index:%d thread_id:%lx",
+		SYNCABNOR("%s->%s:%d buffer push failed! shadow_index:%d thread_id:%lx",
 			src, dst, msg_id, pServer->shadow_index, thread_id(src));
 	}
 	else

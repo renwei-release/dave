@@ -14,8 +14,6 @@ void sync_client_run_exit(void);
 
 void sync_client_run_thread(SyncServer *pServer, ub frame_len, u8 *frame);
 
-void sync_client_run_thread_events(void *ptr);
-
 void sync_client_run_internal(
 	s8 *src, s8 *dst,
 	ub msg_id,

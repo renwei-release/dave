@@ -80,6 +80,7 @@ typedef struct {
 } ThreadStruct;
 
 typedef struct {
+	ThreadId thread_id;
 	ub msg_id;
 	thread_msg_fun msg_fun;
 	void *user_ptr;

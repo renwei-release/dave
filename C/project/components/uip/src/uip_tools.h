@@ -14,5 +14,9 @@ dave_bool uip_is_head(s8 *key);
 
 void uip_write_stack(char *stack_name, UIPStack *pStack);
 
+sb uip_ret_to_code(RetCode ret);
+
+s8 * uip_ret_to_desc(RetCode ret);
+
 #endif
 

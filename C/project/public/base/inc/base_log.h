@@ -43,15 +43,12 @@ void base_log_stack_exit(void);
 #define TRACEIENABLE(ID) if(base_log_id_enable(ID) == dave_true)
 #define TRACELENABLE(TIME, NUMBER) if(base_log_line_enable((s8 *)__func__, (ub)__LINE__, TIME, NUMBER) == dave_true)
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
 #define DAVEDEBUG BASEDEBUG
 #define DAVECATCHER BASECATCHER
 #define DAVETRACE BASETRACE
 #define DAVELOG BASELOG
 #define DAVEABNORMAL BASEABNORMAL
 #define DAVEASSERT BASEASSERT
-
 
 #endif
 

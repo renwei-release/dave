@@ -260,7 +260,7 @@ _thread_busy_idle_notify_busy(ThreadBusyIdle *pThread)
 				pBusy->thread_name, pBusy->msg_id, pBusy->msg_number,
 				thread_name(pList->thread_id));
 
-			write_msg(pList->thread_id, MSGID_THREAD_BUSY, pBusy);
+			id_msg(pList->thread_id, MSGID_THREAD_BUSY, pBusy);
 	
 			pList = pList->next;
 		}
@@ -303,7 +303,7 @@ _thread_busy_idle_notify_idle(ThreadBusyIdle *pThread)
 
 			THREADLOG("thread:%s idle to %s", pIdle->thread_name, thread_name(pList->thread_id));
 
-			write_msg(pList->thread_id, MSGID_THREAD_IDLE, pIdle);
+			id_msg(pList->thread_id, MSGID_THREAD_IDLE, pIdle);
 	
 			pList = pList->next;
 		}

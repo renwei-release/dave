@@ -122,7 +122,7 @@ _sync_client_disconnect_req(SyncServer *pServer)
 		pReq->socket = socket;
 		pReq->ptr = pServer;
 
-		write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+		id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
 	}
 }
 
@@ -193,7 +193,7 @@ _sync_client_connect_req(SyncServer *pServer)
 
 		SYNCTRACE("%s", ipv4str(pReq->NetInfo.addr.ip.ip_addr, pReq->NetInfo.port));
 
-		write_msg(_socket_thread, SOCKET_CONNECT_REQ, pReq);
+		id_msg(_socket_thread, SOCKET_CONNECT_REQ, pReq);
 	}
 }
 
@@ -491,12 +491,6 @@ _sync_client_guard_time(TIMERID timer_id, ub thread_index)
 }
 
 static void
-_sync_client_events(InternalEvents *pEvents)
-{
-	sync_client_run_thread_events(pEvents->ptr);
-}
-
-static void
 _sync_client_busy(ClientBusy *pBusy)
 {
 	sync_client_tx_system_state(dave_true);
@@ -696,7 +690,7 @@ _sync_client_safe_rx_event(SocketRawEvent *pEvent)
 	{
 		SocketRawEvent *pNewEvent = thread_msg(pNewEvent);	
 		*pNewEvent = *pEvent;
-		write_msg(self(), SOCKET_RAW_EVENT, pNewEvent);
+		id_msg(self(), SOCKET_RAW_EVENT, pNewEvent);
 	}
 }
 
@@ -720,13 +714,9 @@ _sync_client_init(MSGBODY *msg)
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 
 	sync_client_data_init();
-
 	sync_client_run_init();
-
 	sync_client_thread_init();
-
 	sync_client_link_init();
-
 	sync_client_msg_buffer_init();
 
 	_sync_client_connect_all();
@@ -749,9 +739,6 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
 			break;
-		case MSGID_INTERNAL_EVENTS:
-				_sync_client_events((InternalEvents *)(msg->msg_body));
-			break;
 		case MSGID_SYSTEM_MOUNT:
 				_sync_client_safe_system_mount(msg->msg_src, (SystemMount *)(msg->msg_body));
 			break;
@@ -763,6 +750,9 @@ _sync_client_main(MSGBODY *msg)
 			break;
 		case MSGID_CLIENT_IDLE:
 				_sync_client_idle((ClientIdle *)(msg->msg_body));
+			break;
+		case MSGID_INTERNAL_LOOP:
+				SYNCLOG("This message should not appear here, it is already handled in module base_rxtx!");
 			break;
 		case SOCKET_CONNECT_RSP:
 				_sync_client_safe_connect_rsp((SocketConnectRsp *)(msg->msg_body));
@@ -789,13 +779,9 @@ static void
 _sync_client_exit(MSGBODY *msg)
 {
 	sync_client_run_exit();
-
 	sync_client_msg_buffer_exit();
-
 	sync_client_thread_exit();
-
 	sync_client_link_exit();
-
 	sync_client_data_exit();
 }
 

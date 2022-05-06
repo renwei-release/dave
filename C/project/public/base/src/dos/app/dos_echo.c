@@ -38,7 +38,7 @@ _dos_echo(dave_bool echo_multiple, s8 *thread_name)
 		thread_name,
 		pEcho->echo_multiple == dave_true ? "multiple" : "single");
 
-	write_msg(echo_id, MSGID_ECHO, pEcho);
+	id_msg(echo_id, MSGID_ECHO, pEcho);
 }
 
 static RetCode

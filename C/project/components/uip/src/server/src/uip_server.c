@@ -147,7 +147,7 @@ _uip_server_http_rsp(ThreadId dst, RetCode ret, void *ptr, void *pJson)
 	pRsp->local_creat_time = dave_os_time_us();
 	pRsp->ptr = ptr;
 
-	write_msg(dst, HTTPMSG_RECV_RSP, pRsp);
+	id_msg(dst, HTTPMSG_RECV_RSP, pRsp);
 }
 
 static void
@@ -201,7 +201,7 @@ _uip_server_register_req(ThreadId src, UIPRegisterReq *pReq)
 	}
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, UIP_REGISTER_RSP, pRsp);
+	id_msg(src, UIP_REGISTER_RSP, pRsp);
 }
 
 static void
@@ -228,7 +228,7 @@ _uip_server_unregister_req(ThreadId src, UIPUnregisterReq *pReq)
 	}
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, UIP_UNREGISTER_RSP, pRsp);
+	id_msg(src, UIP_UNREGISTER_RSP, pRsp);
 }
 
 static void

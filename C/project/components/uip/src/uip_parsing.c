@@ -9,6 +9,7 @@
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
 #include "uip_parsing.h"
+#include "uip_tools.h"
 #include "uip_log.h"
 
 #define THE_MY_MAGIC_DATA 0x9988aaeec3
@@ -84,8 +85,8 @@ _uip_encode_head(UIPHead *pHead)
 
 	if(pHead->req_flag == dave_false)
 	{
-		dave_json_add_sb(pJsonHead, UIP_JSON_RESULT_CODE, pHead->rsp_code);
-		dave_json_add_str(pJsonHead, UIP_JSON_RESULT_DESC, retstr(pHead->rsp_code));
+		dave_json_add_sb(pJsonHead, UIP_JSON_RESULT_CODE, uip_ret_to_code(pHead->rsp_code));
+		dave_json_add_str(pJsonHead, UIP_JSON_RESULT_DESC, uip_ret_to_desc(pHead->rsp_code));
 	}
 	dave_json_add_str(pJsonHead, UIP_JSON_METHOD, pHead->method);
 	dave_json_add_str(pJsonHead, UIP_JSON_CHANNEL, pHead->channel);

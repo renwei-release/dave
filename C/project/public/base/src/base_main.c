@@ -71,7 +71,7 @@ base_restart(const char *args, ...)
 	vsnprintf((char *)pRoweroff->reason, sizeof(pRoweroff->reason), args, list_args);
 	va_end(list_args);
 
-	write_msg(thread_id(GUARDIAN_THREAD_NAME), MSGID_POWER_OFF, pRoweroff);
+	id_msg(thread_id(GUARDIAN_THREAD_NAME), MSGID_POWER_OFF, pRoweroff);
 }
 
 void

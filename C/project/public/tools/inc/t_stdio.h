@@ -45,11 +45,5 @@ void t_stdio_print_char(const char *msg, u8 *char_data, ub char_len);
 #define dave_tolowers t_stdio_tolowers
 #define dave_strstr t_stdio_strstr
 
-
-// $$$$$$$$$$$$$$$$$$interface compatible$$$$$$$$$$$$$$$$$$$$
-#define dave_printf_hex t_stdio_print_hex
-#define dave_printf_char t_stdio_print_char
-
-
 #endif
 

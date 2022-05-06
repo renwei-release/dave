@@ -87,7 +87,7 @@ dave_http_init(void)
 
 	_http_thread = base_thread_creat(HTTP_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _http_init, _http_main, _http_exit);
 	if(_http_thread == INVALID_THREAD_ID)
-		dave_restart(HTTP_THREAD_NAME);
+		base_restart(HTTP_THREAD_NAME);
 }
 
 void

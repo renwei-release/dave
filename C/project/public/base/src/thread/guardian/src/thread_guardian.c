@@ -67,89 +67,34 @@ _thread_guardian_test(MSGBODY *task_msg)
 }
 
 static void
-_thread_guardian_setup_run_time(s8 *msg, s8 *rsp_msg)
+_thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg)
 {
-	ub run_time;
+	s8 id_str[64], run_str[64], wakeup_str[64];
+	ub msg_id, run_time, wakeup_time;
 
-	run_time = stringdigital(msg);
+	msg = dave_strfind(msg, ' ', id_str, sizeof(id_str));
+	msg = dave_strfind(msg, ' ', run_str, sizeof(run_str));
+	msg = dave_strfind(msg, ' ', wakeup_str, sizeof(wakeup_str));
 
-	if(run_time == 0)
-	{
-		dave_sprintf(rsp_msg, "disable thread run time!");
-	}
-	else
-	{
-		dave_sprintf(rsp_msg, "enable thread run time<%dus>!", run_time);
-	}
+	msg_id = stringdigital(id_str);
+	run_time = stringdigital(run_str);
+	wakeup_time = stringdigital(wakeup_str);
 
-	thread_statistics_setup_run_time(run_time);
+	dave_sprintf(rsp_msg, "setup statistics msg-id:%s run-time:%d wakup-time:%d",
+		msgstr(msg_id), run_time, wakeup_time);
+
+	thread_statistics_setup_all(msg_id, run_time, wakeup_time);
 }
 
 static void
-_thread_guardian_setup_msg_time(s8 *msg, s8 *rsp_msg)
+_thread_guardian_load_statistics(s8 *msg, s8 *rsp_msg)
 {
-	ub msg_time;
+	ub msg_id, run_time, wakeup_time;
 
-	msg_time = stringdigital(msg);
+	thread_statistics_load_all(&msg_id, &run_time, &wakeup_time);
 
-	if(msg_time == 0)
-	{
-		dave_sprintf(rsp_msg, "disable thread msg time!");
-	}
-	else
-	{
-		dave_sprintf(rsp_msg, "enable thread msg time<%dus>!", msg_time);
-	}
-
-	thread_statistics_setup_msg_time(msg_time);
-}
-
-static void
-_thread_guardian_setup_msg_id(s8 *msg, s8 *rsp_msg)
-{
-	ub msg_id;
-
-	msg_id = stringdigital(msg);
-
-	if(msg_id == MSGID_RESERVED)
-	{
-		dave_sprintf(rsp_msg, "disable thread msg id!");
-	}
-	else
-	{
-		dave_sprintf(rsp_msg, "enable thread msg id:%d!", msg_id);
-	}
-
-	thread_statistics_setup_msg_id((ub)msg_id);
-}
-
-static void
-_thread_guardian_setup_all_time(s8 *msg, s8 *rsp_msg)
-{
-	ub msg_time;
-
-	msg_time = stringdigital(msg);
-
-	if(msg_time == 0)
-	{
-		dave_sprintf(rsp_msg, "disable thread all time!");
-	}
-	else
-	{
-		dave_sprintf(rsp_msg, "enable thread all time<%dus>!", msg_time);
-	}
-
-	thread_statistics_setup_all_time(msg_time);
-}
-
-static void
-_thread_guardian_load_all_time(s8 *msg, s8 *rsp_msg)
-{
-	ub run_time, msg_time;
-
-	thread_statistics_load_all_time(&run_time, &msg_time);
-
-	dave_sprintf(rsp_msg, "run-time:%d msg-time:%d", run_time, msg_time);
+	dave_sprintf(rsp_msg, "load statistics msg-id:%s run-time:%d wakup-time:%d",
+		msgstr(msg_id), run_time, wakeup_time);
 }
 
 static void
@@ -172,25 +117,13 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 	DebugRsp *pRsp = thread_reset_msg(pRsp);
 	ub msg_len;
 
-	if(pReq->msg[0] == 'r')
+	if(pReq->msg[0] == 's')
 	{
-		_thread_guardian_setup_run_time(&(pReq->msg[1]), pRsp->msg);
+		_thread_guardian_setup_statistics(&(pReq->msg[1]), pRsp->msg);
 	}
-	else if(pReq->msg[0] == 'm')
+	else if(pReq->msg[0] == 'l')
 	{
-		_thread_guardian_setup_msg_time(&(pReq->msg[1]), pRsp->msg);
-	}
-	else if(pReq->msg[0] == 'i')
-	{
-		_thread_guardian_setup_msg_id(&(pReq->msg[1]), pRsp->msg);
-	}
-	else if(pReq->msg[0] == 'a')
-	{
-		_thread_guardian_setup_all_time(&(pReq->msg[1]), pRsp->msg);
-	}
-	else if(pReq->msg[0] == 's')
-	{
-		_thread_guardian_load_all_time(&(pReq->msg[1]), pRsp->msg);
+		_thread_guardian_load_statistics(&(pReq->msg[1]), pRsp->msg);
 	}
 	else if(pReq->msg[0] == 'b')
 	{
@@ -215,7 +148,7 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 		thread_show_all_info(_thread, &_system_work_start_date, pRsp->msg, sizeof(pRsp->msg), dave_true);
 	}
 
-	write_msg(src, MSGID_DEBUG_RSP, pRsp);
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 
 static void

@@ -461,7 +461,9 @@ _thread_write_msg(
 					msg_type,
 					fun, line);
 
-		thread_statistics_write_msg_time(pMsg);
+#ifdef ENABLE_THREAD_STATISTICS
+		thread_statistics_write_msg(pMsg);
+#endif
 
 		ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
 		if(ret == RetCode_not_my_data)
@@ -506,7 +508,9 @@ _thread_read_msg(ThreadStruct *pThread)
 		pMsg = _thread_safe_read_msg_queue(pThread);
 	}
 
-	thread_statistics_read_msg_time(pMsg);
+#ifdef ENABLE_THREAD_STATISTICS
+	thread_statistics_read_msg(pMsg);
+#endif
 
 	return pMsg;
 }
@@ -607,7 +611,9 @@ _thread_run_call_back_user_fun(
 	MSGBODY *msg,
 	dave_bool enable_stack)
 {
+#ifdef ENABLE_THREAD_STATISTICS
 	ub run_time = 0;
+#endif
 	ThreadStack *stack = NULL;
 
 	if((pThread == NULL) || (msg == NULL))
@@ -626,17 +632,9 @@ _thread_run_call_back_user_fun(
 			msg->thread_wakeup_index);
 	}
 
-#ifdef DEBUG_THREAD_RUN_INFO
-	if(msg->msg_id != MSGID_WAKEUP)
-	{
-		THREADDEBUG(">>>> run src:%s<%x> dst:%s<%x> msg_id:%lx",
-			_thread_get_name(msg->msg_src), msg->msg_src,
-			_thread_get_name(msg->msg_dst), msg->msg_dst,
-			msg->msg_id);
-	}
+#ifdef ENABLE_THREAD_STATISTICS
+	run_time = thread_statistics_start_msg(msg);
 #endif
-
-	run_time = thread_statistics_run_start();
 
 	if(enable_stack == dave_true)
 	{
@@ -670,13 +668,8 @@ _thread_run_call_back_user_fun(
 		thread_free(stack, MSGID_RESERVED, (s8 *)__func__, (ub)__LINE__);
 	}
 
-	thread_statistics_run_end(run_time, pThread, msg);
-
-#ifdef DEBUG_THREAD_RUN_INFO
-	if(msg->msg_id != MSGID_WAKEUP)
-	{
-		THREADDEBUG("run task end! <<<<");
-	}
+#ifdef ENABLE_THREAD_STATISTICS
+	thread_statistics_end_msg(run_time, pThread, msg);
 #endif
 }
 
@@ -970,7 +963,7 @@ _thread_guardian_running_function(base_thread_fun thread_fun, base_thread_fun la
 		_guardian_thread = _thread_get_id(GUARDIAN_THREAD_NAME);
 	}
 
-	write_msg(_guardian_thread, MSGID_RUN_FUNCTION, pRun);	
+	id_msg(_guardian_thread, MSGID_RUN_FUNCTION, pRun);	
 }
 
 static void
@@ -1061,7 +1054,7 @@ _thread_delay_notify_for_system_ready(ThreadId thread_id, s8 *name, ub thread_fl
 	}
 }
 
-static ThreadId
+static inline ThreadId
 _thread_src_id_change(ThreadId src_id, ThreadId dst_id)
 {
 	/*
@@ -1092,37 +1085,6 @@ _thread_sync_function_access(ThreadStruct *pSrcThread, ThreadStruct *pDstThread)
 	}
 
 	return dave_true;
-}
-
-static void
-_thread_wait_dst_thread_ready(ThreadId dst_id, ub msg_id)
-{
-	ThreadId thread_id_lock = INVALID_THREAD_ID;
-
-	/*
-	 * This detection is mainly for the unstable state of the system initialization,
-	 * in the process of creating a thread, 
-	 * there will be a message to be sent to the thread.
-	 */
-	if(_system_schedule_counter < SYSTEM_READY_COUNTER)
-	{
-		if((dst_id == INVALID_THREAD_ID) || (dave_strcmp(_thread_get_name(dst_id), "NULL") == dave_true))
-		{
-			thread_id_lock = INVALID_THREAD_ID;
-		}
-		else
-		{
-			if(_system_thread_pv_lock_name[0] != '\0')
-			{
-				thread_id_lock = _thread_get_id(_system_thread_pv_lock_name);
-			}
-		}
-
-		if(thread_id_lock == dst_id)
-		{
-			dave_os_sleep(10);
-		}
-	}
 }
 
 static void
@@ -1522,7 +1484,7 @@ _thread_local_ready(char *thread_name)
 				pReady->local_thread_id = thread_id;
 				dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
 
-				write_msg(pThread->thread_id, MSGID_LOCAL_THREAD_READY, pReady);	
+				id_msg(pThread->thread_id, MSGID_LOCAL_THREAD_READY, pReady);	
 			}
 		}
 	}
@@ -1894,8 +1856,6 @@ base_thread_id_msg(
 		}
 		else
 		{
-			_thread_wait_dst_thread_ready(dst_id, msg_id);
-
 			ret  = _thread_safe_id_msg(src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
@@ -1957,8 +1917,8 @@ base_thread_name_msg(
 
 	if(ret == dave_false)
 	{
-		THREADLTRACE(60,1,"%lx/%s->%lx/%s:%d <%s:%d>",
-			self(), _thread_get_name(self()), dst_id, thread_name, msg_id,
+		THREADLTRACE(60,1,"%lx/%s->%lx/%s:%s <%s:%d>",
+			self(), _thread_get_name(self()), dst_id, thread_name, msgstr(msg_id),
 			fun, line);
 	}
 
@@ -2045,8 +2005,8 @@ base_thread_sync_msg(
 	pSync = thread_call_sync_pre(pSrcThread, &src_id, pDstThread, sync_id, sync_body, sync_len);
 	if(pSync == NULL)
 	{
-		THREADLTRACE(60,1,"sync thread call failed! %s->%s %d <%s:%d>",
-			pSrcThread->thread_name, pDstThread->thread_name, msg_id,
+		THREADLTRACE(60,1,"sync thread call failed! %s->%s:%s <%s:%d>",
+			pSrcThread->thread_name, pDstThread->thread_name, msgstr(msg_id),
 			fun, line);
 		thread_clean_user_input_data(msg_body, msg_id);
 		return NULL;
@@ -2064,8 +2024,8 @@ base_thread_sync_msg(
 
 	if(ret_body == NULL)
 	{
-		THREADLTRACE(60,1,"thread:%s msg_id:%d sync failed! <%s:%d>",
-			pSrcThread->thread_name, msg_id,
+		THREADLTRACE(60,1,"thread:%s msg_id:%s sync failed! <%s:%d>",
+			pSrcThread->thread_name, msgstr(msg_id),
 			fun, line);
 	}
 

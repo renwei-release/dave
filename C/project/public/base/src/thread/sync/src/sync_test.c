@@ -64,7 +64,7 @@ sync_test_req(ThreadId src, DebugReq *pReq, sync_info_fun info_fun)
 
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_DEBUG_RSP, pRsp);
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 
 void

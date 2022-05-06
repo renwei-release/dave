@@ -531,7 +531,7 @@ _sync_server_data_client_reboot(void)
 			pReq->socket = pClient->client_socket;
 			pReq->ptr = pClient;
 		
-			write_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
+			id_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
 		}
 	}
 }

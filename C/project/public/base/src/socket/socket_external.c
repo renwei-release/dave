@@ -97,7 +97,7 @@ _socket_external_plugout(ThreadId dst, SOCKETTYPE type, s32 socket_external_inde
 		pPlugout->thread_id = _socket_thread;
 		pPlugout->ptr = user_ptr;
 
-		write_msg(dst, SOCKET_PLUGOUT, pPlugout);
+		id_msg(dst, SOCKET_PLUGOUT, pPlugout);
 	}
 }
 
@@ -120,7 +120,7 @@ _socket_external_plugin(SocketCore *pCore, ThreadId dst, s32 father_socket_exter
 	pPlugin->thread_id = _socket_thread;
 	pPlugin->ptr = pCore->user_ptr;
 
-	write_msg(dst, SOCKET_PLUGIN, pPlugin);
+	id_msg(dst, SOCKET_PLUGIN, pPlugin);
 }
 
 static inline void
@@ -212,7 +212,7 @@ _socket_external_recv_notify(SocketCore *pCore, SocNetInfo *pNetInfo, MBUF *data
 	}
 	pEvent->ptr = pCore;
 
-	return write_nmsg(pCore->owner, SOCKET_RAW_EVENT, pEvent, 128);
+	return id_nmsg(pCore->owner, SOCKET_RAW_EVENT, pEvent, 128);
 }
 
 static inline dave_bool
@@ -229,7 +229,7 @@ _socket_external_recv_data(SocketCore *pCore, SocketRawEvent *pEvent)
 	pRead->data = pEvent->data;
 	pRead->ptr = pCore->user_ptr;
 
-	write_msg(pCore->owner, SOCKET_READ, pRead);
+	id_msg(pCore->owner, SOCKET_READ, pRead);
 
 	return dave_true;
 }
@@ -295,7 +295,7 @@ _socket_external_recv_package(SocketCore *pCore)
 				ipv4str2(pRead->IPInfo.dst_ip, pRead->IPInfo.dst_port),
 				pRead->data_len);
 
-			write_msg(pCore->owner, SOCKET_READ, pRead);
+			id_msg(pCore->owner, SOCKET_READ, pRead);
 
 			ret = dave_true;
 		}

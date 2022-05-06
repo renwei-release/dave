@@ -41,6 +41,11 @@ _rxtx_check_crc(u8 *package, ub package_len)
 	crc_checksum += (((u32)(package[-- package_len])) << 8);
 	crc_checksum += (((u32)(package[-- package_len])) << 16);
 	crc_checksum += (((u32)(package[-- package_len])) << 24);
+	if(crc_checksum == 0)
+	{
+		RTDEBUG("No need to check CRC!");
+		return package_len;
+	}
 
 	if(t_crypto_crc32(package, package_len) != crc_checksum)
 	{
@@ -56,17 +61,20 @@ _rxtx_check_crc(u8 *package, ub package_len)
 // =====================================================================
 
 ub
-rxtx_build_crc(u8 *package, ub package_len)
+rxtx_build_crc_on_buf(u8 *package, ub package_len)
 {
 	return _rxtx_build_crc(package, package_len);
 }
 
 ub
-rxtx_build_crc_v2(MBUF *data, u8 *crc_ptr, ub crc_len)
+rxtx_build_crc_on_mbuf(MBUF *data, u8 *crc_ptr, ub crc_len)
 {
 	u32 crc_checksum;
 
-	crc_checksum = t_crypto_mcrc32(data);
+	if(data == NULL)
+		crc_checksum = 0x00000000;
+	else
+		crc_checksum = t_crypto_mcrc32(data);
 
 	crc_ptr[0] = (u8)(crc_checksum >> 24);
 	crc_ptr[1] = (u8)(crc_checksum >> 16);

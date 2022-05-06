@@ -15,33 +15,16 @@
 #include "thread_guardian.h"
 #include "thread_log.h"
 
-static ub _statistics_thread_run_time = 0;	// 1000 * 100;
-static ub _statistics_thread_msg_time = 0;	// 1000 * 100;
-static ub _statistics_msg_id = MSGID_RESERVED;
-
-static void
-_thread_statistics_msg_id(MSGBODY *msg)
-{
-	if(_statistics_msg_id != msg->msg_id)
-	{
-		return;
-	}
-
-	THREADLOG("msg run %s->%s %d wakeup:%d time:%ld serial:%ld",
-		thread_name(msg->msg_src),
-		thread_name(msg->msg_dst),
-		msg->msg_id,
-		msg->thread_wakeup_index,
-		msg->msg_build_time,
-		msg->msg_build_serial);
-}
+static ub _statistics_thread_msg_id = 0;
+static ub _statistics_thread_run_time = 0;
+static ub _statistics_thread_wakeup_time = 0;
 
 // =====================================================================
 
 ub
-thread_statistics_run_start(MSGBODY *pMsg)
+thread_statistics_start_msg(MSGBODY *pMsg)
 {
-	if(_statistics_thread_run_time > 0)
+	if((_statistics_thread_run_time > 0) && (_statistics_thread_msg_id == pMsg->msg_id))
 	{
 		return dave_os_time_us();
 	}
@@ -52,32 +35,30 @@ thread_statistics_run_start(MSGBODY *pMsg)
 }
 
 void
-thread_statistics_run_end(ub run_time, ThreadStruct *pThread, MSGBODY *msg)
+thread_statistics_end_msg(ub run_time, ThreadStruct *pThread, MSGBODY *msg)
 {
 	if((_statistics_thread_run_time > 0) && (run_time > 0))
 	{
 		run_time = dave_os_time_us() - run_time;
 		if(run_time > _statistics_thread_run_time)
 		{
-			THREADLOG("msg run time:%dus name:%s %s->%s %d wakeup:%d",
+			THREADLOG("msg run time:%dus name:%s %s->%s:%s wakeup:%d",
 				run_time,
 				pThread->thread_name,
 				thread_name(msg->msg_src),
 				thread_name(msg->msg_dst),
-				msg->msg_id,
+				msgstr(msg->msg_id),
 				msg->thread_wakeup_index);
 		}
 	}
-
-	_thread_statistics_msg_id(msg);
 }
 
 void
-thread_statistics_write_msg_time(ThreadMsg *pMsg)
+thread_statistics_write_msg(ThreadMsg *pMsg)
 {
 	if(pMsg != NULL)
 	{
-		if(_statistics_thread_msg_time > 0)
+		if((_statistics_thread_wakeup_time > 0) && (_statistics_thread_msg_id == pMsg->msg_body.msg_id))
 		{
 			pMsg->msg_body.msg_build_time = dave_os_time_us();
 		}
@@ -85,54 +66,39 @@ thread_statistics_write_msg_time(ThreadMsg *pMsg)
 }
 
 void
-thread_statistics_read_msg_time(ThreadMsg *pMsg)
+thread_statistics_read_msg(ThreadMsg *pMsg)
 {
 	ub msg_wakeup_time;
 
-	if((pMsg != NULL) && (_statistics_thread_msg_time > 0) && (pMsg->msg_body.msg_build_time > 0))
+	if((pMsg != NULL) && (_statistics_thread_wakeup_time > 0) && (pMsg->msg_body.msg_build_time > 0))
 	{
 		msg_wakeup_time = dave_os_time_us() - pMsg->msg_body.msg_build_time;
 
-		if(msg_wakeup_time > _statistics_thread_msg_time)
+		if(msg_wakeup_time > _statistics_thread_wakeup_time)
 		{
-			THREADLOG("msg wakeup time:%dus %s->%s %d",
+			THREADLOG("msg wakeup time:%dus %s->%s:%s",
 				msg_wakeup_time,
 				thread_name(pMsg->msg_body.msg_src),
 				thread_name(pMsg->msg_body.msg_dst),
-				pMsg->msg_body.msg_id);
+				msgstr(pMsg->msg_body.msg_id));
 		}
 	}
 }
 
 void
-thread_statistics_setup_run_time(ub run_time)
+thread_statistics_setup_all(ub msg_id, ub run_time, ub wakeup_time)
 {
+	_statistics_thread_msg_id = msg_id;
 	_statistics_thread_run_time = run_time;
+	_statistics_thread_wakeup_time = wakeup_time;
 }
 
 void
-thread_statistics_setup_msg_time(ub msg_time)
+thread_statistics_load_all(ub *msg_id, ub *run_time, ub *wakeup_time)
 {
-	_statistics_thread_msg_time = msg_time;
-}
-
-void
-thread_statistics_setup_msg_id(ub msg_id)
-{
-	_statistics_msg_id = msg_id;
-}
-
-void
-thread_statistics_setup_all_time(ub all_time)
-{
-	_statistics_thread_run_time = _statistics_thread_msg_time = all_time;
-}
-
-void
-thread_statistics_load_all_time(ub *run_time, ub *msg_time)
-{
+	*msg_id = _statistics_thread_msg_id;
 	*run_time = _statistics_thread_run_time;
-	*msg_time = _statistics_thread_msg_time;
+	*wakeup_time = _statistics_thread_wakeup_time;
 }
 
 #endif

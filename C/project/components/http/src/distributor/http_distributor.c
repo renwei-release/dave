@@ -91,7 +91,7 @@ _distributor_http_close_req(ub port)
 	pReq->listen_port = port;
 	pReq->ptr = NULL;
 
-	write_event(_http_thread, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP, _distributor_http_close_rsp);
+	id_event(_http_thread, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP, _distributor_http_close_rsp);
 }
 
 static void
@@ -126,7 +126,7 @@ _distributor_http_listen_req(ub port)
 	}
 	pReq->ptr = NULL;
 
-	write_event(_http_thread, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP, _distributor_http_listen_rsp);
+	id_event(_http_thread, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP, _distributor_http_listen_rsp);
 }
 
 static HttpDistributorInfo *
@@ -174,7 +174,7 @@ _distributor_listen_rsp(ThreadId dst, RetCode ret, s8 *path, void *ptr)
 	_distributor_copy_path(pRsp->path, path);
 	pRsp->ptr = ptr;
 
-	write_msg(dst, HTTPMSG_LISTEN_RSP, pRsp);
+	id_msg(dst, HTTPMSG_LISTEN_RSP, pRsp);
 }
 
 static void
@@ -226,7 +226,7 @@ _distributor_close_rsp(ThreadId dst, RetCode ret, void *ptr)
 	pRsp->listen_port = HTTP_DISTRIBUTOR_SERVER_PORT;
 	pRsp->ptr = ptr;
 
-	write_msg(dst, HTTPMSG_CLOSE_RSP, pRsp);
+	id_msg(dst, HTTPMSG_CLOSE_RSP, pRsp);
 }
 
 static void
@@ -260,7 +260,7 @@ _distributor_recv_error_rsp(RetCode ret, void *ptr)
 	pRsp->local_creat_time = dave_os_time_us();
 	pRsp->ptr = ptr;
 
-	write_msg(_http_thread, HTTPMSG_RECV_RSP, pRsp);
+	id_msg(_http_thread, HTTPMSG_RECV_RSP, pRsp);
 }
 
 static void
@@ -398,7 +398,7 @@ http_distributor_init(void)
 
 	_distributor_thread = base_thread_creat(DISTRIBUTOR_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _distributor_init, _distributor_main, _distributor_exit);
 	if(_distributor_thread == INVALID_THREAD_ID)
-		dave_restart(DISTRIBUTOR_THREAD_NAME);
+		base_restart(DISTRIBUTOR_THREAD_NAME);
 }
 
 void

@@ -147,7 +147,7 @@ _dos_sync_blocks_req(s8 *cmd_ptr, ub cmd_len)
 		pReq->blocks_id_2 = blocks_id_2;
 		pReq->ptr = NULL;
 
-		write_event(thread_id(SYNC_SERVER_THREAD_NAME), MSGID_BLOCKS_REQ, pReq, MSGID_BLOCKS_RSP, _dos_sync_blocks_rsp);
+		id_event(thread_id(SYNC_SERVER_THREAD_NAME), MSGID_BLOCKS_REQ, pReq, MSGID_BLOCKS_RSP, _dos_sync_blocks_rsp);
 
 		ret = RetCode_OK;
 	}

@@ -13,6 +13,7 @@
 #include "base_tools.h"
 #include "rxtx_confirm_transfer.h"
 #include "rxtx_secure.h"
+#include "rxtx_system.h"
 #include "rxtx_param.h"
 #include "rxtx_tools.h"
 #include "rxtx_log.h"
@@ -20,6 +21,13 @@
 #define SECURE_DATA_MAX_LENGTH 32
 #define RECV_COUNTER_MAX (256)
 #define MAYBE_HAS_DATA_COUNTER_MAX (1)
+
+typedef struct {
+	RXTX *pRxTx;
+	u8 *permutation_ptr;
+	ub permutation_len;
+	ub event_serial;
+} RXTXEvent;
 
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static TLock _opt_pv;
@@ -39,6 +47,7 @@ _base_rxtx_reset(RXTX *pRxTx)
 	pRxTx->owner_thread = INVALID_THREAD_ID;
 	pRxTx->owner_file_name = NULL;
 	pRxTx->owner_file_line = 0;
+	pRxTx->enable_data_crc = dave_true;
 }
 
 static inline RXTX *
@@ -148,7 +157,7 @@ _base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
 	T_CopyNetInfo(&(pEvent->NetInfo), &(pUpEvent->NetInfo));
 	pEvent->data = NULL;
 
-	write_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
+	id_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
 }
 
 static inline FRAMETYPE
@@ -258,41 +267,39 @@ _base_rxtx_msgtype(BinStackMsgHead *message, u8 *data, ub len)
 }
 
 static inline void
-_base_rxtx_has_bad_frame(RXTX *pRxTx, dave_bool bad_frame, ub bad_frame_index, u8 *data, ub data_len)
+_base_rxtx_has_bad_frame(RXTX *pRxTx, ub bad_frame_index, u8 *data_ptr, ub process_index, ub data_len)
 {
 	s8 *bad_data_file;
 	ub bad_data_length, bad_data_index, data_index;
 	s8 file_name[256];
 	DateStruct file_time;
 
-	if(bad_frame == dave_true)
+	RTLOG("thread:%s socket:%d has bad frame start index:%d, data len:%d/%d (%s:%d)",
+		thread_name(pRxTx->owner_thread), pRxTx->socket,
+		bad_frame_index, process_index, data_len,
+		pRxTx->owner_file_name, pRxTx->owner_file_line);
+
+	bad_data_length = data_len * 16 + 16;
+
+	bad_data_file = dave_malloc(bad_data_length);
+
+	for(data_index=0,bad_data_index=0; data_index<data_len; data_index++)
 	{
-		RTLOG("thread:%s socket:%d has bad frame start on:%d, data len:%d (%s:%d)",
-			thread_name(pRxTx->owner_thread), pRxTx->socket,
-			bad_frame_index, data_len,
-			pRxTx->owner_file_name, pRxTx->owner_file_line);
-
-		bad_data_length = data_len * 16 + 16;
-
-		bad_data_file = dave_malloc(bad_data_length);
-
-		for(data_index=0,bad_data_index=0; data_index<data_len; data_index++)
-		{
-			bad_data_index += dave_snprintf(&bad_data_file[bad_data_index], bad_data_length-bad_data_index, "0x%02x, ", data[data_index]);
-		}
-
-		t_time_get_date(&file_time);
-
-		dave_snprintf(file_name, sizeof(file_name), "BAD_FRAME-%s-%d-%d-%d-%d-%d-%d-%d",
-			thread_name(pRxTx->owner_thread),
-			file_time.year, file_time.month, file_time.day,
-			file_time.hour, file_time.minute, file_time.second,
-			data_len);
-
-		dave_os_file_write(CREAT_WRITE_FLAG, file_name, 0, bad_data_index, (u8 *)bad_data_file);
-
-		dave_free(bad_data_file);
+		bad_data_index += dave_snprintf(&bad_data_file[bad_data_index], bad_data_length-bad_data_index,
+			"0x%02x, ", data_ptr[data_index]);
 	}
+
+	t_time_get_date(&file_time);
+
+	dave_snprintf(file_name, sizeof(file_name), "BAD_FRAME-%s-%d-%d-%d-%d-%d-%d-%d",
+		thread_name(pRxTx->owner_thread),
+		file_time.year, file_time.month, file_time.day,
+		file_time.hour, file_time.minute, file_time.second,
+		data_len);
+
+	dave_os_file_write(CREAT_WRITE_FLAG, file_name, 0, bad_data_index, (u8 *)bad_data_file);
+
+	dave_free(bad_data_file);
 }
 
 static inline ub
@@ -313,6 +320,94 @@ _base_rxtx_build_head(u8 *head_data, u8 ver_type, ORDER_CODE order_id, ub data_l
 	}
 
 	return head_index;
+}
+
+static inline void
+_base_rxtx_buffer_malloc(RXTX *pRxTx)
+{
+	if(pRxTx->rx_buffer_ptr == NULL)
+	{
+		pRxTx->rx_buffer_ptr = dave_malloc(RX_TX_BUF_MAX);
+		pRxTx->rx_buffer_len = 0;
+	}
+}
+
+static inline void
+_base_rxtx_buffer_free(RXTX *pRxTx)
+{
+	if((pRxTx->rx_buffer_ptr != NULL) && (pRxTx->rx_buffer_len == 0))
+	{
+		dave_free(pRxTx->rx_buffer_ptr);
+		pRxTx->rx_buffer_ptr = NULL;
+		pRxTx->rx_buffer_len = 0;
+	}
+}
+
+static inline void
+_base_rxtx_buffer_tidy(RXTX *pRxTx, ub process_len)
+{
+	if(process_len > pRxTx->rx_buffer_len)
+	{
+		RTABNOR("process_len:%d > rx_buffer_len:%d why?",
+			process_len, pRxTx->rx_buffer_len);
+
+		pRxTx->rx_buffer_len = 0;
+	}
+	else if(process_len == pRxTx->rx_buffer_len)
+	{
+		pRxTx->rx_buffer_len = 0;
+	}
+	else if(process_len > 0)
+	{
+		pRxTx->rx_buffer_len = pRxTx->rx_buffer_len - process_len;
+
+		dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
+
+		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+		{
+			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+		}
+	}
+}
+
+static inline void
+_base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *pRxTx, ub process_len)
+{
+	u8 *last_data_ptr;
+	ub last_data_len;
+	u8 *new_buffer_ptr = dave_malloc(RX_TX_BUF_MAX);
+
+	if(process_len > pRxTx->rx_buffer_len)
+	{
+		RTABNOR("process_len:%d > rx_buffer_len:%d why?",
+			process_len, pRxTx->rx_buffer_len);
+		process_len = pRxTx->rx_buffer_len;
+	}
+
+	last_data_ptr = &pRxTx->rx_buffer_ptr[process_len];
+	last_data_len = pRxTx->rx_buffer_len - process_len;
+
+	*permutation_ptr = pRxTx->rx_buffer_ptr;
+	*permutation_len = process_len;
+
+	pRxTx->rx_buffer_ptr = new_buffer_ptr;
+	pRxTx->rx_buffer_len = last_data_len;
+
+	if(last_data_len > 0)
+	{
+		dave_memcpy(pRxTx->rx_buffer_ptr, last_data_ptr, last_data_len);
+	}
+
+	if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+	{
+		pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+	}
+}
+
+static inline void
+_base_rxtx_buffer_clean(u8 *permutation_ptr)
+{
+	dave_free(permutation_ptr);
 }
 
 static inline dave_bool
@@ -414,7 +509,10 @@ _base_rxtx_output_data(RXTX *pRxTx, u8 *dst_ip, u16 dst_port, u8 type, ORDER_COD
 
 	crc = dave_mmalloc(16);
 
-	crc->tot_len = crc->len = rxtx_build_crc_v2(data, dave_mptr(crc), crc->len);
+	if(pRxTx->enable_data_crc == dave_true)
+		crc->tot_len = crc->len = rxtx_build_crc_on_mbuf(data, dave_mptr(crc), crc->len);
+	else
+		crc->tot_len = crc->len = rxtx_build_crc_on_mbuf(NULL, dave_mptr(crc), crc->len);
 
 	data = dave_mchain(data, crc);
 
@@ -447,7 +545,7 @@ _base_rxtx_output_normal(dave_bool ct, u8 *dst_ip, u16 dst_port, s32 socket, ORD
 
 	RTDEBUG("order_id:%x data len:%d", order_id, data->len);
 
-	if(data->len < SECURE_DATA_MAX_LENGTH)
+	if((data == NULL) || (data->len < SECURE_DATA_MAX_LENGTH))
 	{
 		if(ct == dave_true)
 		{
@@ -488,6 +586,18 @@ _base_rxtx_output_bin_ct(u8 dst_ip[4], u16 dst_port, s32 socket, CTNote *pNote)
 	return ret;
 }
 
+static inline void
+_base_rxtx_receive_fun_process(
+	RXTX *pRxTx, stack_receive_fun receive_fun,
+	void *param, s32 socket, IPBaseInfo *pIPInfo, FRAMETYPE ver_type,
+	ORDER_CODE order_id, ub frame_len, u8 *frame)
+{
+	if(rxtx_system_rx(pRxTx, order_id, frame_len, frame) == dave_true)
+	{
+		receive_fun(param, socket, pIPInfo, ver_type, order_id, frame_len, frame);
+	}
+}
+
 static inline RetCode
 _base_rxtx_input_data_decode(RXTX *pRxTx, BinStackMsgHead *message, stack_receive_fun receive_fun)
 {
@@ -498,7 +608,10 @@ _base_rxtx_input_data_decode(RXTX *pRxTx, BinStackMsgHead *message, stack_receiv
 
 	if(package != NULL)
 	{
-		receive_fun(pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), CT_ENCRYPT_DATA_FRAME, (ORDER_CODE)(message->order_id), package_len, package);
+		_base_rxtx_receive_fun_process(
+			pRxTx, receive_fun,
+			pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), CT_ENCRYPT_DATA_FRAME,
+			(ORDER_CODE)(message->order_id), package_len, package);
 
 		rxtx_simple_decode_release(package);
 
@@ -529,132 +642,111 @@ _base_rxtx_input_data(RXTX *pRxTx, BinStackMsgHead *pMessage, stack_receive_fun 
 		return RetCode_Invalid_data_crc_check;
 	}
 
-	receive_fun(pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), CT_DATA_FRAME, (ORDER_CODE)(pMessage->order_id), package_len, package);
+	_base_rxtx_receive_fun_process(
+		pRxTx, receive_fun,
+		pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), CT_DATA_FRAME,
+		(ORDER_CODE)(pMessage->order_id), package_len, package);
 
 	return RetCode_OK;
 }
 
-static inline ub
-_base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
+static inline RetCode
+_base_rxtx_input_rel(RXTX *pRxTx, BinStackMsgHead *pMessage)
 {
 	stack_receive_fun receive_fun;
 	u8 *package = pMessage->frame;
 	ub package_len;
 
-	*ret = RetCode_OK;
-
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
 	{
 		RTLOG("receive_fun is empty!");
-		return (STACK_HEAD_LENver2 + pMessage->frame_len);
+		return RetCode_OK;
 	}
 
 	package_len = rxtx_check_crc(pMessage->frame, pMessage->frame_len);
 	if(package_len == 0)
 	{
-		*ret = RetCode_Invalid_data_crc_check;
 		RTLOG("invalid check crc! order_id:%x frame_len:%d frame:%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
 			pMessage->order_id, pMessage->frame_len,
 			pMessage->frame[0], pMessage->frame[1], pMessage->frame[2],
 			pMessage->frame[3], pMessage->frame[4], pMessage->frame[5],
 			pMessage->frame[6], pMessage->frame[7], pMessage->frame[8],
 			pMessage->frame[9], pMessage->frame[10], pMessage->frame[11]);
-		return 1;
+		return RetCode_Invalid_data_crc_check;
 	}
 
-	receive_fun(pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), REL_FRAME, (ORDER_CODE)(pMessage->order_id), package_len, package);
+	_base_rxtx_receive_fun_process(
+		pRxTx, receive_fun,
+		pRxTx->param, pRxTx->socket, &(pRxTx->IPInfo), REL_FRAME,
+		(ORDER_CODE)(pMessage->order_id), package_len, package);
 
-	return (STACK_HEAD_LENver2 + pMessage->frame_len);
+	return RetCode_OK;
 }
 
-static inline ub
-_base_rxtx_input_decode(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
+static inline RetCode
+_base_rxtx_input_decode(RXTX *pRxTx, BinStackMsgHead *pMessage)
 {
 	stack_receive_fun receive_fun;
+	RetCode ret;
 
 	RTDEBUG("order_id:%x frame_len:%d", pMessage->order_id, pMessage->frame_len);
 
-	*ret = RetCode_OK;
-
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
 	{
 		RTLOG("receive_fun is empty!");
-		return (STACK_HEAD_LENver2 + pMessage->frame_len);
+		return RetCode_OK;
 	}
 
-	*ret = _base_rxtx_input_data_decode(pRxTx, pMessage, receive_fun);
-	if(*ret != RetCode_OK)
+	ret = _base_rxtx_input_data_decode(pRxTx, pMessage, receive_fun);
+	if(ret != RetCode_OK)
 	{
-		RTLOG("process error:%s", retstr(*ret));
+		RTLOG("process error:%s", retstr(ret));
 	}
 
-	if(*ret == RetCode_OK)
-	{
-		return (STACK_HEAD_LENver2 + pMessage->frame_len);
-	}
-	else
-	{
-		RTLOG("invalid check crc! ret:%s", retstr(*ret));
-		return 1;
-	}
+	return ret;
 }
 
-static inline ub
-_base_rxtx_input_ct(dave_bool decode, RXTX *pRxTx, BinStackMsgHead *pMessage, ub process_index, ub data_len, RetCode *ret)
+static inline RetCode
+_base_rxtx_input_ct(dave_bool decode, RXTX *pRxTx, BinStackMsgHead *pMessage)
 {
 	stack_receive_fun receive_fun;
-
-	RTDEBUG("decode:%d data_len:%d", decode, data_len);
-
-	*ret = RetCode_OK;
+	RetCode ret;
 
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
 	{
 		RTLOG("receive_fun is empty!");
-		return (STACK_HEAD_LENver2 + pMessage->frame_len);
+		return RetCode_OK;
 	}
 
 	if(decode == dave_true)
 	{
-		*ret = _base_rxtx_input_data_decode(pRxTx, pMessage, receive_fun);
+		ret = _base_rxtx_input_data_decode(pRxTx, pMessage, receive_fun);
 	}
 	else
 	{
-		*ret = _base_rxtx_input_data(pRxTx, pMessage, receive_fun);
+		ret = _base_rxtx_input_data(pRxTx, pMessage, receive_fun);
 	}
 
-	if(*ret != RetCode_OK)
+	if(ret != RetCode_OK)
 	{
-		RTLOG("process error:%s data len:%d/%d", retstr(*ret), process_index, data_len);
-
+		RTLOG("process error:%s", retstr(ret));
 		_base_rxtx_output_sync(pRxTx, pMessage->order_id);
-
-		*ret = RetCode_OK;
+		ret = RetCode_OK;
 	}
 	else
 	{
 		_base_rxtx_output_ack(pRxTx, pMessage->order_id);
 	}
 
-	if(*ret == RetCode_OK)
-	{
-		return (STACK_HEAD_LENver2 + pMessage->frame_len);
-	}
-	else
-	{
-		RTLOG("invalid check crc! ret:%s", retstr(*ret));
-		return 1;
-	}
+	return ret;
 }
 
-static inline ub
-_base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
+static inline RetCode
+_base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage)
 {
-	*ret = RetCode_OK;
-
 	if(rxtx_confirm_transfer_pop(pRxTx->socket, pMessage->order_id) == dave_false)
 	{
 		RTDEBUG("%s pop failed!", thread_name(pRxTx->owner_thread));
@@ -664,27 +756,57 @@ _base_rxtx_input_ack(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
 		rxtx_confirm_transfer_out(pRxTx->socket, dave_false);
 	}
 
-	return STACK_HEAD_LENver2;
+	return RetCode_OK;
 }
 
-static inline ub
-_base_rxtx_input_sync(RXTX *pRxTx, BinStackMsgHead *pMessage, RetCode *ret)
+static inline RetCode
+_base_rxtx_input_sync(RXTX *pRxTx, BinStackMsgHead *pMessage)
 {
-	*ret = RetCode_OK;
-
 	rxtx_confirm_transfer_out(pRxTx->socket, dave_true);
 
-	return STACK_HEAD_LENver2;
+	return RetCode_OK;
+}
+
+static inline RetCode
+_base_rxtx_input_meaningful(FRAMETYPE type, RXTX *pRxTx, BinStackMsgHead *message)
+{
+	RetCode ret;
+
+	switch(type)
+	{
+		case REL_FRAME:
+				ret = _base_rxtx_input_rel(pRxTx, message);
+			break;
+		case ENCRYPT_REL_FRAME:
+				ret = _base_rxtx_input_decode(pRxTx, message);
+			break;
+		case CT_ENCRYPT_DATA_FRAME:
+				ret = _base_rxtx_input_ct(dave_true, pRxTx, message);
+			break;
+		case CT_ACK_FRAME:
+				ret = _base_rxtx_input_ack(pRxTx, message);
+			break;
+		case CT_SYNC_FRAME:
+				ret = _base_rxtx_input_sync(pRxTx, message);
+			break;
+		case CT_DATA_FRAME:
+				ret = _base_rxtx_input_ct(dave_false, pRxTx, message);
+			break;
+		default:
+				ret = RetCode_OK;
+			break;
+	}
+
+	return ret;
 }
 
 static inline ub
-_base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
+_base_rxtx_input(dave_bool preloading, RXTX *pRxTx, u8 *data_ptr, ub data_len, RetCode *ret)
 {
 	ub process_index;
 	FRAMETYPE type;
 	BinStackMsgHead message;
 	stack_receive_fun receive_fun;
-	RetCode ret;
 	dave_bool bad_frame_detected;
 	ub bad_frame_index;
 
@@ -692,9 +814,9 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
 		thread_name(pRxTx->owner_thread), pRxTx->socket,
 		pRxTx->rx_buffer_len);
 
-	*result = RetCode_OK;
+	*ret = RetCode_OK;
 
-	if((data == NULL) || (data_len == 0))
+	if((data_ptr == NULL) || (data_len == 0))
 	{
 		return 0;
 	}
@@ -714,13 +836,9 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
 
 	while(process_index < data_len)
 	{
-		ret = RetCode_OK;
+		*ret = RetCode_OK;
 
-		type = _base_rxtx_msgtype(&message, &data[process_index], data_len - process_index);
-
-		RTDEBUG("ver_type:%x type:%d frame_len:%d order_id:%x data:%d/%d",
-			message.ver_type, type, message.frame_len, message.order_id,
-			process_index, data_len);
+		type = _base_rxtx_msgtype(&message, &data_ptr[process_index], data_len - process_index);
 
 		switch(type)
 		{
@@ -735,22 +853,16 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
 			case BAD_LENGTH:
 					goto rxtx_input_end;
 			case REL_FRAME:
-					process_index += _base_rxtx_input_rel(pRxTx, &message, &ret);
-				break;
 			case ENCRYPT_REL_FRAME:
-					process_index += _base_rxtx_input_decode(pRxTx, &message, &ret);
-				break;
 			case CT_ENCRYPT_DATA_FRAME:
-					process_index += _base_rxtx_input_ct(dave_true, pRxTx, &message, process_index, data_len, &ret);
-				break;
 			case CT_ACK_FRAME:
-					process_index += _base_rxtx_input_ack(pRxTx, &message, &ret);
-				break;
 			case CT_SYNC_FRAME:
-					process_index += _base_rxtx_input_sync(pRxTx, &message, &ret);
-				break;
 			case CT_DATA_FRAME:
-					process_index += _base_rxtx_input_ct(dave_false, pRxTx, &message, process_index, data_len, &ret);
+					if(preloading == dave_false)
+					{
+						*ret = _base_rxtx_input_meaningful(type, pRxTx, &message);
+					}
+					process_index += (STACK_HEAD_LENver2 + message.frame_len);
 				break;
 			default:
 					RTLOG("invalid type:%d on index:%d", type, process_index);
@@ -758,10 +870,8 @@ _base_rxtx_input(RXTX *pRxTx, u8 *data, ub data_len, RetCode *result)
 				break;
 		}
 
-		if(ret != RetCode_OK)
+		if(*ret != RetCode_OK)
 		{
-			*result = ret;
-
 			break;
 		}
 	}
@@ -770,9 +880,9 @@ rxtx_input_end:
 
 	if(bad_frame_detected == dave_true)
 	{
-		_base_rxtx_has_bad_frame(pRxTx, bad_frame_detected, bad_frame_index, data, data_len);
+		_base_rxtx_has_bad_frame(pRxTx, bad_frame_index, data_ptr, process_index, data_len);
 
-		*result = RetCode_Invalid_data;
+		*ret = RetCode_Invalid_data;
 	}
 
 	RTDEBUG("%s socket:%d rx_buffer_len:%d process_index:%d",
@@ -782,40 +892,80 @@ rxtx_input_end:
 	return process_index;
 }
 
+static void
+_base_rxtx_event_get(MSGBODY *msg)
+{
+	RXTXEvent *pEvent = (RXTXEvent *)(((InternalLoop *)(msg->msg_body))->ptr);
+	ub process_len;
+	RetCode ret;
+
+	process_len = _base_rxtx_input(dave_false, pEvent->pRxTx, pEvent->permutation_ptr, pEvent->permutation_len, &ret);
+	if(process_len != pEvent->permutation_len)
+	{
+		RTLOG("There should be no unprocessed data:%d/%d here!", process_len, pEvent->permutation_len);
+	}
+	if(ret != RetCode_OK)
+	{
+		RTLOG("find error:%s", retstr(ret));
+	}
+
+	RTDEBUG("%s socket:%d %d/%d serial:%lx",
+		thread_name(pEvent->pRxTx->owner_thread), pEvent->pRxTx->socket,
+		process_len, pEvent->permutation_len, pEvent->event_serial);
+
+	_base_rxtx_buffer_clean(pEvent->permutation_ptr);
+
+	dave_free(pEvent);
+}
+
+static inline void
+_base_rxtx_event_set(RXTX *pRxTx, u8 *permutation_ptr, ub permutation_len)
+{
+	InternalLoop *pLoop = thread_msg(pLoop);
+	RXTXEvent *pEvent = dave_malloc(sizeof(RXTXEvent));
+
+	pEvent->pRxTx = pRxTx;
+	pEvent->permutation_ptr = permutation_ptr;
+	pEvent->permutation_len = permutation_len;
+	pEvent->event_serial = dave_os_time_us();
+
+	pLoop->ptr = pEvent;
+
+	RTDEBUG("%s socket:%d %d serial:%lx",
+		thread_name(pEvent->pRxTx->owner_thread), pEvent->pRxTx->socket,
+		pEvent->permutation_len, pEvent->event_serial);
+
+	id_msg(pRxTx->owner_thread, MSGID_INTERNAL_LOOP, pLoop);
+}
+
 static inline RetCode
 _base_rxtx_event_process(RXTX *pRxTx)
 {
 	ub process_len;
 	RetCode ret = RetCode_OK;
+	dave_bool preloading = dave_true;
+	u8 *permutation_ptr;
+	ub permutation_len;
 
-	if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+	process_len = _base_rxtx_input(preloading, pRxTx, pRxTx->rx_buffer_ptr, pRxTx->rx_buffer_len, &ret);
+	if(ret != RetCode_OK)
 	{
-		pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+		RTLOG("%s %d %d/%d", retstr(ret), preloading, process_len, pRxTx->rx_buffer_len);
+	}
+	if(process_len == 0)
+	{
+		return RetCode_OK;
 	}
 
-	process_len = _base_rxtx_input(pRxTx, pRxTx->rx_buffer_ptr, pRxTx->rx_buffer_len, &ret);
-
-	if(process_len > pRxTx->rx_buffer_len)
+	if(preloading == dave_true)
 	{
-		RTABNOR("process_len:%d > rx_buffer_len:%d why?",
-			process_len, pRxTx->rx_buffer_len);
+		_base_rxtx_buffer_permutation(&permutation_ptr, &permutation_len, pRxTx, process_len);
 
-		pRxTx->rx_buffer_len = 0;
+		_base_rxtx_event_set(pRxTx, permutation_ptr, permutation_len);
 	}
-	else if(process_len == pRxTx->rx_buffer_len)
+	else
 	{
-		pRxTx->rx_buffer_len = 0;
-	}
-	else if(process_len > 0)
-	{
-		pRxTx->rx_buffer_len = pRxTx->rx_buffer_len - process_len;
-
-		dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
-
-		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
-		{
-			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
-		}
+		_base_rxtx_buffer_tidy(pRxTx, process_len);
 	}
 
 	return ret;
@@ -890,36 +1040,18 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	if(ret == RetCode_OK)
 	{
 		*recv_total_length += rx_buffer_len;
-
-		pRxTx->rx_buffer_len += rx_buffer_len;	
+		pRxTx->rx_buffer_len += rx_buffer_len;
+		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+		{
+			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+		}
 	}
 
 	return ret;
 }
 
-static inline void
-_base_rxtx_buffer_malloc(RXTX *pRxTx)
-{
-	if(pRxTx->rx_buffer_ptr == NULL)
-	{
-		pRxTx->rx_buffer_ptr = dave_malloc(RX_TX_BUF_MAX);
-		pRxTx->rx_buffer_len = 0;
-	}
-}
-
-static inline void
-_base_rxtx_buffer_free(RXTX *pRxTx)
-{
-	if((pRxTx->rx_buffer_ptr != NULL) && (pRxTx->rx_buffer_len == 0))
-	{
-		dave_free(pRxTx->rx_buffer_ptr);
-		pRxTx->rx_buffer_ptr = NULL;
-		pRxTx->rx_buffer_len = 0;
-	}
-}
-
 static inline RetCode
-_base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
+_base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_receive_fun receive_fun, void *param)
 {
 	RXTX *pRxTx = NULL;
 	ub safe_counter;
@@ -933,6 +1065,8 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 		dave_mfree(pEvent->data);
 		return RetCode_lost_link;
 	}
+	pRxTx->receive_fun = receive_fun;
+	pRxTx->param = param;
 
 	safe_counter = 0;
 
@@ -954,8 +1088,6 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 				if(pRxTx->rx_buffer_len > backup_rx_buf_len)
 				{
-					pRxTx->receive_fun = result_fun;
-					pRxTx->param = param;
 					ret = _base_rxtx_event_process(pRxTx);
 					if(ret != RetCode_OK)
 					{
@@ -999,7 +1131,7 @@ _base_rxtx_event_notify_recv_length(s32 socket, ub recv_total_length, void *ptr)
 	pNotify->data = recv_total_length;
 	pNotify->ptr = ptr;
 
-	write_msg(_socket_thread, SOCKET_NOTIFY, pNotify);
+	id_msg(_socket_thread, SOCKET_NOTIFY, pNotify);
 }
 
 static inline void
@@ -1116,6 +1248,12 @@ __base_rxtx_build__(SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
 	{
 		_base_rxtx_show();
 	}
+	else
+	{
+		reg_msg(MSGID_INTERNAL_LOOP, _base_rxtx_event_get);
+
+		rxtx_system_no_crc_tx(pRxTx);
+	}
 
 	return ret;
 }
@@ -1189,12 +1327,12 @@ base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF
 }
 
 RetCode
-base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun result_fun, void *param)
+base_rxtx_event(SocketRawEvent *pEvent, stack_receive_fun receive_fun, void *param)
 {
 	RetCode ret;
 	ub recv_total_length = 0;
 
-	ret = _base_rxtx_event_action(&recv_total_length, pEvent, result_fun, param);
+	ret = _base_rxtx_event_action(&recv_total_length, pEvent, receive_fun, param);
 
 	_base_rxtx_event_notify_recv_length(pEvent->socket, recv_total_length, pEvent->ptr);
 

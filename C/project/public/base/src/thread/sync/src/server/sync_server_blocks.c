@@ -239,7 +239,7 @@ _sync_server_blocks_req(ThreadId src, MsgBlocksReq *pReq)
 	_sync_server_load_blocks(pRsp->blocks);
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_BLOCKS_RSP, pRsp);
+	id_msg(src, MSGID_BLOCKS_RSP, pRsp);
 }
 
 // =====================================================================

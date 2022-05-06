@@ -46,7 +46,7 @@ http_recv_listen(ThreadId src, HTTPListenReq *pReq)
 
 	HTTPLOG("%s listen:%d %s", thread_name(src), pReq->listen_port, retstr(pRsp->ret));
 
-	write_msg(src, HTTPMSG_LISTEN_RSP, pRsp);
+	id_msg(src, HTTPMSG_LISTEN_RSP, pRsp);
 }
 
 void
@@ -61,6 +61,6 @@ http_recv_close(ThreadId src, HTTPCloseReq *pReq)
 
 	HTTPLOG("%s close:%d %s", thread_name(src), pReq->listen_port, retstr(pRsp->ret));
 
-	write_msg(src, HTTPMSG_CLOSE_RSP, pRsp);
+	id_msg(src, HTTPMSG_CLOSE_RSP, pRsp);
 }
 

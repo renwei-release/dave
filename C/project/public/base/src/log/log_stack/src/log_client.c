@@ -46,7 +46,7 @@ _log_stack_client_disconnect(s32 socket)
 
 		pReq->socket = socket;
 
-		write_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+		id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
 	}
 }
 
@@ -224,7 +224,7 @@ _log_stack_client_connect_req(void)
 		_socket_thread = get_thread_id(SOCKET_THREAD_NAME); 
 	}
 
-	write_event(_socket_thread, SOCKET_CONNECT_REQ, pReq, SOCKET_CONNECT_RSP, _log_stack_client_connect_rsp);
+	id_event(_socket_thread, SOCKET_CONNECT_REQ, pReq, SOCKET_CONNECT_RSP, _log_stack_client_connect_rsp);
 }
 
 static void

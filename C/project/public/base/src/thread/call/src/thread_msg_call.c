@@ -15,157 +15,68 @@
 #include "thread_mem.h"
 #include "thread_log.h"
 
-#define MAX_MSG_CALL_FUN (512)
+static void *_msg_call_kv = NULL;
 
-typedef struct {
-	ThreadId thread_id;
-	TLock pv_opt;
-	MsgCallFun call_fun[MAX_MSG_CALL_FUN];
-} MsgCall;
-
-static MsgCall _msg_call[THREAD_MAX];
-
-static void
-_thread_msg_fun_reset(MsgCallFun *pFun)
+static inline s8 *
+_thread_msg_call_key(s8 *key_ptr, ub key_len, ThreadId thread_id, ub msg_id)
 {
-	dave_memset(pFun, 0x00, sizeof(MsgCallFun));
+	dave_snprintf(key_ptr, key_len, "%d-%d", thread_id, msg_id);
 
-	pFun->msg_id = MSGID_RESERVED;
-	pFun->msg_fun = NULL;
+	return key_ptr;
 }
 
-static void
-_thread_msg_fun_all_reset(MsgCall *pCall)
+static inline void
+_thread_msg_call_add(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
 {
-	ub fun_index;
+	MsgCallFun *pFun = dave_malloc(sizeof(MsgCallFun));
+	s8 key[256];
 
-	for(fun_index=0; fun_index<MAX_MSG_CALL_FUN; fun_index++)
-	{
-		_thread_msg_fun_reset(&(pCall->call_fun[fun_index]));
-	}
-}
-
-static void
-_thread_msg_call_reset(MsgCall *pCall)
-{
-	pCall->thread_id = INVALID_THREAD_ID;
-
-	_thread_msg_fun_all_reset(pCall);
-}
-
-static void
-_thread_msg_call_reset_all(void)
-{
-	ub call_index;
-
-	for(call_index=0; call_index<THREAD_MAX; call_index++)
-	{
-		dave_memset(&_msg_call[call_index], 0x00, sizeof(MsgCall));
-
-		_thread_msg_call_reset(&_msg_call[call_index]);
-
-		t_lock_reset(&(_msg_call[call_index].pv_opt));
-	}
-}
-
-static ub
-_thread_msg_call_id_to_index(ThreadId thread_id)
-{
-	return (ub)(thread_id % THREAD_MAX);
-}
-
-static MsgCallFun *
-_thread_msg_id_to_fun(MsgCall *pCall, ub msg_id, dave_bool find_new)
-{
-	ub fun_index, safe_counter;
-	MsgCallFun *pFun;
-
-	fun_index = msg_id % MAX_MSG_CALL_FUN;
-
-	pFun = NULL;
-
-	for(safe_counter=0; safe_counter<MAX_MSG_CALL_FUN; safe_counter++)
-	{
-		if(fun_index >= MAX_MSG_CALL_FUN)
-		{
-			fun_index = 0;
-		}
-
-		if(((find_new == dave_true) && (pCall->call_fun[fun_index].msg_id == MSGID_RESERVED))
-			|| (pCall->call_fun[fun_index].msg_id == msg_id))
-		{
-			pFun = &(pCall->call_fun[fun_index]);
-			break;
-		}
-
-		fun_index ++;
-	}
-
-	return pFun;
-}
-
-static dave_bool
-_thread_msg_call_register_new(MsgCall *pCall, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
-{
-	MsgCallFun *pFun;
-
-	pFun = _thread_msg_id_to_fun(pCall, msg_id, dave_true);
-	if(pFun == NULL)
-	{
-		THREADABNOR("Limited resources! %s:%d", thread_name(pCall->thread_id), msg_id);
-		return dave_false;
-	}
-
+	pFun->thread_id = thread_id;
 	pFun->msg_id = msg_id;
 	pFun->msg_fun = msg_fun;
 	pFun->user_ptr = user_ptr;
 
-	return dave_true;
+	base_ramkv_add_key_ptr(
+		_msg_call_kv,
+		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id),
+		pFun);
 }
 
-static dave_bool
-_thread_msg_call_register_old(MsgCallFun *pFun, MsgCall *pCall, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
+static inline void
+_thread_msg_call_del(ThreadId thread_id, ub msg_id)
 {
-	pFun->msg_id = msg_id;
-	if(msg_fun != pFun->msg_fun)
-	{
-		THREADLOG("Please pay attention, it will cause the message to be received. "\
-			"messages can only be processed by the last passed function."\
-			"thread:%s msg:%d fun change!",
-			thread_name(pCall->thread_id), msg_id);
-	}
-	pFun->msg_fun = msg_fun;
-	pFun->user_ptr = user_ptr;
-
-	return dave_true;
-}
-
-static void
-_thread_msg_call_unregister(MsgCall *pCall, ub msg_id)
-{
+	s8 key[256];
 	MsgCallFun *pFun;
 
-	pFun = _thread_msg_id_to_fun(pCall, msg_id, dave_false);
-	if(pFun == NULL)
-	{
-		return;
-	}
+	pFun = base_ramkv_del_key_ptr(
+		_msg_call_kv,
+		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
 
-	_thread_msg_fun_reset(pFun);
+	if(pFun != NULL)
+		dave_free(pFun);
 }
 
-static MsgCallFun *
-_thread_msg_call(MsgCall *pCall, ub msg_id)
+static inline MsgCallFun *
+_thread_msg_call_inq(ThreadId thread_id, ub msg_id)
 {
-	MsgCallFun *pFun;
+	s8 key[256];
 
-	pFun = _thread_msg_id_to_fun(pCall, msg_id, dave_false);
+	return (MsgCallFun *)base_ramkv_inq_key_ptr(
+		_msg_call_kv,
+		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
+}
+
+static RetCode
+_thread_msg_call_recycle(void *ramkv, s8 *key)
+{
+	MsgCallFun *pFun = base_ramkv_del_key_ptr(ramkv, key);
+
 	if(pFun == NULL)
-	{
-		return NULL;
-	}
+		return RetCode_empty_data;
 
-	return pFun;
+	dave_free(pFun);
+
+	return RetCode_OK;
 }
 
 // =====================================================================
@@ -173,22 +84,18 @@ _thread_msg_call(MsgCall *pCall, ub msg_id)
 void
 thread_msg_call_init(void)
 {
-	_thread_msg_call_reset_all();
+	_msg_call_kv = base_ramkv_malloc("tmckv", KvAttrib_ram, 0, NULL);
 }
 
 void
 thread_msg_call_exit(void)
 {
-
+	base_ramkv_free(_msg_call_kv, _thread_msg_call_recycle);
 }
 
 dave_bool
 thread_msg_call_register(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
 {
-	ub call_index;
-	MsgCallFun *pFun;
-	dave_bool ret = dave_false;
-
 	if((thread_id == INVALID_THREAD_ID) || (msg_fun == NULL))
 	{
 		THREADABNOR("invalid param:%d,%x", thread_id, msg_fun);
@@ -196,98 +103,23 @@ thread_msg_call_register(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, 
 	}
 
 	thread_id = thread_get_local(thread_id);
+	_thread_msg_call_add(thread_id, msg_id, msg_fun, user_ptr);
 
-	call_index = _thread_msg_call_id_to_index(thread_id);
-
-	if(call_index >= THREAD_MAX)
-	{
-		THREADABNOR("invalid call_index:%d thread_id:%d", call_index, thread_id);
-		return dave_false;
-	}
-
-	if((_msg_call[call_index].thread_id != INVALID_THREAD_ID) && (_msg_call[call_index].thread_id != thread_id))
-	{
-		THREADABNOR("thread_id is change:%d->%d", _msg_call[call_index].thread_id, thread_id);
-		return dave_false;
-	}
-
-	SAFECODEv1(_msg_call[call_index].pv_opt, {
-		_msg_call[call_index].thread_id = thread_id;
-
-		pFun = _thread_msg_call(&_msg_call[call_index], msg_id);
-		if(pFun == NULL)
-		{
-			ret = _thread_msg_call_register_new(&_msg_call[call_index], msg_id, msg_fun, user_ptr);
-		}
-		else
-		{
-			ret = _thread_msg_call_register_old(pFun, &_msg_call[call_index], msg_id, msg_fun, user_ptr);
-		}
-	} );
-
-	if(ret == dave_false)
-	{
-		THREADABNOR("%s register id:%d fun:%x failed!", thread_name(thread_id), msg_id, msg_fun);
-	}
-
-	return ret;
+	return dave_true;
 }
 
 void
 thread_msg_call_unregister(ThreadId thread_id, ub msg_id)
 {
-	ub call_index;
-
 	thread_id = thread_get_local(thread_id);
-
-	call_index = _thread_msg_call_id_to_index(thread_id);
-
-	if(call_index >= THREAD_MAX)
-	{
-		THREADABNOR("invalid call_index:%d thread_id:%d", call_index, thread_id);
-		return;
-	}
-
-	if((_msg_call[call_index].thread_id != INVALID_THREAD_ID) && (_msg_call[call_index].thread_id != thread_id))
-	{
-		THREADABNOR("thread_id is change:%d->%d", _msg_call[call_index].thread_id, thread_id);
-		return;
-	}
-
-	SAFECODEv1(_msg_call[call_index].pv_opt, {
-		_msg_call[call_index].thread_id = thread_id;
-		
-		_thread_msg_call_unregister(&_msg_call[call_index], msg_id);
-	} );
+	_thread_msg_call_del(thread_id, msg_id);
 }
 
 MsgCallFun *
 thread_msg_call(ThreadId thread_id, ub msg_id)
 {
-	ub call_index;
-
 	thread_id = thread_get_local(thread_id);
-
-	call_index = _thread_msg_call_id_to_index(thread_id);
-
-	if(call_index >= THREAD_MAX)
-	{
-		THREADABNOR("invalid call_index:%d thread_id:%d msg_id:%d", call_index, thread_id, msg_id);
-		return NULL;
-	}
-
-	if((_msg_call[call_index].thread_id != INVALID_THREAD_ID) && (_msg_call[call_index].thread_id != thread_id))
-	{
-		THREADABNOR("thread_id is change:%d<%s>->%d msg_id:%d",
-			_msg_call[call_index].thread_id, get_thread_name(_msg_call[call_index].thread_id),
-			thread_id, msg_id);
-
-		return NULL;
-	}
-
-	_msg_call[call_index].thread_id = thread_id;	
-
-	return _thread_msg_call(&_msg_call[call_index], msg_id);
+	return _thread_msg_call_inq(thread_id, msg_id);
 }
 
 #endif

@@ -30,7 +30,7 @@ _http_test_recv_req(MSGBODY *msg)
 	pRsp->local_creat_time = dave_os_time_us();
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(self(), HTTPMSG_RECV_RSP, pRsp);
+	id_msg(self(), HTTPMSG_RECV_RSP, pRsp);
 }
 
 static void
@@ -60,7 +60,7 @@ _http_test_listen_req(s8 *msg, ub msg_len)
 	pReq->rule = LocationMatch_Accurate;
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "/jegom/jtp");
 
-	write_event(self(), HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP, _http_test_listen_rsp);
+	id_event(self(), HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP, _http_test_listen_rsp);
 
 	return dave_snprintf(msg, msg_len, "ok");
 }
@@ -79,6 +79,6 @@ http_test(ThreadId src, DebugReq *pReq)
 
 	pRsp->ptr = pReq->ptr;
 
-	write_msg(src, MSGID_DEBUG_REQ, pRsp);
+	id_msg(src, MSGID_DEBUG_REQ, pRsp);
 }
 

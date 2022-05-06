@@ -74,3 +74,18 @@ uip_write_stack(char *stack_name, UIPStack *pStack)
 	}
 }
 
+sb
+uip_ret_to_code(RetCode ret)
+{
+	if(ret == RetCode_OK)
+		return 1;
+	else
+		return ret;
+}
+
+s8 *
+uip_ret_to_desc(RetCode ret)
+{
+	return retstr(ret);
+}
+

@@ -16,10 +16,6 @@
 #endif
 
 #ifdef THREAD_DEBUG
-// #define DEBUG_THREAD_RUN_INFO
-#endif
-
-#ifdef THREAD_DEBUG
 #define THREADDEBUG(a, ...) { DAVEDEBUG("[THREAD]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
 #else
 #define THREADDEBUG(a, ...) {}

@@ -55,7 +55,7 @@ dave_product_init(void)
 
 	_io_thread = base_thread_creat(dave_verno_my_product(), thread_number, THREAD_THREAD_FLAG, _io_thread_init, _io_thread_main, _io_thread_exit);
 	if(_io_thread == INVALID_THREAD_ID)
-		dave_restart(dave_verno_my_product());
+		base_restart(dave_verno_my_product());
 }
 
 void

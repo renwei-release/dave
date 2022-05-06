@@ -63,7 +63,7 @@ _uip_client_post_req(UIPStack *pStack)
 		_http_thread_id = thread_id(POST_THREAD_NAME);
 	}
 
-	return write_event(_http_thread_id, HTTPMSG_POST_REQ, pReq, HTTPMSG_POST_RSP, _uip_client_post_rsp);
+	return id_event(_http_thread_id, HTTPMSG_POST_REQ, pReq, HTTPMSG_POST_RSP, _uip_client_post_rsp);
 }
 
 static void
@@ -78,7 +78,7 @@ _uip_client_send_rsp(ThreadId dst, RetCode ret, s8 *method, MBUF *data, void *pt
 
 	uip_free(pStack);
 
-	write_msg(dst, UIP_DATA_SEND_RSP, pRsp);
+	id_msg(dst, UIP_DATA_SEND_RSP, pRsp);
 }
 
 static RetCode

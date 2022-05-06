@@ -152,7 +152,7 @@ _nginx_action_timer_out(TIMERID timer_id, ub thread_index)
 		_nginx_action_timer = INVALID_TIMER_ID;
 	}
 
-	dave_timer_die(timer_id);
+	base_timer_die(timer_id);
 }
 
 // =====================================================================
@@ -199,12 +199,12 @@ nginx_action_start(void)
 
 	if(_nginx_action_timer != INVALID_TIMER_ID)
 	{
-		dave_timer_die(_nginx_action_timer);
+		base_timer_die(_nginx_action_timer);
 
 		_nginx_action_timer = INVALID_TIMER_ID;
 	}
 
-	_nginx_action_timer = dave_timer_creat("nginxaction", _nginx_action_timer_out, 6000);
+	_nginx_action_timer = base_timer_creat("nginxaction", _nginx_action_timer_out, 6000);
 
 	return RetCode_OK;
 }
