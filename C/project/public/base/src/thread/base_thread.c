@@ -46,7 +46,6 @@ static volatile dave_bool __system_startup__ = dave_false;
 static void *_main_thread_id = NULL;
 static volatile sb _system_wakeup_counter = 0;
 static TLock _system_thread_pv;
-static s8 _system_thread_pv_lock_name[THREAD_NAME_MAX];
 static volatile ub _system_schedule_counter = 0;
 
 static ThreadStruct _thread[THREAD_MAX];
@@ -1598,8 +1597,6 @@ base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun t
 	ThreadId thread_id = INVALID_THREAD_ID;
 
 	SAFECODEv2W(_system_thread_pv, {
-		dave_strcpy(_system_thread_pv_lock_name, name, THREAD_NAME_MAX);
-
 		thread_id = _thread_safe_creat((s8 *)name, level_number, thread_flag, thread_init, thread_main, thread_exit);
 	} );
 
@@ -1616,8 +1613,6 @@ base_thread_del(ThreadId thread_id)
 	_thread_local_remove(thread_id);
 
 	SAFECODEv2W(_system_thread_pv, {
-		dave_memset(_system_thread_pv_lock_name, 0x00, THREAD_NAME_MAX);
-
 		ret = _thread_safe_del(thread_id);
 	} );
 

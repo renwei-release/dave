@@ -21,6 +21,7 @@
 #define SECURE_DATA_MAX_LENGTH 32
 #define RECV_COUNTER_MAX (256)
 #define MAYBE_HAS_DATA_COUNTER_MAX (1)
+#define RXTX_BUFFER_CFG_NAME "RxTxBufferCfgLength"
 
 typedef struct {
 	RXTX *pRxTx;
@@ -31,6 +32,7 @@ typedef struct {
 
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static TLock _opt_pv;
+static ub _rxtx_buffer_cfg_length = RX_TX_BUF_SETUP;
 static RXTX _rx_tx[RXTX_MAX];
 
 static inline void
@@ -327,7 +329,7 @@ _base_rxtx_buffer_malloc(RXTX *pRxTx)
 {
 	if(pRxTx->rx_buffer_ptr == NULL)
 	{
-		pRxTx->rx_buffer_ptr = dave_malloc(RX_TX_BUF_MAX);
+		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
 		pRxTx->rx_buffer_len = 0;
 	}
 }
@@ -363,7 +365,7 @@ _base_rxtx_buffer_tidy(RXTX *pRxTx, ub process_len)
 
 		dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
 
-		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 		}
@@ -375,7 +377,7 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 {
 	u8 *last_data_ptr;
 	ub last_data_len;
-	u8 *new_buffer_ptr = dave_malloc(RX_TX_BUF_MAX);
+	u8 *new_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
 
 	if(process_len > pRxTx->rx_buffer_len)
 	{
@@ -398,7 +400,7 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 		dave_memcpy(pRxTx->rx_buffer_ptr, last_data_ptr, last_data_len);
 	}
 
-	if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+	if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
 	{
 		pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 	}
@@ -977,8 +979,8 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	ub rx_buffer_len;
 	RetCode ret = RetCode_OK;
 
-	rx_buffer_len = RX_TX_BUF_MAX - pRxTx->rx_buffer_len;
-	if(rx_buffer_len < RX_TX_BUF_MIN)
+	rx_buffer_len = _rxtx_buffer_cfg_length - pRxTx->rx_buffer_len;
+	if(rx_buffer_len < RX_TX_BUF_WARRING)
 	{
 		RTLTRACE(60,1,"rx_buffer too short:%d/%d on %s",
 			rx_buffer_len, pRxTx->rx_buffer_len,
@@ -1041,7 +1043,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	{
 		*recv_total_length += rx_buffer_len;
 		pRxTx->rx_buffer_len += rx_buffer_len;
-		if(pRxTx->rx_buffer_len < RX_TX_BUF_MAX)
+		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 		}
@@ -1186,6 +1188,19 @@ _base_rxtx_show(void)
 	}
 }
 
+static void
+_base_rxtx_update_buffer_length(void)
+{
+	_rxtx_buffer_cfg_length = cfg_get_ub(RXTX_BUFFER_CFG_NAME);
+	if(_rxtx_buffer_cfg_length == 0)
+	{
+		_rxtx_buffer_cfg_length = RX_TX_BUF_SETUP;
+		cfg_set_ub(RXTX_BUFFER_CFG_NAME, _rxtx_buffer_cfg_length);
+	}
+	if(_rxtx_buffer_cfg_length < RX_TX_BUF_MIN)
+		_rxtx_buffer_cfg_length = RX_TX_BUF_MIN;
+}
+
 // =====================================================================
 
 void
@@ -1196,6 +1211,8 @@ base_rxtx_init(void)
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 
 	t_lock_reset(&_opt_pv);
+
+	_base_rxtx_update_buffer_length();
 
 	for(rxtx_index=0; rxtx_index<RXTX_MAX; rxtx_index++)
 	{

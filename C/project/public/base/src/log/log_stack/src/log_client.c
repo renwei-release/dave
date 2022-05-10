@@ -26,10 +26,10 @@ static void _log_stack_client_reconnect(TIMERID timer_id, ub thread_index);
 
 static ThreadId _log_stack_client_thread = INVALID_THREAD_ID;
 static TIMERID _log_stack_snd_log_timer_id = INVALID_TIMER_ID;
-static s8 _log_verno_name[2048];
-static u16 _log_verno_len;
-static s8 _log_device_name[2048];
-static u16 _log_device_len;
+static s8 _log_product_name[2048];
+static u16 _log_product_name_len;
+static s8 _log_device_info[2048];
+static u16 _log_device_info_len;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static ThreadId _bdata_thread = INVALID_THREAD_ID;
 static s32 _log_stack_client_socket = INVALID_SOCKET_ID;
@@ -51,7 +51,7 @@ _log_stack_client_disconnect(s32 socket)
 }
 
 static void
-_log_stack_client_get_device_name(s8 *name, ub len)
+_log_stack_client_get_device_info(s8 *info_ptr, ub info_len)
 {
 	s8 host_name[128];
 	u8 mac[DAVE_MAC_ADDR_LEN];
@@ -60,7 +60,7 @@ _log_stack_client_get_device_name(s8 *name, ub len)
 
 	dave_os_load_mac(mac);
 
-	dave_snprintf(name, len, "%s-%02X%02X%02X%02X%02X%02X",
+	dave_snprintf(info_ptr, info_len, "%s-%02X%02X%02X%02X%02X%02X",
 		host_name,
 		mac[0], mac[1], mac[2],
 		mac[3], mac[4], mac[5]);
@@ -71,12 +71,7 @@ _log_stack_client_server_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
 	if(cfg_get(CFG_LOG_SERVER_IP_V4, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
 	{
-		#if defined(__DAVE_ANDROID__) || defined(__DAVE_IOS__)
-		// LOG-SERVER aliyun disable
-		ip[0] = 47; ip[1] = 106; ip[2] = 161; ip[3] = 71;
-		#else
 		ip[0] = 127; ip[1] = 0; ip[2] = 0; ip[3] = 1;
-		#endif
 	}
 }
 
@@ -105,10 +100,10 @@ _log_stack_client_record_log(void)
 		frame = (s8 *)dave_mptr(data);
 
 		index = 0;
-		dave_byte_8(frame[index++], frame[index++], _log_verno_len);
-		index += dave_memcpy(&frame[index], _log_verno_name, _log_verno_len);
-		dave_byte_8(frame[index++], frame[index++], _log_device_len);
-		index += dave_memcpy(&frame[index], _log_device_name, _log_device_len);
+		dave_byte_8(frame[index++], frame[index++], _log_product_name_len);
+		index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
+		dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
+		index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
 		len_index = index; log_len = 0;
 		dave_byte_8(frame[index++], frame[index++], log_len);
 		log_len = base_log_load(&frame[index], LOG_ONCE_SEND_BYTE_MAX-index, &level);
@@ -152,10 +147,10 @@ _log_stack_client_send_booting_message(void)
 	index = 0;
 	frame = dave_mptr(data);
 
-	dave_byte_8(frame[index++], frame[index++], _log_verno_len);
-	index += dave_memcpy(&frame[index], _log_verno_name, _log_verno_len);
-	dave_byte_8(frame[index++], frame[index++], _log_device_len);
-	index += dave_memcpy(&frame[index], _log_device_name, _log_device_len);
+	dave_byte_8(frame[index++], frame[index++], _log_product_name_len);
+	index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
+	dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
+	index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
 	len_index = index; booting_message_length = 0;
 	dave_byte_8(frame[index++], frame[index++], booting_message_length);
 
@@ -217,12 +212,9 @@ _log_stack_client_connect_req(void)
 	pReq->NetInfo.fixed_src_flag = NotFixedPort;
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
+	_socket_thread = thread_id(SOCKET_THREAD_NAME);
+
 	LOGDEBUG("server ip:%s", ipv4str(pReq->NetInfo.addr.ip.ip_addr, pReq->NetInfo.port));
-	if(dave_strcmp((s8 *)SOCKET_THREAD_NAME, get_thread_name(_socket_thread)) == dave_false)
-	{
-		LOGABNOR("invalid socket thread:%d,%s why?", _socket_thread, thread_name(_socket_thread));
-		_socket_thread = get_thread_id(SOCKET_THREAD_NAME); 
-	}
 
 	id_event(_socket_thread, SOCKET_CONNECT_REQ, pReq, SOCKET_CONNECT_RSP, _log_stack_client_connect_rsp);
 }
@@ -344,10 +336,10 @@ _log_stack_client_init(MSGBODY *msg)
 {
 	_log_stack_snd_log_timer_id = INVALID_TIMER_ID;
 
-	dave_verno_product(dave_verno(), _log_verno_name, sizeof(_log_verno_name));
-	_log_verno_len = dave_strlen(_log_verno_name);
-	_log_stack_client_get_device_name(_log_device_name, sizeof(_log_device_name));
-	_log_device_len = dave_strlen(_log_device_name);
+	dave_verno_product(dave_verno(), _log_product_name, sizeof(_log_product_name));
+	_log_product_name_len = dave_strlen(_log_product_name);
+	_log_stack_client_get_device_info(_log_device_info, sizeof(_log_device_info));
+	_log_device_info_len = dave_strlen(_log_device_info);
 
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 	_bdata_thread = INVALID_THREAD_ID;

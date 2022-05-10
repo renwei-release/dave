@@ -202,21 +202,21 @@ _log_stack_server_close_log_file_timer_fun(TIMERID timer_id, ub thread_index)
 }
 
 static inline void
-_log_stack_server_build_record_file_name(s8 *file_name_ptr, ub file_name_len, s8 *log_verno, s8 *device_name)
+_log_stack_server_build_record_file_name(s8 *file_name_ptr, ub file_name_len, s8 *product_name, s8 *device_info)
 {
 	DateStruct date = t_time_get_date(NULL);
 
 	dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s",
-		log_verno,
+		product_name,
 		date.year, date.month, date.day,
-		device_name);
+		device_info);
 }
 
 static void
 _log_stack_server_save_local(s8 *log_file_name, s8 *content_ptr, ub content_len)
 {
 	DateStruct date;
-	s8 log_date[64];
+	s8 log_date[128];
 	ub log_date_len;
 	sb file_id;
 	sb file_len;
@@ -224,7 +224,7 @@ _log_stack_server_save_local(s8 *log_file_name, s8 *content_ptr, ub content_len)
 
 	t_time_get_date(&date);
 
-	log_date_len = dave_sprintf(log_date,
+	log_date_len = dave_snprintf(log_date, sizeof(log_date),
 		"|%04d%02d%02d%02d%02d%02d|",
 		date.year, date.month,
 		date.day, date.hour,
@@ -286,27 +286,27 @@ static void
 _log_stack_server_log_record(ub frame_len, u8 *frame)
 {
 	ub frame_index;
-	s8 log_file_name[1024];
-	s8 log_name[2048];
-	u16 log_name_len;
-	s8 device_name[2048];
-	u16 device_name_len;
+	s8 log_file_name[256];
+	s8 product_name[256];
+	u16 product_name_len;
+	s8 device_info[256];
+	u16 device_info_len;
 	u16 content_len;
 
 	frame_index = 0;
 
-	dave_byte_16(log_name_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(log_name, &frame[frame_index], log_name_len);
-	if(log_name_len < sizeof(log_name))
+	dave_byte_16(product_name_len, frame[frame_index++], frame[frame_index++]);
+	frame_index += dave_memcpy(product_name, &frame[frame_index], product_name_len);
+	if(product_name_len < sizeof(product_name))
 	{
-		log_name[log_name_len] = '\0';
+		product_name[product_name_len] = '\0';
 	}
 
-	dave_byte_16(device_name_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(device_name, &frame[frame_index], device_name_len);
-	if(device_name_len < sizeof(device_name))
+	dave_byte_16(device_info_len, frame[frame_index++], frame[frame_index++]);
+	frame_index += dave_memcpy(device_info, &frame[frame_index], device_info_len);
+	if(device_info_len < sizeof(device_info))
 	{
-		device_name[device_name_len] = '\0';
+		device_info[device_info_len] = '\0';
 	}
 
 	dave_byte_16(content_len, frame[frame_index++], frame[frame_index++]);
@@ -318,7 +318,7 @@ _log_stack_server_log_record(ub frame_len, u8 *frame)
 		content_len = frame_len - frame_index;
 	}
 
-	_log_stack_server_build_record_file_name(log_file_name, sizeof(log_file_name), log_name, device_name);
+	_log_stack_server_build_record_file_name(log_file_name, sizeof(log_file_name), product_name, device_info);
 
 	_log_stack_server_save_local(log_file_name, (s8 *)(&frame[frame_index]), content_len);
 }

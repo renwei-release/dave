@@ -404,7 +404,7 @@ dos_opt_ip_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *server_name)
 		switch(type)
 		{
 			case DosUserOpt_SET:
-					if(database_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
+					if(cfg_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
 					{
 						dave_sprintf(out_msg, "%s set server ip success:%d.%d.%d.%d",
 							msg, ip_v4[0], ip_v4[1], ip_v4[2], ip_v4[3]);
@@ -416,7 +416,7 @@ dos_opt_ip_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *server_name)
 					}
 				break;
 			case DosUserOpt_GET:
-					if(database_get(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
+					if(cfg_get(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
 					{
 						dave_sprintf(out_msg, "%s server ip:%d.%d.%d.%d",
 							msg, ip_v4[0], ip_v4[1], ip_v4[2], ip_v4[3]);

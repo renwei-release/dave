@@ -138,10 +138,10 @@ _uip_server_monitor_kv_timer(void)
 	u8 kv_timer_str[128];
 	ub kv_timer;
 
-	if(database_get(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, sizeof(kv_timer_str)) == dave_false)
+	if(cfg_get(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, sizeof(kv_timer_str)) == dave_false)
 	{
 		digitalstring((s8 *)kv_timer_str, sizeof(kv_timer_str), MONITOR_KV_DEFAULT_TIME);
-		database_set(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, dave_strlen(kv_timer_str));
+		cfg_set(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, dave_strlen(kv_timer_str));
 		return MONITOR_KV_DEFAULT_TIME;
 	}
 
