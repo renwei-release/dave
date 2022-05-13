@@ -15,4 +15,4 @@ fi
 
 cd ../../
 chmod a+x *.sh
-./debug.sh $PROJECTNAME
+./debug.sh $PROJECTNAME $PROJECT

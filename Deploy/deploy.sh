@@ -100,5 +100,5 @@ if [ "$exit_project_contains" == "" ]; then
 else
    ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
    echo The ${PROJECTNAME} container exists, no new container is installed! But update the ${PROJECTNAME}
-   ./release.sh ${PROJECTNAME}
+   ./release.sh ${PROJECTNAME} ${PROJECTMAPPING}
 fi

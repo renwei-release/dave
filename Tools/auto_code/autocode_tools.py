@@ -388,6 +388,7 @@ def is_digital_string(string_data):
             or ((string_data[string_index] >= 'a') and (string_data[string_index] <= 'f')) \
             or ((string_data[string_index] >= 'A') and (string_data[string_index] <= 'F')) \
             or ((string_index == 0) and (string_data[string_index] == '-')) \
+            or ((string_index != 0) and (string_data[string_index] == '*')) \
             or (string_data[string_index] == 'x') \
             or (string_data[string_index] == 'X'):
             find_digital_string = True

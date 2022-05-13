@@ -210,6 +210,54 @@ def _remove_struct_unuse_define(define_table, all_struct_table):
     return new_define_table
 
 
+def _define_character_value_on_the_table(define_table, character_value):
+
+    character_value = character_value.replace(' ', '').replace('(', '').replace(')', '')
+
+    define_name = ''
+    for value_index in range(len(character_value)):
+        the_character = character_value[value_index]
+        if the_character == '+' \
+            or the_character == '-' \
+            or the_character == '*' \
+            or the_character == '/':
+            if is_digital_string(define_name) == False \
+                and define_table.get(define_name, None) == None:
+                return False
+            define_name = ''
+        else:
+            define_name += the_character
+
+    if define_name != '':
+        if is_digital_string(define_name) == False \
+            and define_table.get(define_name, None) == None:
+            return False       
+
+    return True
+
+
+def _define_table_sorted(define_table):
+    define_table = struct_sorted(define_table)
+
+    new_define_table = {}
+
+    # get digital value
+    for define_name in define_table.keys():
+        define_value = define_table[define_name]
+        if is_digital_string(define_value) == True:
+            new_define_table[define_name] = define_value
+
+    # get character value
+    for Loop_multiple_times_to_get_nested_define in range(6):
+        for define_name in define_table.keys():
+            define_value = define_table[define_name]
+            if is_digital_string(define_value) == False:
+                if _define_character_value_on_the_table(new_define_table, define_value) == True:
+                    new_define_table[define_name] = define_value
+
+    return new_define_table
+
+
 # =====================================================================
 
 
@@ -223,6 +271,6 @@ def find_define_table(file_list, all_struct_table):
 
     define_table = _remove_struct_unuse_define(define_table, all_struct_table)
 
-    define_table = struct_sorted(define_table)
+    define_table = _define_table_sorted(define_table)
 
     return define_table, include_list

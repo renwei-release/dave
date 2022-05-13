@@ -62,24 +62,6 @@ func Write_msg(dst interface{}, msg_id int, msg_len int, msg_ptr unsafe.Pointer)
 	return true
 }
 
-func Sync_msg(dst string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int, rsp_len int, rsp_ptr unsafe.Pointer) bool {
-	pc, _, __LINE__, _ := runtime.Caller(2)
-	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
-	__func__ := funcNamearray[len(funcNamearray)-1]
-
-	c_func := (*C.char)(tools.T_cgo_gostring2cstring(__func__))
-
-	c_dst := C.CString(dst)
-	ret := C.dave_dll_thread_sync_msg(c_dst, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), C.int(rsp_len), rsp_ptr, c_func, C.int(__LINE__))
-	C.free(unsafe.Pointer(c_dst))
-
-	if ret == nil {
-		return false
-	}
-
-	return true
-}
-
 func Broadcast_msg(dst string, msg_id int, msg_len int, msg_ptr unsafe.Pointer) bool {
 	pc, _, __LINE__, _ := runtime.Caller(2)
 	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")

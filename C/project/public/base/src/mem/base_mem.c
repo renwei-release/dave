@@ -189,6 +189,17 @@ base_mptr(MBUF *data)
 	return data->payload;
 }
 
+sb
+base_mlen(MBUF *data)
+{
+	if(data == NULL)
+	{
+		return 0;
+	}
+
+	return data->len;
+}
+
 ub
 base_mlnumber(MBUF *data)
 {

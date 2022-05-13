@@ -19,7 +19,7 @@
 
 #define HTTP_RECV_MAX (DAVE_SERVER_SUPPORT_SOCKET_MAX)
 #define HTTP_TIMER_OUT_EFFECTIVE_MIN (1000000)
-#define HTTP_INVALID_REQ_SERIAL 0
+#define HTTP_REQ_EMPTY_SERIAL 0
 
 typedef struct {
 	s32 socket;
@@ -59,9 +59,9 @@ _http_recv_serial(void)
 	t_lock_spin(&_http_req_serial_pv);
 
 	{
-		if(_http_req_serial == HTTP_INVALID_REQ_SERIAL)
+		if(_http_req_serial == HTTP_REQ_EMPTY_SERIAL)
 		{
-			_http_req_serial = HTTP_INVALID_REQ_SERIAL + 1;
+			_http_req_serial = HTTP_REQ_EMPTY_SERIAL + 1;
 		}
 
 		serial = _http_req_serial ++;
@@ -82,12 +82,12 @@ _http_recv_recv_to_ptr(HTTPRecv *pRecv)
 
 	SAFECODEv1(pRecv->opt_pv, {
 
-		if((pRecv->socket == INVALID_SOCKET_ID) && (pRecv->req_serial != HTTP_INVALID_REQ_SERIAL))
+		if((pRecv->socket == INVALID_SOCKET_ID) && (pRecv->req_serial != HTTP_REQ_EMPTY_SERIAL))
 		{
 			HTTPABNOR("An unprocessed node(serial:%ld) was found.", pRecv->req_serial);
 		}
 
-		if(pRecv->req_serial == HTTP_INVALID_REQ_SERIAL)
+		if(pRecv->req_serial == HTTP_REQ_EMPTY_SERIAL)
 		{
 			pRecv->req_serial = serial = _http_recv_serial() & 0xffffffff;
 		}
@@ -155,7 +155,7 @@ _http_recv_data_reset(HTTPRecv *pRecv)
 	pRecv->fcgi.content = NULL;
 
 	pRecv->old_req_serial = pRecv->req_serial; 
-	pRecv->req_serial = HTTP_INVALID_REQ_SERIAL;
+	pRecv->req_serial = HTTP_REQ_EMPTY_SERIAL;
 
 	pRecv->recv_buf_index = 0;
 	pRecv->recv_buf = NULL;
@@ -234,6 +234,26 @@ _http_recv_get_content(Fcgi *pFcgi)
 	pFcgi->content[pFcgi->content_length] = '\0';
 
 	return dave_true;
+}
+
+static void
+_http_recv_tidy_content(MBUF *content)
+{
+	s8 *content_ptr;
+	ub content_len;
+
+	if(content != NULL)
+	{
+		content_ptr = content->payload;
+		content_len = content->len;
+		while((content_len > 0) && (content_ptr[content_len - 1] == '\0')) -- content_len;
+		content->len = content_len;
+	}
+	else
+	{
+		content_ptr = NULL;
+		content_len = 0;
+	}
 }
 
 static dave_bool
@@ -356,7 +376,7 @@ _http_recv_write_error(HTTPRecv *pRecv, s32 socket)
 	}
 	else
 	{
-		pRecv->req_serial = HTTP_INVALID_REQ_SERIAL;
+		pRecv->req_serial = HTTP_REQ_EMPTY_SERIAL;
 
 		pMbuf = dave_mmalloc(1024);
 
@@ -378,7 +398,7 @@ _http_recv_write_ok(HTTPRecv *pRecv, s32 socket)
 	}
 	else
 	{
-		pRecv->req_serial = HTTP_INVALID_REQ_SERIAL;
+		pRecv->req_serial = HTTP_REQ_EMPTY_SERIAL;
 
 		pMbuf = dave_mmalloc(2048);
 
@@ -394,7 +414,7 @@ _http_recv_check_plugout_abnormal(HTTPRecv *pRecv)
 {
 	ub consumption_time;
 
-	if(pRecv->req_serial != HTTP_INVALID_REQ_SERIAL)
+	if(pRecv->req_serial != HTTP_REQ_EMPTY_SERIAL)
 	{
 		consumption_time = dave_os_time_us() - pRecv->last_plugin_time;
 	
@@ -672,21 +692,15 @@ _http_recv_rsp(HTTPRecv *pRecv, HTTPRecvRsp *pRsp)
 	}
 	else
 	{
-		HTTPLTRACE(60,1, "Please note that the time of the server applying for this port(%d/%d %ld/%ld) is different from the local time.",
+		HTTPLTRACE(60,1,
+			"Please note that the time of the server applying for this port(%d/%d %ld/%ld) is different from the local time.",
 			pRecv->nginx_port, pRecv->cgi_port, pRsp->local_creat_time, local_current_time);
 	}
 
-	if(pRsp->content != NULL)
-	{
-		content_ptr = pRsp->content->payload;
-		content_len = pRsp->content->len;
-		while((content_len > 0) && (content_ptr[content_len - 1] == '\0')) -- content_len;
-	}
-	else
-	{
-		content_ptr = NULL;
-		content_len = 0;
-	}
+	_http_recv_tidy_content(pRsp->content);
+
+	content_ptr = dave_mptr(pRsp->content);
+	content_len = dave_mlen(pRsp->content);
 
 	pMbuf = dave_mmalloc(2048 + content_len);
 
@@ -695,7 +709,7 @@ _http_recv_rsp(HTTPRecv *pRecv, HTTPRecvRsp *pRsp)
 			pRsp->content_type, content_len, content_ptr,
 			pMbuf->len, (u8 *)(pMbuf->payload));
 
-	pRecv->req_serial = HTTP_INVALID_REQ_SERIAL;
+	pRecv->req_serial = HTTP_REQ_EMPTY_SERIAL;
 
 	_http_recv_write(pRecv->socket, pMbuf);
 }

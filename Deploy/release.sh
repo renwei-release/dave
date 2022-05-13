@@ -7,12 +7,15 @@
 # */
 
 PROJECTNAME=$1
+PROJECTMAPPING=$2
 RUNNINGFILE=/project/dave-running.sh
 
-ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=debug' | awk '{print $1}'`
-if [ -n "$ACTIONLINE" ]; then
-   echo release.sh modify ${PROJECTNAME} to release
-   ACTIONLINEARRAY=(${ACTIONLINE})
-   docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=release" ${RUNNINGFILE}
-   docker restart ${PROJECTNAME}
+if [ ! "$PROJECTMAPPING" != "" ]; then
+   ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=debug' | awk '{print $1}'`
+   if [ -n "$ACTIONLINE" ]; then
+      echo release.sh modify ${PROJECTNAME} to release
+      ACTIONLINEARRAY=(${ACTIONLINE})
+      docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=release" ${RUNNINGFILE}
+      docker restart ${PROJECTNAME}
+   fi
 fi
