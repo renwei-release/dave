@@ -25,11 +25,35 @@ _thread_msg_call_key(s8 *key_ptr, ub key_len, ThreadId thread_id, ub msg_id)
 	return key_ptr;
 }
 
+static inline MsgCallFun *
+_thread_msg_call_inq(ThreadId thread_id, ub msg_id)
+{
+	s8 key[256];
+
+	return (MsgCallFun *)base_ramkv_inq_key_ptr(
+		_msg_call_kv,
+		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
+}
+
 static inline void
 _thread_msg_call_add(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, void *user_ptr)
 {
-	MsgCallFun *pFun = dave_malloc(sizeof(MsgCallFun));
+	MsgCallFun *pFun;
 	s8 key[256];
+
+	pFun = _thread_msg_call_inq(thread_id, msg_id);
+	if(pFun == NULL)
+	{
+		pFun = dave_malloc(sizeof(MsgCallFun));
+	}
+	else
+	{
+		if((pFun->msg_fun == msg_fun)
+			&& (pFun->user_ptr == user_ptr))
+		{
+			return;
+		}
+	}
 
 	pFun->thread_id = thread_id;
 	pFun->msg_id = msg_id;
@@ -54,16 +78,6 @@ _thread_msg_call_del(ThreadId thread_id, ub msg_id)
 
 	if(pFun != NULL)
 		dave_free(pFun);
-}
-
-static inline MsgCallFun *
-_thread_msg_call_inq(ThreadId thread_id, ub msg_id)
-{
-	s8 key[256];
-
-	return (MsgCallFun *)base_ramkv_inq_key_ptr(
-		_msg_call_kv,
-		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
 }
 
 static RetCode
