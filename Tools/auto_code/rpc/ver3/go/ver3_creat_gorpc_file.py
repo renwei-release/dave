@@ -31,7 +31,7 @@ def _c_enum_to_go_type(enum_value_array):
     return 'int32'
 
 
-def _c_type_to_go_type(c_type, is_ptr, struct_total, enum_table, fun_table):
+def _c_type_to_go_type(c_type, c_name, is_ptr, struct_total, enum_table, fun_table):
     if c_type == 'dave_bool':
         return 'int8'
     elif c_type == 's8':
@@ -84,7 +84,10 @@ def _c_type_to_go_type(c_type, is_ptr, struct_total, enum_table, fun_table):
         return 'float64'
     elif c_type == 'void':
         if is_ptr == True:
-            return 'unsafe.Pointer'
+            if c_name == 'Ptr':
+                return 'uint64'
+            else:
+                return 'unsafe.Pointer'
         else:
             return 'uint64'
     elif enum_table.get(c_type, None) != None:
@@ -126,7 +129,8 @@ def _creat_msg_id_file(msg_id_table, file_name):
 
 
 def _creat_msg_id_information(file_id, msg_name):
-    file_id.write(f'/* for {msg_name} message */\n')
+    if msg_name != None:
+        file_id.write(f'/* for {msg_name} message */\n')
     return
 
 
@@ -146,9 +150,9 @@ def _creat_struct_file(struct_table, struct_total, enum_table, fun_table, file_n
                 value_dimension = struct_data['d']
                 is_ptr = struct_data['p']
                 if value_dimension == None:
-                    file_id.write(f'\t{value_name} {_c_type_to_go_type(value_type, is_ptr, struct_total, enum_table, fun_table)}\n')
+                    file_id.write(f'\t{value_name} {_c_type_to_go_type(value_type, value_name, is_ptr, struct_total, enum_table, fun_table)}\n')
                 else:
-                    file_id.write(f'\t{value_name} [{value_dimension}] {_c_type_to_go_type(value_type, is_ptr, struct_total, enum_table, fun_table)}\n')
+                    file_id.write(f'\t{value_name} [{value_dimension}] {_c_type_to_go_type(value_type, value_name, is_ptr, struct_total, enum_table, fun_table)}\n')
             file_id.write(f'{"}"}\n\n')
     return
 

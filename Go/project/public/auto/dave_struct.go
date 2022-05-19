@@ -14,7 +14,6 @@ package auto
 
 import "unsafe"
 
-/* for None message */
 type MCardVerText struct {
 	Version int64
 	Type int64
@@ -24,7 +23,6 @@ type MCardVerText struct {
 	Utf8_txt *MBUF
 }
 
-/* for None message */
 type MCardVerMedia struct {
 	Version int64
 	Type int64
@@ -39,14 +37,12 @@ type MCardVerMedia struct {
 	Second uint64
 }
 
-/* for None message */
 type MCardVerComment struct {
 	Version int64
 	Head MCardCommentHead
 	Content MCardContent
 }
 
-/* for None message */
 type MCardLocation struct {
 	Latitude float64
 	Longitude float64
@@ -55,14 +51,12 @@ type MCardLocation struct {
 	Slope float64
 }
 
-/* for None message */
 type MCardTime struct {
 	Write_time DateStruct
 	Failure_type int64
 	Failure_time DateStruct
 }
 
-/* for None message */
 type MCardContent struct {
 	Id int64
 	Content_type int64
@@ -70,7 +64,6 @@ type MCardContent struct {
 	Pcontent *MBUF
 }
 
-/* for None message */
 type CVModelResult struct {
 	Search_opt int32
 	Content_type int64
@@ -100,7 +93,6 @@ type CVModelResult struct {
 	Model_raw_data *MBUF
 }
 
-/* for None message */
 type TerminalInformation struct {
 	Language [64] byte
 	Country [64] byte
@@ -116,7 +108,6 @@ type TerminalInformation struct {
 	Sdkversion [64] byte
 }
 
-/* for None message */
 type BillingRulesPrivate struct {
 	Rules_id uint64
 	Measurement_activity int8
@@ -133,7 +124,6 @@ type BillingRulesPrivate struct {
 	Sub_inactive_date DateStruct
 }
 
-/* for None message */
 type PainterIntroduction struct {
 	Table_id uint64
 	Painter_name [128] byte
@@ -146,19 +136,16 @@ type PainterIntroduction struct {
 	Total_painting_number uint64
 }
 
-/* for None message */
 type SocNetInfoAddr struct {
 	Ip SocNetInfoIp
 	Url [DAVE_URL_LEN] byte
 }
 
-/* for None message */
 type SocNetInfoIp struct {
 	Ver int32
 	Ip_addr [16] byte
 }
 
-/* for None message */
 type MCardPOI struct {
 	Location MCardLocation
 	Type int64
@@ -168,14 +155,12 @@ type MCardPOI struct {
 	Rating float64
 }
 
-/* for None message */
 type MCardCommentHead struct {
 	Nosql_head NoSQLHead
 	Comment_head MCardCommentHeadData
 	Reserve_data [DAVE_MACRD_HEAD_MAX-2976] byte
 }
 
-/* for None message */
 type Rectangle struct {
 	X1 float32
 	Y1 float32
@@ -185,13 +170,11 @@ type Rectangle struct {
 	H float32
 }
 
-/* for None message */
 type NoSQLHead struct {
 	Key_str [DAVE_NOSQL_KEY_STR_MAX] byte
 	Reserve_data [512-DAVE_NOSQL_KEY_STR_MAX] byte
 }
 
-/* for None message */
 type MCardCommentHeadData struct {
 	Type int64
 	Post_id [DAVE_KEY_LEN_MAX] byte
@@ -207,7 +190,6 @@ type MCardCommentHeadData struct {
 	Comment_attributes uint64
 }
 
-/* for None message */
 type UserInformation struct {
 	Language [64] byte
 	Country [64] byte
@@ -223,7 +205,6 @@ type UserInformation struct {
 	Avatar_url [256] byte
 }
 
-/* for None message */
 type MBUF struct {
 	Next unsafe.Pointer
 	Payload unsafe.Pointer
@@ -233,7 +214,6 @@ type MBUF struct {
 	Alloc_len int64
 }
 
-/* for None message */
 type GPSLocation struct {
 	Latitude float64
 	Longitude float64
@@ -241,7 +221,6 @@ type GPSLocation struct {
 	Course float64
 }
 
-/* for None message */
 type MCard struct {
 	Version int64
 	Text MCardVerText
@@ -250,7 +229,6 @@ type MCard struct {
 	Comment MCardVerComment
 }
 
-/* for None message */
 type Account struct {
 	Account_name [DAVE_NORMAL_NAME_LEN] byte
 	Account_password [DAVE_PASSWORD_LEN] byte
@@ -259,7 +237,6 @@ type Account struct {
 	Account_id uint64
 }
 
-/* for None message */
 type DeviceInfo struct {
 	Name [DAVE_DEVICE_NAME_LEN] byte
 	Wifi_mac_address [DAVE_DEVICE_MAC_LEN] byte
@@ -277,7 +254,6 @@ type DeviceInfo struct {
 	Gps_latitude [DAVE_NORMAL_NAME_LEN] byte
 }
 
-/* for None message */
 type MCardVerTalk struct {
 	Version int64
 	Type int64
@@ -294,7 +270,6 @@ type MCardVerTalk struct {
 	Content MCardContent
 }
 
-/* for None message */
 type UniversalLabel struct {
 	Label_extra_information [DAVE_LABEL_EXTRA_INFO_MAX] byte
 	Label_id uint64
@@ -302,13 +277,11 @@ type UniversalLabel struct {
 	Label_score float32
 }
 
-/* for None message */
 type CVResult struct {
 	Model_result CVModelResult
 	Image_introduction ImageIntroduction
 }
 
-/* for None message */
 type CVKeyPoint struct {
 	Width int32
 	Height int32
@@ -316,7 +289,6 @@ type CVKeyPoint struct {
 	_keypoint_ *MBUF
 }
 
-/* for None message */
 type OpenCVMat struct {
 	Type int32
 	Flags int32
@@ -326,7 +298,6 @@ type OpenCVMat struct {
 	Mat *MBUF
 }
 
-/* for None message */
 type WeiChatUserInfo struct {
 	Uuid [64] byte
 	Openid [64] byte
@@ -337,14 +308,12 @@ type WeiChatUserInfo struct {
 	Ti TerminalInformation
 }
 
-/* for None message */
 type ChannelInfo struct {
 	Domain [DAVE_DOMAIN_LEN] byte
 	Tenant_name [DAVE_TENANT_NAME_LEN] byte
 	Tenant_id uint64
 }
 
-/* for None message */
 type DateStruct struct {
 	Year uint16
 	Month byte
@@ -355,7 +324,6 @@ type DateStruct struct {
 	Week byte
 }
 
-/* for None message */
 type BillingUser struct {
 	User_id uint64
 	Billing_user_id uint64
@@ -365,7 +333,6 @@ type BillingUser struct {
 	Rules_private [DAVE_BILLING_MAX_RULES_IN_USER] BillingRulesPrivate
 }
 
-/* for None message */
 type ImageIntroduction struct {
 	Image_id [DAVE_SHA1_IMAGE_ID] byte
 	Painter PainterIntroduction
@@ -381,7 +348,6 @@ type ImageIntroduction struct {
 	Audio_url [DAVE_URL_LEN] byte
 }
 
-/* for None message */
 type MuseumIntroduction struct {
 	Table_id uint64
 	Museum_id [DAVE_SHA1_IMAGE_ID] byte
@@ -394,13 +360,11 @@ type MuseumIntroduction struct {
 	Museum_introduction [16384] byte
 }
 
-/* for None message */
 type HttpKeyValue struct {
 	Key [DAVE_HTTP_KEY_LEN] byte
 	Value [DAVE_HTTP_VALUE_LEN] byte
 }
 
-/* for None message */
 type BuildingBlocks struct {
 	Blocks_id uint64
 	Verno [DAVE_VERNO_STR_LEN] byte
@@ -412,7 +376,6 @@ type BuildingBlocks struct {
 	Release_quantity uint64
 }
 
-/* for None message */
 type SocNetInfo struct {
 	Domain int32
 	Type int32
@@ -428,7 +391,6 @@ type SocNetInfo struct {
 	Netcard_name [DAVE_NORMAL_NAME_LEN] byte
 }
 
-/* for None message */
 type IPBaseInfo struct {
 	Protocol int32
 	Ver int32

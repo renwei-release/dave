@@ -86,6 +86,26 @@ dave_dll_thread_gid_msg(char *gid, char *thread_name, int msg_id, int msg_len, v
 	}
 }
 
+void *
+dave_dll_thread_sync_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, int sync_id, int sync_len, void *sync_body, char *fun, int line)
+{
+	ThreadId src_id, dst_id;
+
+	src_id = self();
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = dave_dll_main_thread_id();
+	}
+	dst_id = thread_id(thread_name);
+	if(dst_id == INVALID_THREAD_ID)
+	{
+		DLLLOG("invalid dst_id on thread_name:%s!", thread_name);
+		return NULL;
+	}
+
+	return base_thread_sync_msg((ThreadId)src_id, (ThreadId)dst_id, (ub)msg_id, (ub)msg_len, (u8 *)msg_body, (ub)sync_id, (ub)sync_len, (u8 *)sync_body, (s8 *)fun, (ub)line);
+}
+
 int
 dave_dll_thread_broadcast_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {

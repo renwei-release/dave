@@ -17,20 +17,20 @@ import "unsafe"
 /* for AIXMSG_AESTHETICS_REQ message */
 type AIXMsgAestheticsReq struct {
 	Image_path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for AIXMSG_AESTHETICS_RSP message */
 type AIXMsgAestheticsRsp struct {
 	Ret int64
 	Score float32
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for AIXMSG_IMAGE_CLASSIFICATION_REQ message */
 type AIXMsgImageClassificationReq struct {
 	Image_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for AIXMSG_IMAGE_CLASSIFICATION_RSP message */
@@ -38,14 +38,14 @@ type AIXMsgImageClassificationRsp struct {
 	Ret int64
 	Label uint64
 	Score float32
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_FUNCTION_REGISTER_REQ message */
 type AppMsgFunctionRegReq struct {
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
 	Function_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_FUNCTION_REGISTER_RSP message */
@@ -53,14 +53,14 @@ type AppMsgFunctionRegRsp struct {
 	Ret int64
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
 	Function_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_FUNCTION_UNREGISTER_REQ message */
 type AppMsgFunctionUnRegReq struct {
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
 	Function_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_FUNCTION_UNREGISTER_RSP message */
@@ -68,35 +68,35 @@ type AppMsgFunctionUnRegRsp struct {
 	Ret int64
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
 	Function_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_MCARD_REQ message */
 type AppMsgMCardReq struct {
 	Location GPSLocation
 	Radius uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_MCARD_RSP message */
 type AppMsgMCardRsp struct {
 	Ret int64
 	Mcard MCard
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_TALK_MCARD_REQ message */
 type AppMsgTalkMCardReq struct {
 	Url [DAVE_URL_LEN] byte
 	Mcard MCard
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for APPMSG_TALK_MCARD_RSP message */
 type AppMsgTalkMCardRsp struct {
 	Ret int64
 	Mcard MCard
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for BBSMSG_ADD_COMMENT_REQ message */
@@ -104,13 +104,13 @@ type BBSMsgAddCommentReq struct {
 	Product_name [DAVE_NORMAL_NAME_LEN] byte
 	Post_id [DAVE_KEY_LEN_MAX] byte
 	Mcard MCard
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for BBSMSG_ADD_COMMENT_RSP message */
 type BBSMsgAddCommentRsp struct {
 	Ret int64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for BBSMSG_INQ_COMMENT_REQ message */
@@ -119,7 +119,7 @@ type BBSMsgInqCommentReq struct {
 	Post_or_comment_id [DAVE_KEY_LEN_MAX] byte
 	Page_id uint64
 	Page_number uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for BBSMSG_INQ_COMMENT_RSP message */
@@ -131,7 +131,7 @@ type BBSMsgInqCommentRsp struct {
 	Page_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
 	Reply_array_number uint64
 	Reply_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for BDATAMSG_BS_RECORD message */
@@ -192,14 +192,14 @@ type CFGUpdate struct {
 type CVMsgFeaturesDetectedReq struct {
 	Image_path [DAVE_PATH_LEN] byte
 	Nfeatures uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_FEATURES_DETECTED_RSP message */
 type CVMsgFeaturesDetectedRsp struct {
 	Ret int64
 	Image_path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_IMAGE_SEARCH_REQ message */
@@ -207,14 +207,14 @@ type CVMsgImageSearchReq struct {
 	Content_type int64
 	Language_code int32
 	Image_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_IMAGE_SEARCH_RSP message */
 type CVMsgImageSearchRsp struct {
 	Ret int64
 	Cv_result CVResult
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_PAINTING_AESTHETICS_REQ message */
@@ -222,14 +222,14 @@ type CVMsgPaintingAestheticsReq struct {
 	Content_type int64
 	Language_code int32
 	Image_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_PAINTING_AESTHETICS_RSP message */
 type CVMsgPaintingAestheticsRsp struct {
 	Ret int64
 	Cv_result CVResult
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_SCULPTURES_SEARCH_REQ message */
@@ -237,26 +237,26 @@ type CVMsgSculpturesSearchReq struct {
 	Content_type int64
 	Language_code int32
 	Image_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for CVMSG_SCULPTURES_SEARCH_RSP message */
 type CVMsgSculpturesSearchRsp struct {
 	Ret int64
 	Cv_result CVResult
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_CLIENT_BUSY message */
 type ClientBusy struct {
 	Verno [DAVE_VERNO_STR_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_CLIENT_IDLE message */
 type ClientIdle struct {
 	Verno [DAVE_VERNO_STR_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_HYBRID_ADD_LIST_REQ message */
@@ -264,7 +264,7 @@ type DBHybridAddListReq struct {
 	Table [DAVE_NORMAL_NAME_LEN] byte
 	Key [DAVE_KEY_LEN_MAX] byte
 	Value *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_HYBRID_ADD_LIST_RSP message */
@@ -272,7 +272,7 @@ type DBHybridAddListRsp struct {
 	Ret int64
 	Table [DAVE_NORMAL_NAME_LEN] byte
 	Key [DAVE_KEY_LEN_MAX] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_HYBRID_INQ_LIST_REQ message */
@@ -282,7 +282,7 @@ type DBHybridInqListReq struct {
 	Key [DAVE_KEY_LEN_MAX] byte
 	Page_id uint64
 	Page_number uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_HYBRID_INQ_LIST_RSP message */
@@ -295,7 +295,7 @@ type DBHybridInqListRsp struct {
 	Total_number uint64
 	Page_number uint64
 	Value *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_NOSQL_ADD_TALK_REQ message */
@@ -305,20 +305,20 @@ type DBNosqlAddTalkReq struct {
 	From_server MCard
 	Label UniversalLabel
 	Model_raw_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_NOSQL_ADD_TALK_RSP message */
 type DBNosqlAddTalkRsp struct {
 	Ret int64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_REDIS_DEL_TABLE_REQ message */
 type DBRedisDelTableReq struct {
 	Req_type int32
 	Table_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_REDIS_DEL_TABLE_RSP message */
@@ -326,7 +326,7 @@ type DBRedisDelTableRsp struct {
 	Req_type int32
 	Ret int64
 	Table_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_ADD_IMAGE_FEATURE_REQ message */
@@ -336,7 +336,7 @@ type DBSysAddImageFeatureReq struct {
 	Point CVKeyPoint
 	Mat OpenCVMat
 	Vgg_feature [DAVE_VGG_FEATURE_LEN] float32
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_ADD_IMAGE_FEATURE_RSP message */
@@ -344,26 +344,26 @@ type DBSysAddImageFeatureRsp struct {
 	Ret int64
 	Table_name [DAVE_NORMAL_NAME_LEN] byte
 	Image_id [DAVE_SHA1_IMAGE_ID] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_ADD_WEICHAT_REQ message */
 type DBSysAddWeiChatReq struct {
 	Info WeiChatUserInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_ADD_WEICHAT_RSP message */
 type DBSysAddWeiChatRsp struct {
 	Ret int64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_CHANNEL_REQ message */
 type DBSysInqChannelReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Table_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_CHANNEL_RSP message */
@@ -382,7 +382,7 @@ type DBSysInqChannelRsp struct {
 	Billing_user BillingUser
 	Uip_cmd_str [DAVE_UIP_CMD_STR_LEN] byte
 	Forbidden_uip_cmd_str [DAVE_UIP_CMD_STR_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_IMAGE_FEATURE_REQ message */
@@ -390,7 +390,7 @@ type DBSysInqImageFeatureReq struct {
 	Table_name [DAVE_NORMAL_NAME_LEN] byte
 	Table_id uint64
 	Image_id [DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_IMAGE_FEATURE_RSP message */
@@ -404,7 +404,7 @@ type DBSysInqImageFeatureRsp struct {
 	Mat [DAVE_KEY_OPT_MAX] OpenCVMat
 	Vgg_feature [DAVE_VGG_FEATURE_LEN] float32
 	Process_time uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_IMAGE_REQ message */
@@ -412,7 +412,7 @@ type DBSysInqImageReq struct {
 	Image_id [DAVE_SHA1_IMAGE_ID] byte
 	Language_code int32
 	Details int8
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_IMAGE_RSP message */
@@ -420,7 +420,7 @@ type DBSysInqImageRsp struct {
 	Ret int64
 	Image_id [DAVE_SHA1_IMAGE_ID] byte
 	Image ImageIntroduction
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_MUSEUM_PAGE_REQ message */
@@ -428,7 +428,7 @@ type DBSysInqMuseumPageReq struct {
 	Table_id uint64
 	Page_id uint64
 	Page_number uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_MUSEUM_PAGE_RSP message */
@@ -440,7 +440,7 @@ type DBSysInqMuseumPageRsp struct {
 	Total_number uint64
 	Page_number uint64
 	Image_id_page [DAVE_DBA_PAGE_MAX*DAVE_SHA1_IMAGE_ID] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_MUSEUM_REQ message */
@@ -448,7 +448,7 @@ type DBSysInqMuseumReq struct {
 	Museum_id [DAVE_SHA1_IMAGE_ID] byte
 	Language_code int32
 	Details int8
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_MUSEUM_RSP message */
@@ -456,7 +456,7 @@ type DBSysInqMuseumRsp struct {
 	Ret int64
 	Museum_id [DAVE_SHA1_IMAGE_ID] byte
 	Museum MuseumIntroduction
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_PAINTER_PAGE_REQ message */
@@ -464,7 +464,7 @@ type DBSysInqPainterPageReq struct {
 	Table_id uint64
 	Page_id uint64
 	Page_number uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_PAINTER_PAGE_RSP message */
@@ -476,14 +476,14 @@ type DBSysInqPainterPageRsp struct {
 	Total_number uint64
 	Page_number uint64
 	Image_id_page [DAVE_DBA_PAGE_MAX*DAVE_SHA1_IMAGE_ID] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_WEICHAT_REQ message */
 type DBSysInqWeiChatReq struct {
 	Uuid [64] byte
 	Openid [64] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for DBMSG_SYS_INQ_WEICHAT_RSP message */
@@ -491,26 +491,26 @@ type DBSysInqWeiChatRsp struct {
 	Ret int64
 	Table_id uint64
 	Info WeiChatUserInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_DEBUG_REQ message */
 type DebugReq struct {
 	Msg [4096] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_DEBUG_RSP message */
 type DebugRsp struct {
 	Msg [1048576] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_CLOSE_REQ message */
 type HTTPCloseReq struct {
 	Listen_port uint64
 	Path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_CLOSE_RSP message */
@@ -518,7 +518,7 @@ type HTTPCloseRsp struct {
 	Ret int64
 	Listen_port uint64
 	Path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_LISTEN_REQ message */
@@ -527,7 +527,7 @@ type HTTPListenReq struct {
 	Rule int32
 	Type int32
 	Path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_LISTEN_RSP message */
@@ -535,7 +535,7 @@ type HTTPListenRsp struct {
 	Ret int64
 	Listen_port uint64
 	Path [DAVE_PATH_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_POST_REQ message */
@@ -544,7 +544,7 @@ type HTTPPostReq struct {
 	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
 	Content_type int32
 	Content *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_POST_RSP message */
@@ -552,7 +552,7 @@ type HTTPPostRsp struct {
 	Ret int64
 	Head [DAVE_HTTP_HEAD_MAX] HttpKeyValue
 	Content *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_RECV_REQ message */
@@ -565,7 +565,7 @@ type HTTPRecvReq struct {
 	Content_type int32
 	Content *MBUF
 	Local_creat_time uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for HTTPMSG_RECV_RSP message */
@@ -574,47 +574,47 @@ type HTTPRecvRsp struct {
 	Content_type int32
 	Content *MBUF
 	Local_creat_time uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_INTERNAL_EVENTS message */
 type InternalEvents struct {
 	Event_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_INTERNAL_LOOP message */
 type InternalLoop struct {
 	Event_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_CMD_REQ message */
 type MainMsgAddChannelCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Uip_cmd_str [128] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_CMD_RSP message */
 type MainMsgAddChannelCMDRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_REQ message */
 type MainMsgAddChannelForbiddenCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Forbidden_uip_cmd_str [128] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_RSP message */
 type MainMsgAddChannelForbiddenCMDRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_REQ message */
@@ -625,7 +625,7 @@ type MainMsgAddChannelReq struct {
 	Validity_date DateStruct
 	Auth_key_str [DAVE_AUTH_KEY_STR_LEN] byte
 	Channel_info ChannelInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_ADD_CHANNEL_RSP message */
@@ -635,48 +635,48 @@ type MainMsgAddChannelRsp struct {
 	Auth_key_str [DAVE_AUTH_KEY_STR_LEN] byte
 	Channel_info ChannelInfo
 	Max_balance float64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_CMD_REQ message */
 type MainMsgDelChannelCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Uip_cmd_str [128] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_CMD_RSP message */
 type MainMsgDelChannelCMDRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_REQ message */
 type MainMsgDelChannelForbiddenCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Forbidden_uip_cmd_str [128] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_RSP message */
 type MainMsgDelChannelForbiddenCMDRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_REQ message */
 type MainMsgDelChannelReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_DEL_CHANNEL_RSP message */
 type MainMsgDelChannelRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_DEREG_REQ message */
@@ -684,14 +684,14 @@ type MainMsgIMUserDeRegReq struct {
 	Request_date DateStruct
 	Im_user_name [DAVE_USER_NAME_LEN] byte
 	Im_password [DAVE_PASSWORD_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_DEREG_RSP message */
 type MainMsgIMUserDeRegRsp struct {
 	Ret int64
 	Im_user_name [DAVE_USER_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_INQ_REQ message */
@@ -699,14 +699,14 @@ type MainMsgIMUserInqReq struct {
 	Request_date DateStruct
 	Im_user_name [DAVE_USER_NAME_LEN] byte
 	Im_password [DAVE_PASSWORD_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_INQ_RSP message */
 type MainMsgIMUserInqRsp struct {
 	Ret int64
 	Im_user_name [DAVE_USER_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_REG_REQ message */
@@ -715,7 +715,7 @@ type MainMsgIMUserRegReq struct {
 	Im_user_name [DAVE_USER_NAME_LEN] byte
 	Im_password [DAVE_PASSWORD_LEN] byte
 	Im_nickname [DAVE_NICKNAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_IM_USER_REG_RSP message */
@@ -723,13 +723,13 @@ type MainMsgIMUserRegRsp struct {
 	Ret int64
 	Im_user_name [DAVE_USER_NAME_LEN] byte
 	Token [DAVE_TOKEN_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_INQ_CHANNEL_CMD_REQ message */
 type MainMsgInqChannelCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_INQ_CHANNEL_CMD_RSP message */
@@ -737,19 +737,19 @@ type MainMsgInqChannelCMDRsp struct {
 	Ret int64
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Uip_cmd_str [DAVE_UIP_CMD_STR_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_INQ_CHANNEL_FORBIDDEN_CMD_REQ message */
 type MainMsgInqChannelForbiddenCMDReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_INQ_CHANNEL_REQ message */
 type MainMsgInqChannelReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_INQ_CHANNEL_RSP message */
@@ -760,7 +760,7 @@ type MainMsgInqChannelRsp struct {
 	Account Account
 	Billing_user BillingUser
 	Channel_info ChannelInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_PYTHON_REQ message */
@@ -769,7 +769,7 @@ type MainMsgPythonReq struct {
 	Opt_param uint64
 	File_path [DAVE_PATH_LEN] byte
 	Req_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_PYTHON_RSP message */
@@ -777,7 +777,7 @@ type MainMsgPythonRsp struct {
 	Ret int64
 	Time uint64
 	Rsp_data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_REC_CHANNEL_REQ message */
@@ -786,7 +786,7 @@ type MainMsgRecChannelReq struct {
 	Balance_type int32
 	Add_recharge_flag int8
 	Recharge_balance float64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_REC_CHANNEL_RSP message */
@@ -795,7 +795,7 @@ type MainMsgRecChannelRsp struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
 	Balance float64
 	Max_allow_balance float64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_TALK_MCARD_REQ message */
@@ -803,7 +803,7 @@ type MainMsgTalkMCardReq struct {
 	Id uint64
 	Format [DAVE_NORMAL_NAME_LEN] byte
 	Content *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MAINMSG_TALK_MCARD_RSP message */
@@ -812,7 +812,7 @@ type MainMsgTalkMCardRsp struct {
 	Id uint64
 	Format [DAVE_NORMAL_NAME_LEN] byte
 	Content *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_MEMORY_WARNING message */
@@ -825,7 +825,7 @@ type MsgBlocksReq struct {
 	Opt int32
 	Blocks_id_1 uint64
 	Blocks_id_2 uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_BLOCKS_RSP message */
@@ -833,7 +833,7 @@ type MsgBlocksRsp struct {
 	Ret int64
 	Opt int32
 	Blocks [DAVE_BUILDING_BLOCKS_MAX] BuildingBlocks
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_ECHO message */
@@ -899,7 +899,7 @@ type RUNFUNCTIONMSG struct {
 /* for SOCKET_BIND_REQ message */
 type SocketBindReq struct {
 	Netinfo SocNetInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_BIND_RSP message */
@@ -908,13 +908,13 @@ type SocketBindRsp struct {
 	Netinfo SocNetInfo
 	Bindinfo int32
 	Thread_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_CONNECT_REQ message */
 type SocketConnectReq struct {
 	Netinfo SocNetInfo
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_CONNECT_RSP message */
@@ -923,20 +923,20 @@ type SocketConnectRsp struct {
 	Netinfo SocNetInfo
 	Connectinfo int32
 	Thread_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_DISCONNECT_REQ message */
 type SocketDisconnectReq struct {
 	Socket int32
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_DISCONNECT_RSP message */
 type SocketDisconnectRsp struct {
 	Socket int32
 	Result int32
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_NOTIFY message */
@@ -944,7 +944,7 @@ type SocketNotify struct {
 	Socket int32
 	Notify int32
 	Data uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_PLUGIN message */
@@ -953,7 +953,7 @@ type SocketPlugIn struct {
 	Child_socket int32
 	Netinfo SocNetInfo
 	Thread_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_PLUGOUT message */
@@ -962,7 +962,7 @@ type SocketPlugOut struct {
 	Reason int32
 	Netinfo SocNetInfo
 	Thread_id uint64
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_RAW_EVENT message */
@@ -972,7 +972,7 @@ type SocketRawEvent struct {
 	Event int32
 	Netinfo SocNetInfo
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_READ message */
@@ -981,7 +981,7 @@ type SocketRead struct {
 	Ipinfo IPBaseInfo
 	Data_len uint64
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for SOCKET_WRITE message */
@@ -1089,7 +1089,7 @@ type UIPDataRecvReq struct {
 	Method [DAVE_UIP_METHOD_MAX_LEN] byte
 	Customer_body *MBUF
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_DATA_RECV_RSP message */
@@ -1097,7 +1097,7 @@ type UIPDataRecvRsp struct {
 	Ret int64
 	Method [DAVE_UIP_METHOD_MAX_LEN] byte
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_DATA_SEND_REQ message */
@@ -1108,7 +1108,7 @@ type UIPDataSendReq struct {
 	Customer_head *MBUF
 	Customer_body *MBUF
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_DATA_SEND_RSP message */
@@ -1116,33 +1116,33 @@ type UIPDataSendRsp struct {
 	Ret int64
 	Method [DAVE_UIP_METHOD_MAX_LEN] byte
 	Data *MBUF
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_REGISTER_REQ message */
 type UIPRegisterReq struct {
 	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_REGISTER_RSP message */
 type UIPRegisterRsp struct {
 	Ret int64
 	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_UNREGISTER_REQ message */
 type UIPUnregisterReq struct {
 	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for UIP_UNREGISTER_RSP message */
 type UIPUnregisterRsp struct {
 	Ret int64
 	Method [DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN] byte
-	Ptr unsafe.Pointer
+	Ptr uint64
 }
 
 /* for MSGID_WAKEUP message */

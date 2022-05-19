@@ -34,6 +34,8 @@
 #include "base_dll_main.h"
 #include "dll_log.h"
 
+#define DLL_MAIN_THREAD_MAX_NUMBER 128
+
 typedef struct {
 	char msg_src_name[128];
 	unsigned long long msg_src;
@@ -46,6 +48,7 @@ typedef struct {
 } DllMsgBody;
 
 static ThreadId _main_thread = INVALID_THREAD_ID;
+static ub _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
@@ -64,7 +67,17 @@ _dll_main_name(void)
 static ub
 _dll_main_number(void)
 {
-	return dave_os_cpu_process_number();
+	if(_dll_thread_number == 0)
+	{
+		_dll_thread_number = dave_os_cpu_process_number();
+	}
+	else
+	{
+		if(_dll_thread_number > DLL_MAIN_THREAD_MAX_NUMBER)
+			_dll_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
+	}
+
+	return _dll_thread_number;
 }
 
 static void
@@ -116,8 +129,11 @@ _dll_main_exit(MSGBODY *msg)
 // =====================================================================
 
 void
-dave_dll_main_init(dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
+dave_dll_main_init(
+	int thread_number,
+	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
+	_dll_thread_number = (ub)thread_number;
 	_dll_init_fun = dll_init_fun;
 	_dll_main_fun = dll_main_fun;
 	_dll_exit_fun = dll_exit_fun;

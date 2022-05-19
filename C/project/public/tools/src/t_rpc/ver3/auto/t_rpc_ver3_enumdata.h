@@ -14,20 +14,37 @@
 #ifndef _T_RPC_ENUMDATA_H__
 #define _T_RPC_ENUMDATA_H__
 #include "dave_base.h"
+#include "database_msg.h"
+#include "cv_param.h"
+#include "dave_enum.h"
+#include "dave_error_code.h"
+#include "dave_mcard.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "base_enum.h"
 #include "base_retcode.h"
 
 
+void * t_rpc_ver3_zip_AIPlaceType(AIPlaceType zip_data);
+dave_bool t_rpc_ver3_unzip_AIPlaceType(AIPlaceType *unzip_data, void *pArrayBson);
+
 void * t_rpc_ver3_zip_BuildingBlocksOpt(BuildingBlocksOpt zip_data);
 dave_bool t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data);
+dave_bool t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_CurrencyType(CurrencyType zip_data);
+dave_bool t_rpc_ver3_unzip_CurrencyType(CurrencyType *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_EnableKeepAliveFlag(EnableKeepAliveFlag zip_data);
 dave_bool t_rpc_ver3_unzip_EnableKeepAliveFlag(EnableKeepAliveFlag *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_EnableNetCardBindFlag(EnableNetCardBindFlag zip_data);
 dave_bool t_rpc_ver3_unzip_EnableNetCardBindFlag(EnableNetCardBindFlag *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_ErrCode(ErrCode zip_data);
+dave_bool t_rpc_ver3_unzip_ErrCode(ErrCode *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_FixedPortFlag(FixedPortFlag zip_data);
 dave_bool t_rpc_ver3_unzip_FixedPortFlag(FixedPortFlag *unzip_data, void *pArrayBson);
@@ -50,8 +67,35 @@ dave_bool t_rpc_ver3_unzip_IPProtocol(IPProtocol *unzip_data, void *pArrayBson);
 void * t_rpc_ver3_zip_IPVER(IPVER zip_data);
 dave_bool t_rpc_ver3_unzip_IPVER(IPVER *unzip_data, void *pArrayBson);
 
+void * t_rpc_ver3_zip_LanguageCode(LanguageCode zip_data);
+dave_bool t_rpc_ver3_unzip_LanguageCode(LanguageCode *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardContentType(MCardContentType zip_data);
+dave_bool t_rpc_ver3_unzip_MCardContentType(MCardContentType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardIdentityType(MCardIdentityType zip_data);
+dave_bool t_rpc_ver3_unzip_MCardIdentityType(MCardIdentityType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardSource(MCardSource zip_data);
+dave_bool t_rpc_ver3_unzip_MCardSource(MCardSource *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardTimeType(MCardTimeType zip_data);
+dave_bool t_rpc_ver3_unzip_MCardTimeType(MCardTimeType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardType(MCardType zip_data);
+dave_bool t_rpc_ver3_unzip_MCardType(MCardType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_MCardVer(MCardVer zip_data);
+dave_bool t_rpc_ver3_unzip_MCardVer(MCardVer *unzip_data, void *pArrayBson);
+
 void * t_rpc_ver3_zip_NetAddrType(NetAddrType zip_data);
 dave_bool t_rpc_ver3_unzip_NetAddrType(NetAddrType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_PythonFun(PythonFun zip_data);
+dave_bool t_rpc_ver3_unzip_PythonFun(PythonFun *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_ReqType(ReqType zip_data);
+dave_bool t_rpc_ver3_unzip_ReqType(ReqType *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_RetCode(RetCode zip_data);
 dave_bool t_rpc_ver3_unzip_RetCode(RetCode *unzip_data, void *pArrayBson);
@@ -67,6 +111,9 @@ dave_bool t_rpc_ver3_unzip_SOCKETINFO(SOCKETINFO *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_SOCTYPE(SOCTYPE zip_data);
 dave_bool t_rpc_ver3_unzip_SOCTYPE(SOCTYPE *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_TraceLevel(TraceLevel zip_data);
+dave_bool t_rpc_ver3_unzip_TraceLevel(TraceLevel *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_UIPType(UIPType zip_data);
 dave_bool t_rpc_ver3_unzip_UIPType(UIPType *unzip_data, void *pArrayBson);

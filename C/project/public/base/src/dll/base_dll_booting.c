@@ -42,6 +42,7 @@ typedef enum {
 
 static void *_dave_main_thread_id = NULL;
 static void *_dave_inner_loop_id = NULL;
+static int _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
@@ -104,7 +105,7 @@ _dave_dll_main_thread(void *arg)
 {
 	base_init(_dave_main_thread_id);
 
-	dave_dll_main_init(_dll_init_fun, _dll_main_fun, _dll_exit_fun);
+	dave_dll_main_init(_dll_thread_number, _dll_init_fun, _dll_main_fun, _dll_exit_fun);
 
 	base_running(dave_false);
 
@@ -120,8 +121,10 @@ _dave_dll_main_thread(void *arg)
 static void
 _dave_dll_init(
 	char *my_verno, char *mode,
+	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun)
 {
+	_dll_thread_number = thread_number;
 	_dll_init_fun = init_fun;
 	_dll_main_fun = main_fun;
 	_dll_exit_fun = exit_fun;
@@ -167,9 +170,13 @@ _dave_dll_exit(void)
 void
 dave_dll_init(
 	char *my_verno, char *mode,
+	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun)
 {
-	_dave_dll_init(my_verno, mode, init_fun, main_fun, exit_fun);
+	_dave_dll_init(
+		my_verno, mode,
+		thread_number,
+		init_fun, main_fun, exit_fun);
 }
 
 void

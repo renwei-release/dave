@@ -19,6 +19,7 @@ MBUF * __base_mchain__(MBUF *cur_point, MBUF *cat_point, s8 *file, ub line);
 MBUF * __base_mdechain__(MBUF *m, s8 *file, ub line);
 MBUF * __base_mclone__(MBUF *m, s8 *file, ub line);
 void * base_mptr(MBUF *data);
+sb base_mlen(MBUF *data);
 ub base_mlnumber(MBUF *data);
 void base_mem_init(void);
 void base_mem_exit(void);
@@ -50,6 +51,7 @@ ub base_mem_info(s8 *info, ub info_len, dave_bool base_flag);
 #define dave_mdechain base_mdechain
 #define dave_mclone base_mclone
 #define dave_mptr base_mptr
+#define dave_mlen base_mlen
 #define dave_mlnumber base_mlnumber
 
 #define ms8ptr(mbuf_ptr) (s8 *)base_mptr(mbuf_ptr)

@@ -1,4 +1,5 @@
 package base
+
 /*
  * Copyright (c) 2022 Renwei
  *
@@ -25,14 +26,14 @@ import (
 )
 
 type DllMsgBody struct {
-	msg_src_name [128] byte
-	msg_src uint64
-	msg_dst_name [128] byte
-	msg_dst uint64
-	msg_id uint64
-	msg_len uint64
-	msg_check uint64
-	msg_body unsafe.Pointer
+	msg_src_name [128]byte
+	msg_src      uint64
+	msg_dst_name [128]byte
+	msg_dst      uint64
+	msg_id       uint64
+	msg_len      uint64
+	msg_check    uint64
+	msg_body     unsafe.Pointer
 }
 
 var _product_init_fun func()
@@ -45,7 +46,7 @@ func dave_go_init(c_data unsafe.Pointer) {
 
 //export dave_go_main
 func dave_go_main(c_data unsafe.Pointer) {
-	Dave_msg_process((* DllMsgBody)(c_data))
+	Dave_msg_process((*DllMsgBody)(c_data))
 }
 
 //export dave_go_exit
@@ -75,8 +76,9 @@ func Dave_go_init(init_fun func(), exit_fun func()) {
 
 	my_verno := C.CString(Dave_verno())
 	model := C.CString("Outer Loop")
+	thread_number := 16
 
-	C.dave_dll_init(my_verno, model, C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit))
+	C.dave_dll_init(my_verno, model, C.int(thread_number), C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit))
 
 	C.free(unsafe.Pointer(my_verno))
 	C.free(unsafe.Pointer(model))

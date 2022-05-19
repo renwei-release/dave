@@ -28,6 +28,174 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				pBson = t_rpc_ver3_zip_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, msg_len);
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				pBson = t_rpc_ver3_zip_AIXMsgAestheticsRsp((AIXMsgAestheticsRsp *)msg_body, msg_len);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				pBson = t_rpc_ver3_zip_AIXMsgImageClassificationReq((AIXMsgImageClassificationReq *)msg_body, msg_len);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				pBson = t_rpc_ver3_zip_AIXMsgImageClassificationRsp((AIXMsgImageClassificationRsp *)msg_body, msg_len);
+			break;
+		case APPMSG_FUNCTION_REGISTER_REQ:
+				pBson = t_rpc_ver3_zip_AppMsgFunctionRegReq((AppMsgFunctionRegReq *)msg_body, msg_len);
+			break;
+		case APPMSG_FUNCTION_REGISTER_RSP:
+				pBson = t_rpc_ver3_zip_AppMsgFunctionRegRsp((AppMsgFunctionRegRsp *)msg_body, msg_len);
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_REQ:
+				pBson = t_rpc_ver3_zip_AppMsgFunctionUnRegReq((AppMsgFunctionUnRegReq *)msg_body, msg_len);
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_RSP:
+				pBson = t_rpc_ver3_zip_AppMsgFunctionUnRegRsp((AppMsgFunctionUnRegRsp *)msg_body, msg_len);
+			break;
+		case APPMSG_MCARD_REQ:
+				pBson = t_rpc_ver3_zip_AppMsgMCardReq((AppMsgMCardReq *)msg_body, msg_len);
+			break;
+		case APPMSG_MCARD_RSP:
+				pBson = t_rpc_ver3_zip_AppMsgMCardRsp((AppMsgMCardRsp *)msg_body, msg_len);
+			break;
+		case APPMSG_TALK_MCARD_REQ:
+				pBson = t_rpc_ver3_zip_AppMsgTalkMCardReq((AppMsgTalkMCardReq *)msg_body, msg_len);
+			break;
+		case APPMSG_TALK_MCARD_RSP:
+				pBson = t_rpc_ver3_zip_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, msg_len);
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				pBson = t_rpc_ver3_zip_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, msg_len);
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				pBson = t_rpc_ver3_zip_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, msg_len);
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				pBson = t_rpc_ver3_zip_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, msg_len);
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				pBson = t_rpc_ver3_zip_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, msg_len);
+			break;
+		case BDATAMSG_BS_RECORD:
+				pBson = t_rpc_ver3_zip_BdataBSRecord((BdataBSRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_CHANNEL_RECORD:
+				pBson = t_rpc_ver3_zip_BdataChannelRecord((BdataChannelRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_DEVICE_RECORD:
+				pBson = t_rpc_ver3_zip_BdataDeviceRecord((BdataDeviceRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				pBson = t_rpc_ver3_zip_BdataMCardRecord((BdataMCardRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_TALK_RECORD:
+				pBson = t_rpc_ver3_zip_BdataTalkRecord((BdataTalkRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_TRACE_RECORD:
+				pBson = t_rpc_ver3_zip_BdataTraceRecord((BdataTraceRecord *)msg_body, msg_len);
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, msg_len);
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgFeaturesDetectedRsp((CVMsgFeaturesDetectedRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgImageSearchReq((CVMsgImageSearchReq *)msg_body, msg_len);
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgImageSearchRsp((CVMsgImageSearchRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgPaintingAestheticsReq((CVMsgPaintingAestheticsReq *)msg_body, msg_len);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgPaintingAestheticsRsp((CVMsgPaintingAestheticsRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgSculpturesSearchReq((CVMsgSculpturesSearchReq *)msg_body, msg_len);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgSculpturesSearchRsp((CVMsgSculpturesSearchRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_HYBRID_ADD_LIST_REQ:
+				pBson = t_rpc_ver3_zip_DBHybridAddListReq((DBHybridAddListReq *)msg_body, msg_len);
+			break;
+		case DBMSG_HYBRID_ADD_LIST_RSP:
+				pBson = t_rpc_ver3_zip_DBHybridAddListRsp((DBHybridAddListRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_HYBRID_INQ_LIST_REQ:
+				pBson = t_rpc_ver3_zip_DBHybridInqListReq((DBHybridInqListReq *)msg_body, msg_len);
+			break;
+		case DBMSG_HYBRID_INQ_LIST_RSP:
+				pBson = t_rpc_ver3_zip_DBHybridInqListRsp((DBHybridInqListRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_NOSQL_ADD_TALK_REQ:
+				pBson = t_rpc_ver3_zip_DBNosqlAddTalkReq((DBNosqlAddTalkReq *)msg_body, msg_len);
+			break;
+		case DBMSG_NOSQL_ADD_TALK_RSP:
+				pBson = t_rpc_ver3_zip_DBNosqlAddTalkRsp((DBNosqlAddTalkRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_REDIS_DEL_TABLE_REQ:
+				pBson = t_rpc_ver3_zip_DBRedisDelTableReq((DBRedisDelTableReq *)msg_body, msg_len);
+			break;
+		case DBMSG_REDIS_DEL_TABLE_RSP:
+				pBson = t_rpc_ver3_zip_DBRedisDelTableRsp((DBRedisDelTableRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
+				pBson = t_rpc_ver3_zip_DBSysAddImageFeatureReq((DBSysAddImageFeatureReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
+				pBson = t_rpc_ver3_zip_DBSysAddImageFeatureRsp((DBSysAddImageFeatureRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_REQ:
+				pBson = t_rpc_ver3_zip_DBSysAddWeiChatReq((DBSysAddWeiChatReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_RSP:
+				pBson = t_rpc_ver3_zip_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqChannelRsp((DBSysInqChannelRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqImageFeatureReq((DBSysInqImageFeatureReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqImageFeatureRsp((DBSysInqImageFeatureRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqImageReq((DBSysInqImageReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqImageRsp((DBSysInqImageRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqMuseumPageReq((DBSysInqMuseumPageReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqMuseumPageRsp((DBSysInqMuseumPageRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqMuseumReq((DBSysInqMuseumReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqMuseumRsp((DBSysInqMuseumRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqPainterPageReq((DBSysInqPainterPageReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqPainterPageRsp((DBSysInqPainterPageRsp *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_REQ:
+				pBson = t_rpc_ver3_zip_DBSysInqWeiChatReq((DBSysInqWeiChatReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_RSP:
+				pBson = t_rpc_ver3_zip_DBSysInqWeiChatRsp((DBSysInqWeiChatRsp *)msg_body, msg_len);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
@@ -51,6 +219,93 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case HTTPMSG_RECV_RSP:
 				pBson = t_rpc_ver3_zip_HTTPRecvRsp((HTTPRecvRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelCMDReq((MainMsgAddChannelCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelCMDRsp((MainMsgAddChannelCMDRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelForbiddenCMDReq((MainMsgAddChannelForbiddenCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelForbiddenCMDRsp((MainMsgAddChannelForbiddenCMDRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelReq((MainMsgAddChannelReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_ADD_CHANNEL_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgAddChannelRsp((MainMsgAddChannelRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelCMDReq((MainMsgDelChannelCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelCMDRsp((MainMsgDelChannelCMDRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelForbiddenCMDReq((MainMsgDelChannelForbiddenCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelForbiddenCMDRsp((MainMsgDelChannelForbiddenCMDRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelReq((MainMsgDelChannelReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_DEL_CHANNEL_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgDelChannelRsp((MainMsgDelChannelRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_DEREG_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserDeRegReq((MainMsgIMUserDeRegReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_DEREG_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserDeRegRsp((MainMsgIMUserDeRegRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_INQ_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserInqReq((MainMsgIMUserInqReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_INQ_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserInqRsp((MainMsgIMUserInqRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_REG_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserRegReq((MainMsgIMUserRegReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_IM_USER_REG_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgIMUserRegRsp((MainMsgIMUserRegRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgInqChannelCMDReq((MainMsgInqChannelCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgInqChannelCMDRsp((MainMsgInqChannelCMDRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_INQ_CHANNEL_FORBIDDEN_CMD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgInqChannelForbiddenCMDReq((MainMsgInqChannelForbiddenCMDReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_INQ_CHANNEL_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgInqChannelReq((MainMsgInqChannelReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_INQ_CHANNEL_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgInqChannelRsp((MainMsgInqChannelRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_PYTHON_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgPythonReq((MainMsgPythonReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_PYTHON_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgPythonRsp((MainMsgPythonRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_REC_CHANNEL_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgRecChannelReq((MainMsgRecChannelReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_REC_CHANNEL_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgRecChannelRsp((MainMsgRecChannelRsp *)msg_body, msg_len);
+			break;
+		case MAINMSG_TALK_MCARD_REQ:
+				pBson = t_rpc_ver3_zip_MainMsgTalkMCardReq((MainMsgTalkMCardReq *)msg_body, msg_len);
+			break;
+		case MAINMSG_TALK_MCARD_RSP:
+				pBson = t_rpc_ver3_zip_MainMsgTalkMCardRsp((MainMsgTalkMCardRsp *)msg_body, msg_len);
 			break;
 		case MSGID_BLOCKS_REQ:
 				pBson = t_rpc_ver3_zip_MsgBlocksReq((MsgBlocksReq *)msg_body, msg_len);
@@ -78,6 +333,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_INTERNAL_EVENTS:
 				pBson = t_rpc_ver3_zip_InternalEvents((InternalEvents *)msg_body, msg_len);
+			break;
+		case MSGID_INTERNAL_LOOP:
+				pBson = t_rpc_ver3_zip_InternalLoop((InternalLoop *)msg_body, msg_len);
 			break;
 		case MSGID_LOCAL_THREAD_READY:
 				pBson = t_rpc_ver3_zip_ThreadLocalReadyMsg((ThreadLocalReadyMsg *)msg_body, msg_len);
@@ -224,6 +482,174 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				ret = t_rpc_ver3_unzip_AIXMsgAestheticsReq(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				ret = t_rpc_ver3_unzip_AIXMsgAestheticsRsp(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				ret = t_rpc_ver3_unzip_AIXMsgImageClassificationReq(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				ret = t_rpc_ver3_unzip_AIXMsgImageClassificationRsp(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_FUNCTION_REGISTER_REQ:
+				ret = t_rpc_ver3_unzip_AppMsgFunctionRegReq(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_FUNCTION_REGISTER_RSP:
+				ret = t_rpc_ver3_unzip_AppMsgFunctionRegRsp(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_REQ:
+				ret = t_rpc_ver3_unzip_AppMsgFunctionUnRegReq(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_RSP:
+				ret = t_rpc_ver3_unzip_AppMsgFunctionUnRegRsp(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_MCARD_REQ:
+				ret = t_rpc_ver3_unzip_AppMsgMCardReq(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_MCARD_RSP:
+				ret = t_rpc_ver3_unzip_AppMsgMCardRsp(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_TALK_MCARD_REQ:
+				ret = t_rpc_ver3_unzip_AppMsgTalkMCardReq(msg_body, msg_len, pBson);
+			break;
+		case APPMSG_TALK_MCARD_RSP:
+				ret = t_rpc_ver3_unzip_AppMsgTalkMCardRsp(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				ret = t_rpc_ver3_unzip_BBSMsgAddCommentReq(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				ret = t_rpc_ver3_unzip_BBSMsgAddCommentRsp(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				ret = t_rpc_ver3_unzip_BBSMsgInqCommentReq(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				ret = t_rpc_ver3_unzip_BBSMsgInqCommentRsp(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_BS_RECORD:
+				ret = t_rpc_ver3_unzip_BdataBSRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_CHANNEL_RECORD:
+				ret = t_rpc_ver3_unzip_BdataChannelRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_DEVICE_RECORD:
+				ret = t_rpc_ver3_unzip_BdataDeviceRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				ret = t_rpc_ver3_unzip_BdataMCardRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_TALK_RECORD:
+				ret = t_rpc_ver3_unzip_BdataTalkRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_TRACE_RECORD:
+				ret = t_rpc_ver3_unzip_BdataTraceRecord(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgFeaturesDetectedReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgFeaturesDetectedRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgImageSearchReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgImageSearchRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgPaintingAestheticsReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgPaintingAestheticsRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgSculpturesSearchReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgSculpturesSearchRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_HYBRID_ADD_LIST_REQ:
+				ret = t_rpc_ver3_unzip_DBHybridAddListReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_HYBRID_ADD_LIST_RSP:
+				ret = t_rpc_ver3_unzip_DBHybridAddListRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_HYBRID_INQ_LIST_REQ:
+				ret = t_rpc_ver3_unzip_DBHybridInqListReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_HYBRID_INQ_LIST_RSP:
+				ret = t_rpc_ver3_unzip_DBHybridInqListRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_NOSQL_ADD_TALK_REQ:
+				ret = t_rpc_ver3_unzip_DBNosqlAddTalkReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_NOSQL_ADD_TALK_RSP:
+				ret = t_rpc_ver3_unzip_DBNosqlAddTalkRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_REDIS_DEL_TABLE_REQ:
+				ret = t_rpc_ver3_unzip_DBRedisDelTableReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_REDIS_DEL_TABLE_RSP:
+				ret = t_rpc_ver3_unzip_DBRedisDelTableRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
+				ret = t_rpc_ver3_unzip_DBSysAddImageFeatureReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
+				ret = t_rpc_ver3_unzip_DBSysAddImageFeatureRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_REQ:
+				ret = t_rpc_ver3_unzip_DBSysAddWeiChatReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_RSP:
+				ret = t_rpc_ver3_unzip_DBSysAddWeiChatRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqChannelReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqChannelRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqImageFeatureReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqImageFeatureRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqImageReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_IMAGE_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqImageRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqMuseumPageReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqMuseumPageRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqMuseumReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqMuseumRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqPainterPageReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqPainterPageRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_REQ:
+				ret = t_rpc_ver3_unzip_DBSysInqWeiChatReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_RSP:
+				ret = t_rpc_ver3_unzip_DBSysInqWeiChatRsp(msg_body, msg_len, pBson);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
 			break;
@@ -247,6 +673,93 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case HTTPMSG_RECV_RSP:
 				ret = t_rpc_ver3_unzip_HTTPRecvRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_CMD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelCMDRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelForbiddenCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_FORBIDDEN_CMD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelForbiddenCMDRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_ADD_CHANNEL_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgAddChannelRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_CMD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelCMDRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelForbiddenCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_FORBIDDEN_CMD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelForbiddenCMDRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_DEL_CHANNEL_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgDelChannelRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_DEREG_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserDeRegReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_DEREG_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserDeRegRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_INQ_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserInqReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_INQ_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserInqRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_REG_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserRegReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_IM_USER_REG_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgIMUserRegRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgInqChannelCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_INQ_CHANNEL_CMD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgInqChannelCMDRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_INQ_CHANNEL_FORBIDDEN_CMD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgInqChannelForbiddenCMDReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_INQ_CHANNEL_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgInqChannelReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_INQ_CHANNEL_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgInqChannelRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_PYTHON_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgPythonReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_PYTHON_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgPythonRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_REC_CHANNEL_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgRecChannelReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_REC_CHANNEL_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgRecChannelRsp(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_TALK_MCARD_REQ:
+				ret = t_rpc_ver3_unzip_MainMsgTalkMCardReq(msg_body, msg_len, pBson);
+			break;
+		case MAINMSG_TALK_MCARD_RSP:
+				ret = t_rpc_ver3_unzip_MainMsgTalkMCardRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_BLOCKS_REQ:
 				ret = t_rpc_ver3_unzip_MsgBlocksReq(msg_body, msg_len, pBson);
@@ -274,6 +787,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_INTERNAL_EVENTS:
 				ret = t_rpc_ver3_unzip_InternalEvents(msg_body, msg_len, pBson);
+			break;
+		case MSGID_INTERNAL_LOOP:
+				ret = t_rpc_ver3_unzip_InternalLoop(msg_body, msg_len, pBson);
 			break;
 		case MSGID_LOCAL_THREAD_READY:
 				ret = t_rpc_ver3_unzip_ThreadLocalReadyMsg(msg_body, msg_len, pBson);
@@ -452,7 +968,7 @@ t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub pac
 	s64 rpc_time;
 	if(t_bson_inq_int64(pBson, "rpc_time", (u64 *)(&rpc_time)) == true) {
 		rpc_time = (s64)dave_os_time_us() - rpc_time;
-		if(rpc_time > 1000000)
+		if(rpc_time > 3000000)
 			TOOLSLOG("msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.", msgstr(msg_id), rpc_time);
 	}
 	#endif

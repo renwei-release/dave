@@ -15,11 +15,11 @@ ub base_cfg_get_ub(s8 *cfg_name);
 
 #define base_cfg_set(name, value_ptr, value_len) base_cfg_dir_set((s8 *)((void *)NULL), name, value_ptr, value_len)
 #define base_cfg_get(name, value_ptr, value_len) base_cfg_dir_get((s8 *)((void *)NULL), name, value_ptr, value_len)
+
 #define cfg_set base_cfg_set
 #define cfg_get base_cfg_get
-
-#define database_set cfg_set
-#define database_get cfg_get
+#define cfg_set_ub base_cfg_set_ub
+#define cfg_get_ub base_cfg_get_ub
 
 #endif
 

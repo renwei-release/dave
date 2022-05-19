@@ -50,7 +50,10 @@ _linux_parse_the_command_line(int argc, char **argv)
 		|| dave_strcmp(argv[1], "-version"))
 	{
 		boot_main_flag = dave_false;
-		fprintf(stdout, "%s\n", dave_verno());
+		fprintf(stdout,
+			"Version:%s\nHost:%s\nCompiler:%s\nMac:%s\n",
+			dave_verno(),
+			__BUILD_HOSTNAME__, __BUILD_USERNAME__, __BUILD_MAC_ADDRESS__);
 	}
 
 	return boot_main_flag;

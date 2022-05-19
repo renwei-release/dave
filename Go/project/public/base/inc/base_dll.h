@@ -19,6 +19,7 @@ typedef int (* dll_checkback_fun)(int);
 
 API void dave_dll_init(
 	char *my_verno, char *mode,
+	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun);
 
 API void dave_dll_running(void);

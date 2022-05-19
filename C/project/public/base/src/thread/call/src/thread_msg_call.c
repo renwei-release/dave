@@ -41,6 +41,23 @@ _thread_msg_call_add(ThreadId thread_id, ub msg_id, thread_msg_fun msg_fun, void
 	MsgCallFun *pFun;
 	s8 key[256];
 
+	/*
+	 * 在程序刚开始跑的时候，还未来得及执行
+	 * base_ramkv_add_key_ptr
+	 * 这时，如果刚好有多次并发
+	 * _thread_msg_call_inq，
+	 * 这时会产生多个pFun，
+	 * 其实只有一个pFun被base_ramkv_add_key_ptr
+	 * 最后写入了KV。其他的pFun都被最后写入的那次给覆盖了，
+	 * 这样就造成了pFun内存的泄漏。
+	 * 但，没关系，这种情况很少见。要处理这个情况会影响程序效率，
+	 * 比如在此函数加锁，这样就会大大降低这个函数
+	 * 的执行效率，所以：
+	 * 这里不处理这个小的泄漏问题，用泄漏换效率。
+	 * 注意，这种处理策略会出现在其他的类似以下方式调用的代码里面，
+	 * 未来还是要考虑一个好的效率和泄漏都顾全的方法。
+	 * Renwei 20220515
+	 */
 	pFun = _thread_msg_call_inq(thread_id, msg_id);
 	if(pFun == NULL)
 	{
