@@ -1,8 +1,12 @@
 LIB := -Wl,-Bstatic
 LIB += -L../../../ThirdParty/build/jemalloc/setup/lib -ljemalloc
 LIB += -L../../../ThirdParty/build/json-c/setup/lib64 -ljson-c
+ifeq ($(words $(findstring $(VER_PRODUCT), AIB)), 1)
 LIB += -L../../../ThirdParty/build/fastdfs/setup/lib -lfdfsclient -lfastcommon
+endif
+ifeq ($(words $(findstring $(VER_PRODUCT), AIX)), 1)
 LIB += -L../../../ThirdParty/build/magsac/setup/lib -lmagsac
+endif
 
 LIB += -Wl,-Bdynamic
 ifeq ($(words $(findstring $(VER_PRODUCT), AIX)), 1)

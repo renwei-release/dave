@@ -117,49 +117,6 @@ const (
 )
 
 const (
-	CVSearchOpt_0 int = iota
-	CVSearchOpt_1
-	CVSearchOpt_2
-	CVSearchOpt_max
-)
-
-const (
-	CurrencyType_reserve = 0 + iota
-	CurrencyType_audio = 1
-	CurrencyType_video = 2
-	CurrencyType_RMB = 3
-	CurrencyType_USD = 4
-	CurrencyType_GBP = 5
-	CurrencyType_JPY = 6
-	CurrencyType_EUR = 7
-	CurrencyType_AUD = 8
-	CurrencyType_DEM = 9
-	CurrencyType_CHF = 10
-	CurrencyType_FRF = 11
-	CurrencyType_CAD = 12
-	CurrencyType_HKD = 13
-	CurrencyType_ATS = 14
-	CurrencyType_FIM = 15
-	CurrencyType_BEF = 16
-	CurrencyType_NZD = 17
-	CurrencyType_SGD = 18
-	CurrencyType_KRW = 19
-	CurrencyType_IEP = 20
-	CurrencyType_ITL = 21
-	CurrencyType_LUF = 22
-	CurrencyType_NLG = 23
-	CurrencyType_PTE = 24
-	CurrencyType_ESP = 25
-	CurrencyType_IDR = 26
-	CurrencyType_MYR = 27
-	CurrencyType_PHP = 28
-	CurrencyType_SUR = 29
-	CurrencyType_THB = 30
-	CurrencyType_reserve1 = 31
-	CurrencyType_max
-)
-
-const (
 	KeepAlive_enable = 0x01234567 + iota
 	KeepAlive_disable = 0x09abcdef
 )
@@ -645,45 +602,7 @@ const (
 )
 
 const (
-	REQ_TYPE_ADD = 1 + iota
-	REQ_TYPE_DEL = 2
-	REQ_TYPE_INQ = 3
-	REQ_TYPE_UPDATE = 4
-	REQ_TYPE_PROVIDER_ADD = 5
-	REQ_TYPE_PROVIDER_DEL = 6
-	REQ_TYPE_PROVIDER_INQ = 7
-	REQ_TYPE_PROVIDER_UPDATE = 8
-	REQ_TYPE_ELASTIC_BULK_SEND = 50
-	REQ_TYPE_ELASTIC_QUANTITY = 51
-	REQ_TYPE_ELASTIC_RECORD = 52
-	REQ_TYPE_ELASTIC_TRANSACTE = 53
-	REQ_TYPE_ELASTIC_SMS_COST_SALSE = 54
-	REQ_TYPE_GENERAL_1 = 101
-	REQ_TYPE_GENERAL_2 = 102
-	REQ_TYPE_GENERAL_3 = 103
-	REQ_TYPE_GENERAL_4 = 104
-	REQ_TYPE_GENERAL_5 = 105
-	REQ_TYPE_GENERAL_6 = 106
-	REQ_TYPE_INQ_VOIP_SIP = 107
-	REQ_TYPE_SMPP_CUSTOM = 1000
-	REQ_TYPE_SMPP_END = 1199
-	REQ_TYPE_SMS_CUSTOM = 1200
-	REQ_TYPE_SMS_END = 1399
-	REQ_TYPE_CUST_CUSTOM = 1400
-	REQ_TYPE_CUST_END = 1599
-	REQ_TYPE_SMSGATE_CUSTOM = 1600
-	REQ_TYPE_SMSGATE_END = 1699
-	REQ_TYPE_SMS_REG_START = 2000
-	REQ_TYPE_SMS_REG_SMSGATE = 2001
-	REQ_TYPE_SMS_REG_ALISMS = 2002
-	REQ_TYPE_SMS_REG_CUST = 2003
-	REQ_TYPE_SMS_REG_SMPP = 2004
-	REQ_TYPE_SMS_REG_MDM = 2005
-	REQ_TYPE_SMS_REG_BROADCAST = 2006
-	REQ_TYPE_SMS_ROUTEID_BROADCAST = 2007
-	REQ_TYPE_JEJOM_ADD_END_SEND = 2020
-	REQ_TYPE_JEJOM_DEL_END_SEND = 2021
-	REQ_TYPE_MAX = 0x1fffffff
+	REQ_TYPE_MAX = 0x1fffffff + iota
 )
 
 const (
@@ -872,16 +791,6 @@ const (
 	TYPE_SOCK_SCTP
 	TYPE_SOCK_max
 	TYPE_SOCK_MAX = 0x1fffffff
-)
-
-const (
-	TRACELEVEL_DEBUG = 0 + iota
-	TRACELEVEL_CATCHER
-	TRACELEVEL_TRACE
-	TRACELEVEL_LOG
-	TRACELEVEL_ABNORMAL
-	TRACELEVEL_ASSERT
-	TRACELEVEL_MAX
 )
 
 const (

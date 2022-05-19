@@ -37,60 +37,26 @@ type MCardVerMedia struct {
 	Second uint64
 }
 
+type MCardVerTalk struct {
+	Version int64
+	Type int64
+	Channel [DAVE_NORMAL_NAME_LEN] byte
+	Uuid [DAVE_UUID_LEN] byte
+	App_id uint64
+	Src_user [DAVE_USER_NAME_LEN] byte
+	Dst_user [DAVE_USER_NAME_LEN] byte
+	Location MCardLocation
+	Time MCardTime
+	Main_serial uint64
+	Sub_serial uint64
+	Total_sub_serial uint64
+	Content MCardContent
+}
+
 type MCardVerComment struct {
 	Version int64
 	Head MCardCommentHead
 	Content MCardContent
-}
-
-type MCardLocation struct {
-	Latitude float64
-	Longitude float64
-	Altitude float64
-	Course float64
-	Slope float64
-}
-
-type MCardTime struct {
-	Write_time DateStruct
-	Failure_type int64
-	Failure_time DateStruct
-}
-
-type MCardContent struct {
-	Id int64
-	Content_type int64
-	Content_language int32
-	Pcontent *MBUF
-}
-
-type CVModelResult struct {
-	Search_opt int32
-	Content_type int64
-	Language_code int32
-	Image_local_path [DAVE_PATH_LEN] byte
-	Image_url_path [DAVE_PATH_LEN] byte
-	Opt_number uint64
-	Face_number uint64
-	Vgg_id [DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID] byte
-	Vgg_score [DAVE_KEY_OPT_MAX] float32
-	Rectangle [DAVE_KEY_OPT_MAX] Rectangle
-	Image_title [DAVE_KEY_OPT_MAX*DAVE_IMAGE_TITLE_LEN] byte
-	Image_painter [DAVE_KEY_OPT_MAX*DAVE_USER_NAME_LEN] byte
-	Inliners_num [DAVE_KEY_OPT_MAX] uint64
-	Inliners_score [DAVE_KEY_OPT_MAX] float32
-	Keypoints_num [DAVE_KEY_OPT_MAX] uint64
-	Keypoints_score [DAVE_KEY_OPT_MAX] float32
-	Confidence int8
-	Label [DAVE_LABEL_STR_MAX] byte
-	Score float32
-	Cnn_model_work_time uint64
-	Features_db_req_time uint64
-	Features_db_rsp_time uint64
-	Features_db_process_time uint64
-	Introduce_db_req_time uint64
-	Introduce_db_rsp_time uint64
-	Model_raw_data *MBUF
 }
 
 type TerminalInformation struct {
@@ -106,22 +72,6 @@ type TerminalInformation struct {
 	System [64] byte
 	Platform [64] byte
 	Sdkversion [64] byte
-}
-
-type BillingRulesPrivate struct {
-	Rules_id uint64
-	Measurement_activity int8
-	Measurement_activity_date DateStruct
-	Measurement_inactive_date DateStruct
-	Measurement_value uint64
-	Expand_business_id uint64
-	Max_measurement_value uint64
-	From_package_id uint64
-	Bs [DAVE_BILLING_BUSINESS_SERIAL_LEN] byte
-	Start_use_time DateStruct
-	End_use_time DateStruct
-	Sub_activity_date DateStruct
-	Sub_inactive_date DateStruct
 }
 
 type PainterIntroduction struct {
@@ -146,6 +96,20 @@ type SocNetInfoIp struct {
 	Ip_addr [16] byte
 }
 
+type MCardLocation struct {
+	Latitude float64
+	Longitude float64
+	Altitude float64
+	Course float64
+	Slope float64
+}
+
+type MCardTime struct {
+	Write_time DateStruct
+	Failure_type int64
+	Failure_time DateStruct
+}
+
 type MCardPOI struct {
 	Location MCardLocation
 	Type int64
@@ -155,19 +119,17 @@ type MCardPOI struct {
 	Rating float64
 }
 
+type MCardContent struct {
+	Id int64
+	Content_type int64
+	Content_language int32
+	Pcontent *MBUF
+}
+
 type MCardCommentHead struct {
 	Nosql_head NoSQLHead
 	Comment_head MCardCommentHeadData
 	Reserve_data [DAVE_MACRD_HEAD_MAX-2976] byte
-}
-
-type Rectangle struct {
-	X1 float32
-	Y1 float32
-	X2 float32
-	Y2 float32
-	W float32
-	H float32
 }
 
 type NoSQLHead struct {
@@ -205,15 +167,6 @@ type UserInformation struct {
 	Avatar_url [256] byte
 }
 
-type MBUF struct {
-	Next unsafe.Pointer
-	Payload unsafe.Pointer
-	Tot_len int64
-	Len int64
-	Ref int64
-	Alloc_len int64
-}
-
 type GPSLocation struct {
 	Latitude float64
 	Longitude float64
@@ -229,45 +182,13 @@ type MCard struct {
 	Comment MCardVerComment
 }
 
-type Account struct {
-	Account_name [DAVE_NORMAL_NAME_LEN] byte
-	Account_password [DAVE_PASSWORD_LEN] byte
-	Balance_type int32
-	Balance float64
-	Account_id uint64
-}
-
-type DeviceInfo struct {
-	Name [DAVE_DEVICE_NAME_LEN] byte
-	Wifi_mac_address [DAVE_DEVICE_MAC_LEN] byte
-	Bt_mac_address [DAVE_DEVICE_MAC_LEN] byte
-	Version [DAVE_NORMAL_NAME_LEN] byte
-	Imei [DAVE_DEVICE_IMEI_LEN] byte
-	Imsi [DAVE_DEVICE_IMSI_LEN] byte
-	Model [DAVE_DEVICE_MODEL_LEN] byte
-	Ip [DAVE_DEVICE_IP_LEN] byte
-	Mcc [DAVE_DEVICE_MCC_LEN] byte
-	Mnc [DAVE_DEVICE_MNC_LEN] byte
-	Lac uint64
-	Cid uint64
-	Gps_longitude [DAVE_NORMAL_NAME_LEN] byte
-	Gps_latitude [DAVE_NORMAL_NAME_LEN] byte
-}
-
-type MCardVerTalk struct {
-	Version int64
-	Type int64
-	Channel [DAVE_NORMAL_NAME_LEN] byte
-	Uuid [DAVE_UUID_LEN] byte
-	App_id uint64
-	Src_user [DAVE_USER_NAME_LEN] byte
-	Dst_user [DAVE_USER_NAME_LEN] byte
-	Location MCardLocation
-	Time MCardTime
-	Main_serial uint64
-	Sub_serial uint64
-	Total_sub_serial uint64
-	Content MCardContent
+type MBUF struct {
+	Next unsafe.Pointer
+	Payload unsafe.Pointer
+	Tot_len int64
+	Len int64
+	Ref int64
+	Alloc_len int64
 }
 
 type UniversalLabel struct {
@@ -275,11 +196,6 @@ type UniversalLabel struct {
 	Label_id uint64
 	Label_str [DAVE_LABEL_STR_MAX] byte
 	Label_score float32
-}
-
-type CVResult struct {
-	Model_result CVModelResult
-	Image_introduction ImageIntroduction
 }
 
 type CVKeyPoint struct {
@@ -322,15 +238,6 @@ type DateStruct struct {
 	Minute byte
 	Second byte
 	Week byte
-}
-
-type BillingUser struct {
-	User_id uint64
-	Billing_user_id uint64
-	Package_number uint64
-	Package_id [DAVE_BILLING_MAX_PACKAGE_IN_USER] uint64
-	Rules_number uint64
-	Rules_private [DAVE_BILLING_MAX_RULES_IN_USER] BillingRulesPrivate
 }
 
 type ImageIntroduction struct {

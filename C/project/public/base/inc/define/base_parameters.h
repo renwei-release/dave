@@ -36,5 +36,9 @@
 
 #define DAVE_UUID_LEN (64)
 
+#define DAVE_AUTH_KEY_LEN (64)
+
+#define DAVE_AUTH_KEY_STR_LEN (DAVE_AUTH_KEY_LEN * 2 + 1)
+
 #endif
 

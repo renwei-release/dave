@@ -19,11 +19,8 @@
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
-#include "nlp_param.h"
 #include "http_param.h"
 #include "uip_msg.h"
-#include "talk_param.h"
-#include "bbs_param.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -52,7 +49,6 @@ s8 *t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
 s8 *t_auto_CallFunctionType_str(CallFunctionType enum_value);
 s8 *t_auto_CallingNumberFlag_str(CallingNumberFlag enum_value);
-s8 *t_auto_CommentAttributes_str(CommentAttributes enum_value);
 s8 *t_auto_CountryCode_str(CountryCode enum_value);
 s8 *t_auto_CurrencyType_str(CurrencyType enum_value);
 s8 *t_auto_DBInqType_str(DBInqType enum_value);
@@ -90,11 +86,6 @@ s8 *t_auto_MatrixOpt_str(MatrixOpt enum_value);
 s8 *t_auto_ModImpuFlag_str(ModImpuFlag enum_value);
 s8 *t_auto_MsgMemState_str(MsgMemState enum_value);
 s8 *t_auto_MsisdnOperator_str(MsisdnOperator enum_value);
-s8 *t_auto_NLPDependencySyntax_str(NLPDependencySyntax enum_value);
-s8 *t_auto_NLPIRLabel_str(NLPIRLabel enum_value);
-s8 *t_auto_NLPNEREntity_str(NLPNEREntity enum_value);
-s8 *t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value);
-s8 *t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value);
 s8 *t_auto_NetAddrType_str(NetAddrType enum_value);
 s8 *t_auto_NumberReqType_str(NumberReqType enum_value);
 s8 *t_auto_NumberType_str(NumberType enum_value);
@@ -107,7 +98,6 @@ s8 *t_auto_PythonFun_str(PythonFun enum_value);
 s8 *t_auto_RESTPushEventType_str(RESTPushEventType enum_value);
 s8 *t_auto_RNMBusinessType_str(RNMBusinessType enum_value);
 s8 *t_auto_RNMQueryType_str(RNMQueryType enum_value);
-s8 *t_auto_RegINAttrib_str(RegINAttrib enum_value);
 s8 *t_auto_ReportMsgType_str(ReportMsgType enum_value);
 s8 *t_auto_ReqType_str(ReqType enum_value);
 s8 *t_auto_RetCode_str(RetCode enum_value);

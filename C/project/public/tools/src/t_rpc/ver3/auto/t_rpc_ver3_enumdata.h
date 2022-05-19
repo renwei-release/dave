@@ -15,7 +15,6 @@
 #define _T_RPC_ENUMDATA_H__
 #include "dave_base.h"
 #include "database_msg.h"
-#include "cv_param.h"
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
@@ -30,12 +29,6 @@ dave_bool t_rpc_ver3_unzip_AIPlaceType(AIPlaceType *unzip_data, void *pArrayBson
 
 void * t_rpc_ver3_zip_BuildingBlocksOpt(BuildingBlocksOpt zip_data);
 dave_bool t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBson);
-
-void * t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data);
-dave_bool t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson);
-
-void * t_rpc_ver3_zip_CurrencyType(CurrencyType zip_data);
-dave_bool t_rpc_ver3_unzip_CurrencyType(CurrencyType *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_EnableKeepAliveFlag(EnableKeepAliveFlag zip_data);
 dave_bool t_rpc_ver3_unzip_EnableKeepAliveFlag(EnableKeepAliveFlag *unzip_data, void *pArrayBson);
@@ -111,9 +104,6 @@ dave_bool t_rpc_ver3_unzip_SOCKETINFO(SOCKETINFO *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_SOCTYPE(SOCTYPE zip_data);
 dave_bool t_rpc_ver3_unzip_SOCTYPE(SOCTYPE *unzip_data, void *pArrayBson);
-
-void * t_rpc_ver3_zip_TraceLevel(TraceLevel zip_data);
-dave_bool t_rpc_ver3_unzip_TraceLevel(TraceLevel *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_UIPType(UIPType zip_data);
 dave_bool t_rpc_ver3_unzip_UIPType(UIPType *unzip_data, void *pArrayBson);
