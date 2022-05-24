@@ -1,4 +1,4 @@
-FROM centos:centos7.9.2009
+FROM fedora:latest
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

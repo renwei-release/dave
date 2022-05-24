@@ -18,7 +18,7 @@ USERNAME=${USER}
 JUPYTERPORT=8888
 HOMEPATH='./'
 
-while getopts ":p:g:i:t:e:h:j:" opt
+while getopts ":p:g:i:t:e:h:j:u:" opt
 do
     case $opt in
         p)
@@ -39,7 +39,7 @@ do
         ;;
         e)
         EXTEND=$OPTARG
-        PROJECTMAPPING=$(echo $EXTEND | grep -o "project:/project")
+        PROJECTMAPPING=$(echo $EXTEND | grep -o ":/project")
         echo EXTEND:$EXTEND
         echo PROJECT MAPPING:$PROJECTMAPPING
         ;;
@@ -50,6 +50,10 @@ do
         j)
         JUPYTERPORT=$OPTARG
         echo JUPYTER PORT:$JUPYTERPORT
+        ;;
+        u)
+        USERNAME=$OPTARG
+        echo USER NAME:$USERNAME
         ;;
         ?)
         echo "未知参数:" $opt
@@ -100,5 +104,6 @@ if [ "$exit_project_contains" == "" ]; then
 else
    ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
    echo The ${PROJECTNAME} container exists, no new container is installed! But update the ${PROJECTNAME}
-   ./release.sh ${PROJECTNAME} ${PROJECTMAPPING}
 fi
+
+./restart.sh ${PROJECT} ${PROJECTNAME}

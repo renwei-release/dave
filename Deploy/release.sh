@@ -13,9 +13,8 @@ RUNNINGFILE=/project/dave-running.sh
 if [ ! "$PROJECTMAPPING" != "" ]; then
    ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=debug' | awk '{print $1}'`
    if [ -n "$ACTIONLINE" ]; then
-      echo release.sh modify ${PROJECTNAME} to release
+      echo -e "release.sh modify ${PROJECTNAME} to \033[35mrelease\033[0m"
       ACTIONLINEARRAY=(${ACTIONLINE})
       docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=release" ${RUNNINGFILE}
-      docker restart ${PROJECTNAME}
    fi
 fi

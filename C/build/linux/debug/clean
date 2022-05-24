@@ -1,4 +1,0 @@
-PROJECT=${PWD##*/}
-PROJECT=${PROJECT^^}
-
-make -C ../ VER_PRODUCT=${PROJECT} clean

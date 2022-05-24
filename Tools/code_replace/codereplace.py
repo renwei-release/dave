@@ -49,7 +49,7 @@ def _codereplace_file_list(file_path):
 # =====================================================================
 
 #
-# python codereplace.py ../../C errorstr retstr
+# python codereplace.py ../../Project/C errorstr retstr
 #
 def codereplace_main():
     if len(sys.argv) < 3:

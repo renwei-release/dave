@@ -1,7 +1,0 @@
-#!/bin/bash
-
-homepath=$(cd `dirname $0`; pwd)
-PROJECT=${PWD##*/}
-
-cd ../
-./build.sh $PROJECT

@@ -50,7 +50,7 @@ copy_python_project_to_container()
 backup_python_project_from_container()
 {
    if [ ${DEPLOYMODE} == 'develop' ]; then
-      DEPLOYPRJDIR=${HOMEPATH}/../../../Deploy/deploy/${PROJECT}
+      DEPLOYPRJDIR=${HOMEPATH}/../../../../Deploy/deploy/${PROJECT}
       echo update.sh backup project from ${PROJECTNAME} to ${DEPLOYPRJDIR}
       if [ -d ${DEPLOYPRJDIR}/project ]; then
          rm -rf ${DEPLOYPRJDIR}/project
@@ -72,8 +72,8 @@ copy_bin_project_file()
 
    if [ -f ${PRJBINFILE} ]; then
       echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
-      chmod a+x ${PRJBINFILE}
       docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
+      docker exec -it ${PROJECTNAME} bash -c "chmod a+x /project/${PROJECT^^}-BIN"
    fi
 }
 
@@ -125,16 +125,22 @@ __copy_sh_file__()
 copy_sh_file()
 {
    # running file
-   SHFILE=${HOMEPATH}/../../../Deploy/dave-running.sh
+   SHFILE=${HOMEPATH}/../../../../../Deploy/dave-running.sh
    if [ ! -f ${SHFILE} ]; then
       SHFILE=${HOMEPATH}/../../../../Deploy/dave-running.sh
+   fi
+   if [ ! -f ${SHFILE} ]; then
+      SHFILE=${HOMEPATH}/../../../Deploy/dave-running.sh
    fi
    __copy_sh_file__
 
    # debug file
-   SHFILE=${HOMEPATH}/../../../Deploy/dave-debug.sh
+   SHFILE=${HOMEPATH}/../../../../../Deploy/dave-debug.sh
    if [ ! -f ${SHFILE} ]; then
       SHFILE=${HOMEPATH}/../../../../Deploy/dave-debug.sh
+   fi
+   if [ ! -f ${SHFILE} ]; then
+      SHFILE=${HOMEPATH}/../../../Deploy/dave-debug.sh
    fi
    __copy_sh_file__
 }
@@ -160,5 +166,4 @@ if [ -f jupyter.sh ]; then
    ./jupyter.sh ${PROJECTNAME} ${JUPYTERPORT}
 fi
 
-echo update.sh restart ${PROJECTNAME} user:${USER} project:${PROJECT} ...
-docker restart ${PROJECTNAME}
+./release.sh ${PROJECTNAME} ${PROJECTMAPPING}

@@ -14,7 +14,7 @@ DEBUGBIN=./deploy/debug/project/DEBUG-BIN
 
 ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=release' | awk '{print $1}'`
 if [ -n "$ACTIONLINE" ]; then
-   echo debug.sh modify action to debug
+   echo -e "debug.sh modify ${PROJECTNAME} to \033[35mdebug\033[0m"
    ACTIONLINEARRAY=(${ACTIONLINE})
    docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=debug" ${RUNNINGFILE}
 fi

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for project_name in $(ls ./)
+   do
+      [ -d $project_name ] && echo -e "\n\n\033[35mbuild $project_name\033[0m" && cd $project_name && ./clean > /dev/null && ./build $1 && cd ../
+   done
+   
+cd $project_name && ./clean > /dev/null && cd ../

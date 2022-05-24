@@ -1,7 +1,0 @@
-PROJECT=${PWD##*/}
-PROJECT=${PROJECT^^}
-
-make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$1 pre_build
-make -j8 -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$1
-make -C ../ VER_PRODUCT=${PROJECT} LEVEL_PRODUCT=$1 end_build
-mv ../${PROJECT}-BIN ./
