@@ -56,7 +56,7 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 
 	if(thread_enable_coroutine(pThread) == dave_true)
 	{
-		if(thread_coroutine_running_setp_go(pThread, thread_fun, msg) == dave_false)
+		if(thread_coroutine_running_step_go(pThread, thread_fun, msg) == dave_false)
 			thread_fun(msg);
 	}
 	else

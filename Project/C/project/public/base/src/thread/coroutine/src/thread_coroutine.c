@@ -352,7 +352,7 @@ _thread_coroutine_running_step_4(void *param)
 }
 
 static inline void *
-_thread_coroutine_running_setp_3(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
+_thread_coroutine_running_step_3(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
 {
 	ub wakeup_index;
 	CoroutineSite *pSite;
@@ -487,7 +487,7 @@ thread_coroutine_free(ThreadStruct *pThread)
 }
 
 dave_bool
-thread_coroutine_running_setp_go(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
+thread_coroutine_running_step_go(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 {
 	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
 		return dave_false;
@@ -505,9 +505,9 @@ thread_coroutine_running_setp_go(ThreadStruct *pThread, base_thread_fun thread_f
 }
 
 void *
-thread_coroutine_running_setp_setup(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
+thread_coroutine_running_step_setup(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
 {
-	return _thread_coroutine_running_setp_3(pSrcThread, src_id, dst_id, msg_id, msg_body, msg_len);
+	return _thread_coroutine_running_step_3(pSrcThread, src_id, dst_id, msg_id, msg_body, msg_len);
 }
 
 void *

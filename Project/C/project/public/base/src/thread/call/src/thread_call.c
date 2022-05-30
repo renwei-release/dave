@@ -68,7 +68,7 @@ thread_call_sync_pre(
 	ub wait_msg, u8 *wait_body, ub wait_len)
 {
 	if(thread_enable_coroutine(pSrcThread) == dave_true)
-		return thread_coroutine_running_setp_setup(pSrcThread, src_id, dst_id, wait_msg, wait_body, wait_len);
+		return thread_coroutine_running_step_setup(pSrcThread, src_id, dst_id, wait_msg, wait_body, wait_len);
 	else
 		return thread_sync_call_step_1_pre(pSrcThread, src_id, pDstThread, wait_msg, wait_body, wait_len);
 }
