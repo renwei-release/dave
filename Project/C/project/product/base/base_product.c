@@ -58,7 +58,13 @@ _base_thread_rpc_debug_req(ThreadId remote_thread_id)
 	pReq->double_debug = DOUBLE_DEBUG_VALUE;
 	pReq->void_debug = VOID_DEBUG_VALUE;
 
-	if(sync_msg(remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, &rsp) != NULL)
+	if(go(remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, &rsp) != NULL)
+	{
+		BASELOG("Runs successfully!");
+		_base_thread_rpc_debug_rsp(remote_thread_id, &rsp);
+	}
+
+	if(go(remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, &rsp) != NULL)
 	{
 		BASELOG("Runs successfully!");
 		_base_thread_rpc_debug_rsp(remote_thread_id, &rsp);

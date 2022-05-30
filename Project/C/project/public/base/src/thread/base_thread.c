@@ -1868,7 +1868,11 @@ base_thread_sync_msg(
 		return NULL;
 	}
 
-	pSync = thread_call_sync_pre(pSrcThread, &src_id, pDstThread, sync_id, sync_body, sync_len);
+	pSync = thread_call_sync_pre(
+		pSrcThread, &src_id,
+		pDstThread, dst_id,
+		sync_id, sync_body, sync_len);
+
 	if(pSync == NULL)
 	{
 		THREADLTRACE(60,1,"sync thread call failed! %s->%s:%s <%s:%d>",

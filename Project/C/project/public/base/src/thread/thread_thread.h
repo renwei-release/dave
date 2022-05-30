@@ -28,9 +28,11 @@ ThreadId thread_thread_self(ub *wakeup_index);
 
 ThreadSync * thread_thread_sync(ub thread_index, ub wakeup_index);
 
-void thread_thread_set_coroutine_point(ub thread_index, ub wakeup_index, void *point);
+void thread_thread_set_coroutine_site(ub thread_index, ub wakeup_index, void *point);
 
-void * thread_thread_get_coroutine_point(ub thread_index, ub wakeup_index);
+void * thread_thread_get_coroutine_site(ub thread_index, ub wakeup_index);
+
+void thread_thread_clean_coroutine_site(ub thread_index, ub wakeup_index);
 
 void __thread_thread_write__(ub thread_index, ub wakeup_index, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line);
 #define thread_thread_write(thread_index, wakeup_index, msg_id, msg_body) __thread_thread_write__(thread_index, wakeup_index, msg_id, sizeof(*msg_body), (void *)msg_body, (s8 *)__func__, (ub)__LINE__)

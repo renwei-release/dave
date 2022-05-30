@@ -889,7 +889,7 @@ thread_thread_read(void *param)
 }
 
 void
-thread_thread_set_coroutine_point(ub thread_index, ub wakeup_index, void *point)
+thread_thread_set_coroutine_site(ub thread_index, ub wakeup_index, void *point)
 {
 	ThreadThread *pTThread;
 
@@ -899,11 +899,16 @@ thread_thread_set_coroutine_point(ub thread_index, ub wakeup_index, void *point)
 		return;
 	}
 
+	if(pTThread->current_coroutine_point != NULL)
+	{
+		THREADABNOR("There is on-site information that has not been cleared!");
+	}
+
 	pTThread->current_coroutine_point = point;
 }
 
 void *
-thread_thread_get_coroutine_point(ub thread_index, ub wakeup_index)
+thread_thread_get_coroutine_site(ub thread_index, ub wakeup_index)
 {
 	ThreadThread *pTThread;
 	void *point;
@@ -921,9 +926,23 @@ thread_thread_get_coroutine_point(ub thread_index, ub wakeup_index)
 	}
 
 	point = pTThread->current_coroutine_point;
-	pTThread->current_coroutine_point = NULL;
 
 	return point;
+}
+
+void
+thread_thread_clean_coroutine_site(ub thread_index, ub wakeup_index)
+{
+	ThreadThread *pTThread;
+
+	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
+	if(pTThread == NULL)
+	{
+		THREADLOG("%d/%d has empty thread!", thread_index, wakeup_index);
+		return;
+	}
+
+	pTThread->current_coroutine_point = NULL;
 }
 
 #endif

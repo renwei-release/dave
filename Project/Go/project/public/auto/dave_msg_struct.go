@@ -227,8 +227,10 @@ type ClientIdle struct {
 
 /* for MSGID_COROUTINE_WAKEUP message */
 type CoroutineWakeup struct {
+	Wakeup_id uint64
 	Thread_index uint64
 	Wakeup_index uint64
+	Some_string [256] byte
 	Ptr uint64
 }
 

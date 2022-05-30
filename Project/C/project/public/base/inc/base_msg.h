@@ -249,8 +249,11 @@ typedef struct {
 
 /* for MSGID_COROUTINE_WAKEUP message */
 typedef struct {
+	ub wakeup_id;
+
 	ub thread_index;
 	ub wakeup_index;
+	s8 some_string[256];
 	void *ptr;
 } CoroutineWakeup;
 

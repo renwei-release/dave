@@ -62,12 +62,15 @@ thread_call_sync_check(void)
 }
 
 void *
-thread_call_sync_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, ThreadStruct *pDstThread, ub wait_msg, u8 *wait_body, ub wait_len)
+thread_call_sync_pre(
+	ThreadStruct *pSrcThread, ThreadId *src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub wait_msg, u8 *wait_body, ub wait_len)
 {
 	if(thread_enable_coroutine(pSrcThread) == dave_true)
-		return thread_coroutine_running_setp_setup(pSrcThread, sync_src_id, wait_msg, wait_body, wait_len);
+		return thread_coroutine_running_setp_setup(pSrcThread, src_id, dst_id, wait_msg, wait_body, wait_len);
 	else
-		return thread_sync_call_step_1_pre(pSrcThread, sync_src_id, pDstThread, wait_msg, wait_body, wait_len);
+		return thread_sync_call_step_1_pre(pSrcThread, src_id, pDstThread, wait_msg, wait_body, wait_len);
 }
 
 void *

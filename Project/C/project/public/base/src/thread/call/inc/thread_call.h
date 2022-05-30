@@ -22,7 +22,10 @@ MsgCallFun * thread_call_msg(ThreadId thread_id, ub msg_id);
 
 void thread_call_sync_check(void);
 
-void * thread_call_sync_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, ThreadStruct *pDstThread, ub wait_msg, u8 *wait_body, ub wait_len);
+void * thread_call_sync_pre(
+	ThreadStruct *pSrcThread, ThreadId *src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub wait_msg, u8 *wait_body, ub wait_len);
 
 void * thread_call_sync_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *pSync);
 
