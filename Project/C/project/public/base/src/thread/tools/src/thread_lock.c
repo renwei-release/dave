@@ -15,7 +15,7 @@
 #include "thread_tools.h"
 
 static s8 _lock_ptr[256];
-static s8 _exter_lock_ptr[256];
+static s8 _other_lock_ptr[256];
 
 // =====================================================================
 
@@ -23,14 +23,14 @@ void
 thread_lock_init(void)
 {
 	dave_os_spin_lock_init((void *)_lock_ptr);
-	dave_os_spin_lock_init((void *)_exter_lock_ptr);
+	dave_os_spin_lock_init((void *)_other_lock_ptr);
 }
 
 void
 thread_lock_exit(void)
 {
 	dave_os_spin_lock_destroy((void *)_lock_ptr);
-	dave_os_spin_lock_destroy((void *)_exter_lock_ptr);
+	dave_os_spin_lock_destroy((void *)_other_lock_ptr);
 }
 
 void
@@ -46,15 +46,15 @@ thread_unlock(void)
 }
 
 void
-thread_exter_lock(void)
+thread_other_lock(void)
 {
-	dave_os_spin_lock((void *)_exter_lock_ptr);
+	dave_os_spin_lock((void *)_other_lock_ptr);
 }
 
 void
-thread_exter_unlock(void)
+thread_other_unlock(void)
 {
-	dave_os_spin_unlock((void *)_exter_lock_ptr);
+	dave_os_spin_unlock((void *)_other_lock_ptr);
 }
 
 #endif

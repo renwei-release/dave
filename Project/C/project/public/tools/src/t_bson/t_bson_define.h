@@ -59,7 +59,9 @@ typedef struct {
 	tBsonData *pDataHead;
 	tBsonData *pDataTail;
 
-	tBsonData *pCurFind;
+	tBsonData *pCurKeyFind;
+	tBsonData *pCurIndexFind;
+
 	u64 key_bloom_filter;
 
 	tBsonSerialize serialize;

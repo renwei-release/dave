@@ -25,6 +25,7 @@
 #include "thread_remote_id_table.h"
 #include "thread_gid_table.h"
 #include "thread_wakeup_the_sleep.h"
+#include "thread_running.h"
 #include "thread_log.h"
 
 static void _thread_guardian_exit(MSGBODY *task_msg);
@@ -61,7 +62,7 @@ _thread_guardian_test(MSGBODY *task_msg)
 }
 
 static void
-_thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg)
+_thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg, ub rsp_len)
 {
 	s8 id_str[64], run_str[64], wakeup_str[64];
 	ub msg_id, run_time, wakeup_time;
@@ -74,20 +75,20 @@ _thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg)
 	run_time = stringdigital(run_str);
 	wakeup_time = stringdigital(wakeup_str);
 
-	dave_sprintf(rsp_msg, "setup statistics msg-id:%s run-time:%d wakup-time:%d",
+	dave_snprintf(rsp_msg, rsp_len, "setup statistics msg-id:%s run-time:%d wakup-time:%d",
 		msgstr(msg_id), run_time, wakeup_time);
 
 	thread_statistics_setup_all(msg_id, run_time, wakeup_time);
 }
 
 static void
-_thread_guardian_load_statistics(s8 *msg, s8 *rsp_msg)
+_thread_guardian_load_statistics(s8 *msg, s8 *rsp_msg, ub rsp_len)
 {
 	ub msg_id, run_time, wakeup_time;
 
 	thread_statistics_load_all(&msg_id, &run_time, &wakeup_time);
 
-	dave_sprintf(rsp_msg, "load statistics msg-id:%s run-time:%d wakup-time:%d",
+	dave_snprintf(rsp_msg, rsp_len, "load statistics msg-id:%s run-time:%d wakup-time:%d",
 		msgstr(msg_id), run_time, wakeup_time);
 }
 
@@ -113,11 +114,11 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 
 	if(pReq->msg[0] == 's')
 	{
-		_thread_guardian_setup_statistics(&(pReq->msg[1]), pRsp->msg);
+		_thread_guardian_setup_statistics(&(pReq->msg[1]), pRsp->msg, sizeof(pRsp->msg));
 	}
 	else if(pReq->msg[0] == 'l')
 	{
-		_thread_guardian_load_statistics(&(pReq->msg[1]), pRsp->msg);
+		_thread_guardian_load_statistics(&(pReq->msg[1]), pRsp->msg, sizeof(pRsp->msg));
 	}
 	else if(pReq->msg[0] == 'b')
 	{
@@ -217,7 +218,7 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 		{
 			_thread_guardian_thread_option(pThread, thread_index, run->initialization_flag);
 
-			thread_run_user_fun(
+			thread_running(
 				(ThreadStack **)(run->param),
 				(base_thread_fun)(run->thread_fun),
 				pThread,
@@ -236,7 +237,7 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 		{
 			pThread->has_initialization = dave_false;
 
-			thread_run_user_fun(
+			thread_running(
 				(ThreadStack **)(run->param),
 				(base_thread_fun)(run->thread_fun),
 				pThread,

@@ -17,8 +17,6 @@
 #define CREAT_SW_TIMER_MIN_VALUE (1000)						// ms
 #define CREAT_SW_TIMER_MAX_VALUE (1000*60*60*24*7UL)		// ms
 
-#define TIMER_THREAD_NAME "timer"
-
 typedef enum {
 	CREATE_TIMER,
 	DIE_TIMER,

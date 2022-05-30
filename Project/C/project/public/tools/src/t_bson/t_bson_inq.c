@@ -30,6 +30,19 @@ _t_bson_key_inq(tBsonObject *pBson, char *key_ptr, size_t key_len)
 		return NULL;
 	}
 
+	if(pBson->pCurKeyFind != NULL)
+	{
+		pInq = pBson->pCurKeyFind;
+
+		if((pInq->key_len == key_len)
+			&& (memcmp(pInq->key_ptr, key_ptr, key_len) == 0))
+		{
+			pBson->pCurKeyFind = (tBsonData *)(pInq->next);
+
+			return pInq;
+		}		
+	}
+
 	pInq = pBson->pDataHead;
 
 	while(pInq != NULL)
@@ -37,6 +50,8 @@ _t_bson_key_inq(tBsonObject *pBson, char *key_ptr, size_t key_len)
 		if((pInq->key_len == key_len)
 			&& (memcmp(pInq->key_ptr, key_ptr, key_len) == 0))
 		{
+			pBson->pCurKeyFind = (tBsonData *)(pInq->next);
+
 			return pInq;
 		}
 
@@ -52,20 +67,20 @@ _t_bson_index_inq(tBsonObject *pBson, size_t inq_index)
 	tBsonData *pInq;
 	size_t index;
 
-	if(pBson->pCurFind == NULL)
+	if(pBson->pCurIndexFind == NULL)
 	{
 		pInq = pBson->pDataHead;
 		index = 0;
 	}
-	else if(inq_index >= pBson->pCurFind->list_index)
+	else if(inq_index >= pBson->pCurIndexFind->list_index)
 	{
-		pInq = pBson->pCurFind;
-		index = pBson->pCurFind->list_index;
+		pInq = pBson->pCurIndexFind;
+		index = pBson->pCurIndexFind->list_index;
 	}
 	else
 	{
 		TOOLSLOG("There is a reverse lookup, and the algorithm needs to be optimized %x %d/%d",
-			pBson, inq_index, pBson->pCurFind->list_index);
+			pBson, inq_index, pBson->pCurIndexFind->list_index);
 		pInq = pBson->pDataHead;
 		index = 0;
 	}
@@ -74,7 +89,7 @@ _t_bson_index_inq(tBsonObject *pBson, size_t inq_index)
 	{
 		if(index == inq_index)
 		{
-			pBson->pCurFind = (tBsonData *)(pInq->next);
+			pBson->pCurIndexFind = (tBsonData *)(pInq->next);
 
 			return pInq;
 		}

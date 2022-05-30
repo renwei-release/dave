@@ -143,6 +143,7 @@ void
 thread_msg_call_unregister(ThreadId thread_id, ub msg_id)
 {
 	thread_id = thread_get_local(thread_id);
+
 	_thread_msg_call_del(thread_id, msg_id);
 }
 
@@ -150,6 +151,7 @@ MsgCallFun *
 thread_msg_call(ThreadId thread_id, ub msg_id)
 {
 	thread_id = thread_get_local(thread_id);
+
 	return _thread_msg_call_inq(thread_id, msg_id);
 }
 

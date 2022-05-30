@@ -53,5 +53,10 @@ void * __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line);
 #define base_ramkv_del_bin_ptr(ramkv, bin_data, bin_len) __base_ramkv_del_bin_ptr__(ramkv, bin_data, bin_len, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_inq_top_ptr(ramkv) __base_ramkv_inq_top_ptr__(ramkv, (s8 *)__func__, (ub)__LINE__)
 
+#define kv_malloc base_ramkv_malloc
+#define kv_free base_ramkv_free
+#define kv_add_ub_ptr base_ramkv_add_ub_ptr
+#define kv_del_ub_ptr base_ramkv_del_ub_ptr
+
 #endif
 

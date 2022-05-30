@@ -24,13 +24,16 @@ include LIB
 OBJS := $(patsubst %.c,%.o,$(SOURCES))
 OBJS := $(patsubst %.cpp,%.o,$(OBJS))
 OBJS := $(patsubst %.cu,%.o,$(OBJS))
+OBJS := $(patsubst %.S,%.o,$(OBJS))
 
 GCNO := $(patsubst %.c,%.gcno,$(SOURCES))
 GCNO := $(patsubst %.cpp,%.gcno,$(GCNO))
 GCNO := $(patsubst %.cu,%.gcno,$(GCNO))
+GCNO := $(patsubst %.S,%.gcno,$(GCNO))
 GCDA := $(patsubst %.c,%.gcda,$(SOURCES))
 GCDA := $(patsubst %.cpp,%.gcda,$(GCDA))
 GCDA := $(patsubst %.cu,%.gcda,$(GCDA))
+GCDA := $(patsubst %.S,%.gcda,$(GCDA))
 
 CC := gcc
 CPLUS := g++
@@ -57,11 +60,17 @@ endif
 $(NAME_PRODUCT)-BIN: $(OBJS)
 	@$(CC) -o $@ $^ $(CFLAGS) $(LIB)
 %.o: %.c
+	@echo $<
 	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 %.o: %.cpp
+	@echo $<
 	@$(CPLUS) -o $@ -c $< $(CPLUSFLAGS) $(INCLUDE)
 %.o: %.cu
+	@echo $<
 	@$(NVCC) -o $@ -c $< $(NVCCFLAGS) $(INCLUDE)
+%.o: %.S
+	@echo $<
+	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 
 pre_build:
 	python3 ../../../../Tools/refresh_version/refresh_version.py "../../../../" $(NAME_PRODUCT)

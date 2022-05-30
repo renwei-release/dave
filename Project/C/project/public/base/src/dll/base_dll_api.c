@@ -50,7 +50,7 @@ dave_dll_cfg_set(char *cfg_name, char *cfg_ptr)
 		return -1;
 	}
 
-	if(cfg_set((s8 *)cfg_name, (u8 *)cfg_ptr, cfg_len) == dave_false)
+	if(cfg_set((s8 *)cfg_name, (u8 *)cfg_ptr, cfg_len) != RetCode_OK)
 		return -1;
 	else
 		return 0;

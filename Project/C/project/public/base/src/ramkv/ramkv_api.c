@@ -37,6 +37,9 @@ ramkv_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *f
 {
 	dave_bool ret;
 
+	if(__ramkv_check__(pKV, fun, line) == dave_false)
+		return dave_false;
+
 	if((key_ptr == NULL) || (key_len == 0))
 	{
 		KVLOG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
@@ -75,6 +78,9 @@ ramkv_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_
 {
 	ub ret;
 
+	if(__ramkv_check__(pKV, fun, line) == dave_false)
+		return 0;
+
 	switch(pKV->attrib)
 	{
 		case KvAttrib_ram:
@@ -101,6 +107,9 @@ ub
 ramkv_del(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	ub ret;
+
+	if(__ramkv_check__(pKV, fun, line) == dave_false)
+		return 0;
 
 	switch(pKV->attrib)
 	{
@@ -136,6 +145,9 @@ ramkv_top(KV *pKV, u8 *key_ptr, ub key_len)
 {
 	dave_bool ret;
 
+	if(ramkv_check(pKV) == dave_false)
+		return dave_false;
+
 	switch(pKV->attrib)
 	{
 		case KvAttrib_ram:
@@ -154,6 +166,9 @@ ramkv_top(KV *pKV, u8 *key_ptr, ub key_len)
 ub
 ramkv_info(KV *pKV, s8 *info_ptr, ub info_len)
 {
+	if(ramkv_check(pKV) == dave_false)
+		return 0;
+
 	return ramkv_timer_info(pKV, info_ptr, info_len);
 }
 

@@ -256,8 +256,8 @@ _thread_busy_idle_notify_busy(ThreadBusyIdle *pThread)
 			pBusy->msg_id = pList->msg_id;
 			pBusy->msg_number = pList->msg_number;
 
-			THREADLOG("thread:%s msg:%d number:%d busy to %s",
-				pBusy->thread_name, pBusy->msg_id, pBusy->msg_number,
+			THREADLOG("thread:%s msg:%s number:%d busy to %s",
+				pBusy->thread_name, msgstr(pBusy->msg_id), pBusy->msg_number,
 				thread_name(pList->thread_id));
 
 			id_msg(pList->thread_id, MSGID_THREAD_BUSY, pBusy);

@@ -120,16 +120,10 @@ _thread_sync_call_load_sync(ThreadStruct *pThread, ub wakeup_index)
 	return pSync;
 }
 
-static inline ub
-_thread_sync_get_wakeup_index(ThreadId thread_id)
-{
-	return thread_get_wakeup(thread_id);
-}
-
 static inline ThreadId
 _thread_sync_set_index(ThreadId thread_id, ub *wakeup_index)
 {
-	if(thread_thread_self(wakeup_index, NULL) == thread_id)
+	if(thread_thread_self(wakeup_index) == thread_id)
 	{
 		return thread_set_wakeup(thread_id, *wakeup_index);
 	}
@@ -181,7 +175,7 @@ thread_sync_call_check(void)
 	_thread_sync_call_check_safe();
 }
 
-ThreadSync *
+void *
 thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, ThreadStruct *pDstThread, ub wait_msg, u8 *wait_body, ub wait_len)
 {
 	ub wakeup_index;
@@ -213,7 +207,7 @@ thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, Thr
 
 	while(t_trylock_mutex(&(pSync->sync_pv)) == dave_false)
 	{
-		if((++ safe_counter) > 1024)
+		if((++ safe_counter) > 10240)
 		{
 			THREADLOG("Only one can be locked at a time:%s->%s:%d",
 				pDstThread->thread_name, pSrcThread->thread_name, wait_msg);
@@ -235,8 +229,9 @@ thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, Thr
 }
 
 void *
-thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, ThreadSync *pSync)
+thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *param)
 {
+	ThreadSync *pSync = (ThreadSync *)param;
 	dave_bool wait_timerout = dave_false;
 	ub wait_start_time;
 
@@ -281,7 +276,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 }
 
 dave_bool
-thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadId wait_thread, ub wait_msg, void *catch_body, ub catch_len)
+thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadId wait_thread, ub wait_msg, void *wait_body, ub wait_len)
 {
 	ThreadSync *pSync;
 	ub wakeup_index;
@@ -289,10 +284,10 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 
 	if(_syncc_thread_id == INVALID_THREAD_ID)
 	{
-		_syncc_thread_id = thread_map_id((s8 *)SYNC_CLIENT_THREAD_NAME);
+		_syncc_thread_id = thread_map_id(SYNC_CLIENT_THREAD_NAME);
 	}
 
-	wakeup_index = _thread_sync_get_wakeup_index(dst_id);
+	wakeup_index = thread_get_wakeup(dst_id);
 
 	if((pDstThread != NULL)
 		&& (wakeup_index != INVALID_THREAD_ID)
@@ -305,18 +300,18 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 			&& ((thread_get_local(pSync->wait_thread) == thread_get_local(wait_thread)) || (thread_id(pSync->wait_name) == thread_get_local(wait_thread)))
 			&& (pSync->wait_msg == wait_msg))
 		{
-			if(pSync->wait_len != catch_len)
+			if(pSync->wait_len != wait_len)
 			{
-				THREADABNOR("catch_len:%d and wait_len:%d is mismatch! thread:%s/%s msg:%d",
-					catch_len, pSync->wait_len,
+				THREADABNOR("wait_len:%d and wait_len:%d is mismatch! thread:%s/%s msg:%d",
+					wait_len, pSync->wait_len,
 					pDstThread->thread_name, thread_name(wait_thread), wait_msg);
 			}
-			if(pSync->wait_len > catch_len)
+			if(pSync->wait_len > wait_len)
 			{
-				pSync->wait_len = catch_len;
+				pSync->wait_len = wait_len;
 			}
 
-			dave_memcpy(pSync->wait_body, catch_body, pSync->wait_len);
+			dave_memcpy(pSync->wait_body, wait_body, pSync->wait_len);
 
 			unlock = (pSync->wait_thread != INVALID_THREAD_ID) ? dave_true : dave_false;
 

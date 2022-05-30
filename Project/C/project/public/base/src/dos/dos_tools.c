@@ -357,7 +357,7 @@ dos_opt_u16_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *u16_name)
 		switch(type)
 		{
 			case DosUserOpt_SET:
-					if(cfg_set(u16_name, (u8 *)(&u16_value), sizeof(u16)) == dave_true)
+					if(cfg_set(u16_name, (u8 *)(&u16_value), sizeof(u16)) == RetCode_OK)
 					{
 						dave_sprintf(out_msg, "%s set config success:%d", msg, u16_value);
 					}
@@ -404,7 +404,7 @@ dos_opt_ip_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *server_name)
 		switch(type)
 		{
 			case DosUserOpt_SET:
-					if(cfg_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
+					if(cfg_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == RetCode_OK)
 					{
 						dave_sprintf(out_msg, "%s set server ip success:%d.%d.%d.%d",
 							msg, ip_v4[0], ip_v4[1], ip_v4[2], ip_v4[3]);
@@ -455,7 +455,7 @@ dos_opt_ip_port_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *server_name, s8 *por
 		switch(type)
 		{
 			case DosUserOpt_SET:
-					if(cfg_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == dave_true)
+					if(cfg_set(server_name, ip_v4, DAVE_IP_V4_ADDR_LEN) == RetCode_OK)
 					{
 						if(port == 0)
 						{
@@ -468,7 +468,7 @@ dos_opt_ip_port_cfg(char *msg, s8 *cmd_ptr, ub cmd_len, s8 *server_name, s8 *por
 					}
 					if(port != 0)
 					{
-						if(cfg_set(port_name, (u8 *)(&port), sizeof(port)) == dave_true)
+						if(cfg_set(port_name, (u8 *)(&port), sizeof(port)) == RetCode_OK)
 						{
 							dave_sprintf(out_msg, "%s set config success:%s", msg, ipv4str(ip_v4, port));
 						}

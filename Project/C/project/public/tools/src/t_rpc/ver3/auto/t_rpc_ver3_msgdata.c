@@ -1384,6 +1384,52 @@ t_rpc_ver3_unzip_ClientIdle(void **unzip_data, ub *unzip_len, void *pStructBson)
 }
 
 void *
+t_rpc_ver3_zip_CoroutineWakeup(CoroutineWakeup *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(CoroutineWakeup) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(CoroutineWakeup) does not match(%d/%d), please contact the message settlers!", sizeof(CoroutineWakeup), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ub-thread_index", t_rpc_ver3_zip_ub(zip_data->thread_index));
+	t_bson_add_object(pStructBson, "ub-wakeup_index", t_rpc_ver3_zip_ub(zip_data->wakeup_index));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_CoroutineWakeup(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		CoroutineWakeup *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(CoroutineWakeup);
+
+		t_rpc_ver3_unzip_ub(&(pUnzip->thread_index), t_bson_inq_object(pStructBson, "ub-thread_index"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->wakeup_index), t_bson_inq_object(pStructBson, "ub-wakeup_index"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
 t_rpc_ver3_zip_DBHybridAddListReq(DBHybridAddListReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -3758,13 +3804,13 @@ t_rpc_ver3_unzip_RESTARTRSPMSG(void **unzip_data, ub *unzip_len, void *pStructBs
 }
 
 void *
-t_rpc_ver3_zip_RPCDebugMsg(RPCDebugMsg *zip_data, ub zip_len)
+t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
 
-	if(sizeof(RPCDebugMsg) != zip_len)
+	if(sizeof(RPCDebugReq) != zip_len)
 	{
-	    TOOLSABNOR("Discover this message(RPCDebugMsg) does not match(%d/%d), please contact the message settlers!", sizeof(RPCDebugMsg), zip_len);
+	    TOOLSABNOR("Discover this message(RPCDebugReq) does not match(%d/%d), please contact the message settlers!", sizeof(RPCDebugReq), zip_len);
 		return NULL;
 	}
 
@@ -3789,7 +3835,7 @@ t_rpc_ver3_zip_RPCDebugMsg(RPCDebugMsg *zip_data, ub zip_len)
 }
 
 dave_bool
-t_rpc_ver3_unzip_RPCDebugMsg(void **unzip_data, ub *unzip_len, void *pStructBson)
+t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson)
 {
 	dave_bool ret = dave_true;
 
@@ -3802,9 +3848,77 @@ t_rpc_ver3_unzip_RPCDebugMsg(void **unzip_data, ub *unzip_len, void *pStructBson
 	}
 	else
 	{
-		RPCDebugMsg *pUnzip = thread_msg(pUnzip);
+		RPCDebugReq *pUnzip = thread_msg(pUnzip);
 		*unzip_data = pUnzip;
-		*unzip_len = sizeof(RPCDebugMsg);
+		*unzip_len = sizeof(RPCDebugReq);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
+		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));
+		t_rpc_ver3_unzip_u8(&(pUnzip->u8_debug), t_bson_inq_object(pStructBson, "u8-u8_debug"));
+		t_rpc_ver3_unzip_s16(&(pUnzip->s16_debug), t_bson_inq_object(pStructBson, "s16-s16_debug"));
+		t_rpc_ver3_unzip_u16(&(pUnzip->u16_debug), t_bson_inq_object(pStructBson, "u16-u16_debug"));
+		t_rpc_ver3_unzip_s32(&(pUnzip->s32_debug), t_bson_inq_object(pStructBson, "s32-s32_debug"));
+		t_rpc_ver3_unzip_u32(&(pUnzip->u32_debug), t_bson_inq_object(pStructBson, "u32-u32_debug"));
+		t_rpc_ver3_unzip_s64(&(pUnzip->s64_debug), t_bson_inq_object(pStructBson, "s64-s64_debug"));
+		t_rpc_ver3_unzip_u64(&(pUnzip->u64_debug), t_bson_inq_object(pStructBson, "u64-u64_debug"));
+		t_rpc_ver3_unzip_float(&(pUnzip->float_debug), t_bson_inq_object(pStructBson, "float-float_debug"));
+		t_rpc_ver3_unzip_double(&(pUnzip->double_debug), t_bson_inq_object(pStructBson, "double-double_debug"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->void_debug), t_bson_inq_object(pStructBson, "void-void_debug"));
+		t_rpc_ver3_unzip_DateStruct(&(pUnzip->date_debug), t_bson_inq_object(pStructBson, "DateStruct-date_debug"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->mbuf_debug), t_bson_inq_object(pStructBson, "MBUF-mbuf_debug"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RPCDebugRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RPCDebugRsp) does not match(%d/%d), please contact the message settlers!", sizeof(RPCDebugRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret_debug", t_rpc_ver3_zip_RetCode(zip_data->ret_debug));
+	t_bson_add_object(pStructBson, "s8-s8_debug", t_rpc_ver3_zip_s8(zip_data->s8_debug));
+	t_bson_add_object(pStructBson, "u8-u8_debug", t_rpc_ver3_zip_u8(zip_data->u8_debug));
+	t_bson_add_object(pStructBson, "s16-s16_debug", t_rpc_ver3_zip_s16(zip_data->s16_debug));
+	t_bson_add_object(pStructBson, "u16-u16_debug", t_rpc_ver3_zip_u16(zip_data->u16_debug));
+	t_bson_add_object(pStructBson, "s32-s32_debug", t_rpc_ver3_zip_s32(zip_data->s32_debug));
+	t_bson_add_object(pStructBson, "u32-u32_debug", t_rpc_ver3_zip_u32(zip_data->u32_debug));
+	t_bson_add_object(pStructBson, "s64-s64_debug", t_rpc_ver3_zip_s64(zip_data->s64_debug));
+	t_bson_add_object(pStructBson, "u64-u64_debug", t_rpc_ver3_zip_u64(zip_data->u64_debug));
+	t_bson_add_object(pStructBson, "float-float_debug", t_rpc_ver3_zip_float(zip_data->float_debug));
+	t_bson_add_object(pStructBson, "double-double_debug", t_rpc_ver3_zip_double(zip_data->double_debug));
+	t_bson_add_object(pStructBson, "void-void_debug", t_rpc_ver3_zip_void_ptr(zip_data->void_debug));
+	t_bson_add_object(pStructBson, "DateStruct-date_debug", t_rpc_ver3_zip_DateStruct(&(zip_data->date_debug)));
+	t_bson_add_object(pStructBson, "MBUF-mbuf_debug", t_rpc_ver3_zip_MBUF_ptr(zip_data->mbuf_debug));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RPCDebugRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RPCDebugRsp);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
 		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));

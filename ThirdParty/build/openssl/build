@@ -11,6 +11,10 @@ if [ ! -d ./openssl-OpenSSL_${VERSION} ]; then
   tar -xzvf OpenSSL_${VERSION}.tar.gz
 fi
 
+yum install -y perl-FindBin.noarch
+yum install -y perl-File-Compare.noarch
+yum install -y perl-File-Copy.noarch
+
 cd openssl-OpenSSL_${VERSION}
 
 ./config -fPIC no-shared --prefix=/dave/tools/openssl --openssldir=/dave/tools/openssl

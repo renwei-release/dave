@@ -21,7 +21,7 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
-#define SYNC_CLIENT_THREAD_MAX 3
+#define SYNC_CLIENT_THREAD_MAX 1
 
 static ThreadId _sync_client_thread = INVALID_THREAD_ID;
 

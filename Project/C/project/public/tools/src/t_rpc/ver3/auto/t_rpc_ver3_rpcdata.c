@@ -229,6 +229,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_CLIENT_IDLE:
 				pBson = t_rpc_ver3_zip_ClientIdle((ClientIdle *)msg_body, msg_len);
 			break;
+		case MSGID_COROUTINE_WAKEUP:
+				pBson = t_rpc_ver3_zip_CoroutineWakeup((CoroutineWakeup *)msg_body, msg_len);
+			break;
 		case MSGID_DEBUG_REQ:
 				pBson = t_rpc_ver3_zip_DebugReq((DebugReq *)msg_body, msg_len);
 			break;
@@ -280,8 +283,11 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_RESTART_RSP:
 				pBson = t_rpc_ver3_zip_RESTARTRSPMSG((RESTARTRSPMSG *)msg_body, msg_len);
 			break;
-		case MSGID_RPC_DEBUG_MSG:
-				pBson = t_rpc_ver3_zip_RPCDebugMsg((RPCDebugMsg *)msg_body, msg_len);
+		case MSGID_RPC_DEBUG_REQ:
+				pBson = t_rpc_ver3_zip_RPCDebugReq((RPCDebugReq *)msg_body, msg_len);
+			break;
+		case MSGID_RPC_DEBUG_RSP:
+				pBson = t_rpc_ver3_zip_RPCDebugRsp((RPCDebugRsp *)msg_body, msg_len);
 			break;
 		case MSGID_RUN_FUNCTION:
 				pBson = t_rpc_ver3_zip_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, msg_len);
@@ -590,6 +596,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_CLIENT_IDLE:
 				ret = t_rpc_ver3_unzip_ClientIdle(msg_body, msg_len, pBson);
 			break;
+		case MSGID_COROUTINE_WAKEUP:
+				ret = t_rpc_ver3_unzip_CoroutineWakeup(msg_body, msg_len, pBson);
+			break;
 		case MSGID_DEBUG_REQ:
 				ret = t_rpc_ver3_unzip_DebugReq(msg_body, msg_len, pBson);
 			break;
@@ -641,8 +650,11 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_RESTART_RSP:
 				ret = t_rpc_ver3_unzip_RESTARTRSPMSG(msg_body, msg_len, pBson);
 			break;
-		case MSGID_RPC_DEBUG_MSG:
-				ret = t_rpc_ver3_unzip_RPCDebugMsg(msg_body, msg_len, pBson);
+		case MSGID_RPC_DEBUG_REQ:
+				ret = t_rpc_ver3_unzip_RPCDebugReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_RPC_DEBUG_RSP:
+				ret = t_rpc_ver3_unzip_RPCDebugRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_RUN_FUNCTION:
 				ret = t_rpc_ver3_unzip_RUNFUNCTIONMSG(msg_body, msg_len, pBson);

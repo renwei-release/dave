@@ -12,7 +12,7 @@
 #if defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_BASE__)
 #define SYNC_STACK_SERVER
 #endif
-#if !(defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_LOG__) || defined(__DAVE_PRODUCT_DEBUG__))
+#if !(defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_LOG__))
 #define SYNC_STACK_CLIENT
 #endif
 

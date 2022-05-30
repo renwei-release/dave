@@ -35,6 +35,7 @@ typedef struct {
 	s8 thread_name[THREAD_NAME_MAX];
 	ub thread_index;
 	ThreadId thread_id;
+	ThreadQueue thread_queue[THREAD_THREAD_QUEUE_NUM];
 
 	volatile ThreadState state;
 
@@ -45,6 +46,7 @@ typedef struct {
 	ub wakeup_index;
 
 	ThreadSync sync;
+	void *current_coroutine_point;
 } ThreadThread;
 
 typedef struct {
@@ -53,7 +55,16 @@ typedef struct {
 } ThreadSelfMap;
 
 typedef struct {
-	volatile ub current_wakeup_tthread_index;
+	ThreadThread *pTThread;
+	void *next;
+} ThreadIndexList;
+
+typedef struct {
+	TLock pv;
+
+	ThreadIndexList *pList;
+	ThreadIndexList *pCurr;
+
 	ThreadThread *pTThread[THREAD_THREAD_MAX];
 } ThreadIndexMap;
 
@@ -71,12 +82,14 @@ _tthread_reset(ThreadThread *pTThread)
 	dave_memset(pTThread->thread_name, 0x00, sizeof(pTThread->thread_name));
 	pTThread->thread_index = THREAD_MAX;
 	pTThread->thread_id = INVALID_THREAD_ID;
+	thread_queue_reset(pTThread->thread_queue, THREAD_THREAD_QUEUE_NUM);
 
 	pTThread->state = ThreadState_INIT;
 
 	pTThread->wakeup_index = 0;
 
 	thread_reset_sync(&(pTThread->sync));
+	pTThread->current_coroutine_point = NULL;
 }
 
 static void
@@ -87,6 +100,8 @@ _tthread_reset_all(void)
 	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
 	{		
 		dave_memset(&_thread_thread[tthread_index], 0x00, sizeof(ThreadThread));
+
+		thread_queue_booting(_thread_thread[tthread_index].thread_queue, THREAD_THREAD_QUEUE_NUM);
 
 		t_lock_reset(&(_thread_thread[tthread_index].sync.sync_pv));
 
@@ -121,7 +136,9 @@ _tthread_reset_index_map(ThreadIndexMap *pMap)
 	{
 		dave_memset(pMap, 0x00, sizeof(ThreadIndexMap));
 
-		pMap->current_wakeup_tthread_index = 0;
+		t_lock_reset(&(pMap->pv));
+
+		pMap->pList = pMap->pCurr = NULL;
 	}
 }
 
@@ -158,7 +175,7 @@ _tthread_sleep_thread(ThreadThread *pTThread)
 	pthread_mutex_unlock(&(pTThread->m_mutex_t));
 }
 
-static dave_bool
+static inline dave_bool
 _tthread_wakeup_thread(ThreadThread *pTThread)
 {
 	pthread_mutex_lock(&(pTThread->m_mutex_t));
@@ -178,11 +195,11 @@ _tthread_running_thread(ThreadThread *pTThread)
 
 	if(_schedule_thread_fun != NULL)
 	{
-		loop_counter = _schedule_thread_fun(pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
+		loop_counter = _schedule_thread_fun(pTThread, pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
 
 		while(((loop_counter --) >= 0) && (pTThread->state == ThreadState_RUNNING))
 		{
-			_schedule_thread_fun(pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
+			_schedule_thread_fun(pTThread, pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
 		}
 	}
 }
@@ -254,7 +271,7 @@ _tthread_creat_thread(ThreadThread *pTThread)
 	}
 }
 
-static pthread_t
+static inline pthread_t
 _tthread_self_thread(void)
 {
 	return pthread_self();
@@ -291,7 +308,7 @@ _tthread_exit(void)
 }
 
 static ThreadThread *
-_tthread_find_ptr(ub thread_index, ub wakeup_index, dave_bool find_new)
+_tthread_find_thread(ub thread_index, dave_bool find_new)
 {
 	ub tthread_index, safe_counter;
 	ThreadThread *pTThread;
@@ -315,16 +332,7 @@ _tthread_find_ptr(ub thread_index, ub wakeup_index, dave_bool find_new)
 
 		if((find_new == dave_false) && (thread_index == _thread_thread[tthread_index].thread_index))
 		{
-			if(wakeup_index >= THREAD_THREAD_MAX)
-			{
-				pTThread = &_thread_thread[tthread_index];
-				break;
-			}
-			else if(wakeup_index == _thread_thread[tthread_index].wakeup_index)
-			{
-				pTThread = &_thread_thread[tthread_index];
-				break;
-			}
+			pTThread = &_thread_thread[tthread_index];
 		}
 
 		tthread_index ++;
@@ -333,7 +341,7 @@ _tthread_find_ptr(ub thread_index, ub wakeup_index, dave_bool find_new)
 	return pTThread;
 }
 
-static ThreadSelfMap *
+static inline ThreadSelfMap *
 _tthread_find_self_map(pthread_t self, ThreadThread *pTThread, dave_bool find_new)
 {
 	ub map_index, safe_counter;
@@ -374,56 +382,10 @@ _tthread_find_self_map(pthread_t self, ThreadThread *pTThread, dave_bool find_ne
 	return pMap;
 }
 
-static void
-_tthread_find_index_map(ub thread_index, dave_bool add, ThreadThread *pTThread)
-{
-	ub tthread_index, move_tthread_index;
-
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADABNOR("invalid thread_index:%d", thread_index);
-		return;
-	}
-
-	if(add == dave_true)
-	{
-		for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
-		{
-			if(_index_map[thread_index].pTThread[tthread_index] == NULL)
-			{
-				_index_map[thread_index].pTThread[tthread_index] = pTThread;
-
-				break;
-			}
-		}
-	}
-	else
-	{
-		for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
-		{
-			if(_index_map[thread_index].pTThread[tthread_index] == pTThread)
-			{
-				_index_map[thread_index].pTThread[tthread_index] = NULL;
-			}
-		}
-
-		for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
-		{
-			if(_index_map[thread_index].pTThread[tthread_index] == NULL)
-			{
-				for(move_tthread_index=tthread_index+1; move_tthread_index<THREAD_THREAD_MAX; move_tthread_index++)
-				{
-					_index_map[thread_index].pTThread[move_tthread_index - 1] = _index_map[thread_index].pTThread[move_tthread_index];	
-				}
-			}
-		}
-	}
-}
-
-static ThreadThread *
+static inline ThreadThread *
 _tthread_find_wakeup_thread(ub thread_index)
 {
-	ThreadIndexMap *pMap;
+	ThreadIndexMap *pIndexMap;
 	ub safe_counter;
 	ThreadThread *pTThread;
 
@@ -433,39 +395,191 @@ _tthread_find_wakeup_thread(ub thread_index)
 		return NULL;
 	}
 
-	pMap = &_index_map[thread_index];
+	pIndexMap = &_index_map[thread_index];
 
 	safe_counter = 0;
 
 	pTThread = NULL;
 
-	thread_lock();
+	t_lock_spin(&(_index_map[thread_index].pv));
 
-	while(((++ safe_counter) <= THREAD_THREAD_MAX) && (pTThread == NULL))
+	while((pTThread == NULL) && ((++ safe_counter) <= THREAD_THREAD_MAX))
 	{
-		if(pMap->current_wakeup_tthread_index >= THREAD_THREAD_MAX)
+		if(pIndexMap->pCurr == NULL)
 		{
-			pMap->current_wakeup_tthread_index = 0;
+			pIndexMap->pCurr = pIndexMap->pList;
 		}
 
-		pTThread = pMap->pTThread[pMap->current_wakeup_tthread_index ++];
-
-		if(pTThread == NULL)
+		if(pIndexMap->pCurr == NULL)
 		{
-			pMap->current_wakeup_tthread_index = 0;
+			break;
 		}
+
+		pTThread = pIndexMap->pCurr->pTThread;
+		pIndexMap->pCurr = pIndexMap->pCurr->next;
 	}
 
-	thread_unlock();
+	t_unlock_spin(&(_index_map[thread_index].pv));
 
 	return pTThread;
 }
 
-static ThreadThread *
+static void
+_tthread_add_index_map(ub thread_index, ThreadThread *pTThread)
+{
+	ub tthread_index;
+	dave_bool find_node;
+
+	find_node = dave_false;
+	
+	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+	{
+		if((_index_map[thread_index].pTThread[tthread_index] == NULL)
+			&& (thread_index == tthread_index))
+		{
+			_index_map[thread_index].pTThread[tthread_index] = pTThread;
+			find_node = dave_true;
+			break;
+		}
+	}
+	
+	if(find_node == dave_false)
+	{
+		for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+		{
+			if(_index_map[thread_index].pTThread[tthread_index] == NULL)
+			{
+				_index_map[thread_index].pTThread[tthread_index] = pTThread;
+				break;
+			}
+		}
+	}
+}
+
+static void
+_tthread_del_index_map(ub thread_index, ThreadThread *pTThread)
+{
+	ub tthread_index, move_tthread_index;
+
+	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+	{
+		if(_index_map[thread_index].pTThread[tthread_index] == pTThread)
+		{
+			_index_map[thread_index].pTThread[tthread_index] = NULL;
+		}
+	}
+	
+	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+	{
+		if(_index_map[thread_index].pTThread[tthread_index] == NULL)
+		{
+			for(move_tthread_index=tthread_index+1; move_tthread_index<THREAD_THREAD_MAX; move_tthread_index++)
+			{
+				_index_map[thread_index].pTThread[move_tthread_index - 1] = _index_map[thread_index].pTThread[move_tthread_index];	
+			}
+		}
+	}
+}
+
+static void
+_tthread_add_list_map(ub thread_index, ThreadThread *pTThread)
+{
+	ub safe_counter;
+	ThreadIndexList *pList;
+
+	pList = _index_map[thread_index].pList;
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
+	{
+		if(pList == NULL)
+			break;
+
+		if(pList->pTThread == pTThread)
+		{
+			THREADABNOR("%s duplicate addition!", pTThread->thread_name, thread_index);
+			return;
+		}
+
+		pList = pList->next;
+	}
+
+	
+	pList = dave_malloc(sizeof(ThreadIndexList));
+	pList->pTThread = pTThread;
+	pList->next = NULL;
+
+	if(_index_map[thread_index].pList == NULL)
+	{
+		_index_map[thread_index].pList = _index_map[thread_index].pCurr = pList;
+	}
+	else
+	{
+		_index_map[thread_index].pCurr->next = pList;
+		_index_map[thread_index].pCurr = pList;
+	}
+}
+
+static void
+_tthread_del_list_map(ub thread_index, ThreadThread *pTThread)
+{
+	ub safe_counter;
+	ThreadIndexList *pUp, *pCurr;
+
+	pUp = pCurr = _index_map[thread_index].pList;
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
+	{
+		if(pCurr == NULL)
+			break;
+
+		if(pCurr->pTThread == pTThread)
+		{
+			if(_index_map[thread_index].pList == pCurr)
+			{
+				_index_map[thread_index].pList = _index_map[thread_index].pList->next;
+			}
+			else
+			{
+				if(pUp->next != pCurr)
+					THREADABNOR("Algorithm error!");
+				pUp->next = pCurr->next;
+			}
+
+			dave_free(pCurr);
+			break;
+		}
+
+		pUp = pCurr;
+		pCurr = pCurr->next;
+	}
+
+	_index_map[thread_index].pCurr = _index_map[thread_index].pList;
+}
+
+static void
+_tthread_opt_index_map(dave_bool add, ub thread_index, ThreadThread *pTThread)
+{
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	if(add == dave_true)
+	{
+		_tthread_add_index_map(thread_index, pTThread);
+		_tthread_add_list_map(thread_index, pTThread);
+	}
+	else
+	{
+		_tthread_del_index_map(thread_index, pTThread);
+		_tthread_del_list_map(thread_index, pTThread);
+	}
+}
+
+static inline ThreadThread *
 _tthread_find_my_thread(ub thread_index, ub wakeup_index)
 {
-	ThreadIndexMap *pMap;
-	ub tthread_index;
+	ThreadIndexList *pList;
+	ub safe_counter;
 
 	if(thread_index >= THREAD_MAX)
 	{
@@ -473,19 +587,22 @@ _tthread_find_my_thread(ub thread_index, ub wakeup_index)
 		return NULL;
 	}
 
-	pMap = &_index_map[thread_index];
+	pList = _index_map[thread_index].pList;
 
-	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
 	{
-		if(pMap->pTThread[tthread_index] == NULL)
+		if(pList == NULL)
 		{
 			break;
 		}
 
-		if(pMap->pTThread[tthread_index]->wakeup_index == wakeup_index)
+		if((pList->pTThread != NULL)
+			&& (pList->pTThread->wakeup_index == wakeup_index))
 		{
-			return pMap->pTThread[tthread_index];
+			return pList->pTThread;
 		}
+
+		pList = pList->next;
 	}
 
 	return NULL;
@@ -497,7 +614,7 @@ _tthread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub number_i
 	ThreadThread *pTThread;
 	dave_bool ret;
 
-	pTThread = _tthread_find_ptr(thread_index, THREAD_THREAD_MAX, dave_true);
+	pTThread = _tthread_find_thread(thread_index, dave_true);
 
 	ret = dave_true;
 
@@ -522,6 +639,7 @@ _tthread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub number_i
 		dave_snprintf(pTThread->thread_name, THREAD_NAME_MAX, "%s%s%d", dave_verno_my_product(), thread_name, number_index);
 		pTThread->thread_index = thread_index;
 		pTThread->thread_id = thread_id;
+		thread_queue_malloc(pTThread->thread_queue, THREAD_THREAD_QUEUE_NUM);
 
 		pTThread->wakeup_index = number_index;
 	}
@@ -534,7 +652,7 @@ _tthread_creat(s8 *thread_name, ub thread_index, ThreadId thread_id, ub number_i
 		{
 			_tthread_find_self_map(pTThread->thr_id, pTThread, dave_true);
 
-			_tthread_find_index_map(thread_index, dave_true, pTThread);
+			_tthread_opt_index_map(dave_true, thread_index, pTThread);
 		}
 	}
 
@@ -551,13 +669,15 @@ _tthread_die(ub thread_index)
 {
 	ThreadThread *pTThread;
 
-	pTThread = _tthread_find_ptr(thread_index, THREAD_THREAD_MAX, dave_false);
+	pTThread = _tthread_find_thread(thread_index, dave_false);
 
 	if(pTThread != NULL)
 	{
 		_tthread_reset_self_map(_tthread_find_self_map(pTThread->thr_id, pTThread, dave_false));
 
-		_tthread_find_index_map(thread_index, dave_false, pTThread);
+		_tthread_opt_index_map(dave_false, thread_index, pTThread);
+
+		thread_queue_free(pTThread->thread_queue, THREAD_THREAD_QUEUE_NUM);
 
 		_tthread_die_thread(pTThread);
 
@@ -674,7 +794,7 @@ thread_thread_is_main(void)
 }
 
 ThreadId
-thread_thread_self(ub *wakeup_index, ThreadSync **ppSync)
+thread_thread_self(ub *wakeup_index)
 {
 	ThreadSelfMap *pMap;
 	ThreadId thread_id;
@@ -688,10 +808,6 @@ thread_thread_self(ub *wakeup_index, ThreadSync **ppSync)
 		{
 			*wakeup_index = 0;
 		}
-		if(ppSync != NULL)
-		{
-			*ppSync = NULL;
-		}
 	}
 	else
 	{
@@ -699,10 +815,6 @@ thread_thread_self(ub *wakeup_index, ThreadSync **ppSync)
 		if(wakeup_index != NULL)
 		{
 			*wakeup_index = pMap->pTThread->wakeup_index;
-		}
-		if(ppSync != NULL)
-		{
-			*ppSync = &(pMap->pTThread->sync);
 		}
 	}
 
@@ -721,6 +833,97 @@ thread_thread_sync(ub thread_index, ub wakeup_index)
 	}
 
 	return &(pTThread->sync);
+}
+
+void
+__thread_thread_write__(
+	ub thread_index, ub wakeup_index,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	ThreadThread *pTThread;
+	ThreadStruct *pThread;
+	ThreadMsg *pMsg;
+
+	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
+	if(pTThread == NULL)
+	{
+		THREADABNOR("empty thread_index:%d wakeup_index:%d",
+			thread_index, wakeup_index);
+		return;
+	}
+
+	pThread = thread_find_busy_thread(pTThread->thread_id);
+
+	pMsg = thread_build_msg(
+		pThread,
+		pThread->thread_id, pThread->thread_id,
+		msg_id, msg_len, msg_body,
+		BaseMsgType_Unicast,
+		fun, line);
+
+	THREADDEBUG("%lx/%d/%d %s->%s:%s",
+		pTThread, thread_index, wakeup_index,
+		thread_name(pMsg->msg_body.msg_src), thread_name(pMsg->msg_body.msg_dst),
+		msgstr(pMsg->msg_body.msg_id));
+
+	thread_queue_write(pTThread->thread_queue, pMsg);
+}
+
+ThreadMsg *
+thread_thread_read(void *param)
+{
+	ThreadThread *pTThread = (ThreadThread *)param;
+	ThreadMsg *pMsg;
+
+	pMsg = thread_queue_read(pTThread->thread_queue, dave_false);
+	if(pMsg != NULL)
+	{
+		THREADDEBUG("%lx %s->%s:%s",
+			pTThread,
+			thread_name(pMsg->msg_body.msg_src), thread_name(pMsg->msg_body.msg_dst),
+			msgstr(pMsg->msg_body.msg_id));		
+	}
+
+	return pMsg;
+}
+
+void
+thread_thread_set_coroutine_point(ub thread_index, ub wakeup_index, void *point)
+{
+	ThreadThread *pTThread;
+
+	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
+	if(pTThread == NULL)
+	{
+		return;
+	}
+
+	pTThread->current_coroutine_point = point;
+}
+
+void *
+thread_thread_get_coroutine_point(ub thread_index, ub wakeup_index)
+{
+	ThreadThread *pTThread;
+	void *point;
+
+	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
+	if(pTThread == NULL)
+	{
+		THREADLOG("%d/%d has empty thread!", thread_index, wakeup_index);
+		return NULL;
+	}
+
+	if(pTThread->current_coroutine_point == NULL)
+	{
+		THREADABNOR("%s Algorithm exception!", pTThread->thread_name);
+	}
+
+	point = pTThread->current_coroutine_point;
+	pTThread->current_coroutine_point = NULL;
+
+	return point;
 }
 
 #endif

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=1.0
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+  wget https://github.com/Tencent/libco/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./libco-${VERSION} ]; then
+  tar -xf v${VERSION}.tar.gz
+fi
+
+cd ./libco-${VERSION}
+
+if [ ! -d build ]; then
+   mkdir build
+fi
+cd build && cmake .. && make
+
+cd $homepath
+
+if [ -d setup ]; then
+   rm -rf setup
+fi
+mkdir setup
+mkdir setup/include
+mkdir setup/lib
+cp -r ./libco-${VERSION}/*.h ./setup/include
+cp ./libco-${VERSION}/build/libcolib.a ./setup/lib
+
+rm -rf libco-${VERSION}

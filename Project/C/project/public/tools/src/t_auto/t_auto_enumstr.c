@@ -5433,9 +5433,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_LOCAL_THREAD_REMOVE:
 				value_str = "'MSGID_LOCAL_THREAD_REMOVE-28'";
 			break;
-		case MSGID_RPC_DEBUG_MSG:
-				value_str = "'MSGID_RPC_DEBUG_MSG-29'";
-			break;
 		case MSGID_CFG_UPDATE:
 				value_str = "'MSGID_CFG_UPDATE-30'";
 			break;
@@ -5450,6 +5447,15 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_INTERNAL_LOOP:
 				value_str = "'MSGID_INTERNAL_LOOP-34'";
+			break;
+		case MSGID_COROUTINE_WAKEUP:
+				value_str = "'MSGID_COROUTINE_WAKEUP-35'";
+			break;
+		case MSGID_RPC_DEBUG_REQ:
+				value_str = "'MSGID_RPC_DEBUG_REQ-36'";
+			break;
+		case MSGID_RPC_DEBUG_RSP:
+				value_str = "'MSGID_RPC_DEBUG_RSP-37'";
 			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";

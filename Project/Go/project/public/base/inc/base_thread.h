@@ -10,6 +10,9 @@
 
 #define SYNC_CLIENT_THREAD_NAME "syncc"
 #define SYNC_SERVER_THREAD_NAME "syncs"
+#define LOG_CLIENT_THREAD_NAME "logc"
+#define LOG_SERVER_THREAD_NAME "logs"
+#define TIMER_THREAD_NAME "timer"
 #define GUARDIAN_THREAD_NAME "g"
 
 #define INVALID_THREAD_ID (0xffffffffffffffff)
@@ -76,8 +79,8 @@ dave_bool base_thread_del(ThreadId thread_id);
 ThreadId base_thread_get_self(s8 *fun, ub line);
 ub base_thread_name_array(s8 thread_name[][64], ub thread_number);
 dave_bool __base_thread_trace_state__(s8 *fun, ub line);
-RetCode base_thread_msg_register(ThreadId src_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr);
-void base_thread_msg_unregister(ub msg_id);
+RetCode base_thread_msg_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr);
+void base_thread_msg_unregister(ThreadId thread_id, ub msg_id);
 
 ThreadId base_thread_get_local(ThreadId thread_id);
 ThreadId base_thread_get_id(const s8 *name, s8 *fun, ub line);
@@ -123,7 +126,7 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define broadcast_dismiss(thread_name, msg_id) base_thread_broadcast_msg(BaseMsgType_Broadcast_dismiss, thread_name, (ub)msg_id, 0, NULL, (s8 *)__func__, (ub)__LINE__)
 #define reg_msg(msg_id, msg_fun) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, NULL)
 #define reg_msgptr(msg_id, msg_fun, user_ptr) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, user_ptr)
-#define unreg_msg(msg_id) base_thread_msg_unregister((ub)msg_id)
+#define unreg_msg(msg_id) base_thread_msg_unregister(INVALID_THREAD_ID, (ub)msg_id)
 
 #endif
 

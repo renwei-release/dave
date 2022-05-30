@@ -8,11 +8,13 @@
 #ifndef __THREAD_QUEUE_H__
 #define __THREAD_QUEUE_H__
 
-void thread_queue_all_reset(ThreadStruct *pThread);
+void thread_queue_booting(ThreadQueue *pQueue, ub queue_number);
 
-void thread_queue_all_free(ThreadStruct *pThread);
+void thread_queue_reset(ThreadQueue *pQueue, ub queue_number);
 
-void thread_queue_all_malloc(ThreadStruct *pThread);
+void thread_queue_malloc(ThreadQueue *pQueue, ub queue_number);
+
+void thread_queue_free(ThreadQueue *pQueue, ub queue_number);
 
 RetCode thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg);
 

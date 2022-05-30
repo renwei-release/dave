@@ -22,13 +22,13 @@
 
 #define VERSION_MAIN "4"
 #if defined(__VERNO_ALPHA_VERSION__)
- #define VERSION_SUB "5"
+ #define VERSION_SUB "7"
 #else
- #define VERSION_SUB "6"
+ #define VERSION_SUB "8"
 #endif
-#define VERSION_REV "6"
+#define VERSION_REV "1"
 
-#define VERSION_DATE_TIME "20220524171335"
+#define VERSION_DATE_TIME "20220530103812"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -37,8 +37,8 @@
 #endif
 
 #define __BUILD_MAC_ADDRESS__ "000C29960DBF"
-#define __BUILD_HOSTNAME__ "fedora"
-#define __BUILD_USERNAME__ "renwei"
+#define __BUILD_HOSTNAME__ "fedora-renwei"
+#define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);
 s8 * dave_verno_reset(s8 *verno);

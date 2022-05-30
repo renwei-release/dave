@@ -225,6 +225,13 @@ type ClientIdle struct {
 	Ptr uint64
 }
 
+/* for MSGID_COROUTINE_WAKEUP message */
+type CoroutineWakeup struct {
+	Thread_index uint64
+	Wakeup_index uint64
+	Ptr uint64
+}
+
 /* for DBMSG_HYBRID_ADD_LIST_REQ message */
 type DBHybridAddListReq struct {
 	Table [DAVE_NORMAL_NAME_LEN] byte
@@ -628,8 +635,26 @@ type RESTARTRSPMSG struct {
 	Wait_flag int8
 }
 
-/* for MSGID_RPC_DEBUG_MSG message */
-type RPCDebugMsg struct {
+/* for MSGID_RPC_DEBUG_REQ message */
+type RPCDebugReq struct {
+	Ret_debug int64
+	S8_debug byte
+	U8_debug byte
+	S16_debug int16
+	U16_debug uint16
+	S32_debug int32
+	U32_debug uint32
+	S64_debug int64
+	U64_debug uint64
+	Float_debug float32
+	Double_debug float64
+	Void_debug unsafe.Pointer
+	Date_debug DateStruct
+	Mbuf_debug *MBUF
+}
+
+/* for MSGID_RPC_DEBUG_RSP message */
+type RPCDebugRsp struct {
 	Ret_debug int64
 	S8_debug byte
 	U8_debug byte

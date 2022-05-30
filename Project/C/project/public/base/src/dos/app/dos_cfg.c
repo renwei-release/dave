@@ -9,6 +9,7 @@
 #if defined(__DAVE_BASE__)
 #include "dave_base.h"
 #include "dave_os.h"
+#include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "dos_tools.h"
 #include "dos_show.h"
@@ -18,17 +19,11 @@
 static s8 *
 _dos_cfg_dir(s8 *dir_ptr, ub dir_len)
 {
-	s8 hostname[256], product[256];
+	dir_len = dave_snprintf(dir_ptr, dir_len, "%s", dave_os_file_home_dir());
 
-	if(dave_os_on_docker() == dave_true)
+	if(dir_ptr[dir_len- 1] == '/')
 	{
-		dave_os_load_host_name(hostname, sizeof(hostname));
-		dave_strfind(hostname, '-', product, sizeof(product));
-		dave_snprintf(dir_ptr, dir_len, "/dave/%s", product);
-	}
-	else
-	{
-		dave_snprintf(dir_ptr, dir_len, "%s", dave_os_file_home_dir());
+		dir_ptr[dir_len- 1] = '\0';
 	}
 
 	return dir_ptr;
@@ -80,10 +75,12 @@ _dos_cfg_get_one(s8 *cmd_ptr, ub cmd_len, s8 *show_ptr, ub show_len)
 }
 
 static ub
-_dos_cfg_get_all(s8 *show_ptr, ub show_len)
+_dos_cfg_get_dir_all(s8 *show_ptr, ub show_len, void *pJson)
 {
 	s8 dir[128];
 	s8 config_path[1024];
+	s8 json_data[128];
+	ub json_len;
 	MBUF *pList, *pConfigKey;
 	ub show_index = 0;
 
@@ -93,14 +90,70 @@ _dos_cfg_get_all(s8 *show_ptr, ub show_len)
 
 	while(pConfigKey != NULL)
 	{
-		show_index += _dos_cfg_get_one(
-			dave_mptr(pConfigKey), pConfigKey->len,
-			&show_ptr[show_index], show_len-show_index);
+		json_len = sizeof(json_data);
+
+		if(dave_json_get_str(pJson, (char *)dave_mptr(pConfigKey), json_data, &json_len) == dave_false)
+		{
+			show_index += _dos_cfg_get_one(
+				dave_mptr(pConfigKey), dave_mlen(pConfigKey),
+				&show_ptr[show_index], show_len-show_index);
+		}
 
 		pConfigKey = pConfigKey->next;
 	}
 
 	dave_mfree(pList);
+
+	return show_index;
+}
+
+static ub
+_dos_cfg_get_json_all(s8 *show_ptr, ub show_len, void **ppJson)
+{
+	s8 dir[128];
+	s8 config_json_path[1024];
+	ub data_len = 3 * 1024 * 1024;
+	ub read_len;
+	u8 *data_ptr;
+	void *pJson = NULL;
+
+	data_ptr = dave_malloc(data_len);
+
+	dave_snprintf(config_json_path, sizeof(config_json_path), "%s/config/CONFIG.json", _dos_cfg_dir(dir, sizeof(dir)));
+
+	read_len = dave_os_file_read(DIRECT_FLAG|READ_FLAG, config_json_path, 0, data_len, data_ptr);
+	if(read_len < data_len)
+		data_ptr[read_len] = '\0';
+
+	if(read_len > 0)
+	{
+		pJson = dave_string_to_json(data_ptr, read_len);
+	}
+
+	if(pJson != NULL)
+	{
+		show_len = dave_snprintf(show_ptr, show_len, "%s\n\n", dave_json_to_string(pJson, NULL));
+	}
+	else
+	{
+		show_len = 0;
+	}
+
+	*ppJson = pJson;
+
+	return show_len;
+}
+
+static ub
+_dos_cfg_get_all(s8 *show_ptr, ub show_len)
+{
+	ub show_index = 0;
+	void *pJson;
+
+	show_index += _dos_cfg_get_json_all(&show_ptr[show_index], show_len-show_index, &pJson);
+	show_index += _dos_cfg_get_dir_all(&show_ptr[show_index], show_len-show_index, pJson);
+
+	dave_json_free(pJson);
 
 	return show_index;
 }

@@ -67,6 +67,8 @@ else
    PROJECTNAME=${PROJECT}-${USERNAME}
 fi
 
+HOSTNAME=${HOSTNAME}-${PROJECTNAME}-docker
+
 if [ -f environment.sh ]; then
    ./environment.sh
 fi
@@ -92,9 +94,9 @@ exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}"`
 
 if [ "$exit_project_contains" == "" ]; then
    if [ "$GPU" == '"NULL"' ]; then
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${PROJECTNAME}-docker --name ${PROJECTNAME} ${IMAGE}:${TAG}
+      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${HOSTNAME} --name ${PROJECTNAME} ${IMAGE}:${TAG}
    else
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${PROJECTNAME}-docker --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
+      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${HOSTNAME} --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
    fi
 
    ./restore.sh $PROJECTNAME $PROJECT

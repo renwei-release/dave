@@ -34,6 +34,20 @@ _thread_queue_msg_clean(ThreadMsg *pMsg)
 }
 
 static inline void
+_thread_queue_booting(ThreadQueue *pQueue_ptr, ub queue_number)
+{
+	ub queue_index;
+	ThreadQueue *pQueue;
+
+	for(queue_index=0; queue_index<queue_number; queue_index++)
+	{
+		pQueue = &(pQueue_ptr[queue_index]);
+
+		t_lock_reset(&(pQueue->queue_opt_pv));
+	}
+}
+
+static inline void
 _thread_queue_reset(ThreadQueue *pQueue_ptr, ub queue_number)
 {
 	ub queue_index;
@@ -46,6 +60,28 @@ _thread_queue_reset(ThreadQueue *pQueue_ptr, ub queue_number)
 		SAFECODEv2W(pQueue->queue_opt_pv, {
 
 			pQueue->on_queue_process = dave_false;
+
+			pQueue->list_number = 0;
+			pQueue->queue_head = pQueue->queue_tail = NULL;
+
+			pQueue->queue_received_counter = 0;
+			pQueue->queue_processed_counter = 0;
+
+		} );
+	}
+}
+
+static inline void
+_thread_queue_malloc(ThreadQueue *pQueue_ptr, ub queue_number)
+{
+	ub queue_index;
+	ThreadQueue *pQueue;
+
+	for(queue_index=0; queue_index<queue_number; queue_index++)
+	{
+		pQueue = &(pQueue_ptr[queue_index]);
+	
+		SAFECODEv2W(pQueue->queue_opt_pv, {
 
 			pQueue->list_number = 0;
 			pQueue->queue_head = pQueue->queue_tail = NULL;
@@ -95,55 +131,6 @@ _thread_queue_free(ThreadQueue *pQueue_ptr, ub queue_number)
 
 		} );
 	}
-}
-
-static inline void
-_thread_queue_malloc(ThreadQueue *pQueue_ptr, ub queue_number)
-{
-	ub queue_index;
-	ThreadQueue *pQueue;
-
-	for(queue_index=0; queue_index<queue_number; queue_index++)
-	{
-		pQueue = &(pQueue_ptr[queue_index]);
-	
-		SAFECODEv2W(pQueue->queue_opt_pv, {
-
-			pQueue->list_number = 0;
-			pQueue->queue_head = pQueue->queue_tail = NULL;
-
-			pQueue->queue_received_counter = 0;
-			pQueue->queue_processed_counter = 0;
-
-		} );
-	}
-}
-
-static inline void
-_thread_queue_all_reset(ThreadStruct *pThread)
-{
-	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
-	pThread->seq_queue_read_sequence = 0;
-
-	_thread_queue_reset(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	_thread_queue_reset(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-}
-
-static inline void
-_thread_queue_all_free(ThreadStruct *pThread)
-{
-	_thread_queue_free(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	_thread_queue_free(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-}
-
-static inline void
-_thread_queue_all_malloc(ThreadStruct *pThread)
-{
-	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
-	pThread->seq_queue_read_sequence = 0;
-
-	_thread_queue_malloc(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	_thread_queue_malloc(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
 }
 
 static inline void
@@ -285,21 +272,27 @@ _thread_queue_read(ThreadQueue *pQueue)
 // =====================================================================
 
 void
-thread_queue_all_reset(ThreadStruct *pThread)
+thread_queue_booting(ThreadQueue *pQueue, ub queue_number)
 {
-	_thread_queue_all_reset(pThread);
+	_thread_queue_booting(pQueue, queue_number);
 }
 
 void
-thread_queue_all_free(ThreadStruct *pThread)
+thread_queue_reset(ThreadQueue *pQueue, ub queue_number)
 {
-	_thread_queue_all_free(pThread);
+	_thread_queue_reset(pQueue, queue_number);
 }
 
 void
-thread_queue_all_malloc(ThreadStruct *pThread)
+thread_queue_malloc(ThreadQueue *pQueue, ub queue_number)
 {
-	_thread_queue_all_malloc(pThread);
+	_thread_queue_malloc(pQueue, queue_number);
+}
+
+void
+thread_queue_free(ThreadQueue *pQueue, ub queue_number)
+{
+	_thread_queue_free(pQueue, queue_number);
 }
 
 RetCode

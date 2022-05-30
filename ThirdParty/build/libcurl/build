@@ -1,0 +1,33 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=7_80_0
+
+if [ ! -f ./curl-${VERSION}.tar.gz ]; then
+  wget https://github.com/curl/curl/archive/refs/tags/curl-${VERSION}.tar.gz
+fi
+
+if [ ! -d ./curl-curl-${VERSION} ]; then
+  tar -xzvf curl-${VERSION}.tar.gz
+fi
+
+cd curl-curl-${VERSION}
+
+autoreconf -fi
+
+./configure --prefix=/dave/tools/libcurl --enable-shared=no --enable-static=yes --disable-ldap --disable-ldaps --with-openssl=/dave/tools/openssl --with-libssh2 --with-libssh2=/dave/tools/libssh2
+
+make && make install
+
+cd ${homepath}
+
+if [ -d ./setup ]; then
+  rm -rf setup
+fi
+mkdir setup
+
+cp -rf /dave/tools/libcurl/* ./setup
+rm -rf ./setup/share
+
+rm -rf curl-curl-${VERSION}

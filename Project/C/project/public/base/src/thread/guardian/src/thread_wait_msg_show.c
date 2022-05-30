@@ -105,9 +105,9 @@ _thread_wait_msg_show(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 			&& (pShow[buffer_index].counter > 0))
 		{
 			msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
-				" msg_num:%04d msg_id:%05d on:%s\n",
+				" msg_num:%04d msg_id:%s on:%s\n",
 				pShow[buffer_index].counter,
-				pShow[buffer_index].msg_id,
+				msgstr(pShow[buffer_index].msg_id),
 				pThread->thread_name);
 		}
 	}

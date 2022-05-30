@@ -144,7 +144,8 @@ __thread_find_busy_index__(ThreadId thread_id, s8 *fun, ub line)
 
 	if((thread_id == INVALID_THREAD_ID) || (thread_id < 0))
 	{
-		THREADABNOR("get invalid thread_id:%d <%s:%d>", thread_id, fun, line);
+		THREADABNOR("get invalid thread_id:%d <%s:%d>",
+			thread_id, fun, line);
 		return THREAD_MAX;
 	}
 
@@ -237,19 +238,22 @@ thread_show_all_info(ThreadStruct *pThread, DateStruct *pWorkDate, s8 *msg_ptr, 
 	if(base_flag == dave_true)
 	{
 		msg_index += _thread_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "============================================================\n");
+		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
+			"============================================================\n");
 	}
 	msg_index += _thread_msg_wait_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
 	msg_index += base_mem_info(&msg_ptr[msg_index], msg_len-msg_index, base_flag);
 	msg_index += thread_memory_info(&msg_ptr[msg_index], msg_len-msg_index, base_flag);
 	if(pWorkDate != NULL)
 	{
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "SYSTEM BOOT TIME:%s\n", t_a2b_date_str(pWorkDate));
+		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
+			"SYSTEM BOOT TIME:%s\n", t_a2b_date_str(pWorkDate));
 	}
 
 	if(msg_index == 0)
 	{
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "Empty info!\n");
+		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
+			"Empty info!\n");
 	}
 
 	return msg_index;
@@ -260,7 +264,8 @@ thread_check_pair_msg(ub req_id, ub rsp_id)
 {
 	if((req_id + 1) != rsp_id)
 	{
-		THREADLOG("We want the request and response messages to be contiguous.<%d/%d>", req_id, rsp_id);
+		THREADLOG("We want the request and response messages to be contiguous.<%d/%d>",
+			req_id, rsp_id);
 	}
 }
 
@@ -282,68 +287,108 @@ __thread_clean_user_input_data__(void *data, ub msg_id, s8 *fun, ub line)
 	}
 }
 
-void
-thread_run_user_fun(
-	ThreadStack **ppCurrentMsgStack,
-	base_thread_fun thread_fun,
-	ThreadStruct *pThread,
-	MSGBODY *msg,
-	dave_bool enable_stack)
+dave_bool
+thread_enable_coroutine(ThreadStruct *pThread)
 {
-	ThreadStack *stack = NULL;
+	if((pThread->thread_flag & THREAD_THREAD_FLAG)
+		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
+		return dave_true;
+	else
+		return dave_false;
+}
 
-	if((pThread == NULL) || (msg == NULL))
+ThreadMsg *
+thread_build_msg(
+	ThreadStruct *pThread,
+	ThreadId src_id, ThreadId dst_id,
+	ub msg_id, ub data_len, u8 *data,
+	BaseMsgType msg_type,
+	s8 *fun, ub line)
+{
+	dave_bool data_is_here = thread_memory_at_here((void *)data);
+	ThreadMsg *task_msg;
+
+	task_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
+	if(data_is_here == dave_false)
 	{
-		THREADABNOR("pThread:%x or msg:%x is NULL!", pThread, msg);
-		return;
+		THREADTRACE("Please use thread_msg function to build the msg:%d buffer! <%s:%d>", msg_id, fun, line);
+		task_msg->msg_body.msg_body = thread_malloc(data_len, msg_id, (s8 *)__func__, (ub)__LINE__);
 	}
 
-	if(pThread->thread_id != thread_get_local(msg->msg_dst))
+	task_msg->msg_body.msg_src = src_id;
+	if(dst_id != INVALID_THREAD_ID)
 	{
-		THREADLOG("schedule error! thread:%s<%d> msg:%s<%d>->%s<%d> %d %d",
-			pThread->thread_name, pThread->thread_id,
-			thread_name(msg->msg_src), msg->msg_src,
-			thread_name(msg->msg_dst), msg->msg_dst,
-			msg->msg_id,
-			msg->thread_wakeup_index);
+		task_msg->msg_body.msg_dst = dst_id;
 	}
-
-#ifdef ENABLE_THREAD_STATISTICS
-	ub run_time = 0;
-	run_time = thread_statistics_start_msg(msg);
-#endif
-
-	if(enable_stack == dave_true)
+	else
 	{
-		stack = thread_malloc(sizeof(ThreadStack), MSGID_RESERVED, (s8 *)__func__, (ub)__LINE__);
-
-		thread_lock();
-		stack->next_stack = *ppCurrentMsgStack;
-		stack->thread_id = pThread->thread_id;
-		*ppCurrentMsgStack = stack;
-		thread_unlock();
+		if(pThread == NULL)
+			task_msg->msg_body.msg_dst = INVALID_THREAD_ID;
+		else
+			task_msg->msg_body.msg_dst = pThread->thread_id;
 	}
-
-	if(thread_fun != NULL)
+	task_msg->msg_body.msg_id = msg_id;
+	task_msg->msg_body.msg_type = msg_type;
+	task_msg->msg_body.src_attrib = base_thread_attrib(src_id);
+	if(dst_id != INVALID_THREAD_ID)
 	{
-		thread_fun(msg);
+		task_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
 	}
-
-	if(enable_stack == dave_true)
+	else
 	{
-		thread_lock();
-        if(*ppCurrentMsgStack != NULL)
-        {
-            *ppCurrentMsgStack = (*ppCurrentMsgStack)->next_stack;
-        }
-		thread_unlock();
-
-		thread_free(stack, MSGID_RESERVED, (s8 *)__func__, (ub)__LINE__);
+		if(pThread == NULL)
+			task_msg->msg_body.dst_attrib = LOCAL_TASK_ATTRIB;
+		else
+			task_msg->msg_body.dst_attrib = pThread->attrib;
 	}
+	task_msg->msg_body.msg_len = data_len;
+	if(data_is_here == dave_true)
+	{
+		task_msg->msg_body.msg_body = (void *)data;
+	}
+	else
+	{
+		dave_memcpy(task_msg->msg_body.msg_body, data, data_len);
+	}
+	task_msg->msg_body.mem_state = MsgMemState_uncaptured;
 
-#ifdef ENABLE_THREAD_STATISTICS
-	thread_statistics_end_msg(run_time, pThread, msg);
-#endif
+	task_msg->msg_body.msg_build_time = 0;
+	task_msg->msg_body.msg_build_serial = 0;
+
+	task_msg->msg_body.user_ptr = NULL;
+
+	task_msg->pQueue = task_msg->next = NULL;
+
+	return task_msg;
+}
+
+void
+thread_clean_msg(ThreadMsg *pMsg)
+{
+	ThreadQueue *pQueue;
+
+	if(pMsg != NULL)
+	{
+		pQueue = (ThreadQueue *)(pMsg->pQueue);
+		if(pQueue != NULL)
+		{
+			thread_queue_reset_process(pQueue);
+		}
+
+		if(pMsg->msg_body.msg_body != NULL)
+		{
+			if(pMsg->msg_body.mem_state == MsgMemState_uncaptured)
+			{
+				thread_free(pMsg->msg_body.msg_body, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
+			}
+			else if(pMsg->msg_body.mem_state == MsgMemState_captured)
+			{
+				pMsg->msg_body.mem_state = MsgMemState_uncaptured;
+			}
+		}
+
+		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
+	}
 }
 
 #endif

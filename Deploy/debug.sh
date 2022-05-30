@@ -10,7 +10,6 @@ PROJECTNAME=$1
 PROJECT=$2
 RUNNINGFILE=/project/dave-running.sh
 PRJBINFILE=./deploy/${PROJECT}/project/${PROJECT^^}-BIN
-DEBUGBIN=./deploy/debug/project/DEBUG-BIN
 
 ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=release' | awk '{print $1}'`
 if [ -n "$ACTIONLINE" ]; then
@@ -23,12 +22,6 @@ if [ -f ${PRJBINFILE} ]; then
    echo debug.sh copy ${PRJBINFILE} to ${PROJECTNAME}
    chmod a+x ${PRJBINFILE}
    docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
-fi
-
-if [ -f ${DEBUGBIN} ]; then
-   echo debug.sh copy ${DEBUGBIN} to ${PROJECTNAME}
-   chmod a+x ${DEBUGBIN}
-   docker cp ${DEBUGBIN} ${PROJECTNAME}:/project
 fi
 
 echo debug.sh restart ${PROJECTNAME}

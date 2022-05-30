@@ -192,7 +192,7 @@ sb
 dave_os_file_open(FileOptFlag flag, s8 *file_name)
 {
     sw_int32 oflag;
-    s8 file_full_name[200];
+    s8 file_full_name[512];
 
 	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
 
@@ -202,6 +202,8 @@ dave_os_file_open(FileOptFlag flag, s8 *file_name)
 		_linux_file_creat_dir(file_full_name);
         oflag |= O_CREAT;
     }
+
+	OSDEBUG("flag:%x %s->%s", flag, file_name, file_full_name);
 
     return (sb)open((char *)file_full_name, oflag, 0777);
 }
@@ -216,7 +218,7 @@ dave_os_file_delete(FileOptFlag flag, s8 *file_name)
 	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
 
     _linux_file_creat_dir(file_full_name);
-    
+
     oflag = O_RDWR;
     file_id = open((char *)file_full_name, oflag, 0777);
     if(file_id < 0)
@@ -226,7 +228,7 @@ dave_os_file_delete(FileOptFlag flag, s8 *file_name)
 
 	close(file_id);
 
-    if(remove((char *)file_full_name)==-1)
+    if(remove((char *)file_full_name) == -1)
     {
 		OSABNOR("delete file fail,error(%d):%s", errno, strerror(errno));
 		return dave_false;
@@ -247,7 +249,7 @@ dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data)
     if(offset < 0)
     {
 		OSABNOR("lseek file fail,error(%d):%s", errno, strerror(errno));
-		return (sb)offset;
+		return 0;
     }
 
     read_len = read((int)file_id, data, data_len);
@@ -303,86 +305,42 @@ dave_os_file_valid(s8 *file_name)
 ub
 dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data)
 {
-    s8 file_full_name[200];
-    int file_id = 0;
-    sb read_len = 0;
-    int oflag = 0;
-    mode_t mode = 0;
-    
-    read_len = 0;
+	sb file_id, read_len;
 
-	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
-    
-    if((flag & CREAT_FLAG) == CREAT_FLAG)
-    {
-        oflag |= O_CREAT;
-        mode = S_IRWXU | S_IRWXG | S_IRWXO;
-    }
-    if((flag & READ_FLAG) == READ_FLAG)
-        oflag |= O_RDONLY;
-    if((flag & WRITE_FLAG) == WRITE_FLAG)
-        oflag |= O_WRONLY;
-    
-    file_id = open((char *)file_full_name, oflag, mode);
-    if(file_id >= 0)
-    {
-        lseek(file_id, file_index, SEEK_SET);
-        read_len = read((int)file_id, (void *)data, (size_t)data_len);
-        close(file_id);
-    }
-    
-    if(read_len < 0)
-    {
-        OSABNOR("Read file(%s)<file_id:%d data_len:%d> fail(%d)!", file_full_name, file_id, data_len, read_len);
-		read_len = 0;
-	}
+	file_id = dave_os_file_open(flag, file_name);
+	if(file_id < 0)
+		return 0;
 
-    return (ub)read_len;
+	read_len = dave_os_file_load(file_id, file_index, data_len, data);
+
+	dave_os_file_close(file_id);
+
+	return read_len;
 }
 
 dave_bool
 dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data)
 {
-    s8 file_full_name[200];
-    int file_id;
-    sw_int32 write_len;
-    int oflag;
+	sb file_id, write_len;
 
-    write_len = 0;
+	file_id = dave_os_file_open(flag, file_name);
+	if(file_id < 0)
+	{
+		return 0;
+	}
 
-	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
+	write_len = dave_os_file_save(file_id, file_index, data_len, data);
 
-    _linux_file_creat_dir(file_full_name);
-    
-    oflag = O_RDWR;
-    if((flag & CREAT_FLAG) == CREAT_FLAG)
-    {
-        oflag |= O_CREAT;
-    }
-    
-    file_id = open((char *)file_full_name, oflag, 0777);
-    if(file_id >= 0)
-    {
-        if(file_index == 0xffffffff)
-        {
-            lseek(file_id, 0, SEEK_END);
-        }
-        else
-        {
-            lseek(file_id, file_index, SEEK_SET);
-        }
-        write_len = (s32)write((int)file_id, (void *)data, (size_t)data_len);
-        close(file_id);
-    }
-    
-    if(write_len == data_len)
-    {
-        return dave_true;
-    }
-    else
-    {
-        return dave_false;
-    }
+	dave_os_file_close(file_id);
+
+	if((ub)write_len != data_len)
+	{
+		OSABNOR("flag:%x file_name:%s file_index:%d data_len:%d save failed!",
+			flag, file_name, file_index, data_len);
+		return dave_false;
+	}
+
+	return dave_true;
 }
 
 void *

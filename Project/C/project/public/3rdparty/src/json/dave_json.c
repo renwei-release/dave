@@ -109,7 +109,7 @@ dave_json_to_string(void *object, ub *length)
 		return NULL;
 	}
 
-	string = json_object_to_json_string_length((struct json_object *)object, JSON_C_TO_STRING_SPACED, &string_length);
+	string = json_object_to_json_string_length((struct json_object *)object, JSON_C_TO_STRING_PRETTY, &string_length);
 
 	if(length != NULL)
 	{

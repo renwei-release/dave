@@ -11,6 +11,7 @@
 #include "dave_tools.h"
 #include "dave_verno.h"
 #include "base_test.h"
+#include "base_log.h"
 
 #define RET_DEBUG_VALUE RetCode_OK
 #define S8_DEBUG_VALUE -12
@@ -28,50 +29,59 @@
 static ThreadId _base_thread = INVALID_THREAD_ID;
 
 static void
-_base_thread_rpc_debug_rsp(ThreadId src, RPCDebugMsg *pDebug)
+_base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 {
-	if(pDebug->u32_debug != U32_DEBUG_VALUE)
-	{
-		DAVELOG("come from %lx/%s debug message:invalid u32_debug:%d\n",
-			src, thread_name(src),
-			pDebug->u32_debug);
-	}
+	BASELOG("from:%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%d/%d",
+		thread_name(src),
+		pRsp->s8_debug, pRsp->u8_debug,
+		pRsp->s16_debug, pRsp->u16_debug,
+		pRsp->s32_debug, pRsp->u32_debug,
+		pRsp->s64_debug, pRsp->u64_debug);
 }
 
 static void
 _base_thread_rpc_debug_req(ThreadId remote_thread_id)
 {
-	RPCDebugMsg *pDebug = thread_msg(pDebug);
+	RPCDebugReq *pReq = thread_reset_msg(pReq);
+	RPCDebugRsp rsp;
 
-	pDebug->ret_debug = RET_DEBUG_VALUE;
-	pDebug->s8_debug = S8_DEBUG_VALUE;
-	pDebug->u8_debug = U8_DEBUG_VALUE;
-	pDebug->s16_debug = S16_DEBUG_VALUE;
-	pDebug->u16_debug = U16_DEBUG_VALUE;
-	pDebug->s32_debug = S32_DEBUG_VALUE;
-	pDebug->u32_debug = U32_DEBUG_VALUE;
-	pDebug->s64_debug = S64_DEBUG_VALUE;
-	pDebug->float_debug = FLOAT_DEBUG_VALUE;
-	pDebug->double_debug = DOUBLE_DEBUG_VALUE;
-	pDebug->void_debug = VOID_DEBUG_VALUE;
+	pReq->ret_debug = RET_DEBUG_VALUE;
+	pReq->s8_debug = S8_DEBUG_VALUE;
+	pReq->u8_debug = U8_DEBUG_VALUE;
+	pReq->s16_debug = S16_DEBUG_VALUE;
+	pReq->u16_debug = U16_DEBUG_VALUE;
+	pReq->s32_debug = S32_DEBUG_VALUE;
+	pReq->u32_debug = U32_DEBUG_VALUE;
+	pReq->s64_debug = S64_DEBUG_VALUE;
+	pReq->u64_debug = U64_DEBUG_VALUE;
+	pReq->float_debug = FLOAT_DEBUG_VALUE;
+	pReq->double_debug = DOUBLE_DEBUG_VALUE;
+	pReq->void_debug = VOID_DEBUG_VALUE;
 
-	id_msg(remote_thread_id, MSGID_RPC_DEBUG_MSG, pDebug);
+	if(sync_msg(remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, &rsp) != NULL)
+	{
+		BASELOG("Runs successfully!");
+		_base_thread_rpc_debug_rsp(remote_thread_id, &rsp);
+	}
 }
 
 static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
-	DAVELOG("%lx/%s/%s/%s\n",
+	BASELOG("%lx/%s/%s/%s",
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
-	_base_thread_rpc_debug_req(pReady->remote_thread_id);
+	if(dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true)
+	{
+		_base_thread_rpc_debug_req(pReady->remote_thread_id);
+	}
 }
 
 static void
 _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 {
-	DAVELOG("%lx/%s/%s\n",
+	BASELOG("%lx/%s/%s",
 		pReady->remote_thread_id,
 		pReady->remote_thread_name, pReady->globally_identifier);
 }
@@ -99,8 +109,8 @@ _base_thread_main(MSGBODY *msg)
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 				_base_thread_remote_id_remove((ThreadRemoteIDRemoveMsg *)(msg->msg_body));
 			break;
-		case MSGID_RPC_DEBUG_MSG:
-				_base_thread_rpc_debug_rsp(msg->msg_src, (RPCDebugMsg *)(msg->msg_body));
+		case MSGID_RPC_DEBUG_RSP:
+				_base_thread_rpc_debug_rsp(msg->msg_src, (RPCDebugRsp *)(msg->msg_body));
 			break;
 		default:
 			break;
@@ -118,7 +128,9 @@ _base_thread_exit(MSGBODY *msg)
 void
 dave_product_init(void)
 {
-	_base_thread = base_thread_creat(dave_verno_my_product(), 1, THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
+	ub thread_number = dave_os_cpu_process_number();
+
+	_base_thread = base_thread_creat(dave_verno_my_product(), thread_number, THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
 	if(_base_thread == INVALID_THREAD_ID)
 		base_restart(dave_verno_my_product());
 }

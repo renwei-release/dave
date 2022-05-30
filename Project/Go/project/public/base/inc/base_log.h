@@ -31,24 +31,17 @@ void base_log_exit(void);
 void base_log_stack_init(void);
 void base_log_stack_exit(void);
 
-#define BASEDEBUG __base_debug__
-#define BASECATCHER __base_catcher__
-#define BASETRACE __base_trace__
-#define BASELOG __base_log__
-#define BASEABNORMAL __base_abnormal__
-#define BASEASSERT(assert_flag, args...) __base_assert__(assert_flag, __func__, __LINE__, ## args)
-
 #define TRACEFLAG DAVEDEBUG("%s:%d\n", (s8 *)__func__, (ub)__LINE__);
 #define TRACETENABLE if(base_thread_trace_state() == dave_true)
 #define TRACEIENABLE(ID) if(base_log_id_enable(ID) == dave_true)
 #define TRACELENABLE(TIME, NUMBER) if(base_log_line_enable((s8 *)__func__, (ub)__LINE__, TIME, NUMBER) == dave_true)
 
-#define DAVEDEBUG BASEDEBUG
-#define DAVECATCHER BASECATCHER
-#define DAVETRACE BASETRACE
-#define DAVELOG BASELOG
-#define DAVEABNORMAL BASEABNORMAL
-#define DAVEASSERT BASEASSERT
+#define DAVEDEBUG __base_debug__
+#define DAVECATCHER __base_catcher__
+#define DAVETRACE __base_trace__
+#define DAVELOG __base_log__
+#define DAVEABNORMAL __base_abnormal__
+#define DAVEASSERT(assert_flag, args...) __base_assert__(assert_flag, __func__, __LINE__, ## args)
 
 #endif
 

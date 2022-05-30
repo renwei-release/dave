@@ -26,6 +26,8 @@
 #include "thread_remote_id_table.h"
 #include "thread_gid_table.h"
 #include "thread_seq_msg.h"
+#include "thread_running.h"
+#include "thread_coroutine.h"
 #include "thread_log.h"
 
 #define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
@@ -48,6 +50,33 @@ static ThreadPriority _msg_priority[THREAD_MAX];
 static ThreadStack *_current_msg_stack = NULL;
 static ThreadStack _top_msg_stack;
 static ThreadId _guardian_thread = INVALID_THREAD_ID;
+
+static void
+_thread_queue_all_reset(ThreadStruct *pThread)
+{
+	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
+	pThread->seq_queue_read_sequence = 0;
+
+	thread_queue_reset(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
+	thread_queue_reset(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+}
+
+static void
+_thread_queue_all_malloc(ThreadStruct *pThread)
+{
+	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
+	pThread->seq_queue_read_sequence = 0;
+
+	thread_queue_malloc(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
+	thread_queue_malloc(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+}
+
+static void
+_thread_queue_all_free(ThreadStruct *pThread)
+{
+	thread_queue_free(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
+	thread_queue_free(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+}
 
 static void
 _thread_reset(ThreadStruct *pThread)
@@ -75,7 +104,7 @@ _thread_reset(ThreadStruct *pThread)
 	pThread->message_idle_total = 0;
 	pThread->message_wakeup_counter = 0;
 
-	thread_queue_all_reset(pThread);
+	_thread_queue_all_reset(pThread);
 
 	thread_reset_sync(&(pThread->sync));
 
@@ -89,7 +118,7 @@ _thread_reset(ThreadStruct *pThread)
 static void
 _thread_reset_all(void)
 {
-	ub thread_index, queue_index;
+	ub thread_index;
 
 	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 	{
@@ -97,24 +126,13 @@ _thread_reset_all(void)
 
 		_thread[thread_index].thread_index = thread_index;
 
-		for(queue_index=0; queue_index<THREAD_MSG_QUEUE_NUM; queue_index++)
-		{
-			t_lock_reset(&(_thread[thread_index].msg_queue[queue_index].queue_opt_pv));
-		}
-		for(queue_index=0; queue_index<THREAD_SEQ_QUEUE_NUM; queue_index++)
-		{
-			t_lock_reset(&(_thread[thread_index].seq_queue[queue_index].queue_opt_pv));
-		}
+		thread_queue_booting(_thread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
+		thread_queue_booting(_thread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
+
 		t_lock_reset(&(_thread[thread_index].sync.sync_pv));
 
 		_thread_reset(&_thread[thread_index]);
 	}
-}
-
-static inline TaskAttribute
-_thread_msg_attrib(ThreadStruct *pThread)
-{
-	return pThread->attrib;
 }
 
 #define _thread_get_id(name) _thread_get_id_(name, (s8 *)__func__, (ub)__LINE__)
@@ -351,86 +369,6 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static inline ThreadMsg *
-_thread_build_msg(
-	ThreadStruct *pThread,
-	ThreadId src_id, ThreadId route_dst_id,
-	ub msg_id, ub data_len, u8 *data,
-	BaseMsgType msg_type,
-	s8 *fun, ub line)
-{
-	dave_bool data_is_here = thread_memory_at_here((void *)data);
-	ThreadMsg *task_msg;
-
-	task_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
-	if(data_is_here == dave_false)
-	{
-		THREADTRACE("Please use thread_msg function to build the msg:%d buffer! <%s:%d>", msg_id, fun, line);
-		task_msg->msg_body.msg_body = thread_malloc(data_len, msg_id, (s8 *)__func__, (ub)__LINE__);
-	}
-
-	task_msg->msg_body.msg_src = src_id;
-	if(route_dst_id != INVALID_THREAD_ID)
-		task_msg->msg_body.msg_dst = route_dst_id;
-	else
-		task_msg->msg_body.msg_dst = pThread->thread_id;
-	task_msg->msg_body.msg_id = msg_id;
-	task_msg->msg_body.msg_type = msg_type;
-	task_msg->msg_body.src_attrib = _thread_attrib(src_id);
-	if(route_dst_id != INVALID_THREAD_ID)
-		task_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
-	else
-		task_msg->msg_body.dst_attrib = _thread_msg_attrib(pThread);
-	task_msg->msg_body.msg_len = data_len;
-	if(data_is_here == dave_true)
-	{
-		task_msg->msg_body.msg_body = (void *)data;
-	}
-	else
-	{
-		dave_memcpy(task_msg->msg_body.msg_body, data, data_len);
-	}
-	task_msg->msg_body.mem_state = MsgMemState_uncaptured;
-
-	task_msg->msg_body.msg_build_time = 0;
-	task_msg->msg_body.msg_build_serial = 0;
-
-	task_msg->msg_body.user_ptr = NULL;
-
-	task_msg->pQueue = task_msg->next = NULL;
-
-	return task_msg;
-}
-
-static inline void
-_thread_clean_msg(ThreadMsg *pMsg, dave_bool carried_out)
-{
-	ThreadQueue *pQueue;
-
-	if(pMsg != NULL)
-	{
-		pQueue = (ThreadQueue *)(pMsg->pQueue);
-		if(pQueue != NULL)
-		{
-			thread_queue_reset_process(pQueue);
-		}
-
-		if(pMsg->msg_body.msg_body != NULL)
-		{
-			if(pMsg->msg_body.mem_state == MsgMemState_uncaptured)
-			{
-				thread_free(pMsg->msg_body.msg_body, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
-			}
-			else if(pMsg->msg_body.mem_state == MsgMemState_captured)
-			{
-				pMsg->msg_body.mem_state = MsgMemState_uncaptured;
-			}
-		}
-
-		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
-	}
-}
-
 static inline RetCode
 _thread_write_msg(
 	ThreadId src_id, ThreadId dst_id,
@@ -446,9 +384,9 @@ _thread_write_msg(
 
 	pDstThread = &_thread[dst_thread_index];
 
-	if(thread_call_sync_catch(pDstThread, dst_id, src_id, msg_id, data, data_len) == dave_false)
+	if(thread_call_sync_catch(src_id, pDstThread, dst_id, msg_id, data, data_len) == dave_false)
 	{
-		pMsg = _thread_build_msg(
+		pMsg = thread_build_msg(
 					pDstThread,
 					src_id, route_dst_id,
 					msg_id, data_len, data,
@@ -473,7 +411,7 @@ _thread_write_msg(
 				_thread_get_name(pMsg->msg_body.msg_dst),
 				pMsg->msg_body.msg_id);
 
-			_thread_clean_msg(pMsg, dave_false);
+			thread_clean_msg(pMsg);
 		}
 	}
 	else
@@ -491,11 +429,19 @@ _thread_write_msg(
 }
 
 static inline ThreadMsg *
-_thread_read_msg(ThreadStruct *pThread)
+_thread_read_msg(ThreadStruct *pThread, void *pTThread)
 {
-	ThreadMsg *pMsg;
+	ThreadMsg *pMsg = NULL;
 
-	pMsg = _thread_safe_read_seq_queue(pThread);
+	if(pTThread != NULL)
+	{
+		pMsg = thread_thread_read(pTThread);
+	}
+
+	if(pMsg == NULL)
+	{
+		pMsg = _thread_safe_read_seq_queue(pThread);
+	}
 
 	if(pMsg == NULL)
 	{
@@ -751,7 +697,7 @@ _thread_schedule_predecessor_task(void)
 }
 
 static ub
-_thread_schedule_one_thread(ub thread_index, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
+_thread_schedule_one_thread(void *pTThread, ub thread_index, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
 {
 	ThreadStruct *pThread;
 	ThreadMsg *pMsg;
@@ -784,7 +730,7 @@ _thread_schedule_one_thread(ub thread_index, ThreadId thread_id, s8 *thread_name
 
 	if(pThread->has_initialization == dave_true)
 	{
-		pMsg = _thread_read_msg(pThread);
+		pMsg = _thread_read_msg(pThread, pTThread);
 		if(pMsg != NULL)
 		{
 			msg_body = &(pMsg->msg_body);
@@ -797,7 +743,7 @@ _thread_schedule_one_thread(ub thread_index, ThreadId thread_id, s8 *thread_name
 			{
 				msg_body->user_ptr = msgcall_fun->user_ptr;
 
-				thread_run_user_fun(
+				thread_running(
 					&_current_msg_stack,
 					msgcall_fun->msg_fun,
 					pThread,
@@ -805,14 +751,14 @@ _thread_schedule_one_thread(ub thread_index, ThreadId thread_id, s8 *thread_name
 			}
 			else
 			{
-				thread_run_user_fun(
+				thread_running(
 					&_current_msg_stack,
 					pThread->thread_main,
 					pThread,
 					msg_body, enable_stack);
 			}
 
-			_thread_clean_msg(pMsg, dave_true);
+			thread_clean_msg(pMsg);
 		}
 	}
 
@@ -847,7 +793,7 @@ _thread_schedule(void)
 			{
 				if(! (pThread->thread_flag & THREAD_THREAD_FLAG))
 				{
-					if(_thread_schedule_one_thread(thread_index, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
+					if(_thread_schedule_one_thread(NULL, thread_index, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
 					{
 						all_message_empty = dave_false;
 					}
@@ -1016,11 +962,13 @@ _thread_del_last_fun(MSGBODY *thread_msg)
 	{
 		THREADDEBUG("name:%s id:%d index:%d", pThread->thread_name, pThread->thread_id, thread_index);
 
+		thread_coroutine_free(pThread);
+
 		thread_map_name_del(pThread->thread_name);
 
 		_thread_remove_genealogy(thread_index);
 
-		thread_queue_all_free(pThread);
+		_thread_queue_all_free(pThread);
 
 		_thread_sorting_thread();
 
@@ -1033,11 +981,13 @@ _thread_creat_frist_fun(ThreadStruct *pThread)
 {
 	_thread_build_genealogy(pThread->thread_name, pThread->thread_index, _thread_get_id(pThread->thread_name));
 	
-	thread_queue_all_malloc(pThread);
-	
+	_thread_queue_all_malloc(pThread);
+
 	_thread_sorting_thread();
 	
 	thread_map_name_add((s8 *)(pThread->thread_name), pThread);
+
+	thread_coroutine_malloc(pThread);
 }
 
 static ThreadId
@@ -1296,14 +1246,14 @@ _thread_exit(void)
 			msg.msg_len = 0;
 			msg.msg_body = NULL;
 
-			thread_run_user_fun(
+			thread_running(
 				&_current_msg_stack,
 				pThread->thread_exit,
 				pThread,
 				&msg, dave_true);
 		}
 
-		thread_queue_all_free(pThread);
+		_thread_queue_all_free(pThread);
 
 		_thread_reset(pThread);
 	}
@@ -1616,7 +1566,7 @@ base_thread_get_self(s8 *fun, ub line)
 		}
 		else
 		{
-			self = thread_thread_self(NULL, NULL);
+			self = thread_thread_self(NULL);
 
 			if(self == INVALID_THREAD_ID)
 			{
@@ -1684,14 +1634,14 @@ __base_thread_trace_state__(s8 *fun, ub line)
 }
 
 RetCode
-base_thread_msg_register(ThreadId src_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr)
+base_thread_msg_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr)
 {
-	if(src_id == INVALID_THREAD_ID)
+	if(thread_id == INVALID_THREAD_ID)
 	{
-		src_id = self();
+		thread_id = self();
 	}
 
-	if(thread_call_msg_register(src_id, msg_id, msg_fun, user_ptr) == dave_true)
+	if(thread_call_msg_register(thread_id, msg_id, msg_fun, user_ptr) == dave_true)
 	{
 		return RetCode_OK;
 	}
@@ -1702,9 +1652,14 @@ base_thread_msg_register(ThreadId src_id, ub msg_id, base_thread_fun msg_fun, vo
 }
 
 void
-base_thread_msg_unregister(ub msg_id)
+base_thread_msg_unregister(ThreadId thread_id, ub msg_id)
 {
-	thread_call_msg_unregister(self(), msg_id);
+	if(thread_id == INVALID_THREAD_ID)
+	{
+		thread_id = self();
+	}
+
+	thread_call_msg_unregister(thread_id, msg_id);
 }
 
 ub
@@ -1899,7 +1854,7 @@ base_thread_sync_msg(
 	s8 *fun, ub line)
 {
 	ThreadStruct *pSrcThread = NULL, *pDstThread = NULL;
-	ThreadSync *pSync;
+	void *pSync;
 	void *ret_body = NULL;
 
 	if(_thread_check_sync_param(

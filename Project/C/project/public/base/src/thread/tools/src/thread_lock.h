@@ -16,9 +16,9 @@ void thread_lock(void);
 
 void thread_unlock(void);
 
-void thread_exter_lock(void);
+void thread_other_lock(void);
 
-void thread_exter_unlock(void);
+void thread_other_unlock(void);
 
 #endif
 

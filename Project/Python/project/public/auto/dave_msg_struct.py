@@ -258,6 +258,14 @@ class ClientIdle (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_COROUTINE_WAKEUP message *#
+class CoroutineWakeup (Structure):
+	_fields_ = [
+		("thread_index", c_ulonglong),
+		("wakeup_index", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for DBMSG_HYBRID_ADD_LIST_REQ message *#
 class DBHybridAddListReq (Structure):
 	_fields_ = [
@@ -710,8 +718,27 @@ class RESTARTRSPMSG (Structure):
 		("wait_flag", c_char),
 ]
 
-#* for MSGID_RPC_DEBUG_MSG message *#
-class RPCDebugMsg (Structure):
+#* for MSGID_RPC_DEBUG_REQ message *#
+class RPCDebugReq (Structure):
+	_fields_ = [
+		("ret_debug", c_ulonglong),
+		("s8_debug", c_char),
+		("u8_debug", c_char),
+		("s16_debug", c_short),
+		("u16_debug", c_ushort),
+		("s32_debug", c_int),
+		("u32_debug", c_uint),
+		("s64_debug", c_long),
+		("u64_debug", c_ulonglong),
+		("float_debug", c_float),
+		("double_debug", c_double),
+		("void_debug", POINTER(c_char)),
+		("date_debug", DateStruct),
+		("mbuf_debug", POINTER(MBUF)),
+]
+
+#* for MSGID_RPC_DEBUG_RSP message *#
+class RPCDebugRsp (Structure):
 	_fields_ = [
 		("ret_debug", c_ulonglong),
 		("s8_debug", c_char),

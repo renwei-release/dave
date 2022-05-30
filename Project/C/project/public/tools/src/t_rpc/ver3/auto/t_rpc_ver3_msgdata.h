@@ -113,6 +113,9 @@ dave_bool t_rpc_ver3_unzip_ClientBusy(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_zip_ClientIdle(ClientIdle *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ClientIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
 
+void * t_rpc_ver3_zip_CoroutineWakeup(CoroutineWakeup *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_CoroutineWakeup(void **unzip_data, ub *unzip_len, void *pStructBson);
+
 void * t_rpc_ver3_zip_DBHybridAddListReq(DBHybridAddListReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBHybridAddListReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 
@@ -260,8 +263,11 @@ dave_bool t_rpc_ver3_unzip_RESTARTREQMSG(void **unzip_data, ub *unzip_len, void 
 void * t_rpc_ver3_zip_RESTARTRSPMSG(RESTARTRSPMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RESTARTRSPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
 
-void * t_rpc_ver3_zip_RPCDebugMsg(RPCDebugMsg *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RPCDebugMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+
+void * t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 
 void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);

@@ -476,9 +476,9 @@ log_stack_server_init(void)
 {
 	ub thread_number = dave_os_cpu_process_number();
 
-	_log_stack_server_thread = base_thread_creat("LOGSERVER", thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_server_init, _log_stack_server_main, _log_stack_server_exit);
+	_log_stack_server_thread = base_thread_creat(LOG_SERVER_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_stack_server_init, _log_stack_server_main, _log_stack_server_exit);
 	if(_log_stack_server_thread == INVALID_THREAD_ID)
-		base_restart("LOGSERVER");
+		base_restart(LOG_SERVER_THREAD_NAME);
 }
 
 void

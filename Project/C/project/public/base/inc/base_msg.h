@@ -177,7 +177,7 @@ typedef struct {
 	s8 local_thread_name[128];
 } ThreadLocalRemoveMsg;
 
-/* for MSGID_RPC_DEBUG_MSG message */
+/* for MSGID_RPC_DEBUG_REQ message */
 typedef struct {
 	RetCode ret_debug;
 	s8 s8_debug;
@@ -193,7 +193,25 @@ typedef struct {
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
-} RPCDebugMsg;
+} RPCDebugReq;
+
+/* for MSGID_RPC_DEBUG_RSP message */
+typedef struct {
+	RetCode ret_debug;
+	s8 s8_debug;
+	u8 u8_debug;
+	s16 s16_debug;
+	u16 u16_debug;
+	s32 s32_debug;
+	u32 u32_debug;
+	s64 s64_debug;
+	u64 u64_debug;
+	float float_debug;
+	double double_debug;
+	void *void_debug;
+	DateStruct date_debug;
+	MBUF *mbuf_debug;
+} RPCDebugRsp;
 
 /* for MSGID_CFG_UPDATE message */
 typedef struct {
@@ -228,6 +246,13 @@ typedef struct {
 	ub event_id;
 	void *ptr;
 } InternalLoop;
+
+/* for MSGID_COROUTINE_WAKEUP message */
+typedef struct {
+	ub thread_index;
+	ub wakeup_index;
+	void *ptr;
+} CoroutineWakeup;
 
 #endif
 

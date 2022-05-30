@@ -9,8 +9,7 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
-
-#define BASETESTLOG(a, ...) { DAVELOG("[BASE]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
+#include "base_log.h"
 
 static void
 __concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho, dave_bool concurrency_flag)
@@ -83,7 +82,7 @@ base_echo(ThreadId src, MsgIdEcho *pEcho)
 			{
 				if((pEcho->echo_counter % echo_show_interval) == 0)
 				{
-					BASETESTLOG("from:%s echo:(%s) %ld/%ld", thread_name(src), pEcho->msg, pEcho->echo_counter, echo_show_interval);
+					BASELOG("from:%s echo:(%s) %ld/%ld", thread_name(src), pEcho->msg, pEcho->echo_counter, echo_show_interval);
 				}
 
 				name_msg(thread_name(src), MSGID_ECHO, pNewEcho);

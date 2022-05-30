@@ -146,7 +146,9 @@ _t_bson_object_malloc(void)
 
 	pBson->pDataHead = pBson->pDataTail = NULL;
 
-	pBson->pCurFind = NULL;
+	pBson->pCurKeyFind = NULL;
+	pBson->pCurIndexFind = NULL;
+
 	pBson->key_bloom_filter = 0;
 
 	t_bson_serialize_reset(pBson);

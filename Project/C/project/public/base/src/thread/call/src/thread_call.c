@@ -17,6 +17,8 @@
 #include "thread_call.h"
 #include "thread_sync_call.h"
 #include "thread_msg_call.h"
+#include "thread_coroutine.h"
+#include "thread_tools.h"
 #include "thread_log.h"
 
 // =====================================================================
@@ -59,22 +61,31 @@ thread_call_sync_check(void)
 	thread_sync_call_check();
 }
 
-ThreadSync *
+void *
 thread_call_sync_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, ThreadStruct *pDstThread, ub wait_msg, u8 *wait_body, ub wait_len)
 {
-	return thread_sync_call_step_1_pre(pSrcThread, sync_src_id, pDstThread, wait_msg, wait_body, wait_len);
+	if(thread_enable_coroutine(pSrcThread) == dave_true)
+		return thread_coroutine_running_setp_setup(pSrcThread, sync_src_id, wait_msg, wait_body, wait_len);
+	else
+		return thread_sync_call_step_1_pre(pSrcThread, sync_src_id, pDstThread, wait_msg, wait_body, wait_len);
 }
 
 void *
-thread_call_sync_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, ThreadSync *pSync)
+thread_call_sync_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *pSync)
 {
-	return thread_sync_call_step_2_wait(pSrcThread, pDstThread, pSync);
+	if(thread_enable_coroutine(pSrcThread) == dave_true)
+		return thread_coroutine_running_step_yield(pSync);
+	else
+		return thread_sync_call_step_2_wait(pSrcThread, pDstThread, pSync);
 }
 
 dave_bool
-thread_call_sync_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadId wait_thread, ub wait_msg, void *catch_body, ub catch_len)
+thread_call_sync_catch(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub wait_msg, void *wait_body, ub wait_len)
 {
-	return thread_sync_call_step_3_catch(pDstThread, dst_id, wait_thread, wait_msg, catch_body, catch_len);
+	if(thread_enable_coroutine(pDstThread) == dave_true)
+		return thread_coroutine_running_step_resume(src_id, dst_id, wait_msg, wait_body, wait_len);
+	else
+		return thread_sync_call_step_3_catch(pDstThread, dst_id, src_id, wait_msg, wait_body, wait_len);
 }
 
 #endif
