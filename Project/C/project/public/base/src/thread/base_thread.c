@@ -1365,7 +1365,7 @@ _thread_local_remove(ThreadId thread_id)
 	thread_index = thread_find_busy_index(thread_id);
 	if(thread_index >= THREAD_MAX)
 	{
-		THREADLOG("can't find thread:%s", thread_name(thread_id));
+		THREADTRACE("can't find thread:%s", thread_name(thread_id));
 	}
 	else
 	{

@@ -148,13 +148,14 @@ static int CoRoutineFunc( stCoRoutine_t *co,void * )
 	return 0;
 }
 
-struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAttr_t* attr,
+struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAttr_t *attr,
 		pfn_co_routine_t pfn,void *arg )
 {
 	stCoRoutineAttr_t at;
+
 	if( attr )
 	{
-		memcpy( &at,attr,sizeof(at) );
+		memcpy( &at, attr, sizeof(at) );
 	}
 	if( at.stack_size <= 0 )
 	{
@@ -173,7 +174,7 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 
 	stCoRoutine_t *lp = (stCoRoutine_t*)malloc( sizeof(stCoRoutine_t) );
 	
-	memset( lp,0,(long)(sizeof(stCoRoutine_t))); 
+	memset( lp, 0, (long)(sizeof(stCoRoutine_t))); 
 
 	lp->env = env;
 	lp->pfn = pfn;
@@ -206,14 +207,30 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 }
 
 extern "C" int
-co_create( stCoRoutine_t **ppco,const stCoRoutineAttr_t *attr,pfn_co_routine_t pfn,void *arg )
+co_create( stCoRoutine_t **ppco, const stCoRoutineAttr_t *attr, pfn_co_routine_t pfn, void *arg )
 {
+	if(attr == NULL)
+	{
+		int stack_size = 1024 * 128;
+		stShareStack_t *share_stack;
+		stCoRoutineAttr_t local_attr;
+
+		share_stack = co_alloc_sharestack(1, stack_size);
+		local_attr.stack_size = stack_size;
+		local_attr.share_stack = share_stack;
+
+		attr = &local_attr;
+	}
+
 	if( !co_get_curr_thread_env() ) 
 	{
 		co_init_curr_thread_env();
 	}
+
 	stCoRoutine_t *co = co_create_env( co_get_curr_thread_env(), attr, pfn,arg );
+
 	*ppco = co;
+
 	return 0;
 }
 

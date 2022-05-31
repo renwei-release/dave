@@ -277,36 +277,6 @@ _tthread_self_thread(void)
 	return pthread_self();
 }
 
-static void
-_tthread_init(schedule_thread_fun schedule_fun)
-{
-	_main_thread = _tthread_self_thread();
-
-	_tthread_reset_all();
-
-	_tthread_reset_self_map_all();
-
-	_tthread_reset_index_map_all();
-
-	_schedule_thread_fun = schedule_fun;
-
-	t_lock_reset(&_thread_thread_pv);
-}
-
-static void
-_tthread_exit(void)
-{
-	ub tthread_index;
-
-	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
-	{
-		if(_thread_thread[tthread_index].thread_name[0] != '\0')
-		{
-			_tthread_die_thread(&_thread_thread[tthread_index]);
-		}
-	}
-}
-
 static ThreadThread *
 _tthread_find_thread(ub thread_index, dave_bool find_new)
 {
@@ -502,7 +472,6 @@ _tthread_add_list_map(ub thread_index, ThreadThread *pTThread)
 		pList = pList->next;
 	}
 
-	
 	pList = dave_malloc(sizeof(ThreadIndexList));
 	pList->pTThread = pTThread;
 	pList->next = NULL;
@@ -552,6 +521,25 @@ _tthread_del_list_map(ub thread_index, ThreadThread *pTThread)
 	}
 
 	_index_map[thread_index].pCurr = _index_map[thread_index].pList;
+}
+
+static void
+_tthread_clean_list_map(ub thread_index)
+{
+	ub safe_counter;
+	ThreadIndexList *pCurr, *pList;
+
+	pCurr = _index_map[thread_index].pList;
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
+	{
+		if(pCurr == NULL)
+			break;
+
+		pList = pCurr;
+		pCurr = pCurr->next;
+
+		dave_free(pList);
+	}
 }
 
 static void
@@ -722,6 +710,41 @@ _thread_safe_die(ub thread_index)
 		if(_tthread_die(thread_index) == dave_false)
 		{
 			break;
+		}
+	}
+}
+
+static void
+_tthread_init(schedule_thread_fun schedule_fun)
+{
+	_main_thread = _tthread_self_thread();
+
+	_tthread_reset_all();
+
+	_tthread_reset_self_map_all();
+
+	_tthread_reset_index_map_all();
+
+	_schedule_thread_fun = schedule_fun;
+
+	t_lock_reset(&_thread_thread_pv);
+}
+
+static void
+_tthread_exit(void)
+{
+	ub thread_index, tthread_index;
+
+	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
+	{
+		_tthread_clean_list_map(thread_index);
+	}
+
+	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+	{
+		if(_thread_thread[tthread_index].thread_name[0] != '\0')
+		{
+			_tthread_die_thread(&_thread_thread[tthread_index]);
 		}
 	}
 }
