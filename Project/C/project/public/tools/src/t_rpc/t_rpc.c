@@ -11,6 +11,7 @@
 
 void * t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len);
 dave_bool t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
+void * t_rpc_ver3_ptr(ub msg_id, void *msg_body);
 
 static void *
 _t_rpc_zip_ver1(ub msg_id, void *msg_body, ub msg_len)
@@ -67,5 +68,11 @@ t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_l
 		return _t_rpc_unzip_ver1(msg_body, msg_len, msg_id, packet_ptr, packet_len);
 	else
 		return _t_rpc_unzip_ver3(msg_body, msg_len, msg_id, packet_ptr, packet_len);
+}
+
+void *
+t_rpc_ptr(ub msg_id, void *msg_body)
+{
+	return t_rpc_ver3_ptr(msg_id, msg_body);
 }
 

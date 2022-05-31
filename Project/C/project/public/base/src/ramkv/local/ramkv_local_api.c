@@ -101,7 +101,7 @@ ramkv_local_top(KV *pKV, u8 *key_ptr, ub key_len)
 				/*
 				 * 不方便计算top。
 				 */
-				KVTRACE("unsupport attrib:%d", pKV->attrib);
+				KVLOG("Top calculation is not supported on attrib:%d", pKV->attrib);
 				ret = dave_false;
 			break;
 		case KvAttrib_list:

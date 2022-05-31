@@ -17,6 +17,7 @@ _rpcinc_head = "\
 _rpcinc_end = "\
 MBUF * t_rpc_zip(sb ver, ub msg_id, void *msg_body, ub msg_len);\n\
 dave_bool t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n\
+void * t_rpc_ptr(ub msg_id, void *msg_body);\n\
 \n\
 #endif\n\n"
 

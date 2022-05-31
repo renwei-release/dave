@@ -41,20 +41,16 @@ _uip_server_register_malloc(ThreadId src, s8 *method)
 static RetCode
 _uip_server_register_free(void *kv, s8 *method)
 {
-	UIPRegister *pRegister;
+	UIPRegister *pRegister = base_ramkv_del_key_ptr(pKV, method);
 
-	pRegister = base_ramkv_inq_key_ptr(pKV, method);
 	if(pRegister == NULL)
 	{
 		return RetCode_empty_data;
 	}
 
-	base_ramkv_del_key_ptr(pKV, pRegister->method);
-
 	dave_free(pRegister);
 
 	return RetCode_OK;
-
 }
 
 static s8 *
@@ -76,7 +72,7 @@ _uip_server_register_method_to_thread(s8 *method)
 void
 uip_server_register_init(void)
 {
-	pKV = base_ramkv_malloc(REGISTER_TABLE_NAME, KvAttrib_ram, 0, NULL);
+	pKV = base_ramkv_malloc(REGISTER_TABLE_NAME, KvAttrib_list, 0, NULL);
 }
 
 void

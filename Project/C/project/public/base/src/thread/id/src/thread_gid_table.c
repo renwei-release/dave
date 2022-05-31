@@ -26,7 +26,7 @@ _thread_gid_key(s8 *key_ptr, ub key_len, s8 *gid, s8 *thread_name)
 void
 thread_gid_table_init(void)
 {
-	_pKV = base_ramkv_malloc((s8 *)"threadgidtable", KvAttrib_ram, 0, NULL);
+	_pKV = base_ramkv_malloc((s8 *)"threadgidtable", KvAttrib_list, 0, NULL);
 }
 
 void

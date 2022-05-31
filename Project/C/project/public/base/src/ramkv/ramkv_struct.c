@@ -68,8 +68,8 @@ ___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback
 	return pKV;
 }
 
-void
-___ramkv_free___(KV *pKV)
+static void
+___ramkv_free___(KV *pKV, s8 *fun, ub line)
 {
 	if(pKV == NULL)
 		return;
@@ -79,8 +79,9 @@ ___ramkv_free___(KV *pKV)
 
 	if(dave_strcmp(pKV->thread_name, thread_name(self())) == dave_false)
 	{
-		KVABNOR("The resource requested by %s is released by %s!",
-			pKV->thread_name, thread_name(self()));
+		KVABNOR("The resource requested by %s is released by %s! <%s:%d>",
+			pKV->thread_name, thread_name(self()),
+			fun, line);
 	}
 
 	ramkv_timer_exit(pKV);
@@ -128,17 +129,17 @@ __ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_seco
 }
 
 void
-ramkv_free(dave_bool external_call, KV *pKV)
+__ramkv_free__(dave_bool external_call, KV *pKV, s8 *fun, ub line)
 {
 	___ramkv_pv_booting___();
 
 	if(external_call == dave_true)
 	{
-		SAFECODEv2W(_ramkv_struct_global_pv, ___ramkv_free___(pKV););
+		SAFECODEv2W(_ramkv_struct_global_pv, ___ramkv_free___(pKV, fun, line););
 	}
 	else
 	{
-		___ramkv_free___(pKV);
+		___ramkv_free___(pKV, fun, line);
 	}
 }
 

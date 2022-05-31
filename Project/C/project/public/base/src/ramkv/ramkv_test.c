@@ -330,16 +330,11 @@ _ramkv_test_check_timer(TIMERID timer_id, ub thread_index)
 static RetCode
 _ramkv_test_recycle(void *ramkv, s8 *key)
 {
-	void *ptr = base_ramkv_inq_key_ptr(ramkv, key);
+	void *ptr = base_ramkv_del_key_ptr(ramkv, key);
 
 	if(ptr == NULL)
 	{
 		return RetCode_empty_data;
-	}
-
-	if(base_ramkv_del_key_ptr(ramkv, key) == dave_false)
-	{
-		return RetCode_Arithmetic_error;
 	}
 
 	if(dave_free(ptr) == dave_false)

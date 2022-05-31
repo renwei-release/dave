@@ -595,16 +595,12 @@ _ramkv_timer_out(KV *pKV)
 static inline RetCode
 _ramkv_timer_recycle_key_ramkv(void *ramkv, s8 *key)
 {
-	KVTimerKeyList *pTimeKey = base_ramkv_inq_key_ptr(ramkv, key);
+	KVTimerKeyList *pTimeKey = base_ramkv_del_key_ptr(ramkv, key);
 
 	if(pTimeKey == NULL)
 		return RetCode_empty_data;
 
-	if(base_ramkv_del_bin_ptr(ramkv, pTimeKey->key_data, pTimeKey->key_len) == NULL)
-	{
-		KVABNOR("invalid del bin option! key_len:%d", pTimeKey->key_len);
-		return RetCode_invalid_option;
-	}
+	_ramkv_timer_key_clean(pTimeKey);
 
 	return RetCode_OK;
 }

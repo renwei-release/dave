@@ -13,10 +13,23 @@
 void thread_coroutine_malloc(ThreadStruct *pThread);
 void thread_coroutine_free(ThreadStruct *pThread);
 
-dave_bool thread_coroutine_running_step_go(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg);
-void * thread_coroutine_running_step_setup(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len);
+dave_bool thread_coroutine_running_step_go(
+	ThreadStruct *pThread,
+	base_thread_fun thread_fun,
+	MSGBODY *msg);
+
+void * thread_coroutine_running_step_setup(
+	ThreadStruct *pSrcThread,
+	ThreadId *src_id, ThreadId dst_id,
+	ub req_msg_id, u8 *req_msg_body,
+	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len);
+
 void * thread_coroutine_running_step_yield(void *param);
-dave_bool thread_coroutine_running_step_resume(ThreadId wait_thread, ThreadId dst_id, ub wait_msg, void *catch_body, ub catch_len);
+
+dave_bool thread_coroutine_running_step_resume(
+	ThreadId src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub msg_id, void *msg_body, ub msg_len);
 
 #endif
 

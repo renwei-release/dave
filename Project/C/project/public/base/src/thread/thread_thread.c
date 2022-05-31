@@ -938,7 +938,6 @@ thread_thread_clean_coroutine_site(ub thread_index, ub wakeup_index)
 	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
 	if(pTThread == NULL)
 	{
-		THREADLOG("%d/%d has empty thread!", thread_index, wakeup_index);
 		return;
 	}
 

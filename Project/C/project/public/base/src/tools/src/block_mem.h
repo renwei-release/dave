@@ -66,7 +66,7 @@ dave_bool block_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line);
 
 dave_bool block_memory(BlockMem *pBlock, void *user_ptr, s8 *file, ub line);
 
-ub block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag);
+ub block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag, ub warring_line);
 
 void block_info_write(char *block_name, BlockMem *pBlock);
 

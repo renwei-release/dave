@@ -63,12 +63,6 @@ _base_thread_rpc_debug_req(ThreadId remote_thread_id)
 		BASELOG("Runs successfully!");
 		_base_thread_rpc_debug_rsp(remote_thread_id, &rsp);
 	}
-
-	if(go(remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, &rsp) != NULL)
-	{
-		BASELOG("Runs successfully!");
-		_base_thread_rpc_debug_rsp(remote_thread_id, &rsp);
-	}
 }
 
 static void

@@ -90,7 +90,7 @@ __base_mem_poweroff(s8 *file, ub line, ub len)
 			"\n** Please note that <%s:%d> the memory allocation length is 0 **", file, line);
 	}
 
-	base_power_off((char *)message);
+	base_power_off(message);
 }
 
 // =====================================================================

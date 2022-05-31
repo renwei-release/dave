@@ -133,7 +133,7 @@ _uip_channel_table_booting_sync(void)
 void
 uip_channel_init(void)
 {
-	pKV = base_ramkv_malloc(UIP_CHANNEL_KV_TABLE, KvAttrib_ram, 0, NULL);
+	pKV = base_ramkv_malloc(UIP_CHANNEL_KV_TABLE, KvAttrib_list, 0, NULL);
 }
 
 void

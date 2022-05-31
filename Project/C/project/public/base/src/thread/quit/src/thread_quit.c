@@ -28,39 +28,24 @@ typedef struct {
 	s8 reason[QUIT_REASON_MESSAGE_LEN];
 	TIMERID quit_timer;
 	sb wait_timer;
-	ThreadId who_have_restart_msg[THREAD_MAX];
 	ThreadStruct *task;
 	ub task_num;
 } SYSTEMQUIT;
 
 static SYSTEMQUIT _msg_quit;
-static void *_system_wakeup_ptr = NULL;
 
 static void
 _system_quit(void)
 {
-	dave_os_thread_wakeup(_system_wakeup_ptr);
-
 	switch(_msg_quit.type)
 	{
 		case QUIT_TYPE_RESTART:
 		case QUIT_TYPE_POWER_OFF:
-				dave_os_power_off(_msg_quit.reason);
+				base_power_off(NULL);
 			break;
 		default:
 				THREADLOG("system quit");
 			break;
-	}
-}
-
-static void
-_clean_who_have_restart_msg(void)
-{
-	sw_ubase index;
-
-	for(index=0; index<THREAD_MAX; index++)
-	{
-		_msg_quit.who_have_restart_msg[index] = INVALID_THREAD_ID;
 	}
 }
 
@@ -75,8 +60,6 @@ _broadcast_system_quit_message(void)
 	{
 		_msg_quit.task_num = THREAD_MAX;
 	}
-
-	_clean_who_have_restart_msg();
 
 	if(_msg_quit.wait_timer < 0)
 	{
@@ -93,8 +76,6 @@ _broadcast_system_quit_message(void)
 		if((_msg_quit.task[task_index].thread_id != INVALID_THREAD_ID)
 			&& (_msg_quit.task[task_index].attrib == LOCAL_TASK_ATTRIB))
 		{
-			_msg_quit.who_have_restart_msg[task_index] = _msg_quit.task[task_index].thread_id;
-
 			pRestart = thread_msg(pRestart);
 			dave_strcpy(pRestart->reason, _msg_quit.reason, sizeof(pRestart->reason));
 			pRestart->times = times;
@@ -159,10 +140,9 @@ _start_quit_timer(void)
 // =====================================================================
 
 void
-thread_quit_init(void *main_thread_id)
+thread_quit_init(void)
 {
 	_msg_quit.type = QUIT_TYPE_MAX;
-	_system_wakeup_ptr = main_thread_id;
 }
 
 void

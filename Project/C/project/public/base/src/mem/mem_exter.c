@@ -74,7 +74,7 @@ ub
 __exter_memory_info__(s8 *info_ptr, ub info_len, dave_bool base_flag)
 {
 #ifdef EXTER_ENABLE_BLOCK
-	return block_info(EXTER_MEM_NAME, _exter_mem, info_ptr, info_len, base_flag, dave_false);
+	return block_info(EXTER_MEM_NAME, _exter_mem, info_ptr, info_len, base_flag, dave_false, 0);
 #else
 	return 0;
 #endif

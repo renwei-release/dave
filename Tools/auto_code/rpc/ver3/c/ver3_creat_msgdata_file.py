@@ -160,12 +160,26 @@ def _creat_msgdata_unzip_fun_file(file_id, msg_struct_name, msg_struct_data, str
     return
 
 
+def _creat_msgdata_ptr_fun_file(file_id, msg_struct_name, msg_struct_data):
+    ptr_name = struct_table_ptr_name(msg_struct_data)
+
+    file_id.write("void *\nt_rpc_ver3_ptr_"+msg_struct_name+"("+msg_struct_name+" *struct_data)\n")
+    file_id.write("{\n")
+    if ptr_name != None:
+        file_id.write(f"\treturn struct_data->{ptr_name};\n")
+    else:
+        file_id.write(f"\treturn NULL;\n")
+    file_id.write("}\n\n")
+    return
+
+
 def _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table):
     for msg_struct_name in msg_struct_table.keys():
         msg_struct_data = msg_struct_table[msg_struct_name]
         if msg_struct_data != None:
             _creat_msgdata_zip_fun_file(file_id, msg_struct_name, msg_struct_data, struct_table)
             _creat_msgdata_unzip_fun_file(file_id, msg_struct_name, msg_struct_data, struct_table)
+            _creat_msgdata_ptr_fun_file(file_id, msg_struct_name, msg_struct_data)
     return
 
 
@@ -187,7 +201,8 @@ def _creat_msgdata_inc_file(msg_struct_table, include_list, file_name):
         for msg_struct_name in msg_struct_table.keys():
             msg_struct_name = msg_struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver3_zip_"+msg_struct_name+"("+msg_struct_name+" *zip_data, ub zip_len);\n")
-            file_id.write("dave_bool t_rpc_ver3_unzip_"+msg_struct_name+"(void **unzip_data, ub *unzip_len, void *pStructBson);\n\n")
+            file_id.write("dave_bool t_rpc_ver3_unzip_"+msg_struct_name+"(void **unzip_data, ub *unzip_len, void *pStructBson);\n")
+            file_id.write("void * t_rpc_ver3_ptr_"+msg_struct_name+"("+msg_struct_name+" *struct_data);\n\n")
         file_id.write(_msgdata_inc_end)
     return
 

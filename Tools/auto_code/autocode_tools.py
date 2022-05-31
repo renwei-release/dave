@@ -339,6 +339,15 @@ def struct_on_the_table(struct_name, struct_table):
     return False
 
 
+def struct_table_ptr_name(struct_table):
+    for struct_object in struct_table_get(struct_table):
+        struct_name = struct_object['n'].lower()
+        has_ptr = struct_object['p']
+        if (struct_name == 'ptr') and (has_ptr == True):
+            return struct_object['n']
+    return None
+
+
 def struct_sorted(struct_data):  
     sorted_keys = sorted(struct_data)
     new_struct_data = {}

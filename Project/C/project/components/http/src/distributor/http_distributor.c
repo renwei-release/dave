@@ -151,13 +151,11 @@ _distributor_clean_info(void *ramkv, s8 *key)
 {
 	HttpDistributorInfo *pInfo;
 
-	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, NULL);
+	pInfo = base_ramkv_del_key_ptr(_distributor_ramkv, key);
 	if(pInfo == NULL)
 	{
 		return RetCode_empty_data;
 	}
-
-	base_ramkv_del_key_ptr(ramkv, pInfo->path);
 
 	_distributor_free_info(pInfo);
 
@@ -349,7 +347,7 @@ _distributor_restart(RESTARTREQMSG *pRestart)
 static void
 _distributor_init(MSGBODY *msg)
 {
-	_distributor_ramkv = base_ramkv_malloc("http-distributor", KvAttrib_ram, 0, NULL);
+	_distributor_ramkv = base_ramkv_malloc("http-distributor", KvAttrib_list, 0, NULL);
 	_http_thread = thread_id(HTTP_THREAD_NAME);
 
 	_distributor_http_listen_req(HTTPS_DISTRIBUTOR_SERVER_PORT);

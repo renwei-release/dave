@@ -18,7 +18,7 @@ static void *_pKV = NULL;
 void
 thread_remote_id_table_init(void)
 {
-	_pKV = base_ramkv_malloc((s8 *)"threadremoteidtable", KvAttrib_ram, 0, NULL);
+	_pKV = base_ramkv_malloc((s8 *)"threadremoteidtable", KvAttrib_list, 0, NULL);
 }
 
 void

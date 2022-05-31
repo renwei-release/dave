@@ -1407,7 +1407,7 @@ base_thread_init(void *main_thread_id)
 
 	thread_call_init();
 
-	thread_quit_init(main_thread_id);
+	thread_quit_init();
 
 	thread_thread_init(_thread_schedule_one_thread);
 
@@ -1418,6 +1418,9 @@ void
 base_thread_exit(void)
 {
 	thread_guardian_exit();
+
+	_guardian_thread = INVALID_THREAD_ID;
+	_current_msg_stack = NULL;
 
 	thread_thread_exit();
 
@@ -1524,7 +1527,10 @@ base_thread_attrib(ThreadId thread_id)
 s8 *
 base_thread_get_name(ThreadId thread_id, s8 *fun, ub line)
 {
-	s8 *name = NULL;
+	s8 *name = "NULL";
+
+	if(thread_id == INVALID_THREAD_ID)
+		return name;
 
 	if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 	{
@@ -1871,6 +1877,7 @@ base_thread_sync_msg(
 	pSync = thread_call_sync_pre(
 		pSrcThread, &src_id,
 		pDstThread, dst_id,
+		msg_id, msg_body, msg_len,
 		sync_id, sync_body, sync_len);
 
 	if(pSync == NULL)

@@ -51,7 +51,7 @@ thread_exter_memory(void *ptr, s8 *file, ub line)
 ub
 thread_exter_memory_info(s8 *info_ptr, ub info_len, dave_bool base_flag)
 {
-	return block_info(THREAD_EXTER_MEM_NAME, _thread_exter_mem, info_ptr, info_len, base_flag, dave_false);
+	return block_info(THREAD_EXTER_MEM_NAME, _thread_exter_mem, info_ptr, info_len, base_flag, dave_false, 0);
 }
 
 #endif

@@ -30,7 +30,7 @@ typedef struct {
 	ThreadId src_thread;
 	ThreadId dst_thread;
 	ub msg_id;
-	ub msg_association_info;
+	ub msg_site;
 	ub wakeup_index;
 
 	ub thread_index;
@@ -68,7 +68,7 @@ _thread_coroutine_key_kv(
 	ThreadId src_thread,
 	ThreadId dst_thread,
 	ub msg_id,
-	ub msg_association_info,
+	ub msg_site,
 	ub wakeup_index,
 	s8 *key_ptr, ub key_len)
 {
@@ -83,7 +83,7 @@ _thread_coroutine_key_kv(
 	dave_snprintf(key_ptr, key_len,
 		"%lx-%lx-%lx-%lx-%lx",
 		src_thread, dst_thread, msg_id,
-		msg_association_info,
+		msg_site,
 		wakeup_index);
 
 	return key_ptr;
@@ -167,7 +167,7 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 		pSite->src_thread,
 		pSite->dst_thread,
 		pSite->msg_id,
-		pSite->msg_association_info,
+		pSite->msg_site,
 		pSite->wakeup_index,
 		key, sizeof(key));
 
@@ -179,7 +179,7 @@ _thread_coroutine_del_kv(
 	ThreadId src_thread,
 	ThreadId dst_thread,
 	ub msg_id,
-	ub msg_association_info,
+	ub msg_site,
 	ub wakeup_index)
 {
 	s8 key[256];
@@ -191,7 +191,7 @@ _thread_coroutine_del_kv(
 		dst_thread,
 		src_thread,
 		msg_id,
-		msg_association_info,
+		msg_site,
 		wakeup_index,
 		key, sizeof(key));
 
@@ -233,7 +233,7 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, base_thread_fun thread_fun,
 	pSite->src_thread = INVALID_THREAD_ID;
 	pSite->dst_thread = INVALID_THREAD_ID;
 	pSite->msg_id = MSGID_RESERVED;
-	pSite->msg_association_info = 0;
+	pSite->msg_site = 0;
 	pSite->wakeup_index = msg->thread_wakeup_index;
 
 	pSite->thread_index = pThread->thread_index;
@@ -277,22 +277,14 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 }
 
 static dave_bool
-_thread_coroutine_running_step_5(ThreadId src_id, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
+_thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
 {
-	ThreadStruct *pWaitThread;
 	ub wakeup_index;
 	CoroutineSite *pSite;
 
-	pWaitThread = thread_find_busy_thread(dst_id);
-	if(pWaitThread == NULL)
-	{
-		THREADLOG("%lx/%s can't find pSrcThread!", dst_id, thread_name(dst_id));
-		return dave_false;
-	}
-
 	wakeup_index = thread_get_wakeup(dst_id);
 
-	pSite = _thread_coroutine_del_kv(src_id, dst_id, msg_id, 0, wakeup_index);
+	pSite = _thread_coroutine_del_kv(src_id, dst_id, msg_id, (ub)(t_rpc_ptr(msg_id, msg_body)), wakeup_index);
 	if(pSite == NULL)
 	{
 		THREADDEBUG("%lx/%s->%lx/%s:%s wakeup_index:%d",
@@ -301,12 +293,12 @@ _thread_coroutine_running_step_5(ThreadId src_id, ThreadId dst_id, ub msg_id, vo
 		return dave_false;
 	}
 
-	if((pSite->thread_index != pWaitThread->thread_index)
+	if((pSite->thread_index != pDstThread->thread_index)
 		|| (pSite->wakeup_index != wakeup_index)
 		|| (pSite->msg_id != msg_id))
 	{
 		THREADABNOR("wait thread mismatch, thread_index:%d/%d wakeup_index:%d/%d wait_msg:%s/%s",
-			pSite->thread_index, pWaitThread->thread_index,
+			pSite->thread_index, pDstThread->thread_index,
 			pSite->wakeup_index, wakeup_index,
 			msgstr(pSite->msg_id), msgstr(msg_id));
 		return dave_false;
@@ -352,7 +344,11 @@ _thread_coroutine_running_step_4(void *param)
 }
 
 static inline void *
-_thread_coroutine_running_step_3(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
+_thread_coroutine_running_step_3(
+	ThreadStruct *pSrcThread,
+	ThreadId *src_id, ThreadId dst_id,
+	ub req_msg_id, u8 *req_msg_body,
+	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 	ub wakeup_index;
 	CoroutineSite *pSite;
@@ -362,25 +358,25 @@ _thread_coroutine_running_step_3(ThreadStruct *pSrcThread, ThreadId *src_id, Thr
 	pSite = (CoroutineSite *)thread_thread_get_coroutine_site(pSrcThread->thread_index, wakeup_index);
 	if(pSite == NULL)
 	{
-		THREADABNOR("%s can't find sync on msg_id:%s!",
-			pSrcThread->thread_name, msgstr(msg_id));
+		THREADABNOR("%s can't find site on msg_id:%s!",
+			pSrcThread->thread_name, msgstr(rsp_msg_id));
 		return NULL;
 	}
 
 	THREADDEBUG("%lx/%s->%lx/%s:%s wakeup_index:%d",
-		*src_id, thread_name(*src_id), dst_id, thread_name(dst_id), msgstr(msg_id),
+		*src_id, thread_name(*src_id), dst_id, thread_name(dst_id), msgstr(rsp_msg_id),
 		wakeup_index);
 
 	pSite->src_thread = *src_id;
 	pSite->dst_thread = dst_id;
-	pSite->msg_id = msg_id;
-	pSite->msg_association_info = 0;
+	pSite->msg_id = rsp_msg_id;
+	pSite->msg_site = (ub)(t_rpc_ptr(req_msg_id, req_msg_body));
 	pSite->wakeup_index = wakeup_index;
 
 	pSite->thread_index = pSrcThread->thread_index;
 
-	pSite->msg_body = msg_body;
-	pSite->msg_len = msg_len;
+	pSite->msg_body = rsp_msg_body;
+	pSite->msg_len = rsp_msg_len;
 	pSite->real_msg_len = 0;
 
 	return pSite;
@@ -472,6 +468,20 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 	return dave_true;
 }
 
+static inline void
+_thread_coroutine_booting(void)
+{
+	if(_coroutine_kv == NULL)
+	{
+		thread_other_lock();
+		if(_coroutine_kv == NULL)
+		{
+			_coroutine_kv = kv_malloc("ckv", KvAttrib_list, 30, _thread_coroutine_kv_timer_out);
+		}
+		thread_other_unlock();
+	}
+}
+
 // =====================================================================
 
 void
@@ -487,17 +497,15 @@ thread_coroutine_free(ThreadStruct *pThread)
 }
 
 dave_bool
-thread_coroutine_running_step_go(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
+thread_coroutine_running_step_go(
+	ThreadStruct *pThread,
+	base_thread_fun thread_fun,
+	MSGBODY *msg)
 {
 	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
 		return dave_false;
 
-	thread_other_lock();
-	if(_coroutine_kv == NULL)
-	{
-		_coroutine_kv = kv_malloc("ckv", KvAttrib_ram, 30, _thread_coroutine_kv_timer_out);
-	}
-	thread_other_unlock();
+	_thread_coroutine_booting();
 
 	_thread_coroutine_running_step_1(pThread, thread_fun, msg);
 
@@ -505,9 +513,17 @@ thread_coroutine_running_step_go(ThreadStruct *pThread, base_thread_fun thread_f
 }
 
 void *
-thread_coroutine_running_step_setup(ThreadStruct *pSrcThread, ThreadId *src_id, ThreadId dst_id, ub msg_id, u8 *msg_body, ub msg_len)
+thread_coroutine_running_step_setup(
+	ThreadStruct *pSrcThread,
+	ThreadId *src_id, ThreadId dst_id,
+	ub req_msg_id, u8 *req_msg_body,
+	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
-	return _thread_coroutine_running_step_3(pSrcThread, src_id, dst_id, msg_id, msg_body, msg_len);
+	return _thread_coroutine_running_step_3(
+		pSrcThread,
+		src_id, dst_id,
+		req_msg_id, req_msg_body,
+		rsp_msg_id, rsp_msg_body, rsp_msg_len);
 }
 
 void *
@@ -517,9 +533,12 @@ thread_coroutine_running_step_yield(void *param)
 }
 
 dave_bool
-thread_coroutine_running_step_resume(ThreadId src_id, ThreadId dst_id, ub wait_msg, void *catch_body, ub catch_len)
+thread_coroutine_running_step_resume(
+	ThreadId src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub msg_id, void *msg_body, ub msg_len)
 {
-	return _thread_coroutine_running_step_5(src_id, dst_id, wait_msg, catch_body, catch_len);
+	return _thread_coroutine_running_step_5(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
 }
 
 #endif

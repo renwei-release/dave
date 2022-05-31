@@ -14,7 +14,7 @@ typedef enum {
 	QUIT_TYPE_MAX
 } QUITTYPE;
 
-void thread_quit_init(void *main_thread_id);
+void thread_quit_init(void);
 
 void thread_quit_exit(void);
 

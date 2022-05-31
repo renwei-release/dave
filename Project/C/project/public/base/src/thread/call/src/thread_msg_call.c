@@ -94,7 +94,9 @@ _thread_msg_call_del(ThreadId thread_id, ub msg_id)
 		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
 
 	if(pFun != NULL)
+	{
 		dave_free(pFun);
+	}
 }
 
 static RetCode
@@ -115,18 +117,21 @@ _thread_msg_call_recycle(void *ramkv, s8 *key)
 void
 thread_msg_call_init(void)
 {
-	_msg_call_kv = base_ramkv_malloc("tmckv", KvAttrib_ram, 0, NULL);
+	_msg_call_kv = base_ramkv_malloc("tmckv", KvAttrib_list, 0, NULL);
 }
 
 void
 thread_msg_call_exit(void)
 {
 	base_ramkv_free(_msg_call_kv, _thread_msg_call_recycle);
+	_msg_call_kv = NULL;
 }
 
 dave_bool
 thread_msg_call_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr)
 {
+	if(_msg_call_kv == NULL) return dave_false;
+
 	if((thread_id == INVALID_THREAD_ID) || (msg_fun == NULL))
 	{
 		THREADABNOR("invalid param:%d,%x", thread_id, msg_fun);
@@ -134,6 +139,9 @@ thread_msg_call_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun,
 	}
 
 	thread_id = thread_get_local(thread_id);
+
+	THREADDEBUG("thread_id:%lx msg_id:%d", thread_id, msg_id);
+
 	_thread_msg_call_add(thread_id, msg_id, msg_fun, user_ptr);
 
 	return dave_true;
@@ -142,7 +150,11 @@ thread_msg_call_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun,
 void
 thread_msg_call_unregister(ThreadId thread_id, ub msg_id)
 {
+	if(_msg_call_kv == NULL) return;
+
 	thread_id = thread_get_local(thread_id);
+
+	THREADDEBUG("thread_id:%lx msg_id:%d", thread_id, msg_id);
 
 	_thread_msg_call_del(thread_id, msg_id);
 }
@@ -150,6 +162,8 @@ thread_msg_call_unregister(ThreadId thread_id, ub msg_id)
 MsgCallFun *
 thread_msg_call(ThreadId thread_id, ub msg_id)
 {
+	if(_msg_call_kv == NULL) return NULL;
+
 	thread_id = thread_get_local(thread_id);
 
 	return _thread_msg_call_inq(thread_id, msg_id);

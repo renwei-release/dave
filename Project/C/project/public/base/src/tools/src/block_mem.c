@@ -141,13 +141,14 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 }
 
 static inline ub
-_block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock)
+_block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub warring_line)
 {
 	ub block_index, info_index, top_index;
 	s8 *top_file[TOP_INFO_MAX];
 	ub top_line[TOP_INFO_MAX];
 	ub top_number[TOP_INFO_MAX];
 	dave_bool has_top = dave_false;
+	dave_bool has_number = dave_false;
 
 	dave_memset(top_file, 0x00, sizeof(top_file));
 	dave_memset(top_line, 0x00, sizeof(top_line));
@@ -171,13 +172,18 @@ _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBloc
 
 	for(top_index=0; top_index<TOP_INFO_MAX; top_index++)
 	{
-		if(top_number[top_index] > 0)
+		if(top_number[top_index] > warring_line)
 		{
 			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 				" %s:%d number:%d\n",
 				top_file[top_index], top_line[top_index], top_number[top_index]);
+
+			has_number = dave_true;
 		}
 	}
+
+	if((has_top == dave_false) || (has_number == dave_false))
+		return 0;
 
 	return info_index;
 }
@@ -547,7 +553,7 @@ block_memory(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 }
 
 ub
-block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag)
+block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag, ub warring_line)
 {
 	ub info_index;
 
@@ -557,7 +563,7 @@ block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_b
 	}
 	else
 	{
-		info_index = _block_mem_top_info(block_name, info_ptr, info_len, pBlock);
+		info_index = _block_mem_top_info(block_name, info_ptr, info_len, pBlock, warring_line);
 		if((info_index > 0) && (detail_flag == dave_true))
 		{
 			BLOCKMEMLOG("\nPlease note that the following memory has not been released(%s):\n%s", block_name, info_ptr);
@@ -577,7 +583,7 @@ block_info_write(char *block_name, BlockMem *pBlock)
 	DateStruct date;
 	s8 file_name[64];
 
-	info_len = block_info(block_name, pBlock, info_ptr, sizeof(info_ptr), dave_false, dave_true);
+	info_len = block_info(block_name, pBlock, info_ptr, sizeof(info_ptr), dave_false, dave_true, 64);
 
 	if(info_len > 0)
 	{

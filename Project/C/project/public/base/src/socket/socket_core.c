@@ -174,7 +174,7 @@ _socket_core_map_find(s32 os_socket)
 static inline RetCode
 _socket_core_map_clean(void *ramkv, s8 *key)
 {
-	SocketMap *pMap = base_ramkv_del_key_ptr(_socket_map_ramkv, NULL);
+	SocketMap *pMap = base_ramkv_del_key_ptr(_socket_map_ramkv, key);
 
 	if(pMap == NULL)
 	{

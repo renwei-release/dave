@@ -85,7 +85,7 @@ __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback
 
 	KVDEBUG("name:%s", ((KV *)(ramkv))->name);
 
-	ramkv_free(external_call, (KV *)(ramkv));
+	__ramkv_free__(external_call, (KV *)(ramkv), fun, line);
 }
 
 dave_bool

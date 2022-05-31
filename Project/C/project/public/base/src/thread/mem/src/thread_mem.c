@@ -77,7 +77,7 @@ _thread_mem_poweroff(s8 *file, ub line, ub len, ub msg_id)
 			"\n** Please note that the memory allocation length is 0 **");
 	}
 
-	base_power_off((char *)message);
+	base_power_off(message);
 }
 
 static void

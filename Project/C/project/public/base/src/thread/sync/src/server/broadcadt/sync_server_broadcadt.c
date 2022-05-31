@@ -440,7 +440,7 @@ sync_server_broadcadt_init(void)
 {
 	t_lock_reset(&_broadcadt_pv);
 
-	pSyncServerBroadcadt = base_ramkv_malloc(SERVER_BROADCADT_TABLE_NAME, KvAttrib_ram, 0, NULL);
+	pSyncServerBroadcadt = base_ramkv_malloc(SERVER_BROADCADT_TABLE_NAME, KvAttrib_list, 0, NULL);
 }
 
 void

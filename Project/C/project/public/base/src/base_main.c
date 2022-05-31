@@ -17,12 +17,15 @@
 
 static volatile dave_bool _base_running = dave_true;
 static volatile dave_bool _base_power_state = dave_true;
+static void *_main_thread_id = NULL;
 
 // =====================================================================
 
 void
 base_init(void *main_thread_id)
 {
+	_main_thread_id = main_thread_id;
+
 	booting_lock();
 	base_log_init();
 	base_mem_init();
@@ -77,19 +80,31 @@ base_restart(const char *args, ...)
 void
 base_power_off(s8 *reason)
 {
-	DateStruct date = t_time_get_date(NULL);
+	DateStruct date;
 	s8 file_name[64];
 
+	dave_os_thread_wakeup(_main_thread_id);
+
 	_base_running = dave_false;
-	_base_power_state = dave_false;
 
-	dave_snprintf(file_name, sizeof(file_name), "CORE-DUMP-%04d-%02d-%02d_%02d:%02d:%02d",
-		date.year, date.month, date.day,
-		date.hour, date.minute, date.second);
+	if(reason != NULL)
+	{
+		date = t_time_get_date(NULL);
 
-	dave_os_file_write(CREAT_WRITE_FLAG, file_name, 0, dave_strlen(reason), (u8 *)reason);
+		dave_snprintf(file_name, sizeof(file_name), "CORE-DUMP-%04d-%02d-%02d_%02d:%02d:%02d",
+			date.year, date.month, date.day,
+			date.hour, date.minute, date.second);
 
-	dave_os_power_off(reason);
+		dave_os_file_write(CREAT_WRITE_FLAG, file_name, 0, dave_strlen(reason), (u8 *)reason);
+	}
+	else
+	{
+		reason = "Bye!";
+	}
+
+//	dave_os_sleep(3000);
+
+//	dave_os_power_off(reason);
 }
 
 dave_bool
