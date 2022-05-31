@@ -15,12 +15,12 @@
 * See the License for the specific language governing permissions and 
 * limitations under the License.
 */
-
-
 #ifndef __CO_ROUTINE_INNER_H__
+#define __CO_ROUTINE_INNER_H__
 
 #include "co_routine.h"
 #include "coctx.h"
+
 struct stCoRoutineEnv_t;
 struct stCoSpec_t
 {
@@ -33,7 +33,6 @@ struct stStackMem_t
 	int stack_size;
 	char* stack_bp; //stack_buffer + stack_size
 	char* stack_buffer;
-
 };
 
 struct stShareStack_t
@@ -43,8 +42,6 @@ struct stShareStack_t
 	int count;
 	stStackMem_t** stack_array;
 };
-
-
 
 struct stCoRoutine_t
 {
@@ -56,14 +53,10 @@ struct stCoRoutine_t
 	char cStart;
 	char cEnd;
 	char cIsMain;
-	char cEnableSysHook;
 	char cIsShareStack;
-
-	void *pvEnv;
 
 	//char sRunStack[ 1024 * 128 ];
 	stStackMem_t* stack_mem;
-
 
 	//save satck buffer while confilct on same stack_buffer;
 	char* stack_sp; 
@@ -71,10 +64,7 @@ struct stCoRoutine_t
 	char* save_buffer;
 
 	stCoSpec_t aSpec[1024];
-
 };
-
-
 
 //1.env
 void 				co_init_curr_thread_env();
@@ -85,27 +75,6 @@ extern "C" void    co_free( stCoRoutine_t * co );
 extern "C" void    co_yield_env(  stCoRoutineEnv_t *env );
 
 //3.func
-
-
-
-//-----------------------------------------------------------------------------------------------
-
-struct stTimeout_t;
-struct stTimeoutItem_t ;
-
-stTimeout_t *AllocTimeout( int iSize );
-void 	FreeTimeout( stTimeout_t *apTimeout );
-int  	AddTimeout( stTimeout_t *apTimeout,stTimeoutItem_t *apItem ,uint64_t allNow );
-
-struct stCoEpoll_t;
-stCoEpoll_t * AllocEpoll();
-void 		FreeEpoll( stCoEpoll_t *ctx );
-
-stCoRoutine_t *		GetCurrThreadCo();
-void 				SetEpoll( stCoRoutineEnv_t *env,stCoEpoll_t *ev );
-
-typedef void (*pfnCoRoutineFunc_t)();
+stCoRoutine_t *	GetCurrThreadCo();
 
 #endif
-
-#define __CO_ROUTINE_INNER_H__

@@ -93,7 +93,7 @@ int coctx_init( coctx_t *ctx )
 	memset( ctx,0,sizeof(*ctx));
 	return 0;
 }
-int coctx_make( coctx_t *ctx,coctx_pfn_t pfn,const void *s,const void *s1 )
+int coctx_make( coctx_t *ctx, coctx_pfn_t pfn,const void *s,const void *s1 )
 {
 	//make room for coctx_param
 	char *sp = ctx->ss_sp + ctx->ss_size - sizeof(coctx_param_t);
