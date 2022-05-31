@@ -60,9 +60,10 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 			thread_queue_total(&msg_list_total, &msg_received_counter, &msg_processed_counter, pThread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
 			thread_queue_total(&seq_list_total, &seq_received_counter, &seq_processed_counter, pThread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
 
-			printf_len = dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, " %s(%02x)<%s><%s,%d>",
+			printf_len = dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, " %s(%02x)<%s%s><%s,%d>",
 				pThread[thread_index].thread_name, pThread[thread_index].thread_id,
 				pThread[thread_index].attrib==LOCAL_TASK_ATTRIB ? (pThread[thread_index].thread_flag&THREAD_PRIVATE_FLAG ? "P" : "L") : "R",
+				pThread[thread_index].thread_flag&THREAD_COROUTINE_FLAG ? "-CO" : "",
 				pThread[thread_index].thread_flag&THREAD_THREAD_FLAG ? "C" : "M", pThread[thread_index].level_number);
 			msg_index += printf_len;
 
