@@ -94,7 +94,7 @@ dave_bool base_thread_name_msg(s8 *thread_name, ub msg_id, ub msg_len, u8 *msg_b
 dave_bool base_thread_name_event(s8 *thread_name, ub req_id, ub msg_len, u8 *msg_body, ub rsp_id, base_thread_fun rsp_fun, s8 *fun, ub line);
 dave_bool base_thread_gid_msg(s8 *gid, s8 *thread_name, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line);
 dave_bool base_thread_gid_event(s8 *gid, s8 *thread_name, ub req_id, ub msg_len, u8 *msg_body, ub rsp_id, base_thread_fun rsp_fun, s8 *fun, ub line);
-void * base_thread_sync_msg(ThreadId src_id, ThreadId dst_id, ub msg_id, ub msg_len, u8 *msg_body, ub sync_id, ub sync_len, u8 *sync_body, s8 *fun, ub line);
+void * base_thread_sync_msg(ThreadId src_id, ThreadId dst_id, ub req_id, ub req_len, u8 *req_body, ub rsp_id, ub rsp_len, u8 *rsp_body, s8 *fun, ub line);
 dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line);
 
 #define base_thread_trace_state() __base_thread_trace_state__((s8 *)__func__, (ub)__LINE__)
@@ -118,7 +118,9 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define name_event(thread_name, req_id, msg_body, rsp_id, rsp_fun) base_thread_name_event(thread_name, (ub)req_id, sizeof(*msg_body), (u8 *)(msg_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
 #define gid_msg(gid, thread_name, msg_id, msg_body) base_thread_gid_msg(gid, thread_name, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define gid_event(gid, thread_name, req_id, msg_body, rsp_id, rsp_fun) base_thread_gid_event(gid, thread_name, (ub)req_id, sizeof(*msg_body), (u8 *)(msg_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
-#define sync_msg(dst_id, msg_id, msg_body, sync_id, sync_body) base_thread_sync_msg(INVALID_THREAD_ID, dst_id, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (ub)sync_id, sizeof(*sync_body), (u8 *)(sync_body), (s8 *)__func__, (ub)__LINE__)
+#define sync_msg(dst_id, req_id, req_body, rsp_id, rsp_body) base_thread_sync_msg(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, sizeof(*rsp_body), (u8 *)(rsp_body), (s8 *)__func__, (ub)__LINE__)
+#define id_go(dst_id, req_id, req_body, rsp_id) base_thread_sync_msg(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, 0, NULL, (s8 *)__func__, (ub)__LINE__)
+#define name_go(dst_name, req_id, req_body, rsp_id) id_go(thread_id(dst_name), req_id, req_body, rsp_id)
 #define broadcast_thread(thread_name, msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_thread, thread_name, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_local(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_local, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_remote(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_remote, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
@@ -127,8 +129,6 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define reg_msg(msg_id, msg_fun) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, NULL)
 #define reg_msgptr(msg_id, msg_fun, user_ptr) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, user_ptr)
 #define unreg_msg(msg_id) base_thread_msg_unregister(INVALID_THREAD_ID, (ub)msg_id)
-
-#define go sync_msg
 
 #endif
 

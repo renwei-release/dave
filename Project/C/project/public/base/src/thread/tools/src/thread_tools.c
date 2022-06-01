@@ -280,11 +280,11 @@ thread_reset_sync(ThreadSync *pSync)
 }
 
 void
-__thread_clean_user_input_data__(void *data, ub msg_id, s8 *fun, ub line)
+__thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line)
 {
-	if(thread_memory_at_here(data) == dave_true)
+	if(thread_memory_at_here(msg_body) == dave_true)
 	{
-		thread_free((void *)data, msg_id, fun, line);
+		thread_free((void *)msg_body, msg_id, fun, line);
 	}
 }
 
@@ -302,18 +302,18 @@ ThreadMsg *
 thread_build_msg(
 	ThreadStruct *pThread,
 	ThreadId src_id, ThreadId dst_id,
-	ub msg_id, ub data_len, u8 *data,
+	ub msg_id, ub msg_len, u8 *msg_body,
 	BaseMsgType msg_type,
 	s8 *fun, ub line)
 {
-	dave_bool data_is_here = thread_memory_at_here((void *)data);
+	dave_bool data_is_here = thread_memory_at_here((void *)msg_body);
 	ThreadMsg *task_msg;
 
 	task_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
 	if(data_is_here == dave_false)
 	{
 		THREADTRACE("Please use thread_msg function to build the msg:%d buffer! <%s:%d>", msg_id, fun, line);
-		task_msg->msg_body.msg_body = thread_malloc(data_len, msg_id, (s8 *)__func__, (ub)__LINE__);
+		task_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, (s8 *)__func__, (ub)__LINE__);
 	}
 
 	task_msg->msg_body.msg_src = src_id;
@@ -342,14 +342,14 @@ thread_build_msg(
 		else
 			task_msg->msg_body.dst_attrib = pThread->attrib;
 	}
-	task_msg->msg_body.msg_len = data_len;
+	task_msg->msg_body.msg_len = msg_len;
 	if(data_is_here == dave_true)
 	{
-		task_msg->msg_body.msg_body = (void *)data;
+		task_msg->msg_body.msg_body = (void *)msg_body;
 	}
 	else
 	{
-		dave_memcpy(task_msg->msg_body.msg_body, data, data_len);
+		dave_memcpy(task_msg->msg_body.msg_body, msg_body, msg_len);
 	}
 	task_msg->msg_body.mem_state = MsgMemState_uncaptured;
 

@@ -193,6 +193,7 @@ typedef struct {
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
+	void *ptr;
 } RPCDebugReq;
 
 /* for MSGID_RPC_DEBUG_RSP message */
@@ -211,6 +212,7 @@ typedef struct {
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
+	void *ptr;
 } RPCDebugRsp;
 
 /* for MSGID_CFG_UPDATE message */

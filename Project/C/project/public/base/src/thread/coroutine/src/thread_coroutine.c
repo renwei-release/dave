@@ -22,9 +22,17 @@ typedef enum {
 } wakeupevent;
 
 typedef struct {
+	ub msg_id;
+	void *msg_body;
+	ub msg_len;
+
+	void *next;
+} CoMsgList;
+
+typedef struct {
 	ThreadStruct *pThread;
 	base_thread_fun thread_fun;
-	MSGBODY msg;
+	MSGBODY boot_the_co_msg;
 	void *co;
 
 	ThreadId src_thread;
@@ -35,9 +43,11 @@ typedef struct {
 
 	ub thread_index;
 
-	u8 *msg_body;
-	ub msg_len;
-	ub real_msg_len;
+	void *rsp_msg_body;
+	CoMsgList *rsp_msg_head;
+
+	u8 *user_msg_body;
+	ub user_msg_len;
 } CoroutineSite;
 
 typedef struct {
@@ -69,22 +79,15 @@ _thread_coroutine_key_kv(
 	ThreadId dst_thread,
 	ub msg_id,
 	ub msg_site,
-	ub wakeup_index,
 	s8 *key_ptr, ub key_len)
 {
-	ThreadId local_id;
-	ub net_index;
-
 	src_thread = thread_get_local(src_thread);
-	local_id = thread_get_local(dst_thread);
-	net_index = thread_get_net(dst_thread);
-	dst_thread = thread_set_net(local_id, net_index);
+	dst_thread = thread_get_local(dst_thread);
 
 	dave_snprintf(key_ptr, key_len,
-		"%lx-%lx-%lx-%lx-%lx",
+		"%lx->%lx:%lx-%lx",
 		src_thread, dst_thread, msg_id,
-		msg_site,
-		wakeup_index);
+		msg_site);
 
 	return key_ptr;
 }
@@ -168,7 +171,6 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 		pSite->dst_thread,
 		pSite->msg_id,
 		pSite->msg_site,
-		pSite->wakeup_index,
 		key, sizeof(key));
 
 	_thread_coroutine_add_kv_(key, pSite);
@@ -179,8 +181,7 @@ _thread_coroutine_del_kv(
 	ThreadId src_thread,
 	ThreadId dst_thread,
 	ub msg_id,
-	ub msg_site,
-	ub wakeup_index)
+	ub msg_site)
 {
 	s8 key[256];
 
@@ -192,15 +193,14 @@ _thread_coroutine_del_kv(
 		src_thread,
 		msg_id,
 		msg_site,
-		wakeup_index,
 		key, sizeof(key));
 
 	return _thread_coroutine_del_kv_(key);
 }
 
 /*
- * ¿¼ÂÇµ½¾ºÕùÎÊÌâ£¬
- * ÎÒÃÇ°ÑÓëÕâ¸öÏß³ÌÓĞ¹ØµÄÏûÏ¢¶¼ÔÚ¸ÃÏß³Ì×Ô¼ºµÄÏûÏ¢¶ÓÁĞÈ¥ÅÅ¶ÓÖ´ĞĞ¡£
+ * è€ƒè™‘åˆ°ç«äº‰é—®é¢˜ï¼Œ
+ * æˆ‘ä»¬æŠŠä¸è¿™ä¸ªçº¿ç¨‹æœ‰å…³çš„æ¶ˆæ¯éƒ½åœ¨è¯¥çº¿ç¨‹è‡ªå·±çš„æ¶ˆæ¯é˜Ÿåˆ—å»æ’é˜Ÿæ‰§è¡Œã€‚
  */
 static inline void
 _thread_coroutine_wakeup_me(CoroutineSite *pSite, wakeupevent event, s8 *some_string)
@@ -214,10 +214,51 @@ _thread_coroutine_wakeup_me(CoroutineSite *pSite, wakeupevent event, s8 *some_st
 	pWakeup->thread_index = pSite->thread_index;
 	pWakeup->wakeup_index = pSite->wakeup_index;
 	if(some_string != NULL)
+	{
 		dave_strcpy(pWakeup->some_string, some_string, sizeof(pWakeup->some_string));
+	}
 	pWakeup->ptr = pSite;
 
 	thread_thread_write(pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
+}
+
+static inline void *
+_thread_coroutine_push_msg_list(CoroutineSite *pSite, ub msg_id, void *msg_body, ub msg_len)
+{
+	CoMsgList *pList;
+
+	if((msg_body == NULL) || (msg_len == 0))
+		return NULL;
+
+	pList = dave_malloc(sizeof(CoMsgList));
+
+	pList->msg_id = msg_id;
+	pList->msg_body = msg_body;
+	pList->msg_len = msg_len;
+
+	pList->next = pSite->rsp_msg_head;
+
+	pSite->rsp_msg_head = pList;
+
+	return msg_body;
+}
+
+static inline dave_bool
+_thread_coroutine_pop_msg_list(CoroutineSite *pSite)
+{
+	CoMsgList *pList;
+
+	if(pSite->rsp_msg_head == NULL)
+		return dave_false;
+
+	pList = pSite->rsp_msg_head;
+	pSite->rsp_msg_head = pSite->rsp_msg_head->next;
+
+	thread_clean_user_input_data(pList->msg_body, pList->msg_id);
+
+	dave_free(pList);
+
+	return dave_true;
 }
 
 static inline CoroutineSite *
@@ -227,7 +268,7 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, base_thread_fun thread_fun,
 
 	pSite->pThread = pThread;
 	pSite->thread_fun = thread_fun;
-	pSite->msg = *msg;
+	pSite->boot_the_co_msg = *msg;
 	pSite->co = NULL;
 
 	pSite->src_thread = INVALID_THREAD_ID;
@@ -238,8 +279,10 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, base_thread_fun thread_fun,
 
 	pSite->thread_index = pThread->thread_index;
 
-	pSite->msg_body = NULL;
-	pSite->msg_len = 0;
+	pSite->rsp_msg_head = NULL;
+
+	pSite->user_msg_body = NULL;
+	pSite->user_msg_len = 0;
 
 	msg->mem_state = MsgMemState_captured;
 
@@ -249,14 +292,19 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, base_thread_fun thread_fun,
 static inline void
 _thread_coroutine_info_free(CoroutineSite *pSite)
 {
-	if(pSite->msg.msg_body != NULL)
+	if(pSite->boot_the_co_msg.msg_body != NULL)
 	{
-		thread_free(pSite->msg.msg_body, pSite->msg.msg_id, (s8 *)__func__, (ub)__LINE__);
+		thread_clean_user_input_data(pSite->boot_the_co_msg.msg_body, pSite->boot_the_co_msg.msg_id);
 	}
 
 	if(pSite->co != NULL)
 	{
 		dave_co_release(pSite->co);
+	}
+
+	while(pSite->rsp_msg_head != NULL)
+	{
+		_thread_coroutine_pop_msg_list(pSite);
 	}
 
 	dave_free(pSite);
@@ -279,37 +327,42 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 static dave_bool
 _thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
 {
-	ub wakeup_index;
 	CoroutineSite *pSite;
 
-	wakeup_index = thread_get_wakeup(dst_id);
-
-	pSite = _thread_coroutine_del_kv(src_id, dst_id, msg_id, (ub)(t_rpc_ptr(msg_id, msg_body)), wakeup_index);
+	pSite = _thread_coroutine_del_kv(src_id, dst_id, msg_id, (ub)(t_rpc_ptr(msg_id, msg_body)));
 	if(pSite == NULL)
 	{
-		THREADDEBUG("%lx/%s->%lx/%s:%s wakeup_index:%d",
+		THREADDEBUG("%lx/%s->%lx/%s:%s-%lx",
 			src_id, thread_name(src_id), dst_id, thread_name(dst_id), msgstr(msg_id),
-			wakeup_index);
+			t_rpc_ptr(msg_id, msg_body));
 		return dave_false;
 	}
 
 	if((pSite->thread_index != pDstThread->thread_index)
-		|| (pSite->wakeup_index != wakeup_index)
 		|| (pSite->msg_id != msg_id))
 	{
-		THREADABNOR("wait thread mismatch, thread_index:%d/%d wakeup_index:%d/%d wait_msg:%s/%s",
+		THREADABNOR("wait thread mismatch, thread_index:%d/%d msg_id:%s/%s",
 			pSite->thread_index, pDstThread->thread_index,
-			pSite->wakeup_index, wakeup_index,
 			msgstr(pSite->msg_id), msgstr(msg_id));
 		return dave_false;
 	}
 
-	if(msg_len > pSite->msg_len)
+	pSite->rsp_msg_body = _thread_coroutine_push_msg_list(pSite, msg_id, msg_body, msg_len);
+
+	if(pSite->user_msg_body != NULL)
 	{
-		msg_len = pSite->msg_len;
+		if(msg_len > pSite->user_msg_len)
+		{
+			msg_len = pSite->user_msg_len;
+		}
+
+		pSite->user_msg_len = dave_memcpy(pSite->user_msg_body, msg_body, msg_len);
 	}
 
-	pSite->real_msg_len = dave_memcpy(pSite->msg_body, msg_body, msg_len);
+	THREADDEBUG("%lx/%s->%lx/%s:%lx/%s-%lx pSite:%lx co:%lx",
+		src_id, thread_name(src_id), dst_id, thread_name(dst_id), msg_id, msgstr(msg_id),
+		pSite->msg_site,
+		pSite, pSite->co);
 
 	_thread_coroutine_wakeup_me(pSite, wakeupevent_get_msg, NULL);
 
@@ -334,13 +387,7 @@ _thread_coroutine_running_step_4(void *param)
 
 	THREADDEBUG("wakeup me !!!!!!!!!!!!!!!!");
 
-	if(pSite->real_msg_len == 0)
-	{
-		dave_memset(pSite->msg_body, 0x00, pSite->msg_len);
-		return NULL;
-	}
-
-	return pSite->msg_body;
+	return (pSite->user_msg_body != NULL ? pSite->user_msg_body : pSite->rsp_msg_body);
 }
 
 static inline void *
@@ -363,10 +410,6 @@ _thread_coroutine_running_step_3(
 		return NULL;
 	}
 
-	THREADDEBUG("%lx/%s->%lx/%s:%s wakeup_index:%d",
-		*src_id, thread_name(*src_id), dst_id, thread_name(dst_id), msgstr(rsp_msg_id),
-		wakeup_index);
-
 	pSite->src_thread = *src_id;
 	pSite->dst_thread = dst_id;
 	pSite->msg_id = rsp_msg_id;
@@ -375,9 +418,15 @@ _thread_coroutine_running_step_3(
 
 	pSite->thread_index = pSrcThread->thread_index;
 
-	pSite->msg_body = rsp_msg_body;
-	pSite->msg_len = rsp_msg_len;
-	pSite->real_msg_len = 0;
+	pSite->rsp_msg_body = NULL;
+
+	pSite->user_msg_body = rsp_msg_body;
+	pSite->user_msg_len = (pSite->user_msg_body == NULL) ? 0 : rsp_msg_len;
+
+	THREADDEBUG("%lx/%s->%lx/%s:%lx/%s-%lx pSite:%lx co:%lx",
+		*src_id, thread_name(*src_id), dst_id, thread_name(dst_id), rsp_msg_id, msgstr(rsp_msg_id),
+		pSite->msg_site,
+		pSite, pSite->co);
 
 	return pSite;
 }
@@ -389,7 +438,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
-	pSite->thread_fun(&(pSite->msg));
+	pSite->thread_fun(&(pSite->boot_the_co_msg));
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
@@ -411,7 +460,6 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, base_thread_fun thread_f
 static inline void
 _thread_coroutine_timer_out(CoroutineSite *pSite, s8 *key)
 {
-	// ÔÙ´ÎÈ·ÈÏ³¬Ê±µÄpSiteÊÇ·ñ»¹ÔÚ¡£
 	if(pSite == _thread_coroutine_inq_kv_(key))
 	{
 		_thread_coroutine_del_kv_(key);
@@ -448,6 +496,11 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 	pSite = _thread_coroutine_inq_kv_(key);
 	if(pSite != NULL)
 	{
+		THREADLOG("%s %d->%d:%d pSite:%lx co:%lx",
+			key,
+			pSite->src_thread, pSite->dst_thread, pSite->msg_id,
+			pSite, pSite->co);
+	
 		_thread_coroutine_wakeup_me(pSite, wakeupevent_timer_out, key);
 	}
 }

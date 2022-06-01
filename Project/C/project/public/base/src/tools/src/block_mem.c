@@ -141,7 +141,7 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 }
 
 static inline ub
-_block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub warring_line)
+_block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub warning_number_exceeded)
 {
 	ub block_index, info_index, top_index;
 	s8 *top_file[TOP_INFO_MAX];
@@ -172,7 +172,7 @@ _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBloc
 
 	for(top_index=0; top_index<TOP_INFO_MAX; top_index++)
 	{
-		if(top_number[top_index] > warring_line)
+		if(top_number[top_index] > warning_number_exceeded)
 		{
 			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 				" %s:%d number:%d\n",
@@ -553,7 +553,7 @@ block_memory(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 }
 
 ub
-block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag, ub warring_line)
+block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag, ub warning_number_exceeded)
 {
 	ub info_index;
 
@@ -563,7 +563,7 @@ block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_b
 	}
 	else
 	{
-		info_index = _block_mem_top_info(block_name, info_ptr, info_len, pBlock, warring_line);
+		info_index = _block_mem_top_info(block_name, info_ptr, info_len, pBlock, warning_number_exceeded);
 		if((info_index > 0) && (detail_flag == dave_true))
 		{
 			BLOCKMEMLOG("\nPlease note that the following memory has not been released(%s):\n%s", block_name, info_ptr);

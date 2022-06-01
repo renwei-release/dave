@@ -373,23 +373,27 @@ static inline RetCode
 _thread_write_msg(
 	ThreadId src_id, ThreadId dst_id,
 	ub dst_thread_index,
-	ub msg_id, ub data_len, u8 *data,
+	ub msg_id, ub msg_len, u8 *msg_body,
 	dave_bool wakeup, BaseMsgType msg_type,
-	ThreadId route_dst_id,
 	s8 *fun, ub line)
 {
 	ThreadStruct *pDstThread;
+	dave_bool hold_body;
 	ThreadMsg *pMsg;
 	RetCode ret;
 
 	pDstThread = &_thread[dst_thread_index];
 
-	if(thread_call_sync_catch(src_id, pDstThread, dst_id, msg_id, data, data_len) == dave_false)
+	if(thread_call_sync_catch(
+		src_id,
+		pDstThread, dst_id,
+		msg_id, msg_body, msg_len,
+		&hold_body) == dave_false)
 	{
 		pMsg = thread_build_msg(
 					pDstThread,
-					src_id, route_dst_id,
-					msg_id, data_len, data,
+					src_id, dst_id,
+					msg_id, msg_len, msg_body,
 					msg_type,
 					fun, line);
 
@@ -417,7 +421,10 @@ _thread_write_msg(
 	else
 	{
 		ret = RetCode_OK;
-		thread_clean_user_input_data(data, msg_id);
+		if(hold_body == dave_false)
+		{
+			thread_clean_user_input_data(msg_body, msg_id);
+		}
 	}
 
 	if(wakeup == dave_true)
@@ -664,7 +671,6 @@ _thread_build_tick_message(void)
 							thread_index,
 							MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
 							dave_false, BaseMsgType_Unicast,
-							INVALID_THREAD_ID,
 							(s8 *)__func__, (ub)__LINE__);
 					}
 				}
@@ -929,7 +935,7 @@ _thread_src_id_change(ThreadId src_id, ThreadId dst_id)
 	}
 	if(src_id == INVALID_THREAD_ID)
 	{
-		src_id = dst_id;
+		src_id = thread_get_local(dst_id);
 	}
 
 	return src_id;
@@ -1143,7 +1149,6 @@ _thread_safe_id_msg(
 	s8 *fun, ub line)
 {
 	ub thread_index;
-	ThreadId local_dst_id, route_dst_id;
 	RetCode ret;
 
 	if(thread_is_remote(dst_id) == dave_true)
@@ -1156,49 +1161,39 @@ _thread_safe_id_msg(
 				msg_id);
 			return dave_false;
 		}
-
-		route_dst_id = dst_id;
-	}
-	else
-	{
-		route_dst_id = INVALID_THREAD_ID;
 	}
 
-	local_dst_id = thread_get_local(dst_id);
-
-	if(local_dst_id == INVALID_THREAD_ID)
+	if(thread_get_local(dst_id) == INVALID_THREAD_ID)
 	{
 		if(base_power_state() == dave_true)
 		{
 			THREADLTRACE(60,1,"Parameter error, dst_id:%d msg_id:%d msg_len:%d (%s:%d)",
-				local_dst_id, msg_id, msg_len, fun, line);
+				thread_get_local(dst_id), msg_id, msg_len, fun, line);
 		}
+		return dave_false;
+	}
+	thread_index =  thread_find_busy_index(thread_get_local(dst_id));
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADLTRACE(60,1,"Can not find thread, dst_id:%lx msg_id:%d (%s:%d)",
+			thread_get_local(dst_id), msg_id, fun, line);
 		return dave_false;
 	}
 
 	if((msg_len >= THREAD_MSG_MAX_LEN) || (msg_len == 0))
 	{
 		THREADLOG("send msg<%d> to %s, the length is invalid(%d/%d)!",
-			msg_id, _thread_get_name(local_dst_id), msg_len, THREAD_MSG_MAX_LEN);
+			msg_id, _thread_get_name(thread_get_local(dst_id)), msg_len, THREAD_MSG_MAX_LEN);
 		return dave_false;
 	}
 
-	thread_index =  thread_find_busy_index(local_dst_id);
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADLTRACE(60,1,"Can not find thread, dst_id:%lx msg_id:%d (%s:%d)",
-			local_dst_id, msg_id, fun, line);
-		return dave_false;
-	}
-
-	src_id = _thread_src_id_change(src_id, local_dst_id);
+	src_id = _thread_src_id_change(src_id, dst_id);
 
 	ret = _thread_write_msg(
 		src_id, dst_id,
 		thread_index,
 		msg_id, msg_len, msg_body,
 		dave_true, msg_type,
-		route_dst_id,
 		fun, line);
 
 	if(ret != RetCode_OK)
@@ -1263,13 +1258,13 @@ static dave_bool
 _thread_check_sync_param(
 	ThreadStruct **ppSrcThread, ThreadStruct **ppDstThread,
 	ThreadId *src_id, ThreadId *dst_id,
-	ub msg_id, ub msg_len, u8 *msg_body,
-	ub sync_id, ub sync_len, u8 *sync_body,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id, ub rsp_len, u8 *rsp_body,
 	s8 *fun, ub line)
 {
 	if((*src_id == *dst_id) || (self() == *dst_id))
 	{
-		THREADABNOR("Do not send synchronization messages inside a thread! <%d/%s %d/%s %d/%s> <%s:%d>",
+		THREADABNOR("Do not send synchronization messages inside a thread! <%lx/%s->%lx/%s %d/%s> <%s:%d>",
 			*src_id, _thread_get_name(*src_id),
 			*dst_id, _thread_get_name(*dst_id),
 			self(), _thread_get_name(self()),
@@ -1294,18 +1289,18 @@ _thread_check_sync_param(
 
 	if(*ppDstThread == NULL)
 	{
-		THREADABNOR("pDstThread is NULL! msg_id:%d sync_id:%d <%s:%d>", msg_id, sync_id, fun, line);
+		THREADABNOR("pDstThread is NULL! req_id:%d rsp_id:%d <%s:%d>", req_id, rsp_id, fun, line);
 		return dave_false;
 	}
 
 	if(_thread_sync_function_access(*ppSrcThread, *ppDstThread) == dave_false)
 	{
-		THREADABNOR("Synchronization only happens between two separate threads! msg_id:%d <%s:%d>",
-			msg_id, fun, line);
+		THREADABNOR("Synchronization only happens between two separate threads! req_id:%d <%s:%d>",
+			req_id, fun, line);
 		return dave_false;
 	}
 
-	thread_check_pair_msg(msg_id, sync_id);
+	thread_check_pair_msg(req_id, rsp_id);
 
 	return dave_true;
 }
@@ -1855,54 +1850,51 @@ base_thread_gid_event(
 void *
 base_thread_sync_msg(
 	ThreadId src_id, ThreadId dst_id,
-	ub msg_id, ub msg_len, u8 *msg_body,
-	ub sync_id, ub sync_len, u8 *sync_body,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id, ub rsp_len, u8 *rsp_body,
 	s8 *fun, ub line)
 {
 	ThreadStruct *pSrcThread = NULL, *pDstThread = NULL;
 	void *pSync;
-	void *ret_body = NULL;
+	void *ret_body;
 
 	if(_thread_check_sync_param(
 		&pSrcThread, &pDstThread,
 		&src_id, &dst_id,
-		msg_id, msg_len, msg_body,
-		sync_id, sync_len, sync_body,
+		req_id, req_len, req_body,
+		rsp_id, rsp_len, rsp_body,
 		fun, line) == dave_false)
 	{
-		thread_clean_user_input_data(msg_body, msg_id);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
 	pSync = thread_call_sync_pre(
 		pSrcThread, &src_id,
 		pDstThread, dst_id,
-		msg_id, msg_body, msg_len,
-		sync_id, sync_body, sync_len);
+		req_id, req_body, req_len,
+		rsp_id, rsp_body, rsp_len);
 
 	if(pSync == NULL)
 	{
 		THREADLTRACE(60,1,"sync thread call failed! %s->%s:%s <%s:%d>",
-			pSrcThread->thread_name, pDstThread->thread_name, msgstr(msg_id),
+			pSrcThread->thread_name, pDstThread->thread_name, msgstr(req_id),
 			fun, line);
-		thread_clean_user_input_data(msg_body, msg_id);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
-	if(base_thread_id_msg(src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line) == dave_false)
+	if(base_thread_id_msg(src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
 	{
-		sync_body = NULL;
+		return NULL;
 	}
 
-	if(sync_body != NULL)
-	{
-		ret_body = thread_call_sync_wait(pSrcThread, pDstThread, pSync);
-	}
+	ret_body = thread_call_sync_wait(pSrcThread, pDstThread, pSync);
 
 	if(ret_body == NULL)
 	{
 		THREADLTRACE(60,1,"thread:%s msg_id:%s sync failed! <%s:%d>",
-			pSrcThread->thread_name, msgstr(msg_id),
+			pSrcThread->thread_name, msgstr(req_id),
 			fun, line);
 	}
 

@@ -737,6 +737,7 @@ class RPCDebugReq (Structure):
 		("void_debug", POINTER(c_char)),
 		("date_debug", DateStruct),
 		("mbuf_debug", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_RPC_DEBUG_RSP message *#
@@ -756,6 +757,7 @@ class RPCDebugRsp (Structure):
 		("void_debug", POINTER(c_char)),
 		("date_debug", DateStruct),
 		("mbuf_debug", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_RUN_FUNCTION message *#

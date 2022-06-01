@@ -593,7 +593,7 @@ _sync_client_route(MSGBODY *pMsg)
 
 	if(pMsg->msg_type == BaseMsgType_Unicast)
 	{
-		thread_id = sync_client_thread_id_change_from_user(pMsg->msg_dst);
+		thread_id = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
 		if(thread_id == INVALID_THREAD_ID)
 			return;
 		pMsg->msg_dst = thread_id;
@@ -810,7 +810,7 @@ sync_client_thread_id(ThreadId thread_id)
 {
 	ThreadId new_id;
 
-	new_id = sync_client_thread_id_change_from_user(thread_id);
+	new_id = sync_client_thread_id_change_from_user(thread_id, _sync_client_thread);
 	if(new_id == INVALID_THREAD_ID)
 		return thread_id;
 	else

@@ -25,8 +25,8 @@ void thread_call_sync_check(void);
 void * thread_call_sync_pre(
 	ThreadStruct *pSrcThread, ThreadId *src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
-	ub msg_id, u8 *msg_body, ub msg_len,
-	ub wait_msg, u8 *wait_body, ub wait_len);
+	ub req_msg_id, u8 *req_msg_body, ub req_msg_len,
+	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len);
 
 void * thread_call_sync_wait(
 	ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
@@ -35,7 +35,8 @@ void * thread_call_sync_wait(
 dave_bool thread_call_sync_catch(
 	ThreadId src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
-	ub msg_id, void *msg_body, ub msg_len);
+	ub msg_id, void *msg_body, ub msg_len,
+	dave_bool *hold_body);
 
 #endif
 

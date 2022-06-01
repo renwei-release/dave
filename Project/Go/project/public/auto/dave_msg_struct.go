@@ -653,6 +653,7 @@ type RPCDebugReq struct {
 	Void_debug unsafe.Pointer
 	Date_debug DateStruct
 	Mbuf_debug *MBUF
+	Ptr uint64
 }
 
 /* for MSGID_RPC_DEBUG_RSP message */
@@ -671,6 +672,7 @@ type RPCDebugRsp struct {
 	Void_debug unsafe.Pointer
 	Date_debug DateStruct
 	Mbuf_debug *MBUF
+	Ptr uint64
 }
 
 /* for MSGID_RUN_FUNCTION message */

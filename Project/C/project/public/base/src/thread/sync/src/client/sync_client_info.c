@@ -250,8 +250,8 @@ _sync_client_info_thread(s8 *info, ub info_len)
 		if(pThread->thread_name[0] != '\0')
 		{
 			info_index += dave_snprintf(&info[info_index], info_len-info_index,
-				" %x s-%06ld/r-%06ld",
-				pThread,
+				" %x/%03x s-%06ld/r-%06ld",
+				pThread, pThread->thread_index,
 				pThread->thread_send_message_counter, pThread->thread_recv_message_counter);
 
 			for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)

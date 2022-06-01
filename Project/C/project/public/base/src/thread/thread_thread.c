@@ -891,6 +891,8 @@ __thread_thread_write__(
 		msgstr(pMsg->msg_body.msg_id));
 
 	thread_queue_write(pTThread->thread_queue, pMsg);
+
+	_tthread_wakeup_thread(pTThread);
 }
 
 ThreadMsg *

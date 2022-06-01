@@ -243,13 +243,14 @@ __sync_client_thread_id_change_to_user__(ThreadId thread_id, ThreadId sync_id, s
 }
 
 ThreadId
-__sync_client_thread_id_change_from_user__(ThreadId thread_id, s8 *fun, ub line)
+__sync_client_thread_id_change_from_user__(ThreadId thread_id, ThreadId sync_id, s8 *fun, ub line)
 {
 	LinkThread *pThread;
 	ThreadId new_id;
 
 	if((thread_is_remote(thread_id) == dave_true)
-		&& (thread_attrib(thread_id) == LOCAL_TASK_ATTRIB))
+		&& (thread_attrib(thread_id) == LOCAL_TASK_ATTRIB)
+		&& (thread_get_local(thread_id) == thread_get_local(sync_id)))
 	{
 		pThread = sync_client_thread(thread_get_thread(thread_id));
 		if((pThread == NULL) || (pThread->thread_name[0] == '\0'))

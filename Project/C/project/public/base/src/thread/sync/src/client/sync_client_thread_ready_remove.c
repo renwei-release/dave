@@ -23,6 +23,8 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
+#define READY_REMOVE_MSG_NOTIFY_CYCLE_TIME 3
+
 typedef struct {
 	dave_bool ready_or_remove_flag;
 
@@ -117,12 +119,12 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 
 	dave_snprintf(active_key, sizeof(active_key), "%lx%lx", pServer, pThread);
 
-	pActive = base_ramkv_inq_key_ptr(_thread_active_ramkv, active_key);
+	pActive = kv_inq_key_ptr(_thread_active_ramkv, active_key);
 	if(pActive == NULL)
 	{
 		pActive = _sync_client_thread_active_malloc(ready_or_remove_flag, thread_id, pServer, pThread);
 
-		base_ramkv_add_key_ptr(_thread_active_ramkv, active_key, pActive);
+		kv_add_key_ptr(_thread_active_ramkv, active_key, pActive);
 	}
 	else
 	{
@@ -149,7 +151,7 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 				pActive->ready_or_remove_flag==dave_true?"ready":"remove",
 				ready_or_remove_flag==dave_true?"ready":"remove");
 
-			_sync_client_thread_active_free(base_ramkv_del_key_ptr(_thread_active_ramkv, active_key));
+			_sync_client_thread_active_free(kv_del_key_ptr(_thread_active_ramkv, active_key));
 		}
 	}
 }
@@ -157,13 +159,13 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 static void
 _sync_client_thread_active_pop(void *ramkv, s8 *key)
 {
-	ThreadActive *pActive = base_ramkv_inq_key_ptr(_thread_active_ramkv, key);
+	ThreadActive *pActive = kv_inq_key_ptr(_thread_active_ramkv, key);
 	dave_bool free_flag = dave_false;
 
 	if(pActive == NULL)
 	{
 		SYNCABNOR("Arithmetic error!");
-		base_ramkv_del_key_ptr(_thread_active_ramkv, key);
+		kv_del_key_ptr(_thread_active_ramkv, key);
 	}
 	else
 	{
@@ -192,7 +194,7 @@ _sync_client_thread_active_pop(void *ramkv, s8 *key)
 
 		if(free_flag == dave_true)
 		{
-			_sync_client_thread_active_free(base_ramkv_del_key_ptr(_thread_active_ramkv, key));
+			_sync_client_thread_active_free(kv_del_key_ptr(_thread_active_ramkv, key));
 		}
 	}
 }
@@ -269,7 +271,7 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 static RetCode
 _sync_client_thread_ramkv_recycle(void *ramkv, s8 *key)
 {
-	ThreadActive *pActive = base_ramkv_del_key_ptr(ramkv, key);
+	ThreadActive *pActive = kv_del_key_ptr(ramkv, key);
 
 	if(pActive == NULL)
 		return RetCode_empty_data;
@@ -284,8 +286,7 @@ _sync_client_thread_active_timer_malloc(void)
 {
 	if(_thread_active_ramkv == NULL)
 	{
-		SYNCTRACE("");
-		_thread_active_ramkv = base_ramkv_malloc((s8 *)"threadactive", KvAttrib_list, 1, _sync_client_thread_active_timer);
+		_thread_active_ramkv = kv_malloc("threadactive", KvAttrib_list, READY_REMOVE_MSG_NOTIFY_CYCLE_TIME, _sync_client_thread_active_timer);
 	}
 }
 
@@ -294,7 +295,7 @@ _sync_client_thread_active_timer_free(void)
 {
 	if(_thread_active_ramkv != NULL)
 	{
-		base_ramkv_free(_thread_active_ramkv, _sync_client_thread_ramkv_recycle);
+		kv_free(_thread_active_ramkv, _sync_client_thread_ramkv_recycle);
 		_thread_active_ramkv = NULL;
 	}
 }
@@ -304,7 +305,7 @@ _sync_client_thread_ramkv_empty_check(void)
 {
 	if(_thread_active_ramkv != NULL)
 	{
-		if(base_ramkv_inq_top_ptr(_thread_active_ramkv) == NULL)
+		if(kv_inq_top_ptr(_thread_active_ramkv) == NULL)
 		{
 			_sync_client_thread_active_timer_free();
 		}

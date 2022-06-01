@@ -695,13 +695,13 @@ but the source(%s) of the message was not registered as a remote thread.", threa
 }
 
 static ub
-_sync_client_data_thread_index_on_name(s8 *thread_name)
+_sync_client_data_thread_index_on_name(s8 *thread_name, ub thread_index)
 {
 	LinkThread *pThread;
 
 	SYNCDEBUG("thread:%s", thread_name);
 
-	pThread = _sync_client_data_thread_on_name(thread_name, SYNC_THREAD_INDEX_MAX);
+	pThread = _sync_client_data_thread_on_name(thread_name, thread_index);
 	if(pThread == NULL)
 	{
 		return SYNC_THREAD_INDEX_MAX;
@@ -907,7 +907,7 @@ sync_client_data_thread_on_name(s8 *thread_name, ub thread_index)
 		thread_index = sync_client_data_thread_name_to_index(thread_name);
 	}
 
-	SAFECODEv2R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index); );
+	SAFECODEv2R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index););
 
 	return pThread;
 }
@@ -915,9 +915,9 @@ sync_client_data_thread_on_name(s8 *thread_name, ub thread_index)
 ub
 sync_client_data_thread_index_on_name(s8 *thread_name)
 {
-	ub thread_index = SYNC_THREAD_INDEX_MAX;
+	ub thread_index = sync_client_data_thread_name_to_index(thread_name);
 
-	SAFECODEv2R(_sync_client_data_pv, thread_index = _sync_client_data_thread_index_on_name(thread_name); );
+	SAFECODEv2R(_sync_client_data_pv, thread_index = _sync_client_data_thread_index_on_name(thread_name, thread_index););
 
 	return thread_index;
 }

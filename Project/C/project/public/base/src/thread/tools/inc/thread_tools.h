@@ -34,8 +34,8 @@ void thread_check_pair_msg(ub req_id, ub rsp_id);
 
 void thread_reset_sync(ThreadSync *pSync);
 
-void __thread_clean_user_input_data__(void *data, ub msg_id, s8 *fun, ub line);
-#define thread_clean_user_input_data(data, msg_id) __thread_clean_user_input_data__(data, msg_id, (s8 *)__func__, (ub)__LINE__)
+void __thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line);
+#define thread_clean_user_input_data(msg_body, msg_id) __thread_clean_user_input_data__(msg_body, msg_id, (s8 *)__func__, (ub)__LINE__)
 
 dave_bool thread_enable_coroutine(ThreadStruct *pThread);
 

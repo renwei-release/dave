@@ -65,17 +65,19 @@ void *
 thread_call_sync_pre(
 	ThreadStruct *pSrcThread, ThreadId *src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
-	ub msg_id, u8 *msg_body, ub msg_len,
-	ub wait_msg, u8 *wait_body, ub wait_len)
+	ub req_msg_id, u8 *req_msg_body, ub req_msg_len,
+	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 	if(thread_enable_coroutine(pSrcThread) == dave_true)
-		return thread_coroutine_running_step_setup(pSrcThread, src_id, dst_id, msg_id, msg_body, wait_msg, wait_body, wait_len);
+		return thread_coroutine_running_step_setup(pSrcThread, src_id, dst_id, req_msg_id, req_msg_body, rsp_msg_id, rsp_msg_body, rsp_msg_len);
 	else
-		return thread_sync_call_step_1_pre(pSrcThread, src_id, pDstThread, wait_msg, wait_body, wait_len);
+		return thread_sync_call_step_1_pre(pSrcThread, src_id, pDstThread, rsp_msg_id, rsp_msg_body, rsp_msg_len);
 }
 
 void *
-thread_call_sync_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *pSync)
+thread_call_sync_wait(
+	ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
+	void *pSync)
 {
 	if(thread_enable_coroutine(pSrcThread) == dave_true)
 		return thread_coroutine_running_step_yield(pSync);
@@ -84,12 +86,22 @@ thread_call_sync_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *
 }
 
 dave_bool
-thread_call_sync_catch(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
+thread_call_sync_catch(
+	ThreadId src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub msg_id, void *msg_body, ub msg_len,
+	dave_bool *hold_body)
 {
 	if(thread_enable_coroutine(pDstThread) == dave_true)
-		return thread_coroutine_running_step_resume(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
+	{
+		*hold_body = thread_coroutine_running_step_resume(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
+		return *hold_body;
+	}
 	else
+	{
+		*hold_body = dave_false;
 		return thread_sync_call_step_3_catch(pDstThread, dst_id, src_id, msg_id, msg_body, msg_len);
+	}
 }
 
 #endif
