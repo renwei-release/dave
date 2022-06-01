@@ -1,0 +1,225 @@
+#!/bin/sh
+
+go get github.com/shirou/gopsutil
+
+go get github.com/tklauser/go-sysconf
+
+go get golang.org/x/sys/unix
+
+go env -w GOPROXY=https://goproxy.cn,direct
+
+cd %GOPATH%/src
+
+git clone https://github.com/karrick/godirwalk ./github.com/karrick/godirwalk
+go install ./github.com/karrick/godirwalk
+
+git clone https://github.com/pkg/errors ./github.com/pkg/errors
+go install ./github.com/pkg/errors
+
+git clone https://github.com/uudashr/gopkgs ./github.com/uudashr/gopkgs
+go install ./github.com/uudashr/gopkgs/cmd/gopkgs
+
+git clone https://github.com/golang/xerrors ./golang.org/x/xerrors
+go install ./golang.org/x/xerrors
+
+git clone https://github.com/golang/mod ./golang.org/x/mod
+go install ./golang.org/x/mod/module
+
+git clone https://github.com/sergi/go-diff ./github.com/sergi/go-diff
+go install ./github.com/sergi/go-diff/diffmatchpatch
+go get -u github.com/sergi/go-diff/diffmatchpatch
+
+git clone https://github.com/dominikh/go-tools ./github.com/dominikh/go-tools
+git clone https://github.com/dominikh/go-tools ./honnef.co/go/tools
+
+go get -u honnef.co/go/tools
+
+git clone https://github.com/google/go-cmp/ ./github.com/google/go-cmp
+go install ./github.com/google/go-cmp/cmp
+
+git clone https://github.com/mvdan/gofumpt ./mvdan.cc/gofumpt
+go install ./mvdan.cc/gofumpt/format
+go get -u mvdan.cc/gofumpt/format
+
+git clone https://github.com/mvdan/xurls ./mvdan.cc/xurls
+go install ./mvdan.cc/xurls
+go get -u mvdan.cc/xurls
+
+git clone https://github.com/BurntSushi/toml ./github.com/BurntSushi/toml
+go install ./github.com/BurntSushi/toml
+
+git clone https://github.com/golang/sync ./golang.org/x/sync
+go install ./golang.org/x/sync/errgroup
+
+git clone https://github.com/golang/sys ./golang.org/x/sys
+go install ./golang.org/x/sys/unix
+go install ./golang.org/x/sys/execabs
+go install ./golang.org/x/sys/windows
+
+git clone https://github.com/golang/tools ./golang.org/x/tools
+go install ./golang.org/x/tools/go/buildutil
+go install ./golang.org/x/tools/cmd/guru
+go install ./golang.org/x/tools/cmd/gorename
+go install ./golang.org/x/tools/gopls
+go install ./golang.org/x/tools/cmd/goimports
+
+git clone https://github.com/golang/lint ./golang.org/x/lint
+go install ./golang.org/x/lint/golint
+
+git clone https://github.com/stamblerre/gocode ./github.com/stamblerre/gocode
+go install ./github.com/stamblerre/gocode
+
+git clone https://github.com/ramya-rao-a/go-outline ./github.com/ramya-rao-a/go-outline
+go install ./github.com/ramya-rao-a/go-outline
+
+git clone https://github.com/golang/text ./golang.org/x/text
+go install ./golang.org/x/text
+
+git clone https://github.com/golang/net ./golang.org/x/net
+go install ./golang.org/x/net/websocket
+go install ./golang.org/x/net/proxy
+go install ./golang.org/x/net/context
+
+git clone https://github.com/mdempsky/gocode ./github.com/mdempsky/gocode
+go install ./github.com/mdempsky/gocode
+
+go get -u -v github.com/mdempsky/gocode
+
+go get -u github.com/google/gops
+go get -u github.com/uber/go-torch
+
+git clone https://github.com/acroca/go-symbols ./github.com/acroca/go-symbols
+go install ./github.com/acroca/go-symbols
+
+git clone https://github.com/cweill/gotests ./github.com/cweill/gotests
+go install ./github.com/cweill/gotests
+
+git clone https://github.com/fatih/camelcase ./github.com/fatih/camelcase
+go install ./github.com/fatih/camelcase
+
+git clone https://github.com/fatih/structtag ./github.com/fatih/structtag
+go install ./github.com/fatih/structtag
+
+git clone https://github.com/fatih/gomodifytags ./github.com/fatih/gomodifytags
+go install ./github.com/fatih/gomodifytags
+
+git clone https://github.com/josharian/impl ./github.com/josharian/impl
+go install ./github.com/josharian/impl
+
+git clone https://github.com/davidrjenni/reftools/ ./github.com/davidrjenni/reftools
+go install ./github.com/davidrjenni/reftools/cmd/fillstruct
+
+git clone https://github.com/skratchdot/open-golang ./github.com/skratchdot/open-golang
+go install ./github.com/skratchdot/open-golang/open
+
+git clone https://github.com/haya14busa/goplay ./github.com/haya14busa/goplay
+go install ./github.com/haya14busa/goplay/cmd/goplay
+
+git clone https://github.com/godoctor/godoctor ./github.com/godoctor/godoctor
+go install ./github.com/godoctor/godoctor
+
+git clone https://github.com/go-delve/delve ./github.com/go-delve/delve
+go install ./github.com/go-delve/delve/cmd/dlv
+
+git clone https://github.com/rogpeppe/godef ./github.com/rogpeppe/godef
+go install ./github.com/rogpeppe/godef
+
+git clone https://github.com/sqs/goreturns ./github.com/sqs/goreturns
+go install ./github.com/sqs/goreturns
+
+go get -u github.com/sqs/goreturns
+
+git clone https://github.com/davecgh/go-spew ./github.com/davecgh/go-spew
+go install ./github.com/davecgh/go-spew/spew
+
+git clone https://github.com/pmezard/go-difflib ./github.com/pmezard/go-difflib
+go install ./github.com/pmezard/go-difflib/difflib
+
+git clone https://gopkg.in/yaml.v3 ./gopkg.in/yaml.v3
+go install ./gopkg.in/yaml.v3
+
+git clone https://github.com/stretchr/testify ./github.com/stretchr/testify
+go install ./github.com/stretchr/testify/assert
+
+git clone https://github.com/beevik/etree ./github.com/beevik/etree
+go install ./github.com/beevik/etree
+
+git clone https://github.com/bitly/go-simplejson ./github.com/bitly/go-simplejson
+go install ./github.com/bitly/go-simplejson
+
+git clone https://github.com/go-ini/ini ./github.com/go-ini/ini
+go install ./github.com/go-ini/ini
+
+git clone https://github.com/go-sql-driver/mysql ./github.com/go-sql-driver/mysql
+go install ./github.com/go-sql-driver/mysql
+
+git clone https://github.com/lestrrat-go/strftime ./github.com/lestrrat-go/strftime
+go install ./github.com/lestrrat-go/strftime
+
+git clone https://github.com/lestrrat-go/file-rotatelogs ./github.com/lestrrat-go/file-rotatelogs
+go install ./github.com/lestrrat-go/file-rotatelogs
+
+git clone https://github.com/sirupsen/logrus ./github.com/sirupsen/logrus
+go install ./github.com/sirupsen/logrus
+
+git clone https://github.com/rifflock/lfshook ./github.com/rifflock/lfshook
+go install ./github.com/rifflock/lfshook
+
+git clone https://github.com/axgle/mahonia ./github.com/axgle/mahonia
+go install ./github.com/axgle/mahonia
+
+git clone https://github.com/LindsayBradford/go-dbf ./github.com/LindsayBradford/go-dbf
+go install ./github.com/LindsayBradford/go-dbf/godbf
+
+git clone https://github.com/globalsign/mgo ./github.com/globalsign/mgo
+go install ./github.com/globalsign/mgo
+
+git clone https://github.com/shopspring/decimal ./github.com/shopspring/decimal
+go install ./github.com/shopspring/decimal
+
+git clone https://github.com/armon/go-proxyproto ./github.com/armon/go-proxyproto
+go install ./github.com/armon/go-proxyproto
+
+go get -u github.com/quickfixgo/quickfix
+
+git clone https://github.com/quickfixgo/quickfix ./github.com/quickfixgo/quickfix
+git clone https://github.com/quickfixgo/enum ./github.com/quickfixgo/enum
+git clone https://github.com/quickfixgo/tag ./github.com/quickfixgo/tag
+git clone https://github.com/quickfixgo/field ./github.com/quickfixgo/field
+git clone https://github.com/quickfixgo/fix42 ./github.com/quickfixgo/fix42
+go install ./github.com/quickfixgo/quickfix
+go install ./github.com/quickfixgo/enum
+go install ./github.com/quickfixgo/tag
+go install ./github.com/quickfixgo/field
+go install ./github.com/quickfixgo/fix42
+
+git clone https://github.com/golang-sql/civil ./github.com/golang-sql/civil
+go install ./github.com/golang-sql/civil
+
+git clone https://github.com/denisenkom/go-mssqldb ./github.com/denisenkom/go-mssqldb
+go install ./github.com/denisenkom/go-mssqldb
+
+git clone https://github.com/google/gops ./github.com/google/gops
+go install ./github.com/google/gops
+
+git clone https://github.com/gomodule/redigo ./github.com/gomodule/redigo
+go install ./github.com/gomodule/redigo/redis
+
+git clone https://github.com/jmoiron/sqlx ./github.com/jmoiron/sqlx
+go install ./github.com/jmoiron/sqlx
+
+git clone https://github.com/golang/protobuf ./golang/protobuf
+git clone https://github.com/golang/protobuf ./github.com/golang/protobuf
+git clone https://github.com/protocolbuffers/protobuf-go.git ./google.golang.org/protobuf
+git clone https://github.com/googleapis/go-genproto ./google.golang.org/genproto
+
+git clone https://github.com/golang/mock ./github.com/golang/mock
+go install ./github.com/golang/mock/gomock
+
+# grpc-go
+git clone https://github.com/grpc/grpc-go ./google.golang.org/grpc
+go install ./google.golang.org/grpc
+
+git clone https://github.com/apache/thrift ./github.com/apache/thrift
+go install ./github.com/apache/thrift/lib/go/thrift
+go get github.com/apache/thrift/lib/go/thrift/...
