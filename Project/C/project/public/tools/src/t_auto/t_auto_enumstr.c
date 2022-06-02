@@ -5433,6 +5433,9 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_LOCAL_THREAD_REMOVE:
 				value_str = "'MSGID_LOCAL_THREAD_REMOVE-28'";
 			break;
+		case MSGID_INNER_LOOP:
+				value_str = "'MSGID_INNER_LOOP-29'";
+			break;
 		case MSGID_CFG_UPDATE:
 				value_str = "'MSGID_CFG_UPDATE-30'";
 			break;

@@ -130,5 +130,7 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define reg_msgptr(msg_id, msg_fun, user_ptr) base_thread_msg_register(INVALID_THREAD_ID, (ub)msg_id, msg_fun, user_ptr)
 #define unreg_msg(msg_id) base_thread_msg_unregister(INVALID_THREAD_ID, (ub)msg_id)
 
+#define inner_loop(fun) { MsgInnerLoop loop; reg_msg(MSGID_INNER_LOOP, fun); id_msg(self(), MSGID_INNER_LOOP, &loop); }
+
 #endif
 

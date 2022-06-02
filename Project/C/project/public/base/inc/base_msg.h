@@ -177,6 +177,11 @@ typedef struct {
 	s8 local_thread_name[128];
 } ThreadLocalRemoveMsg;
 
+/* for MSGID_INNER_LOOP message */
+typedef struct {
+	void *ptr;
+} MsgInnerLoop;
+
 /* for MSGID_RPC_DEBUG_REQ message */
 typedef struct {
 	RetCode ret_debug;

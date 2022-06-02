@@ -609,6 +609,11 @@ type MsgIdEcho struct {
 	Msg [256] byte
 }
 
+/* for MSGID_INNER_LOOP message */
+type MsgInnerLoop struct {
+	Ptr uint64
+}
+
 /* for MSGID_OS_NOTIFY message */
 type MsgOSNotify struct {
 	Notify_info uint64

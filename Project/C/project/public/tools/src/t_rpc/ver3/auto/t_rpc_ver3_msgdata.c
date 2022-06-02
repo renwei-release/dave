@@ -4036,6 +4036,54 @@ t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data)
 }
 
 void *
+t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(MsgInnerLoop) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(MsgInnerLoop) does not match(%d/%d), please contact the message settlers!", sizeof(MsgInnerLoop), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_MsgInnerLoop(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		MsgInnerLoop *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(MsgInnerLoop);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_MsgInnerLoop(MsgInnerLoop *struct_data)
+{
+	return struct_data->ptr;
+}
+
+void *
 t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len)
 {
 	void *pStructBson;

@@ -322,6 +322,10 @@ void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data);
 
+void * t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgInnerLoop(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_MsgInnerLoop(MsgInnerLoop *struct_data);
+
 void * t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_MsgOSNotify(MsgOSNotify *struct_data);

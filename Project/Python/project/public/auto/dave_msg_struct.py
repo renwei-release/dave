@@ -687,6 +687,12 @@ class MsgIdEcho (Structure):
 		("msg", c_char * 256),
 ]
 
+#* for MSGID_INNER_LOOP message *#
+class MsgInnerLoop (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_OS_NOTIFY message *#
 class MsgOSNotify (Structure):
 	_fields_ = [

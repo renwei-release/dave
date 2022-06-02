@@ -55,6 +55,9 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 #define t_trylock_mutex(pLock) __t_trylock_mutex__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_unlock_mutex(pLock) __t_unlock_mutex__(pLock, (s8 *)__func__, (ub)__LINE__)
 
+#define t_lock t_lock_spin(NULL)
+#define t_unlock t_unlock_spin(NULL)
+
 #define SAFECODEv2R(pv, safe_zone){\
 	t_rlock_rw(&pv);\
 	{ safe_zone; }\

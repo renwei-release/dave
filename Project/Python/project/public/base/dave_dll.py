@@ -107,7 +107,7 @@ def dave_python_init(product_name):
 
    my_verno = dave_verno()
    model = b"Outer Loop"
-   thread_number = 16
+   thread_number = 3
 
    davelib.dave_dll_init(c_char_p(my_verno), c_char_p(model), c_int(thread_number), _c_python_init, _c_python_main, _c_python_exit)
    return
