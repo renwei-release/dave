@@ -31,12 +31,13 @@ static ThreadId _base_thread = INVALID_THREAD_ID;
 static void
 _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 {
-	BASELOG("from:%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld",
+	BASELOG("from:%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
 		thread_name(src),
 		pRsp->s8_debug, pRsp->u8_debug,
 		pRsp->s16_debug, pRsp->u16_debug,
 		pRsp->s32_debug, pRsp->u32_debug,
-		pRsp->s64_debug, pRsp->u64_debug);
+		pRsp->s64_debug, pRsp->u64_debug,
+		pRsp->ptr);
 }
 
 static void
@@ -64,7 +65,7 @@ _base_thread_rpc_debug_req(ThreadRemoteIDReadyMsg *pReady)
 	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("id_go successfully!");
+		BASELOG("id_go successfully! ptr:%lx/%lx", &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
 
@@ -76,11 +77,12 @@ _base_thread_rpc_debug_req(ThreadRemoteIDReadyMsg *pReady)
 	req.u32_debug ++;	
 	req.s64_debug ++;
 	req.u64_debug ++;
+	req.ptr = &req;
 
 	pRsp = name_go(pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("name_go successfully!");
+		BASELOG("name_go successfully! ptr:%lx/%lx", &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
 }

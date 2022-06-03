@@ -28,475 +28,475 @@
 
 void * t_rpc_ver3_zip_AIXMsgAestheticsReq(AIXMsgAestheticsReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AIXMsgAestheticsReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AIXMsgAestheticsReq(AIXMsgAestheticsReq *struct_data);
+void * t_rpc_ver3_ptr_AIXMsgAestheticsReq(AIXMsgAestheticsReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AIXMsgAestheticsRsp(AIXMsgAestheticsRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AIXMsgAestheticsRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AIXMsgAestheticsRsp(AIXMsgAestheticsRsp *struct_data);
+void * t_rpc_ver3_ptr_AIXMsgAestheticsRsp(AIXMsgAestheticsRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AIXMsgImageClassificationReq(AIXMsgImageClassificationReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AIXMsgImageClassificationReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AIXMsgImageClassificationReq(AIXMsgImageClassificationReq *struct_data);
+void * t_rpc_ver3_ptr_AIXMsgImageClassificationReq(AIXMsgImageClassificationReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AIXMsgImageClassificationRsp(AIXMsgImageClassificationRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AIXMsgImageClassificationRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AIXMsgImageClassificationRsp(AIXMsgImageClassificationRsp *struct_data);
+void * t_rpc_ver3_ptr_AIXMsgImageClassificationRsp(AIXMsgImageClassificationRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgFunctionRegReq(AppMsgFunctionRegReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgFunctionRegReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgFunctionRegReq(AppMsgFunctionRegReq *struct_data);
+void * t_rpc_ver3_ptr_AppMsgFunctionRegReq(AppMsgFunctionRegReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgFunctionRegRsp(AppMsgFunctionRegRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgFunctionRegRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgFunctionRegRsp(AppMsgFunctionRegRsp *struct_data);
+void * t_rpc_ver3_ptr_AppMsgFunctionRegRsp(AppMsgFunctionRegRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgFunctionUnRegReq(AppMsgFunctionUnRegReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgFunctionUnRegReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgFunctionUnRegReq(AppMsgFunctionUnRegReq *struct_data);
+void * t_rpc_ver3_ptr_AppMsgFunctionUnRegReq(AppMsgFunctionUnRegReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgFunctionUnRegRsp(AppMsgFunctionUnRegRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgFunctionUnRegRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgFunctionUnRegRsp(AppMsgFunctionUnRegRsp *struct_data);
+void * t_rpc_ver3_ptr_AppMsgFunctionUnRegRsp(AppMsgFunctionUnRegRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgMCardReq(AppMsgMCardReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgMCardReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgMCardReq(AppMsgMCardReq *struct_data);
+void * t_rpc_ver3_ptr_AppMsgMCardReq(AppMsgMCardReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgMCardRsp(AppMsgMCardRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgMCardRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgMCardRsp(AppMsgMCardRsp *struct_data);
+void * t_rpc_ver3_ptr_AppMsgMCardRsp(AppMsgMCardRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgTalkMCardReq(AppMsgTalkMCardReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgTalkMCardReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgTalkMCardReq(AppMsgTalkMCardReq *struct_data);
+void * t_rpc_ver3_ptr_AppMsgTalkMCardReq(AppMsgTalkMCardReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AppMsgTalkMCardRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *struct_data);
+void * t_rpc_ver3_ptr_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BBSMsgAddCommentReq(BBSMsgAddCommentReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BBSMsgAddCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data);
+void * t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BBSMsgAddCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *struct_data);
+void * t_rpc_ver3_ptr_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BBSMsgInqCommentReq(BBSMsgInqCommentReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BBSMsgInqCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgInqCommentReq(BBSMsgInqCommentReq *struct_data);
+void * t_rpc_ver3_ptr_BBSMsgInqCommentReq(BBSMsgInqCommentReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BBSMsgInqCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data);
+void * t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BdataMCardRecord(BdataMCardRecord *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BdataMCardRecord(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BdataMCardRecord(BdataMCardRecord *struct_data);
+void * t_rpc_ver3_ptr_BdataMCardRecord(BdataMCardRecord *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_BdataTalkRecord(BdataTalkRecord *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BdataTalkRecord(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data);
+void * t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CFGUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CFGUpdate(CFGUpdate *struct_data);
+void * t_rpc_ver3_ptr_CFGUpdate(CFGUpdate *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgFeaturesDetectedReq(CVMsgFeaturesDetectedReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgFeaturesDetectedReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq(CVMsgFeaturesDetectedReq *struct_data);
+void * t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq(CVMsgFeaturesDetectedReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgFeaturesDetectedRsp(CVMsgFeaturesDetectedRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgFeaturesDetectedRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp(CVMsgFeaturesDetectedRsp *struct_data);
+void * t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp(CVMsgFeaturesDetectedRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgImageSearchReq(CVMsgImageSearchReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgImageSearchReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgImageSearchReq(CVMsgImageSearchReq *struct_data);
+void * t_rpc_ver3_ptr_CVMsgImageSearchReq(CVMsgImageSearchReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgImageSearchRsp(CVMsgImageSearchRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgImageSearchRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgImageSearchRsp(CVMsgImageSearchRsp *struct_data);
+void * t_rpc_ver3_ptr_CVMsgImageSearchRsp(CVMsgImageSearchRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgPaintingAestheticsReq(CVMsgPaintingAestheticsReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgPaintingAestheticsReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq(CVMsgPaintingAestheticsReq *struct_data);
+void * t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq(CVMsgPaintingAestheticsReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgPaintingAestheticsRsp(CVMsgPaintingAestheticsRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgPaintingAestheticsRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp(CVMsgPaintingAestheticsRsp *struct_data);
+void * t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp(CVMsgPaintingAestheticsRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgSculpturesSearchReq(CVMsgSculpturesSearchReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgSculpturesSearchReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgSculpturesSearchReq(CVMsgSculpturesSearchReq *struct_data);
+void * t_rpc_ver3_ptr_CVMsgSculpturesSearchReq(CVMsgSculpturesSearchReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CVMsgSculpturesSearchRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *struct_data);
+void * t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ClientBusy(ClientBusy *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ClientBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ClientBusy(ClientBusy *struct_data);
+void * t_rpc_ver3_ptr_ClientBusy(ClientBusy *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ClientIdle(ClientIdle *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ClientIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ClientIdle(ClientIdle *struct_data);
+void * t_rpc_ver3_ptr_ClientIdle(ClientIdle *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_CoroutineWakeup(CoroutineWakeup *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CoroutineWakeup(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CoroutineWakeup(CoroutineWakeup *struct_data);
+void * t_rpc_ver3_ptr_CoroutineWakeup(CoroutineWakeup *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBHybridAddListReq(DBHybridAddListReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBHybridAddListReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBHybridAddListReq(DBHybridAddListReq *struct_data);
+void * t_rpc_ver3_ptr_DBHybridAddListReq(DBHybridAddListReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBHybridAddListRsp(DBHybridAddListRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBHybridAddListRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBHybridAddListRsp(DBHybridAddListRsp *struct_data);
+void * t_rpc_ver3_ptr_DBHybridAddListRsp(DBHybridAddListRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBHybridInqListReq(DBHybridInqListReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBHybridInqListReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBHybridInqListReq(DBHybridInqListReq *struct_data);
+void * t_rpc_ver3_ptr_DBHybridInqListReq(DBHybridInqListReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBHybridInqListRsp(DBHybridInqListRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBHybridInqListRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBHybridInqListRsp(DBHybridInqListRsp *struct_data);
+void * t_rpc_ver3_ptr_DBHybridInqListRsp(DBHybridInqListRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBNosqlAddTalkReq(DBNosqlAddTalkReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBNosqlAddTalkReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBNosqlAddTalkReq(DBNosqlAddTalkReq *struct_data);
+void * t_rpc_ver3_ptr_DBNosqlAddTalkReq(DBNosqlAddTalkReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBNosqlAddTalkRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *struct_data);
+void * t_rpc_ver3_ptr_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBRedisDelTableReq(DBRedisDelTableReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBRedisDelTableReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBRedisDelTableReq(DBRedisDelTableReq *struct_data);
+void * t_rpc_ver3_ptr_DBRedisDelTableReq(DBRedisDelTableReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBRedisDelTableRsp(DBRedisDelTableRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBRedisDelTableRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBRedisDelTableRsp(DBRedisDelTableRsp *struct_data);
+void * t_rpc_ver3_ptr_DBRedisDelTableRsp(DBRedisDelTableRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysAddImageFeatureReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysAddImageFeatureRsp(DBSysAddImageFeatureRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysAddImageFeatureRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysAddImageFeatureRsp(DBSysAddImageFeatureRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysAddImageFeatureRsp(DBSysAddImageFeatureRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysAddWeiChatReq(DBSysAddWeiChatReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysAddWeiChatReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysAddWeiChatReq(DBSysAddWeiChatReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysAddWeiChatReq(DBSysAddWeiChatReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysAddWeiChatRsp(DBSysAddWeiChatRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysAddWeiChatRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysAddWeiChatRsp(DBSysAddWeiChatRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysAddWeiChatRsp(DBSysAddWeiChatRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqChannelReq(DBSysInqChannelReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqChannelReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqChannelReq(DBSysInqChannelReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqChannelReq(DBSysInqChannelReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqChannelRsp(DBSysInqChannelRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqChannelRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqChannelRsp(DBSysInqChannelRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqChannelRsp(DBSysInqChannelRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqImageFeatureReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqImageFeatureRsp(DBSysInqImageFeatureRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqImageFeatureRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqImageFeatureRsp(DBSysInqImageFeatureRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqImageFeatureRsp(DBSysInqImageFeatureRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqImageReq(DBSysInqImageReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqImageReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqImageReq(DBSysInqImageReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqImageReq(DBSysInqImageReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqImageRsp(DBSysInqImageRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqImageRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqImageRsp(DBSysInqImageRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqImageRsp(DBSysInqImageRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqMuseumPageReq(DBSysInqMuseumPageReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqMuseumPageReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqMuseumPageReq(DBSysInqMuseumPageReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqMuseumPageReq(DBSysInqMuseumPageReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqMuseumPageRsp(DBSysInqMuseumPageRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqMuseumPageRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqMuseumPageRsp(DBSysInqMuseumPageRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqMuseumPageRsp(DBSysInqMuseumPageRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqMuseumReq(DBSysInqMuseumReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqMuseumReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqMuseumReq(DBSysInqMuseumReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqMuseumReq(DBSysInqMuseumReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqMuseumRsp(DBSysInqMuseumRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqMuseumRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqMuseumRsp(DBSysInqMuseumRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqMuseumRsp(DBSysInqMuseumRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqPainterPageReq(DBSysInqPainterPageReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqPainterPageReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqPainterPageReq(DBSysInqPainterPageReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqPainterPageReq(DBSysInqPainterPageReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqPainterPageRsp(DBSysInqPainterPageRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqPainterPageRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqPainterPageRsp(DBSysInqPainterPageRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqPainterPageRsp(DBSysInqPainterPageRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqWeiChatReq(DBSysInqWeiChatReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqWeiChatReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqWeiChatReq(DBSysInqWeiChatReq *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqWeiChatReq(DBSysInqWeiChatReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DBSysInqWeiChatRsp(DBSysInqWeiChatRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqWeiChatRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysInqWeiChatRsp(DBSysInqWeiChatRsp *struct_data);
+void * t_rpc_ver3_ptr_DBSysInqWeiChatRsp(DBSysInqWeiChatRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DebugReq(DebugReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DebugReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DebugReq(DebugReq *struct_data);
+void * t_rpc_ver3_ptr_DebugReq(DebugReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_DebugRsp(DebugRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DebugRsp(DebugRsp *struct_data);
+void * t_rpc_ver3_ptr_DebugRsp(DebugRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPCloseReq(HTTPCloseReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPCloseReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPCloseReq(HTTPCloseReq *struct_data);
+void * t_rpc_ver3_ptr_HTTPCloseReq(HTTPCloseReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPCloseRsp(HTTPCloseRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPCloseRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPCloseRsp(HTTPCloseRsp *struct_data);
+void * t_rpc_ver3_ptr_HTTPCloseRsp(HTTPCloseRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPListenReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPListenReq(HTTPListenReq *struct_data);
+void * t_rpc_ver3_ptr_HTTPListenReq(HTTPListenReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPListenRsp(HTTPListenRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPListenRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPListenRsp(HTTPListenRsp *struct_data);
+void * t_rpc_ver3_ptr_HTTPListenRsp(HTTPListenRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPPostReq(HTTPPostReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPPostReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPPostReq(HTTPPostReq *struct_data);
+void * t_rpc_ver3_ptr_HTTPPostReq(HTTPPostReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPPostRsp(HTTPPostRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPPostRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPPostRsp(HTTPPostRsp *struct_data);
+void * t_rpc_ver3_ptr_HTTPPostRsp(HTTPPostRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPRecvReq(HTTPRecvReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPRecvReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPRecvReq(HTTPRecvReq *struct_data);
+void * t_rpc_ver3_ptr_HTTPRecvReq(HTTPRecvReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_HTTPRecvRsp(HTTPRecvRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPRecvRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_HTTPRecvRsp(HTTPRecvRsp *struct_data);
+void * t_rpc_ver3_ptr_HTTPRecvRsp(HTTPRecvRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_InternalEvents(InternalEvents *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_InternalEvents(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_InternalEvents(InternalEvents *struct_data);
+void * t_rpc_ver3_ptr_InternalEvents(InternalEvents *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_InternalLoop(InternalLoop *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_InternalLoop(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_InternalLoop(InternalLoop *struct_data);
+void * t_rpc_ver3_ptr_InternalLoop(InternalLoop *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MainMsgPythonReq(MainMsgPythonReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MainMsgPythonReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MainMsgPythonReq(MainMsgPythonReq *struct_data);
+void * t_rpc_ver3_ptr_MainMsgPythonReq(MainMsgPythonReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MainMsgPythonRsp(MainMsgPythonRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MainMsgPythonRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MainMsgPythonRsp(MainMsgPythonRsp *struct_data);
+void * t_rpc_ver3_ptr_MainMsgPythonRsp(MainMsgPythonRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MemoryWarning(MemoryWarning *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MemoryWarning(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MemoryWarning(MemoryWarning *struct_data);
+void * t_rpc_ver3_ptr_MemoryWarning(MemoryWarning *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MsgBlocksReq(MsgBlocksReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgBlocksReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgBlocksReq(MsgBlocksReq *struct_data);
+void * t_rpc_ver3_ptr_MsgBlocksReq(MsgBlocksReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MsgBlocksRsp(MsgBlocksRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgBlocksRsp(MsgBlocksRsp *struct_data);
+void * t_rpc_ver3_ptr_MsgBlocksRsp(MsgBlocksRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data);
+void * t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgInnerLoop(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgInnerLoop(MsgInnerLoop *struct_data);
+void * t_rpc_ver3_ptr_MsgInnerLoop(MsgInnerLoop *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgOSNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgOSNotify(MsgOSNotify *struct_data);
+void * t_rpc_ver3_ptr_MsgOSNotify(MsgOSNotify *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_POWEROFFMSG(POWEROFFMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_POWEROFFMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_POWEROFFMSG(POWEROFFMSG *struct_data);
+void * t_rpc_ver3_ptr_POWEROFFMSG(POWEROFFMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *struct_data);
+void * t_rpc_ver3_ptr_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_RESTARTREQMSG(RESTARTREQMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RESTARTREQMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RESTARTREQMSG(RESTARTREQMSG *struct_data);
+void * t_rpc_ver3_ptr_RESTARTREQMSG(RESTARTREQMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_RESTARTRSPMSG(RESTARTRSPMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RESTARTRSPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RESTARTRSPMSG(RESTARTRSPMSG *struct_data);
+void * t_rpc_ver3_ptr_RESTARTRSPMSG(RESTARTRSPMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RPCDebugReq(RPCDebugReq *struct_data);
+void * t_rpc_ver3_ptr_RPCDebugReq(RPCDebugReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RPCDebugRsp(RPCDebugRsp *struct_data);
+void * t_rpc_ver3_ptr_RPCDebugRsp(RPCDebugRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RUNFUNCTIONMSG(RUNFUNCTIONMSG *struct_data);
+void * t_rpc_ver3_ptr_RUNFUNCTIONMSG(RUNFUNCTIONMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketBindReq(SocketBindReq *struct_data);
+void * t_rpc_ver3_ptr_SocketBindReq(SocketBindReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketBindRsp(SocketBindRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketBindRsp(SocketBindRsp *struct_data);
+void * t_rpc_ver3_ptr_SocketBindRsp(SocketBindRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketConnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketConnectReq(SocketConnectReq *struct_data);
+void * t_rpc_ver3_ptr_SocketConnectReq(SocketConnectReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketConnectRsp(SocketConnectRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketConnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketConnectRsp(SocketConnectRsp *struct_data);
+void * t_rpc_ver3_ptr_SocketConnectRsp(SocketConnectRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketDisconnectReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketDisconnectReq(SocketDisconnectReq *struct_data);
+void * t_rpc_ver3_ptr_SocketDisconnectReq(SocketDisconnectReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketDisconnectRsp(SocketDisconnectRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketDisconnectRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketDisconnectRsp(SocketDisconnectRsp *struct_data);
+void * t_rpc_ver3_ptr_SocketDisconnectRsp(SocketDisconnectRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketNotify(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketNotify(SocketNotify *struct_data);
+void * t_rpc_ver3_ptr_SocketNotify(SocketNotify *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketPlugIn(SocketPlugIn *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketPlugIn(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketPlugIn(SocketPlugIn *struct_data);
+void * t_rpc_ver3_ptr_SocketPlugIn(SocketPlugIn *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketPlugOut(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketPlugOut(SocketPlugOut *struct_data);
+void * t_rpc_ver3_ptr_SocketPlugOut(SocketPlugOut *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketRawEvent(SocketRawEvent *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketRawEvent(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketRawEvent(SocketRawEvent *struct_data);
+void * t_rpc_ver3_ptr_SocketRawEvent(SocketRawEvent *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketRead(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketRead(SocketRead *struct_data);
+void * t_rpc_ver3_ptr_SocketRead(SocketRead *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SocketWrite(SocketWrite *struct_data);
+void * t_rpc_ver3_ptr_SocketWrite(SocketWrite *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data);
+void * t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_SystemMount(SystemMount *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemMount(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SystemMount(SystemMount *struct_data);
+void * t_rpc_ver3_ptr_SystemMount(SystemMount *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TESTMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_TESTMSG(TESTMSG *struct_data);
+void * t_rpc_ver3_ptr_TESTMSG(TESTMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_TIMERMSG(TIMERMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TIMERMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_TIMERMSG(TIMERMSG *struct_data);
+void * t_rpc_ver3_ptr_TIMERMSG(TIMERMSG *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TemporarilyDefineMessageMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *struct_data);
+void * t_rpc_ver3_ptr_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadBusy(ThreadBusy *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadBusy(ThreadBusy *struct_data);
+void * t_rpc_ver3_ptr_ThreadBusy(ThreadBusy *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadIdle(ThreadIdle *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadIdle(ThreadIdle *struct_data);
+void * t_rpc_ver3_ptr_ThreadIdle(ThreadIdle *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadLocalReadyMsg(ThreadLocalReadyMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadLocalReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadLocalReadyMsg(ThreadLocalReadyMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadLocalReadyMsg(ThreadLocalReadyMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadLocalRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadRemoteIDRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadRemoteReadyMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *struct_data);
+void * t_rpc_ver3_ptr_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_TraceSwitchMsg(TraceSwitchMsg *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_TraceSwitchMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_TraceSwitchMsg(TraceSwitchMsg *struct_data);
+void * t_rpc_ver3_ptr_TraceSwitchMsg(TraceSwitchMsg *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPDataRecvReq(UIPDataRecvReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPDataRecvReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPDataRecvReq(UIPDataRecvReq *struct_data);
+void * t_rpc_ver3_ptr_UIPDataRecvReq(UIPDataRecvReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPDataRecvRsp(UIPDataRecvRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPDataRecvRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPDataRecvRsp(UIPDataRecvRsp *struct_data);
+void * t_rpc_ver3_ptr_UIPDataRecvRsp(UIPDataRecvRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPDataSendReq(UIPDataSendReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPDataSendReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPDataSendReq(UIPDataSendReq *struct_data);
+void * t_rpc_ver3_ptr_UIPDataSendReq(UIPDataSendReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPDataSendRsp(UIPDataSendRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPDataSendRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPDataSendRsp(UIPDataSendRsp *struct_data);
+void * t_rpc_ver3_ptr_UIPDataSendRsp(UIPDataSendRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPRegisterReq(UIPRegisterReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPRegisterReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPRegisterReq(UIPRegisterReq *struct_data);
+void * t_rpc_ver3_ptr_UIPRegisterReq(UIPRegisterReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPRegisterRsp(UIPRegisterRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPRegisterRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPRegisterRsp(UIPRegisterRsp *struct_data);
+void * t_rpc_ver3_ptr_UIPRegisterRsp(UIPRegisterRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPUnregisterReq(UIPUnregisterReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPUnregisterReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPUnregisterReq(UIPUnregisterReq *struct_data);
+void * t_rpc_ver3_ptr_UIPUnregisterReq(UIPUnregisterReq *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_UIPUnregisterRsp(UIPUnregisterRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPUnregisterRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_UIPUnregisterRsp(UIPUnregisterRsp *struct_data);
+void * t_rpc_ver3_ptr_UIPUnregisterRsp(UIPUnregisterRsp *struct_data, void *new_ptr);
 
 void * t_rpc_ver3_zip_WAKEUPMSG(WAKEUPMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_WAKEUPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_WAKEUPMSG(WAKEUPMSG *struct_data);
+void * t_rpc_ver3_ptr_WAKEUPMSG(WAKEUPMSG *struct_data, void *new_ptr);
 
 #endif
 

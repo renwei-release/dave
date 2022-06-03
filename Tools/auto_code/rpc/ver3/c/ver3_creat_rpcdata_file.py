@@ -72,7 +72,7 @@ def _creat_rpc_data_private_unzip_file(file_id, msg_table):
 
 
 def _creat_rpc_data_private_ptr_file(file_id, msg_table):
-    file_id.write("static void *\n_t_rpc_ptr(ub msg_id, void *msg_body)\n")
+    file_id.write("static void *\n_t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)\n")
     file_id.write("{\n")
     file_id.write("	void *ptr;\n")
     file_id.write("\n")
@@ -81,7 +81,7 @@ def _creat_rpc_data_private_ptr_file(file_id, msg_table):
     for msg_name in msg_table.keys():
         struct_name = msg_table[msg_name]
         file_id.write("\t\tcase "+msg_name+":\n")
-        file_id.write("\t			ptr = t_rpc_ver3_ptr_"+struct_name+"(("+struct_name+" *)msg_body);\n")
+        file_id.write("\t			ptr = t_rpc_ver3_ptr_"+struct_name+"(("+struct_name+" *)msg_body, new_ptr);\n")
         file_id.write("\t		break;\n")
     file_id.write("		default:\n")
     file_id.write("				TOOLSLOG(\"msg_id:%d zip failed!\", msg_id);\n")
@@ -137,10 +137,10 @@ def _creat_rpcdata_unzip_file(file_id):
 
 
 def _creat_rpcdata_ptr_file(file_id):
-    file_id.write("void *\nt_rpc_ver3_ptr(ub msg_id, void *msg_body)\n")
+    file_id.write("void *\nt_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr)\n")
     file_id.write("{\n")
     file_id.write("	void *ptr;\n")
-    file_id.write("\n\tptr = _t_rpc_ptr(msg_id, msg_body);\n")
+    file_id.write("\n\tptr = _t_rpc_ptr(msg_id, msg_body, new_ptr);\n")
     file_id.write("\n\treturn ptr;\n")
     file_id.write("}\n")
     return
@@ -169,7 +169,7 @@ def _creat_rpcdata_inc_file(file_name):
         file_id.write(_rpcdata_inc_head)
         file_id.write("void * t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len);\n")
         file_id.write("dave_bool t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
-        file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body);\n\n")
+        file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n\n")
         file_id.write(_rpcdata_inc_end)
     return
 

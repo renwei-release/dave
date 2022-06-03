@@ -762,365 +762,365 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 }
 
 static void *
-_t_rpc_ptr(ub msg_id, void *msg_body)
+_t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 {
 	void *ptr;
 
 	switch((sb)msg_id)
 	{
 		case AIXMSG_AESTHETICS_REQ:
-				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, new_ptr);
 			break;
 		case AIXMSG_AESTHETICS_RSP:
-				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsRsp((AIXMsgAestheticsRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsRsp((AIXMsgAestheticsRsp *)msg_body, new_ptr);
 			break;
 		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
-				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationReq((AIXMsgImageClassificationReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationReq((AIXMsgImageClassificationReq *)msg_body, new_ptr);
 			break;
 		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
-				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationRsp((AIXMsgImageClassificationRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationRsp((AIXMsgImageClassificationRsp *)msg_body, new_ptr);
 			break;
 		case APPMSG_FUNCTION_REGISTER_REQ:
-				ptr = t_rpc_ver3_ptr_AppMsgFunctionRegReq((AppMsgFunctionRegReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgFunctionRegReq((AppMsgFunctionRegReq *)msg_body, new_ptr);
 			break;
 		case APPMSG_FUNCTION_REGISTER_RSP:
-				ptr = t_rpc_ver3_ptr_AppMsgFunctionRegRsp((AppMsgFunctionRegRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgFunctionRegRsp((AppMsgFunctionRegRsp *)msg_body, new_ptr);
 			break;
 		case APPMSG_FUNCTION_UNREGISTER_REQ:
-				ptr = t_rpc_ver3_ptr_AppMsgFunctionUnRegReq((AppMsgFunctionUnRegReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgFunctionUnRegReq((AppMsgFunctionUnRegReq *)msg_body, new_ptr);
 			break;
 		case APPMSG_FUNCTION_UNREGISTER_RSP:
-				ptr = t_rpc_ver3_ptr_AppMsgFunctionUnRegRsp((AppMsgFunctionUnRegRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgFunctionUnRegRsp((AppMsgFunctionUnRegRsp *)msg_body, new_ptr);
 			break;
 		case APPMSG_MCARD_REQ:
-				ptr = t_rpc_ver3_ptr_AppMsgMCardReq((AppMsgMCardReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgMCardReq((AppMsgMCardReq *)msg_body, new_ptr);
 			break;
 		case APPMSG_MCARD_RSP:
-				ptr = t_rpc_ver3_ptr_AppMsgMCardRsp((AppMsgMCardRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgMCardRsp((AppMsgMCardRsp *)msg_body, new_ptr);
 			break;
 		case APPMSG_TALK_MCARD_REQ:
-				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardReq((AppMsgTalkMCardReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardReq((AppMsgTalkMCardReq *)msg_body, new_ptr);
 			break;
 		case APPMSG_TALK_MCARD_RSP:
-				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, new_ptr);
 			break;
 		case BBSMSG_ADD_COMMENT_REQ:
-				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, new_ptr);
 			break;
 		case BBSMSG_ADD_COMMENT_RSP:
-				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, new_ptr);
 			break;
 		case BBSMSG_INQ_COMMENT_REQ:
-				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, new_ptr);
 			break;
 		case BBSMSG_INQ_COMMENT_RSP:
-				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, new_ptr);
 			break;
 		case BDATAMSG_MCARD_RECORD:
-				ptr = t_rpc_ver3_ptr_BdataMCardRecord((BdataMCardRecord *)msg_body);
+				ptr = t_rpc_ver3_ptr_BdataMCardRecord((BdataMCardRecord *)msg_body, new_ptr);
 			break;
 		case BDATAMSG_TALK_RECORD:
-				ptr = t_rpc_ver3_ptr_BdataTalkRecord((BdataTalkRecord *)msg_body);
+				ptr = t_rpc_ver3_ptr_BdataTalkRecord((BdataTalkRecord *)msg_body, new_ptr);
 			break;
 		case CVMSG_FEATURES_DETECTED_REQ:
-				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, new_ptr);
 			break;
 		case CVMSG_FEATURES_DETECTED_RSP:
-				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp((CVMsgFeaturesDetectedRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp((CVMsgFeaturesDetectedRsp *)msg_body, new_ptr);
 			break;
 		case CVMSG_IMAGE_SEARCH_REQ:
-				ptr = t_rpc_ver3_ptr_CVMsgImageSearchReq((CVMsgImageSearchReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgImageSearchReq((CVMsgImageSearchReq *)msg_body, new_ptr);
 			break;
 		case CVMSG_IMAGE_SEARCH_RSP:
-				ptr = t_rpc_ver3_ptr_CVMsgImageSearchRsp((CVMsgImageSearchRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgImageSearchRsp((CVMsgImageSearchRsp *)msg_body, new_ptr);
 			break;
 		case CVMSG_PAINTING_AESTHETICS_REQ:
-				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq((CVMsgPaintingAestheticsReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq((CVMsgPaintingAestheticsReq *)msg_body, new_ptr);
 			break;
 		case CVMSG_PAINTING_AESTHETICS_RSP:
-				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp((CVMsgPaintingAestheticsRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp((CVMsgPaintingAestheticsRsp *)msg_body, new_ptr);
 			break;
 		case CVMSG_SCULPTURES_SEARCH_REQ:
-				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchReq((CVMsgSculpturesSearchReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchReq((CVMsgSculpturesSearchReq *)msg_body, new_ptr);
 			break;
 		case CVMSG_SCULPTURES_SEARCH_RSP:
-				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp((CVMsgSculpturesSearchRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp((CVMsgSculpturesSearchRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_HYBRID_ADD_LIST_REQ:
-				ptr = t_rpc_ver3_ptr_DBHybridAddListReq((DBHybridAddListReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBHybridAddListReq((DBHybridAddListReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_HYBRID_ADD_LIST_RSP:
-				ptr = t_rpc_ver3_ptr_DBHybridAddListRsp((DBHybridAddListRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBHybridAddListRsp((DBHybridAddListRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_HYBRID_INQ_LIST_REQ:
-				ptr = t_rpc_ver3_ptr_DBHybridInqListReq((DBHybridInqListReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBHybridInqListReq((DBHybridInqListReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_HYBRID_INQ_LIST_RSP:
-				ptr = t_rpc_ver3_ptr_DBHybridInqListRsp((DBHybridInqListRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBHybridInqListRsp((DBHybridInqListRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_NOSQL_ADD_TALK_REQ:
-				ptr = t_rpc_ver3_ptr_DBNosqlAddTalkReq((DBNosqlAddTalkReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBNosqlAddTalkReq((DBNosqlAddTalkReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_NOSQL_ADD_TALK_RSP:
-				ptr = t_rpc_ver3_ptr_DBNosqlAddTalkRsp((DBNosqlAddTalkRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBNosqlAddTalkRsp((DBNosqlAddTalkRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_REDIS_DEL_TABLE_REQ:
-				ptr = t_rpc_ver3_ptr_DBRedisDelTableReq((DBRedisDelTableReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBRedisDelTableReq((DBRedisDelTableReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_REDIS_DEL_TABLE_RSP:
-				ptr = t_rpc_ver3_ptr_DBRedisDelTableRsp((DBRedisDelTableRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBRedisDelTableRsp((DBRedisDelTableRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysAddImageFeatureReq((DBSysAddImageFeatureReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysAddImageFeatureReq((DBSysAddImageFeatureReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysAddImageFeatureRsp((DBSysAddImageFeatureRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysAddImageFeatureRsp((DBSysAddImageFeatureRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatReq((DBSysAddWeiChatReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatReq((DBSysAddWeiChatReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqChannelRsp((DBSysInqChannelRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqChannelRsp((DBSysInqChannelRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqImageFeatureReq((DBSysInqImageFeatureReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqImageFeatureReq((DBSysInqImageFeatureReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqImageFeatureRsp((DBSysInqImageFeatureRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqImageFeatureRsp((DBSysInqImageFeatureRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_IMAGE_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqImageReq((DBSysInqImageReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqImageReq((DBSysInqImageReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_IMAGE_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqImageRsp((DBSysInqImageRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqImageRsp((DBSysInqImageRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqMuseumPageReq((DBSysInqMuseumPageReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqMuseumPageReq((DBSysInqMuseumPageReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqMuseumPageRsp((DBSysInqMuseumPageRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqMuseumPageRsp((DBSysInqMuseumPageRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_MUSEUM_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqMuseumReq((DBSysInqMuseumReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqMuseumReq((DBSysInqMuseumReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_MUSEUM_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqMuseumRsp((DBSysInqMuseumRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqMuseumRsp((DBSysInqMuseumRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqPainterPageReq((DBSysInqPainterPageReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqPainterPageReq((DBSysInqPainterPageReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqPainterPageRsp((DBSysInqPainterPageRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqPainterPageRsp((DBSysInqPainterPageRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_WEICHAT_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqWeiChatReq((DBSysInqWeiChatReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqWeiChatReq((DBSysInqWeiChatReq *)msg_body, new_ptr);
 			break;
 		case DBMSG_SYS_INQ_WEICHAT_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqWeiChatRsp((DBSysInqWeiChatRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DBSysInqWeiChatRsp((DBSysInqWeiChatRsp *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_CLOSE_REQ:
-				ptr = t_rpc_ver3_ptr_HTTPCloseReq((HTTPCloseReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPCloseReq((HTTPCloseReq *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_CLOSE_RSP:
-				ptr = t_rpc_ver3_ptr_HTTPCloseRsp((HTTPCloseRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPCloseRsp((HTTPCloseRsp *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_LISTEN_REQ:
-				ptr = t_rpc_ver3_ptr_HTTPListenReq((HTTPListenReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPListenReq((HTTPListenReq *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_LISTEN_RSP:
-				ptr = t_rpc_ver3_ptr_HTTPListenRsp((HTTPListenRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPListenRsp((HTTPListenRsp *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_POST_REQ:
-				ptr = t_rpc_ver3_ptr_HTTPPostReq((HTTPPostReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPPostReq((HTTPPostReq *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_POST_RSP:
-				ptr = t_rpc_ver3_ptr_HTTPPostRsp((HTTPPostRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPPostRsp((HTTPPostRsp *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_RECV_REQ:
-				ptr = t_rpc_ver3_ptr_HTTPRecvReq((HTTPRecvReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPRecvReq((HTTPRecvReq *)msg_body, new_ptr);
 			break;
 		case HTTPMSG_RECV_RSP:
-				ptr = t_rpc_ver3_ptr_HTTPRecvRsp((HTTPRecvRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_HTTPRecvRsp((HTTPRecvRsp *)msg_body, new_ptr);
 			break;
 		case MAINMSG_PYTHON_REQ:
-				ptr = t_rpc_ver3_ptr_MainMsgPythonReq((MainMsgPythonReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_MainMsgPythonReq((MainMsgPythonReq *)msg_body, new_ptr);
 			break;
 		case MAINMSG_PYTHON_RSP:
-				ptr = t_rpc_ver3_ptr_MainMsgPythonRsp((MainMsgPythonRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_MainMsgPythonRsp((MainMsgPythonRsp *)msg_body, new_ptr);
 			break;
 		case MSGID_BLOCKS_REQ:
-				ptr = t_rpc_ver3_ptr_MsgBlocksReq((MsgBlocksReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_MsgBlocksReq((MsgBlocksReq *)msg_body, new_ptr);
 			break;
 		case MSGID_BLOCKS_RSP:
-				ptr = t_rpc_ver3_ptr_MsgBlocksRsp((MsgBlocksRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_MsgBlocksRsp((MsgBlocksRsp *)msg_body, new_ptr);
 			break;
 		case MSGID_CFG_UPDATE:
-				ptr = t_rpc_ver3_ptr_CFGUpdate((CFGUpdate *)msg_body);
+				ptr = t_rpc_ver3_ptr_CFGUpdate((CFGUpdate *)msg_body, new_ptr);
 			break;
 		case MSGID_CLIENT_BUSY:
-				ptr = t_rpc_ver3_ptr_ClientBusy((ClientBusy *)msg_body);
+				ptr = t_rpc_ver3_ptr_ClientBusy((ClientBusy *)msg_body, new_ptr);
 			break;
 		case MSGID_CLIENT_IDLE:
-				ptr = t_rpc_ver3_ptr_ClientIdle((ClientIdle *)msg_body);
+				ptr = t_rpc_ver3_ptr_ClientIdle((ClientIdle *)msg_body, new_ptr);
 			break;
 		case MSGID_COROUTINE_WAKEUP:
-				ptr = t_rpc_ver3_ptr_CoroutineWakeup((CoroutineWakeup *)msg_body);
+				ptr = t_rpc_ver3_ptr_CoroutineWakeup((CoroutineWakeup *)msg_body, new_ptr);
 			break;
 		case MSGID_DEBUG_REQ:
-				ptr = t_rpc_ver3_ptr_DebugReq((DebugReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_DebugReq((DebugReq *)msg_body, new_ptr);
 			break;
 		case MSGID_DEBUG_RSP:
-				ptr = t_rpc_ver3_ptr_DebugRsp((DebugRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_DebugRsp((DebugRsp *)msg_body, new_ptr);
 			break;
 		case MSGID_ECHO:
-				ptr = t_rpc_ver3_ptr_MsgIdEcho((MsgIdEcho *)msg_body);
+				ptr = t_rpc_ver3_ptr_MsgIdEcho((MsgIdEcho *)msg_body, new_ptr);
 			break;
 		case MSGID_INNER_LOOP:
-				ptr = t_rpc_ver3_ptr_MsgInnerLoop((MsgInnerLoop *)msg_body);
+				ptr = t_rpc_ver3_ptr_MsgInnerLoop((MsgInnerLoop *)msg_body, new_ptr);
 			break;
 		case MSGID_INTERNAL_EVENTS:
-				ptr = t_rpc_ver3_ptr_InternalEvents((InternalEvents *)msg_body);
+				ptr = t_rpc_ver3_ptr_InternalEvents((InternalEvents *)msg_body, new_ptr);
 			break;
 		case MSGID_INTERNAL_LOOP:
-				ptr = t_rpc_ver3_ptr_InternalLoop((InternalLoop *)msg_body);
+				ptr = t_rpc_ver3_ptr_InternalLoop((InternalLoop *)msg_body, new_ptr);
 			break;
 		case MSGID_LOCAL_THREAD_READY:
-				ptr = t_rpc_ver3_ptr_ThreadLocalReadyMsg((ThreadLocalReadyMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadLocalReadyMsg((ThreadLocalReadyMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_LOCAL_THREAD_REMOVE:
-				ptr = t_rpc_ver3_ptr_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_MEMORY_WARNING:
-				ptr = t_rpc_ver3_ptr_MemoryWarning((MemoryWarning *)msg_body);
+				ptr = t_rpc_ver3_ptr_MemoryWarning((MemoryWarning *)msg_body, new_ptr);
 			break;
 		case MSGID_OS_NOTIFY:
-				ptr = t_rpc_ver3_ptr_MsgOSNotify((MsgOSNotify *)msg_body);
+				ptr = t_rpc_ver3_ptr_MsgOSNotify((MsgOSNotify *)msg_body, new_ptr);
 			break;
 		case MSGID_POWER_OFF:
-				ptr = t_rpc_ver3_ptr_POWEROFFMSG((POWEROFFMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_POWEROFFMSG((POWEROFFMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
-				ptr = t_rpc_ver3_ptr_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
-				ptr = t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
-				ptr = t_rpc_ver3_ptr_ThreadRemoteIDRemoveMsg((ThreadRemoteIDRemoveMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadRemoteIDRemoveMsg((ThreadRemoteIDRemoveMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_REMOTE_THREAD_READY:
-				ptr = t_rpc_ver3_ptr_ThreadRemoteReadyMsg((ThreadRemoteReadyMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadRemoteReadyMsg((ThreadRemoteReadyMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_REMOTE_THREAD_REMOVE:
-				ptr = t_rpc_ver3_ptr_ThreadRemoteRemoveMsg((ThreadRemoteRemoveMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadRemoteRemoveMsg((ThreadRemoteRemoveMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_RESTART_REQ:
-				ptr = t_rpc_ver3_ptr_RESTARTREQMSG((RESTARTREQMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_RESTARTREQMSG((RESTARTREQMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_RESTART_RSP:
-				ptr = t_rpc_ver3_ptr_RESTARTRSPMSG((RESTARTRSPMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_RESTARTRSPMSG((RESTARTRSPMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_RPC_DEBUG_REQ:
-				ptr = t_rpc_ver3_ptr_RPCDebugReq((RPCDebugReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_RPCDebugReq((RPCDebugReq *)msg_body, new_ptr);
 			break;
 		case MSGID_RPC_DEBUG_RSP:
-				ptr = t_rpc_ver3_ptr_RPCDebugRsp((RPCDebugRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_RPCDebugRsp((RPCDebugRsp *)msg_body, new_ptr);
 			break;
 		case MSGID_RUN_FUNCTION:
-				ptr = t_rpc_ver3_ptr_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_SYSTEM_DECOUPLING:
-				ptr = t_rpc_ver3_ptr_SystemDecoupling((SystemDecoupling *)msg_body);
+				ptr = t_rpc_ver3_ptr_SystemDecoupling((SystemDecoupling *)msg_body, new_ptr);
 			break;
 		case MSGID_SYSTEM_MOUNT:
-				ptr = t_rpc_ver3_ptr_SystemMount((SystemMount *)msg_body);
+				ptr = t_rpc_ver3_ptr_SystemMount((SystemMount *)msg_body, new_ptr);
 			break;
 		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
-				ptr = t_rpc_ver3_ptr_TemporarilyDefineMessageMsg((TemporarilyDefineMessageMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_TemporarilyDefineMessageMsg((TemporarilyDefineMessageMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_TEST:
-				ptr = t_rpc_ver3_ptr_TESTMSG((TESTMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_TESTMSG((TESTMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_THREAD_BUSY:
-				ptr = t_rpc_ver3_ptr_ThreadBusy((ThreadBusy *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadBusy((ThreadBusy *)msg_body, new_ptr);
 			break;
 		case MSGID_THREAD_IDLE:
-				ptr = t_rpc_ver3_ptr_ThreadIdle((ThreadIdle *)msg_body);
+				ptr = t_rpc_ver3_ptr_ThreadIdle((ThreadIdle *)msg_body, new_ptr);
 			break;
 		case MSGID_TIMER:
-				ptr = t_rpc_ver3_ptr_TIMERMSG((TIMERMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_TIMERMSG((TIMERMSG *)msg_body, new_ptr);
 			break;
 		case MSGID_TRACE_SWITCH:
-				ptr = t_rpc_ver3_ptr_TraceSwitchMsg((TraceSwitchMsg *)msg_body);
+				ptr = t_rpc_ver3_ptr_TraceSwitchMsg((TraceSwitchMsg *)msg_body, new_ptr);
 			break;
 		case MSGID_WAKEUP:
-				ptr = t_rpc_ver3_ptr_WAKEUPMSG((WAKEUPMSG *)msg_body);
+				ptr = t_rpc_ver3_ptr_WAKEUPMSG((WAKEUPMSG *)msg_body, new_ptr);
 			break;
 		case SOCKET_BIND_REQ:
-				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body, new_ptr);
 			break;
 		case SOCKET_BIND_RSP:
-				ptr = t_rpc_ver3_ptr_SocketBindRsp((SocketBindRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketBindRsp((SocketBindRsp *)msg_body, new_ptr);
 			break;
 		case SOCKET_CONNECT_REQ:
-				ptr = t_rpc_ver3_ptr_SocketConnectReq((SocketConnectReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketConnectReq((SocketConnectReq *)msg_body, new_ptr);
 			break;
 		case SOCKET_CONNECT_RSP:
-				ptr = t_rpc_ver3_ptr_SocketConnectRsp((SocketConnectRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketConnectRsp((SocketConnectRsp *)msg_body, new_ptr);
 			break;
 		case SOCKET_DISCONNECT_REQ:
-				ptr = t_rpc_ver3_ptr_SocketDisconnectReq((SocketDisconnectReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketDisconnectReq((SocketDisconnectReq *)msg_body, new_ptr);
 			break;
 		case SOCKET_DISCONNECT_RSP:
-				ptr = t_rpc_ver3_ptr_SocketDisconnectRsp((SocketDisconnectRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketDisconnectRsp((SocketDisconnectRsp *)msg_body, new_ptr);
 			break;
 		case SOCKET_NOTIFY:
-				ptr = t_rpc_ver3_ptr_SocketNotify((SocketNotify *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketNotify((SocketNotify *)msg_body, new_ptr);
 			break;
 		case SOCKET_PLUGIN:
-				ptr = t_rpc_ver3_ptr_SocketPlugIn((SocketPlugIn *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketPlugIn((SocketPlugIn *)msg_body, new_ptr);
 			break;
 		case SOCKET_PLUGOUT:
-				ptr = t_rpc_ver3_ptr_SocketPlugOut((SocketPlugOut *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketPlugOut((SocketPlugOut *)msg_body, new_ptr);
 			break;
 		case SOCKET_RAW_EVENT:
-				ptr = t_rpc_ver3_ptr_SocketRawEvent((SocketRawEvent *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketRawEvent((SocketRawEvent *)msg_body, new_ptr);
 			break;
 		case SOCKET_READ:
-				ptr = t_rpc_ver3_ptr_SocketRead((SocketRead *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketRead((SocketRead *)msg_body, new_ptr);
 			break;
 		case SOCKET_WRITE:
-				ptr = t_rpc_ver3_ptr_SocketWrite((SocketWrite *)msg_body);
+				ptr = t_rpc_ver3_ptr_SocketWrite((SocketWrite *)msg_body, new_ptr);
 			break;
 		case UIP_DATA_RECV_REQ:
-				ptr = t_rpc_ver3_ptr_UIPDataRecvReq((UIPDataRecvReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPDataRecvReq((UIPDataRecvReq *)msg_body, new_ptr);
 			break;
 		case UIP_DATA_RECV_RSP:
-				ptr = t_rpc_ver3_ptr_UIPDataRecvRsp((UIPDataRecvRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPDataRecvRsp((UIPDataRecvRsp *)msg_body, new_ptr);
 			break;
 		case UIP_DATA_SEND_REQ:
-				ptr = t_rpc_ver3_ptr_UIPDataSendReq((UIPDataSendReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPDataSendReq((UIPDataSendReq *)msg_body, new_ptr);
 			break;
 		case UIP_DATA_SEND_RSP:
-				ptr = t_rpc_ver3_ptr_UIPDataSendRsp((UIPDataSendRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPDataSendRsp((UIPDataSendRsp *)msg_body, new_ptr);
 			break;
 		case UIP_REGISTER_REQ:
-				ptr = t_rpc_ver3_ptr_UIPRegisterReq((UIPRegisterReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPRegisterReq((UIPRegisterReq *)msg_body, new_ptr);
 			break;
 		case UIP_REGISTER_RSP:
-				ptr = t_rpc_ver3_ptr_UIPRegisterRsp((UIPRegisterRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPRegisterRsp((UIPRegisterRsp *)msg_body, new_ptr);
 			break;
 		case UIP_UNREGISTER_REQ:
-				ptr = t_rpc_ver3_ptr_UIPUnregisterReq((UIPUnregisterReq *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPUnregisterReq((UIPUnregisterReq *)msg_body, new_ptr);
 			break;
 		case UIP_UNREGISTER_RSP:
-				ptr = t_rpc_ver3_ptr_UIPUnregisterRsp((UIPUnregisterRsp *)msg_body);
+				ptr = t_rpc_ver3_ptr_UIPUnregisterRsp((UIPUnregisterRsp *)msg_body, new_ptr);
 			break;
 		default:
 				TOOLSLOG("msg_id:%d zip failed!", msg_id);
@@ -1183,11 +1183,11 @@ t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub pac
 }
 
 void *
-t_rpc_ver3_ptr(ub msg_id, void *msg_body)
+t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr)
 {
 	void *ptr;
 
-	ptr = _t_rpc_ptr(msg_id, msg_body);
+	ptr = _t_rpc_ptr(msg_id, msg_body, new_ptr);
 
 	return ptr;
 }
