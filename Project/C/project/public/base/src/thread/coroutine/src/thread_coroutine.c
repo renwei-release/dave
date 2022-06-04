@@ -58,6 +58,7 @@ typedef struct {
 } CoroutineSiteList;
 
 static void *_coroutine_kv = NULL;
+static void *_delayed_destruction_site_kv = NULL;
 
 static inline ThreadId
 _thread_coroutine_set_index(ThreadId thread_id, ub *wakeup_index)
@@ -318,6 +319,19 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 }
 
 static inline void
+_thread_coroutine_running_step_7(void *ramkv, s8 *key)
+{
+	CoroutineSite *pSite;
+
+	pSite = kv_del_key_ptr(_delayed_destruction_site_kv, key);
+
+	if(pSite != NULL)
+	{
+		_thread_coroutine_info_free(pSite);
+	}
+}
+
+static inline void
 _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 {
 	CoroutineSite *pSite = (CoroutineSite *)(pWakeup->ptr);
@@ -458,7 +472,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
-	_thread_coroutine_info_free(pSite);
+	kv_add_ub_ptr(_delayed_destruction_site_kv, (ub)pSite, pSite);
 
 	return NULL;
 }
@@ -544,6 +558,10 @@ _thread_coroutine_booting(void)
 		if(_coroutine_kv == NULL)
 		{
 			_coroutine_kv = kv_malloc("ckv", KvAttrib_list, 30, _thread_coroutine_kv_timer_out);
+		}
+		if(_delayed_destruction_site_kv == NULL)
+		{
+			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, 15, _thread_coroutine_running_step_7);
 		}
 		thread_other_unlock();
 	}

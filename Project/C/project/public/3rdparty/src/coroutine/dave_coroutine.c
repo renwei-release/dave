@@ -10,7 +10,7 @@
 #include "dave_base.h"
 #include "dave_coroutine.h"
 
-int co_create( void **co,const void *attr,void *routine,void *arg );
+int co_create( void **co, void *routine, void *arg );
 void co_resume( void *co );
 void co_yield( void *co );
 void co_release( void *co );
@@ -22,7 +22,7 @@ dave_co_create(coroutine_fun fun, void *param)
 {
 	void *co = NULL;
 
-	co_create(&co, NULL, (void *)fun, param);
+	co_create(&co, (void *)fun, param);
 
 	return (void *)co;
 }

@@ -42,7 +42,7 @@
 #include "dave_base.h"
 #include "party_log.h"
 
-#define CALL_STACK_MAX 1024
+#define CALL_STACK_MAX 128
 
 extern "C"
 {
@@ -96,29 +96,52 @@ static pid_t GetPid()
 /////////////////for copy stack //////////////////////////
 stStackMem_t* co_alloc_stackmem(unsigned int stack_size)
 {
-	stStackMem_t* stack_mem = (stStackMem_t*)malloc(sizeof(stStackMem_t));
+	stStackMem_t* stack_mem = (stStackMem_t*)dave_malloc(sizeof(stStackMem_t));
 	stack_mem->occupy_co= NULL;
 	stack_mem->stack_size = stack_size;
-	stack_mem->stack_buffer = (char*)malloc(stack_size);
+	stack_mem->stack_buffer = (char*)dave_malloc(stack_size);
 	stack_mem->stack_bp = stack_mem->stack_buffer + stack_size;
 	return stack_mem;
 }
 
+void co_free_stackmem(stStackMem_t *stack_mem)
+{
+	if(stack_mem != NULL)
+	{
+		dave_free(stack_mem->stack_buffer);
+
+		dave_free(stack_mem);
+	}
+}
+
 stShareStack_t* co_alloc_sharestack(int count, int stack_size)
 {
-	stShareStack_t* share_stack = (stShareStack_t*)malloc(sizeof(stShareStack_t));
+	stShareStack_t* share_stack = (stShareStack_t*)dave_malloc(sizeof(stShareStack_t));
 	share_stack->alloc_idx = 0;
 	share_stack->stack_size = stack_size;
 
 	//alloc stack array
 	share_stack->count = count;
-	stStackMem_t** stack_array = (stStackMem_t**)calloc(count, sizeof(stStackMem_t*));
+	stStackMem_t** stack_array = (stStackMem_t**)dave_ralloc(count * sizeof(stStackMem_t*));
 	for (int i = 0; i < count; i++)
 	{
 		stack_array[i] = co_alloc_stackmem(stack_size);
 	}
 	share_stack->stack_array = stack_array;
 	return share_stack;
+}
+
+void co_free_sharestack(stShareStack_t *share_stack)
+{
+	int index;
+
+	for(index=0; index<share_stack->count; index++)
+	{
+		co_free_stackmem(share_stack->stack_array[index]);
+	}
+	dave_free(share_stack->stack_array);
+
+	dave_free(share_stack);
 }
 
 static stStackMem_t* co_get_stackmem(stShareStack_t* share_stack)
@@ -172,9 +195,7 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 		at.stack_size += 0x1000;
 	}
 
-	stCoRoutine_t *lp = (stCoRoutine_t*)malloc( sizeof(stCoRoutine_t) );
-	
-	memset( lp, 0, (long)(sizeof(stCoRoutine_t))); 
+	stCoRoutine_t *lp = (stCoRoutine_t*)dave_ralloc( sizeof(stCoRoutine_t) );
 
 	lp->env = env;
 	lp->pfn = pfn;
@@ -207,27 +228,20 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 }
 
 extern "C" int
-co_create( stCoRoutine_t **ppco, const stCoRoutineAttr_t *attr, pfn_co_routine_t pfn, void *arg )
+co_create( stCoRoutine_t **ppco, pfn_co_routine_t pfn, void *arg )
 {
-	if(attr == NULL)
-	{
-		int stack_size = 1024 * 128;
-		stShareStack_t *share_stack;
-		stCoRoutineAttr_t local_attr;
-
-		share_stack = co_alloc_sharestack(1, stack_size);
-		local_attr.stack_size = stack_size;
-		local_attr.share_stack = share_stack;
-
-		attr = &local_attr;
-	}
+	stCoRoutineAttr_t attr;
 
 	if( !co_get_curr_thread_env() ) 
 	{
 		co_init_curr_thread_env();
 	}
 
-	stCoRoutine_t *co = co_create_env( co_get_curr_thread_env(), attr, pfn,arg );
+	attr.share_stack = co_alloc_sharestack(1, attr.stack_size);
+
+	stCoRoutine_t *co = co_create_env( co_get_curr_thread_env(), &attr, pfn, arg );
+
+	co->user_attr = attr;
 
 	*ppco = co;
 
@@ -238,11 +252,15 @@ extern "C" void
 co_free( stCoRoutine_t *co )
 {
     if (!co->cIsShareStack) 
-    {    
-        free(co->stack_mem->stack_buffer);
-        free(co->stack_mem);
-    }   
-    free( co );
+    {
+        dave_free(co->stack_mem->stack_buffer);
+        dave_free(co->stack_mem);
+    }
+	else
+	{
+		co_free_sharestack(co->user_attr.share_stack);
+	}
+    dave_free( co );
 }
 
 extern "C" void
@@ -260,7 +278,7 @@ co_resume( stCoRoutine_t *co )
 	stCoRoutine_t *lpCurrRoutine = env->pCallStack[ env->iCallStackSize - 1 ];
 	if( !co->cStart )
 	{
-		coctx_make( &co->ctx,(coctx_pfn_t)CoRoutineFunc,co,0 );
+		coctx_make( &co->ctx, (coctx_pfn_t)CoRoutineFunc, co, 0 );
 		co->cStart = 1;
 	}
 	if(env->iCallStackSize >= CALL_STACK_MAX)
@@ -303,10 +321,10 @@ void save_stack_buffer(stCoRoutine_t* occupy_co)
 
 	if (occupy_co->save_buffer)
 	{
-		free(occupy_co->save_buffer), occupy_co->save_buffer = NULL;
+		dave_free(occupy_co->save_buffer), occupy_co->save_buffer = NULL;
 	}
 
-	occupy_co->save_buffer = (char*)malloc(len); //malloc buf;
+	occupy_co->save_buffer = (char*)dave_malloc(len); //malloc buf;
 	occupy_co->save_size = len;
 
 	memcpy(occupy_co->save_buffer, occupy_co->stack_sp, len);
@@ -341,7 +359,7 @@ void co_swap(stCoRoutine_t* curr, stCoRoutine_t* pending_co)
 	}
 
 	//swap context
-	coctx_swap(&(curr->ctx),&(pending_co->ctx) );
+	coctx_swap(&(curr->ctx), &(pending_co->ctx) );
 
 	//stack buffer may be overwrite, so get again;
 	stCoRoutineEnv_t* curr_env = co_get_curr_thread_env();
@@ -362,7 +380,7 @@ static stCoRoutineEnv_t* g_arrCoEnvPerThread[ 204800 ] = { 0 };
 void co_init_curr_thread_env()
 {
 	pid_t pid = GetPid();	
-	g_arrCoEnvPerThread[ pid ] = (stCoRoutineEnv_t*)calloc( 1,sizeof(stCoRoutineEnv_t) );
+	g_arrCoEnvPerThread[ pid ] = (stCoRoutineEnv_t*)dave_ralloc( sizeof(stCoRoutineEnv_t) );
 	stCoRoutineEnv_t *env = g_arrCoEnvPerThread[ pid ];
 
 	env->iCallStackSize = 0;
@@ -393,8 +411,6 @@ stCoRoutine_t *GetCurrThreadCo( )
 	if( !env ) return 0;
 	return GetCurrCo(env);
 }
-
-typedef int (*poll_pfn_t)(struct pollfd fds[], nfds_t nfds, int timeout);
 
 void *co_getspecific(pthread_key_t key)
 {

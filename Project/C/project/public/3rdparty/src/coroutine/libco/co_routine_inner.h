@@ -55,6 +55,7 @@ struct stCoRoutine_t
 	char cIsMain;
 	char cIsShareStack;
 
+	stCoRoutineAttr_t user_attr;
 	stStackMem_t* stack_mem;
 
 	//save satck buffer while confilct on same stack_buffer;

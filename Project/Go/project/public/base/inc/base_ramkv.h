@@ -61,6 +61,7 @@ void * __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line);
 #define kv_add_ub_ptr base_ramkv_add_ub_ptr
 #define kv_inq_ub_ptr base_ramkv_inq_ub_ptr
 #define kv_del_ub_ptr base_ramkv_del_ub_ptr
+#define kv_inq_top_ptr base_ramkv_inq_top_ptr
 
 #endif
 

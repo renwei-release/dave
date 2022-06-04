@@ -44,7 +44,7 @@ typedef void *(*pfn_co_routine_t)( void * );
 
 //2.co_routine
 
-extern "C" int 	co_create( stCoRoutine_t **co,const stCoRoutineAttr_t *attr,void *(*routine)(void*),void *arg );
+extern "C" int 	co_create( stCoRoutine_t **co, void *(*routine)(void*), void *arg );
 extern "C" void    co_resume( stCoRoutine_t *co );
 extern "C" void    co_yield( stCoRoutine_t *co );
 extern "C" void    co_yield_ct(); //ct = current thread
@@ -62,6 +62,7 @@ struct stCoCond_t;
 
 //7.share stack
 stShareStack_t* co_alloc_sharestack(int iCount, int iStackSize);
+void co_free_sharestack(stShareStack_t *share_stack);
 
 //8.init envlist for hook get/set env
 void co_log_err( const char *fmt,... );
