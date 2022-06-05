@@ -12,7 +12,7 @@
 #include "dave_tools.h"
 #include "timer_log.h"
 
-#define TIMER_MAX (8192)
+#define TIMER_MAX (1024)
 #define TIMER_NAME_LEN (16)
 #define CREAT_SW_TIMER_MIN_VALUE (1000)						// ms
 #define CREAT_SW_TIMER_MAX_VALUE (1000*60*60*24*7UL)		// ms
@@ -25,14 +25,9 @@ typedef enum {
 	OP_TIMER_NULL
 } TimerOPType;
 
-typedef enum {
-	HW_TIMER,
-	SW_TIMER,
-	NONE_TIMER
-} TimerAttrib;
-
 typedef struct {
 	TIMERID timer_id;
+	s8 name[TIMER_NAME_LEN];
 
 	TLock opt_pv;
 	TLock run_pv;
@@ -42,12 +37,11 @@ typedef struct {
 	void *param;
 	ThreadId owner;
 
+	ub wakeup_time_ms;
+
 	ub alarm_ms;
 	ub life_ms;
 	ub time_out_counter;
-
-	s8 name[TIMER_NAME_LEN];
-	TimerAttrib attrib; 
 } TIMER;
 
 static TLock _timer_pv;
@@ -61,6 +55,8 @@ static ThreadId _timer_thread = INVALID_THREAD_ID;
 static void
 _timer_reset(TIMER *pTimer)
 {
+	dave_memset(pTimer->name, 0x00, TIMER_NAME_LEN);
+
 	pTimer->fun = NULL;
 	pTimer->param_fun = NULL;
 	pTimer->param = NULL;
@@ -69,9 +65,6 @@ _timer_reset(TIMER *pTimer)
 	pTimer->alarm_ms = 0;
 	pTimer->life_ms = 0;
 	pTimer->time_out_counter = 0;
-	
-	dave_memset(pTimer->name, 0x00, TIMER_NAME_LEN);
-	pTimer->attrib = NONE_TIMER;
 }
 
 static void
@@ -91,6 +84,7 @@ static RetCode
 _timer_hardware_timer_notify(ub notify_id)
 {
 	TIMERMSG *pMsg;
+	TIMER *pTimer;
 	TIMERID reg_index, timer_id;
 
 	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
@@ -99,29 +93,22 @@ _timer_hardware_timer_notify(ub notify_id)
 			break;
 		timer_id = _timer_id_reg[reg_index];
 
-		if((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
+		pTimer = &_timer[timer_id];
+
+		if((pTimer->fun != NULL) || (pTimer->param_fun != NULL))
 		{
-			if((_timer[timer_id].life_ms + _cur_hardware_alarm_ms) <= _timer[timer_id].life_ms)
-				_timer[timer_id].life_ms = _timer[timer_id].alarm_ms;
+			if((pTimer->life_ms + _cur_hardware_alarm_ms) <= pTimer->life_ms)
+				pTimer->life_ms = pTimer->alarm_ms;
 			else
-				_timer[timer_id].life_ms += _cur_hardware_alarm_ms;
+				pTimer->life_ms += _cur_hardware_alarm_ms;
 
-			if(_timer[timer_id].life_ms >= _timer[timer_id].alarm_ms)
+			if(pTimer->life_ms >= pTimer->alarm_ms)
 			{
-				_timer[timer_id].life_ms = 0;
+				pTimer->life_ms = 0;
 
-				if(_timer[timer_id].attrib == HW_TIMER)
-				{
-					_timer_run_function(_timer[timer_id].fun, _timer[timer_id].param_fun, _timer[timer_id].param, timer_id, 0);
-				}
-				else
-				{
-					pMsg = thread_msg(pMsg);
-
-					pMsg->timer_id = (sb)timer_id;
-
-					snd_from_msg(_timer_thread, _timer_thread, MSGID_TIMER, sizeof(TIMERMSG), pMsg);
-				}
+				pMsg = thread_msg(pMsg);
+				pMsg->timer_id = (sb)timer_id;
+				snd_from_msg(_timer_thread, _timer_thread, MSGID_TIMER, sizeof(TIMERMSG), pMsg);
 			}
 		}
 	}
@@ -300,21 +287,33 @@ _timer_refresh_timer_id_reg(void)
 static void
 _timer_event(MSGBODY *msg)
 {
+	ub current_time_ms;
 	TIMERID timer_id;
 	TIMER *pTimer;
-	base_timer_fun fun = NULL;
-	base_timer_param_fun param_fun = NULL;
+	base_timer_fun fun;
+	base_timer_param_fun param_fun;
 	void *param = NULL;
 
 	timer_id = ((TIMERMSG *)(msg->msg_body))->timer_id;
 	if(timer_id < TIMER_MAX)
 	{
+		current_time_ms = dave_os_time_ms();
 		pTimer = &_timer[timer_id];
-	
+		fun = NULL;
+		param_fun = NULL;
+
 		SAFECODEidlev1(pTimer->opt_pv, {
-			fun = pTimer->fun;
-			param_fun = pTimer->param_fun;
-			param = pTimer->param;
+
+			if((pTimer->name[0] != '\0')
+				&& ((current_time_ms - pTimer->wakeup_time_ms) >= pTimer->alarm_ms))
+			{
+				pTimer->wakeup_time_ms = current_time_ms;
+
+				fun = pTimer->fun;
+				param_fun = pTimer->param_fun;
+				param = pTimer->param;
+			}
+
 		} );
 
 		/*
@@ -322,14 +321,17 @@ _timer_event(MSGBODY *msg)
 		 * 且通过判断_timer[timer_id].fun来
 		 * 确保已经删除的定时器消息不会有机会执行。
 		 */
-		SAFECODEidlev1(pTimer->run_pv, {
-			if((fun != NULL) || (param_fun != NULL))
-			{
-				pTimer->time_out_counter ++;
 
-				_timer_run_function(fun, param_fun, param, timer_id, msg->thread_wakeup_index);
-			}
-		} );
+		if((fun != NULL) || (param_fun != NULL))
+		{
+			SAFECODEidlev1(pTimer->run_pv, {
+
+					pTimer->time_out_counter ++;
+
+					_timer_run_function(fun, param_fun, param, timer_id, msg->thread_wakeup_index);
+
+			} );
+		}
 	}
 }
 
@@ -352,11 +354,32 @@ _timer_the_thread_has_timer(ThreadId owner)
 	return dave_false;
 }
 
-static TIMERID
-_timer_creat_timer_(s8 *name, TimerAttrib attrib, ThreadId owner, base_timer_fun fun, void *param, ub alarm_ms)
+static void
+_timer_msg(TIMERMSG *pTimerMsg)
+{
+	TIMERMSG *pMsg;
+	TIMERID timer_id;
+
+	timer_id = pTimerMsg->timer_id;
+
+	if((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
+	{
+		if(dave_strcmp(thread_name(_timer[timer_id].owner), "NULL") == dave_false)
+		{
+			pMsg = thread_msg(pMsg);
+
+			pMsg->timer_id = timer_id;
+
+			id_msg(_timer[timer_id].owner, MSGID_TIMER, pMsg);
+		}
+	}
+}
+
+static inline TIMERID
+_timer_creat_timer_(s8 *name, ThreadId owner, base_timer_fun fun, void *param, ub alarm_ms)
 {
 	ub safe_count;
-	TIMERID timer_id;
+	TIMER *pTimer;
 	dave_bool new_time_flag = dave_false;
 
 	if((owner == INVALID_THREAD_ID) || (fun == NULL))
@@ -371,27 +394,27 @@ _timer_creat_timer_(s8 *name, TimerAttrib attrib, ThreadId owner, base_timer_fun
 		{
 			_cur_creat_timer_id = 0;
 		}
+		pTimer = &_timer[_cur_creat_timer_id];
 
-		timer_id = _cur_creat_timer_id;
-
-		SAFECODEv1(_timer[timer_id].opt_pv, {
-			if((_timer[timer_id].fun == NULL)
-				&& (_timer[timer_id].param_fun == NULL)
-				&& (_timer[timer_id].owner == INVALID_THREAD_ID))
+		SAFECODEv1(pTimer->opt_pv, {
+			if((pTimer->fun == NULL)
+				&& (pTimer->param_fun == NULL)
+				&& (pTimer->owner == INVALID_THREAD_ID))
 			{
 				if(param == NULL)
-					_timer[timer_id].fun = (base_timer_fun)fun;
+					pTimer->fun = (base_timer_fun)fun;
 				else
-					_timer[timer_id].param_fun = (base_timer_param_fun)fun;
-				_timer[timer_id].param = param;
-				_timer[timer_id].owner = owner;
+					pTimer->param_fun = (base_timer_param_fun)fun;
+				pTimer->param = param;
+				pTimer->owner = owner;
 
-				_timer[timer_id].alarm_ms = alarm_ms;
-				_timer[timer_id].life_ms = 0;
-				_timer[timer_id].time_out_counter = 0;
+				pTimer->wakeup_time_ms = dave_os_time_ms();
 
-				dave_strcpy(_timer[timer_id].name, name, TIMER_NAME_LEN);
-				_timer[timer_id].attrib = attrib;
+				pTimer->alarm_ms = alarm_ms;
+				pTimer->life_ms = 0;
+				pTimer->time_out_counter = 0;
+
+				dave_strcpy(pTimer->name, name, TIMER_NAME_LEN);
 
 				new_time_flag = dave_true;
 			}
@@ -399,30 +422,29 @@ _timer_creat_timer_(s8 *name, TimerAttrib attrib, ThreadId owner, base_timer_fun
 
 		if(new_time_flag == dave_true)
 		{
-			if(attrib == SW_TIMER)
-			{
-				reg_msg(MSGID_TIMER, _timer_event);
-			}
+			reg_msg(MSGID_TIMER, _timer_event);
 
-			return timer_id;
+			return _cur_creat_timer_id;
 		}
 	}
 
 	return INVALID_TIMER_ID;
 }
 
-static void
+static inline void
 _timer_die_timer_(TIMERID timer_id, ThreadId owner)
 {
 	dave_bool unreg_flag = dave_false;
 
 	SAFECODEv1(_timer[timer_id].opt_pv, {
+
 		_timer_reset(&_timer[timer_id]);
 
 		if(_timer_the_thread_has_timer(owner) == dave_false)
 		{
 			unreg_flag = dave_true;
 		}
+
 	} );
 
 	if(unreg_flag == dave_true)
@@ -431,8 +453,8 @@ _timer_die_timer_(TIMERID timer_id, ThreadId owner)
 	}
 }
 
-static TIMERID
-_timer_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun, void *param, ub alarm_ms)
+static inline TIMERID
+_timer_creat_timer(s8 *name, ThreadId owner, void *fun, void *param, ub alarm_ms)
 {
 	TIMERID timer_id;
 
@@ -457,7 +479,7 @@ _timer_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun, void
 
 	_new_hardware_alarm_ms = alarm_ms;
 
-	timer_id = _timer_creat_timer_(name, attrib, owner, fun, param, alarm_ms);
+	timer_id = _timer_creat_timer_(name, owner, fun, param, alarm_ms);
 	if(timer_id != INVALID_TIMER_ID)
 	{
 		_timer_refresh_timer_id_reg();
@@ -473,7 +495,7 @@ _timer_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun, void
 	return timer_id;
 }
 
-static RetCode
+static inline RetCode
 _timer_die_timer(TIMERID timer_id)
 {
 	ThreadId owner = self();
@@ -494,59 +516,44 @@ _timer_die_timer(TIMERID timer_id)
 	return RetCode_OK;
 }
 
-static dave_bool
-_timer_check_timer_is_recreat(s8 *name, base_timer_fun fun, base_timer_param_fun param_fun, TIMERID *time_id)
+static inline TIMERID
+_timer_check_recreat(s8 *name)
 {
-	TIMERID index;
-
-	for(index=0; index<TIMER_MAX; index++)
-	{
-		if(((_timer[index].fun != NULL) || (_timer[index].param_fun != NULL))
-			&& (dave_strcmp(_timer[index].name, name) == dave_true)
-			&& (((_timer[index].fun == fun) && (fun != NULL)) || ((_timer[index].param_fun == param_fun) && (param_fun != NULL))))
-		{
-			if(time_id != NULL)
-			{
-				*time_id = index;
-			}
-
-			_timer[index].life_ms = 0;
-
-			return dave_true;
-		}
-	}
-
-	return dave_false;
-}
-
-static void
-_timer_msg(TIMERMSG *pTimerMsg)
-{
-	TIMERMSG *pMsg;
+	ub reg_index;
 	TIMERID timer_id;
+	TIMER *pTimer;
 
-	timer_id = pTimerMsg->timer_id;
-
-	if(((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
-		&& (_timer[timer_id].attrib == SW_TIMER))
+	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
 	{
-		if(dave_strcmp(thread_name(_timer[timer_id].owner), "NULL") == dave_false)
+		timer_id = _timer_id_reg[reg_index];
+		if((timer_id <= -1) || (timer_id >= TIMER_MAX))
+			break;
+		pTimer = &_timer[timer_id];
+
+		if(((pTimer->fun != NULL) || (pTimer->param_fun != NULL))
+			&& (dave_strcmp(pTimer->name, name) == dave_true))
 		{
-			pMsg = thread_msg(pMsg);
-
-			pMsg->timer_id = timer_id;
-
-			id_msg(_timer[timer_id].owner, MSGID_TIMER, pMsg);
+			return pTimer->timer_id;
 		}
 	}
+
+	return INVALID_TIMER_ID;
 }
 
 static TIMERID
-_timer_safe_creat_timer(s8 *name, TimerAttrib attrib, ThreadId owner, void *fun, void *param, ub alarm_ms)
+_timer_safe_creat_timer(s8 *name, ThreadId owner, void *fun, void *param, ub alarm_ms)
 {
 	TIMERID timer_id = INVALID_TIMER_ID;
 
-	SAFECODEv1(_timer_pv, { timer_id = _timer_creat_timer(name, attrib, owner, fun, param, alarm_ms); } );
+	SAFECODEv1(_timer_pv, {
+
+		timer_id = _timer_check_recreat(name);
+		if(timer_id == INVALID_TIMER_ID)
+		{
+			timer_id = _timer_creat_timer(name, owner, fun, param, alarm_ms);
+		}
+
+	} );
 
 	return timer_id;
 }
@@ -557,16 +564,6 @@ _timer_safe_die_timer(TIMERID timer_id)
 	RetCode ret = RetCode_Invalid_parameter;
 
 	SAFECODEv1( _timer_pv, { ret = _timer_die_timer(timer_id); } );
-
-	return ret;
-}
-
-static dave_bool
-_timer_safe_check_timer_is_recreat(s8 *name, base_timer_fun fun, base_timer_param_fun param_fun, TIMERID *time_id)
-{
-	dave_bool ret = dave_false;
-
-	SAFECODEv1( _timer_pv, { ret = _timer_check_timer_is_recreat(name, fun, param_fun, time_id); } );
 
 	return ret;
 }
@@ -676,11 +673,6 @@ base_timer_creat(char *name, base_timer_fun fun, ub alarm_ms)
 	ThreadId owner;
 	TIMERID timer_id;
 
-	if(_timer_safe_check_timer_is_recreat((s8 *)name, fun, NULL, &timer_id) == dave_true)
-	{
-		return timer_id;
-	}
-
 	if(alarm_ms < CREAT_SW_TIMER_MIN_VALUE)
 	{
 		TIMEABNOR("%s creat min value(%d) timer name:%s", thread_name(get_self()), alarm_ms, name);
@@ -695,7 +687,7 @@ base_timer_creat(char *name, base_timer_fun fun, ub alarm_ms)
 
 	owner = get_self();
 
-	timer_id = _timer_safe_creat_timer((s8 *)name, SW_TIMER, owner, fun, NULL, alarm_ms);
+	timer_id = _timer_safe_creat_timer((s8 *)name, owner, fun, NULL, alarm_ms);
 
 	TIMEDEBUG("name:%s %dms id:%d owner:%s<%d>",
 		_timer[timer_id].name, _timer[timer_id].alarm_ms, timer_id,
@@ -710,11 +702,6 @@ base_timer_param_creat(char *name, base_timer_param_fun fun, void *param, ub ala
 	ThreadId owner;
 	TIMERID timer_id;
 
-	if(_timer_safe_check_timer_is_recreat((s8 *)name, NULL, fun, &timer_id) == dave_true)
-	{
-		return timer_id;
-	}
-
 	if(alarm_ms < CREAT_SW_TIMER_MIN_VALUE)
 	{
 		TIMEABNOR("%s creat min value(%d) timer name:%s", thread_name(get_self()), alarm_ms, name);
@@ -729,7 +716,7 @@ base_timer_param_creat(char *name, base_timer_param_fun fun, void *param, ub ala
 
 	owner = get_self();
 
-	timer_id = _timer_safe_creat_timer((s8 *)name, SW_TIMER, owner, fun, param, alarm_ms);
+	timer_id = _timer_safe_creat_timer((s8 *)name, owner, fun, param, alarm_ms);
 
 	TIMEDEBUG("name:%s %dms id:%d owner:%s<%d>",
 		_timer[timer_id].name, _timer[timer_id].alarm_ms, timer_id,
@@ -749,17 +736,14 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 		return RetCode_Invalid_parameter;
 	}
 
-	if(_timer[timer_id].attrib == SW_TIMER)
+	cur_msg_id = self();
+	if(_timer[timer_id].owner != cur_msg_id)
 	{
-		cur_msg_id = self();
-		if(_timer[timer_id].owner != cur_msg_id)
-		{
-			TIMEABNOR("failed! (timer name:%s, owner task:%s<%d>, cur task:%s<%d>) (%s:%d)",
-					_timer[timer_id].name,
-					get_thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
-					get_thread_name(cur_msg_id), cur_msg_id,
-					fun, line);
-		}
+		TIMEABNOR("failed! (timer name:%s, owner task:%s<%d>, cur task:%s<%d>) (%s:%d)",
+				_timer[timer_id].name,
+				get_thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
+				get_thread_name(cur_msg_id), cur_msg_id,
+				fun, line);
 	}
 
 	TIMEDEBUG("name:%s %dms id:%d", _timer[timer_id].name, _timer[timer_id].alarm_ms, timer_id);

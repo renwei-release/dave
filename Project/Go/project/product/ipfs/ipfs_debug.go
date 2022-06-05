@@ -8,6 +8,7 @@ package ipfs
  */
 
 import (
+	"dave/public/base"
 	"fmt"
 	shell "github.com/ipfs/go-ipfs-api"
 	"os"
@@ -17,6 +18,7 @@ import (
 // =====================================================================
 
 func ipfs_debug(debug_data_req string) string {
+	base.DAVELOG("%s", debug_data_req)
 	sh := shell.NewShell("localhost:5001")
 	cid, err := sh.Add(strings.NewReader("Hello world"))
 	if err != nil {
