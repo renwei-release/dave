@@ -513,7 +513,7 @@ t_rpc_ver3_zip_CVModelResult(CVModelResult *zip_data)
 	t_bson_add_object(pStructBson, "ub-face_number", t_rpc_ver3_zip_ub(zip_data->face_number));
 	t_bson_add_object(pStructBson, "s8-vgg_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->vgg_id), DAVE_KEY_OPT_MAX, DAVE_SHA1_IMAGE_ID));
 	t_bson_add_object(pStructBson, "float-vgg_score", t_rpc_ver3_zip_float_d((float *)(zip_data->vgg_score), DAVE_KEY_OPT_MAX));
-	t_bson_add_object(pStructBson, "Rectangle-rectangle", t_rpc_ver3_zip_Rectangle_d(zip_data->rectangle, DAVE_KEY_OPT_MAX));
+	t_bson_add_object(pStructBson, "CVRectangle-rectangle", t_rpc_ver3_zip_CVRectangle_d(zip_data->rectangle, DAVE_KEY_OPT_MAX));
 	t_bson_add_object(pStructBson, "s8-image_title", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->image_title), DAVE_KEY_OPT_MAX, DAVE_IMAGE_TITLE_LEN));
 	t_bson_add_object(pStructBson, "s8-image_painter", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->image_painter), DAVE_KEY_OPT_MAX, DAVE_USER_NAME_LEN));
 	t_bson_add_object(pStructBson, "ub-inliners_num", t_rpc_ver3_zip_ub_d((ub *)(zip_data->inliners_num), DAVE_KEY_OPT_MAX));
@@ -556,7 +556,7 @@ t_rpc_ver3_unzip_CVModelResult(CVModelResult *unzip_data, void *pStructBson)
 		t_rpc_ver3_unzip_ub(&(unzip_data->face_number), t_bson_inq_object(pStructBson, "ub-face_number"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->vgg_id), DAVE_KEY_OPT_MAX, DAVE_SHA1_IMAGE_ID, t_bson_inq_object(pStructBson, "s8-vgg_id"));
 		t_rpc_ver3_unzip_float_d((float *)(unzip_data->vgg_score), DAVE_KEY_OPT_MAX, t_bson_inq_object(pStructBson, "float-vgg_score"));
-		t_rpc_ver3_unzip_Rectangle_d(unzip_data->rectangle, DAVE_KEY_OPT_MAX, t_bson_inq_object(pStructBson, "Rectangle-rectangle"));
+		t_rpc_ver3_unzip_CVRectangle_d(unzip_data->rectangle, DAVE_KEY_OPT_MAX, t_bson_inq_object(pStructBson, "CVRectangle-rectangle"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->image_title), DAVE_KEY_OPT_MAX, DAVE_IMAGE_TITLE_LEN, t_bson_inq_object(pStructBson, "s8-image_title"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->image_painter), DAVE_KEY_OPT_MAX, DAVE_USER_NAME_LEN, t_bson_inq_object(pStructBson, "s8-image_painter"));
 		t_rpc_ver3_unzip_ub_d((ub *)(unzip_data->inliners_num), DAVE_KEY_OPT_MAX, t_bson_inq_object(pStructBson, "ub-inliners_num"));
@@ -1096,7 +1096,7 @@ t_rpc_ver3_unzip_MCardCommentHead_d(MCardCommentHead *unzip_data, ub unzip_len, 
 }
 
 void *
-t_rpc_ver3_zip_Rectangle(Rectangle *zip_data)
+t_rpc_ver3_zip_CVRectangle(CVRectangle *zip_data)
 {
 	void *pStructBson = t_bson_malloc_object();
 
@@ -1111,14 +1111,14 @@ t_rpc_ver3_zip_Rectangle(Rectangle *zip_data)
 }
 
 dave_bool
-t_rpc_ver3_unzip_Rectangle(Rectangle *unzip_data, void *pStructBson)
+t_rpc_ver3_unzip_CVRectangle(CVRectangle *unzip_data, void *pStructBson)
 {
 	dave_bool ret;
 
 	if(pStructBson == NULL)
 	{
-		TOOLSLTRACE(360,1,"the pBson is NULL on Rectangle");
-		dave_memset(unzip_data, 0x00, sizeof(Rectangle));
+		TOOLSLTRACE(360,1,"the pBson is NULL on CVRectangle");
+		dave_memset(unzip_data, 0x00, sizeof(CVRectangle));
 		ret = dave_false;
 	}
 	else
@@ -1136,25 +1136,25 @@ t_rpc_ver3_unzip_Rectangle(Rectangle *unzip_data, void *pStructBson)
 }
 
 void *
-t_rpc_ver3_zip_Rectangle_d(Rectangle *zip_data, ub zip_len)
+t_rpc_ver3_zip_CVRectangle_d(CVRectangle *zip_data, ub zip_len)
 {
 	void *pArrayBson = t_bson_malloc_array();
 	ub zip_index;
 
 	for(zip_index=0; zip_index<zip_len; zip_index++)
 	{
-		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_Rectangle(&(zip_data[zip_index])));
+		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_CVRectangle(&(zip_data[zip_index])));
 	}
 
 	return pArrayBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_Rectangle_d(Rectangle *unzip_data, ub unzip_len, void *pArrayBson)
+t_rpc_ver3_unzip_CVRectangle_d(CVRectangle *unzip_data, ub unzip_len, void *pArrayBson)
 {
 	sb array_len, array_index;
 
-	dave_memset(unzip_data, 0x00, unzip_len * sizeof(Rectangle));
+	dave_memset(unzip_data, 0x00, unzip_len * sizeof(CVRectangle));
 
 	if(pArrayBson == NULL)
 	{
@@ -1169,7 +1169,7 @@ t_rpc_ver3_unzip_Rectangle_d(Rectangle *unzip_data, ub unzip_len, void *pArrayBs
 
 	for(array_index=0; array_index<array_len; array_index++)
 	{
-		t_rpc_ver3_unzip_Rectangle(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
+		t_rpc_ver3_unzip_CVRectangle(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
 	}
 
 	return dave_true;

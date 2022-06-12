@@ -58,7 +58,7 @@ base_dos_init(void)
 {
 	dos_cmd_init();
 
-	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 1, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG, _base_dos_init, _base_dos_main, _base_dos_exit);
+	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 1, THREAD_THREAD_FLAG, _base_dos_init, _base_dos_main, _base_dos_exit);
 	if(_dos_thread == INVALID_THREAD_ID)
 		base_restart(DOS_THREAD_NAME);
 }

@@ -61,5 +61,7 @@ SyncServer * sync_client_server(ub server_index);
 
 LinkThread * sync_client_thread(ub thread_index);
 
+LinkThread * sync_client_id_to_thread(ThreadId thread_id);
+
 #endif
 

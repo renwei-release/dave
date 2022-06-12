@@ -25,12 +25,12 @@ _ramkv_add_list(KVList *pKV, KVData *pData)
 }
 
 static inline dave_bool
-_ramkv_add_slot(KVList *pKV, KVHash *pHash, KVData *pData)
+_ramkv_add_slot(KVList *pKV, KVHash *pHash, KVData *pData, s8 *fun, ub line)
 {
 	KVSlot *pSlot;
 	dave_bool ret;
 
-	pSlot = ramkv_hash_to_slot(pKV->slot, pHash, dave_true);
+	pSlot = __ramkv_hash_to_slot__(pKV->slot, pHash, dave_true, fun, line);
 
 	if(pSlot != NULL)
 	{
@@ -71,7 +71,7 @@ __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 		return dave_false;
 	}
 
-	pData = ramkv_list_data_malloc(key_ptr, key_len, value_ptr, value_len);
+	pData = __ramkv_list_data_malloc__(key_ptr, key_len, value_ptr, value_len, fun, line);
 
 	SAFECODEv2W(pKV->ramkv_pv, {
 
@@ -85,7 +85,7 @@ __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 		{
 			_ramkv_add_list(&(pKV->local.ramkv_list), pData);
 
-			ret = _ramkv_add_slot(&(pKV->local.ramkv_list), &hash, pData);
+			ret = _ramkv_add_slot(&(pKV->local.ramkv_list), &hash, pData, fun, line);
 		}
 		else
 		{

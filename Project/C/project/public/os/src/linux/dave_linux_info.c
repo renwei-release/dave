@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#ifdef __DAVE_LINUX__
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +16,6 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sys/epoll.h>
 #include <errno.h> 
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -354,4 +354,6 @@ dave_os_cpu_process_number(void)
 
 	return cpu_number;
 }
+
+#endif
 

@@ -7,6 +7,8 @@
 
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
+#include "tools_log.h"
 
 static s8 *
 _t_a2b_net_ip_to_str(s8 *str_ptr, ub str_len, u8 *ip_ptr, ub ip_len, u16 port)
@@ -86,6 +88,75 @@ _t_a2b_net_str_to_ip(u8 *ip_ptr, ub ip_len, s8 *str_ptr, ub str_len)
 	return ip_index;
 }
 
+static dave_bool
+_t_a2b_net_domain_to_ip_and_port(s8 *domain_ptr, ub domain_len, u16 *port, s8 *domain)
+{
+	#define MAX_DOMAIN_STRING 2048
+	ub index, safe_counter;
+	s8 port_str[32];
+	ub domain_index, port_index;
+
+	dave_memset(domain_ptr, 0x00, domain_len);
+	*port = 0;
+
+	index = safe_counter = 0;
+
+	domain_index = 0;
+
+	while((domain[index] != '\0') && (domain_index < domain_len) && ((++ safe_counter) < MAX_DOMAIN_STRING))
+	{
+		if(domain[index] == '/')
+		{
+			domain_index = 0;
+		}
+		else if(domain[index] == ':')
+		{
+			index ++;
+			break;
+		}
+		else
+		{
+			domain_ptr[domain_index ++] = domain[index];
+		}
+
+		index ++;		
+	}
+
+	if(domain_index == 0)
+	{
+		TOOLSLOG("From inside <%s> I can't find the domain!", domain);
+		return dave_false;
+	}
+
+	dave_memset(port_str, 0x00, sizeof(port_str));
+	port_index = 0;
+
+	while((domain[index] != '\0') && ((++ safe_counter) < MAX_DOMAIN_STRING))
+	{
+		if(t_is_digit(domain[index]) == dave_false)
+		{
+			break;
+		}
+		else
+		{
+			port_str[port_index ++] = domain[index];
+		}
+
+		index ++;		
+	}
+
+	if(port_index > 0)
+	{
+		*port = stringdigital(port_str);
+		if(*port == 0)
+		{
+			return dave_false;
+		}
+	}
+
+	return dave_true;
+}
+
 // =====================================================================
 
 s8 *
@@ -124,5 +195,41 @@ t_a2b_net_mac_to_str(u8 *mac)
 	t_a2b_bin_to_hex_string(mac_str, sizeof(mac_str), mac, DAVE_MAC_ADDR_LEN);
 
 	return mac_str;
+}
+
+dave_bool
+t_a2b_net_domain_to_ip_and_port(u8 ipv4[DAVE_IP_V4_ADDR_LEN], u16 *port, s8 *domain)
+{
+	s8 domain_str[1024];
+	s8 ip_str[32];
+
+	dave_memset(ipv4, 0x00, DAVE_IP_V4_ADDR_LEN);
+	*port = 0;
+
+	if(_t_a2b_net_domain_to_ip_and_port(domain_str, sizeof(domain_str), port, domain) == dave_false)
+	{
+		return dave_false;
+	}
+
+	if(t_is_ipv4(domain) == dave_true)
+	{
+		dave_strcpy(ip_str, domain, sizeof(ip_str));
+	}
+	else
+	{
+		if(dave_os_gethostbyname(ip_str, sizeof(ip_str), domain_str) == dave_false)
+		{
+			TOOLSLOG("can't get the host by domain:%s", domain_str);
+			return dave_false;
+		}
+	}
+
+	if(strip(ip_str, dave_strlen(ip_str), ipv4, DAVE_IP_V4_ADDR_LEN) != DAVE_IP_V4_ADDR_LEN)
+	{
+		TOOLSLOG("invalid ip string:%s", ip_str);
+		return dave_false;
+	}
+
+	return dave_true;
 }
 

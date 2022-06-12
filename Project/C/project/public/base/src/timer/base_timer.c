@@ -12,7 +12,7 @@
 #include "dave_tools.h"
 #include "timer_log.h"
 
-#define TIMER_MAX (1024)
+#define BASE_TIMER_MAX (1024)
 #define TIMER_NAME_LEN (16)
 #define CREAT_SW_TIMER_MIN_VALUE (1000)						// ms
 #define CREAT_SW_TIMER_MAX_VALUE (1000*60*60*24*7UL)		// ms
@@ -48,8 +48,8 @@ static TLock _timer_pv;
 static ub _cur_hardware_alarm_ms = 0;
 static ub _new_hardware_alarm_ms = 0;
 static TIMERID _cur_creat_timer_id = 0;
-static TIMER _timer[TIMER_MAX];
-static sb _timer_id_reg[TIMER_MAX];
+static TIMER _timer[BASE_TIMER_MAX];
+static sb _timer_id_reg[BASE_TIMER_MAX];
 static ThreadId _timer_thread = INVALID_THREAD_ID;
 
 static void
@@ -87,7 +87,7 @@ _timer_hardware_timer_notify(ub notify_id)
 	TIMER *pTimer;
 	TIMERID reg_index, timer_id;
 
-	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
+	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
 	{
 		if(_timer_id_reg[reg_index] == INVALID_TIMER_ID)
 			break;
@@ -167,7 +167,7 @@ _timer_get_alarm_ms(s8 *name)
 	timer_id = _timer_id_reg[0];
 	alarm_ms =  _timer[timer_id].alarm_ms;
 
-	for(reg_index=1; (reg_index<TIMER_MAX)&&(_timer_id_reg[reg_index]!=INVALID_TIMER_ID); reg_index++)
+	for(reg_index=1; (reg_index<BASE_TIMER_MAX)&&(_timer_id_reg[reg_index]!=INVALID_TIMER_ID); reg_index++)
 	{
 		timer_id = _timer_id_reg[reg_index];
 		TIMEDEBUG("time change:%d->%d", alarm_ms, _timer[timer_id].alarm_ms);
@@ -265,14 +265,14 @@ _timer_refresh_timer_id_reg(void)
 	TIMERID reg_index, timer_id;
 	dave_bool has_timer;
 
-	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
+	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
 	{
 		_timer_id_reg[reg_index] = INVALID_TIMER_ID;
 	}
 
 	reg_index = 0;
 	has_timer = dave_false;
-	for(timer_id=0; timer_id<TIMER_MAX; timer_id++)
+	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
 	{
 		if((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
 		{
@@ -295,7 +295,7 @@ _timer_event(MSGBODY *msg)
 	void *param = NULL;
 
 	timer_id = ((TIMERMSG *)(msg->msg_body))->timer_id;
-	if(timer_id < TIMER_MAX)
+	if(timer_id < BASE_TIMER_MAX)
 	{
 		current_time_ms = dave_os_time_ms();
 		pTimer = &_timer[timer_id];
@@ -342,7 +342,7 @@ _timer_the_thread_has_timer(ThreadId owner)
 
 	if(owner != INVALID_THREAD_ID)
 	{
-		for(index=0; index<TIMER_MAX; index++)
+		for(index=0; index<BASE_TIMER_MAX; index++)
 		{
 			if(owner == _timer[index].owner)
 			{
@@ -388,9 +388,9 @@ _timer_creat_timer_(s8 *name, ThreadId owner, base_timer_fun fun, void *param, u
 		return INVALID_TIMER_ID;
 	}
 
-	for(safe_count=0; (new_time_flag==dave_false)&&(safe_count<TIMER_MAX); safe_count++)
+	for(safe_count=0; (new_time_flag==dave_false)&&(safe_count<BASE_TIMER_MAX); safe_count++)
 	{	
-		if((++ _cur_creat_timer_id) >= TIMER_MAX)
+		if((++ _cur_creat_timer_id) >= BASE_TIMER_MAX)
 		{
 			_cur_creat_timer_id = 0;
 		}
@@ -487,7 +487,7 @@ _timer_creat_timer(s8 *name, ThreadId owner, void *fun, void *param, ub alarm_ms
 		_timer_opt_hardware_timer(CREATE_TIMER, name);
 	}
 
-	if((timer_id >= TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
+	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
 	{
 		TIMEABNOR("timer:%s not creat!", name);
 	}
@@ -500,7 +500,7 @@ _timer_die_timer(TIMERID timer_id)
 {
 	ThreadId owner = self();
 
-	if(timer_id >= TIMER_MAX)
+	if(timer_id >= BASE_TIMER_MAX)
 		return RetCode_Invalid_parameter;
 
 	if(_timer[timer_id].owner != owner)
@@ -523,10 +523,10 @@ _timer_check_recreat(s8 *name)
 	TIMERID timer_id;
 	TIMER *pTimer;
 
-	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
+	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
 	{
 		timer_id = _timer_id_reg[reg_index];
-		if((timer_id <= -1) || (timer_id >= TIMER_MAX))
+		if((timer_id <= -1) || (timer_id >= BASE_TIMER_MAX))
 			break;
 		pTimer = &_timer[timer_id];
 
@@ -585,7 +585,7 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 		"TIMER INFORMATION:\n");
 
-	for(index=0; index<TIMER_MAX; index++)
+	for(index=0; index<BASE_TIMER_MAX; index++)
 	{
 		pTimer = &_timer[index];
 
@@ -730,7 +730,7 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 {
 	ThreadId cur_msg_id;
 
-	if((timer_id >= TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
+	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
 	{
 		TIMEABNOR("failed! timer_id:%d (%s:%d)", timer_id, fun, line);
 		return RetCode_Invalid_parameter;
@@ -761,7 +761,7 @@ base_timer_init(void)
 	_cur_hardware_alarm_ms = 0;
 	_new_hardware_alarm_ms = 0;
 	_cur_creat_timer_id = 0;
-	for(timer_id=0; timer_id<TIMER_MAX; timer_id++)
+	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
 	{
 		_timer[timer_id].timer_id = timer_id;
 
@@ -770,7 +770,7 @@ base_timer_init(void)
 
 		_timer_reset(&_timer[timer_id]);
 	}
-	for(reg_index=0; reg_index<TIMER_MAX; reg_index++)
+	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
 	{
 		_timer_id_reg[reg_index] = INVALID_TIMER_ID;
 	}

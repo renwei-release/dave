@@ -8,7 +8,8 @@
 #ifndef __RAMKV_LIST_DATA_H__
 #define __RAMKV_LIST_DATA_H__
 
-KVData * ramkv_list_data_malloc(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
+KVData * __ramkv_list_data_malloc__(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line);
+#define ramkv_list_data_malloc(key_ptr, key_len, value_ptr, value_len) __ramkv_list_data_malloc__(key_ptr, key_len, value_ptr, value_len, (s8 *)__func__, (ub)__LINE__)
 
 void ramkv_list_data_free(KVData *pData);
 

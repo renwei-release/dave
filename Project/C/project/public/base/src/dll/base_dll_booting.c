@@ -22,7 +22,6 @@
 #include <dirent.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -33,12 +32,6 @@
 #include "base_dll.h"
 #include "base_dll_main.h"
 #include "dll_log.h"
-
-typedef enum {
-	BaseDllRunningMode_Inner_Loop,
-	BaseDllRunningMode_Outer_Loop,
-	BaseDllRunningMode_max
-} BaseDllRunningMode;
 
 static void *_dave_main_thread_id = NULL;
 static void *_dave_inner_loop_id = NULL;
@@ -58,9 +51,18 @@ _dave_dll_booting(char *my_verno)
 }
 
 static BaseDllRunningMode
-_dave_dll_mode_decode(char *mode)
+_dave_dll_mode_decode(char *mode_str)
 {
-	return dave_strcmp(mode, "Inner Loop") == dave_true ? BaseDllRunningMode_Inner_Loop : BaseDllRunningMode_Outer_Loop;
+	BaseDllRunningMode mode = BaseDllRunningMode_Outer_Loop;
+
+	if(dave_strcmp(mode_str, "Inner Loop") == dave_true)
+		mode = BaseDllRunningMode_Inner_Loop;
+	else if(dave_strcmp(mode_str, "Outer Loop") == dave_true)
+		mode = BaseDllRunningMode_Outer_Loop;
+	else if(dave_strcmp(mode_str, "Coroutine Loop") == dave_true)
+		mode = BaseDllRunningMode_Coroutine_Loop;
+
+	return mode;
 }
 
 static void *
@@ -105,7 +107,10 @@ _dave_dll_main_thread(void *arg)
 {
 	base_init(_dave_main_thread_id);
 
-	dave_dll_main_init(_dll_thread_number, _dll_init_fun, _dll_main_fun, _dll_exit_fun);
+	dave_dll_main_init(
+		_base_dll_running_mode,
+		_dll_thread_number,
+		_dll_init_fun, _dll_main_fun, _dll_exit_fun);
 
 	base_running(dave_false);
 
@@ -182,7 +187,8 @@ dave_dll_init(
 void
 dave_dll_running(void)
 {
-	if(_base_dll_running_mode == BaseDllRunningMode_Outer_Loop)
+	if((_base_dll_running_mode == BaseDllRunningMode_Outer_Loop)
+		|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Loop))
 	{
 		_dave_dll_inner_loop(NULL);
 	}

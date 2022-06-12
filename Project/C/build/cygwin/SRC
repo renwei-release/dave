@@ -1,0 +1,2 @@
+SOURCES=$(shell find `pwd`/../../project -name '*.c')
+SOURCES+=$(shell find `pwd`/../../project -name '*.cpp')

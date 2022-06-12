@@ -69,13 +69,13 @@ case "$1" in
 	echo "-D_GNU_SOURCE -D_REENTRANT"
 	;;
 --cxxflags)
-	echo "-Wall -Wextra -g3 -fvisibility=hidden -O3 -fPIC"
+	echo "-fvisibility=hidden -O3 -fPIC"
 	;;
 --ldflags)
 	echo " "
 	;;
 --libs)
-	echo "-lm -lstdc++ -pthread -ldl"
+	echo "-lm  -pthread -ldl"
 	;;
 *)
 	usage

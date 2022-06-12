@@ -8,7 +8,8 @@
 #ifndef __RAMKV_LIST_SLOT_H__
 #define __RAMKV_LIST_SLOT_H__
 
-KVSlot * ramkv_slot_malloc(KVSlot **up_ppslot);
+KVSlot * __ramkv_slot_malloc__(KVSlot **up_ppslot, s8 *fun, ub line);
+#define ramkv_slot_malloc(up_ppslot) __ramkv_slot_malloc__(up_ppslot, (s8 *)__func__, (ub)__LINE__)
 
 void ramkv_slot_free(KVSlot *pSlot);
 

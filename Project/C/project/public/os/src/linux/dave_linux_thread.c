@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#if defined(__DAVE_CYGWIN__) || defined(__DAVE_LINUX__)
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +17,6 @@
 #include <sys/time.h>
 #include <sys/socket.h> 
 #include <arpa/inet.h>
-#include <sys/epoll.h>
 #include <errno.h>
 #include <netinet/ip.h>
 #include <net/if.h>
@@ -26,7 +26,6 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <sys/prctl.h>
 #include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -60,6 +59,8 @@ typedef struct {
 	s8 thread_name[15];
 	ThreadId dave_thread_id;
 } DAVEPTHREAD;
+
+int pthread_setname_np(pthread_t thread, const char *name);
 
 static DAVEPTHREAD _dave_pthread[DAVE_THREAD_MAX];
 static pthread_spinlock_t _pv_lock;
@@ -119,7 +120,7 @@ _thread_function(void *arg)
 
 	if ((id != NULL) && (id->fun))
 	{
-		prctl(PR_SET_NAME, id->thread_name);
+		pthread_setname_np(id->thr_id, (const char *)(id->thread_name));
 
 		id->fun(id->arg);
 	}
@@ -511,4 +512,6 @@ dave_os_rw_unlock(void *ptr)
 		return dave_false;
 	}
 }
+
+#endif
 

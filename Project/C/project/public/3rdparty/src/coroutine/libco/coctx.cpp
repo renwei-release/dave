@@ -16,6 +16,8 @@
 * limitations under the License.
 */
 
+#include "3rdparty_macro.h"
+#ifdef COROUTINE_3RDPARTY
 #include "coctx.h"
 #include <string.h>
 
@@ -134,5 +136,6 @@ int coctx_init( coctx_t *ctx )
 	return 0;
 }
 
+#endif
 #endif
 

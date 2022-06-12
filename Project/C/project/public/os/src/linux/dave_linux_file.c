@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#if defined(__DAVE_CYGWIN__) || defined(__DAVE_LINUX__)
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -309,7 +310,9 @@ dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u
 
 	file_id = dave_os_file_open(flag, file_name);
 	if(file_id < 0)
+	{
 		return 0;
+	}
 
 	read_len = dave_os_file_load(file_id, file_index, data_len, data);
 
@@ -532,4 +535,6 @@ dave_os_file_read_mbuf(s8 *file_path)
 
 	return file_data;
 }
+
+#endif
 

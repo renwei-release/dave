@@ -28,7 +28,7 @@ _t_lock_check(TLock *pLock, s8 *fun, ub line)
 	ret = dave_true;
 
 	t_lock_spin(pLock);
-	if(pLock->thread_id == -1)
+	if(pLock->thread_id == DAVE_THREAD_EMPTY_VALUE)
 	{
 		pLock->thread_id = pthread_self();
 		pLock->file = fun;
@@ -57,7 +57,7 @@ _t_unlock_check(TLock *pLock, s8 *fun, ub line)
 	t_lock_spin(pLock);
 	if(pLock->thread_id == pthread_self())
 	{
-		pLock->thread_id = -1;
+		pLock->thread_id = DAVE_THREAD_EMPTY_VALUE;
 		pLock->file = NULL;
 		pLock->line = 0;
 	}
@@ -90,7 +90,7 @@ t_lock_reset(TLock *pLock)
 	dave_os_mutex_init(&(pLock->m_mutex_t));
 
 #ifdef LEVEL_PRODUCT_alpha
-	pLock->thread_id = -1;
+	pLock->thread_id = DAVE_THREAD_EMPTY_VALUE;
 	pLock->file = NULL;
 	pLock->line = 0;
 	pLock->magic_data_2 = pLock->magic_data_1;

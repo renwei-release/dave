@@ -1,4 +1,3 @@
-#!/bin/bash
 #/*
 # * Copyright (c) 2022 Renwei
 # *
@@ -7,7 +6,6 @@
 # */
 
 PROJECT=$1
-
 PROJECT=${PROJECT^^}
 
-make NAME_PRODUCT=${PROJECT} clean
+make NAME_PRODUCT=${PROJECT} clean_build

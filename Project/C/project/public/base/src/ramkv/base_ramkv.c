@@ -15,6 +15,17 @@
 #include "ramkv_test.h"
 #include "ramkv_log.h"
 
+#define RECYCLE_LOOP_MAX 999999999
+
+static RetCode
+_base_ramkv_system_recycle(void *ramkv, s8 *key)
+{
+	if(kv_del_key_ptr(ramkv, key) != NULL)
+		return RetCode_OK;
+	else
+		return RetCode_empty_data;
+}
+
 // ====================================================================
 
 void
@@ -60,27 +71,29 @@ __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback
 	u8 key_ptr[RAMKV_KEY_MAX];
 	RetCode ret;
 
-	if(callback_fun != NULL)
+	if(callback_fun == NULL)
 	{
-		safe_counter = 0;
+		callback_fun = _base_ramkv_system_recycle;
+	}
 
-		while((++ safe_counter) < 999999999)
-		{
-			if(ramkv_top(ramkv, key_ptr, sizeof(key_ptr)) == dave_true)
-				ret = callback_fun(ramkv, (s8 *)key_ptr);
-			else
-				ret = callback_fun(ramkv, NULL);
-			if(ret != RetCode_OK)
-			{
-				KVDEBUG("key:%s get error code:%s <%s:%d>", key_ptr, retstr(ret), fun, line);
-				break;
-			}
-		}
+	safe_counter = 0;
 
-		if(safe_counter >= 999999999)
+	while((++ safe_counter) < RECYCLE_LOOP_MAX)
+	{
+		if(ramkv_top(ramkv, key_ptr, sizeof(key_ptr)) == dave_true)
+			ret = callback_fun(ramkv, (s8 *)key_ptr);
+		else
+			ret = callback_fun(ramkv, NULL);
+		if(ret != RetCode_OK)
 		{
-			KVABNOR("while out times:%d <%s:%d>", safe_counter, fun, line);
+			KVDEBUG("key:%s get error code:%s <%s:%d>", key_ptr, retstr(ret), fun, line);
+			break;
 		}
+	}
+
+	if(safe_counter >= RECYCLE_LOOP_MAX)
+	{
+		KVABNOR("while out times:%d <%s:%d>", safe_counter, fun, line);
 	}
 
 	KVDEBUG("name:%s", ((KV *)(ramkv))->name);

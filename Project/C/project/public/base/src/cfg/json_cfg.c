@@ -14,6 +14,8 @@
 #include "cfg_param.h"
 #include "cfg_log.h"
 
+#define JSON_CFG_FILE_LENGTH_MAX (16 * 1024 * 1024)
+
 static volatile sb _json_config_init_ = 0;
 static TLock _json_config_option_pv;
 
@@ -57,7 +59,7 @@ _base_json_cfg_file_path(s8 *dir, s8 *path_ptr, ub path_len)
 static void *
 _base_json_cfg_read(FileOptFlag flag, s8 *file_name)
 {
-	ub data_len = 3 * 1024 * 1024;
+	ub data_len = JSON_CFG_FILE_LENGTH_MAX;
 	ub read_len;
 	u8 *data_ptr;
 	void *pJson = NULL;

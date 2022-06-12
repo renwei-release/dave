@@ -74,7 +74,7 @@ type CVModelResult struct {
 	Face_number uint64
 	Vgg_id [DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID] byte
 	Vgg_score [DAVE_KEY_OPT_MAX] float32
-	Rectangle [DAVE_KEY_OPT_MAX] Rectangle
+	Rectangle [DAVE_KEY_OPT_MAX] CVRectangle
 	Image_title [DAVE_KEY_OPT_MAX*DAVE_IMAGE_TITLE_LEN] byte
 	Image_painter [DAVE_KEY_OPT_MAX*DAVE_USER_NAME_LEN] byte
 	Inliners_num [DAVE_KEY_OPT_MAX] uint64
@@ -145,7 +145,7 @@ type MCardCommentHead struct {
 	Reserve_data [DAVE_MACRD_HEAD_MAX-2976] byte
 }
 
-type Rectangle struct {
+type CVRectangle struct {
 	X1 float32
 	Y1 float32
 	X2 float32

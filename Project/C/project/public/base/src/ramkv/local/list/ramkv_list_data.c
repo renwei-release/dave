@@ -131,11 +131,11 @@ _ramkv_list_data_value_free(KVValue *pValue)
 }
 
 static inline KVData *
-_ramkv_list_data_malloc(void)
+_ramkv_list_data_malloc(s8 *fun, ub line)
 {
 	KVData *pData;
 
-	pData = ramkvm_malloc(sizeof(KVData));
+	pData = ramkvm_malloc_line(sizeof(KVData), fun, line);
 
 	pData->magic_data = KV_DATA_MAGIC_DATA;
 
@@ -157,11 +157,11 @@ _ramkv_list_data_free(KVData *pData)
 }
 
 static inline KVData *
-_ramkv_list_data_malloc_(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
+_ramkv_list_data_malloc_(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	KVData *pData;
 
-	pData = _ramkv_list_data_malloc();
+	pData = _ramkv_list_data_malloc(fun, line);
 
 	_ramkv_list_data_key_malloc(&(pData->key), key_ptr, key_len);
 
@@ -249,9 +249,9 @@ _ramkv_list_data_del_mid(KVList *pKV, KVData *pData)
 // ====================================================================
 
 KVData *
-ramkv_list_data_malloc(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
+__ramkv_list_data_malloc__(u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
-	return _ramkv_list_data_malloc_(key_ptr, key_len, value_ptr, value_len);
+	return _ramkv_list_data_malloc_(key_ptr, key_len, value_ptr, value_len, fun, line);
 }
 
 void

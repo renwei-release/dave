@@ -8,9 +8,13 @@
 #ifndef __3RDPARTY_MACRO_H__
 #define __3RDPARTY_MACRO_H__
 
+#ifdef __DAVE_LINUX__
 #define JEMALLOC_3RDPARTY
+#endif
 #define JSON_3RDPARTY
+#ifdef __DAVE_LINUX__
 #define COROUTINE_3RDPARTY
+#endif
 #define NGINX_3RDPARTY
 #define MONGO_3RDPARTY
 #ifdef __DAVE_PRODUCT_AIB__

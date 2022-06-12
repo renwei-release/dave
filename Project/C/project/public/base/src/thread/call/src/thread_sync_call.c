@@ -241,7 +241,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 	/*
 	 * 在处理同步消息时，不用做同线程资源竞争检测。
 	 */
-	pSync->sync_pv.thread_id = -1;
+	pSync->sync_pv.thread_id = DAVE_THREAD_EMPTY_VALUE;
 #endif
 
 	SAFECODEv1(pSync->sync_pv, {

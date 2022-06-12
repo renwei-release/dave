@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #ifdef __DAVE_BASE__
 #include "dave_base.h"
+#include "thread_parameter.h"
 #include "thread_struct.h"
 #include "thread_lock.h"
 #include "thread_mem.h"
@@ -54,12 +55,14 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 	ub run_time = thread_statistics_start_msg(msg);
 #endif
 
+#ifdef ENABLE_THREAD_COROUTINE
 	if(thread_enable_coroutine(pThread) == dave_true)
 	{
 		if(thread_coroutine_running_step_go(pThread, thread_fun, msg) == dave_false)
 			thread_fun(msg);
 	}
 	else
+#endif
 	{
 		thread_fun(msg);
 	}

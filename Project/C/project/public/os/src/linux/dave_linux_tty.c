@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#ifdef __DAVE_LINUX__
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,9 +23,6 @@
 #include <dirent.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
-#include <linux/input.h>  
-#include <linux/uinput.h>
 #include <termio.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -77,7 +75,7 @@ _read_key_thread(void *arg)
 				break;
 			}
 		}
-		
+
 		_keypad_char[(_keypad_write ++) % KEY_INPUT_MAX] = keypad;
 
 		if((keypad == '\n') && (_notify_fun != NULL))
@@ -184,4 +182,6 @@ dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf)
 		}
 	}
 }
+
+#endif
 

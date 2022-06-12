@@ -11,10 +11,15 @@
 
 #define CFG_SYNC_ADDRESS "SYNCAddress"
 #define CFG_SYNC_PORT "SYNCPort"
-#define CFG_SYNC_CLIENT_ADDRESS "SYNCClientAddress"
 
-void sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN]);
+#define CFG_SYNC_CLIENT_ADDRESS "SYNCClientAddress"
+#define CFG_SYNC_SERVER_DOMAIN "SYNCServerDomain"
+#define CFG_SYNC_SERVER_PORT "SYNCServerPort"
+
+dave_bool sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port);
+
 u16 sync_cfg_get_syncs_port(void);
+
 dave_bool sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN]);
 
 #endif

@@ -19,12 +19,15 @@ build_static_lib()
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
    echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
+   rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
-   rm -f ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+
    echo lib build ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+   rm -f ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
    ar cru ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a ${obj_list}
 
    echo lib build ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
+   rm -f ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
    ar cru ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a ${obj_list}
 }
 
@@ -32,8 +35,8 @@ build_dynamic_lib()
 {
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
-   rm -f ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
    echo lib build ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
+   rm -f ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
    gcc -lpthread -lrt -ldl -lm -shared -o ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so ${obj_list}
 }
 

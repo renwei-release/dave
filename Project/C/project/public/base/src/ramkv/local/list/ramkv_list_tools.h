@@ -10,7 +10,8 @@
 
 dave_bool ramkv_is_my_key(KVData *pData, u8 *key_ptr, ub key_len);
 
-KVSlot * ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag);
+KVSlot * __ramkv_hash_to_slot__(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag, s8 *fun, ub line);
+#define ramkv_hash_to_slot(ppSlot, pHash, creat_flag) __ramkv_hash_to_slot__(ppSlot, pHash, creat_flag, (s8 *)__func__, (ub)__LINE__)
 
 KVSlot ** ramkv_hash_to_pslot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag);
 

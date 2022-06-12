@@ -1,4 +1,5 @@
 package base
+
 /*
  * Copyright (c) 2022 Renwei
  *
@@ -80,6 +81,20 @@ func Sync_msg(dst string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_i
 	return true
 }
 
+func Name_go(dst string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int) unsafe.Pointer {
+	pc, _, __LINE__, _ := runtime.Caller(2)
+	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
+	__func__ := funcNamearray[len(funcNamearray)-1]
+
+	c_func := (*C.char)(tools.T_cgo_gostring2cstring(__func__))
+
+	c_dst := C.CString(dst)
+	ret := C.dave_dll_thread_sync_msg(c_dst, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), C.int(0), nil, c_func, C.int(__LINE__))
+	C.free(unsafe.Pointer(c_dst))
+
+	return ret
+}
+
 func Broadcast_msg(dst string, msg_id int, msg_len int, msg_ptr unsafe.Pointer) bool {
 	pc, _, __LINE__, _ := runtime.Caller(2)
 	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
@@ -109,7 +124,7 @@ func Gid_msg(gid string, thread_name string, msg_id int, msg_len int, msg_ptr un
 	ret := C.int(-1)
 	c_gid_name := C.CString(gid)
 	c_thread_name := C.CString(thread_name)
-	ret = C.dave_dll_thread_gid_msg(c_gid_name, c_thread_name,C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
+	ret = C.dave_dll_thread_gid_msg(c_gid_name, c_thread_name, C.int(msg_id), C.int(msg_len), msg_ptr, c_func, C.int(__LINE__))
 	C.free(unsafe.Pointer(c_gid_name))
 	C.free(unsafe.Pointer(c_thread_name))
 

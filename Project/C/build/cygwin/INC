@@ -1,0 +1,1 @@
+INCLUDE = $(shell find `pwd`/../../project -type d | awk '!/\.svn/ {print " -I "$$0}')

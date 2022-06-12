@@ -6,7 +6,8 @@
  */
 
 #include "base_macro.h"
-#ifdef __DAVE_BASE__
+#include "thread_parameter.h"
+#if defined(__DAVE_BASE__) && defined(ENABLE_THREAD_COROUTINE)
 #include "dave_base.h"
 #include "dave_3rdparty.h"
 #include "dave_os.h"
@@ -15,6 +16,9 @@
 #include "thread_thread.h"
 #include "thread_tools.h"
 #include "thread_log.h"
+
+#define COROUTINE_WAIT_TIMER 180
+#define COROUTINE_DELAY_RELEASE_TIMER 6
 
 typedef enum {
 	wakeupevent_get_msg,
@@ -538,6 +542,11 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 {
 	switch(msg->msg_id)
 	{
+		case MSGID_TIMER:
+		case MSGID_WAKEUP:
+		case MSGID_RESTART_REQ:
+		case MSGID_RESTART_RSP:
+		case MSGID_POWER_OFF:
 		case MSGID_COROUTINE_WAKEUP:
 				return dave_false;
 			break;
@@ -557,11 +566,11 @@ _thread_coroutine_booting(void)
 		thread_other_lock();
 		if(_coroutine_kv == NULL)
 		{
-			_coroutine_kv = kv_malloc("ckv", KvAttrib_list, 30, _thread_coroutine_kv_timer_out);
+			_coroutine_kv = kv_malloc("ckv", KvAttrib_list, COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
 		}
 		if(_delayed_destruction_site_kv == NULL)
 		{
-			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, 15, _thread_coroutine_running_step_7);
+			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_7);
 		}
 		thread_other_unlock();
 	}

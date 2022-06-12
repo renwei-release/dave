@@ -130,6 +130,7 @@ static void
 _sync_client_connect_rsp(SocketConnectRsp *pRsp)
 {
 	SyncServer *pServer = (SyncServer *)(pRsp->ptr);
+	dave_bool clean_flag;
 
 	if(pServer == NULL)
 	{
@@ -158,7 +159,8 @@ _sync_client_connect_rsp(SocketConnectRsp *pRsp)
 					sync_client_type_to_str(pServer->server_type),
 					pRsp->ConnectInfo);
 
-				sync_client_data_reset_server(pServer, dave_true);
+				clean_flag = pServer->server_type == SyncServerType_sync_client ? dave_false : dave_true;
+				sync_client_data_reset_server(pServer, clean_flag);
 			break;
 	}
 }
@@ -562,7 +564,8 @@ static void
 _sync_client_cfg_update(CFGUpdate *pUpdate)
 {
 	if((dave_strcmp(pUpdate->cfg_name, CFG_SYNC_ADDRESS) == dave_true)
-		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_PORT) == dave_true))
+		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_PORT) == dave_true)
+		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_SERVER_DOMAIN) == dave_true))
 	{
 		SYNCTRACE("%s update! %d/%d",
 			pUpdate->cfg_name,
@@ -595,7 +598,13 @@ _sync_client_route(MSGBODY *pMsg)
 	{
 		thread_id = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
 		if(thread_id == INVALID_THREAD_ID)
+		{
+			SYNCTRACE("%lx/%s->%lx/%s:%s change failed!",
+				pMsg->msg_src, thread_name(pMsg->msg_src),
+				pMsg->msg_dst, thread_name(pMsg->msg_dst),
+				msgstr(pMsg->msg_id));
 			return;
+		}
 		pMsg->msg_dst = thread_id;
 	}
 
@@ -768,6 +777,9 @@ _sync_client_main(MSGBODY *msg)
 			break;
 		case SOCKET_RAW_EVENT:
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
+			break;
+		case MSGID_LOCAL_THREAD_READY:
+		case MSGID_LOCAL_THREAD_REMOVE:
 			break;
 		default:
 				_sync_client_route(msg);

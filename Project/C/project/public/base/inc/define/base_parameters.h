@@ -24,7 +24,11 @@
 
 #define DAVE_IP_V6_ADDR_LEN (16)
 
+#ifdef __DAVE_LINUX__
 #define DAVE_SERVER_SUPPORT_SOCKET_MAX (10240)
+#elif defined(__DAVE_CYGWIN__)
+#define DAVE_SERVER_SUPPORT_SOCKET_MAX (1024)
+#endif
 
 #define DAVE_BUILDING_BLOCKS_MAX (255)
 
@@ -39,6 +43,12 @@
 #define DAVE_AUTH_KEY_LEN (64)
 
 #define DAVE_AUTH_KEY_STR_LEN (DAVE_AUTH_KEY_LEN * 2 + 1)
+
+#ifdef __DAVE_LINUX__
+#define DAVE_THREAD_EMPTY_VALUE -1
+#elif defined(__DAVE_CYGWIN__)
+#define DAVE_THREAD_EMPTY_VALUE NULL
+#endif
 
 #endif
 

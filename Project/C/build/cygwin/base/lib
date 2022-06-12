@@ -1,0 +1,65 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECT=${PWD##*/}
+PROJECT=${PROJECT^^}
+BASELIBNAME=libcygwinBASE
+LEVEL=$1
+LOGFILE=build_lib_log.txt
+HOMEPATH=$(cd `dirname $0`; pwd)/../../../
+
+############## build_lib function ##############
+build_static_lib()
+{
+   obj_list=$(find `pwd`/../../../project/public -name '*.o')
+
+   echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
+   rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
+   cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
+
+   echo lib build ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib
+   rm -f ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib
+   ar cru ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib ${obj_list}
+
+   echo lib build ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib
+   rm -f ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib
+   ar cru ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib ${obj_list}
+}
+
+build_lib()
+{
+   ./clean >> $LOGFILE
+
+   echo lib build $LEVEL ...
+   ./build $LEVEL >> $LOGFILE
+
+   build_static_lib
+}
+############## build_lib function ##############
+
+if [ "$LEVEL" == "" ] || [ "$LEVEL" == "alpha" ]; then
+   LEVEL=alpha
+   build_lib
+fi
+
+if [ "$LEVEL" == "beta" ]; then
+   LEVEL=beta
+   build_lib
+fi
+
+if [ "$LEVEL" == "all" ]; then
+   LEVEL=alpha
+   build_lib
+
+   LEVEL=beta
+   build_lib
+fi
+
+./clean >> $LOGFILE
+
+rm -rf $LOGFILE

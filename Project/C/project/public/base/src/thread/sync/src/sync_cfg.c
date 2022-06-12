@@ -14,11 +14,10 @@
 #include "sync_cfg.h"
 
 #define SYNC_SERVICE_PORT 6004
+#define SYNC_SERVER_DOMAIN "localhost:6004"
 
-// =====================================================================
-
-void
-sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
+static void
+_sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
 	if(cfg_get(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
 	{
@@ -36,8 +35,8 @@ sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 	}
 }
 
-u16
-sync_cfg_get_syncs_port(void)
+static u16
+_sync_cfg_get_syncs_port(void)
 {
 	u16 port;
 
@@ -51,36 +50,71 @@ sync_cfg_get_syncs_port(void)
 	return port;
 }
 
+// =====================================================================
+
 dave_bool
-sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
+sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
 {
-	s8 ip_str[128];
-	dave_bool real_cfg = dave_false;
+	s8 domain[1024];
 
-	dave_memset(ip_str, 0x00, sizeof(ip_str));
-
-	if((cfg_get(CFG_SYNC_CLIENT_ADDRESS, (u8 *)ip_str, sizeof(ip_str)) == dave_false)
-		|| (strip(ip_str, dave_strlen(ip_str), ip, DAVE_IP_V4_ADDR_LEN) < DAVE_IP_V4_ADDR_LEN))
+	if(cfg_get(CFG_SYNC_SERVER_DOMAIN, domain, sizeof(domain)) == dave_false)
 	{
-		if(dave_os_on_docker() == dave_false)
-		{
-			dave_os_load_ip(ip, NULL);
+		_sync_cfg_get_syncs_ip(ip);
+		*port = _sync_cfg_get_syncs_port();
 
-			ipstr(ip, DAVE_IP_V4_ADDR_LEN, ip_str, sizeof(ip_str));
-		}
-		else
-		{
-			dave_strcpy(ip_str, t_gp_localhost(), sizeof(ip_str));
-		}
+		dave_snprintf(domain, sizeof(domain), "%d.%d.%d.%d:%d", ip[0], ip[1], ip[2], ip[3], *port);
+		cfg_set(CFG_SYNC_SERVER_DOMAIN, domain, dave_strlen(domain));
 	}
 	else
 	{
-		real_cfg = dave_true;
+		if(domainip(ip, port, domain) == dave_false)
+		{
+			domainip(ip, port, SYNC_SERVER_DOMAIN);
+		}
 	}
 
-	if(strip(ip_str, dave_strlen(ip_str), ip, DAVE_IP_V4_ADDR_LEN) < DAVE_IP_V4_ADDR_LEN)
+	return dave_true;
+}
+
+u16
+sync_cfg_get_syncs_port(void)
+{
+	s8 port_str[64];
+	u16 port;
+
+	if(cfg_get(CFG_SYNC_SERVER_PORT, port_str, sizeof(port_str)) == dave_false)
 	{
-		base_restart("system core error! invalid local ip:%s", ip_str);
+		port = _sync_cfg_get_syncs_port();
+		dave_snprintf(port_str, sizeof(port_str), "%d", port);
+	}
+	else
+	{
+		port = stringdigital(port_str);
+	}
+
+	if(port == 0)
+	{
+		port = SYNC_SERVICE_PORT;
+	}
+
+	return port;
+}
+
+dave_bool
+sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
+{
+	s8 domain[1024];
+	u16 port;
+	dave_bool real_cfg = dave_false;
+
+	if(cfg_get(CFG_SYNC_CLIENT_ADDRESS, domain, sizeof(domain)) == dave_true)
+	{
+		real_cfg = domainip(ip, &port, domain);
+	}
+
+	if(real_cfg == dave_false)
+	{
+		dave_os_load_ip(ip, NULL);
 	}
 
 	return real_cfg;

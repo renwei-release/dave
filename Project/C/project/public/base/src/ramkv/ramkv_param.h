@@ -26,6 +26,7 @@
 #define ramkvm_free dave_jefree
 #else
 #define ramkvm_malloc dave_os_malloc
+#define ramkvm_malloc_line(len, fun, line) dave_os_malloc(len)
 #define ramkvm_free dave_os_free
 #endif
 

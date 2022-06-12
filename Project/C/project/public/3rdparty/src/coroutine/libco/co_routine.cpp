@@ -16,6 +16,8 @@
 * limitations under the License.
 */
 
+#include "3rdparty_macro.h"
+#ifdef COROUTINE_3RDPARTY
 #include "co_routine.h"
 #include "co_routine_inner.h"
 
@@ -437,4 +439,6 @@ stCoRoutine_t *co_self()
 {
 	return GetCurrThreadCo();
 }
+
+#endif
 

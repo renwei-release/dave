@@ -14,7 +14,7 @@
 #include "ramkv_log.h"
 
 static KVSlot **
-_ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag)
+_ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag, s8 *fun, ub line)
 {
 	ub hash_index, hash_slot;
 	KVSlot **up_ppslot;
@@ -38,7 +38,7 @@ _ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag)
 				return NULL;
 			}
 
-			ppSlot[hash_slot] = ramkv_slot_malloc(up_ppslot);
+			ppSlot[hash_slot] = __ramkv_slot_malloc__(up_ppslot, fun, line);
 		}
 
 		if(((hash_index + 1) >= KV_SLOT_DEPTH) || ((pHash->hash_slot[hash_index + 1]) >= KV_SLOT_NUM))
@@ -103,11 +103,11 @@ ramkv_is_my_key(KVData *pData, u8 *key_ptr, ub key_len)
 }
 
 KVSlot *
-ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag)
+__ramkv_hash_to_slot__(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag, s8 *fun, ub line)
 {
 	KVSlot **ppFindSlot;
 
-	ppFindSlot = _ramkv_hash_to_slot(ppSlot, pHash, creat_flag);
+	ppFindSlot = _ramkv_hash_to_slot(ppSlot, pHash, creat_flag, fun, line);
 	if(ppFindSlot == NULL)
 		return NULL;
 
@@ -117,7 +117,7 @@ ramkv_hash_to_slot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag)
 KVSlot **
 ramkv_hash_to_pslot(KVSlot **ppSlot, KVHash *pHash, dave_bool creat_flag)
 {
-	return _ramkv_hash_to_slot(ppSlot, pHash, creat_flag);
+	return _ramkv_hash_to_slot(ppSlot, pHash, creat_flag, (s8 *)__func__, (ub)__LINE__);
 }
 
 void

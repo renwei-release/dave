@@ -98,11 +98,11 @@ dave_bool t_rpc_ver3_unzip_MCardCommentHead(MCardCommentHead *unzip_data, void *
 void * t_rpc_ver3_zip_MCardCommentHead_d(MCardCommentHead *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MCardCommentHead_d(MCardCommentHead *unzip_data, ub unzip_len, void *pArrayBson);
 
-void * t_rpc_ver3_zip_Rectangle(Rectangle *zip_data);
-dave_bool t_rpc_ver3_unzip_Rectangle(Rectangle *unzip_data, void *pStructBson);
+void * t_rpc_ver3_zip_CVRectangle(CVRectangle *zip_data);
+dave_bool t_rpc_ver3_unzip_CVRectangle(CVRectangle *unzip_data, void *pStructBson);
 
-void * t_rpc_ver3_zip_Rectangle_d(Rectangle *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_Rectangle_d(Rectangle *unzip_data, ub unzip_len, void *pArrayBson);
+void * t_rpc_ver3_zip_CVRectangle_d(CVRectangle *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_CVRectangle_d(CVRectangle *unzip_data, ub unzip_len, void *pArrayBson);
 
 void * t_rpc_ver3_zip_NoSQLHead(NoSQLHead *zip_data);
 dave_bool t_rpc_ver3_unzip_NoSQLHead(NoSQLHead *unzip_data, void *pStructBson);

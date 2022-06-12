@@ -15,25 +15,6 @@
 #include "dos_tools.h"
 #include "dos_log.h"
 
-#define CFG_SYNC_ADDRESS "SYNCAddress"
-#define CFG_SYNC_PORT "SYNCPort"
-
-static RetCode
-_dos_sync_syncport_help(void)
-{
-	dos_print("Please enter the command in the following format:\r\n"\
-			"syncport -g\r\n"\
-			"syncport -s [port]");
-
-	return RetCode_OK;
-}
-
-static RetCode
-_dos_sync_port_cfg(s8 *cmd_ptr, ub cmd_len)
-{
-	return dos_opt_u16_cfg("SYNC-PORT", cmd_ptr, cmd_len, CFG_SYNC_PORT);
-}
-
 static BuildingBlocksOpt
 _dos_sync_opt_str_to_opt(s8 *opt_str)
 {
@@ -155,12 +136,6 @@ _dos_sync_blocks_req(s8 *cmd_ptr, ub cmd_len)
 	return ret;
 }
 
-static RetCode
-_dos_sync_cfg(s8 *cmd_ptr, ub cmd_len)
-{
-	return dos_opt_ip_port_cfg("SYNC", cmd_ptr, cmd_len, CFG_SYNC_ADDRESS, CFG_SYNC_PORT);
-}
-
 // =====================================================================
 
 void
@@ -170,13 +145,7 @@ dos_sync_reset(void)
 
 	if(is_sync_server == dave_true)
 	{
-		dos_cmd_reg("syncport", _dos_sync_port_cfg, _dos_sync_syncport_help);
 		dos_cmd_reg("blocks", _dos_sync_blocks_req, _dos_sync_blocks_help);
-	}
-
-	if(is_sync_server == dave_false)
-	{
-		dos_cmd_reg("sync", _dos_sync_cfg, NULL);
 	}
 }
 

@@ -11,7 +11,6 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <sys/prctl.h>
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
@@ -67,6 +66,8 @@ typedef struct {
 
 	ThreadThread *pTThread[THREAD_THREAD_MAX];
 } ThreadIndexMap;
+
+int pthread_setname_np(pthread_t thread, const char *name);
 
 static pthread_t _main_thread = (pthread_t)NULL;
 
@@ -156,7 +157,7 @@ _tthread_reset_index_map_all(void)
 static void
 _tthread_setup_thread_name(ThreadThread *pTThread)
 {
-	prctl(PR_SET_NAME, pTThread->thread_name);
+	pthread_setname_np(pTThread->thr_id, (const char *)(pTThread->thread_name));
 }
 
 static void

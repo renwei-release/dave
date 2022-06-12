@@ -9,7 +9,15 @@
 #define __BASE_DLL_MAIN_H__
 #include "base_dll.h"
 
+typedef enum {
+	BaseDllRunningMode_Inner_Loop,
+	BaseDllRunningMode_Outer_Loop,
+	BaseDllRunningMode_Coroutine_Loop,
+	BaseDllRunningMode_max
+} BaseDllRunningMode;
+
 void dave_dll_main_init(
+	BaseDllRunningMode mode,
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun);
 

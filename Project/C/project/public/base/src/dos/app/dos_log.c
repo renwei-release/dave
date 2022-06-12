@@ -15,8 +15,6 @@
 #include "dos_tools.h"
 #include "dos_log.h"
 
-#define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
-
 static dave_bool
 _dos_trace_on_off(s8 *thread_name, dave_bool on)
 {
@@ -40,21 +38,12 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 	ub log_length;
 	s8 *log_buf;
 	u8 mac[DAVE_MAC_ADDR_LEN];
-	s8 *msg;
 	RetCode ret = RetCode_OK;
 
-	if(param_ptr[0] == '-')
-	{
-		ret = dos_opt_ip_cfg("log server", param_ptr, param_len, CFG_LOG_SERVER_IP_V4);
-	}
-	else if(dave_strcmp(param_ptr, (s8 *)"mac"))
+	if(dave_strcmp(param_ptr, (s8 *)"mac"))
 	{
 		dave_os_load_mac(mac);
-
-		msg = dave_malloc(128);
-		dave_sprintf(msg, "%s", macstr(mac));
-		dos_print(msg);
-		dave_free(msg);
+		dos_print("%s", macstr(mac));
 	}
 	else
 	{

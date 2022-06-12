@@ -10,7 +10,7 @@ package base
 /*
 #cgo CFLAGS: -I./inc -I./inc/define
 #cgo LDFLAGS: -Wl,-rpath,./lib
-#cgo LDFLAGS: -lpthread -lrt -ldl -lm -lstdc++ -lutil -L./lib -llinuxBASE -ljemalloc -ljson-c
+#cgo LDFLAGS: -lpthread -lrt -ldl -lm -lstdc++ -lutil -L./lib -llinuxBASE -ljemalloc
 #include <dave_base.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +42,7 @@ var _product_exit_fun func()
 //export dave_go_init
 func dave_go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
+	dave_module_load()
 }
 
 //export dave_go_main
@@ -75,8 +76,8 @@ func Dave_go_init(init_fun func(), exit_fun func()) {
 	_product_exit_fun = exit_fun
 
 	my_verno := C.CString(Dave_verno())
-	model := C.CString("Outer Loop")
-	thread_number := 16
+	model := C.CString("Coroutine Loop")
+	thread_number := 8
 
 	C.dave_dll_init(my_verno, model, C.int(thread_number), C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit))
 

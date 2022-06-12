@@ -225,7 +225,8 @@ __sync_client_thread_id_change_to_user__(ThreadId thread_id, ThreadId sync_id, s
 {
 	ThreadId new_id;
 
-	if(thread_attrib(thread_id) == LOCAL_TASK_ATTRIB)
+	if((sync_client_id_to_thread(thread_id) != NULL)
+		&& (thread_attrib(thread_id) == LOCAL_TASK_ATTRIB))
 	{
 		/*
 		 * 这个线程来自远端，但它有一个本地的亲戚，

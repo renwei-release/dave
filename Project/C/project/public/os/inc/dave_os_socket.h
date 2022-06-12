@@ -33,5 +33,7 @@ sb dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bo
 
 dave_bool dave_os_close(s32 socket, dave_bool clean_wait);
 
+dave_bool dave_os_gethostbyname(s8 *ip_ptr, ub ip_len, char *domain);
+
 #endif
 

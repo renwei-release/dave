@@ -15,6 +15,10 @@ projectnameforbuild=projectname${PROJECT}
 
 python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PROJECT^^}
 
+if [ -f tidy.sh ]; then
+   ./tidy.sh
+fi
+
 if [ -f $PROJECT ]; then
    rm -rf $PROJECT
 fi

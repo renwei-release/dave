@@ -59,7 +59,7 @@ typedef struct {
 
 	float w;
 	float h;
-} Rectangle;
+} CVRectangle;
 
 typedef struct {
 	ub matrix_row;
@@ -86,7 +86,7 @@ typedef struct {
 	ub feature_length;
 	float *feature_data;
 
-	Rectangle rectangle;
+	CVRectangle rectangle;
 	float score;
 } MatrixData;
 
@@ -115,7 +115,7 @@ typedef struct {
 	ub face_number;
 	s8 vgg_id[DAVE_KEY_OPT_MAX][DAVE_SHA1_IMAGE_ID];
 	float vgg_score[DAVE_KEY_OPT_MAX];
-	Rectangle rectangle[DAVE_KEY_OPT_MAX];
+	CVRectangle rectangle[DAVE_KEY_OPT_MAX];
 	s8 image_title[DAVE_KEY_OPT_MAX][DAVE_IMAGE_TITLE_LEN];
 	s8 image_painter[DAVE_KEY_OPT_MAX][DAVE_USER_NAME_LEN];
 	ub inliners_num[DAVE_KEY_OPT_MAX];

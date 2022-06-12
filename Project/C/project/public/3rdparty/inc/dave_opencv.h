@@ -34,7 +34,7 @@ dave_bool __dave_opencv_matrix_malloc__(Matrix *pMatrix, s8 *pic_path, u8 *pic_d
 
 void dave_opencv_matrix_free(Matrix *pMatrix);
 
-dave_bool dave_opencv_cutting(MatrixData *pMatrix, Rectangle rectangle);
+dave_bool dave_opencv_cutting(MatrixData *pMatrix, CVRectangle rectangle);
 
 dave_bool dave_opencv_unet_post_treatment(MatrixData *target, MatrixData net_data);
 

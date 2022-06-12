@@ -18,14 +18,16 @@ _t_a2b_bin_to_hex_str(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len)
 
 	for(buf_index=0,bin_index=0; ((buf_index+2)<buf_len)&&(bin_index<bin_len); bin_index++)
 	{
-		number = bin_ptr[buf_index];
+		number = bin_ptr[bin_index];
 
 		buf_ptr[buf_index ++] = digits[number >> 4];
 		buf_ptr[buf_index ++] = digits[number & 0x0f];
 	}
 
 	if((buf_index + 1) <= buf_len)
+	{
 		buf_ptr[buf_index] = '\0';
+	}
 
 	return buf_index;
 }

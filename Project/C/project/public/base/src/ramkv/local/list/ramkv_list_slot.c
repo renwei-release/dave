@@ -278,11 +278,11 @@ _ramkv_slot_recover(KVSlot **ppSlot)
 // ====================================================================
 
 KVSlot *
-ramkv_slot_malloc(KVSlot **up_ppslot)
+__ramkv_slot_malloc__(KVSlot **up_ppslot, s8 *fun, ub line)
 {
 	KVSlot *pSlot;
 
-	pSlot = ramkvm_malloc(sizeof(KVSlot));
+	pSlot = ramkvm_malloc_line(sizeof(KVSlot), fun, line);
 
 	pSlot->magic_data = KV_SLOT_MAGIC_DATA;	
 

@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#ifdef __DAVE_LINUX__
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,6 @@ static void *_linux_socket_epoll_thread = NULL;
 static dave_socket_event_fun _epoll_event_notify_fun = NULL;
 static int m_epFd;
 static struct epoll_event m_pEvent[EPOLL_MANAGE_MAX];
-static sb _linux_recv_data_len, _linux_snd_data_len;
 static pthread_mutex_t m_epoll_mutex;
 
 typedef struct conn_info {
@@ -104,7 +104,7 @@ _os_linux_setnonblocking(int sock)
 		return 0;
 	}
 
-	opts = opts|O_NONBLOCK ;
+	opts = opts|O_NONBLOCK;
 	if(fcntl(sock, F_SETFL, opts) < 0)
 	{
 		return 0;
@@ -293,6 +293,67 @@ _os_linux_bind_netcard(s32 socket, s8 *netcard_name)
 			OSABNOR("setup SOL_SOCKET failed! [%d/%s]", socket, nif.ifr_name);
 		}
 	}
+}
+
+static dave_bool
+_os_linux_socket_bind_fix_port(s32 socket, u16 port)
+{
+	struct sockaddr_in bind_port;
+
+	bind_port.sin_family = AF_INET;
+	bind_port.sin_addr.s_addr = htonl(INADDR_ANY);
+	bind_port.sin_port = htons(port);
+	if(bind(socket, (struct sockaddr*)&bind_port, sizeof(struct sockaddr_in)) < 0)
+	{
+		return dave_false;
+	}
+	else
+	{
+		return dave_true;
+	}
+}
+
+static dave_bool
+_os_linux_socket_bind_ip_v4(s32 socket, SocNetInfo *pNetInfo)
+{
+	int bind_result;
+	struct sockaddr_in my_addr;
+	s8 ip_str[20];
+
+	ipstr(pNetInfo->addr.ip.ip_addr, 4, ip_str, 20);
+	dave_memset(&my_addr, 0x00, sizeof(struct sockaddr_in));
+	my_addr.sin_family = AF_INET;
+	my_addr.sin_port = htons(pNetInfo->port);
+	if(pNetInfo->addr_type == NetAddrIPBroadcastType)
+	{
+		my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	}
+	else
+	{
+		my_addr.sin_addr.s_addr = inet_addr((char *)ip_str);
+	}
+
+	bind_result = bind(socket, (struct sockaddr *)&my_addr, sizeof(struct sockaddr));
+
+	if(bind_result >= 0)
+	{
+		OSDEBUG("BIND socket=%d(%s) bind_result=%d port=%d ip_str=%s",
+			socket, pNetInfo->type==TYPE_SOCK_STREAM?"TCP":"UDP",
+			bind_result, pNetInfo->port, ip_str);
+		return dave_true;
+	}	
+	else
+	{
+		OSDEBUG("socket bind<port:%d> failed: errno(%d):%s",
+			pNetInfo->port, errno, strerror(errno));
+		return dave_false;
+	}
+}
+
+static dave_bool
+_os_linux_socket_bind_ip_v6(s32 socket, SocNetInfo *pNetInfo)
+{
+	return dave_false;
 }
 
 static void
@@ -501,67 +562,6 @@ _os_linux_epoll_event_thread(void *arg)
 	return NULL;
 }
 
-static dave_bool
-_os_linux_socket_bind_fix_port(s32 socket, u16 port)
-{
-	struct sockaddr_in bind_port;
-
-	bind_port.sin_family = AF_INET;
-	bind_port.sin_addr.s_addr = htonl(INADDR_ANY);
-	bind_port.sin_port = htons(port);
-	if(bind(socket, (struct sockaddr*)&bind_port, sizeof(struct sockaddr_in)) < 0)
-	{
-		return dave_false;
-	}
-	else
-	{
-		return dave_true;
-	}
-}
-
-static dave_bool
-_os_linux_socket_bind_ip_v4(s32 socket, SocNetInfo *pNetInfo)
-{
-	int bind_result;
-	struct sockaddr_in my_addr;
-	s8 ip_str[20];
-
-	ipstr(pNetInfo->addr.ip.ip_addr, 4, ip_str, 20);
-	dave_memset(&my_addr, 0x00, sizeof(struct sockaddr_in));
-	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(pNetInfo->port);
-	if(pNetInfo->addr_type == NetAddrIPBroadcastType)
-	{
-		my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	}
-	else
-	{
-		my_addr.sin_addr.s_addr = inet_addr((char *)ip_str);
-	}
-
-	bind_result = bind(socket, (struct sockaddr *)&my_addr, sizeof(struct sockaddr));
-
-	if(bind_result >= 0)
-	{
-		OSDEBUG("BIND socket=%d(%s) bind_result=%d port=%d ip_str=%s",
-			socket, pNetInfo->type==TYPE_SOCK_STREAM?"TCP":"UDP",
-			bind_result, pNetInfo->port, ip_str);
-		return dave_true;
-	}	
-	else
-	{
-		OSDEBUG("socket bind<port:%d> failed: errno(%d):%s",
-			pNetInfo->port, errno, strerror(errno));
-		return dave_false;
-	}
-}
-
-static dave_bool
-_os_linux_socket_bind_ip_v6(s32 socket, SocNetInfo *pNetInfo)
-{
-	return dave_false;
-}
-
 // =====================================================================
 
 dave_bool
@@ -585,8 +585,6 @@ dave_os_socket_init(dave_socket_event_fun event_call_back)
 	{
 		OSABNOR("epoll thread failed!");
 	}
-
-	_linux_recv_data_len = _linux_snd_data_len = 0;
 
 	return dave_true;
 }
@@ -858,7 +856,6 @@ dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub *data_len)
 		strip((s8 *)inet_ntoa(remote_addr.sin_addr), 20, pNetInfo->src_ip.ip_addr, 4);
 
 		*data_len = (ub)recv_len;
-		_linux_recv_data_len += (sb)recv_len;
 		return dave_true;
 	}
 }
@@ -888,9 +885,11 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 		}
 
 		snd_len = send(socket, data, data_len, flags);
+
+		OSDEBUG("socket:%d data_len:%d snd_len:%d", socket, data_len, snd_len);
+		
 		if (snd_len >= 0)
 		{
-			_linux_snd_data_len += (sb)snd_len;
 			return snd_len;
 		}
 		else
@@ -927,7 +926,6 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 		snd_len = sendto(socket, data, data_len, 0, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
 		if (snd_len >= 0)
 		{
-			_linux_snd_data_len += (sb)snd_len;
 			return snd_len;
 		}
 		else
@@ -969,4 +967,35 @@ dave_os_close(s32 socket, dave_bool clean_wait)
 
 	return dave_true;
 }
+
+dave_bool
+dave_os_gethostbyname(s8 *ip_ptr, ub ip_len, char *domain)
+{
+	struct hostent *h;
+
+	dave_memset(ip_ptr, 0x00, ip_len);
+
+	if(t_is_ipv4(domain) == dave_true)
+	{
+		dave_strcpy(ip_ptr, domain, ip_len);
+		return dave_true;
+	}
+
+	/*
+	 * 还需解决的问题：
+	 * 如果domain是一个非法的值，会使得gethostbyname
+	 * 等待很长时间。
+	 */
+	h = gethostbyname(domain);
+	if(h ==NULL)
+	{
+		return dave_false;
+	}
+
+	dave_strcpy(ip_ptr, inet_ntoa(*((struct in_addr *)h->h_addr)), ip_len);
+
+	return dave_true;
+}
+
+#endif
 

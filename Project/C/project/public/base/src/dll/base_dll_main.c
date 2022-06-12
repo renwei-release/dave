@@ -22,7 +22,6 @@
 #include <dirent.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -130,15 +129,24 @@ _dll_main_exit(MSGBODY *msg)
 
 void
 dave_dll_main_init(
+	BaseDllRunningMode mode,
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
+	ub thread_flag;
+
+	thread_flag = THREAD_THREAD_FLAG;
+	if(mode == BaseDllRunningMode_Coroutine_Loop)
+	{
+		thread_flag |= THREAD_COROUTINE_FLAG;
+	}
+
 	_dll_thread_number = (ub)thread_number;
 	_dll_init_fun = dll_init_fun;
 	_dll_main_fun = dll_main_fun;
 	_dll_exit_fun = dll_exit_fun;
 
-	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), THREAD_THREAD_FLAG, _dll_main_init, _dll_main_main, _dll_main_exit);
+	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)
 		base_restart(_dll_main_name());
 }

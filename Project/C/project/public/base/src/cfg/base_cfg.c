@@ -33,7 +33,9 @@ _base_cfg_can_be_set_json_valid_char(u8 valid_char)
 		|| (valid_char == '+')
 		|| (valid_char == ' ')
 		|| (valid_char == '<')
-		|| (valid_char == '>'))
+		|| (valid_char == '>')
+		|| (valid_char == ':')
+		|| (valid_char == '.'))
 	{
 		return dave_true;
 	}
@@ -62,21 +64,43 @@ _base_cfg_can_be_set_json_value(u8 *value_ptr, ub value_len)
 RetCode
 base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
+	dave_bool ret;
+
 	if(_base_cfg_can_be_set_json_value(value_ptr, value_len) == dave_true)
-		return base_json_cfg_dir_set(dir, name, value_ptr, value_len);
+	{
+		ret = base_json_cfg_dir_set(dir, name, value_ptr, value_len);
+	}
 	else
-		return base_des_cfg_dir_set(dir, name, value_ptr, value_len);
+	{
+		ret = base_des_cfg_dir_set(dir, name, value_ptr, value_len);
+	}
+
+	return ret;
 }
 
 dave_bool
 base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
-	if(base_json_cfg_dir_get(dir, name, value_ptr, value_len) == dave_false)
+	dave_bool ret;
+
+	dave_memset(value_ptr, 0x00, value_len);
+
+	ret = base_json_cfg_dir_get(dir, name, value_ptr, value_len);
+	if(ret == dave_false)
 	{
-		return base_des_cfg_dir_get(dir, name, value_ptr, value_len);
+		ret = base_des_cfg_dir_get(dir, name, value_ptr, value_len);
+		if(ret == dave_true)
+		{
+			value_len = dave_strlen(value_ptr);
+
+			if(_base_cfg_can_be_set_json_value(value_ptr, value_len) == dave_true)
+			{
+				base_cfg_dir_set(dir, name, value_ptr, value_len);
+			}
+		}
 	}
 
-	return dave_true;
+	return ret;
 }
 
 RetCode

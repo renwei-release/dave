@@ -181,7 +181,7 @@ class MCardVerComment (Structure):
 ]
 
 #* for None message *#
-class Rectangle (Structure):
+class CVRectangle (Structure):
 	_fields_ = [
 		("x1", c_float),
 		("y1", c_float),
@@ -203,7 +203,7 @@ class CVModelResult (Structure):
 		("face_number", c_ulonglong),
 		("vgg_id", c_char * DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID),
 		("vgg_score", c_float * DAVE_KEY_OPT_MAX),
-		("rectangle", Rectangle * DAVE_KEY_OPT_MAX),
+		("rectangle", CVRectangle * DAVE_KEY_OPT_MAX),
 		("image_title", c_char * DAVE_KEY_OPT_MAX*DAVE_IMAGE_TITLE_LEN),
 		("image_painter", c_char * DAVE_KEY_OPT_MAX*DAVE_USER_NAME_LEN),
 		("inliners_num", c_ulonglong * DAVE_KEY_OPT_MAX),

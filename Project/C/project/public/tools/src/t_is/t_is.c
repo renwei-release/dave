@@ -117,7 +117,7 @@ t_is_all_show_char_or_rn(u8 *data_ptr, ub data_len)
 		{
 			if(t_is_show_char(data_ptr[data_index]) == dave_false)
 			{
-				TOOLSLOG("%x, %s", data_ptr[data_index], &data_ptr[data_index]);
+				TOOLSDEBUG("%x, %s", data_ptr[data_index], &data_ptr[data_index]);
 				return dave_false;
 			}
 		}
@@ -165,7 +165,7 @@ t_is_ipv4(s8 *ip_str)
 	
 	dave_memset(ip, 0x00, sizeof(ip));
 
-	if ((15<ip_str_len) || (7>ip_str_len))
+	if ((15 < ip_str_len) || (7 > ip_str_len))
 	{
 		return dave_false;
 	}
@@ -174,18 +174,18 @@ t_is_ipv4(s8 *ip_str)
 	{
 		if (t_is_digit((u8)ip_str[index]) == dave_false)
 		{
-			if (0x2E != (u8)ip_str[index])
+			if ('.' != (u8)ip_str[index])
 			{
 				return dave_false;
 			}
 		}
 	}
-	
+
 	dave_sscanf(ip_str, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
 
-	for (index=0; index<4; ++index)
+	for(index=0; index<4; ++index)
 	{
-		if ((0>ip[index]) || (255<ip[index]))
+		if ((0 >ip[index]) || (255 < ip[index]))
 		{
 			return dave_false;
 		}

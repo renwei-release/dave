@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#if defined(__DAVE_CYGWIN__) || defined(__DAVE_LINUX__)
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -182,4 +183,6 @@ dave_os_on_docker(void)
 {
 	return dave_os_file_valid("/.dockerenv");
 }
+
+#endif
 

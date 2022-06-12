@@ -16,6 +16,7 @@
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
+#define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
 
 #define NUM_LOG_ONCE_SEND      (2048)
 #define LOG_ONCE_SEND_BYTE_MAX (1500)
@@ -67,12 +68,35 @@ _log_stack_client_get_device_info(s8 *info_ptr, ub info_len)
 }
 
 static void
-_log_stack_client_server_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
+_log_stack_client_server_ip(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
 {
-	if(cfg_get(CFG_LOG_SERVER_IP_V4, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
+	s8 domain[1024];
+	dave_bool domain_flag = dave_false;
+
+	dave_memset(ip, 0x00, DAVE_IP_V4_ADDR_LEN);
+	*port = LOG_SERVICE_PORT;
+
+	if(cfg_get(CFG_LOG_SERVER_DOMAIN, (u8 *)domain, sizeof(domain)) == dave_true)
 	{
-		ip[0] = 127; ip[1] = 0; ip[2] = 0; ip[3] = 1;
+		domain_flag = domainip(ip, port, domain);
+		if(domain_flag == dave_true)
+		{
+			LOGDEBUG("load log server:%s->%s", domain, ipv4str(ip, *port));
+		}
 	}
+
+	if(domain_flag == dave_false)
+	{
+		if(cfg_get(CFG_LOG_SERVER_IP_V4, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
+		{
+			ip[0] = 127; ip[1] = 0; ip[2] = 0; ip[3] = 1;
+		}
+
+		dave_snprintf(domain, sizeof(domain), "%d.%d.%d.%d:%d", ip[0], ip[1], ip[2], ip[3], *port);
+		cfg_set(CFG_LOG_SERVER_DOMAIN, domain, dave_strlen(domain));
+	}
+
+	*port = LOG_SERVICE_PORT;
 }
 
 static void
@@ -207,8 +231,7 @@ _log_stack_client_connect_req(void)
 	pReq->NetInfo.type = TYPE_SOCK_DGRAM;
 	pReq->NetInfo.addr_type = NetAddrIPType;
 	pReq->NetInfo.addr.ip.ver = IPVER_IPV4;
-	pReq->NetInfo.port = LOG_SERVICE_PORT;
-	_log_stack_client_server_ip(pReq->NetInfo.addr.ip.ip_addr);
+	_log_stack_client_server_ip(pReq->NetInfo.addr.ip.ip_addr, &(pReq->NetInfo.port));
 	pReq->NetInfo.fixed_src_flag = NotFixedPort;
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
@@ -318,7 +341,8 @@ _log_stack_client_reboot(RESTARTREQMSG *pRestart)
 static void
 _log_stack_client_cfg_update(CFGUpdate *pUpdate)
 {
-	if(dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_IP_V4) == dave_true)
+	if((dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_IP_V4) == dave_true)
+		|| (dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_DOMAIN) == dave_true))
 	{
 		LOGDEBUG("config:%s update!", pUpdate->cfg_name);
 

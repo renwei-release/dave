@@ -39,6 +39,7 @@ static SyncServer _server_data[SERVER_DATA_MAX];
 static SyncClientSocketFastIndex _socket_fast_index[SYNC_FAST_INDEX_MAX];
 static LinkThread _link_thread[SYNC_THREAD_MAX];
 static s8 _local_thread_name[SYNC_THREAD_MAX][SYNC_THREAD_NAME_LEN];
+static void *_thread_id_to_link_kv = NULL;
 
 static LinkThread * _sync_client_data_thread_del(SyncServer *pServer, s8 *thread_name, ub thread_index);
 
@@ -206,9 +207,7 @@ _sync_client_data_reset_sync_server(void)
 {
 	SyncServer *pServer = _sync_client_data_sync_server();
 
-	sync_cfg_get_syncs_ip(pServer->cfg_server_ip);
-
-	pServer->cfg_server_port = sync_cfg_get_syncs_port();	
+	sync_cfg_get_syncs_ip_and_port(pServer->cfg_server_ip, &(pServer->cfg_server_port));
 }
 
 static SyncServer *
@@ -571,6 +570,48 @@ _sync_client_data_server_inq_on_net(u8 *ip, u16 port)
 	return pServer;
 }
 
+static void
+_sync_client_data_link_kv_init(void)
+{
+	_thread_id_to_link_kv = kv_malloc("titl", KvAttrib_list, 0, NULL);
+}
+
+static void
+_sync_client_data_link_kv_exit(void)
+{
+	kv_free(_thread_id_to_link_kv, NULL); _thread_id_to_link_kv = NULL;
+}
+
+static inline void
+_sync_client_data_link_kv_add(LinkThread *pThread)
+{
+	ub thread_id = thread_get_local(thread_id(pThread->thread_name));
+
+	if(thread_id != INVALID_THREAD_ID)
+	{
+		kv_add_ub_ptr(_thread_id_to_link_kv, thread_id, pThread);
+	}
+}
+
+static inline void
+_sync_client_data_link_kv_del(LinkThread *pThread)
+{
+	ub thread_id = thread_get_local(thread_id(pThread->thread_name));
+
+	if(thread_id != INVALID_THREAD_ID)
+	{
+		kv_del_ub_ptr(_thread_id_to_link_kv, thread_id);
+	}
+}
+
+static inline LinkThread *
+_sync_client_data_link_kv_inq(ThreadId thread_id)
+{
+	thread_id = thread_get_local(thread_id);
+
+	return kv_inq_ub_ptr(_thread_id_to_link_kv, (ub)thread_id);
+}
+
 static LinkThread *
 _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_index)
 {
@@ -598,6 +639,8 @@ _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_ind
 	sync_client_thread_add(pServer, pThread->thread_name);
 
 	sync_client_thread_ready(pServer, pThread);
+
+	_sync_client_data_link_kv_add(pThread);
 
 	return pThread;
 }
@@ -648,6 +691,8 @@ _sync_client_data_thread_del(SyncServer *pServer, s8 *thread_name, ub thread_ind
 
 		return pThread;
 	}
+
+	_sync_client_data_link_kv_del(pThread);
 
 	sync_client_thread_del(pServer, thread_name);
 
@@ -798,6 +843,8 @@ sync_client_data_init(void)
 	dave_memset(_link_thread, 0x00, sizeof(_link_thread));
 	dave_memset(_local_thread_name, 0x00, sizeof(_local_thread_name));
 
+	_sync_client_data_link_kv_init();
+
 	sync_client_data_thread_local_reset();
 
 	_sync_client_data_reset_all_server();
@@ -814,6 +861,8 @@ sync_client_data_init(void)
 void
 sync_client_data_exit(void)
 {
+	_sync_client_data_link_kv_exit();
+
 	sync_client_thread_ready_remove_exit();
 }
 
@@ -1059,6 +1108,12 @@ sync_client_thread(ub thread_index)
 		return NULL;
 
 	return &_link_thread[thread_index];
+}
+
+LinkThread *
+sync_client_id_to_thread(ThreadId thread_id)
+{
+	return _sync_client_data_link_kv_inq(thread_id);
 }
 
 #endif

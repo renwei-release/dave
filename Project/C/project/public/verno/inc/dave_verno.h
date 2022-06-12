@@ -18,7 +18,11 @@
 
 #define VERSION_PRODUCT "BASE"
 
-#define VERSION_MISC "linux"
+#ifdef __DAVE_LINUX__
+ #define VERSION_MISC "linux"
+#elif defined(__DAVE_CYGWIN__)
+ #define VERSION_MISC "cygwin"
+#endif
 
 #define VERSION_MAIN "4"
 #if defined(__VERNO_ALPHA_VERSION__)
@@ -26,9 +30,9 @@
 #else
  #define VERSION_SUB "8"
 #endif
-#define VERSION_REV "1"
+#define VERSION_REV "2"
 
-#define VERSION_DATE_TIME "20220605211310"
+#define VERSION_DATE_TIME "20220612110458"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"

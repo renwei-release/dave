@@ -73,13 +73,14 @@ def file_exists(file):
 
 
 def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, SUB, REV):
-    if file_exists(c_verno_inc_file) == False:
-        return
-
-    with open(c_verno_inc_file, "w") as file_id:
+    with open(c_verno_inc_file, "w+") as file_id:
         file_id.write(def_c_verno_head_file)
         file_id.write(f'#define VERSION_PRODUCT "{projectname}"\n\n')
-        file_id.write(f'#define VERSION_MISC "linux"\n\n')
+        file_id.write(f'#ifdef __DAVE_LINUX__\n')
+        file_id.write(f' #define VERSION_MISC "linux"\n')
+        file_id.write(f'#elif defined(__DAVE_CYGWIN__)\n')
+        file_id.write(f' #define VERSION_MISC "cygwin"\n')
+        file_id.write(f'#endif\n\n')
         file_id.write(f'#define VERSION_MAIN "{MAIN}"\n')
         file_id.write(f'#if defined(__VERNO_ALPHA_VERSION__)\n')
         file_id.write(f' #define VERSION_SUB "{SUB}"\n')

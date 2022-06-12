@@ -26,6 +26,7 @@ s8 * t_a2b_net_ipv4_to_str_2(u8 *ip, u16 port);
 s8 * t_a2b_net_ip_to_str(u8 *ip_ptr, ub ip_len, s8 *str_ptr, ub str_len);
 ub t_a2b_net_str_to_ip(s8 *str_ptr, ub str_len, u8 *ip_ptr, ub ip_len);
 s8 * t_a2b_net_mac_to_str(u8 *mac);
+dave_bool t_a2b_net_domain_to_ip_and_port(u8 ipv4[DAVE_IP_V4_ADDR_LEN], u16 *port, s8 *domain);
 
 s8 * t_a2b_date_str(DateStruct *pDate);
 s8 * t_a2b_date_str_2(DateStruct *pDate);
@@ -41,6 +42,7 @@ s8 * t_a2b_date_str_6(DateStruct *pDate);
 #define ipstr t_a2b_net_ip_to_str
 #define strip t_a2b_net_str_to_ip
 #define macstr t_a2b_net_mac_to_str
+#define domainip t_a2b_net_domain_to_ip_and_port
 #define digitalstring t_a2b_digital_to_string
 #define stringdigital t_a2b_string_to_digital
 #define stringhexdigital t_a2b_stringhex_to_digital

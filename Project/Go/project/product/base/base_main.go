@@ -32,11 +32,27 @@ func _fun_MSGID_DEBUG_REQ(src_name string, src_id uint64, msg_len uint64, msg_bo
 	_fun_MSGID_DEBUG_RSP(src_id, pReq.Ptr, debug_data_rsp)
 }
 
+func _fun_RPC_DEBUG_REQ(remote_thread_name string) {
+	req := auto.RPCDebugReq{}
+	req.S16_debug = 12345
+	req.Mbuf_debug = nil
+
+	msg_body := base.Name_go(remote_thread_name, auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP)
+	if msg_body != nil {
+		pRsp := (*auto.RPCDebugRsp)(msg_body)
+		base.DAVELOG("name_go successfully! %d", pRsp.S16_debug)
+	}
+}
+
 func _fun_MSGID_REMOTE_THREAD_ID_READY(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pReady := (*auto.ThreadRemoteIDReadyMsg)(msg_body)
 	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])
 	remote_thread_id := pReady.Remote_thread_id
 	base.DAVELOG("%s/%x", remote_thread_name, remote_thread_id)
+
+	if remote_thread_name == "main_aib" {
+		_fun_RPC_DEBUG_REQ(remote_thread_name)
+	}
 }
 
 func _fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
