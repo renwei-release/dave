@@ -1,57 +1,35 @@
 package pprof
 
+/*
+ * Copyright (c) 2022 chenjun
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
+ */
+
 import (
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 )
 
-func _PprofListen(addr string) error {
+func _PprofListen(addr string, bPanicIfFailed bool) {
 	// For load balance keep alive and pprof debug
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
 
 	var err error = http.ListenAndServe(addr, nil)
-	if nil != err {
-		return err
+	sErrMsg := fmt.Sprintf("%s http.ListenAndServe failed, err:%v", addr, err)
+	fmt.Printf(sErrMsg)
+	if bPanicIfFailed {
+		panic(sErrMsg)
 	}
-
-	return nil
-}
-
-func PprofListen(httpport int) (int, int) {
-	addr := fmt.Sprintf(":%d", httpport)
-	safe_counter := 0
-	success := -1
-
-	fmt.Printf("PprofListen:%d\n", httpport)
-	for {
-		safe_counter++
-		if safe_counter >= 256 {
-			break
-		}
-
-		error := _PprofListen(addr)
-		if error == nil {
-			success = 0
-			fmt.Printf("pprof listen on:http://127.0.0.1:%d/debug/pprof success!", httpport)
-			break
-		}
-
-		fmt.Printf("pprof listen on:http://127.0.0.1:%d/debug/pprof failed!", httpport)
-		httpport++
-		addr = fmt.Sprintf(":%d", httpport)
-	}
-
-	fmt.Printf("PprofListen result:%d\n", success)
-	return success, httpport
 }
 
 // =====================================================================
 
-func StartPprof(httpport int) int {
-	fmt.Printf("start pprof:%d\n", httpport)
-	go PprofListen(httpport)
-	return httpport
+func StartPprof(httpport int) {
+	addr := fmt.Sprintf(":%d", httpport)
+	go _PprofListen(addr, true)
 }

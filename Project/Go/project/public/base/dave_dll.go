@@ -42,7 +42,8 @@ var _product_exit_fun func()
 //export dave_go_init
 func dave_go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
-	dave_module_load()
+
+	dave_module_init()
 }
 
 //export dave_go_main
@@ -52,6 +53,8 @@ func dave_go_main(c_data unsafe.Pointer) {
 
 //export dave_go_exit
 func dave_go_exit(c_data unsafe.Pointer) {
+	dave_module_exit()
+
 	_product_exit_fun()
 }
 

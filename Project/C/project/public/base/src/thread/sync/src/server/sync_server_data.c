@@ -395,11 +395,10 @@ _sync_server_add_thread_client(SyncThread *pThread, SyncClient *pClient)
 		{
 			if(sync_server_are_they_brothers(pThread->pClient[client_index], pClient) == dave_false)
 			{
-				SYNCABNOR("Currently different services do not allow adding threads with the same name:%s! %s/%s",
+				SYNCLOG("different services adding threads with the same name:%s! %s/%s",
 					pThread->thread_name,
 					pThread->pClient[client_index]->verno,
 					pClient->verno);
-				return dave_false;
 			}
 		}
 	}

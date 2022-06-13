@@ -130,7 +130,7 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 	{
 		if(pActive->thread_id != thread_id)
 		{
-			SYNCABNOR("thread_id:%lx/%lx mismatch!", pActive->thread_id != thread_id);
+			SYNCLOG("thread_id:%lx/%lx mismatch!", pActive->thread_id != thread_id);
 			pActive->thread_id = thread_id;
 		}
 

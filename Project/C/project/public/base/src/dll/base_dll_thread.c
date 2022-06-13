@@ -20,7 +20,7 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 {
 	void *ptr;
 
-	ptr = base_thread_msg((ub)msg_len, dave_false, (s8 *)fun, (ub)line);
+	ptr = base_thread_msg((ub)msg_len, dave_true, (s8 *)fun, (ub)line);
 
 	DLLDEBUG("msg_len:%d ptr:%lx fun:%s line:%d",
 		msg_len, ptr, fun, line);

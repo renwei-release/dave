@@ -15,8 +15,8 @@ var VERSION_PRODUCT = "BASE"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "7"
-var VERSION_REV = "2"
-var VERSION_DATE_TIME = "20220612110458"
+var VERSION_REV = "3"
+var VERSION_DATE_TIME = "20220613142245"
 var VERSION_LEVEL = "Alpha"
 
 // =====================================================================
