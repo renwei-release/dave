@@ -563,9 +563,7 @@ _sync_client_reconnect_syncs_logic(void)
 static void
 _sync_client_cfg_update(CFGUpdate *pUpdate)
 {
-	if((dave_strcmp(pUpdate->cfg_name, CFG_SYNC_ADDRESS) == dave_true)
-		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_PORT) == dave_true)
-		|| (dave_strcmp(pUpdate->cfg_name, CFG_SYNC_SERVER_DOMAIN) == dave_true))
+	if(dave_strcmp(pUpdate->cfg_name, CFG_SYNC_SERVER_DOMAIN) == dave_true)
 	{
 		SYNCTRACE("%s update! %d/%d",
 			pUpdate->cfg_name,

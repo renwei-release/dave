@@ -662,23 +662,6 @@ _base_des_cfg_booting(void)
 	t_unlock_spin(NULL);
 }
 
-static void
-_base_des_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
-{
-	CFGUpdate *pUpdate = thread_msg(pUpdate);
-
-	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
-	if(value_len > sizeof(pUpdate->cfg_value))
-	{
-		CFGABNOR("name:%s has value_len:%d/%d is long!", name, value_len, sizeof(pUpdate->cfg_value));
-		value_len = sizeof(pUpdate->cfg_value);
-	}
-	pUpdate->cfg_length = value_len;
-	dave_memcpy(pUpdate->cfg_value, value_ptr, value_len);
-
-	broadcast_total(MSGID_CFG_UPDATE, pUpdate);
-}
-
 static RetCode
 _base_des_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
@@ -703,11 +686,6 @@ _base_des_cfg_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 		ret = __base_des_cfg_set(dir, name, value_ptr, value_len);
 
 	} );
-
-	if(ret == RetCode_OK)
-	{
-		_base_des_cfg_update(name, value_ptr, value_len);
-	}
 
 	return ret;
 }

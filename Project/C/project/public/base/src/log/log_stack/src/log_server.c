@@ -15,6 +15,8 @@
 #include "base_rxtx.h"
 #include "log_log.h"
 
+#define CFG_LOG_SERVER_PORT "LogServerPort"
+
 #define TIME_COUNT_DEFAULT_VAL		3
 #define CLOSE_LOG_FILE_TIME_OUT		60*1000
 #define LOG_FILE_POOL_MAX			81920
@@ -365,7 +367,12 @@ _log_stack_server_bind_req(void)
 	pReq->NetInfo.addr_type = NetAddrIPType;
 	pReq->NetInfo.addr.ip.ver = IPVER_IPV4;
 	dave_memset(pReq->NetInfo.addr.ip.ip_addr, 0x00, 16);
-	pReq->NetInfo.port = LOG_SERVICE_PORT;
+	pReq->NetInfo.port = cfg_get_ub(CFG_LOG_SERVER_PORT);
+	if(pReq->NetInfo.port == 0)
+	{
+		pReq->NetInfo.port = LOG_SERVICE_PORT;
+		cfg_set_ub(CFG_LOG_SERVER_PORT, pReq->NetInfo.port);
+	}
 	pReq->NetInfo.fixed_src_flag = NotFixedPort;
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;

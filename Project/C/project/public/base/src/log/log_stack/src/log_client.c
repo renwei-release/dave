@@ -341,8 +341,7 @@ _log_stack_client_reboot(RESTARTREQMSG *pRestart)
 static void
 _log_stack_client_cfg_update(CFGUpdate *pUpdate)
 {
-	if((dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_IP_V4) == dave_true)
-		|| (dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_DOMAIN) == dave_true))
+	if(dave_strcmp(pUpdate->cfg_name, CFG_LOG_SERVER_DOMAIN) == dave_true)
 	{
 		LOGDEBUG("config:%s update!", pUpdate->cfg_name);
 

@@ -59,6 +59,23 @@ _base_cfg_can_be_set_json_value(u8 *value_ptr, ub value_len)
 	return dave_true;
 }
 
+static void
+_base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
+{
+	CFGUpdate *pUpdate = thread_msg(pUpdate);
+
+	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
+	if(value_len > sizeof(pUpdate->cfg_value))
+	{
+		CFGABNOR("name:%s has value_len:%d/%d is long!", name, value_len, sizeof(pUpdate->cfg_value));
+		value_len = sizeof(pUpdate->cfg_value);
+	}
+	pUpdate->cfg_length = value_len;
+	dave_memcpy(pUpdate->cfg_value, value_ptr, value_len);
+
+	broadcast_total(MSGID_CFG_UPDATE, pUpdate);
+}
+
 // =====================================================================
 
 RetCode
@@ -73,6 +90,11 @@ base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	else
 	{
 		ret = base_des_cfg_dir_set(dir, name, value_ptr, value_len);
+	}
+
+	if(ret == RetCode_OK)
+	{
+		_base_cfg_update(name, value_ptr, value_len);
 	}
 
 	return ret;
