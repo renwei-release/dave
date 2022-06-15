@@ -249,6 +249,11 @@ t_stdio_strfind(s8 *str, s8 end_char, s8 *find_ptr, ub find_len)
 
 	find_ptr[0] = '\0';
 
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
 	find_index = 0;
 
 	if(find_len <= 1)

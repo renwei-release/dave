@@ -32,30 +32,12 @@ func _fun_MSGID_DEBUG_REQ(src_name string, src_id uint64, msg_len uint64, msg_bo
 	_fun_MSGID_DEBUG_RSP(src_id, pReq.Ptr, debug_data_rsp)
 }
 
-func _fun_MSGID_REMOTE_THREAD_ID_READY(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
-	pReady := (*auto.ThreadRemoteIDReadyMsg)(msg_body)
-	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])
-	remote_thread_id := pReady.Remote_thread_id
-	base.DAVELOG("%s/%x", remote_thread_name, remote_thread_id)
-}
-
-func _fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
-	pRemove := (*auto.ThreadRemoteIDRemoveMsg)(msg_body)
-	remote_thread_name := tools.T_cgo_gobyte2gostring(pRemove.Remote_thread_name[:])
-	remote_thread_id := pRemove.Remote_thread_id
-	base.DAVELOG("%s/%x", remote_thread_name, remote_thread_id)
-}
-
 func _main_msg_register() {
 	base.Dave_system_function_table_add(auto.MSGID_DEBUG_REQ, _fun_MSGID_DEBUG_REQ)
-	base.Dave_system_function_table_add(auto.MSGID_REMOTE_THREAD_ID_READY, _fun_MSGID_REMOTE_THREAD_ID_READY)
-	base.Dave_system_function_table_add(auto.MSGID_REMOTE_THREAD_ID_REMOVE, _fun_MSGID_REMOTE_THREAD_ID_REMOVE)
 }
 
 func _main_msg_unregister() {
 	base.Dave_system_function_table_del(auto.MSGID_DEBUG_REQ)
-	base.Dave_system_function_table_del(auto.MSGID_REMOTE_THREAD_ID_READY)
-	base.Dave_system_function_table_del(auto.MSGID_REMOTE_THREAD_ID_REMOVE)
 }
 
 // =====================================================================

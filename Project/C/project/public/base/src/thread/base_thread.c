@@ -970,7 +970,10 @@ _thread_del_last_fun(MSGBODY *thread_msg)
 		THREADDEBUG("name:%s id:%d index:%d", pThread->thread_name, pThread->thread_id, thread_index);
 
 #ifdef ENABLE_THREAD_COROUTINE
-		thread_coroutine_free(pThread);
+		if(thread_enable_coroutine(pThread) == dave_true)
+		{
+			thread_coroutine_free(pThread);
+		}
 #endif
 
 		thread_map_name_del(pThread->thread_name);
@@ -997,7 +1000,10 @@ _thread_creat_frist_fun(ThreadStruct *pThread)
 	thread_map_name_add((s8 *)(pThread->thread_name), pThread);
 
 #ifdef ENABLE_THREAD_COROUTINE
-	thread_coroutine_malloc(pThread);
+	if(thread_enable_coroutine(pThread) == dave_true)
+	{
+		thread_coroutine_malloc(pThread);
+	}
 #endif
 }
 
@@ -1714,7 +1720,6 @@ base_thread_id_msg(
 		THREADLOG("invalid msg_id! <%s:%d>",
 			fun, line);
 		ret  = dave_false;
-		thread_clean_user_input_data(msg_body, msg_id);
 	}
 	else
 	{
@@ -1734,6 +1739,11 @@ base_thread_id_msg(
 		{
 			ret  = _thread_safe_id_msg(src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
 		}
+	}
+
+	if(ret == dave_false)
+	{
+		thread_clean_user_input_data(msg_body, msg_id);
 	}
 
 	return ret;

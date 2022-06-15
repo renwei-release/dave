@@ -37,7 +37,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#ifdef __DAVE_LINUX__
 #include <sys/syscall.h>
+#endif
+#ifdef __DAVE_CYGWIN__
+#include "processthreadsapi.h"
+#endif
 #include <unistd.h>
 #include <limits.h>
 
@@ -45,6 +50,7 @@
 #include "party_log.h"
 
 #define CALL_STACK_MAX 128
+#define TID_MAX 204800
 
 extern "C"
 {
@@ -72,6 +78,7 @@ static pid_t GetPid()
 {
     static __thread pid_t pid = 0;
     static __thread pid_t tid = 0;
+
     if( !pid || !tid || pid != getpid() )
     {
         pid = getpid();
@@ -87,11 +94,15 @@ static pid_t GetPid()
 		{
 			tid = pid;
 		}
-#else 
+#elif defined(__DAVE_LINUX__) 
         tid = syscall( __NR_gettid );
+#elif defined(__DAVE_CYGWIN__)
+		tid = (pid_t)GetCurrentThreadId() % TID_MAX;;
+#else
+#error Please define platform!
 #endif
-
     }
+
     return tid;
 }
 
@@ -378,10 +389,11 @@ void co_swap(stCoRoutine_t* curr, stCoRoutine_t* pending_co)
 	}
 }
 
-static stCoRoutineEnv_t* g_arrCoEnvPerThread[ 204800 ] = { 0 };
+static stCoRoutineEnv_t* g_arrCoEnvPerThread[ TID_MAX ] = { 0 };
 void co_init_curr_thread_env()
 {
-	pid_t pid = GetPid();	
+	pid_t pid = GetPid();
+
 	g_arrCoEnvPerThread[ pid ] = (stCoRoutineEnv_t*)dave_ralloc( sizeof(stCoRoutineEnv_t) );
 	stCoRoutineEnv_t *env = g_arrCoEnvPerThread[ pid ];
 
@@ -412,27 +424,6 @@ stCoRoutine_t *GetCurrThreadCo( )
 	stCoRoutineEnv_t *env = co_get_curr_thread_env();
 	if( !env ) return 0;
 	return GetCurrCo(env);
-}
-
-void *co_getspecific(pthread_key_t key)
-{
-	stCoRoutine_t *co = GetCurrThreadCo();
-	if( !co || co->cIsMain )
-	{
-		return pthread_getspecific( key );
-	}
-	return co->aSpec[ key ].value;
-}
-
-int co_setspecific(pthread_key_t key, const void *value)
-{
-	stCoRoutine_t *co = GetCurrThreadCo();
-	if( !co || co->cIsMain )
-	{
-		return pthread_setspecific( key,value );
-	}
-	co->aSpec[ key ].value = (void*)value;
-	return 0;
 }
 
 stCoRoutine_t *co_self()

@@ -26,7 +26,7 @@
 #ifdef LEVEL_PRODUCT_alpha
 #define ENABLE_THREAD_STATISTICS
 #endif
-#ifdef __DAVE_LINUX__
+#if defined(__DAVE_LINUX__)
 #define ENABLE_THREAD_COROUTINE
 #endif
 

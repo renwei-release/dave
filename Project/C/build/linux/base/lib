@@ -16,6 +16,10 @@ HOMEPATH=$(cd `dirname $0`; pwd)/../../../
 ############## build_lib function ##############
 build_static_lib()
 {
+   mkdir -p ${HOMEPATH}project/public/base/lib/${LEVEL}
+   mkdir -p ${HOMEPATH}../Go/project/public/base/inc
+   mkdir -p ${HOMEPATH}../Go/project/public/base/lib/
+   
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
    echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
@@ -33,6 +37,8 @@ build_static_lib()
 
 build_dynamic_lib()
 {
+   mkdir -p ${HOMEPATH}../Python/project/public/base/lib
+
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
    echo lib build ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so

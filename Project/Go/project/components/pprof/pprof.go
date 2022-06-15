@@ -32,5 +32,5 @@ func _PprofListen(addr string, bPanicIfFailed bool) {
 
 func StartPprof(httpport int) {
 	addr := fmt.Sprintf(":%d", httpport)
-	go _PprofListen(addr, true)
+	go _PprofListen(addr, false)
 }

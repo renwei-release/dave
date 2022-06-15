@@ -64,14 +64,14 @@ _thread_guardian_test(MSGBODY *task_msg)
 static void
 _thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg, ub rsp_len)
 {
-	s8 id_str[64], run_str[64], wakeup_str[64];
+	s8 msg_str[64], run_str[64], wakeup_str[64];
 	ub msg_id, run_time, wakeup_time;
 
-	msg = dave_strfind(msg, ' ', id_str, sizeof(id_str));
+	msg = dave_strfind(msg, ' ', msg_str, sizeof(msg_str));
 	msg = dave_strfind(msg, ' ', run_str, sizeof(run_str));
 	msg = dave_strfind(msg, ' ', wakeup_str, sizeof(wakeup_str));
 
-	msg_id = stringdigital(id_str);
+	msg_id = stringdigital(msg_str);
 	run_time = stringdigital(run_str);
 	wakeup_time = stringdigital(wakeup_str);
 

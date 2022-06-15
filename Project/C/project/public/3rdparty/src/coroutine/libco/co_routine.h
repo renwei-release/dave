@@ -52,11 +52,6 @@ extern "C" void    co_release( stCoRoutine_t *co );
 
 stCoRoutine_t *co_self();
 
-//3.specific
-
-int 	co_setspecific( pthread_key_t key, const void *value );
-void *	co_getspecific( pthread_key_t key );
-
 //6.sync
 struct stCoCond_t;
 

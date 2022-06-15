@@ -9,6 +9,7 @@ package ipfs
 
 import (
 	"bytes"
+	"context"
 	"dave/public/base"
 	"fmt"
 	shell "github.com/ipfs/go-ipfs-api"
@@ -42,15 +43,44 @@ func ipfs_new_build() {
 	ipfs_cat_data(cid)
 }
 
+func ipfs_swarm_build() {
+	ctx := context.TODO()
+
+	sh := shell.NewShell("localhost:5001")
+	base.DAVELOG("connect to ipfs node id!")
+
+	err := sh.SwarmConnect(ctx, "/ip4/1.222.231.117/tcp/41616/p2p/QmPTK2MRQemFkVq5wwR8qn8KSwPWLpVyQfVyHeiv6wqgGL")
+	if err != nil {
+		base.DAVELOG("SwarmConnect:%v", err)
+		return
+	}
+	base.DAVELOG("swarm connect success!")
+
+	latestTLI, err := sh.Resolve("k51qzi5uqu5dknzcklexyqi8kfhfy8oh8ai7tinrlaa0m6sm6hk1mwangfnafn")
+	if err != nil {
+		base.DAVELOG("Resolve:%v", err)
+		return
+	}
+	base.DAVELOG("Resolve connect success!")
+
+	cidTLI := strings.Split(latestTLI, "s/")[1]
+
+	base.DAVELOG("get cid :%v", cidTLI)
+}
+
 // =====================================================================
 
 func ipfs_debug(debug_data_req string) string {
 	base.DAVELOG("%s", debug_data_req)
 
-	if len(debug_data_req) == 0 {
+	if debug_data_req == "new" {
 		ipfs_new_build()
-	} else {
+	}
+	if debug_data_req == "cat" {
 		ipfs_cat_data(debug_data_req)
+	}
+	if debug_data_req == "swarm" {
+		ipfs_swarm_build()
 	}
 
 	return debug_data_req

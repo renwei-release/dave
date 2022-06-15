@@ -23,6 +23,7 @@ include LIB
 
 OBJS := $(patsubst %.c,%.o,$(SOURCES))
 OBJS := $(patsubst %.cpp,%.o,$(OBJS))
+OBJS := $(patsubst %.S,%.o,$(OBJS))
 
 CC := gcc
 CPLUS := g++
@@ -51,6 +52,9 @@ $(NAME_PRODUCT)-BIN: $(OBJS)
 %.o: %.cpp
 	@echo $<
 	@$(CPLUS) -o $@ -c $< $(CPLUSFLAGS) $(INCLUDE)
+%.o: %.S
+	@echo $<
+	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 
 pre_build:
 	python3 ../../../../Tools/refresh_version/refresh_version.py "../../../../" $(NAME_PRODUCT)

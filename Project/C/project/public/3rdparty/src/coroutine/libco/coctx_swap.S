@@ -17,43 +17,12 @@
 */
 
 .globl coctx_swap
-#if !defined( __APPLE__ ) && !defined( __FreeBSD__ )
+#if !defined( __APPLE__ ) && !defined( __FreeBSD__ ) && !defined( __DAVE_CYGWIN__ )
 .type  coctx_swap, @function
 #endif
+
 coctx_swap:
 
-#if defined(__i386__)
-	leal 4(%esp), %eax //sp 
-	movl 4(%esp), %esp 
-	leal 32(%esp), %esp //parm a : &regs[7] + sizeof(void*)
-
-	pushl %eax //esp ->parm a 
-
-	pushl %ebp
-	pushl %esi
-	pushl %edi
-	pushl %edx
-	pushl %ecx
-	pushl %ebx
-	pushl -4(%eax)
-
-	
-	movl 4(%eax), %esp //parm b -> &regs[0]
-
-	popl %eax  //ret func addr
-	popl %ebx  
-	popl %ecx
-	popl %edx
-	popl %edi
-	popl %esi
-	popl %ebp
-	popl %esp
-	pushl %eax //set ret func addr
-
-	xorl %eax, %eax
-	ret
-
-#elif defined(__x86_64__)
 	leaq 8(%rsp),%rax
 	leaq 112(%rdi),%rsp
 	pushq %rax
@@ -92,4 +61,3 @@ coctx_swap:
 	
 	xorl %eax, %eax
 	ret
-#endif
