@@ -636,11 +636,11 @@ _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_ind
 
 	_sync_client_data_add_server_to_thread(pThread, pServer);
 
+	_sync_client_data_link_kv_add(pThread);
+
 	sync_client_thread_add(pServer, pThread->thread_name);
 
 	sync_client_thread_ready(pServer, pThread);
-
-	_sync_client_data_link_kv_add(pThread);
 
 	return pThread;
 }
