@@ -597,12 +597,14 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 				printf_len = dave_snprintf(&info_ptr[info_index], info_len-info_index, " %s", pTimer->name);
 				info_index += printf_len;
 
-				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s", printf_len < 8 ? "\t" : "");
+				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s",
+					printf_len < 8 ? "\t\t" : printf_len < 16 ? "\t" : "");
 
 				printf_len = dave_snprintf(&info_ptr[info_index], info_len-info_index, "%s", thread_name(pTimer->owner));
 				info_index += printf_len;
 
-				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s", printf_len < 8 ? "\t" : "");
+				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s",
+					printf_len < 8 ? "\t\t" : printf_len < 16 ? "\t" : "");
 
 				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "alarm_ms:%ld life_ms:%ld time_out_counter:%lu\n",
 					pTimer->alarm_ms, pTimer->life_ms, pTimer->time_out_counter);

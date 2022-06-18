@@ -98,6 +98,11 @@ _sync_client_message_route(MSGBODY *pMsg)
 		return;
 	}
 
+	SYNCDEBUG("%lx/%s->%lx/%s:%s",
+		pMsg->msg_src, thread_name(pMsg->msg_src),
+		pMsg->msg_dst, thread_name(pMsg->msg_dst),
+		msgstr(pMsg->msg_id));
+
 	sync_client_message_route(pMsg);
 }
 

@@ -11,34 +11,35 @@ import (
 	"bytes"
 	"context"
 	"dave/public/base"
-	"fmt"
 	shell "github.com/ipfs/go-ipfs-api"
-	"os"
 	"strings"
 )
 
-func ipfs_cat_data(cid string) {
-	sh := shell.NewShell("localhost:5001")
+var _MyIPFSNodeServer string = "localhost:5002"
 
+func ipfs_cat_data(cid string) {
+	sh := shell.NewShell(_MyIPFSNodeServer)
+
+	base.DAVELOG("start cat cid:%s on %s", cid, _MyIPFSNodeServer)
 	reader, err := sh.Cat(cid)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s", err)
-		os.Exit(1)
+		base.DAVELOG("error: %s", err)
+		return
 	}
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
-	fmt.Printf("cat the cid:%s -> %s\n", cid, buf)
+	base.DAVELOG("cat the cid:%s -> %s", cid, buf)
 }
 
 func ipfs_new_build() {
-	sh := shell.NewShell("localhost:5001")
+	sh := shell.NewShell(_MyIPFSNodeServer)
 
 	cid, err := sh.Add(strings.NewReader("Hello world"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s", err)
-		os.Exit(1)
+		base.DAVELOG("error: %s", err)
+		return
 	}
-	fmt.Printf("add the cid:%s\n", cid)
+	base.DAVELOG("add the cid:%s", cid)
 
 	ipfs_cat_data(cid)
 }
@@ -46,7 +47,7 @@ func ipfs_new_build() {
 func ipfs_swarm_build() {
 	ctx := context.TODO()
 
-	sh := shell.NewShell("localhost:5001")
+	sh := shell.NewShell(_MyIPFSNodeServer)
 	base.DAVELOG("connect to ipfs node id!")
 
 	err := sh.SwarmConnect(ctx, "/ip4/1.222.231.117/tcp/41616/p2p/QmPTK2MRQemFkVq5wwR8qn8KSwPWLpVyQfVyHeiv6wqgGL")
@@ -76,8 +77,8 @@ func ipfs_debug(debug_data_req string) string {
 	if debug_data_req == "new" {
 		ipfs_new_build()
 	}
-	if debug_data_req == "cat" {
-		ipfs_cat_data(debug_data_req)
+	if debug_data_req[0:3] == "cat" {
+		ipfs_cat_data(debug_data_req[4:])
 	}
 	if debug_data_req == "swarm" {
 		ipfs_swarm_build()

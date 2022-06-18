@@ -235,7 +235,10 @@ __sync_client_thread_id_change_to_user__(ThreadId thread_id, ThreadId sync_id, s
 		 */
 		new_id = thread_set_local(thread_id, sync_id);
 
-		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>", thread_id, thread_name(thread_id), new_id, thread_name(new_id), fun, line);
+		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>",
+			thread_id, thread_name(thread_id),
+			new_id, thread_name(new_id),
+			fun, line);
 
 		return new_id;
 	}
@@ -259,7 +262,10 @@ __sync_client_thread_id_change_from_user__(ThreadId thread_id, ThreadId sync_id,
 
 		new_id = thread_set_local(thread_id, thread_id(pThread->thread_name));
 
-		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>", thread_id, thread_name(thread_id), new_id, thread_name(new_id), fun, line);
+		SYNCDEBUG("%lx/%s->%lx/%s <%s:%d>",
+			thread_id, thread_name(thread_id),
+			new_id, thread_name(new_id),
+			fun, line);
 
 		return new_id;
 	}

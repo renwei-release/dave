@@ -177,13 +177,12 @@ _thread_attrib(ThreadId thread_id)
 	ub thread_index;
 
 	thread_id = thread_get_local(thread_id);
-
 	if(thread_id == INVALID_THREAD_ID)
 	{
 		return EMPTY_TASK_ATTRIB;
 	}
 
-	thread_index = thread_find_busy_index(thread_id);
+	thread_index = thread_id;
 	if(thread_index >= THREAD_MAX)
 	{
 		THREADDEBUG("");
@@ -200,16 +199,13 @@ _thread_get_name_(ThreadId thread_id, s8 *fun, ub line)
 	static s8 can_not_find[] = "NULL";
 	ub thread_index;
 
-	thread_id = thread_sync_thread_id(thread_id);
-
-	thread_id = thread_get_local(thread_id);
-
+	thread_id = thread_get_local(thread_sync_thread_id(thread_id));
 	if(thread_id == INVALID_THREAD_ID)
 	{
 		return (s8 *)can_not_find;
 	}
 
-	thread_index = thread_find_busy_index(thread_id);
+	thread_index = thread_id;
 	if(thread_index >= THREAD_MAX)
 	{
 		THREADDEBUG("thread_id:%d", thread_id);
@@ -378,12 +374,10 @@ _thread_write_msg(
 	dave_bool wakeup, BaseMsgType msg_type,
 	s8 *fun, ub line)
 {
-	ThreadStruct *pDstThread;
+	ThreadStruct *pDstThread = &_thread[dst_thread_index];
 	dave_bool hold_body;
 	ThreadMsg *pMsg;
 	RetCode ret;
-
-	pDstThread = &_thread[dst_thread_index];
 
 	if(thread_call_sync_catch(
 		src_id,

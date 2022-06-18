@@ -221,7 +221,7 @@ _sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 
 		if(pThread->shadow_index_ready_remove_flag[pServer->shadow_index] == dave_false)
 		{
-			SYNCTRACE("type:%d thread:%s", pServer->server_type, pThread->thread_name);
+			SYNCTRACE("type:%d thread:%lx/%s", pServer->server_type, shadow_id, pThread->thread_name);
 
 			pThread->shadow_index_ready_remove_flag[pServer->shadow_index] = dave_true;
 			_sync_client_thread_active_push(pThread->shadow_index_ready_remove_flag[pServer->shadow_index], shadow_id, pServer, pThread);

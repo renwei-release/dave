@@ -44,7 +44,11 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
 	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, pReq->msg, sizeof(pReq->msg));
 
-	debug_thread = thread_id(thread_name);
+	debug_thread = thread_id(upper(thread_name));
+	if(debug_thread == INVALID_THREAD_ID)
+	{
+		debug_thread = thread_id(lower(thread_name));
+	}
 	if(debug_thread == INVALID_THREAD_ID)
 	{
 		if(thread_name[0] != '\0')

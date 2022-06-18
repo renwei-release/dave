@@ -41,7 +41,7 @@ _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 }
 
 static void
-_base_thread_rpc_debug_req(ThreadRemoteIDReadyMsg *pReady)
+_base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 {
 	RPCDebugReq req;
 	RPCDebugRsp *pRsp;
@@ -88,6 +88,48 @@ _base_thread_rpc_debug_req(ThreadRemoteIDReadyMsg *pReady)
 }
 
 static void
+_base_thread_rpc_debug_req_use_msg(ThreadRemoteIDReadyMsg *pReady)
+{
+	RPCDebugReq *pReq = thread_reset_msg(pReq);
+
+	pReq->ret_debug = RET_DEBUG_VALUE;
+	pReq->s8_debug = S8_DEBUG_VALUE;
+	pReq->u8_debug = U8_DEBUG_VALUE;
+	pReq->s16_debug = S16_DEBUG_VALUE;
+	pReq->u16_debug = U16_DEBUG_VALUE;
+	pReq->s32_debug = S32_DEBUG_VALUE;
+	pReq->u32_debug = U32_DEBUG_VALUE;
+	pReq->s64_debug = S64_DEBUG_VALUE;
+	pReq->u64_debug = t_rand();
+	pReq->float_debug = FLOAT_DEBUG_VALUE;
+	pReq->double_debug = DOUBLE_DEBUG_VALUE;
+	pReq->void_debug = VOID_DEBUG_VALUE;
+	pReq->ptr = pReq;
+
+	BASELOG("%lx u64_debug:%ld", pReady->remote_thread_id, pReq->u64_debug);
+
+	id_msg(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq);
+}
+
+static void
+_base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
+{
+	RPCDebugRsp *pRsp = thread_msg(pRsp);
+
+	*pRsp = (*(RPCDebugRsp *)(pReq));
+
+	BASELOG("from:%lx/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+		src, thread_name(src),
+		pRsp->s8_debug, pRsp->u8_debug,
+		pRsp->s16_debug, pRsp->u16_debug,
+		pRsp->s32_debug, pRsp->u32_debug,
+		pRsp->s64_debug, pRsp->u64_debug,
+		pRsp->ptr);
+
+	id_msg(src, MSGID_RPC_DEBUG_RSP, pRsp);
+}
+
+static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	BASELOG("%lx/%s/%s/%s",
@@ -96,7 +138,11 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 
 	if(dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true)
 	{
-		_base_thread_rpc_debug_req(pReady);
+		_base_thread_rpc_debug_req_use_go(pReady);
+	}
+	if(dave_strcmp(pReady->remote_thread_name, "BASE") == dave_true)
+	{
+		_base_thread_rpc_debug_req_use_msg(pReady);
 	}
 }
 
@@ -130,6 +176,9 @@ _base_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 				_base_thread_remote_id_remove((ThreadRemoteIDRemoveMsg *)(msg->msg_body));
+			break;
+		case MSGID_RPC_DEBUG_REQ:
+				_base_thread_rpc_debug_req(msg->msg_src, (RPCDebugReq *)(msg->msg_body));
 			break;
 		case MSGID_RPC_DEBUG_RSP:
 				_base_thread_rpc_debug_rsp(msg->msg_src, (RPCDebugRsp *)(msg->msg_body));

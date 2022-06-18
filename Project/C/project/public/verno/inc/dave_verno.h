@@ -32,7 +32,7 @@
 #endif
 #define VERSION_REV "3"
 
-#define VERSION_DATE_TIME "20220615150130"
+#define VERSION_DATE_TIME "20220617222838"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -40,7 +40,7 @@
  #define VERSION_LEVEL "Beta"
 #endif
 
-#define __BUILD_MAC_ADDRESS__ "000C29960DBF"
+#define __BUILD_MAC_ADDRESS__ "000C2921BC3C"
 #define __BUILD_HOSTNAME__ "fedora-renwei"
 #define __BUILD_USERNAME__ "renwei"
 
