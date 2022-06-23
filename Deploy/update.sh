@@ -115,7 +115,7 @@ __copy_sh_file__()
 
          sed -i "${SHCMDLINE}c goto_debug #___FLAG_FOR_UPDATE.SH___" $SHFILE
       else
-         echo update.sh empty $SHFILE !!!
+         echo update.sh empty grep data from $SHFILE !!!
       fi
    else
       echo update.sh where is $SHFILE ???

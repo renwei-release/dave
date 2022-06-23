@@ -7,7 +7,10 @@
 # */
 
 homepath=$(cd `dirname $0`; pwd)
+
 PROJECT=$1
+TAGS=$2
+
 if [ "$PROJECT" == "" ]; then
    PROJECT=dave
 fi
@@ -25,7 +28,7 @@ fi
 
 cd ../project
 
-GOOS=linux GOARCH=amd64 go build -tags __DAVE_PRODUCT_${PROJECT^^}__ -o $projectnameforbuild dave_main.go
+GOOS=linux GOARCH=amd64 go build -tags "${TAGS} __DAVE_PRODUCT_${PROJECT^^}__" -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
    PROJECTDIR=../../../Deploy/deploy/${PROJECT,,}/project

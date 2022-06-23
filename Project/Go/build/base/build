@@ -9,4 +9,4 @@
 PROJECT=${PWD##*/}
 
 cd ../
-./build.sh $PROJECT
+./BUILD $PROJECT
