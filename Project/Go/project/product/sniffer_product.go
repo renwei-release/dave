@@ -1,4 +1,7 @@
-package tools
+//go:build __DAVE_PRODUCT_SNIFFER__
+// +build __DAVE_PRODUCT_SNIFFER__
+
+package product
 
 /*
  * Copyright (c) 2022 Renwei
@@ -8,12 +11,15 @@ package tools
  */
 
 import (
-	"time"
+	"dave/product/sniffer"
 )
 
 // =====================================================================
 
-func T_time_current_str() string {
-	timeStr:=time.Now().Format("2006-01-02 15:04:05")
-	return timeStr
+func Product_init() {
+	sniffer.Dave_product_init()
+}
+
+func Product_exit() {
+	sniffer.Dave_product_exit()
 }

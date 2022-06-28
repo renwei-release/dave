@@ -1,4 +1,5 @@
 package tools
+
 /*
  * Copyright (c) 2022 Renwei
  *

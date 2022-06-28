@@ -1,4 +1,4 @@
-package ipfs
+package sniffer
 
 /*
  * Copyright (c) 2022 Renwei
@@ -8,6 +8,7 @@ package ipfs
  */
 
 import (
+	"dave/product/sniffer/ipfs_sniffer"
 	"dave/public/auto"
 	"dave/public/base"
 	"dave/public/tools"
@@ -44,6 +45,8 @@ func _main_msg_unregister() {
 
 func Dave_product_init() {
 	_main_msg_register()
+
+	ipfs_sniffer.IPFSSnifferBooting()
 }
 
 func Dave_product_exit() {

@@ -11,12 +11,12 @@ import (
 	"dave/public/tools"
 )
 
-var VERSION_PRODUCT = "IPFS"
+var VERSION_PRODUCT = "SNIFFER"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "7"
-var VERSION_REV = "4"
-var VERSION_DATE_TIME = "20220623171631"
+var VERSION_REV = "5"
+var VERSION_DATE_TIME = "20220628143030"
 var VERSION_LEVEL = "Alpha"
 
 // =====================================================================

@@ -19,7 +19,7 @@ projectnameforbuild=projectname${PROJECT}
 python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PROJECT^^}
 
 if [ -f tidy.sh ]; then
-   ./tidy.sh
+   ./tidy.sh ${PROJECT}
 fi
 
 if [ -f $PROJECT ]; then
@@ -37,8 +37,8 @@ if [ -f $projectnameforbuild ]; then
    if [ ! -d ${PROJECTDIR} ]; then
       mkdir -p ${PROJECTDIR}
    fi
-   echo build.sh copy $projectnameforbuild to ${PRIJECTFILE}
+   echo -e "build.sh copy \033[35m${PROJECT}\033[0m to ${PRIJECTFILE}"
    cp $projectnameforbuild ${PRIJECTFILE}
-   echo build.sh copy $projectnameforbuild to $homepath/${PROJECT,,}/${PROJECT^^}-BIN
+   echo -e "build.sh copy \033[35m${PROJECT}\033[0m to $homepath/${PROJECT,,}/${PROJECT^^}-BIN"
    mv $projectnameforbuild $homepath/${PROJECT,,}/${PROJECT^^}-BIN
 fi

@@ -1,4 +1,5 @@
 package base
+
 /*
  * Copyright (c) 2022 Renwei
  *
@@ -13,10 +14,10 @@ package base
 */
 import "C"
 import (
+	"dave/public/tools"
 	"fmt"
 	"runtime"
 	"strings"
-	"dave/public/tools"
 )
 
 func _dave_go_log(log_string string) {
@@ -24,9 +25,9 @@ func _dave_go_log(log_string string) {
 	funcNamearray := strings.Split(runtime.FuncForPC(pc).Name(), ".")
 	__func__ := funcNamearray[len(funcNamearray)-1]
 
-    c_func := (*C.char)(tools.T_cgo_gostring2cstring(__func__))
-    c_log_string := (*C.char)(tools.T_cgo_gostring2cstring(log_string))
-    C.dave_dll_log(c_func, C.int(__LINE__), c_log_string)
+	c_func := (*C.char)(tools.T_cgo_gostring2cstring(__func__))
+	c_log_string := (*C.char)(tools.T_cgo_gostring2cstring(log_string))
+	C.dave_dll_log(c_func, C.int(__LINE__), c_log_string)
 }
 
 // =====================================================================
@@ -38,7 +39,7 @@ func DAVELOG(format string, a ...interface{}) {
 
 func DAVEDEBUG(format string, a ...interface{}) {
 	/*
-	log_string := fmt.Sprintf(format, a...)
-	_dave_go_log(log_string)
+		log_string := fmt.Sprintf(format, a...)
+		_dave_go_log(log_string)
 	*/
 }

@@ -28,15 +28,26 @@ function loop_notify()
 
 function jupyter_booting()
 {
-    if command -v jupyter > /dev/null 2>&1; then
-        jupyter notebook --allow-root &
-    fi
+   if command -v jupyter > /dev/null 2>&1; then
+      jupyter notebook --allow-root &
+   fi
+}
+
+function jenkins_booting()
+{
+   if [ -f /bin/tini ]; then
+      if [ -f /usr/local/bin/jenkins.sh ]; then
+         /bin/tini -- /usr/local/bin/jenkins.sh
+      fi
+   fi
 }
 
 function goto_debug()
 {
-    jupyter_booting
-    loop_notify "container on $action mode!"
+   jupyter_booting
+   jenkins_booting
+	
+   loop_notify "container on $action mode!"
 }
 
 hasflagnum=$(grep -c "FLAG_FOR_UPDATE" ${0##*/})

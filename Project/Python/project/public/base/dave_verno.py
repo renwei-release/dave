@@ -14,7 +14,7 @@ class define_VERSION:
     VERSION_MISC=("".join(("py"+platform.python_version()).replace('.', '-')))
     VERSION_MAIN="4"
     VERSION_SUB="7"
-    VERSION_REV="4"
+    VERSION_REV="5"
     VERSION_DATE_TIME=time.strftime("%Y%m%d%H%M%S", time.localtime())
     VERSION_LEVEL="Alpha"
 
