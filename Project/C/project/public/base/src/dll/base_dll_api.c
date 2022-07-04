@@ -71,5 +71,11 @@ dave_dll_cfg_get(char *cfg_name, char *cfg_ptr, int cfg_len)
 	}
 }
 
+void
+dave_dll_poweroff(void)
+{
+	base_restart("dll poweroff");
+}
+
 #endif
 

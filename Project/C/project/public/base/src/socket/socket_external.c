@@ -792,7 +792,7 @@ _socket_external_socket_file_max(void)
 		}
 		else
 		{
-			SOCKETLOG("Maybe not a ROOT user, set socket file from %d to %d failed!",
+			SOCKETTRACE("Maybe not a root user, set socket file from %d to %d failed!",
 				file_max, new_file_max)
 		}
 	}

@@ -52,15 +52,10 @@ static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
 
-static char *
+static s8 *
 _dll_main_name(void)
 {
-	static s8 main_name[128];
-	s8 *product_name = dave_verno_my_product();
-
-	dave_snprintf(main_name, sizeof(main_name), "%s", product_name);
-
-	return (char *)main_name;
+	return t_gp_product_name();
 }
 
 static ub

@@ -9,6 +9,7 @@
 #define __T_GLOBAL_PARAM_H__
 
 s8 * t_gp_localhost(void);
+s8 * t_gp_product_name(void);
 
 #endif
 

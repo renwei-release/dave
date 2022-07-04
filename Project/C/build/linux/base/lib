@@ -26,13 +26,15 @@ build_static_lib()
    rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
 
-   echo lib build ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
-   rm -f ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
-   ar cru ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a ${obj_list}
+   GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+   echo lib build ${GOLIB}
+   rm -f ${GOLIB}
+   ar cru ${GOLIB} ${obj_list}
 
-   echo lib build ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
-   rm -f ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
-   ar cru ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a ${obj_list}
+   CLIB=${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
+   echo lib build ${CLIB}
+   rm -f ${CLIB}
+   ar cru ${CLIB} ${obj_list}
 }
 
 build_dynamic_lib()
@@ -41,9 +43,10 @@ build_dynamic_lib()
 
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
-   echo lib build ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
-   rm -f ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
-   gcc -lpthread -lrt -ldl -lm -shared -o ${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so ${obj_list}
+   SOLIB=${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
+   echo lib build ${SOLIB}
+   rm -f ${SOLIB}
+   gcc -lpthread -lrt -ldl -lm -shared -o ${SOLIB} ${obj_list}
 }
 
 build_lib()

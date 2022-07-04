@@ -133,13 +133,16 @@ _tthread_reset_self_map_all(void)
 static void
 _tthread_reset_index_map(ThreadIndexMap *pMap)
 {
+	ub tthread_index;
+
 	if(pMap != NULL)
 	{
-		dave_memset(pMap, 0x00, sizeof(ThreadIndexMap));
-
-		t_lock_reset(&(pMap->pv));
-
 		pMap->pList = pMap->pCurr = NULL;
+
+		for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
+		{
+			pMap->pTThread[tthread_index] = NULL;
+		}
 	}
 }
 
@@ -148,8 +151,14 @@ _tthread_reset_index_map_all(void)
 {
 	ub map_index;
 
+	dave_memset(_index_map, 0x00, sizeof(_index_map));
+
 	for(map_index=0; map_index<THREAD_MAX; map_index++)
 	{
+		dave_memset(&_index_map[map_index], 0x00, sizeof(ThreadIndexMap));
+
+		t_lock_reset(&(_index_map[map_index].pv));
+
 		_tthread_reset_index_map(&_index_map[map_index]);
 	}
 }
@@ -278,7 +287,7 @@ _tthread_self_thread(void)
 	return pthread_self();
 }
 
-static ThreadThread *
+static inline ThreadThread *
 _tthread_find_thread(ub thread_index, dave_bool find_new)
 {
 	ub tthread_index, safe_counter;
@@ -395,14 +404,20 @@ _tthread_find_wakeup_thread(ub thread_index)
 	return pTThread;
 }
 
-static void
+static inline void
 _tthread_add_index_map(ub thread_index, ThreadThread *pTThread)
 {
 	ub tthread_index;
-	dave_bool find_node;
+	dave_bool find_node = dave_false;
 
-	find_node = dave_false;
-	
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
+
 	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
 	{
 		if((_index_map[thread_index].pTThread[tthread_index] == NULL)
@@ -425,12 +440,22 @@ _tthread_add_index_map(ub thread_index, ThreadThread *pTThread)
 			}
 		}
 	}
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
 }
 
-static void
+static inline void
 _tthread_del_index_map(ub thread_index, ThreadThread *pTThread)
 {
 	ub tthread_index, move_tthread_index;
+
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
 
 	for(tthread_index=0; tthread_index<THREAD_THREAD_MAX; tthread_index++)
 	{
@@ -446,17 +471,27 @@ _tthread_del_index_map(ub thread_index, ThreadThread *pTThread)
 		{
 			for(move_tthread_index=tthread_index+1; move_tthread_index<THREAD_THREAD_MAX; move_tthread_index++)
 			{
-				_index_map[thread_index].pTThread[move_tthread_index - 1] = _index_map[thread_index].pTThread[move_tthread_index];	
+				_index_map[thread_index].pTThread[move_tthread_index - 1] = _index_map[thread_index].pTThread[move_tthread_index];
 			}
 		}
 	}
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
 }
 
-static void
+static inline void
 _tthread_add_list_map(ub thread_index, ThreadThread *pTThread)
 {
 	ub safe_counter;
 	ThreadIndexList *pList;
+
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
 
 	pList = _index_map[thread_index].pList;
 	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
@@ -486,13 +521,23 @@ _tthread_add_list_map(ub thread_index, ThreadThread *pTThread)
 		_index_map[thread_index].pCurr->next = pList;
 		_index_map[thread_index].pCurr = pList;
 	}
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
 }
 
-static void
+static inline void
 _tthread_del_list_map(ub thread_index, ThreadThread *pTThread)
 {
 	ub safe_counter;
 	ThreadIndexList *pUp, *pCurr;
+
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
 
 	pUp = pCurr = _index_map[thread_index].pList;
 	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
@@ -509,9 +554,13 @@ _tthread_del_list_map(ub thread_index, ThreadThread *pTThread)
 			else
 			{
 				if(pUp->next != pCurr)
+				{
 					THREADABNOR("Algorithm error!");
+				}
 				pUp->next = pCurr->next;
 			}
+
+			dave_memset(pCurr, 0x00, sizeof(ThreadIndexList));
 
 			dave_free(pCurr);
 			break;
@@ -522,13 +571,23 @@ _tthread_del_list_map(ub thread_index, ThreadThread *pTThread)
 	}
 
 	_index_map[thread_index].pCurr = _index_map[thread_index].pList;
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
 }
 
-static void
+static inline void
 _tthread_clean_list_map(ub thread_index)
 {
 	ub safe_counter;
 	ThreadIndexList *pCurr, *pList;
+
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
 
 	pCurr = _index_map[thread_index].pList;
 	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
@@ -539,11 +598,56 @@ _tthread_clean_list_map(ub thread_index)
 		pList = pCurr;
 		pCurr = pCurr->next;
 
+		dave_memset(pList, 0x00, sizeof(ThreadIndexList));
+
 		dave_free(pList);
 	}
+
+	_tthread_reset_index_map(&_index_map[thread_index]);
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
 }
 
-static void
+static inline ThreadThread *
+_tthread_find_my_thread(ub thread_index, ub wakeup_index)
+{
+	ThreadIndexList *pList;
+	ThreadThread *pTThread = NULL;
+	ub safe_counter;
+
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("invalid thread_index:%d", thread_index);
+		return NULL;
+	}
+
+	t_lock_spin(&(_index_map[thread_index].pv));
+
+	pList = _index_map[thread_index].pList;
+
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
+	{
+		if(pList == NULL)
+		{
+			break;
+		}
+
+		if((pList->pTThread != NULL)
+			&& (pList->pTThread->wakeup_index == wakeup_index))
+		{
+			pTThread = pList->pTThread;
+			break;
+		}
+
+		pList = pList->next;
+	}
+
+	t_unlock_spin(&(_index_map[thread_index].pv));
+
+	return pTThread;
+}
+
+static inline void
 _tthread_opt_index_map(dave_bool add, ub thread_index, ThreadThread *pTThread)
 {
 	if(thread_index >= THREAD_MAX)
@@ -562,39 +666,6 @@ _tthread_opt_index_map(dave_bool add, ub thread_index, ThreadThread *pTThread)
 		_tthread_del_index_map(thread_index, pTThread);
 		_tthread_del_list_map(thread_index, pTThread);
 	}
-}
-
-static inline ThreadThread *
-_tthread_find_my_thread(ub thread_index, ub wakeup_index)
-{
-	ThreadIndexList *pList;
-	ub safe_counter;
-
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADABNOR("invalid thread_index:%d", thread_index);
-		return NULL;
-	}
-
-	pList = _index_map[thread_index].pList;
-
-	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
-	{
-		if(pList == NULL)
-		{
-			break;
-		}
-
-		if((pList->pTThread != NULL)
-			&& (pList->pTThread->wakeup_index == wakeup_index))
-		{
-			return pList->pTThread;
-		}
-
-		pList = pList->next;
-	}
-
-	return NULL;
 }
 
 static dave_bool

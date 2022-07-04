@@ -74,7 +74,6 @@ void
 dos_debug_reset(void)
 {
 	dos_cmd_reg("debug", _dos_debug_req, NULL);
-	dos_cmd_reg("d", _dos_debug_req, NULL);
 }
 
 #endif

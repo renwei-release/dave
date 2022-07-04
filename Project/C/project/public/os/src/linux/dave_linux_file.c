@@ -329,7 +329,8 @@ dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, 
 	file_id = dave_os_file_open(flag, file_name);
 	if(file_id < 0)
 	{
-		return 0;
+		OSABNOR("flag:%x file_name:%s can't open!", flag, file_name);
+		return dave_false;
 	}
 
 	write_len = dave_os_file_save(file_id, file_index, data_len, data);

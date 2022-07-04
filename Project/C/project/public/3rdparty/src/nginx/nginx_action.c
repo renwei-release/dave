@@ -37,12 +37,17 @@
 #include "nginx_conf.h"
 #include "party_log.h"
 
+#define CFG_NGINX_BIN_NAME "NginxBin"
+#define CFG_NGINX_CONF_NAME "NginxConf"
+
 #define NGINX_BIN_NAME (s8 *)"/usr/sbin/nginx"
 #define NGINX_CONF_NAME (s8 *)"/etc/nginx/nginx.conf"
 
 static TLock _nginx_action_pv;
 static dave_bool _nginx_working = dave_false;
 static TIMERID _nginx_action_timer = INVALID_TIMER_ID;
+static s8 _nginx_bin_name[128] = { 0x00 };
+static s8 _nginx_conf_name[128] = { 0x00 };
 
 static RetCode
 _nginx_action_start(void)
@@ -50,13 +55,13 @@ _nginx_action_start(void)
 	s8 cmd[512];
 	dave_bool ret;
 
-	if(dave_os_process_exist(NGINX_BIN_NAME) == dave_false)
+	if(dave_os_process_exist(_nginx_bin_name) == dave_false)
 	{
-		dave_snprintf(cmd, sizeof(cmd), "%s -c %s", NGINX_BIN_NAME, NGINX_CONF_NAME);
+		dave_snprintf(cmd, sizeof(cmd), "%s -c %s", _nginx_bin_name, _nginx_conf_name);
 	}
 	else
 	{
-		dave_snprintf(cmd, sizeof(cmd), "%s -s reload -c %s", NGINX_BIN_NAME, NGINX_CONF_NAME);
+		dave_snprintf(cmd, sizeof(cmd), "%s -s reload -c %s", _nginx_bin_name, _nginx_conf_name);
 	}
 
 	ret = dave_os_system((char *)cmd, NULL, 0);
@@ -78,9 +83,9 @@ _nginx_action_stop(void)
 	s8 kill_cmd[128];
 	int ret = -1;
 
-	if(dave_os_process_exist(NGINX_BIN_NAME) == dave_true)
+	if(dave_os_process_exist(_nginx_bin_name) == dave_true)
 	{
-		dave_sprintf(kill_cmd, "killall -9 %s", NGINX_BIN_NAME);
+		dave_sprintf(kill_cmd, "killall -9 %s", _nginx_bin_name);
 
 		ret = system((const char *)kill_cmd);
 
@@ -124,7 +129,7 @@ _nginx_action_safe_conf_add(ub work_process, ub nginx_port, HTTPListenType type,
 {
 	dave_bool ret = dave_false;
 
-	SAFECODEv1( _nginx_action_pv, ret = nginx_conf_add(NGINX_CONF_NAME, work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path); );
+	SAFECODEv1( _nginx_action_pv, ret = nginx_conf_add(_nginx_conf_name, work_process, nginx_port, type, cgi_port, nginx_path, pem_path, key_path); );
 
 	return ret;
 }
@@ -134,7 +139,7 @@ _nginx_action_safe_conf_del(ub work_process, ub nginx_port)
 {
 	ub has_server_number = 0;
 
-	SAFECODEv1( _nginx_action_pv, has_server_number = nginx_conf_del(NGINX_CONF_NAME, work_process, nginx_port); );
+	SAFECODEv1( _nginx_action_pv, has_server_number = nginx_conf_del(_nginx_conf_name, work_process, nginx_port); );
 
 	return has_server_number;
 }
@@ -155,6 +160,23 @@ _nginx_action_timer_out(TIMERID timer_id, ub thread_index)
 	base_timer_die(timer_id);
 }
 
+
+static void
+_nginx_action_load_config(void)
+{
+	if(cfg_get(CFG_NGINX_BIN_NAME, _nginx_bin_name, sizeof(_nginx_bin_name)) == dave_false)
+	{
+		dave_strcpy(_nginx_bin_name, NGINX_BIN_NAME, sizeof(_nginx_bin_name));
+		cfg_set(CFG_NGINX_BIN_NAME, _nginx_bin_name, dave_strlen(_nginx_bin_name));
+	}
+
+	if(cfg_get(CFG_NGINX_CONF_NAME, _nginx_conf_name, sizeof(_nginx_conf_name)) == dave_false)
+	{
+		dave_strcpy(_nginx_conf_name, NGINX_CONF_NAME, sizeof(_nginx_conf_name));
+		cfg_set(CFG_NGINX_CONF_NAME, _nginx_conf_name, dave_strlen(_nginx_conf_name));
+	}
+}
+
 // =====================================================================
 
 void
@@ -163,14 +185,14 @@ nginx_action_init(void)
 	t_lock_reset(&_nginx_action_pv);
 
 	_nginx_working = dave_false;
-
 	_nginx_action_timer = INVALID_TIMER_ID;
+	_nginx_action_load_config();
 }
 
 void
 nginx_action_exit(void)
 {
-	if(nginx_conf_number(NGINX_CONF_NAME) == 0)
+	if(nginx_conf_number(_nginx_conf_name) == 0)
 	{
 		_nginx_action_safe_stop();
 	}

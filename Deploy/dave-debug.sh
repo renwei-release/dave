@@ -7,7 +7,7 @@
 # */
 
 if [ -f "/project/public/base/lib/libjemalloc.so" ]; then
-   export LD_PRELOAD="/project/public/base/lib/libjemalloc.so /project/public/base/lib/libjson-c.so"
+   export LD_PRELOAD="/project/public/base/lib/libjemalloc.so"
 fi
 
 function loop_notify()
@@ -26,7 +26,6 @@ function loop_notify()
 
 function goto_debug()
 {
-    jupyter_booting
     loop_notify "container on debug mode!"
 }
 

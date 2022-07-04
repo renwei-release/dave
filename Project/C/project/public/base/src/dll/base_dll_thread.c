@@ -28,6 +28,12 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 	return ptr;
 }
 
+void
+dave_dll_thread_msg_release(void *ptr, char *fun, int line)
+{
+	base_thread_msg_release(ptr, (s8 *)fun, (ub)line);
+}
+
 int
 dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
@@ -87,7 +93,7 @@ dave_dll_thread_gid_msg(char *gid, char *thread_name, int msg_id, int msg_len, v
 }
 
 void *
-dave_dll_thread_sync_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, int sync_id, int sync_len, void *sync_body, char *fun, int line)
+dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line)
 {
 	ThreadId src_id, dst_id;
 
@@ -96,14 +102,14 @@ dave_dll_thread_sync_msg(char *thread_name, int msg_id, int msg_len, void *msg_b
 	{
 		src_id = dave_dll_main_thread_id();
 	}
-	dst_id = thread_id(thread_name);
+	dst_id = thread_id(dst_thread);
 	if(dst_id == INVALID_THREAD_ID)
 	{
-		DLLLOG("invalid dst_id on thread_name:%s!", thread_name);
+		DLLLOG("invalid dst_id on thread_name:%s!", dst_thread);
 		return NULL;
 	}
 
-	return base_thread_sync_msg((ThreadId)src_id, (ThreadId)dst_id, (ub)msg_id, (ub)msg_len, (u8 *)msg_body, (ub)sync_id, (ub)sync_len, (u8 *)sync_body, (s8 *)fun, (ub)line);
+	return base_thread_sync_msg(src_id, dst_id, (ub)req_id, (ub)req_len, (u8 *)req_body, (ub)rsp_id, (ub)rsp_len, (u8 *)rsp_body, (s8 *)fun, (ub)line);
 }
 
 int
