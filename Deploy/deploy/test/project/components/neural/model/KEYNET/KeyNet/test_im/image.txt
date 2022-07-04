@@ -1,1 +1,0 @@
-test_im/test_im.ppm
