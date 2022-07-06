@@ -39,8 +39,8 @@
       <reportTargets>
         <htmlpublisher.HtmlPublisherTarget>
           <reportName>HTML Report</reportName>
-          <reportDir>/project/product/test/test/unit_test/output</reportDir>
-          <reportFiles>unit_test.html</reportFiles>
+          <reportDir>/project/product/test/test/service_test/output</reportDir>
+          <reportFiles>service_test_*.html</reportFiles>
           <alwaysLinkToLastBuild>false</alwaysLinkToLastBuild>
           <reportTitles></reportTitles>
           <keepAll>true</keepAll>

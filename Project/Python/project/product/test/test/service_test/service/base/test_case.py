@@ -25,5 +25,5 @@ class BaseCase_RPC(unittest.TestCase):
 # =====================================================================
 
 
-def test_case(suite, input_dir, output_dir):
+def test_case(suite, input_dir, output_dir, gid, service_name, service_id):
     suite.addTest(unittest.makeSuite(BaseCase_RPC))

@@ -7,34 +7,29 @@
 # */
 import threading
 from public import *
-from product.test.test.unit_test.unit_test import unit_test
+from product.test.test.service_test.service_test import service_test
 
 
 _service_table = {}
 
 
 def service_ready_handler():
-    pEvents = thread_msg(InternalEvents)
-    write_msg('TEST', MSGID_INTERNAL_EVENTS, pEvents)
+    dave_poweroff()
     return
 
 
-_service_ready_timer = threading.Timer(180, service_ready_handler)
-
-
-def fun_MSGID_INTERNAL_EVENTS(src_name, src_id, msg_len, msg_body):
-    unit_test(_service_table)
-    return
+_service_ready_timer = threading.Timer(360, service_ready_handler)
 
 
 def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
     global _service_ready_timer
 
+    _service_ready_timer.cancel()
+
     pReady = struct_copy(ThreadRemoteIDReadyMsg, msg_body, msg_len)
 
-    _service_table[pReady.remote_thread_name.lower()] = { pReady.remote_thread_id }
+    service_test(pReady.globally_identifier, pReady.remote_thread_name.lower(), pReady.remote_thread_id)
 
-    _service_ready_timer.cancel()
     _service_ready_timer = threading.Timer(3, service_ready_handler)
     _service_ready_timer.start()
     return
@@ -44,12 +39,10 @@ def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
 
 
 def dave_product_init():
-    dave_system_function_table_add(MSGID_INTERNAL_EVENTS, fun_MSGID_INTERNAL_EVENTS)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)
     return
 
 
 def dave_product_exit():
-    dave_system_function_table_del(MSGID_INTERNAL_EVENTS)
     dave_system_function_table_del(MSGID_REMOTE_THREAD_ID_READY)
     return

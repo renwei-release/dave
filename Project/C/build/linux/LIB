@@ -15,7 +15,9 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L../../../../ThirdParty/build/magsac/setup/lib -lmagsac
 endif
-
+ifeq ($(words $(findstring $(NAME_PRODUCT), TEST)), 1)
+LIB += -L../../../../ThirdParty/build/gtest/setup/lib64 -lgmock -lgtest
+endif
 
 LIB += -Wl,-Bdynamic
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)

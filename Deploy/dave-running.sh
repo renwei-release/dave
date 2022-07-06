@@ -55,8 +55,8 @@ if [ $hasflagnum == 2 ]; then
     goto_debug
 fi
 
-if [ "$action" = "release" ];then
+if [ "$action" = "release" ]; then
 goto_debug #___FLAG_FOR_UPDATE.SH___
 else
-    goto_debug
+   goto_debug
 fi
