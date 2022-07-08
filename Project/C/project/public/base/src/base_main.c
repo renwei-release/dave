@@ -83,9 +83,9 @@ base_power_off(s8 *reason)
 	DateStruct date;
 	s8 file_name[64];
 
-	dave_os_thread_wakeup(_main_thread_id);
-
 	_base_running = dave_false;
+
+	dave_os_thread_wakeup(_main_thread_id);
 
 	if(reason != NULL)
 	{
@@ -102,9 +102,7 @@ base_power_off(s8 *reason)
 		reason = "Bye!";
 	}
 
-//	dave_os_sleep(3000);
-
-//	dave_os_power_off(reason);
+	dave_os_power_off(reason);
 }
 
 dave_bool

@@ -43,6 +43,7 @@ void t_stdio_print_char(const char *msg, u8 *char_data, ub char_len);
 #define dave_strlen(a) t_stdio_strlen((s8 *)(a))
 #define dave_strfind t_stdio_strfind
 #define dave_tolowers t_stdio_tolowers
+#define dave_touppers t_stdio_touppers
 #define dave_strstr t_stdio_strstr
 
 #define upper t_stdio_touppers

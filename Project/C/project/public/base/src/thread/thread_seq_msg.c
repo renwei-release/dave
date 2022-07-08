@@ -24,6 +24,8 @@ thread_is_seq_msg(ThreadMsg *pMsg)
 	{
 		case MSGID_TIMER:
 		case MSGID_WAKEUP:
+		case MSGID_REMOTE_THREAD_ID_READY:
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
 				index = 0;
 			break;
 		case SOCKET_BIND_RSP:

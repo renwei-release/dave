@@ -13,12 +13,12 @@ from product.test.test.service_test.service_test import service_test
 _service_table = {}
 
 
-def service_ready_handler():
+def service_test_exit():
     dave_poweroff()
     return
 
 
-_service_ready_timer = threading.Timer(360, service_ready_handler)
+_service_ready_timer = threading.Timer(360, service_test_exit)
 
 
 def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
@@ -30,7 +30,7 @@ def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
 
     service_test(pReady.globally_identifier, pReady.remote_thread_name.lower(), pReady.remote_thread_id)
 
-    _service_ready_timer = threading.Timer(3, service_ready_handler)
+    _service_ready_timer = threading.Timer(3, service_test_exit)
     _service_ready_timer.start()
     return
 

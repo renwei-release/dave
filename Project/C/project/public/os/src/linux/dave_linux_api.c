@@ -75,13 +75,15 @@ dave_os_size(void *ptr)
 void
 dave_os_restart(s8 *reason)
 {
-	DAVELOG("%s\r\n", reason);
+	OSLOG("%s", reason);
 }
 
 void
 dave_os_power_off(s8 *reason)
 {
-	DAVELOG("system power off reason:%s\n", reason);
+	OSLOG("system power off reason:%s", reason);
+
+	dave_os_sleep(3000);
 
 	exit(0);
 }

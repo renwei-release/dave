@@ -12,7 +12,7 @@ if [ "$1" == "" ]; then
 else
    HOMEPATH=$1
 fi
-IMAGE="centos_docker_image"
+IMAGE="fedora_docker_image"
 TAG="latest"
 EXTEND="-v `pwd`/../../../:/project/DAVE"
 

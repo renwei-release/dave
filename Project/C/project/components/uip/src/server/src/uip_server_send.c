@@ -71,6 +71,12 @@ uip_server_send(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
 	_uip_server_write_stack(pRecvStack, pSendStack);
 #endif
 
+	if(pSendStack->body.pJson != NULL)
+	{
+		dave_json_free(pSendStack->body.pJson);
+		pSendStack->body.pJson = NULL;
+	}
+
 	uip_free(pSendStack);
 
 	return pJson;

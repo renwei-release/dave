@@ -8,14 +8,9 @@
 
 PROJECT=${PWD##*/}
 LEVEL=$1
-CONTAINER=$2
+CONTAINER="fedora"
 
-if [ "${CONTAINER}" == "" ]; then
-   cd ../
-   ./BUILD ${PROJECT} ${LEVEL}
-else
-   ../ENV ${CONTAINER}
+../ENV ${CONTAINER}
 
-   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./BUILD ${PROJECT} ${LEVEL}"
-fi
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./BUILD ${PROJECT} ${LEVEL}"

@@ -32,12 +32,11 @@ def _load_service_testcase(suite, gid, service_name, service_id):
     return False
 
 
-def _html_testrunner(gid, service_name, service_id):
+def _html_testrunner(gid, service_name):
     gid = gid.decode('utf-8')
     service_name = service_name.decode('utf-8')
-    service_id = "{:x}".format(service_id)
 
-    fp = open(f'{output_dir}/service_{gid}_{service_name}_{service_id}.html', 'wb')
+    fp = open(f'{output_dir}/service_{gid}_{service_name}.html', 'wb')
     return HTMLTestRunner(stream=fp, title=u'service test', description=u'Test report for DAVE service')
 
 
@@ -48,6 +47,6 @@ def service_test(gid, service_name, service_id):
     suite = unittest.TestSuite()
 
     if _load_service_testcase(suite, gid, service_name, service_id) == True:
-        runner = _html_testrunner(gid, service_name, service_id)
+        runner = _html_testrunner(gid, service_name)
         runner.run(suite)
     return
