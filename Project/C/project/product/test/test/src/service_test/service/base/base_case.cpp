@@ -9,29 +9,21 @@
 using namespace std;
 #include "gtest.h"
 #include "dave_base.h"
+#include "dave_tools.h"
 #include "test_log.h"
-
-class BaseCase:public testing::Test {
-	protected:
-		virtual void SetUp() {
-		}
-		virtual void TearDown() {
-		}
-};
-
-TEST_F(BaseCase, base_case)
-{
-	TESTLOG("");
-
-    EXPECT_EQ(4, 3);
-}
 
 // =====================================================================
 
-dave_bool
-base_case(s8 *input_dir, s8 *output_dir, s8 *gid, s8 *service, ThreadId id)
+TEST(base_case, BaseCase_RPC)
 {
-	return dave_true;
+	RPCDebugReq *pReq = (RPCDebugReq *)thread_reset_msg(pReq);
+	RPCDebugRsp *pRsp;
+
+	pReq->s64_debug = 1234567890;
+
+	pRsp = (RPCDebugRsp *)name_go("BASE", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
+
+	EXPECT_EQ(pReq->s64_debug, pRsp->s64_debug);
 }
 
 #endif

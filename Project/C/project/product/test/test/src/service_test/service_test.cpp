@@ -12,8 +12,34 @@ using namespace std;
 #include "dave_tools.h"
 #include "test_log.h"
 
-static const s8 * input_dir = "/project/product/test/test/service_test/input";
-static const s8 * output_dir = "/project/product/test/test/service_test/output";
+static const s8 * _input_dir = "/project/product/test/test/service_test/input";
+static const s8 * _output_dir = "/project/product/test/test/service_test/output";
+
+static const s8 *_test_service_table[] {
+	"base",
+	NULL
+} ;
+
+static dave_bool
+_test_service_enable(s8 *gid, s8 *service, ThreadId id)
+{
+	ub table_index;
+
+	for(table_index=0; table_index<40960; table_index++)
+	{
+		if(_test_service_table[table_index] == NULL)
+		{
+			break;
+		}
+
+		if(dave_strcmp(_test_service_table[table_index], service) == dave_true)
+		{
+			return dave_true;
+		}
+	}
+
+	return dave_false;
+}
 
 // =====================================================================
 
@@ -30,16 +56,21 @@ service_test(s8 *globally_identifier, s8 *remote_thread_name, ThreadId remote_th
 
 	lower(remote_thread_name);
 
+	if(_test_service_enable(globally_identifier, remote_thread_name, remote_thread_id) == dave_false)
+	{
+		return;
+	}
+
 	testing::InitGoogleTest(&argc, argv);
 
 	dave_snprintf(output_file, sizeof(output_file),
 		"xml:%s/service_%s_%s.xml",
-		output_dir,
+		_output_dir,
 		globally_identifier, remote_thread_name);
 	testing::GTEST_FLAG(output) = output_file;
 
 	dave_snprintf(test_case, sizeof(test_case),
-		"BaseCase", remote_thread_name);
+		"%s_case.*", remote_thread_name);
 	testing::GTEST_FLAG(filter) = test_case;
 
 	testing::InitGoogleTest();
@@ -47,7 +78,8 @@ service_test(s8 *globally_identifier, s8 *remote_thread_name, ThreadId remote_th
 	ret = RUN_ALL_TESTS();
 	if(ret != 0)
 	{
-		TESTABNOR("gid:%s thread:%s id:%lx run test case failed! ret:%d",
+		TESTABNOR("input_dir:%s output_dir:%s gid:%s service:%s id:%lx run test case failed! ret:%d",
+			_input_dir, _output_dir,
 			globally_identifier, remote_thread_name, remote_thread_id,
 			ret);
 	}

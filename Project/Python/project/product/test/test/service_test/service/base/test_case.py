@@ -13,8 +13,6 @@ class BaseCase_RPC(unittest.TestCase):
     def test_rpc_1(self):
         pReq = RPCDebugReq()
         pReq.s64_debug = 1234567890
-        pReq.mbuf_debug = None
-        pReq.ptr = None
 
         pRsp = name_go('BASE', MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, RPCDebugRsp)
 
