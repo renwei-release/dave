@@ -37,6 +37,7 @@ static ThreadId _sync_client_thread = INVALID_THREAD_ID;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 extern TLock _sync_client_data_pv;
 static TIMERID _sync_client_reconnect_syncs_logic_timer = INVALID_TIMER_ID;
+static TIMERID _sync_client_timer = INVALID_TIMER_ID;
 static dave_bool _sync_client_reconnect_syncs_logic_flag = dave_false;
 
 static void _sync_client_reconnect_syncs_action(void);
@@ -375,6 +376,12 @@ _sync_client_reboot(RESTARTREQMSG *pRestart)
 	if(pRestart->times == 1)
 	{
 		sync_client_link_stop();
+
+		if(_sync_client_timer != INVALID_TIMER_ID)
+		{
+			base_timer_die(_sync_client_timer);
+			_sync_client_timer = INVALID_TIMER_ID;
+		}
 	}
 	else if(pRestart->times == 3)
 	{
@@ -728,7 +735,7 @@ _sync_client_init(MSGBODY *msg)
 
 	_sync_client_connect_all();
 
-	base_timer_creat("syncct", _sync_client_guard_time, SYNC_CLIENT_BASE_TIME);
+	_sync_client_timer = base_timer_creat("syncct", _sync_client_guard_time, SYNC_CLIENT_BASE_TIME);
 }
 
 static void

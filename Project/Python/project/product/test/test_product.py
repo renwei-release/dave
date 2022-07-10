@@ -7,7 +7,7 @@
 # */
 import threading
 from public import *
-from product.test.test.service_test.service_test import service_test
+from product.test.test.test_service.test_service import test_service
 
 
 _service_table = {}
@@ -28,7 +28,7 @@ def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
 
     pReady = struct_copy(ThreadRemoteIDReadyMsg, msg_body, msg_len)
 
-    service_test(pReady.globally_identifier, pReady.remote_thread_name.lower(), pReady.remote_thread_id)
+    test_service(pReady.globally_identifier, pReady.remote_thread_name.lower(), pReady.remote_thread_id)
 
     _service_ready_timer = threading.Timer(3, service_test_exit)
     _service_ready_timer.start()

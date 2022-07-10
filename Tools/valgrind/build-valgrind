@@ -1,0 +1,34 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=3.18.1
+
+if [ ! -f valgrind-${VERSION}.tar.bz2 ]; then
+   wget --no-check-certificate https://sourceware.org/pub/valgrind/valgrind-${VERSION}.tar.bz2
+fi
+if [ ! -d ./valgrind-${VERSION} ]; then
+   tar -jxvf valgrind-${VERSION}.tar.bz2
+fi
+
+if [ -d ${homepath}/setup ]; then
+   rm -rf ${homepath}/setup
+fi
+
+cd valgrind-${VERSION}
+
+./autogen.sh
+
+./configure --prefix=${homepath}/setup
+
+make && make install
+
+cd ../
+
+rm -rf valgrind-${VERSION}

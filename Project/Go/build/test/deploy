@@ -1,0 +1,32 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECT=${PWD##*/}
+HOMEPATH=$(cd `dirname $0`; pwd)
+FINDDEPLOY=0
+DEPLOYPATH=Deploy/deploy/${PROJECT}
+
+if [ -f ../../../../../${DEPLOYPATH}/deploy.sh ]; then
+   cd ../../../../../${DEPLOYPATH}
+   FINDDEPLOY=1
+elif [ -f ../../../../${DEPLOYPATH}/deploy.sh ]; then
+   cd ../../../../${DEPLOYPATH}
+   FINDDEPLOY=1
+elif [ -f ../../../${DEPLOYPATH}/deploy.sh ]; then
+   cd ../../../${DEPLOYPATH}
+   FINDDEPLOY=1
+elif [ -f ../../${DEPLOYPATH}/deploy.sh ]; then
+   cd ../../${DEPLOYPATH}
+   FINDDEPLOY=1
+fi
+
+if [ ${FINDDEPLOY} == 1 ]; then
+   echo deploy ${PROJECT}
+   chmod a+x *.sh
+   ./deploy.sh ${HOMEPATH}
+fi

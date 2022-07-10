@@ -37,9 +37,8 @@ func _fun_RPC_DEBUG_REQ(remote_thread_name string) {
 	req.S16_debug = 12345
 	req.Mbuf_debug = nil
 
-	msg_body := base.Name_go(remote_thread_name, auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP)
-	if msg_body != nil {
-		pRsp := (*auto.RPCDebugRsp)(msg_body)
+	pRsp := (*auto.RPCDebugRsp)(base.Name_go(remote_thread_name, auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP))
+	if pRsp != nil {
 		base.DAVELOG("name_go successfully! %d", pRsp.S16_debug)
 	}
 }

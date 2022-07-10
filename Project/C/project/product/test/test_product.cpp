@@ -10,7 +10,7 @@
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
-#include "service_test.h"
+#include "test_service.h"
 #include "test_log.h"
 
 static ThreadId _test_thread = INVALID_THREAD_ID;
@@ -45,7 +45,7 @@ _test_thread_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	_test_stop_timer();
 
-	service_test(pReady->globally_identifier, pReady->remote_thread_name, pReady->remote_thread_id);
+	test_service(pReady->globally_identifier, pReady->remote_thread_name, pReady->remote_thread_id);
 
 	_test_start_timer(3);
 }
