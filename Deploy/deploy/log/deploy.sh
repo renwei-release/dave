@@ -27,7 +27,7 @@ rm -rf Dockerfile
 
 exit_es_contains=`docker ps -a | grep -w "${PROJECT}-es"`
 if [ "$exit_es_contains" == "" ]; then
-   docker run -d --name ${PROJECT}-es --network host -e "discovery.type=single-node" elasticsearch:8.3.2
+   docker run -d --name ${PROJECT}-es --restart always --network host -e "discovery.type=single-node" elasticsearch:8.3.2
    # 似乎elasticsearch有一个BUG，
    # 不在初始配置下工作一段时间，生成certs下面的相关文件后，
    # 才能转为elasticsearch.yml的xpack.security.enabled: false
