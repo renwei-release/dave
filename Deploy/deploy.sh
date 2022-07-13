@@ -9,6 +9,7 @@
 chmod a+x *.sh curl
 
 PROJECT=demo
+PROJECTNAME=''
 GPU='"NULL"'
 IMAGE=ubuntu_docker_image
 TAG=latest
@@ -17,8 +18,9 @@ PROJECTMAPPING=''
 USERNAME=${USER}
 JUPYTERPORT=8888
 HOMEPATH='./'
+COPYACTION='TRUE'
 
-while getopts ":p:g:i:t:e:h:j:u:" opt
+while getopts ":p:g:i:t:e:h:j:u:n:c:" opt
 do
     case $opt in
         p)
@@ -55,16 +57,26 @@ do
         USERNAME=$OPTARG
         echo USER NAME:$USERNAME
         ;;
+        n)
+        PROJECTNAME=$OPTARG
+        echo PROJECT NAME:$PROJECTNAME
+        ;;
+        c)
+        COPYACTION=$OPTARG
+        echo COPY ACTION:$COPYACTION
+        ;;
         ?)
         echo "未知参数:" $opt
         ;;
     esac
 done
 
-if [ "$USERNAME" == "root" ]; then
-   PROJECTNAME=${PROJECT}
-else
-   PROJECTNAME=${PROJECT}-${USERNAME}
+if [ "$PROJECTNAME" == "" ]; then
+   if [ "$USERNAME" == "root" ]; then
+      PROJECTNAME=${PROJECT}
+   else
+      PROJECTNAME=${PROJECT}-${USERNAME}
+   fi
 fi
 
 HOSTNAME=${HOSTNAME}-${PROJECTNAME}-docker
@@ -101,10 +113,14 @@ if [ "$exit_project_contains" == "" ]; then
 
    ./restore.sh $PROJECTNAME $PROJECT
 
-   ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+   if [ "$COPYACTION" == "TRUE" ]; then
+      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+   fi
    echo Successfully created a new ${PROJECTNAME} container!
 else
-   ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+   if [ "$COPYACTION" == "TRUE" ]; then
+      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+   fi
    echo The ${PROJECTNAME} container exists, no new container is installed! But update the ${PROJECTNAME}
 fi
 

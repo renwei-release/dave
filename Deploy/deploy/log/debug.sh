@@ -1,10 +1,9 @@
 #!/bin/bash
 #/*
-# * ================================================================================
-# * (c) Copyright 2021 Renwei All rights reserved.
-# * --------------------------------------------------------------------------------
-# * 2021.10.12.
-# * ================================================================================
+# * Copyright (c) 2022 Chenxiaomin
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
 # */
 
 PROJECT=${PWD##*/}

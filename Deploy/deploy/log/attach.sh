@@ -1,6 +1,6 @@
 #!/bin/bash
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2022 Chenxiaomin
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
@@ -8,8 +8,4 @@
 
 CONTAINER=${PWD##*/}
 
-if [ "$USER" == "root" ]; then
-   docker attach ${CONTAINER}
-else
-   docker attach ${CONTAINER}-${USER}
-fi
+docker attach ${CONTAINER}-log
