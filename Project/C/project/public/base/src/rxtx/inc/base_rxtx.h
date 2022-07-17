@@ -28,6 +28,7 @@ typedef enum {
 
 	/* log function order code */
 	ORDER_CODE_LOG_RECORD					= 0x0102,
+	ORDER_CODE_LOG_RECORD_V2				= 0x0103,
 
 	ORDER_CODE_RUN_INTERNAL_MSG_REQ 		= 0x0114,
 	ORDER_CODE_RUN_INTERNAL_MSG_RSP 		= 0x0115,

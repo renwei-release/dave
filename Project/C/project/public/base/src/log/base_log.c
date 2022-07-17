@@ -58,7 +58,7 @@ _log_inside_time_format(s8 *log, ub log_len)
 		t_time_get_date(&date);
 
 		time_len += dave_snprintf(&log[time_len], log_len-time_len,
-			"<%04d.%02d.%02d %02d:%02d:%02d:%x>",
+			"<%04d.%02d.%02d %02d:%02d:%02d>{%x}",
 			date.year, date.month, date.day,
 			date.hour, date.minute, date.second,
 			counter);

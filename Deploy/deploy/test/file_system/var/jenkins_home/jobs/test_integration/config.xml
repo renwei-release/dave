@@ -22,7 +22,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cd /project &amp;&amp; ./dave-running.sh</command>
+      <command>cd /project/product/test &amp;&amp; python3 test_main.py</command>
       <configuredLocalRules/>
     </hudson.tasks.Shell>
     <hudson.plugins.groovy.SystemGroovy plugin="groovy@2.4">
@@ -39,8 +39,8 @@
       <reportTargets>
         <htmlpublisher.HtmlPublisherTarget>
           <reportName>HTML Report</reportName>
-          <reportDir>/project/product/test/test/service_test/output</reportDir>
-          <reportFiles>service_*.html</reportFiles>
+          <reportDir>/project/product/test/test/test_integration/output</reportDir>
+          <reportFiles>test_integration.html</reportFiles>
           <alwaysLinkToLastBuild>false</alwaysLinkToLastBuild>
           <reportTitles></reportTitles>
           <keepAll>true</keepAll>

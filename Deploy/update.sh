@@ -33,7 +33,7 @@ copy_python_project_to_container()
 
       chmod a+x rm-project.sh
       docker cp rm-project.sh ${PROJECTNAME}:/
-      docker exec -it ${PROJECTNAME} bash -c "cd / && ./rm-project.sh && rm -rf rm-project.sh"
+      docker exec -it ${PROJECTNAME} sh -c "cd / && ./rm-project.sh && rm -rf rm-project.sh"
 
       docker cp ${HOMEPRJDIR}/dave_main.py ${PROJECTNAME}:/project
       docker cp ${HOMEPRJDIR}/components ${PROJECTNAME}:/project
@@ -73,7 +73,7 @@ copy_bin_project_file()
    if [ -f ${PRJBINFILE} ]; then
       echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
       docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
-      docker exec -it ${PROJECTNAME} bash -c "chmod a+x /project/${PROJECT^^}-BIN"
+      docker exec -it ${PROJECTNAME} sh -c "chmod a+x /project/${PROJECT^^}-BIN"
    fi
 }
 
@@ -150,7 +150,7 @@ copy_sh_file()
 modify_project_attributes()
 {
    echo update.sh chown -R root:root /project
-   docker exec -it ${PROJECTNAME} bash -c "cd / && chown -R root:root /project"
+   docker exec -it ${PROJECTNAME} sh -c "cd / && chown -R root:root /project"
 }
 ############## modify_project_attributes function ##############
 

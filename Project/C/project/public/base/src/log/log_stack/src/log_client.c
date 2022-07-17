@@ -19,7 +19,7 @@
 #define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
 
 #define NUM_LOG_ONCE_SEND      (2048)
-#define LOG_ONCE_SEND_BYTE_MAX (1500)
+#define LOG_ONCE_SEND_BYTE_MAX (4096)
 #define LOG_SEND_INTVL         (1000)
 #define BDATA_TRACE_BUF_MAX	   (1024)
 
@@ -104,7 +104,7 @@ _log_stack_client_record_log(void)
 {
 	sb num_log;
 	MBUF *data;
-	ub index, len_index;
+	ub index, level_index, len_index;
 	ub log_len;
 	s8 *frame;
 	TraceLevel level;
@@ -128,6 +128,8 @@ _log_stack_client_record_log(void)
 		index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
 		dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
 		index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+		level_index = index; level = TRACELEVEL_LOG;
+		dave_byte_8(frame[index++], frame[index++], level);
 		len_index = index; log_len = 0;
 		dave_byte_8(frame[index++], frame[index++], log_len);
 		log_len = base_log_load(&frame[index], LOG_ONCE_SEND_BYTE_MAX-index, &level);
@@ -137,11 +139,12 @@ _log_stack_client_record_log(void)
 			break;
 		}
 
+		dave_byte_8(frame[level_index], frame[level_index + 1], level);
 		dave_byte_8(frame[len_index], frame[len_index + 1], log_len);
 
 		data->len = data->tot_len = index + log_len;
 
-		if(rxtx_writes(_log_stack_client_socket, ORDER_CODE_LOG_RECORD, data) == dave_false)
+		if(rxtx_writes(_log_stack_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_false)
 			break;
 	}
 }
@@ -175,6 +178,7 @@ _log_stack_client_send_booting_message(void)
 	index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
 	dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
 	index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+	dave_byte_8(frame[index++], frame[index++], TRACELEVEL_BOOT);
 	len_index = index; booting_message_length = 0;
 	dave_byte_8(frame[index++], frame[index++], booting_message_length);
 
@@ -191,7 +195,7 @@ _log_stack_client_send_booting_message(void)
 
 	data->len = data->tot_len = index;
 
-	if(rxtx_writes(_log_stack_client_socket, ORDER_CODE_LOG_RECORD, data) == dave_true)
+	if(rxtx_writes(_log_stack_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_true)
 	{
 		_log_stack_client_snd_booting_message_flag = dave_true;
 	}
