@@ -54,7 +54,10 @@ _thread_running_function(base_thread_fun thread_fun, MSGBODY *msg)
 
 	thread_fun(msg);
 
-	thread_chain_clean(pChain);
+	if(pChain != NULL)
+	{
+		thread_chain_clean(pChain);
+	}
 }
 
 static inline void
