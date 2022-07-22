@@ -1,9 +1,8 @@
 /*
- * ================================================================================
- * (c) Copyright 2016 Renwei All rights reserved.
- * --------------------------------------------------------------------------------
- * 2016.9.1.
- * ================================================================================
+ * Copyright (c) 2022 Renwei
+ *
+ * This is a free software; you can redistribute it and/or modify
+ * it under the terms of the MIT license. See LICENSE for details.
  */
 
 #ifndef __DAVE_ENUM_H__
@@ -16,18 +15,6 @@ typedef enum {
 	GPSBaseLocation_North,
 	GPSBaseLocation_South
 } GPSBaseLocation;
-
-typedef enum {
-	UserType_reserve = 0,
-	UserType_share = 1,
-	UserType_private = 2,
-	UserType_jegoboss = 3,
-	UserType_NIM = 4,
-	UserType_RNM = 5,
-	UserType_AUX = 6, // Auxiliary number user
-	UserType_ENT = 7, // Enterprise user
-	UserType_max
-} UserType;
 
 typedef enum {
 	CurrencyType_reserve = 0,
@@ -73,30 +60,5 @@ typedef enum {
 	LanguageCode_Dutch,
 	LanguageCode_max
 } LanguageCode;
-
-typedef enum {
-	PhoneNumberType_unkonw = 0,
-	PhoneNumberType_sip = 1,
-	PhoneNumberType_tel = 2,
-	PhoneNumberType_empty = 3,
-	PhoneNumberType_max
-} PhoneNumberType;
-
-typedef enum {
-	BillingRulesAttrib_reserve = 0,
-	BillingRulesAttrib_share = 1,
-	BillingRulesAttrib_private = 2,
-	BillingRulesAttrib_max
-} BillingRulesAttrib;
-
-typedef enum {
-	BillingRulesPriority_reserve = 0,
-	/* Type has priority, the smaller the value the greater the priority */
-	BillingRulesPriority_added_value = 1,
-	BillingRulesPriority_free = 2,
-	BillingRulesPriority_preferential = 3,
-	BillingRulesPriority_toll = 4,
-	BillingRulesPriority_max
-} BillingRulesPriority;
 
 #endif

@@ -12,7 +12,6 @@
 #include "http_recv.h"
 #include "http_distributor.h"
 #include "http_tools.h"
-#include "http_test.h"
 #include "http_log.h"
 
 #define HTTPS_DISTRIBUTOR_SERVER_PORT 1823

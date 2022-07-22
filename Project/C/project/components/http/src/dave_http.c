@@ -12,7 +12,6 @@
 #include "dave_3rdparty.h"
 #include "http_recv.h"
 #include "http_distributor.h"
-#include "http_test.h"
 #include "http_log.h"
 
 #define HTTP_THREAD_MAX 16
@@ -57,9 +56,6 @@ _http_main(MSGBODY *msg)
 	{
 		case MSGID_RESTART_REQ:
 				_http_restart((RESTARTREQMSG *)(msg->msg_body));
-			break;
-		case MSGID_DEBUG_REQ:
-				http_test(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				http_recv_listen(msg->msg_src, (HTTPListenReq *)(msg->msg_body));
