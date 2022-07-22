@@ -8,14 +8,11 @@
 
 PROJECT=${PWD##*/}
 LEVEL=$1
-CONTAINER=$2
+FORM=$2
 
-if [ "${CONTAINER}" == "" ]; then
-   cd ../
-   ./BUILD ${PROJECT} ${LEVEL}
-else
-   ../ENV ${CONTAINER}
-
-   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./BUILD ${PROJECT} ${LEVEL}"
+if [ "$FORM" == "" ]; then
+   FORM="BIN"
 fi
+
+cd ../
+./BUILD ${PROJECT} ${LEVEL} ${FORM}

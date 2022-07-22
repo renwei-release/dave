@@ -11,14 +11,14 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_tools.h"
-#include "thread_tools.h"
 #include "base_rxtx.h"
+#include "base_tools.h"
+#include "thread_tools.h"
 #include "sync_base_package.h"
 #include "sync_param.h"
 #include "sync_client_tools.h"
 #include "sync_client_data.h"
 #include "sync_client_tx.h"
-#include "sync_globally_identifier.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -125,7 +125,7 @@ sync_client_tx_my_verno(SyncServer *pServer)
 	snd_ptr = dave_mptr(snd_buffer);
 
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, dave_verno());
-	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, sync_globally_identifier());
+	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, globally_identifier());
 
 	snd_buffer->len = snd_buffer->tot_len = snd_index;
 
@@ -156,7 +156,7 @@ sync_client_tx_sync_thread_name_req(SyncServer *pServer, s8 *thread_name, ub thr
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_thread_name_packet(dave_verno(), sync_globally_identifier(), thread_name, thread_index);
+	snd_buffer = sync_thread_name_packet(dave_verno(), globally_identifier(), thread_name, thread_index);
 
 	return _sync_client_tx(pServer, ORDER_CODE_SYNC_THREAD_NAME_REQ, snd_buffer);
 }
@@ -166,7 +166,7 @@ sync_client_tx_sync_thread_name_rsp(SyncServer *pServer, s8 *thread_name, ub thr
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_thread_name_packet(dave_verno(), sync_globally_identifier(), thread_name, thread_index);
+	snd_buffer = sync_thread_name_packet(dave_verno(), globally_identifier(), thread_name, thread_index);
 
 	return _sync_client_tx(pServer, ORDER_CODE_SYNC_THREAD_NAME_RSP, snd_buffer);
 }
@@ -262,7 +262,7 @@ sync_client_tx_add_remote_thread_rsp(SyncServer *pServer, s8 *thread_name, sb th
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_thread_name_packet(dave_verno(), sync_globally_identifier(), thread_name, thread_index);
+	snd_buffer = sync_thread_name_packet(dave_verno(), globally_identifier(), thread_name, thread_index);
 
 	return _sync_client_tx(pServer, ORDER_CODE_ADD_REMOTE_THREAD_RSP, snd_buffer);
 }
@@ -272,7 +272,7 @@ sync_client_tx_del_remote_thread_rsp(SyncServer *pServer, s8 *thread_name, sb th
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_thread_name_packet(dave_verno(), sync_globally_identifier(), thread_name, thread_index);
+	snd_buffer = sync_thread_name_packet(dave_verno(), globally_identifier(), thread_name, thread_index);
 
 	return _sync_client_tx(pServer, ORDER_CODE_DEL_REMOTE_THREAD_RSP, snd_buffer);
 }
@@ -282,7 +282,7 @@ sync_client_tx_link_up_req(SyncServer *pServer, u8 ip[DAVE_IP_V6_ADDR_LEN], u16 
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_link_packet(dave_verno(), ip, port, sync_globally_identifier());
+	snd_buffer = sync_link_packet(dave_verno(), ip, port, globally_identifier());
 
 	return _sync_client_tx(pServer, ORDER_CODE_LINK_UP_REQ, snd_buffer);
 }
@@ -292,7 +292,7 @@ sync_client_tx_link_up_rsp(SyncServer *pServer, s8 *verno, u8 *link_ip, u16 link
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_link_packet(verno, link_ip, link_port, sync_globally_identifier());
+	snd_buffer = sync_link_packet(verno, link_ip, link_port, globally_identifier());
 
 	return _sync_client_tx(pServer, ORDER_CODE_LINK_UP_RSP, snd_buffer);
 }
@@ -302,7 +302,7 @@ sync_client_tx_link_down_req(SyncServer *pServer, u8 ip[DAVE_IP_V6_ADDR_LEN], u1
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_link_packet(dave_verno(), ip, port, sync_globally_identifier());
+	snd_buffer = sync_link_packet(dave_verno(), ip, port, globally_identifier());
 
 	return _sync_client_tx(pServer, ORDER_CODE_LINK_DOWN_REQ, snd_buffer);
 }
@@ -312,7 +312,7 @@ sync_client_tx_link_down_rsp(SyncServer *pServer, s8 *verno, u8 *link_ip, u16 li
 {
 	MBUF *snd_buffer;
 
-	snd_buffer = sync_link_packet(verno, link_ip, link_port, sync_globally_identifier());
+	snd_buffer = sync_link_packet(verno, link_ip, link_port, globally_identifier());
 
 	return _sync_client_tx(pServer, ORDER_CODE_LINK_DOWN_RSP, snd_buffer);
 }

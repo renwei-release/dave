@@ -13,7 +13,7 @@
 #include "json_object_private.h"
 #include "tools_log.h"
 
-static void
+static inline void
 _t_bson_json_boolean(json_object *pJson, tBsonData *pData)
 {
 	if(pJson->o_type == json_type_object)
@@ -25,7 +25,16 @@ _t_bson_json_boolean(json_object *pJson, tBsonData *pData)
 			json_object_new_boolean((json_bool)(pData->value_ptr.bool_value)));	
 }
 
-static void
+static inline void
+_t_json_bson_boolean(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	if(pBson->type == tBsonType_object)
+		t_bson_add_boolean(pBson, key, json_object_get_boolean(pJson));
+	else
+		t_bson_array_add_boolean(pBson, json_object_get_boolean(pJson));
+}
+
+static inline void
 _t_bson_json_int(json_object *pJson, tBsonData *pData)
 {
 	if(pJson->o_type == json_type_object)
@@ -37,7 +46,16 @@ _t_bson_json_int(json_object *pJson, tBsonData *pData)
 			json_object_new_int((int32_t)(pData->value_ptr.int_value)));		
 }
 
-static void
+static inline void
+_t_json_bson_int(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	if(pBson->type == tBsonType_object)
+		t_bson_add_int(pBson, key, json_object_get_int(pJson));
+	else
+		t_bson_array_add_int(pBson, json_object_get_int(pJson));
+}
+
+static inline void
 _t_bson_json_int64(json_object *pJson, tBsonData *pData)
 {
 	if(pJson->o_type == json_type_object)
@@ -49,7 +67,7 @@ _t_bson_json_int64(json_object *pJson, tBsonData *pData)
 			json_object_new_int64((int64_t)(pData->value_ptr.int64_value)));		
 }
 
-static void
+static inline void
 _t_bson_json_double(json_object *pJson, tBsonData *pData)
 {
 	if(pJson->o_type == json_type_object)
@@ -61,7 +79,16 @@ _t_bson_json_double(json_object *pJson, tBsonData *pData)
 			json_object_new_double(pData->value_ptr.double_value));		
 }
 
-static void
+static inline void
+_t_json_bson_double(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	if(pBson->type == tBsonType_object)
+		t_bson_add_double(pBson, key, json_object_get_double(pJson));
+	else
+		t_bson_array_add_double(pBson, json_object_get_double(pJson));		
+}
+
+static inline void
 _t_bson_json_string(json_object *pJson, tBsonData *pData)
 {
 	if(pJson->o_type == json_type_object)
@@ -73,7 +100,16 @@ _t_bson_json_string(json_object *pJson, tBsonData *pData)
 			json_object_new_string(pData->value_ptr.mem_value));		
 }
 
-static void
+static inline void
+_t_json_bson_string(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	if(pBson->type == tBsonType_object)
+		t_bson_add_string(pBson, key, (char *)json_object_get_string(pJson));
+	else
+		t_bson_array_add_string(pBson, (char *)json_object_get_string(pJson));		
+}
+
+static inline void
 _t_bson_json_bin(json_object *pJson, tBsonData *pData)
 {
 	int base64_str_len = 256 + pData->value_len * 2;
@@ -99,7 +135,7 @@ _t_bson_json_bin(json_object *pJson, tBsonData *pData)
 	dave_free(base64_str_ptr);
 }
 
-static void
+static inline void
 _t_bson_json_array(json_object *pJson, tBsonData *pData)
 {
 	json_object *pSubObject = t_bson_json((tBsonObject *)(pData->value_ptr.object_value));
@@ -110,7 +146,59 @@ _t_bson_json_array(json_object *pJson, tBsonData *pData)
 		json_object_array_add(pJson, pSubObject);
 }
 
-static void
+static inline tBsonObject *
+_t_json_array_to_bson_array(json_object *pJson)
+{
+	tBsonObject *pArrayBson;
+	size_t array_len = json_object_array_length(pJson);
+	size_t array_index;
+	json_object *sub_data;
+
+	pArrayBson = t_bson_malloc_array();
+
+	for(array_index=0; array_index<array_len; array_index++)
+	{
+		sub_data = json_object_array_get_idx(pJson, array_index);
+		switch(sub_data->o_type)
+		{
+			case json_type_boolean:
+					t_bson_array_add_boolean(pArrayBson, json_object_get_boolean(sub_data));
+				break;
+			case json_type_double:
+					t_bson_array_add_double(pArrayBson, json_object_get_double(sub_data));
+				break;
+			case json_type_int:
+					t_bson_array_add_int(pArrayBson, json_object_get_int(sub_data));
+				break;
+			case json_type_string:
+					t_bson_array_add_string(pArrayBson, (char *)json_object_get_string(sub_data));
+				break;
+			case json_type_array:
+					t_bson_array_add_object(pArrayBson, _t_json_array_to_bson_array(sub_data));
+				break;
+			case json_type_object:
+					t_bson_array_add_object(pArrayBson, t_json_to_bson(sub_data));
+				break;
+			default:
+				break;
+		}
+	}
+
+	return pArrayBson;
+}
+
+static inline void
+_t_json_bson_array(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	tBsonObject *pArrayBson = _t_json_array_to_bson_array(pJson);
+
+	if(pBson->type == tBsonType_object)
+		t_bson_add_object(pBson, key, pArrayBson);
+	else
+		t_bson_array_add_object(pBson, pArrayBson);
+}
+
+static inline void
 _t_bson_json_object(json_object *pJson, tBsonData *pData)
 {
 	json_object *pSubObject = t_bson_json((tBsonObject *)(pData->value_ptr.object_value));
@@ -119,6 +207,17 @@ _t_bson_json_object(json_object *pJson, tBsonData *pData)
 		json_object_object_add(pJson, (const char *)pData->key_ptr, pSubObject);
 	else
 		json_object_array_add(pJson, pSubObject);
+}
+
+static inline void
+_t_json_bson_object(tBsonObject *pBson, char *key, json_object *pJson)
+{
+	tBsonObject *pSubObject = t_json_bson(pJson);
+
+	if(pBson->type == tBsonType_object)
+		t_bson_add_object(pBson, key, pSubObject);
+	else
+		t_bson_array_add_object(pBson, pSubObject);
 }
 
 // =====================================================================
@@ -185,6 +284,55 @@ t_bson_json(tBsonObject *pBson)
 tBsonObject *
 t_json_bson(json_object *pJson)
 {
-	return NULL;
+	tBsonObject *pBson;
+	char *key = NULL;
+	struct lh_entry *entry = NULL;
+	struct json_object* val = NULL;
+
+	if(pJson->o_type == json_type_object)
+	{
+		pBson = (tBsonObject *)t_bson_malloc_object();
+	}
+	else
+	{
+		TOOLSLOG("invalid type:%d", pJson->o_type);
+		return NULL;
+	}
+
+	entry = json_object_get_object(pJson)->head;
+
+	while(entry)
+	{
+		key = (char *)entry->k;
+		val = (struct json_object *)entry->v;
+
+		switch(json_object_get_type(val))
+		{
+			case json_type_boolean:
+					_t_json_bson_boolean(pBson, key, val);
+				break;
+			case json_type_int:
+					_t_json_bson_int(pBson, key, val);
+				break;
+			case json_type_double:
+					_t_json_bson_double(pBson, key, val);
+				break;
+			case json_type_string:
+					_t_json_bson_string(pBson, key, val);
+				break;
+			case json_type_array:
+					_t_json_bson_array(pBson, key, val);
+				break;
+			case json_type_object:
+					_t_json_bson_object(pBson, key, val);
+				break;
+			default:
+				break;
+		}
+
+		entry = entry->next;
+	}
+
+	return pBson;
 }
 

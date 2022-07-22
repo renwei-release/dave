@@ -10,5 +10,8 @@
 
 void booting_lock(void);
 
+void base_lock(void);
+void base_unlock(void);
+
 #endif
 

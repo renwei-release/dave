@@ -29,6 +29,7 @@
 #include "thread_seq_msg.h"
 #include "thread_running.h"
 #include "thread_coroutine.h"
+#include "thread_chain.h"
 #include "thread_log.h"
 
 #define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
@@ -108,6 +109,8 @@ _thread_reset(ThreadStruct *pThread)
 	_thread_queue_all_reset(pThread);
 
 	thread_reset_sync(&(pThread->sync));
+
+	thread_chain_reset(&(pThread->chain));
 
 	pThread->has_not_wakeup_flag = dave_false;
 
@@ -369,12 +372,11 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 static inline RetCode
 _thread_write_msg(
 	ThreadId src_id, ThreadId dst_id,
-	ub dst_thread_index,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	dave_bool wakeup, BaseMsgType msg_type,
 	s8 *fun, ub line)
 {
-	ThreadStruct *pDstThread = &_thread[dst_thread_index];
+	ThreadStruct *pDstThread = &_thread[thread_get_local(dst_id)];
 	dave_bool hold_body;
 	ThreadMsg *pMsg;
 	RetCode ret;
@@ -663,7 +665,6 @@ _thread_build_tick_message(void)
 
 						_thread_write_msg(
 							_guardian_thread, pThread->thread_id,
-							thread_index,
 							MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
 							dave_false, BaseMsgType_Unicast,
 							(s8 *)__func__, (ub)__LINE__);
@@ -697,9 +698,10 @@ _thread_schedule_predecessor_task(void)
 	_thread_give_wakeup_on_some_time();
 }
 
-static ub
-_thread_schedule_one_thread(void *pTThread, ub thread_index, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
+static inline ub
+_thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
 {
+	ub thread_index = thread_get_local(thread_id);
 	ThreadStruct *pThread;
 	ThreadMsg *pMsg;
 	MSGBODY *msg_body;
@@ -794,7 +796,7 @@ _thread_schedule(void)
 			{
 				if(! (pThread->thread_flag & THREAD_THREAD_FLAG))
 				{
-					if(_thread_schedule_one_thread(NULL, thread_index, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
+					if(_thread_schedule_one_thread(NULL, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
 					{
 						all_message_empty = dave_false;
 					}
@@ -1196,7 +1198,6 @@ _thread_safe_id_msg(
 
 	ret = _thread_write_msg(
 		src_id, dst_id,
-		thread_index,
 		msg_id, msg_len, msg_body,
 		dave_true, msg_type,
 		fun, line);

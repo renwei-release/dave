@@ -10,11 +10,15 @@
 #include "base_define.h"
 #include "thread_struct.h"
 
+typedef void (*coroutine_thread_fun)(base_thread_fun fun, MSGBODY *thread_msg);
+
 void thread_coroutine_malloc(ThreadStruct *pThread);
+
 void thread_coroutine_free(ThreadStruct *pThread);
 
 dave_bool thread_coroutine_running_step_go(
 	ThreadStruct *pThread,
+	coroutine_thread_fun coroutine_fun,
 	base_thread_fun thread_fun,
 	MSGBODY *msg);
 

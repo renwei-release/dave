@@ -12,9 +12,9 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "base_rxtx.h"
+#include "base_tools.h"
 #include "thread_tools.h"
 #include "sync_param.h"
-#include "sync_globally_identifier.h"
 #include "sync_base_package.h"
 #include "sync_server_param.h"
 #include "sync_server_tx.h"
@@ -277,7 +277,7 @@ sync_server_tx_my_verno(SyncClient *pClient)
 	snd_ptr = dave_mptr(snd_buffer);
 
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, dave_verno());
-	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, sync_globally_identifier());
+	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, globally_identifier());
 	snd_index += sync_ip_packet(&snd_ptr[snd_index], snd_max-snd_index, pClient->NetInfo.addr.ip.ip_addr);
 
 	snd_buffer->len = snd_buffer->tot_len = snd_index;

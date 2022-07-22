@@ -9,22 +9,6 @@
 #define __DAVE_STRUCT_H__
 
 typedef struct {
-	PRODUC product_type;
-	s8 product[64];
-	s8 misc[64];
-	u32 main_verno;
-	u32 sub_verno;
-	u32 rev_verno;
-	u16 year;
-	u8 month;
-	u8 day;
-	u8 hour;
-	u8 minute;
-	u8 second;
-	VERLEVEL level;
-} DAVEVERNOSTRUCT;
-
-typedef struct {
 	GPSBaseLocation longitude_base;
 	ub ddd_longitude;
 	ub dot_longitude;

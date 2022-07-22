@@ -81,7 +81,7 @@ _log_inside_time_flag(s8 *log, ub log_len, ub log_total_len)
 	}
 }
 
-static void
+static s8 *
 _log_log(TraceLevel level, const char *fun, int line, const char *fmt, va_list list_args)
 {
 	ub len = 0;
@@ -110,13 +110,7 @@ _log_log(TraceLevel level, const char *fun, int line, const char *fmt, va_list l
 		log_buffer_put(level, buf, len, _inside_time_flag);
 	}
 
-	if(level == TRACELEVEL_ASSERT)
-	{
-		s8 poweroff_message[2048];
-
-		dave_snprintf(poweroff_message, sizeof(poweroff_message), "%s:%d:%s", fun, line, buf);
-		base_power_off((char *)poweroff_message);
-	}
+	return buf;
 }
 
 // =====================================================================
@@ -174,13 +168,17 @@ __base_abnormal__(const char *args, ...)
 void
 __base_assert__(int assert_flag, const char *fun, int line, const char *args, ...)
 {
+	s8 poweroff_message[2048], *buf;
 	va_list list_args;
 
 	if(assert_flag == 0)
 	{
 		va_start(list_args, args);
-		_log_log(TRACELEVEL_ASSERT, fun, line, args, list_args);
+		buf = _log_log(TRACELEVEL_ASSERT, fun, line, args, list_args);
 		va_end(list_args);
+
+		dave_snprintf(poweroff_message, sizeof(poweroff_message), "%s:%d:%s", fun, line, buf);
+		base_power_off(poweroff_message);
 	}
 }
 

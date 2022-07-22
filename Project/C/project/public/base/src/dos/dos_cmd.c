@@ -332,7 +332,7 @@ dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 }
 
 RetCode
-dos_cmd_reg(char *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
+dos_cmd_reg(const char *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
 {
 	return _register_cmd_list((s8 *)cmd, cmd_fun, help_fun, -1);
 }

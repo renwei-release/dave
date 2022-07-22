@@ -12,9 +12,9 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_os.h"
+#include "base_tools.h"
 #include "sync_param.h"
 #include "sync_tools.h"
-#include "sync_globally_identifier.h"
 #include "sync_server_param.h"
 #include "sync_server_data.h"
 #include "sync_server_blocks.h"
@@ -280,7 +280,7 @@ sync_server_info(s8 *info, ub info_len)
 	info_index += _sync_server_info_data(&info[info_index], info_len-info_index);
 	info_index += sync_server_msg_buffer_info(&info[info_index], info_len-info_index);
 	info_index += sync_server_broadcadt_info(&info[info_index], info_len-info_index);
-	info_index += dave_snprintf(&info[info_index], info_len-info_index, "Globally Identifier:%s", sync_globally_identifier());
+	info_index += dave_snprintf(&info[info_index], info_len-info_index, "Globally Identifier:%s", globally_identifier());
 
 	return info_index;
 }

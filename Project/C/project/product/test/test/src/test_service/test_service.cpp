@@ -12,8 +12,8 @@ using namespace std;
 #include "dave_tools.h"
 #include "test_log.h"
 
-static const s8 * _input_dir = "/project/product/test/test/service_test/input";
-static const s8 * _output_dir = "/project/product/test/test/service_test/output";
+static const s8 * _input_dir = "/project/test/test_service/input";
+static const s8 * _output_dir = "/project/test/test_service/output";
 
 static const s8 *_test_service_table[] {
 	"base",
@@ -46,10 +46,6 @@ _test_service_enable(s8 *gid, s8 *service, ThreadId id)
 void
 test_service(s8 *gid, s8 *service, ThreadId id)
 {
-	int argc = 0;
-	char *argv[1] = {
-		(char *)"null",
-	};
 	s8 output_file[1024];
 	s8 test_case[1024];
 	int ret;
@@ -61,7 +57,7 @@ test_service(s8 *gid, s8 *service, ThreadId id)
 		return;
 	}
 
-	testing::InitGoogleTest(&argc, argv);
+	testing::InitGoogleTest();
 
 	dave_snprintf(output_file, sizeof(output_file),
 		"xml:%s/service_%s_%s.xml",
@@ -72,8 +68,6 @@ test_service(s8 *gid, s8 *service, ThreadId id)
 	dave_snprintf(test_case, sizeof(test_case),
 		"%s_case.*", service);
 	testing::GTEST_FLAG(filter) = test_case;
-
-	testing::InitGoogleTest();
 
 	ret = RUN_ALL_TESTS();
 	if(ret != 0)

@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"unsafe"
 )
 
 func _dave_go_log(log_string string) {
@@ -26,8 +27,9 @@ func _dave_go_log(log_string string) {
 	__func__ := funcNamearray[len(funcNamearray)-1]
 
 	c_func := (*C.char)(tools.T_cgo_gostring2cstring(__func__))
-	c_log_string := (*C.char)(tools.T_cgo_gostring2cstring(log_string))
+	c_log_string := C.CString(log_string)
 	C.dave_dll_log(c_func, C.int(__LINE__), c_log_string)
+	C.free(unsafe.Pointer(c_log_string))
 }
 
 // =====================================================================

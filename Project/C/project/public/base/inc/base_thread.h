@@ -58,6 +58,7 @@ typedef struct {
 
 	ub msg_len;
 	void *msg_body;
+	void *msg_chain;
 
 	MsgMemState mem_state;
 

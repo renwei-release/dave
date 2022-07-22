@@ -10,7 +10,7 @@
 #include "base_macro.h"
 #include "thread_struct.h"
 
-typedef ub (* schedule_thread_fun)(void *pTThread, ub thread_index, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack);
+typedef ub (* schedule_thread_fun)(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack);
 
 void thread_thread_init(schedule_thread_fun schedule_fun);
 
@@ -25,6 +25,8 @@ dave_bool thread_thread_wakeup(ub thread_index);
 dave_bool thread_thread_is_main(void);
 
 ThreadId thread_thread_self(ub *wakeup_index);
+
+ThreadChain * thread_thread_chain(void);
 
 ThreadSync * thread_thread_sync(ub thread_index, ub wakeup_index);
 

@@ -46,10 +46,24 @@ _thread_running_pop_stack(ThreadStack **ppCurrentMsgStack, ThreadStack *pStack)
 }
 
 static inline void
+_thread_running_function(base_thread_fun thread_fun, MSGBODY *msg)
+{
+	ThreadChain *pChain;
+
+	pChain = thread_chain_run_msg(msg);
+
+	thread_fun(msg);
+
+	thread_chain_clean(pChain);
+}
+
+static inline void
 _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 {
 	if(thread_fun == NULL)
+	{
 		return;
+	}
 
 #ifdef ENABLE_THREAD_STATISTICS
 	ub run_time = thread_statistics_start_msg(msg);
@@ -58,13 +72,15 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 #ifdef ENABLE_THREAD_COROUTINE
 	if(thread_enable_coroutine(pThread) == dave_true)
 	{
-		if(thread_coroutine_running_step_go(pThread, thread_fun, msg) == dave_false)
-			thread_fun(msg);
+		if(thread_coroutine_running_step_go(pThread, _thread_running_function, thread_fun, msg) == dave_false)
+		{
+			_thread_running_function(thread_fun, msg);
+		}
 	}
 	else
 #endif
 	{
-		thread_fun(msg);
+		_thread_running_function(thread_fun, msg);
 	}
 
 #ifdef ENABLE_THREAD_STATISTICS

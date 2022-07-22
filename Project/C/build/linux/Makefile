@@ -5,8 +5,9 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-NAME_PRODUCT=dave		# SYNC LOG ...
+NAME_PRODUCT=dave	# SYNC LOG ...
 LEVEL_PRODUCT=alpha	# profiling alpha beta
+FORM=BIN
 DEPLOYPATH=../../../../Deploy/deploy/$(shell echo $(NAME_PRODUCT) | tr A-Z a-z)/project
 
 ifeq ($(LEVEL_PRODUCT), profiling)
@@ -29,9 +30,9 @@ CC := gcc
 CPLUS := g++
 
 CFLAGS := -m64 -std=gnu99 -Wall -fPIC -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
-CFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
-CPLUSFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT)
+CPLUSFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 
 ifeq ($(LEVEL_PRODUCT), profiling)
 	CFLAGS += -g -fprofile-arcs -ftest-coverage -pg -O3 -lc

@@ -19,7 +19,7 @@
 #include "thread_parameter.h"
 #include "thread_quit.h"
 #include "thread_tools.h"
-#include "thread_tools.h"
+#include "thread_chain.h"
 #include "thread_log.h"
 
 typedef enum {
@@ -35,6 +35,7 @@ typedef struct {
 	ub thread_index;
 	ThreadId thread_id;
 	ThreadQueue thread_queue[THREAD_THREAD_QUEUE_NUM];
+	ThreadChain chain;
 
 	volatile ThreadState state;
 
@@ -84,6 +85,7 @@ _tthread_reset(ThreadThread *pTThread)
 	pTThread->thread_index = THREAD_MAX;
 	pTThread->thread_id = INVALID_THREAD_ID;
 	thread_queue_reset(pTThread->thread_queue, THREAD_THREAD_QUEUE_NUM);
+	thread_chain_reset(&(pTThread->chain));
 
 	pTThread->state = ThreadState_INIT;
 
@@ -198,19 +200,27 @@ _tthread_wakeup_thread(ThreadThread *pTThread)
 		return dave_true;
 }
 
+static inline sb
+_tthread_running_fun(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
+{
+	if(_schedule_thread_fun != NULL)
+	{
+		return _schedule_thread_fun(pTThread, thread_id, thread_name, wakeup_index, dave_false);
+	}
+
+	return -1;
+}
+
 static void
 _tthread_running_thread(ThreadThread *pTThread)
 {
 	sb loop_counter;
 
-	if(_schedule_thread_fun != NULL)
-	{
-		loop_counter = _schedule_thread_fun(pTThread, pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
+	loop_counter = _tthread_running_fun(pTThread, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
 
-		while(((loop_counter --) >= 0) && (pTThread->state == ThreadState_RUNNING))
-		{
-			_schedule_thread_fun(pTThread, pTThread->thread_index, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
-		}
+	while(((loop_counter --) >= 0) && (pTThread->state == ThreadState_RUNNING))
+	{
+		_tthread_running_fun(pTThread, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
 	}
 }
 
@@ -914,6 +924,20 @@ thread_thread_self(ub *wakeup_index)
 	}
 
 	return thread_id;
+}
+
+ThreadChain *
+thread_thread_chain(void)
+{
+	ThreadSelfMap *pMap;
+
+	pMap = _tthread_find_self_map(_tthread_self_thread(), NULL, dave_false);
+	if(pMap == NULL)
+	{
+		return NULL;
+	}
+
+	return &(pMap->pTThread->chain);
 }
 
 ThreadSync *

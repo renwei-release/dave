@@ -5,15 +5,10 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __BASE_TOOLS_H__
-#define __BASE_TOOLS_H__
+#ifndef __GLOBALLY_IDENTIFIER_H__
+#define __GLOBALLY_IDENTIFIER_H__
 
-#include "dave_tools.h"
-
-#include "block_mem.h"
-#include "netinfo_copy.h"
-#include "sync_type.h"
-#include "globally_identifier.h"
+s8 * globally_identifier(void);
 
 #endif
 

@@ -15,6 +15,7 @@
 #include "thread_mem.h"
 #include "thread_thread.h"
 #include "thread_tools.h"
+#include "thread_coroutine.h"
 #include "thread_log.h"
 
 #define COROUTINE_WAIT_TIMER 180
@@ -35,6 +36,7 @@ typedef struct {
 
 typedef struct {
 	ThreadStruct *pThread;
+	coroutine_thread_fun coroutine_fun;
 	base_thread_fun thread_fun;
 	MSGBODY boot_the_co_msg;
 	void *co;
@@ -273,11 +275,12 @@ _thread_coroutine_pop_msg_list(CoroutineSite *pSite)
 }
 
 static inline CoroutineSite *
-_thread_coroutine_info_malloc(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
+_thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun coroutine_fun, base_thread_fun thread_fun, MSGBODY *msg)
 {
 	CoroutineSite *pSite = dave_malloc(sizeof(CoroutineSite));
 
 	pSite->pThread = pThread;
+	pSite->coroutine_fun = coroutine_fun;
 	pSite->thread_fun = thread_fun;
 	pSite->boot_the_co_msg = *msg;
 	pSite->co = NULL;
@@ -472,7 +475,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
-	pSite->thread_fun(&(pSite->boot_the_co_msg));
+	pSite->coroutine_fun(pSite->thread_fun, &(pSite->boot_the_co_msg));
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
@@ -482,9 +485,9 @@ _thread_coroutine_running_step_2(void *param)
 }
 
 static inline void
-_thread_coroutine_running_step_1(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
+_thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun coroutine_fun, base_thread_fun thread_fun, MSGBODY *msg)
 {
-	CoroutineSite *pSite = _thread_coroutine_info_malloc(pThread, thread_fun, msg);
+	CoroutineSite *pSite = _thread_coroutine_info_malloc(pThread, coroutine_fun, thread_fun, msg);
 
 	pSite->co = dave_co_create(_thread_coroutine_running_step_2, pSite);
 
@@ -593,6 +596,7 @@ thread_coroutine_free(ThreadStruct *pThread)
 dave_bool
 thread_coroutine_running_step_go(
 	ThreadStruct *pThread,
+	coroutine_thread_fun coroutine_fun,
 	base_thread_fun thread_fun,
 	MSGBODY *msg)
 {
@@ -601,7 +605,7 @@ thread_coroutine_running_step_go(
 
 	_thread_coroutine_booting();
 
-	_thread_coroutine_running_step_1(pThread, thread_fun, msg);
+	_thread_coroutine_running_step_1(pThread, coroutine_fun, thread_fun, msg);
 
 	return dave_true;
 }

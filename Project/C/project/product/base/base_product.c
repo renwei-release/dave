@@ -43,46 +43,27 @@ _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 static void
 _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 {
-	RPCDebugReq req;
+	RPCDebugReq *pReq = thread_reset_msg(pReq);
 	RPCDebugRsp *pRsp;
 
-	dave_memset(&req, 0x00, sizeof(req));
+	pReq->ret_debug = RET_DEBUG_VALUE;
+	pReq->s8_debug = S8_DEBUG_VALUE;
+	pReq->u8_debug = U8_DEBUG_VALUE;
+	pReq->s16_debug = S16_DEBUG_VALUE;
+	pReq->u16_debug = U16_DEBUG_VALUE;
+	pReq->s32_debug = S32_DEBUG_VALUE;
+	pReq->u32_debug = U32_DEBUG_VALUE;
+	pReq->s64_debug = S64_DEBUG_VALUE;
+	pReq->u64_debug = U64_DEBUG_VALUE;
+	pReq->float_debug = FLOAT_DEBUG_VALUE;
+	pReq->double_debug = DOUBLE_DEBUG_VALUE;
+	pReq->void_debug = VOID_DEBUG_VALUE;
+	pReq->ptr = pReq;
 
-	req.ret_debug = RET_DEBUG_VALUE;
-	req.s8_debug = S8_DEBUG_VALUE;
-	req.u8_debug = U8_DEBUG_VALUE;
-	req.s16_debug = S16_DEBUG_VALUE;
-	req.u16_debug = U16_DEBUG_VALUE;
-	req.s32_debug = S32_DEBUG_VALUE;
-	req.u32_debug = U32_DEBUG_VALUE;
-	req.s64_debug = S64_DEBUG_VALUE;
-	req.u64_debug = U64_DEBUG_VALUE;
-	req.float_debug = FLOAT_DEBUG_VALUE;
-	req.double_debug = DOUBLE_DEBUG_VALUE;
-	req.void_debug = VOID_DEBUG_VALUE;
-	req.ptr = &req;
-
-	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("id_go successfully! ptr:%lx/%lx", &req, pRsp->ptr);
-		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
-	}
-
-	req.s8_debug ++;
-	req.u8_debug ++;
-	req.s16_debug ++;
-	req.u16_debug ++;
-	req.s32_debug ++;
-	req.u32_debug ++;	
-	req.s64_debug ++;
-	req.u64_debug ++;
-	req.ptr = &req;
-
-	pRsp = name_go(pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("name_go successfully! ptr:%lx/%lx", &req, pRsp->ptr);
+		BASELOG("id_go successfully! ptr:%lx/%lx", pReq, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
 }

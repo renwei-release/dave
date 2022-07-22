@@ -72,7 +72,5 @@ void * t_mbuf_to_bson(MBUF *pMbuf);
 void * t_bson_to_json(void *pBson);
 void * t_json_to_bson(void *pJson);
 
-void t_bson_test(void);
-
 #endif
 

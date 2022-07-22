@@ -48,5 +48,11 @@ ThreadMsg * thread_build_msg(
 
 void thread_clean_msg(ThreadMsg *pMsg);
 
+ThreadChain * thread_current_chain(void);
+
+s8 * thread_id_to_name(ThreadId thread_id);
+
+TaskAttribute thread_id_to_attrib(ThreadId thread_id);
+
 #endif
 

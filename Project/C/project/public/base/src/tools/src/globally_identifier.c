@@ -6,20 +6,19 @@
  */
 
 #include "base_macro.h"
-#include "thread_sync.h"
-#if defined(SYNC_STACK_CLIENT) || defined(SYNC_STACK_SERVER)
+#if defined(__DAVE_BASE__)
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_base.h"
-#include "sync_lock.h"
-#include "sync_log.h"
+#include "base_tools.h"
+#include "base_lock.h"
 
 #define GLOBALLY_IDENTIFIER_CFG_NAME (s8 *)"GLOBALLYIDENTIFIER"
 
-static s8 _sync_globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0'};
+static s8 _globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0'};
 
 static dave_bool
-_sync_globally_identifier_check(s8 *globally_identifier_ptr, ub globally_identifier_len)
+_globally_identifier_check(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
 	s8 mac_str[DAVE_MAC_ADDR_LEN * 2 + 1];
@@ -48,7 +47,7 @@ _sync_globally_identifier_check(s8 *globally_identifier_ptr, ub globally_identif
 }
 
 static void
-_sync_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identifier_len)
+_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
 	s8 hostname[256];
@@ -64,6 +63,7 @@ _sync_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identif
 	dave_os_load_ip(ip_v4, ip_v6);
 
 	encode_ptr = dave_malloc(encode_len);
+
 	encode_index = 0;
 	encode_index += dave_memcpy(&encode_ptr[encode_index], mac, DAVE_MAC_ADDR_LEN);
 	encode_index += dave_strcpy(&encode_ptr[encode_index], hostname, encode_len-encode_index);
@@ -89,13 +89,13 @@ _sync_globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identif
 }
 
 static void
-_sync_globally_identifier_save(s8 *globally_identifier_ptr, ub globally_identifier_len)
+_globally_identifier_save(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
 	cfg_set(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
 }
 
 static dave_bool
-_sync_globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_len)
+_globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
 	return cfg_get(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
 }
@@ -103,28 +103,23 @@ _sync_globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifi
 // =====================================================================
 
 s8 *
-sync_globally_identifier(void)
+globally_identifier(void)
 {
-	dave_bool build_new = dave_false;
-	s8 *id_ptr = _sync_globally_identifier;
-	ub id_len = sizeof(_sync_globally_identifier);
+	s8 *id_ptr = _globally_identifier;
+	ub id_len = sizeof(_globally_identifier);
 
-	sync_lock();
-	if(_sync_globally_identifier_check(id_ptr, id_len) == dave_false)
+	base_lock();
+	if(_globally_identifier_check(id_ptr, id_len) == dave_false)
 	{
-		if((_sync_globally_identifier_load(id_ptr, id_len) == dave_false)
-			|| (_sync_globally_identifier_check(id_ptr, id_len) == dave_false))
+		if((_globally_identifier_load(id_ptr, id_len) == dave_false)
+			|| (_globally_identifier_check(id_ptr, id_len) == dave_false))
 		{
-			build_new = dave_true;
+			_globally_identifier_build(id_ptr, id_len);
 
-			_sync_globally_identifier_build(id_ptr, id_len);
-
-			_sync_globally_identifier_save(id_ptr, id_len);
+			_globally_identifier_save(id_ptr, id_len);
 		}
-
-		SYNCTRACE("%s my globally identifier:%s", build_new==dave_true?"Build":"Load", id_ptr);
 	}
-	sync_unlock();
+	base_unlock();
 
 	return id_ptr;
 }

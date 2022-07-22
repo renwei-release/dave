@@ -154,5 +154,33 @@ base_cfg_get_ub(s8 *cfg_name)
 	return ub_data;
 }
 
+RetCode
+base_cfg_set_bool(s8 *cfg_name, dave_bool bool_value)
+{
+	s8 value_ptr[32];
+	ub value_len;
+
+	value_len = dave_snprintf(value_ptr, sizeof(value_ptr), "%s", bool_value==dave_true?"true":"false");
+
+	return cfg_set(cfg_name, (u8 *)value_ptr, value_len);
+}
+
+dave_bool
+base_cfg_get_bool(s8 *cfg_name, dave_bool default_value)
+{
+	s8 value_ptr[128];
+
+	if(cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
+	{
+		return dave_strcmp(cfg_name, "true");
+	}
+	else
+	{
+		base_cfg_set_bool(cfg_name, default_value);
+
+		return default_value;
+	}
+}
+
 #endif
 

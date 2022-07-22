@@ -13,8 +13,10 @@
 #include "thread_struct.h"
 #include "thread_quit.h"
 #include "thread_tools.h"
+#include "thread_thread.h"
 #include "thread_mem.h"
 #include "thread_wait_msg_show.h"
+#include "thread_chain.h"
 #include "thread_log.h"
 
 #define NOTIFY_MSG_MIN 16
@@ -307,60 +309,62 @@ thread_build_msg(
 	s8 *fun, ub line)
 {
 	dave_bool data_is_here = thread_memory_at_here((void *)msg_body);
-	ThreadMsg *task_msg;
+	ThreadMsg *thread_msg;
 
-	task_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
+	thread_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
 	if(data_is_here == dave_false)
 	{
-		THREADTRACE("Please use thread_msg function to build the msg:%d buffer! <%s:%d>", msg_id, fun, line);
-		task_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, (s8 *)__func__, (ub)__LINE__);
+		THREADDEBUG("Please use thread_msg function to build the msg:%s buffer! <%s:%d>",
+			msgstr(msg_id), fun, line);
+		thread_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, (s8 *)__func__, (ub)__LINE__);
+		dave_memcpy(thread_msg->msg_body.msg_body, msg_body, msg_len);
+	}
+	else
+	{
+		thread_msg->msg_body.msg_body = (void *)msg_body;
 	}
 
-	task_msg->msg_body.msg_src = src_id;
+	thread_msg->msg_body.msg_src = src_id;
 	if(dst_id != INVALID_THREAD_ID)
 	{
-		task_msg->msg_body.msg_dst = dst_id;
+		thread_msg->msg_body.msg_dst = dst_id;
 	}
 	else
 	{
 		if(pThread == NULL)
-			task_msg->msg_body.msg_dst = INVALID_THREAD_ID;
+			thread_msg->msg_body.msg_dst = INVALID_THREAD_ID;
 		else
-			task_msg->msg_body.msg_dst = pThread->thread_id;
+			thread_msg->msg_body.msg_dst = pThread->thread_id;
 	}
-	task_msg->msg_body.msg_id = msg_id;
-	task_msg->msg_body.msg_type = msg_type;
-	task_msg->msg_body.src_attrib = base_thread_attrib(src_id);
+	thread_msg->msg_body.msg_id = msg_id;
+	thread_msg->msg_body.msg_type = msg_type;
+	thread_msg->msg_body.src_attrib = base_thread_attrib(src_id);
 	if(dst_id != INVALID_THREAD_ID)
 	{
-		task_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
+		thread_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
 	}
 	else
 	{
 		if(pThread == NULL)
-			task_msg->msg_body.dst_attrib = LOCAL_TASK_ATTRIB;
+			thread_msg->msg_body.dst_attrib = LOCAL_TASK_ATTRIB;
 		else
-			task_msg->msg_body.dst_attrib = pThread->attrib;
+			thread_msg->msg_body.dst_attrib = pThread->attrib;
 	}
-	task_msg->msg_body.msg_len = msg_len;
-	if(data_is_here == dave_true)
-	{
-		task_msg->msg_body.msg_body = (void *)msg_body;
-	}
-	else
-	{
-		dave_memcpy(task_msg->msg_body.msg_body, msg_body, msg_len);
-	}
-	task_msg->msg_body.mem_state = MsgMemState_uncaptured;
+	thread_msg->msg_body.msg_len = msg_len;
+	thread_msg->msg_body.mem_state = MsgMemState_uncaptured;
 
-	task_msg->msg_body.msg_build_time = 0;
-	task_msg->msg_body.msg_build_serial = 0;
+	thread_msg->msg_body.msg_build_time = 0;
+	thread_msg->msg_body.msg_build_serial = 0;
 
-	task_msg->msg_body.user_ptr = NULL;
+	thread_msg->msg_body.user_ptr = NULL;
 
-	task_msg->pQueue = task_msg->next = NULL;
+	thread_msg->pQueue = NULL;
+	thread_msg->next = NULL;
 
-	return task_msg;
+	thread_msg->msg_body.msg_chain = base_malloc(sizeof(ThreadChain));
+	thread_chain_build_msg(thread_msg->msg_body.msg_chain, src_id, dst_id, msg_id);
+
+	return thread_msg;
 }
 
 void
@@ -387,9 +391,60 @@ thread_clean_msg(ThreadMsg *pMsg)
 				pMsg->msg_body.mem_state = MsgMemState_uncaptured;
 			}
 		}
+		if(pMsg->msg_body.msg_chain != NULL)
+		{
+			base_free(pMsg->msg_body.msg_chain);
+		}
 
 		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
 	}
+}
+
+ThreadChain *
+thread_current_chain(void)
+{
+	ThreadId current_id;
+
+	if(thread_thread_is_main() == dave_true)
+	{
+		current_id = self();
+		if(current_id == INVALID_THREAD_ID)
+		{
+			return NULL;
+		}
+
+		return &(_thread[current_id].chain);
+	}
+	else
+	{
+		return thread_thread_chain();
+	}
+}
+
+s8 *
+thread_id_to_name(ThreadId thread_id)
+{
+	thread_id = thread_get_local(thread_id);
+
+	if(thread_id >= THREAD_MAX)
+	{
+		return "NULL";
+	}
+
+	return _thread[thread_id].thread_name;
+}
+
+TaskAttribute
+thread_id_to_attrib(ThreadId thread_id)
+{
+	thread_id = thread_get_local(thread_id);
+
+	if(thread_id >= THREAD_MAX)
+	{
+		return RESERVED_TASK_ATTRIB;
+	}
+
+	return _thread[thread_id].attrib;
 }
 
 #endif

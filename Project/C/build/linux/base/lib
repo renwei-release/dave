@@ -53,8 +53,8 @@ build_lib()
 {
    ./clean >> $LOGFILE
 
-   echo lib build $LEVEL ...
-   ./build $LEVEL >> $LOGFILE
+   echo lib build $LEVEL LIB ...
+   ./build $LEVEL LIB >> $LOGFILE
 
    build_dynamic_lib
    build_static_lib

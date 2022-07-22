@@ -5,10 +5,11 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __SYNC_GLOBALLY_IDENTIFIER_H__
-#define __SYNC_GLOBALLY_IDENTIFIER_H__
+#ifndef __CHAIN_ID_H__
+#define __CHAIN_ID_H__
+#include "base_define.h"
 
-s8 * sync_globally_identifier(void);
+s8 * chain_id(s8 *chain_id_ptr, ub chain_id_len);
 
 #endif
 

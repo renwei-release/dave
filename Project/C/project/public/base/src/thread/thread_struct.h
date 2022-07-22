@@ -9,6 +9,7 @@
 #define __THREAD_STRUCT_H__
 #include "dave_tools.h"
 #include "thread_parameter.h"
+#include "thread_chain.h"
 
 typedef struct {
 	MSGBODY msg_body;
@@ -71,6 +72,9 @@ typedef struct {
 
 	// sync action
 	ThreadSync sync;
+
+	// call chain
+	ThreadChain chain;
 
 	dave_bool has_not_wakeup_flag;
 
