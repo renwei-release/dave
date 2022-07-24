@@ -203,7 +203,8 @@ thread_chain_run_msg(MSGBODY *msg)
 {
 	ThreadChain *pThreadChain;
 
-	if(msg->msg_chain == NULL)
+	if((msg->msg_chain == NULL)
+		|| (thread_chain_enable(msg->msg_src, msg->msg_dst, msg->msg_id) == dave_false))
 	{
 		return NULL;
 	}
@@ -242,6 +243,9 @@ thread_chain_insert(
 			thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));
 		return;
 	}
+
+	if(chain_enable() == dave_false)
+		return;
 
 	_thread_chain_insert_chain(pChain, called, src_gid, dst_gid, msg_src, msg_dst, msg_id);
 

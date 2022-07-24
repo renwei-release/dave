@@ -48,12 +48,9 @@ _thread_running_pop_stack(ThreadStack **ppCurrentMsgStack, ThreadStack *pStack)
 static inline void
 _thread_running_function(base_thread_fun thread_fun, MSGBODY *msg)
 {
-	ThreadChain *pChain = NULL;
+	ThreadChain *pChain;
 
-	if(thread_chain_enable(msg->msg_src, msg->msg_dst, msg->msg_id) == dave_true)
-	{
-		pChain = thread_chain_run_msg(msg);
-	}
+	pChain = thread_chain_run_msg(msg);
 
 	thread_fun(msg);
 
