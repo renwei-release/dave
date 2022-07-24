@@ -9,8 +9,8 @@
 #include "dave_tools.h"
 #include "tools_log.h"
 
-void * t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len);
-dave_bool t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
+void * t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len);
+dave_bool t_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
 void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);
 
 static void *
@@ -28,12 +28,12 @@ _t_rpc_unzip_ver1(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub pa
 }
 
 static inline MBUF *
-_t_rpc_zip_ver3(ub msg_id, void *msg_body, ub msg_len)
+_t_rpc_zip_ver3(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
 {
 	void *pBson;
 	MBUF *mbuf_data;
 
-	pBson = t_rpc_ver3_zip(msg_id, msg_body, msg_len);
+	pBson = t_rpc_ver3_zip(pChainBson, msg_id, msg_body, msg_len);
 	if(pBson == NULL)
 		return NULL;
 
@@ -45,29 +45,29 @@ _t_rpc_zip_ver3(ub msg_id, void *msg_body, ub msg_len)
 }
 
 static inline  dave_bool
-_t_rpc_unzip_ver3(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+_t_rpc_unzip_ver3(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {
-	return t_rpc_ver3_unzip(msg_body, msg_len, msg_id, packet_ptr, packet_len);
+	return t_rpc_ver3_unzip(ppChainBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
 }
 
 // =====================================================================
 
 MBUF *
-t_rpc_zip(sb ver, ub msg_id, void *msg_body, ub msg_len)
+t_rpc_zip(sb ver, void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
 {
 	if(ver == 1)
 		return _t_rpc_zip_ver1(msg_id, msg_body, msg_len);
 	else
-		return _t_rpc_zip_ver3(msg_id, msg_body, msg_len);
+		return _t_rpc_zip_ver3(pChainBson, msg_id, msg_body, msg_len);
 }
 
 dave_bool
-t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+t_rpc_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {
 	if(packet_ptr[0] == '{')
 		return _t_rpc_unzip_ver1(msg_body, msg_len, msg_id, packet_ptr, packet_len);
 	else
-		return _t_rpc_unzip_ver3(msg_body, msg_len, msg_id, packet_ptr, packet_len);
+		return _t_rpc_unzip_ver3(ppChainBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
 }
 
 void *

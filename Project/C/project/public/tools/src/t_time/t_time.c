@@ -5,9 +5,14 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#include <sys/time.h>
+#include <time.h>
 #include "dave_base.h"
 #include "dave_os.h"
 #include "tools_log.h"
+
+#define MAX_SECOND (157680000000)	// 60 * 60 * 24 * 365 * 5000
+#define YEAR_START (1900)
 
 // =====================================================================
 
@@ -31,5 +36,33 @@ t_time_set_date(DateStruct *pDate)
 		return RetCode_invalid_date;
 
 	return dave_os_set_time(pDate->year, pDate->month, pDate->day, pDate->hour, pDate->minute, pDate->second);
+}
+
+DateStruct
+t_time_second_struct(ub second_time)
+{
+	time_t tm_time;
+	struct tm ptm = { 0 };
+	struct tm *pTm;
+	DateStruct date;
+
+	if(second_time > MAX_SECOND)
+	{
+		TOOLSABNOR("too big second_time:%ld", second_time);
+		second_time = 0;
+	}
+
+	tm_time = (time_t)second_time;
+
+	pTm = gmtime_r(&tm_time, &ptm);
+
+	date.year = YEAR_START + pTm->tm_year;
+	date.month = pTm->tm_mon + 1;
+	date.day = pTm->tm_mday;
+	date.hour = pTm->tm_hour;
+	date.minute = pTm->tm_min;
+	date.second = pTm->tm_sec;
+
+	return date;
 }
 

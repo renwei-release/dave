@@ -22,6 +22,7 @@ void sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub
 
 dave_bool sync_client_tx_run_thread_msg_req(
 	SyncServer *pServer,
+	void *msg_chain,
 	ThreadId route_src, ThreadId route_dst,
 	s8 *src, s8 *dst, ub msg_id,
 	BaseMsgType msg_type, TaskAttribute src_attrib, TaskAttribute dst_attrib,

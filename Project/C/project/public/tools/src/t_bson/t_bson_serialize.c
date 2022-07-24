@@ -373,7 +373,7 @@ _t_bson_serialize_to_string(tBsonObject *pBson, unsigned char *key_ptr, size_t k
 {
 	if(value_len <= 0)
 	{
-		TOOLSABNOR("serialize_len:%d is too short!", value_len);
+		TOOLSLOG("serialize_len:%d is too short! key:%d/%s", value_len, key_len, key_ptr);
 		return;
 	}
 

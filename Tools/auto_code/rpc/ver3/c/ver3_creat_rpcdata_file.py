@@ -92,7 +92,7 @@ def _creat_rpc_data_private_ptr_file(file_id, msg_table):
 
 
 def _creat_rpcdata_zip_file(file_id):
-    file_id.write("void *\nt_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len)\n")
+    file_id.write("void *\nt_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)\n")
     file_id.write("{\n")
     file_id.write("	void *pBson;\n")
     file_id.write("\n\tpBson = _t_rpc_zip(msg_id, msg_body, msg_len);\n")
@@ -104,13 +104,14 @@ def _creat_rpcdata_zip_file(file_id):
     file_id.write("\n\t#ifdef LEVEL_PRODUCT_alpha")
     file_id.write("\n\tt_bson_add_int64(pBson, \"rpc_time\", (u64)dave_os_time_us());")
     file_id.write("\n\t#endif\n")
+    file_id.write("\n\tt_bson_add_object(pBson, \"chain\", pChainBson);\n")
     file_id.write("\n\treturn pBson;\n")
     file_id.write("}\n")
     return
 
 
 def _creat_rpcdata_unzip_file(file_id):
-    file_id.write("dave_bool\nt_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
+    file_id.write("dave_bool\nt_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
     file_id.write("{\r\tvoid *pBson;\n")
     file_id.write("\tdave_bool ret = dave_false;\n")
     file_id.write("\n")
@@ -129,6 +130,7 @@ def _creat_rpcdata_unzip_file(file_id):
     file_id.write("\n\t}")
     file_id.write("\n\t#endif\n")
     file_id.write("\n\tret = _t_rpc_unzip(msg_body, msg_len, msg_id, pBson);\n")
+    file_id.write("\n\t*ppChainBson = t_bson_clone_object(pBson, \"chain\");\n")
     file_id.write("\n\tt_bson_free_object(pBson);\n")
     file_id.write("\n")
     file_id.write("\treturn ret;\n")
@@ -167,8 +169,8 @@ def _creat_rpcdata_inc_file(file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_rpcdata_inc_head)
-        file_id.write("void * t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len);\n")
-        file_id.write("dave_bool t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
+        file_id.write("void * t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len);\n")
+        file_id.write("dave_bool t_rpc_ver3_unzip(void **msg_chain, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
         file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n\n")
         file_id.write(_rpcdata_inc_end)
     return

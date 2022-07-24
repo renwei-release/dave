@@ -220,6 +220,11 @@ t_bson_object_add(tBsonObject *pBson, char *key_ptr, size_t key_len, tBsonObject
 		return;
 	}
 
+	if(pAddBson == NULL)
+	{
+		return;
+	}
+
 	if((pAddBson->type != tBsonType_array) && (pAddBson->type != tBsonType_object))
 	{
 		TOOLSABNOR("invalid type:%d", pAddBson->type);

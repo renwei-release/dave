@@ -19,6 +19,9 @@ _base_cfg_can_be_set_json_valid_char(u8 valid_char)
 	if(((valid_char >= 'a') && (valid_char <= 'z'))
 		|| ((valid_char >= 'A') && (valid_char <= 'Z'))
 		|| ((valid_char >= '0') && (valid_char <= '9'))
+
+		|| (valid_char == '~')
+		|| (valid_char == '`')
 		|| (valid_char == '!')
 		|| (valid_char == '@')
 		|| (valid_char == '#')
@@ -29,13 +32,38 @@ _base_cfg_can_be_set_json_valid_char(u8 valid_char)
 		|| (valid_char == '*')
 		|| (valid_char == '(')
 		|| (valid_char == ')')
+
+		|| (valid_char == '_')
 		|| (valid_char == '-')
+
 		|| (valid_char == '+')
-		|| (valid_char == ' ')
-		|| (valid_char == '<')
-		|| (valid_char == '>')
+		|| (valid_char == '=')
+
+		|| (valid_char == '{')
+		|| (valid_char == '[')
+
+		|| (valid_char == '}')
+		|| (valid_char == ']')
+
+		|| (valid_char == '|')
+		|| (valid_char == '\\')
+
 		|| (valid_char == ':')
-		|| (valid_char == '.'))
+		|| (valid_char == ';')
+
+		|| (valid_char == '"')
+		|| (valid_char == '\'')
+
+		|| (valid_char == '<')
+		|| (valid_char == ',')
+
+		|| (valid_char == '>')
+		|| (valid_char == '.')
+
+		|| (valid_char == '?')
+		|| (valid_char == '/')
+
+		|| (valid_char == ' '))
 	{
 		return dave_true;
 	}
@@ -172,7 +200,7 @@ base_cfg_get_bool(s8 *cfg_name, dave_bool default_value)
 
 	if(cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
 	{
-		return dave_strcmp(cfg_name, "true");
+		return dave_strcmp(value_ptr, "true");
 	}
 	else
 	{

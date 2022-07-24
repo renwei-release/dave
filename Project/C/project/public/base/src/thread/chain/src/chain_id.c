@@ -12,6 +12,8 @@
 #include "base_lock.h"
 
 static ub _chain_id_serial = 0;
+static ub _chain_id_counter = 0;
+static ub _call_id_counter = 0;
 
 // =====================================================================
 
@@ -24,9 +26,33 @@ chain_id(s8 *chain_id_ptr, ub chain_id_len)
 	serial = _chain_id_serial ++;
 	base_unlock();
 
-	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", globally_identifier(), dave_os_time_ns(), serial);
+	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", globally_identifier(), dave_os_time_us(), serial);
 
 	return chain_id_ptr;
+}
+
+ub
+chain_counter(void)
+{
+	ub counter;
+
+	base_lock();
+	counter = _chain_id_counter ++;
+	base_unlock();
+
+	return counter;
+}
+
+ub
+chain_call_id(void)
+{
+	ub call_id;
+
+	base_lock();
+	call_id = _call_id_counter ++;
+	base_unlock();
+
+	return call_id;
 }
 
 #endif

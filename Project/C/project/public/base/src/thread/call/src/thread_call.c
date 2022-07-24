@@ -96,18 +96,21 @@ thread_call_sync_catch(
 	ub msg_id, void *msg_body, ub msg_len,
 	dave_bool *hold_body)
 {
+	dave_bool catch_flag;
+
 #ifdef ENABLE_THREAD_COROUTINE
 	if(thread_enable_coroutine(pDstThread) == dave_true)
 	{
-		*hold_body = thread_coroutine_running_step_resume(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
-		return *hold_body;
+		catch_flag = *hold_body = thread_coroutine_running_step_resume(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
 	}
 	else
 #endif
 	{
 		*hold_body = dave_false;
-		return thread_sync_call_step_3_catch(pDstThread, dst_id, src_id, msg_id, msg_body, msg_len);
+		catch_flag = thread_sync_call_step_3_catch(pDstThread, dst_id, src_id, msg_id, msg_body, msg_len);
 	}
+
+	return catch_flag;
 }
 
 #endif

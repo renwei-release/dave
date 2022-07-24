@@ -89,6 +89,34 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 	return msg_index;
 }
 
+static inline void
+_thread_build_msg_chain(
+	ThreadMsg *thread_msg,
+	void *msg_chain,
+	ThreadId src_id, ThreadId dst_id, ub msg_id)
+{
+	if(thread_chain_enable(src_id, dst_id, msg_id) == dave_true)
+	{
+		if(msg_chain != NULL)
+		{
+			thread_msg->msg_body.msg_chain = msg_chain;
+		}
+		else
+		{
+			thread_msg->msg_body.msg_chain = thread_chain_malloc();
+			thread_chain_build_msg(thread_msg->msg_body.msg_chain, src_id, dst_id, msg_id);
+		}
+	}
+	else
+	{
+		if(msg_chain != NULL)
+		{
+			thread_chain_free(msg_chain);
+		}
+		thread_msg->msg_body.msg_chain = NULL;	
+	}
+}
+
 // =====================================================================
 
 void
@@ -303,6 +331,7 @@ thread_enable_coroutine(ThreadStruct *pThread)
 ThreadMsg *
 thread_build_msg(
 	ThreadStruct *pThread,
+	void *msg_chain,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	BaseMsgType msg_type,
@@ -361,8 +390,7 @@ thread_build_msg(
 	thread_msg->pQueue = NULL;
 	thread_msg->next = NULL;
 
-	thread_msg->msg_body.msg_chain = base_malloc(sizeof(ThreadChain));
-	thread_chain_build_msg(thread_msg->msg_body.msg_chain, src_id, dst_id, msg_id);
+	_thread_build_msg_chain(thread_msg, msg_chain, src_id, dst_id, msg_id);
 
 	return thread_msg;
 }
@@ -393,7 +421,8 @@ thread_clean_msg(ThreadMsg *pMsg)
 		}
 		if(pMsg->msg_body.msg_chain != NULL)
 		{
-			base_free(pMsg->msg_body.msg_chain);
+			thread_chain_free(pMsg->msg_body.msg_chain);
+			pMsg->msg_body.msg_chain = NULL;
 		}
 
 		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);

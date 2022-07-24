@@ -11,7 +11,9 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "base_tools.h"
 #include "thread_tools.h"
+#include "thread_chain.h"
 #include "sync_base_package.h"
 #include "sync_param.h"
 #include "sync_client_tools.h"
@@ -34,6 +36,7 @@ static ThreadId _sync_client_thread = INVALID_THREAD_ID;
 static inline dave_bool
 _sync_client_run_thread_msg(
 	SyncServer *pServer,
+	void *pChainBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ThreadId src_thread, ThreadId dst_thread,
@@ -42,6 +45,8 @@ _sync_client_run_thread_msg(
 	ub msg_len, u8 *msg_body)
 {
 	ub net_index;
+	ThreadChain *pChain;
+	dave_bool ret;
 
 	route_src = thread_set_local(route_src, src_thread);
 	route_dst = thread_set_local(route_dst, dst_thread);
@@ -81,12 +86,32 @@ _sync_client_run_thread_msg(
 
 	route_src = sync_client_thread_id_change_to_user(route_src, _sync_client_thread);
 
-	return snd_from_msg(route_src, route_dst, msg_id, msg_len, msg_body);
+	pChain = thread_bson_to_chain(pChainBson);
+
+	thread_chain_insert(
+		dave_true,
+		pChain,
+		pServer->globally_identifier, globally_identifier(),
+		route_src, route_dst,
+		msg_id, msg_len, msg_body);
+
+	ret = base_thread_id_msg(
+		pChain,
+		route_src, route_dst,
+		BaseMsgType_Unicast,
+		msg_id, msg_len, msg_body,
+		0,
+		(s8 *)__func__, (ub)__LINE__);
+
+	t_bson_free_object(pChainBson);
+
+	return ret;
 }
 
 static inline dave_bool
 _sync_client_run_thread(
 	SyncServer *pServer,
+	void *pChainBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ub msg_id,
@@ -116,6 +141,7 @@ _sync_client_run_thread(
 		{
 			sync_client_msg_buffer_push(
 				pServer,
+				pChainBson,
 				src, route_src,
 				dst, route_dst,
 				msg_id, msg_type,
@@ -133,6 +159,7 @@ _sync_client_run_thread(
 	{
 		ret = _sync_client_run_thread_msg(
 			pServer,
+			pChainBson,
 			src, route_src,
 			dst, route_dst,
 			src_thread, dst_thread,
@@ -190,6 +217,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	u8 *package_ptr = NULL;
 	ub package_len = 0;
 	void *msg_body = NULL;
+	void *pChainBson = NULL;
 	ub msg_len = 0;
 	RetCode ret = RetCode_OK;
 
@@ -199,7 +227,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 		&msg_type, NULL, NULL,
 		&package_len, &package_ptr);
 
-	if(t_rpc_unzip(&msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
+	if(t_rpc_unzip(&pChainBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{
 		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
@@ -215,6 +243,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	{
 		if(_sync_client_run_thread(
 			pServer,
+			pChainBson,
 			src, route_src,
 			dst, route_dst,
 			msg_id,

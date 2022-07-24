@@ -31,7 +31,7 @@ dos_welcome_screen(void)
 		dos_print(_welcome_word);
 	}
 
-	dos_print("Hi, I'm %s\nBUILD INFORMATION: HOST-%s USER-%s MAC-%s!",
+	dos_print("Hi, I'm %s\nBUILD INFORMATION: HOST=%s USER=%s MAC=%s!",
 		dave_verno(), __BUILD_HOSTNAME__, __BUILD_USERNAME__, __BUILD_MAC_ADDRESS__);
 }
 

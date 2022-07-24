@@ -310,7 +310,9 @@ thread_msg_buffer_pop(s8 *dst_thread)
 			src_id = thread_id(pBuffer->src_thread);
 			dst_id = thread_id(pBuffer->dst_thread);
 
-			if(base_thread_id_msg(src_id, dst_id,
+			if(base_thread_id_msg(
+				NULL,
+				src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
 				0,

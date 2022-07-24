@@ -5,14 +5,10 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __CHAIN_ID_H__
-#define __CHAIN_ID_H__
+#ifndef __LOG_SAVE_LOG_H__
+#define __LOG_SAVE_LOG_H__
 
-s8 * chain_id(s8 *chain_id_ptr, ub chain_id_len);
-
-ub chain_counter(void);
-
-ub chain_call_id(void);
+void log_save_log(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len);
 
 #endif
 

@@ -2643,6 +2643,9 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 		case ORDER_CODE_LOG_RECORD_V2:
 				value_str = "'ORDER_CODE_LOG_RECORD_V2-0x0103'";
 			break;
+		case ORDER_CODE_LOG_CHAIN:
+				value_str = "'ORDER_CODE_LOG_CHAIN-0x0104'";
+			break;
 		case ORDER_CODE_RUN_INTERNAL_MSG_REQ:
 				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_REQ-0x0114'";
 			break;

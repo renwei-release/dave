@@ -1134,7 +1134,7 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 // =====================================================================
 
 void *
-t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len)
+t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
 {
 	void *pBson;
 
@@ -1151,11 +1151,13 @@ t_rpc_ver3_zip(ub msg_id, void *msg_body, ub msg_len)
 	t_bson_add_int64(pBson, "rpc_time", (u64)dave_os_time_us());
 	#endif
 
+	t_bson_add_object(pBson, "chain", pChainBson);
+
 	return pBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+t_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {	void *pBson;
 	dave_bool ret = dave_false;
 
@@ -1176,6 +1178,8 @@ t_rpc_ver3_unzip(void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub pac
 	#endif
 
 	ret = _t_rpc_unzip(msg_body, msg_len, msg_id, pBson);
+
+	*ppChainBson = t_bson_clone_object(pBson, "chain");
 
 	t_bson_free_object(pBson);
 

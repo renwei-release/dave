@@ -9,6 +9,11 @@
 #define __T_A2B_H__
 #include "dave_http.h"
 
+#define dave_byte_8_32(d, a0, a1, a2, a3) {u32 t; t=((((u32)(a0))<<24)&0xff000000); t+=((((u32)(a1))<<16)&0xff0000); t+=((((u32)(a2))<<8)&0xff00); t+=(((u32)(a3))&0xff); (d)=t;}
+#define dave_byte_32_8(a0, a1, a2, a3, d) {u32 t; t=d; (a0)=(u8)((t)>>24); (a1)=(u8)((t)>>16); (a2)=(u8)((t)>>8); (a3)=(u8)(t);}
+#define dave_byte_16(d, a0, a1) {u16 t; t=((((u16)(a0))<<8)&0xff00); t+=(((u16)(a1))&0xff); (d)=t;}
+#define dave_byte_8(a0, a1, d) {u16 t; t=d; (a0)=(u8)((t)>>8); (a1)=(u8)(t);}
+
 MBUF * t_a2b_str_to_mbuf(s8 *str);
 MBUF * t_a2b_param_to_mbuf(const char *args, ...);
 ub t_a2b_mbuf_to_buf(MBUF *m, u8 *buf, ub buf_len);

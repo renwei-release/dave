@@ -89,7 +89,9 @@ dave_os_utc_date(DateStruct *date)
 {
 	time_t timep;
 	struct tm *p;
+
 	time(&timep);
+
 	p=gmtime(&timep);
 
 	date->year = 1900+p->tm_year;

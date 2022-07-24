@@ -13,6 +13,7 @@ typedef struct {
 	dave_bool valid;
 
 	s8 chain_id[DAVE_CHAIN_ID_LEN];
+	ub chain_counter;
 	ub generation;
 
 	ub send_time;
@@ -25,15 +26,41 @@ typedef struct {
 	s8 dst_thread[DAVE_THREAD_NAME_LEN];
 
 	ub msg_id;
+
+	dave_bool called;
+	ub call_id;
 } ThreadChain;
+
+void thread_chain_init(void);
+
+void thread_chain_exit(void);
+
+ThreadChain * thread_chain_malloc(void);
+
+void thread_chain_free(ThreadChain *pChain);
 
 void thread_chain_reset(ThreadChain *pChain);
 
+dave_bool thread_chain_enable(ThreadId msg_src, ThreadId msg_dst, ub msg_id);
+
 void thread_chain_clean(ThreadChain *pChain);
 
-void thread_chain_build_msg(ThreadChain *pMsgChain, ThreadId src_id, ThreadId dst_id, ub msg_id);
+void thread_chain_build_msg(ThreadChain *pMsgChain, ThreadId msg_src, ThreadId msg_dst, ub msg_id);
 
 ThreadChain * thread_chain_run_msg(MSGBODY *msg);
+
+void thread_chain_insert(
+	dave_bool called,
+	ThreadChain *pChain,
+	s8 *src_gid, s8 *dst_gid,
+	ThreadId msg_src, ThreadId msg_dst,
+	ub msg_id, ub msg_len, void *msg_body);
+
+MBUF * thread_chain_report(void);
+
+void * thread_chain_to_bson(ThreadChain *pChain);
+
+ThreadChain * thread_bson_to_chain(void *pBson);
 
 #endif
 

@@ -142,6 +142,24 @@ t_bson_inq_object(void *pBson, char *key)
 	return pObject;
 }
 
+void *
+t_bson_clone_object(void *pBson, char *key)
+{
+	tBsonObject *pKeyObject;
+	char *serialize_ptr;
+	size_t serialize_len;
+
+	pKeyObject = t_bson_inq_object(pBson, key);
+	if(pKeyObject == NULL)
+	{
+		return NULL;
+	}
+
+	serialize_ptr = t_bson_to_serialize(pKeyObject, &serialize_len);
+
+	return t_serialize_to_bson(serialize_ptr, serialize_len);
+}
+
 size_t
 t_bson_array_number(void *pBson)
 {

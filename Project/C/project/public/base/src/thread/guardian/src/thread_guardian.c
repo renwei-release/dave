@@ -28,34 +28,34 @@
 #include "thread_running.h"
 #include "thread_log.h"
 
-static void _thread_guardian_exit(MSGBODY *task_msg);
+static void _thread_guardian_exit(MSGBODY *msg);
 
 static ThreadId _guardian_thread = INVALID_THREAD_ID;
 static ThreadStruct *_thread;
 static DateStruct _system_work_start_date;
 
 static void
-_thread_guardian_test(MSGBODY *task_msg)
+_thread_guardian_test(MSGBODY *msg)
 {
 	ub msg_index;
 	ThreadId task2_id;
 
-	if(task_msg->msg_len != 33)
+	if(msg->msg_len != 33)
 	{
-		THREADDEBUG("GUARDIAN GET MSG FAIL msg_len=%d", task_msg->msg_len);
+		THREADDEBUG("GUARDIAN GET MSG FAIL msg_len=%d", msg->msg_len);
 	}
-	for(msg_index=0; msg_index<task_msg->msg_len; msg_index++)
+	for(msg_index=0; msg_index<msg->msg_len; msg_index++)
 	{
-		if(((u8 *)(task_msg->msg_body))[msg_index] != 0xaa)
+		if(((u8 *)(msg->msg_body))[msg_index] != 0xaa)
 			break;
 	}
-	if(msg_index < task_msg->msg_len)
+	if(msg_index < msg->msg_len)
 	{
-		t_stdio_print_hex("GUARDIAN GET DATA FAIL", (u8 *)(task_msg->msg_body), (s32)(task_msg->msg_len));
+		t_stdio_print_hex("GUARDIAN GET DATA FAIL", (u8 *)(msg->msg_body), (s32)(msg->msg_len));
 	}
 
 	task2_id = get_thread_id("test2");
-	if(snd_msg(task2_id, MSGID_TEST, task_msg->msg_len, task_msg->msg_body) == dave_false)
+	if(snd_msg(task2_id, MSGID_TEST, msg->msg_len, msg->msg_body) == dave_false)
 	{
 		THREADDEBUG("GUARDIAN SND MSG FAIL!");
 	}
@@ -206,6 +206,7 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 	msg.msg_id = MSGID_RUN_FUNCTION;
 	msg.msg_len = 0;
 	msg.msg_body = NULL;
+	msg.msg_chain = NULL;
 
 	if(run->initialization_flag == dave_true)
 	{
@@ -294,42 +295,42 @@ _thread_guardian_local_thread_ready(ThreadLocalReadyMsg *pReady)
 }
 
 static void
-_thread_guardian_main(MSGBODY *task_msg)
+_thread_guardian_main(MSGBODY *msg)
 {
-	switch((ub)(task_msg->msg_id))
+	switch((ub)(msg->msg_id))
 	{
 		case MSGID_TEST:
-				_thread_guardian_test(task_msg);
+				_thread_guardian_test(msg);
 			break;
 		case MSGID_DEBUG_REQ:
-				_thread_guardian_debug(task_msg->msg_src, (DebugReq *)(task_msg->msg_body));
+				_thread_guardian_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
 		case MSGID_WAKEUP:
 				_thread_guardian_system_check();
 			break;
 		case MSGID_RUN_FUNCTION:
-				_thread_guardian_run_function((RUNFUNCTIONMSG *)(task_msg->msg_body));
+				_thread_guardian_run_function((RUNFUNCTIONMSG *)(msg->msg_body));
 			break;
 		case MSGID_RESTART_REQ:
-				_thread_guardian_restart((RESTARTREQMSG *)(task_msg->msg_body));
+				_thread_guardian_restart((RESTARTREQMSG *)(msg->msg_body));
 			break;
 		case MSGID_POWER_OFF:
-				thread_quit(QUIT_TYPE_RESTART, ((POWEROFFMSG *)(task_msg->msg_body))->reason, _thread, THREAD_MAX);
+				thread_quit(QUIT_TYPE_RESTART, ((POWEROFFMSG *)(msg->msg_body))->reason, _thread, THREAD_MAX);
 			break;
 		case MSGID_TRACE_SWITCH:
-				_thread_guardian_trace_switch((TraceSwitchMsg *)(task_msg->msg_body));
+				_thread_guardian_trace_switch((TraceSwitchMsg *)(msg->msg_body));
 			break;
 		case MSGID_CFG_UPDATE:
-				thread_busy_idle_cfg_update((CFGUpdate *)(task_msg->msg_body));
+				thread_busy_idle_cfg_update((CFGUpdate *)(msg->msg_body));
 			break;
 		case MSGID_REMOTE_THREAD_READY:
-				_thread_guardian_remote_thread_ready((ThreadRemoteReadyMsg *)(task_msg->msg_body));
+				_thread_guardian_remote_thread_ready((ThreadRemoteReadyMsg *)(msg->msg_body));
 			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
-				_thread_guardian_remote_thread_id_ready((ThreadRemoteIDReadyMsg *)(task_msg->msg_body));
+				_thread_guardian_remote_thread_id_ready((ThreadRemoteIDReadyMsg *)(msg->msg_body));
 			break;
 		case MSGID_LOCAL_THREAD_READY:
-				_thread_guardian_local_thread_ready((ThreadLocalReadyMsg *)(task_msg->msg_body));
+				_thread_guardian_local_thread_ready((ThreadLocalReadyMsg *)(msg->msg_body));
 			break;
 		default:
 			break;
@@ -337,7 +338,7 @@ _thread_guardian_main(MSGBODY *task_msg)
 }
 
 static void
-_thread_guardian_init(MSGBODY *task_msg)
+_thread_guardian_init(MSGBODY *msg)
 {
 	thread_msg_buffer_init();
 	thread_remote_id_table_init();
@@ -347,7 +348,7 @@ _thread_guardian_init(MSGBODY *task_msg)
 }
 
 static void
-_thread_guardian_exit(MSGBODY *task_msg)
+_thread_guardian_exit(MSGBODY *msg)
 {
 	thread_sync_exit();
 	thread_busy_idle_exit();

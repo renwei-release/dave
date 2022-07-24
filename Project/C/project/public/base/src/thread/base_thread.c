@@ -371,6 +371,7 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 
 static inline RetCode
 _thread_write_msg(
+	void *msg_chain,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	dave_bool wakeup, BaseMsgType msg_type,
@@ -389,6 +390,7 @@ _thread_write_msg(
 	{
 		pMsg = thread_build_msg(
 					pDstThread,
+					msg_chain,
 					src_id, dst_id,
 					msg_id, msg_len, msg_body,
 					msg_type,
@@ -421,6 +423,10 @@ _thread_write_msg(
 		if(hold_body == dave_false)
 		{
 			thread_clean_user_input_data(msg_body, msg_id);
+		}
+		if(msg_chain != NULL)
+		{
+			thread_chain_free(msg_chain);
 		}
 	}
 
@@ -664,6 +670,7 @@ _thread_build_tick_message(void)
 						pWakeup = thread_msg(pWakeup);
 
 						_thread_write_msg(
+							NULL,
 							_guardian_thread, pThread->thread_id,
 							MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
 							dave_false, BaseMsgType_Unicast,
@@ -1151,6 +1158,7 @@ _thread_safe_del(ThreadId thread_id)
 
 static inline dave_bool
 _thread_safe_id_msg(
+	void *msg_chain,
 	ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -1197,6 +1205,7 @@ _thread_safe_id_msg(
 	src_id = _thread_src_id_change(src_id, dst_id);
 
 	ret = _thread_write_msg(
+		msg_chain,
 		src_id, dst_id,
 		msg_id, msg_len, msg_body,
 		dave_true, msg_type,
@@ -1412,6 +1421,8 @@ base_thread_init(void *main_thread_id)
 
 	thread_thread_init(_thread_schedule_one_thread);
 
+	thread_chain_init();
+
 	_top_msg_stack.thread_id = _guardian_thread = thread_guardian_init(_thread);
 }
 
@@ -1422,6 +1433,8 @@ base_thread_exit(void)
 
 	_guardian_thread = INVALID_THREAD_ID;
 	_current_msg_stack = NULL;
+
+	thread_chain_exit();
 
 	thread_thread_exit();
 
@@ -1702,6 +1715,7 @@ base_thread_msg_release(void *ptr, s8 *fun, ub line)
 
 dave_bool
 base_thread_id_msg(
+	void *msg_chain,
 	ThreadId src_id, ThreadId dst_id,
 	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
@@ -1732,7 +1746,7 @@ base_thread_id_msg(
 		}
 		else
 		{
-			ret  = _thread_safe_id_msg(src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
+			ret  = _thread_safe_id_msg(msg_chain, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
 
@@ -1756,7 +1770,7 @@ base_thread_id_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_id_msg(src_id, dst_id, msg_type, req_id, msg_len, msg_body, 0, fun, line);
+		return base_thread_id_msg(NULL, src_id, dst_id, msg_type, req_id, msg_len, msg_body, 0, fun, line);
 	}
 	else
 	{
@@ -1788,7 +1802,7 @@ base_thread_name_msg(
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
-			ret = base_thread_id_msg(src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+			ret = base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 		}
 		else
 		{
@@ -1840,7 +1854,7 @@ base_thread_gid_msg(
 		return dave_false;
 	}
 
-	return base_thread_id_msg(INVALID_THREAD_ID, thread_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+	return base_thread_id_msg(NULL, INVALID_THREAD_ID, thread_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 }
 
 dave_bool
@@ -1898,7 +1912,7 @@ base_thread_sync_msg(
 		return NULL;
 	}
 
-	if(base_thread_id_msg(src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
+	if(base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
 	{
 		return NULL;
 	}

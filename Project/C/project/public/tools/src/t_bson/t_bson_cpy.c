@@ -28,11 +28,10 @@ t_bson_string_cpy(tBsonObject *pBson, char *key_ptr, size_t key_len, char *pStri
 
 	if(*pStringLen > string_cpy_len)
 	{
-		string_cpy_len = *pStringLen;
 		pStringValue[string_cpy_len] = '\0';
 	}
 
-	memcpy(pStringValue, string_cpy_ptr, string_cpy_len);
+	*pStringLen = dave_memcpy(pStringValue, string_cpy_ptr, string_cpy_len);
 
 	return true;
 }
@@ -52,11 +51,10 @@ t_bson_bin_cpy(tBsonObject *pBson, char *key_ptr, size_t key_len, char *pBinValu
 
 	if(*pBinLen > bin_cpy_len)
 	{
-		bin_cpy_len = *pBinLen;
 		pBinValue[bin_cpy_len] = '\0';
 	}
 
-	memcpy(pBinValue, bin_cpy_ptr, bin_cpy_len);
+	*pBinLen = dave_memcpy(pBinValue, bin_cpy_ptr, bin_cpy_len);
 
 	return true;
 }
@@ -76,7 +74,6 @@ t_bson_array_string_cpy(tBsonObject *pBson, size_t index, char *pStringValue, si
 
 	if(*pStringLen > string_cpy_len)
 	{
-		string_cpy_len = *pStringLen;
 		pStringValue[string_cpy_len] = '\0';
 	}
 
@@ -100,11 +97,10 @@ t_bson_array_bin_cpy(tBsonObject *pBson, size_t index, char *pBinValue, size_t *
 
 	if(*pBinLen > bin_cpy_len)
 	{
-		bin_cpy_len = *pBinLen;
 		pBinValue[bin_cpy_len] = '\0';
 	}
 
-	dave_memcpy(pBinValue, bin_cpy_ptr, bin_cpy_len);
+	*pBinLen = dave_memcpy(pBinValue, bin_cpy_ptr, bin_cpy_len);
 
 	return true;
 }

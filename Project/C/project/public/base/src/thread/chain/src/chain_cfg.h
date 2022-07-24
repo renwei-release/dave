@@ -5,14 +5,12 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __CHAIN_ID_H__
-#define __CHAIN_ID_H__
+#ifndef __CHAIN_CFG_H__
+#define __CHAIN_CFG_H__
 
-s8 * chain_id(s8 *chain_id_ptr, ub chain_id_len);
+void chain_cfg_reset(void);
 
-ub chain_counter(void);
-
-ub chain_call_id(void);
+dave_bool chain_enable(void);
 
 #endif
 

@@ -37,6 +37,7 @@ bool t_bson_cpy_bin(void *pBson, char *key, char *pBinValue, size_t *pBinLen);
 
 void t_bson_add_object(void *pBson, char *key, void *pAddBson);
 void * t_bson_inq_object(void *pBson, char *key);
+void * t_bson_clone_object(void *pBson, char *key);
 
 size_t t_bson_array_number(void *pBson);
 

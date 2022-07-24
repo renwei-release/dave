@@ -29,6 +29,7 @@ typedef enum {
 	/* log function order code */
 	ORDER_CODE_LOG_RECORD					= 0x0102,
 	ORDER_CODE_LOG_RECORD_V2				= 0x0103,
+	ORDER_CODE_LOG_CHAIN					= 0x0104,
 
 	ORDER_CODE_RUN_INTERNAL_MSG_REQ 		= 0x0114,
 	ORDER_CODE_RUN_INTERNAL_MSG_RSP 		= 0x0115,
@@ -61,11 +62,6 @@ typedef enum {
 
 	ORDER_CODE_END							= 0x8000,
 } ORDER_CODE;
-
-#define dave_byte_8_32(d, a0, a1, a2, a3) {u32 t; t=((((u32)(a0))<<24)&0xff000000); t+=((((u32)(a1))<<16)&0xff0000); t+=((((u32)(a2))<<8)&0xff00); t+=(((u32)(a3))&0xff); (d)=t;}
-#define dave_byte_32_8(a0, a1, a2, a3, d) {u32 t; t=d; (a0)=(u8)((t)>>24); (a1)=(u8)((t)>>16); (a2)=(u8)((t)>>8); (a3)=(u8)(t);}
-#define dave_byte_16(d, a0, a1) {u16 t; t=((((u16)(a0))<<8)&0xff00); t+=(((u16)(a1))&0xff); (d)=t;}
-#define dave_byte_8(a0, a1, d) {u16 t; t=d; (a0)=(u8)((t)>>8); (a1)=(u8)(t);}
 
 typedef void (*stack_receive_fun)(void *param, s32 socket, IPBaseInfo *pIPInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame);
 

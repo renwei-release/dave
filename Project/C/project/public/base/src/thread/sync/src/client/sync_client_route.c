@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "base_tools.h"
 #include "thread_tools.h"
 #include "sync_base_package.h"
 #include "sync_param.h"
@@ -72,6 +73,7 @@ _sync_client_message_route_to_remote(SyncServer *pServer, MSGBODY *pMsg)
 
 	sync_client_tx_run_thread_msg_req(
 		pServer,
+		pMsg->msg_chain,
 		route_src, route_dst,
 		src, dst, pMsg->msg_id,
 		pMsg->msg_type, pMsg->src_attrib, pMsg->dst_attrib,
@@ -88,7 +90,14 @@ sync_client_message_route(MSGBODY *pMsg)
 	pServer = sync_client_chose_server(pMsg);
 
 	if(pServer != NULL)
-	{
+	{		
+		thread_chain_insert(
+			dave_false,
+			pMsg->msg_chain,
+			globally_identifier(), pServer->globally_identifier,
+			pMsg->msg_src, pMsg->msg_dst,
+			pMsg->msg_id, pMsg->msg_len, pMsg->msg_body);
+
 		SAFECODEv2R(pServer->rxtx_pv, _sync_client_message_route_to_remote(pServer, pMsg););
 	}
 	else

@@ -24,6 +24,7 @@
 
 typedef struct {
 	SyncServer *pServer;
+	void *pChainBson;
 	s8 *src;
 	ThreadId route_src;
 	s8 *dst;
@@ -51,6 +52,7 @@ _sync_client_msg_buffer_reset(SyncClientMsgBuffer *pBuffer)
 	dave_memset(pBuffer, 0x00, sizeof(SyncClientMsgBuffer));
 
 	pBuffer->pServer = NULL;
+	pBuffer->pChainBson = NULL;
 	pBuffer->src = NULL;
 	pBuffer->dst = NULL;
 	pBuffer->msg_body = NULL;
@@ -89,6 +91,11 @@ _sync_client_msg_buffer_clear(SyncClientMsgBuffer *pBuffer)
 	if(pBuffer->dst != NULL)
 	{
 		dave_free(pBuffer->dst);
+	}
+
+	if(pBuffer->pChainBson != NULL)
+	{
+		t_bson_free_object(pBuffer->pChainBson);
 	}
 
 	if(pBuffer->msg_body != NULL)
@@ -146,6 +153,7 @@ _sync_client_msg_buffer_timer_out(TIMERID timer_id, ub thread_index)
 static dave_bool
 _sync_client_msg_buffer_push(
 	SyncServer *pServer,
+	void *pChainBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ub msg_id, BaseMsgType msg_type,
@@ -175,6 +183,7 @@ _sync_client_msg_buffer_push(
 			pBuffer->msg_left = SYNC_CLIENT_MSG_BUFFER_LEFT;
 			pBuffer->fun = fun;
 			pBuffer->pServer = pServer;
+			pBuffer->pChainBson = pChainBson;
 
 			ret = dave_true;
 
@@ -225,6 +234,7 @@ _sync_client_msg_buffer_pop(void)
 			{
 				if(pBuffer->fun(
 					pBuffer->pServer,
+					pBuffer->pChainBson,
 					pBuffer->src, pBuffer->route_src,
 					pBuffer->dst, pBuffer->route_dst,
 					pBuffer->msg_id, pBuffer->msg_type,
@@ -235,6 +245,7 @@ _sync_client_msg_buffer_pop(void)
 						pBuffer->src, pBuffer->dst,
 						msgstr(pBuffer->msg_id));
 
+					pBuffer->pChainBson = NULL;
 					pBuffer->msg_body = NULL;
 
 					_sync_client_msg_buffer_clear(pBuffer);
@@ -264,6 +275,7 @@ _sync_client_msg_buffer_pop(void)
 static dave_bool
 _sync_client_msg_buffer_safe_push(
 	SyncServer *pServer,
+	void *pChainBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ub msg_id, BaseMsgType msg_type,
@@ -276,6 +288,7 @@ _sync_client_msg_buffer_safe_push(
 
 			ret = _sync_client_msg_buffer_push(
 				pServer,
+				pChainBson,
 				src, route_src,
 				dst, route_dst,
 				msg_id, msg_type,
@@ -329,6 +342,7 @@ sync_client_msg_buffer_exit(void)
 void
 sync_client_msg_buffer_push(
 	SyncServer *pServer,
+	void *pChainBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ub msg_id, BaseMsgType msg_type,
@@ -337,6 +351,7 @@ sync_client_msg_buffer_push(
 {
 	if(_sync_client_msg_buffer_safe_push(
 		pServer,
+		pChainBson,
 		src, route_src,
 		dst, route_dst,
 		msg_id, msg_type,
