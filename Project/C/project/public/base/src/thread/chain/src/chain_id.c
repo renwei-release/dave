@@ -17,6 +17,12 @@ static ub _call_id_counter = 0;
 
 // =====================================================================
 
+void
+chain_id_reset(void)
+{
+	_call_id_counter = t_rand();
+}
+
 s8 *
 chain_id(s8 *chain_id_ptr, ub chain_id_len)
 {

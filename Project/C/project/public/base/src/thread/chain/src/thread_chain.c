@@ -49,7 +49,7 @@ _thread_chain_build_new(ThreadChain *pMsgChain)
 
 	pMsgChain->valid = dave_true;
 	chain_id(pMsgChain->chain_id, sizeof(pMsgChain->chain_id));
-	pMsgChain->send_time = pMsgChain->recv_time = dave_os_time_us();
+	pMsgChain->send_time = dave_os_time_us();
 }
 
 static inline void
@@ -60,7 +60,7 @@ _thread_chain_build_copy(ThreadChain *pDstChain, ThreadChain *pSrcChain)
 	pDstChain->valid = dave_true;
 	dave_strcpy(pDstChain->chain_id, pSrcChain->chain_id, sizeof(pDstChain->chain_id));
 	pDstChain->generation = pSrcChain->generation + 1;
-	pDstChain->send_time = pDstChain->recv_time = dave_os_time_us();
+	pDstChain->send_time = dave_os_time_us();
 }
 
 static inline void
@@ -71,7 +71,6 @@ _thread_chain_run_copy(ThreadChain *pDstChain, ThreadChain *pSrcChain)
 	pDstChain->valid = dave_true;
 	dave_strcpy(pDstChain->chain_id, pSrcChain->chain_id, sizeof(pDstChain->chain_id));
 	pDstChain->generation = pSrcChain->generation;
-	pDstChain->send_time = pDstChain->recv_time = pSrcChain->send_time;
 }
 
 static inline void
@@ -85,13 +84,10 @@ _thread_chain_insert_chain(
 	pChain->valid = dave_true;
 	pChain->chain_counter = chain_counter();
 
-	if(called == dave_true)
+	pChain->recv_time = dave_os_time_us();
+
+	if(called == dave_false)
 	{
-		pChain->recv_time = dave_os_time_us();
-	}
-	else
-	{
-		pChain->send_time = dave_os_time_us();
 		pChain->call_id = chain_call_id();
 	}
 
@@ -106,7 +102,6 @@ _thread_chain_insert_chain(
 	pChain->called = called;
 }
 
-
 // =====================================================================
 
 void
@@ -115,6 +110,8 @@ thread_chain_init(void)
 	chain_cfg_reset();
 
 	chain_buf_init();
+
+	chain_id_reset();
 }
 
 void
@@ -245,7 +242,9 @@ thread_chain_insert(
 	}
 
 	if(chain_enable() == dave_false)
+	{
 		return;
+	}
 
 	_thread_chain_insert_chain(pChain, called, src_gid, dst_gid, msg_src, msg_dst, msg_id);
 
@@ -275,6 +274,8 @@ thread_chain_to_bson(ThreadChain *pChain)
 
 	pBson = t_bson_malloc_object();
 
+	pChain->send_time = dave_os_time_us();
+
 	t_bson_add_string(pBson, "chain_id", pChain->chain_id);
 	t_bson_add_int64(pBson, "generation", pChain->generation);
 	t_bson_add_int64(pBson, "send_time", pChain->send_time);	
@@ -302,8 +303,6 @@ thread_bson_to_chain(void *pBson)
 	t_bson_inq_int64(pBson, "generation", &(pChain->generation));
 	t_bson_inq_int64(pBson, "send_time", &(pChain->send_time));
 	t_bson_inq_int64(pBson, "call_id", &(pChain->call_id));
-
-	pChain->recv_time = pChain->send_time;
 
 	return pChain;
 }

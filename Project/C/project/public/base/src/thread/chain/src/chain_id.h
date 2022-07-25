@@ -8,6 +8,8 @@
 #ifndef __CHAIN_ID_H__
 #define __CHAIN_ID_H__
 
+void chain_id_reset(void);
+
 s8 * chain_id(s8 *chain_id_ptr, ub chain_id_len);
 
 ub chain_counter(void);

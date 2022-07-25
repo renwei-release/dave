@@ -65,6 +65,19 @@ if [[ "$DEPLOYMODEL" == "kibana" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-kibana -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
-   echo -e "Now \033[35mlog\033[0m is ready!"
+   echo -e "Now \033[35mkibana\033[0m is ready!"
    echo -e "Please browse the web: \033[35mhttp://[your IP address]:5601/app/management/data/index_management/indices\033[0m"
+fi
+
+if [[ "$DEPLOYMODEL" == "jaeger" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
+   cp jaeger_Dockerfile Dockerfile
+   IMAGE="jaeger_docker_image"
+   TAG="latest"
+   EXTEND="-v /dave/log:/dave/log"
+   cd ../../
+   chmod a+x *.sh
+   ./deploy.sh -p ${PROJECT} -n ${PROJECT}-jaeger -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
+   cd ${SHHOMEPATH}
+   rm -rf Dockerfile
+   echo -e "Now \033[35mjaeger\033[0m is ready!"
 fi
