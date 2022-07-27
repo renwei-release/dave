@@ -44,7 +44,7 @@ _chain_buf_malloc(
 	data_index += dave_memcpy(&data_ptr[data_index], pChain, sizeof(ThreadChain));
 
 	dave_byte_32_8(data_ptr[data_index++], data_ptr[data_index++], data_ptr[data_index++], data_ptr[data_index++], msg_id);
-	if(pChain->called == dave_true)
+	if(pChain->type == ChainType_execution)
 	{
 		if(msg_len > CHAIN_BODY_MAX_LEN)
 		{

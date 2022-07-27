@@ -7,11 +7,15 @@ RUN yum update -y
 RUN yum groupinstall -y "Development Tools"
 RUN yum install -y findutils
 RUN yum install -y vim
+RUN yum install -y wget
 RUN yum install -y libgomp
 RUN yum install -y gcc-c++.x86_64
 RUN yum install -y cmake
 RUN yum install -y python3
 RUN yum install -y golang.x86_64
+RUN yum install -y libstdc++
+RUN yum install -y libstdc++-devel
+RUN yum install -y libstdc++-static
 
 RUN mkdir -p /project/DAVE
 

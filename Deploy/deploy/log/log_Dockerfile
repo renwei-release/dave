@@ -5,9 +5,15 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN chmod 777 /tmp
 
 RUN yum update -y
-RUN yum -y install libgomp
+RUN yum install -y libgomp
+RUN yum install -y libstdc++
+RUN yum install -y libstdc++-devel
+RUN yum install -y libstdc++-static
 
-RUN mkdir /dave
+WORKDIR /
+
+COPY ./file_system .
+
 WORKDIR /project
 COPY dave-running.sh .
 CMD ["./dave-running.sh"]

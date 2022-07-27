@@ -86,6 +86,12 @@ t_rpc_ver3_ptr_AIXMsgAestheticsReq(AIXMsgAestheticsReq *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AIXMsgAestheticsReq(void)
+{
+	return sizeof(AIXMsgAestheticsReq);
+}
+
 void *
 t_rpc_ver3_zip_AIXMsgAestheticsRsp(AIXMsgAestheticsRsp *zip_data, ub zip_len)
 {
@@ -141,6 +147,12 @@ t_rpc_ver3_ptr_AIXMsgAestheticsRsp(AIXMsgAestheticsRsp *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AIXMsgAestheticsRsp(void)
+{
+	return sizeof(AIXMsgAestheticsRsp);
+}
+
 void *
 t_rpc_ver3_zip_AIXMsgImageClassificationReq(AIXMsgImageClassificationReq *zip_data, ub zip_len)
 {
@@ -192,6 +204,12 @@ t_rpc_ver3_ptr_AIXMsgImageClassificationReq(AIXMsgImageClassificationReq *struct
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_AIXMsgImageClassificationReq(void)
+{
+	return sizeof(AIXMsgImageClassificationReq);
 }
 
 void *
@@ -251,6 +269,12 @@ t_rpc_ver3_ptr_AIXMsgImageClassificationRsp(AIXMsgImageClassificationRsp *struct
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AIXMsgImageClassificationRsp(void)
+{
+	return sizeof(AIXMsgImageClassificationRsp);
+}
+
 void *
 t_rpc_ver3_zip_AppMsgFunctionRegReq(AppMsgFunctionRegReq *zip_data, ub zip_len)
 {
@@ -304,6 +328,12 @@ t_rpc_ver3_ptr_AppMsgFunctionRegReq(AppMsgFunctionRegReq *struct_data, void *new
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_AppMsgFunctionRegReq(void)
+{
+	return sizeof(AppMsgFunctionRegReq);
 }
 
 void *
@@ -363,6 +393,12 @@ t_rpc_ver3_ptr_AppMsgFunctionRegRsp(AppMsgFunctionRegRsp *struct_data, void *new
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AppMsgFunctionRegRsp(void)
+{
+	return sizeof(AppMsgFunctionRegRsp);
+}
+
 void *
 t_rpc_ver3_zip_AppMsgFunctionUnRegReq(AppMsgFunctionUnRegReq *zip_data, ub zip_len)
 {
@@ -416,6 +452,12 @@ t_rpc_ver3_ptr_AppMsgFunctionUnRegReq(AppMsgFunctionUnRegReq *struct_data, void 
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_AppMsgFunctionUnRegReq(void)
+{
+	return sizeof(AppMsgFunctionUnRegReq);
 }
 
 void *
@@ -475,6 +517,12 @@ t_rpc_ver3_ptr_AppMsgFunctionUnRegRsp(AppMsgFunctionUnRegRsp *struct_data, void 
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AppMsgFunctionUnRegRsp(void)
+{
+	return sizeof(AppMsgFunctionUnRegRsp);
+}
+
 void *
 t_rpc_ver3_zip_AppMsgMCardReq(AppMsgMCardReq *zip_data, ub zip_len)
 {
@@ -528,6 +576,12 @@ t_rpc_ver3_ptr_AppMsgMCardReq(AppMsgMCardReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_AppMsgMCardReq(void)
+{
+	return sizeof(AppMsgMCardReq);
 }
 
 void *
@@ -585,6 +639,12 @@ t_rpc_ver3_ptr_AppMsgMCardRsp(AppMsgMCardRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AppMsgMCardRsp(void)
+{
+	return sizeof(AppMsgMCardRsp);
+}
+
 void *
 t_rpc_ver3_zip_AppMsgTalkMCardReq(AppMsgTalkMCardReq *zip_data, ub zip_len)
 {
@@ -640,6 +700,12 @@ t_rpc_ver3_ptr_AppMsgTalkMCardReq(AppMsgTalkMCardReq *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_AppMsgTalkMCardReq(void)
+{
+	return sizeof(AppMsgTalkMCardReq);
+}
+
 void *
 t_rpc_ver3_zip_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *zip_data, ub zip_len)
 {
@@ -693,6 +759,12 @@ t_rpc_ver3_ptr_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_AppMsgTalkMCardRsp(void)
+{
+	return sizeof(AppMsgTalkMCardRsp);
 }
 
 void *
@@ -752,6 +824,12 @@ t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_BBSMsgAddCommentReq(void)
+{
+	return sizeof(BBSMsgAddCommentReq);
+}
+
 void *
 t_rpc_ver3_zip_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *zip_data, ub zip_len)
 {
@@ -803,6 +881,12 @@ t_rpc_ver3_ptr_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *struct_data, void *new_p
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_BBSMsgAddCommentRsp(void)
+{
+	return sizeof(BBSMsgAddCommentRsp);
 }
 
 void *
@@ -862,6 +946,12 @@ t_rpc_ver3_ptr_BBSMsgInqCommentReq(BBSMsgInqCommentReq *struct_data, void *new_p
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_BBSMsgInqCommentReq(void)
+{
+	return sizeof(BBSMsgInqCommentReq);
 }
 
 void *
@@ -929,6 +1019,12 @@ t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_BBSMsgInqCommentRsp(void)
+{
+	return sizeof(BBSMsgInqCommentRsp);
+}
+
 void *
 t_rpc_ver3_zip_BdataMCardRecord(BdataMCardRecord *zip_data, ub zip_len)
 {
@@ -975,6 +1071,12 @@ void *
 t_rpc_ver3_ptr_BdataMCardRecord(BdataMCardRecord *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_BdataMCardRecord(void)
+{
+	return sizeof(BdataMCardRecord);
 }
 
 void *
@@ -1031,6 +1133,12 @@ t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_BdataTalkRecord(void)
+{
+	return sizeof(BdataTalkRecord);
+}
+
 void *
 t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len)
 {
@@ -1081,6 +1189,12 @@ void *
 t_rpc_ver3_ptr_CFGUpdate(CFGUpdate *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_CFGUpdate(void)
+{
+	return sizeof(CFGUpdate);
 }
 
 void *
@@ -1138,6 +1252,12 @@ t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq(CVMsgFeaturesDetectedReq *struct_data, v
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CVMsgFeaturesDetectedReq(void)
+{
+	return sizeof(CVMsgFeaturesDetectedReq);
+}
+
 void *
 t_rpc_ver3_zip_CVMsgFeaturesDetectedRsp(CVMsgFeaturesDetectedRsp *zip_data, ub zip_len)
 {
@@ -1191,6 +1311,12 @@ t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp(CVMsgFeaturesDetectedRsp *struct_data, v
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_CVMsgFeaturesDetectedRsp(void)
+{
+	return sizeof(CVMsgFeaturesDetectedRsp);
 }
 
 void *
@@ -1250,6 +1376,12 @@ t_rpc_ver3_ptr_CVMsgImageSearchReq(CVMsgImageSearchReq *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CVMsgImageSearchReq(void)
+{
+	return sizeof(CVMsgImageSearchReq);
+}
+
 void *
 t_rpc_ver3_zip_CVMsgImageSearchRsp(CVMsgImageSearchRsp *zip_data, ub zip_len)
 {
@@ -1303,6 +1435,12 @@ t_rpc_ver3_ptr_CVMsgImageSearchRsp(CVMsgImageSearchRsp *struct_data, void *new_p
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_CVMsgImageSearchRsp(void)
+{
+	return sizeof(CVMsgImageSearchRsp);
 }
 
 void *
@@ -1362,6 +1500,12 @@ t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq(CVMsgPaintingAestheticsReq *struct_dat
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CVMsgPaintingAestheticsReq(void)
+{
+	return sizeof(CVMsgPaintingAestheticsReq);
+}
+
 void *
 t_rpc_ver3_zip_CVMsgPaintingAestheticsRsp(CVMsgPaintingAestheticsRsp *zip_data, ub zip_len)
 {
@@ -1415,6 +1559,12 @@ t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp(CVMsgPaintingAestheticsRsp *struct_dat
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_CVMsgPaintingAestheticsRsp(void)
+{
+	return sizeof(CVMsgPaintingAestheticsRsp);
 }
 
 void *
@@ -1474,6 +1624,12 @@ t_rpc_ver3_ptr_CVMsgSculpturesSearchReq(CVMsgSculpturesSearchReq *struct_data, v
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CVMsgSculpturesSearchReq(void)
+{
+	return sizeof(CVMsgSculpturesSearchReq);
+}
+
 void *
 t_rpc_ver3_zip_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *zip_data, ub zip_len)
 {
@@ -1529,6 +1685,12 @@ t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *struct_data, v
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CVMsgSculpturesSearchRsp(void)
+{
+	return sizeof(CVMsgSculpturesSearchRsp);
+}
+
 void *
 t_rpc_ver3_zip_ClientBusy(ClientBusy *zip_data, ub zip_len)
 {
@@ -1582,6 +1744,12 @@ t_rpc_ver3_ptr_ClientBusy(ClientBusy *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_ClientBusy(void)
+{
+	return sizeof(ClientBusy);
+}
+
 void *
 t_rpc_ver3_zip_ClientIdle(ClientIdle *zip_data, ub zip_len)
 {
@@ -1633,6 +1801,12 @@ t_rpc_ver3_ptr_ClientIdle(ClientIdle *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_ClientIdle(void)
+{
+	return sizeof(ClientIdle);
 }
 
 void *
@@ -1694,6 +1868,12 @@ t_rpc_ver3_ptr_CoroutineWakeup(CoroutineWakeup *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_CoroutineWakeup(void)
+{
+	return sizeof(CoroutineWakeup);
+}
+
 void *
 t_rpc_ver3_zip_DBHybridAddListReq(DBHybridAddListReq *zip_data, ub zip_len)
 {
@@ -1751,6 +1931,12 @@ t_rpc_ver3_ptr_DBHybridAddListReq(DBHybridAddListReq *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBHybridAddListReq(void)
+{
+	return sizeof(DBHybridAddListReq);
+}
+
 void *
 t_rpc_ver3_zip_DBHybridAddListRsp(DBHybridAddListRsp *zip_data, ub zip_len)
 {
@@ -1806,6 +1992,12 @@ t_rpc_ver3_ptr_DBHybridAddListRsp(DBHybridAddListRsp *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBHybridAddListRsp(void)
+{
+	return sizeof(DBHybridAddListRsp);
 }
 
 void *
@@ -1867,6 +2059,12 @@ t_rpc_ver3_ptr_DBHybridInqListReq(DBHybridInqListReq *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBHybridInqListReq(void)
+{
+	return sizeof(DBHybridInqListReq);
 }
 
 void *
@@ -1936,6 +2134,12 @@ t_rpc_ver3_ptr_DBHybridInqListRsp(DBHybridInqListRsp *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBHybridInqListRsp(void)
+{
+	return sizeof(DBHybridInqListRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBNosqlAddTalkReq(DBNosqlAddTalkReq *zip_data, ub zip_len)
 {
@@ -1997,6 +2201,12 @@ t_rpc_ver3_ptr_DBNosqlAddTalkReq(DBNosqlAddTalkReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBNosqlAddTalkReq(void)
+{
+	return sizeof(DBNosqlAddTalkReq);
+}
+
 void *
 t_rpc_ver3_zip_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *zip_data, ub zip_len)
 {
@@ -2048,6 +2258,12 @@ t_rpc_ver3_ptr_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBNosqlAddTalkRsp(void)
+{
+	return sizeof(DBNosqlAddTalkRsp);
 }
 
 void *
@@ -2105,6 +2321,12 @@ t_rpc_ver3_ptr_DBRedisDelTableReq(DBRedisDelTableReq *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBRedisDelTableReq(void)
+{
+	return sizeof(DBRedisDelTableReq);
+}
+
 void *
 t_rpc_ver3_zip_DBRedisDelTableRsp(DBRedisDelTableRsp *zip_data, ub zip_len)
 {
@@ -2160,6 +2382,12 @@ t_rpc_ver3_ptr_DBRedisDelTableRsp(DBRedisDelTableRsp *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBRedisDelTableRsp(void)
+{
+	return sizeof(DBRedisDelTableRsp);
 }
 
 void *
@@ -2223,6 +2451,12 @@ t_rpc_ver3_ptr_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *struct_data, voi
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysAddImageFeatureReq(void)
+{
+	return sizeof(DBSysAddImageFeatureReq);
+}
+
 void *
 t_rpc_ver3_zip_DBSysAddImageFeatureRsp(DBSysAddImageFeatureRsp *zip_data, ub zip_len)
 {
@@ -2280,6 +2514,12 @@ t_rpc_ver3_ptr_DBSysAddImageFeatureRsp(DBSysAddImageFeatureRsp *struct_data, voi
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysAddImageFeatureRsp(void)
+{
+	return sizeof(DBSysAddImageFeatureRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysAddWeiChatReq(DBSysAddWeiChatReq *zip_data, ub zip_len)
 {
@@ -2331,6 +2571,12 @@ t_rpc_ver3_ptr_DBSysAddWeiChatReq(DBSysAddWeiChatReq *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysAddWeiChatReq(void)
+{
+	return sizeof(DBSysAddWeiChatReq);
 }
 
 void *
@@ -2386,6 +2632,12 @@ t_rpc_ver3_ptr_DBSysAddWeiChatRsp(DBSysAddWeiChatRsp *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysAddWeiChatRsp(void)
+{
+	return sizeof(DBSysAddWeiChatRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqChannelReq(DBSysInqChannelReq *zip_data, ub zip_len)
 {
@@ -2439,6 +2691,12 @@ t_rpc_ver3_ptr_DBSysInqChannelReq(DBSysInqChannelReq *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqChannelReq(void)
+{
+	return sizeof(DBSysInqChannelReq);
 }
 
 void *
@@ -2516,6 +2774,12 @@ t_rpc_ver3_ptr_DBSysInqChannelRsp(DBSysInqChannelRsp *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqChannelRsp(void)
+{
+	return sizeof(DBSysInqChannelRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *zip_data, ub zip_len)
 {
@@ -2571,6 +2835,12 @@ t_rpc_ver3_ptr_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *struct_data, voi
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqImageFeatureReq(void)
+{
+	return sizeof(DBSysInqImageFeatureReq);
 }
 
 void *
@@ -2642,6 +2912,12 @@ t_rpc_ver3_ptr_DBSysInqImageFeatureRsp(DBSysInqImageFeatureRsp *struct_data, voi
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqImageFeatureRsp(void)
+{
+	return sizeof(DBSysInqImageFeatureRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqImageReq(DBSysInqImageReq *zip_data, ub zip_len)
 {
@@ -2697,6 +2973,12 @@ t_rpc_ver3_ptr_DBSysInqImageReq(DBSysInqImageReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqImageReq(void)
+{
+	return sizeof(DBSysInqImageReq);
 }
 
 void *
@@ -2756,6 +3038,12 @@ t_rpc_ver3_ptr_DBSysInqImageRsp(DBSysInqImageRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqImageRsp(void)
+{
+	return sizeof(DBSysInqImageRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqMuseumPageReq(DBSysInqMuseumPageReq *zip_data, ub zip_len)
 {
@@ -2811,6 +3099,12 @@ t_rpc_ver3_ptr_DBSysInqMuseumPageReq(DBSysInqMuseumPageReq *struct_data, void *n
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqMuseumPageReq(void)
+{
+	return sizeof(DBSysInqMuseumPageReq);
 }
 
 void *
@@ -2878,6 +3172,12 @@ t_rpc_ver3_ptr_DBSysInqMuseumPageRsp(DBSysInqMuseumPageRsp *struct_data, void *n
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqMuseumPageRsp(void)
+{
+	return sizeof(DBSysInqMuseumPageRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqMuseumReq(DBSysInqMuseumReq *zip_data, ub zip_len)
 {
@@ -2933,6 +3233,12 @@ t_rpc_ver3_ptr_DBSysInqMuseumReq(DBSysInqMuseumReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqMuseumReq(void)
+{
+	return sizeof(DBSysInqMuseumReq);
 }
 
 void *
@@ -2992,6 +3298,12 @@ t_rpc_ver3_ptr_DBSysInqMuseumRsp(DBSysInqMuseumRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqMuseumRsp(void)
+{
+	return sizeof(DBSysInqMuseumRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqPainterPageReq(DBSysInqPainterPageReq *zip_data, ub zip_len)
 {
@@ -3047,6 +3359,12 @@ t_rpc_ver3_ptr_DBSysInqPainterPageReq(DBSysInqPainterPageReq *struct_data, void 
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqPainterPageReq(void)
+{
+	return sizeof(DBSysInqPainterPageReq);
 }
 
 void *
@@ -3114,6 +3432,12 @@ t_rpc_ver3_ptr_DBSysInqPainterPageRsp(DBSysInqPainterPageRsp *struct_data, void 
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqPainterPageRsp(void)
+{
+	return sizeof(DBSysInqPainterPageRsp);
+}
+
 void *
 t_rpc_ver3_zip_DBSysInqWeiChatReq(DBSysInqWeiChatReq *zip_data, ub zip_len)
 {
@@ -3167,6 +3491,12 @@ t_rpc_ver3_ptr_DBSysInqWeiChatReq(DBSysInqWeiChatReq *struct_data, void *new_ptr
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysInqWeiChatReq(void)
+{
+	return sizeof(DBSysInqWeiChatReq);
 }
 
 void *
@@ -3226,6 +3556,12 @@ t_rpc_ver3_ptr_DBSysInqWeiChatRsp(DBSysInqWeiChatRsp *struct_data, void *new_ptr
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DBSysInqWeiChatRsp(void)
+{
+	return sizeof(DBSysInqWeiChatRsp);
+}
+
 void *
 t_rpc_ver3_zip_DebugReq(DebugReq *zip_data, ub zip_len)
 {
@@ -3279,6 +3615,12 @@ t_rpc_ver3_ptr_DebugReq(DebugReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_DebugReq(void)
+{
+	return sizeof(DebugReq);
+}
+
 void *
 t_rpc_ver3_zip_DebugRsp(DebugRsp *zip_data, ub zip_len)
 {
@@ -3330,6 +3672,12 @@ t_rpc_ver3_ptr_DebugRsp(DebugRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DebugRsp(void)
+{
+	return sizeof(DebugRsp);
 }
 
 void *
@@ -3387,6 +3735,12 @@ t_rpc_ver3_ptr_HTTPCloseReq(HTTPCloseReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_HTTPCloseReq(void)
+{
+	return sizeof(HTTPCloseReq);
+}
+
 void *
 t_rpc_ver3_zip_HTTPCloseRsp(HTTPCloseRsp *zip_data, ub zip_len)
 {
@@ -3442,6 +3796,12 @@ t_rpc_ver3_ptr_HTTPCloseRsp(HTTPCloseRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_HTTPCloseRsp(void)
+{
+	return sizeof(HTTPCloseRsp);
 }
 
 void *
@@ -3503,6 +3863,12 @@ t_rpc_ver3_ptr_HTTPListenReq(HTTPListenReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_HTTPListenReq(void)
+{
+	return sizeof(HTTPListenReq);
+}
+
 void *
 t_rpc_ver3_zip_HTTPListenRsp(HTTPListenRsp *zip_data, ub zip_len)
 {
@@ -3558,6 +3924,12 @@ t_rpc_ver3_ptr_HTTPListenRsp(HTTPListenRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_HTTPListenRsp(void)
+{
+	return sizeof(HTTPListenRsp);
 }
 
 void *
@@ -3619,6 +3991,12 @@ t_rpc_ver3_ptr_HTTPPostReq(HTTPPostReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_HTTPPostReq(void)
+{
+	return sizeof(HTTPPostReq);
+}
+
 void *
 t_rpc_ver3_zip_HTTPPostRsp(HTTPPostRsp *zip_data, ub zip_len)
 {
@@ -3674,6 +4052,12 @@ t_rpc_ver3_ptr_HTTPPostRsp(HTTPPostRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_HTTPPostRsp(void)
+{
+	return sizeof(HTTPPostRsp);
 }
 
 void *
@@ -3743,6 +4127,12 @@ t_rpc_ver3_ptr_HTTPRecvReq(HTTPRecvReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_HTTPRecvReq(void)
+{
+	return sizeof(HTTPRecvReq);
+}
+
 void *
 t_rpc_ver3_zip_HTTPRecvRsp(HTTPRecvRsp *zip_data, ub zip_len)
 {
@@ -3802,6 +4192,12 @@ t_rpc_ver3_ptr_HTTPRecvRsp(HTTPRecvRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_HTTPRecvRsp(void)
+{
+	return sizeof(HTTPRecvRsp);
+}
+
 void *
 t_rpc_ver3_zip_InternalEvents(InternalEvents *zip_data, ub zip_len)
 {
@@ -3855,6 +4251,12 @@ t_rpc_ver3_ptr_InternalEvents(InternalEvents *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_InternalEvents(void)
+{
+	return sizeof(InternalEvents);
+}
+
 void *
 t_rpc_ver3_zip_InternalLoop(InternalLoop *zip_data, ub zip_len)
 {
@@ -3906,6 +4308,12 @@ t_rpc_ver3_ptr_InternalLoop(InternalLoop *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_InternalLoop(void)
+{
+	return sizeof(InternalLoop);
 }
 
 void *
@@ -3967,6 +4375,12 @@ t_rpc_ver3_ptr_MainMsgPythonReq(MainMsgPythonReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_MainMsgPythonReq(void)
+{
+	return sizeof(MainMsgPythonReq);
+}
+
 void *
 t_rpc_ver3_zip_MainMsgPythonRsp(MainMsgPythonRsp *zip_data, ub zip_len)
 {
@@ -4024,6 +4438,12 @@ t_rpc_ver3_ptr_MainMsgPythonRsp(MainMsgPythonRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_MainMsgPythonRsp(void)
+{
+	return sizeof(MainMsgPythonRsp);
+}
+
 void *
 t_rpc_ver3_zip_MemoryWarning(MemoryWarning *zip_data, ub zip_len)
 {
@@ -4070,6 +4490,12 @@ void *
 t_rpc_ver3_ptr_MemoryWarning(MemoryWarning *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_MemoryWarning(void)
+{
+	return sizeof(MemoryWarning);
 }
 
 void *
@@ -4129,6 +4555,12 @@ t_rpc_ver3_ptr_MsgBlocksReq(MsgBlocksReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_MsgBlocksReq(void)
+{
+	return sizeof(MsgBlocksReq);
+}
+
 void *
 t_rpc_ver3_zip_MsgBlocksRsp(MsgBlocksRsp *zip_data, ub zip_len)
 {
@@ -4184,6 +4616,12 @@ t_rpc_ver3_ptr_MsgBlocksRsp(MsgBlocksRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_MsgBlocksRsp(void)
+{
+	return sizeof(MsgBlocksRsp);
 }
 
 void *
@@ -4242,6 +4680,12 @@ t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_MsgIdEcho(void)
+{
+	return sizeof(MsgIdEcho);
+}
+
 void *
 t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len)
 {
@@ -4293,6 +4737,12 @@ t_rpc_ver3_ptr_MsgInnerLoop(MsgInnerLoop *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_MsgInnerLoop(void)
+{
+	return sizeof(MsgInnerLoop);
+}
+
 void *
 t_rpc_ver3_zip_MsgOSNotify(MsgOSNotify *zip_data, ub zip_len)
 {
@@ -4341,6 +4791,12 @@ t_rpc_ver3_ptr_MsgOSNotify(MsgOSNotify *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_MsgOSNotify(void)
+{
+	return sizeof(MsgOSNotify);
+}
+
 void *
 t_rpc_ver3_zip_POWEROFFMSG(POWEROFFMSG *zip_data, ub zip_len)
 {
@@ -4387,6 +4843,12 @@ void *
 t_rpc_ver3_ptr_POWEROFFMSG(POWEROFFMSG *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_POWEROFFMSG(void)
+{
+	return sizeof(POWEROFFMSG);
 }
 
 void *
@@ -4441,6 +4903,12 @@ t_rpc_ver3_ptr_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *struct_data, void *n
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg(void)
+{
+	return sizeof(ProcessMsgTimerOutMsg);
+}
+
 void *
 t_rpc_ver3_zip_RESTARTREQMSG(RESTARTREQMSG *zip_data, ub zip_len)
 {
@@ -4491,6 +4959,12 @@ t_rpc_ver3_ptr_RESTARTREQMSG(RESTARTREQMSG *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_RESTARTREQMSG(void)
+{
+	return sizeof(RESTARTREQMSG);
+}
+
 void *
 t_rpc_ver3_zip_RESTARTRSPMSG(RESTARTRSPMSG *zip_data, ub zip_len)
 {
@@ -4537,6 +5011,12 @@ void *
 t_rpc_ver3_ptr_RESTARTRSPMSG(RESTARTRSPMSG *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_RESTARTRSPMSG(void)
+{
+	return sizeof(RESTARTRSPMSG);
 }
 
 void *
@@ -4618,6 +5098,12 @@ t_rpc_ver3_ptr_RPCDebugReq(RPCDebugReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_RPCDebugReq(void)
+{
+	return sizeof(RPCDebugReq);
+}
+
 void *
 t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len)
 {
@@ -4697,6 +5183,12 @@ t_rpc_ver3_ptr_RPCDebugRsp(RPCDebugRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_RPCDebugRsp(void)
+{
+	return sizeof(RPCDebugRsp);
+}
+
 void *
 t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len)
 {
@@ -4753,6 +5245,12 @@ t_rpc_ver3_ptr_RUNFUNCTIONMSG(RUNFUNCTIONMSG *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_RUNFUNCTIONMSG(void)
+{
+	return sizeof(RUNFUNCTIONMSG);
+}
+
 void *
 t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len)
 {
@@ -4804,6 +5302,12 @@ t_rpc_ver3_ptr_SocketBindReq(SocketBindReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SocketBindReq(void)
+{
+	return sizeof(SocketBindReq);
 }
 
 void *
@@ -4865,6 +5369,12 @@ t_rpc_ver3_ptr_SocketBindRsp(SocketBindRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketBindRsp(void)
+{
+	return sizeof(SocketBindRsp);
+}
+
 void *
 t_rpc_ver3_zip_SocketConnectReq(SocketConnectReq *zip_data, ub zip_len)
 {
@@ -4916,6 +5426,12 @@ t_rpc_ver3_ptr_SocketConnectReq(SocketConnectReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SocketConnectReq(void)
+{
+	return sizeof(SocketConnectReq);
 }
 
 void *
@@ -4977,6 +5493,12 @@ t_rpc_ver3_ptr_SocketConnectRsp(SocketConnectRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketConnectRsp(void)
+{
+	return sizeof(SocketConnectRsp);
+}
+
 void *
 t_rpc_ver3_zip_SocketDisconnectReq(SocketDisconnectReq *zip_data, ub zip_len)
 {
@@ -5028,6 +5550,12 @@ t_rpc_ver3_ptr_SocketDisconnectReq(SocketDisconnectReq *struct_data, void *new_p
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SocketDisconnectReq(void)
+{
+	return sizeof(SocketDisconnectReq);
 }
 
 void *
@@ -5085,6 +5613,12 @@ t_rpc_ver3_ptr_SocketDisconnectRsp(SocketDisconnectRsp *struct_data, void *new_p
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketDisconnectRsp(void)
+{
+	return sizeof(SocketDisconnectRsp);
+}
+
 void *
 t_rpc_ver3_zip_SocketNotify(SocketNotify *zip_data, ub zip_len)
 {
@@ -5140,6 +5674,12 @@ t_rpc_ver3_ptr_SocketNotify(SocketNotify *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SocketNotify(void)
+{
+	return sizeof(SocketNotify);
 }
 
 void *
@@ -5201,6 +5741,12 @@ t_rpc_ver3_ptr_SocketPlugIn(SocketPlugIn *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketPlugIn(void)
+{
+	return sizeof(SocketPlugIn);
+}
+
 void *
 t_rpc_ver3_zip_SocketPlugOut(SocketPlugOut *zip_data, ub zip_len)
 {
@@ -5258,6 +5804,12 @@ t_rpc_ver3_ptr_SocketPlugOut(SocketPlugOut *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SocketPlugOut(void)
+{
+	return sizeof(SocketPlugOut);
 }
 
 void *
@@ -5321,6 +5873,12 @@ t_rpc_ver3_ptr_SocketRawEvent(SocketRawEvent *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketRawEvent(void)
+{
+	return sizeof(SocketRawEvent);
+}
+
 void *
 t_rpc_ver3_zip_SocketRead(SocketRead *zip_data, ub zip_len)
 {
@@ -5380,6 +5938,12 @@ t_rpc_ver3_ptr_SocketRead(SocketRead *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketRead(void)
+{
+	return sizeof(SocketRead);
+}
+
 void *
 t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len)
 {
@@ -5436,6 +6000,12 @@ t_rpc_ver3_ptr_SocketWrite(SocketWrite *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_SocketWrite(void)
+{
+	return sizeof(SocketWrite);
+}
+
 void *
 t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len)
 {
@@ -5486,6 +6056,12 @@ void *
 t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_SystemDecoupling(void)
+{
+	return sizeof(SystemDecoupling);
 }
 
 void *
@@ -5540,6 +6116,12 @@ t_rpc_ver3_ptr_SystemMount(SystemMount *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_SystemMount(void)
+{
+	return sizeof(SystemMount);
+}
+
 void *
 t_rpc_ver3_zip_TESTMSG(TESTMSG *zip_data, ub zip_len)
 {
@@ -5586,6 +6168,12 @@ void *
 t_rpc_ver3_ptr_TESTMSG(TESTMSG *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_TESTMSG(void)
+{
+	return sizeof(TESTMSG);
 }
 
 void *
@@ -5636,6 +6224,12 @@ t_rpc_ver3_ptr_TIMERMSG(TIMERMSG *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_TIMERMSG(void)
+{
+	return sizeof(TIMERMSG);
+}
+
 void *
 t_rpc_ver3_zip_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *zip_data, ub zip_len)
 {
@@ -5682,6 +6276,12 @@ void *
 t_rpc_ver3_ptr_TemporarilyDefineMessageMsg(TemporarilyDefineMessageMsg *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_TemporarilyDefineMessageMsg(void)
+{
+	return sizeof(TemporarilyDefineMessageMsg);
 }
 
 void *
@@ -5738,6 +6338,12 @@ t_rpc_ver3_ptr_ThreadBusy(ThreadBusy *struct_data, void *new_ptr)
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ThreadBusy(void)
+{
+	return sizeof(ThreadBusy);
+}
+
 void *
 t_rpc_ver3_zip_ThreadIdle(ThreadIdle *zip_data, ub zip_len)
 {
@@ -5786,6 +6392,12 @@ void *
 t_rpc_ver3_ptr_ThreadIdle(ThreadIdle *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_ThreadIdle(void)
+{
+	return sizeof(ThreadIdle);
 }
 
 void *
@@ -5838,6 +6450,12 @@ t_rpc_ver3_ptr_ThreadLocalReadyMsg(ThreadLocalReadyMsg *struct_data, void *new_p
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ThreadLocalReadyMsg(void)
+{
+	return sizeof(ThreadLocalReadyMsg);
+}
+
 void *
 t_rpc_ver3_zip_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *zip_data, ub zip_len)
 {
@@ -5886,6 +6504,12 @@ void *
 t_rpc_ver3_ptr_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_ThreadLocalRemoveMsg(void)
+{
+	return sizeof(ThreadLocalRemoveMsg);
 }
 
 void *
@@ -5940,6 +6564,12 @@ t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg(ThreadRemoteIDReadyMsg *struct_data, void 
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ThreadRemoteIDReadyMsg(void)
+{
+	return sizeof(ThreadRemoteIDReadyMsg);
+}
+
 void *
 t_rpc_ver3_zip_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *zip_data, ub zip_len)
 {
@@ -5992,6 +6622,12 @@ t_rpc_ver3_ptr_ThreadRemoteIDRemoveMsg(ThreadRemoteIDRemoveMsg *struct_data, voi
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ThreadRemoteIDRemoveMsg(void)
+{
+	return sizeof(ThreadRemoteIDRemoveMsg);
+}
+
 void *
 t_rpc_ver3_zip_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *zip_data, ub zip_len)
 {
@@ -6040,6 +6676,12 @@ void *
 t_rpc_ver3_ptr_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_ThreadRemoteReadyMsg(void)
+{
+	return sizeof(ThreadRemoteReadyMsg);
 }
 
 void *
@@ -6092,6 +6734,12 @@ t_rpc_ver3_ptr_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *struct_data, void *n
 	return NULL;
 }
 
+ub
+t_rpc_ver3_sizeof_ThreadRemoteRemoveMsg(void)
+{
+	return sizeof(ThreadRemoteRemoveMsg);
+}
+
 void *
 t_rpc_ver3_zip_TraceSwitchMsg(TraceSwitchMsg *zip_data, ub zip_len)
 {
@@ -6140,6 +6788,12 @@ void *
 t_rpc_ver3_ptr_TraceSwitchMsg(TraceSwitchMsg *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_TraceSwitchMsg(void)
+{
+	return sizeof(TraceSwitchMsg);
 }
 
 void *
@@ -6207,6 +6861,12 @@ t_rpc_ver3_ptr_UIPDataRecvReq(UIPDataRecvReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_UIPDataRecvReq(void)
+{
+	return sizeof(UIPDataRecvReq);
+}
+
 void *
 t_rpc_ver3_zip_UIPDataRecvRsp(UIPDataRecvRsp *zip_data, ub zip_len)
 {
@@ -6262,6 +6922,12 @@ t_rpc_ver3_ptr_UIPDataRecvRsp(UIPDataRecvRsp *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_UIPDataRecvRsp(void)
+{
+	return sizeof(UIPDataRecvRsp);
 }
 
 void *
@@ -6327,6 +6993,12 @@ t_rpc_ver3_ptr_UIPDataSendReq(UIPDataSendReq *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_UIPDataSendReq(void)
+{
+	return sizeof(UIPDataSendReq);
+}
+
 void *
 t_rpc_ver3_zip_UIPDataSendRsp(UIPDataSendRsp *zip_data, ub zip_len)
 {
@@ -6384,6 +7056,12 @@ t_rpc_ver3_ptr_UIPDataSendRsp(UIPDataSendRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_UIPDataSendRsp(void)
+{
+	return sizeof(UIPDataSendRsp);
+}
+
 void *
 t_rpc_ver3_zip_UIPRegisterReq(UIPRegisterReq *zip_data, ub zip_len)
 {
@@ -6435,6 +7113,12 @@ t_rpc_ver3_ptr_UIPRegisterReq(UIPRegisterReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_UIPRegisterReq(void)
+{
+	return sizeof(UIPRegisterReq);
 }
 
 void *
@@ -6492,6 +7176,12 @@ t_rpc_ver3_ptr_UIPRegisterRsp(UIPRegisterRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_UIPRegisterRsp(void)
+{
+	return sizeof(UIPRegisterRsp);
+}
+
 void *
 t_rpc_ver3_zip_UIPUnregisterReq(UIPUnregisterReq *zip_data, ub zip_len)
 {
@@ -6543,6 +7233,12 @@ t_rpc_ver3_ptr_UIPUnregisterReq(UIPUnregisterReq *struct_data, void *new_ptr)
 	if(new_ptr != NULL)
 		struct_data->ptr = new_ptr;
 	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_UIPUnregisterReq(void)
+{
+	return sizeof(UIPUnregisterReq);
 }
 
 void *
@@ -6600,6 +7296,12 @@ t_rpc_ver3_ptr_UIPUnregisterRsp(UIPUnregisterRsp *struct_data, void *new_ptr)
 	return old_ptr;
 }
 
+ub
+t_rpc_ver3_sizeof_UIPUnregisterRsp(void)
+{
+	return sizeof(UIPUnregisterRsp);
+}
+
 void *
 t_rpc_ver3_zip_WAKEUPMSG(WAKEUPMSG *zip_data, ub zip_len)
 {
@@ -6648,5 +7350,11 @@ void *
 t_rpc_ver3_ptr_WAKEUPMSG(WAKEUPMSG *struct_data, void *new_ptr)
 {
 	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_WAKEUPMSG(void)
+{
+	return sizeof(WAKEUPMSG);
 }
 

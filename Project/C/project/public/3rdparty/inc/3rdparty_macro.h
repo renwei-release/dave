@@ -29,6 +29,9 @@
 #ifdef __DAVE_PRODUCT_AIX__
 #define TENSORFLOW_3RDPARTY
 #endif
+#if defined(__DAVE_PRODUCT_LOG__) || defined(__DAVE_PRODUCT_BASE__)
+#define JAEGERTRACING_3RDPARTY
+#endif
 
 #endif
 

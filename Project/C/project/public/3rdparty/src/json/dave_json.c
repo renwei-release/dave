@@ -260,7 +260,7 @@ dave_json_add_ub(void *object, char *key, ub ub_data)
 		return dave_false;
 	}
 
-	if(json_object_object_add((struct json_object *)object, (const char *)key, json_object_new_int64((int64_t)ub_data)) < 0)
+	if(json_object_object_add((struct json_object *)object, (const char *)key, json_object_new_uint64((uint64_t)ub_data)) < 0)
 	{
 		PARTYABNOR("add json key:%s failed!", key);
 
@@ -307,7 +307,7 @@ __dave_json_get_ub__(void *object, char *key, ub *ub_data, s8 *fun, ub line)
 
 	if(json_object_get_type(ub_object) == json_type_int)
 	{
-		*ub_data = json_object_get_int64(ub_object);
+		*ub_data = json_object_get_uint64(ub_object);
 	}
 	else if(json_object_get_type(ub_object) == json_type_string)
 	{
@@ -331,7 +331,7 @@ dave_json_add_sb(void *object, char *key, sb sb_data)
 		return dave_false;
 	}
 
-	if(json_object_object_add((struct json_object *)object, (const char *)key, json_object_new_int((int32_t)sb_data)) < 0)
+	if(json_object_object_add((struct json_object *)object, (const char *)key, json_object_new_int64((int64_t)sb_data)) < 0)
 	{
 		PARTYABNOR("add json key:%s failed!", key);
 
@@ -382,7 +382,7 @@ dave_json_get_sb(void *object, char *key, sb *sb_data)
 		return dave_false;
 	}
 
-	*sb_data = json_object_get_int(sb_object);
+	*sb_data = json_object_get_int64(sb_object);
 
 	return dave_true;
 }

@@ -95,7 +95,8 @@ _base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
 	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
 	if(value_len > sizeof(pUpdate->cfg_value))
 	{
-		CFGABNOR("name:%s has value_len:%d/%d is long!", name, value_len, sizeof(pUpdate->cfg_value));
+		CFGABNOR("name:%s has value_len:%d/%d is long!",
+			name, value_len, sizeof(pUpdate->cfg_value));
 		value_len = sizeof(pUpdate->cfg_value);
 	}
 	pUpdate->cfg_length = value_len;
@@ -200,7 +201,17 @@ base_cfg_get_bool(s8 *cfg_name, dave_bool default_value)
 
 	if(cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
 	{
-		return dave_strcmp(value_ptr, "true");
+		lower(value_ptr);
+	
+		if((dave_strcmp(value_ptr, "true") == dave_true)
+			|| (dave_strcmp(value_ptr, "enable") == dave_true))
+		{
+			return dave_true;
+		}
+		else
+		{
+			return dave_false;
+		}
 	}
 	else
 	{

@@ -41,6 +41,9 @@ extern "C"{
 #ifdef TENSORFLOW_3RDPARTY
 #include "dave_tensorflow.h"
 #endif
+#ifdef JAEGERTRACING_3RDPARTY
+#include "dave_jaegertracing.h"
+#endif
 
 #ifdef __cplusplus
 }

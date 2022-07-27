@@ -176,6 +176,14 @@ def _creat_msgdata_ptr_fun_file(file_id, msg_struct_name, msg_struct_data):
     return
 
 
+def _creat_msgdata_sizeof_fun_file(file_id, msg_struct_name):
+    file_id.write("ub\nt_rpc_ver3_sizeof_"+msg_struct_name+"(void)\n")
+    file_id.write("{\n")
+    file_id.write(f"\treturn sizeof({msg_struct_name});\n")
+    file_id.write("}\n\n")
+    return
+
+
 def _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table):
     for msg_struct_name in msg_struct_table.keys():
         msg_struct_data = msg_struct_table[msg_struct_name]
@@ -183,6 +191,7 @@ def _creat_msgdata_fun_file(file_id, msg_struct_table, struct_table):
             _creat_msgdata_zip_fun_file(file_id, msg_struct_name, msg_struct_data, struct_table)
             _creat_msgdata_unzip_fun_file(file_id, msg_struct_name, msg_struct_data, struct_table)
             _creat_msgdata_ptr_fun_file(file_id, msg_struct_name, msg_struct_data)
+            _creat_msgdata_sizeof_fun_file(file_id, msg_struct_name)
     return
 
 
@@ -205,7 +214,8 @@ def _creat_msgdata_inc_file(msg_struct_table, include_list, file_name):
             msg_struct_name = msg_struct_name.replace(" ", "")
             file_id.write("void * t_rpc_ver3_zip_"+msg_struct_name+"("+msg_struct_name+" *zip_data, ub zip_len);\n")
             file_id.write("dave_bool t_rpc_ver3_unzip_"+msg_struct_name+"(void **unzip_data, ub *unzip_len, void *pStructBson);\n")
-            file_id.write("void * t_rpc_ver3_ptr_"+msg_struct_name+"("+msg_struct_name+" *struct_data, void *new_ptr);\n\n")
+            file_id.write("void * t_rpc_ver3_ptr_"+msg_struct_name+"("+msg_struct_name+" *struct_data, void *new_ptr);\n")
+            file_id.write("ub t_rpc_ver3_sizeof_"+msg_struct_name+"(void);\n\n")
         file_id.write(_msgdata_inc_end)
     return
 

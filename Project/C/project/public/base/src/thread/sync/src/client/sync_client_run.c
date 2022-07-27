@@ -89,7 +89,7 @@ _sync_client_run_thread_msg(
 	pChain = thread_bson_to_chain(pChainBson);
 
 	thread_chain_insert(
-		dave_true,
+		ChainType_called,
 		pChain,
 		pServer->globally_identifier, globally_identifier(),
 		route_src, route_dst,

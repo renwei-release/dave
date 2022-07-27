@@ -80,4 +80,5 @@ if [[ "$DEPLOYMODEL" == "jaeger" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
    echo -e "Now \033[35mjaeger\033[0m is ready!"
+   echo -e "Please browse the web: \033[35mhttp://[your IP address]:16686/search\033[0m"
 fi

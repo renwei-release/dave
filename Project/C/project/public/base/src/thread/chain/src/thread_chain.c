@@ -22,7 +22,7 @@ _thread_chain_clean(ThreadChain *pChain)
 	if(pChain == NULL)
 		return;
 
-	pChain->valid = dave_false;
+	pChain->type = ChainType_none;
 
 	pChain->chain_id[0] = '\0';
 	pChain->chain_counter = 0;
@@ -37,9 +37,7 @@ _thread_chain_clean(ThreadChain *pChain)
 	pChain->src_thread[0] = '\0';
 
 	pChain->msg_id = MSGID_RESERVED;
-
-	pChain->called = dave_false;
-	pChain->call_id = 0;
+	pChain->msg_serial = 0;
 }
 
 static inline void
@@ -47,9 +45,9 @@ _thread_chain_build_new(ThreadChain *pMsgChain)
 {
 	_thread_chain_clean(pMsgChain);
 
-	pMsgChain->valid = dave_true;
 	chain_id(pMsgChain->chain_id, sizeof(pMsgChain->chain_id));
 	pMsgChain->send_time = dave_os_time_us();
+	pMsgChain->msg_serial = chain_msg_serial();
 }
 
 static inline void
@@ -57,10 +55,10 @@ _thread_chain_build_copy(ThreadChain *pDstChain, ThreadChain *pSrcChain)
 {
 	_thread_chain_clean(pDstChain);
 
-	pDstChain->valid = dave_true;
 	dave_strcpy(pDstChain->chain_id, pSrcChain->chain_id, sizeof(pDstChain->chain_id));
 	pDstChain->generation = pSrcChain->generation + 1;
 	pDstChain->send_time = dave_os_time_us();
+	pDstChain->msg_serial = chain_msg_serial();
 }
 
 static inline void
@@ -68,7 +66,6 @@ _thread_chain_run_copy(ThreadChain *pDstChain, ThreadChain *pSrcChain)
 {
 	_thread_chain_clean(pDstChain);
 
-	pDstChain->valid = dave_true;
 	dave_strcpy(pDstChain->chain_id, pSrcChain->chain_id, sizeof(pDstChain->chain_id));
 	pDstChain->generation = pSrcChain->generation;
 }
@@ -76,20 +73,15 @@ _thread_chain_run_copy(ThreadChain *pDstChain, ThreadChain *pSrcChain)
 static inline void
 _thread_chain_insert_chain(
 	ThreadChain *pChain,
-	dave_bool called,
+	ChainType type,
 	s8 *src_gid, s8 *dst_gid,
 	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id)
 {
-	pChain->valid = dave_true;
+	pChain->type = type;
 	pChain->chain_counter = chain_counter();
 
 	pChain->recv_time = dave_os_time_us();
-
-	if(called == dave_false)
-	{
-		pChain->call_id = chain_call_id();
-	}
 
 	dave_strcpy(pChain->src_gid, src_gid, sizeof(pChain->src_gid));
 	dave_strcpy(pChain->dst_gid, dst_gid, sizeof(pChain->dst_gid));
@@ -98,8 +90,6 @@ _thread_chain_insert_chain(
 	dave_strcpy(pChain->dst_thread, thread_id_to_name(msg_dst), sizeof(pChain->dst_thread));
 
 	pChain->msg_id = msg_id;
-
-	pChain->called = called;
 }
 
 // =====================================================================
@@ -137,7 +127,7 @@ thread_chain_reset(ThreadChain *pChain)
 {
 	dave_memset(pChain, 0x00, sizeof(ThreadChain));
 
-	thread_chain_clean(pChain);
+	_thread_chain_clean(pChain);
 }
 
 dave_bool
@@ -159,12 +149,6 @@ thread_chain_enable(ThreadId msg_src, ThreadId msg_dst, ub msg_id)
 }
 
 void
-thread_chain_clean(ThreadChain *pChain)
-{
-	_thread_chain_clean(pChain);
-}
-
-void
 thread_chain_build_msg(
 	ThreadChain *pMsgChain,
 	ThreadId msg_src, ThreadId msg_dst,
@@ -182,14 +166,14 @@ thread_chain_build_msg(
 		return;
 	}
 
-	if(pThreadChain->valid == dave_false)
+	if(pThreadChain->type == ChainType_none)
 		_thread_chain_build_new(pMsgChain);
 	else
 		_thread_chain_build_copy(pMsgChain, pThreadChain);
 
-	THREADDEBUG("pThreadChain:%lx pThreadChain->valid:%d chain_id:%s %s->%s %s->%s:%s",
+	THREADDEBUG("pThreadChain:%lx type:%d chain_id:%s %s->%s %s->%s:%s",
 		pThreadChain,
-		pThreadChain->valid,
+		pThreadChain->type,
 		pMsgChain->chain_id,
 		pMsgChain->src_gid, pMsgChain->dst_gid,
 		thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));
@@ -198,9 +182,10 @@ thread_chain_build_msg(
 ThreadChain *
 thread_chain_run_msg(MSGBODY *msg)
 {
+	ThreadChain *pMsgChain = (ThreadChain *)(msg->msg_chain);
 	ThreadChain *pThreadChain;
 
-	if((msg->msg_chain == NULL)
+	if((pMsgChain == NULL)
 		|| (thread_chain_enable(msg->msg_src, msg->msg_dst, msg->msg_id) == dave_false))
 	{
 		return NULL;
@@ -212,21 +197,46 @@ thread_chain_run_msg(MSGBODY *msg)
 		return NULL;
 	}
 
-	if(pThreadChain->valid == dave_true)
-	{
-		THREADABNOR("Arithmetic error! %s->%s:%s",
-			thread_id_to_name(msg->msg_src), thread_id_to_name(msg->msg_dst),
-			msgstr(msg->msg_id));
-	}
+	_thread_chain_run_copy(pThreadChain, pMsgChain);
 
-	_thread_chain_run_copy(pThreadChain, (ThreadChain *)(msg->msg_chain));
+	pMsgChain->send_time = dave_os_time_us();
 
 	return pThreadChain;
 }
 
 void
+thread_chain_run_clean(ThreadChain *pChain, MSGBODY *msg)
+{
+	ThreadChain *pMsgChain = (ThreadChain *)(msg->msg_chain);
+
+	if(pMsgChain == NULL)
+		return;
+
+	pMsgChain->recv_time = dave_os_time_us();
+
+	thread_chain_insert(
+		ChainType_execution,
+		pMsgChain,
+		pMsgChain->src_gid, pMsgChain->dst_gid,
+		msg->msg_src, msg->msg_dst,
+		msg->msg_id, msg->msg_len, msg->msg_body);
+
+	_thread_chain_clean(pChain);
+}
+
+void
+thread_chain_clean_msg(MSGBODY *msg)
+{
+	if(msg->msg_chain != NULL)
+	{
+		thread_chain_free((ThreadChain *)(msg->msg_chain));
+		msg->msg_chain = NULL;
+	}
+}
+
+void
 thread_chain_insert(
-	dave_bool called,
+	ChainType type,
 	ThreadChain *pChain,
 	s8 *src_gid, s8 *dst_gid,
 	ThreadId msg_src, ThreadId msg_dst,
@@ -234,8 +244,8 @@ thread_chain_insert(
 {
 	if(pChain == NULL)
 	{
-		THREADLOG("chain is empty! called:%s %s->%s %s->%s:%s",
-			called==dave_true?"called":"calling",
+		THREADLOG("chain is empty! type:%s %s->%s %s->%s:%s",
+			type==ChainType_calling?"calling":type==ChainType_called?"called":"execution",
 			src_gid, dst_gid,
 			thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));
 		return;
@@ -246,10 +256,10 @@ thread_chain_insert(
 		return;
 	}
 
-	_thread_chain_insert_chain(pChain, called, src_gid, dst_gid, msg_src, msg_dst, msg_id);
+	_thread_chain_insert_chain(pChain, type, src_gid, dst_gid, msg_src, msg_dst, msg_id);
 
-	THREADDEBUG("called:%s chain_id:%s chain_counter:%d generation:%d time:%lx/%lx %s->%s %s->%s:%s",
-		called==dave_true?"called":"calling",
+	THREADDEBUG("type:%s chain_id:%s chain_counter:%d generation:%d time:%lx/%lx %s->%s %s->%s:%s",
+		type==ChainType_calling?"calling":type==ChainType_called?"called":"execution",
 		pChain->chain_id, pChain->chain_counter, pChain->generation,
 		pChain->send_time, pChain->recv_time,
 		pChain->src_gid, pChain->dst_gid,
@@ -276,10 +286,10 @@ thread_chain_to_bson(ThreadChain *pChain)
 
 	pChain->send_time = dave_os_time_us();
 
-	t_bson_add_string(pBson, "chain_id", pChain->chain_id);
-	t_bson_add_int64(pBson, "generation", pChain->generation);
-	t_bson_add_int64(pBson, "send_time", pChain->send_time);	
-	t_bson_add_int64(pBson, "call_id", pChain->call_id);
+	t_bson_add_string(pBson, "1", pChain->chain_id);
+	t_bson_add_int64(pBson, "2", pChain->generation);
+	t_bson_add_int64(pBson, "3", pChain->send_time);
+	t_bson_add_int64(pBson, "4", pChain->msg_serial);
 
 	return pBson;
 }
@@ -298,11 +308,11 @@ thread_bson_to_chain(void *pBson)
 	_thread_chain_clean(pChain);
 	chain_id_len = sizeof(pChain->chain_id);
 
-	pChain->valid = dave_true;
-	t_bson_cpy_string(pBson, "chain_id", pChain->chain_id, &chain_id_len);
-	t_bson_inq_int64(pBson, "generation", &(pChain->generation));
-	t_bson_inq_int64(pBson, "send_time", &(pChain->send_time));
-	t_bson_inq_int64(pBson, "call_id", &(pChain->call_id));
+	pChain->type = ChainType_called;
+	t_bson_cpy_string(pBson, "1", pChain->chain_id, &chain_id_len);
+	t_bson_inq_int64(pBson, "2", &(pChain->generation));
+	t_bson_inq_int64(pBson, "3", &(pChain->send_time));
+	t_bson_inq_int64(pBson, "4", &(pChain->msg_serial));
 
 	return pChain;
 }

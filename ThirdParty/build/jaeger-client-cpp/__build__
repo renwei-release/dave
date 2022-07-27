@@ -1,0 +1,38 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=0.9.0
+INSTALL=${homepath}/setup
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+   wget https://github.com/jaegertracing/jaeger-client-cpp/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./jaeger-client-cpp-${VERSION} ]; then
+  tar -zxvf v${VERSION}.tar.gz
+fi
+
+cd jaeger-client-cpp-${VERSION}
+
+mkdir build
+cd build
+export CFLAGS="$CFLAGS -march=x86-64 -fPIC"
+export CXXFLAGS="$CXXFLAGS -march=x86-64 -fPIC"
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DCMAKE_BUILD_TYPE=Release -DJAEGERTRACING_PLUGIN=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DHUNTER_CONFIGURATION_TYPES=Release ..
+
+if [ ! -d ${INSTALL} ]; then
+   mkdir ${INSTALL}
+fi
+make && make install
+cp -r /root/.hunter/_Base/d45d77d/6bface3/3b7ee27/Install/lib64/* ${INSTALL}/lib64
+cp -r /root/.hunter/_Base/d45d77d/6bface3/3b7ee27/Install/lib/* ${INSTALL}/lib64
+
+cd ${homepath}
+
+if [ -d setup ]; then
+   rm -rf setup
+fi
+mkdir setup
+cp -r ${INSTALL}/* ./setup
+
+rm -rf jaeger-client-cpp-${VERSION}

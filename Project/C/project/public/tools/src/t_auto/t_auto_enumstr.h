@@ -31,6 +31,7 @@
 #include "base_rxtx.h"
 #include "rxtx_param.h"
 #include "socket_parameters.h"
+#include "thread_chain.h"
 #include "sync_param.h"
 #include "sync_type.h"
 
@@ -38,6 +39,7 @@ s8 *t_auto_AIPlaceType_str(AIPlaceType enum_value);
 s8 *t_auto_BaseMsgType_str(BaseMsgType enum_value);
 s8 *t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
+s8 *t_auto_ChainType_str(ChainType enum_value);
 s8 *t_auto_CommentAttributes_str(CommentAttributes enum_value);
 s8 *t_auto_CountryCode_str(CountryCode enum_value);
 s8 *t_auto_CurrencyType_str(CurrencyType enum_value);

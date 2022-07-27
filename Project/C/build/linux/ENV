@@ -6,15 +6,43 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
+homepath=$(cd `dirname $0`; pwd)/../../../../
+
 CONTAINER=$1
 
-exit_container=`docker ps | grep ${CONTAINER}`
+cd ${homepath}
 
+exit_container=`docker ps | grep ${CONTAINER}`
 if [ "$exit_container" == "" ]; then
    echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
-   cd ../../../../../Deploy/deploy/${CONTAINER}
+   cd ./Deploy/deploy/${CONTAINER}
    chmod a+x deploy.sh
    ./deploy.sh
    echo -e "The build \033[35m${CONTAINER}\033[0m is ready, now start building the project:"
    echo
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/jemalloc/setup/lib/libjemalloc.a ]; then
+   cd ./ThirdParty/build/jemalloc
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/gtest/setup/lib/libgtest.a ]; then
+   cd ./ThirdParty/build/gtest
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/jaeger-client-cpp/setup/lib64/libjaegertracing.a ]; then
+   cd ./ThirdParty/build/jaeger-client-cpp
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/yaml-cpp/setup/lib64/libyaml-cpp.a ]; then
+   cd ./ThirdParty/build/yaml-cpp
+   ./build
+   cd ${homepath}
 fi

@@ -34,7 +34,7 @@ _rpcdata_inc_end = "\
 
 
 def _creat_rpc_data_private_zip_file(file_id, msg_table):
-    file_id.write("static void *\n_t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)\n")
+    file_id.write("static inline void *\n_t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)\n")
     file_id.write("{\n")
     file_id.write("	void *pBson;\n")
     file_id.write("\n")
@@ -54,7 +54,7 @@ def _creat_rpc_data_private_zip_file(file_id, msg_table):
 
 
 def _creat_rpc_data_private_unzip_file(file_id, msg_table):
-    file_id.write("static dave_bool\n_t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)\n")
+    file_id.write("static inline dave_bool\n_t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)\n")
     file_id.write("{\n\tdave_bool ret;\n\n")
     file_id.write("	switch((sb)msg_id)\n")
     file_id.write("	{\n")
@@ -72,7 +72,7 @@ def _creat_rpc_data_private_unzip_file(file_id, msg_table):
 
 
 def _creat_rpc_data_private_ptr_file(file_id, msg_table):
-    file_id.write("static void *\n_t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)\n")
+    file_id.write("static inline void *\n_t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)\n")
     file_id.write("{\n")
     file_id.write("	void *ptr;\n")
     file_id.write("\n")
@@ -91,6 +91,26 @@ def _creat_rpc_data_private_ptr_file(file_id, msg_table):
     file_id.write("\n\treturn ptr;\n}\n\n")
 
 
+def _creat_rpc_data_msg_sizeof_file(file_id, msg_table):
+    file_id.write("static inline ub\n_t_rpc_sizeof(ub msg_id)\n")
+    file_id.write("{\n")
+    file_id.write("	ub msg_len;\n")
+    file_id.write("\n")
+    file_id.write("	switch((sb)msg_id)\n")
+    file_id.write("	{\n")
+    for msg_name in msg_table.keys():
+        struct_name = msg_table[msg_name]
+        file_id.write("\t\tcase "+msg_name+":\n")
+        file_id.write("\t			msg_len = t_rpc_ver3_sizeof_"+struct_name+"();\n")
+        file_id.write("\t		break;\n")
+    file_id.write("		default:\n")
+    file_id.write("				TOOLSLOG(\"msg_id:%d zip failed!\", msg_id);\n")
+    file_id.write(" 				msg_len = 0;\n")
+    file_id.write("			break;\n")
+    file_id.write("	}\n")
+    file_id.write("\n\treturn msg_len;\n}\n\n")
+
+
 def _creat_rpcdata_zip_file(file_id):
     file_id.write("void *\nt_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)\n")
     file_id.write("{\n")
@@ -104,7 +124,8 @@ def _creat_rpcdata_zip_file(file_id):
     file_id.write("\n\t#ifdef LEVEL_PRODUCT_alpha")
     file_id.write("\n\tt_bson_add_int64(pBson, \"rpc_time\", (u64)dave_os_time_us());")
     file_id.write("\n\t#endif\n")
-    file_id.write("\n\tt_bson_add_object(pBson, \"chain\", pChainBson);\n")
+    file_id.write("\n\tif(pChainBson != NULL)\n")
+    file_id.write("\t\tt_bson_add_object(pBson, \"chain\", pChainBson);\n")
     file_id.write("\n\treturn pBson;\n")
     file_id.write("}\n")
     return
@@ -141,9 +162,15 @@ def _creat_rpcdata_unzip_file(file_id):
 def _creat_rpcdata_ptr_file(file_id):
     file_id.write("void *\nt_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr)\n")
     file_id.write("{\n")
-    file_id.write("	void *ptr;\n")
-    file_id.write("\n\tptr = _t_rpc_ptr(msg_id, msg_body, new_ptr);\n")
-    file_id.write("\n\treturn ptr;\n")
+    file_id.write("\treturn _t_rpc_ptr(msg_id, msg_body, new_ptr);\n")
+    file_id.write("}\n")
+    return
+
+
+def _creat_rpcdata_sizeof_file(file_id):
+    file_id.write("ub\nt_rpc_ver3_sizeof(ub msg_id)\n")
+    file_id.write("{\n")
+    file_id.write("\treturn _t_rpc_sizeof(msg_id);\n")
     file_id.write("}\n")
     return
 
@@ -155,12 +182,15 @@ def _creat_rpcdata_src_file(msg_table, file_name):
         _creat_rpc_data_private_zip_file(file_id, msg_table)
         _creat_rpc_data_private_unzip_file(file_id, msg_table)
         _creat_rpc_data_private_ptr_file(file_id, msg_table)
+        _creat_rpc_data_msg_sizeof_file(file_id, msg_table)
         file_id.write("// =====================================================================\n\n")
         _creat_rpcdata_zip_file(file_id)
         file_id.write("\n")
         _creat_rpcdata_unzip_file(file_id)
         file_id.write("\n")
         _creat_rpcdata_ptr_file(file_id)
+        file_id.write("\n")
+        _creat_rpcdata_sizeof_file(file_id)
         file_id.write("\n")
     return
 
@@ -171,7 +201,8 @@ def _creat_rpcdata_inc_file(file_name):
         file_id.write(_rpcdata_inc_head)
         file_id.write("void * t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len);\n")
         file_id.write("dave_bool t_rpc_ver3_unzip(void **msg_chain, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
-        file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n\n")
+        file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n")
+        file_id.write("ub t_rpc_ver3_sizeof(ub msg_id);\n\n")
         file_id.write(_rpcdata_inc_end)
     return
 

@@ -30,6 +30,7 @@
 #include "base_rxtx.h"
 #include "rxtx_param.h"
 #include "socket_parameters.h"
+#include "thread_chain.h"
 #include "sync_param.h"
 #include "sync_type.h"
 
@@ -410,6 +411,33 @@ t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
 			break;
 		case CVSearchOpt_max:
 				value_str = "'CVSearchOpt_max'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ChainType_str(ChainType enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case ChainType_none:
+				value_str = "'ChainType_none-0'";
+			break;
+		case ChainType_calling:
+				value_str = "'ChainType_calling'";
+			break;
+		case ChainType_called:
+				value_str = "'ChainType_called'";
+			break;
+		case ChainType_execution:
+				value_str = "'ChainType_execution'";
 			break;
 		default:
 				value_str = "'NULL'";

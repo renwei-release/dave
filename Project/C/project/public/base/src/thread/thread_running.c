@@ -56,7 +56,7 @@ _thread_running_function(base_thread_fun thread_fun, MSGBODY *msg)
 
 	if(pChain != NULL)
 	{
-		thread_chain_clean(pChain);
+		thread_chain_run_clean(pChain, msg);
 	}
 }
 

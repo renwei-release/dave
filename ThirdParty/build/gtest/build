@@ -1,27 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 
-homepath=$(cd `dirname $0`; pwd)
+PROJECT=${PWD##*/}
+CONTAINER="ubuntu"
 
-VERSION=1.12.1
+../ENV ${CONTAINER}
 
-if [ ! -f release-${VERSION}.tar.gz ]; then
-   wget https://github.com/google/googletest/archive/refs/tags/release-${VERSION}.tar.gz
-fi
-if [ ! -d ./googletest-release-${VERSION} ]; then
-  tar -zxvf release-${VERSION}.tar.gz
-fi
-
-cd googletest-release-${VERSION}
-
-if [ ! -d build ]; then
-   mkdir build
-fi
-cd build
-
-cmake -DCMAKE_INSTALL_PREFIX=${homepath}/setup -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" ../
-
-make && make install
-
-cd ${homepath}
-
-rm -rf googletest-release-${VERSION}
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build__"

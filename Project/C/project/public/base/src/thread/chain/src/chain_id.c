@@ -13,14 +13,14 @@
 
 static ub _chain_id_serial = 0;
 static ub _chain_id_counter = 0;
-static ub _call_id_counter = 0;
+static ub _chain_msg_serial = 0;
 
 // =====================================================================
 
 void
 chain_id_reset(void)
 {
-	_call_id_counter = t_rand();
+	_chain_msg_serial = t_rand();
 }
 
 s8 *
@@ -50,15 +50,15 @@ chain_counter(void)
 }
 
 ub
-chain_call_id(void)
+chain_msg_serial(void)
 {
-	ub call_id;
+	ub msg_serial;
 
 	base_lock();
-	call_id = _call_id_counter ++;
+	msg_serial = _chain_msg_serial ++;
 	base_unlock();
 
-	return call_id;
+	return msg_serial;
 }
 
 #endif

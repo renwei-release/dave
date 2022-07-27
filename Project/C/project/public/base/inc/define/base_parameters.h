@@ -50,7 +50,5 @@
 #define DAVE_THREAD_EMPTY_VALUE NULL
 #endif
 
-#define DAVE_CHAIN_ID_LEN (64)
-
 #endif
 

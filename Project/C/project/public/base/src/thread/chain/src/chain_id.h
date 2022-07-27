@@ -14,7 +14,7 @@ s8 * chain_id(s8 *chain_id_ptr, ub chain_id_len);
 
 ub chain_counter(void);
 
-ub chain_call_id(void);
+ub chain_msg_serial(void);
 
 #endif
 

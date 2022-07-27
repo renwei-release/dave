@@ -16,6 +16,12 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L../../../../ThirdParty/build/magsac/setup/lib -lmagsac
 endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), LOG BASE)), 1)
+LIB += -L../../../../ThirdParty/build/jaeger-client-cpp/setup/lib64 -ljaegertracing -lopentracing -lthrift
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), LOG BASE)), 1)
+LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib64 -lyaml-cpp
+endif
 
 LIB += -Wl,-Bdynamic
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)

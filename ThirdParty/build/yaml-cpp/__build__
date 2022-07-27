@@ -1,0 +1,27 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=0.7.0
+
+if [ ! -f yaml-cpp-${VERSION}.tar.gz ]; then
+   wget https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-${VERSION}.tar.gz
+fi
+if [ ! -d ./yaml-cpp-yaml-cpp-${VERSION} ]; then
+  tar -zxvf yaml-cpp-${VERSION}.tar.gz
+fi
+
+cd yaml-cpp-yaml-cpp-${VERSION}
+
+if [ ! -d build ]; then
+   mkdir build
+fi
+cd build
+
+cmake -DCMAKE_INSTALL_PREFIX=${homepath}/setup -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" ../
+
+make && make install
+
+cd ${homepath}
+
+rm -rf yaml-cpp-yaml-cpp-${VERSION}

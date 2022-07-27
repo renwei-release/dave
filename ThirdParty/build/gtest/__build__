@@ -1,0 +1,27 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=1.12.1
+
+if [ ! -f release-${VERSION}.tar.gz ]; then
+   wget https://github.com/google/googletest/archive/refs/tags/release-${VERSION}.tar.gz
+fi
+if [ ! -d ./googletest-release-${VERSION} ]; then
+  tar -zxvf release-${VERSION}.tar.gz
+fi
+
+cd googletest-release-${VERSION}
+
+if [ ! -d build ]; then
+   mkdir build
+fi
+cd build
+
+cmake -DCMAKE_INSTALL_PREFIX=${homepath}/setup -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" ../
+
+make && make install
+
+cd ${homepath}
+
+rm -rf googletest-release-${VERSION}

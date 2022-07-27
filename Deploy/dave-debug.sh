@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
+ldconfig
 if [ -f "/project/public/base/lib/libjemalloc.so" ]; then
    export LD_PRELOAD="/project/public/base/lib/libjemalloc.so"
 fi

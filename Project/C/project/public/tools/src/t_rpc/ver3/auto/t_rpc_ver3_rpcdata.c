@@ -21,7 +21,7 @@
 #include "t_rpc_ver3_structdata.h"
 #include "tools_log.h"
 
-static void *
+static inline void *
 _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 {
 	void *pBson;
@@ -391,7 +391,7 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 	return pBson;
 }
 
-static dave_bool
+static inline dave_bool
 _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 {
 	dave_bool ret;
@@ -761,7 +761,7 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 	return ret;
 }
 
-static void *
+static inline void *
 _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 {
 	void *ptr;
@@ -1131,6 +1131,376 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 	return ptr;
 }
 
+static inline ub
+_t_rpc_sizeof(ub msg_id)
+{
+	ub msg_len;
+
+	switch((sb)msg_id)
+	{
+		case AIXMSG_AESTHETICS_REQ:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgAestheticsReq();
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgAestheticsRsp();
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgImageClassificationReq();
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgImageClassificationRsp();
+			break;
+		case APPMSG_FUNCTION_REGISTER_REQ:
+				msg_len = t_rpc_ver3_sizeof_AppMsgFunctionRegReq();
+			break;
+		case APPMSG_FUNCTION_REGISTER_RSP:
+				msg_len = t_rpc_ver3_sizeof_AppMsgFunctionRegRsp();
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_REQ:
+				msg_len = t_rpc_ver3_sizeof_AppMsgFunctionUnRegReq();
+			break;
+		case APPMSG_FUNCTION_UNREGISTER_RSP:
+				msg_len = t_rpc_ver3_sizeof_AppMsgFunctionUnRegRsp();
+			break;
+		case APPMSG_MCARD_REQ:
+				msg_len = t_rpc_ver3_sizeof_AppMsgMCardReq();
+			break;
+		case APPMSG_MCARD_RSP:
+				msg_len = t_rpc_ver3_sizeof_AppMsgMCardRsp();
+			break;
+		case APPMSG_TALK_MCARD_REQ:
+				msg_len = t_rpc_ver3_sizeof_AppMsgTalkMCardReq();
+			break;
+		case APPMSG_TALK_MCARD_RSP:
+				msg_len = t_rpc_ver3_sizeof_AppMsgTalkMCardRsp();
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentReq();
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentRsp();
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentReq();
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentRsp();
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				msg_len = t_rpc_ver3_sizeof_BdataMCardRecord();
+			break;
+		case BDATAMSG_TALK_RECORD:
+				msg_len = t_rpc_ver3_sizeof_BdataTalkRecord();
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgFeaturesDetectedReq();
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgFeaturesDetectedRsp();
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgImageSearchReq();
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgImageSearchRsp();
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgPaintingAestheticsReq();
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgPaintingAestheticsRsp();
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgSculpturesSearchReq();
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgSculpturesSearchRsp();
+			break;
+		case DBMSG_HYBRID_ADD_LIST_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBHybridAddListReq();
+			break;
+		case DBMSG_HYBRID_ADD_LIST_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBHybridAddListRsp();
+			break;
+		case DBMSG_HYBRID_INQ_LIST_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBHybridInqListReq();
+			break;
+		case DBMSG_HYBRID_INQ_LIST_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBHybridInqListRsp();
+			break;
+		case DBMSG_NOSQL_ADD_TALK_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBNosqlAddTalkReq();
+			break;
+		case DBMSG_NOSQL_ADD_TALK_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBNosqlAddTalkRsp();
+			break;
+		case DBMSG_REDIS_DEL_TABLE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBRedisDelTableReq();
+			break;
+		case DBMSG_REDIS_DEL_TABLE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBRedisDelTableRsp();
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysAddImageFeatureReq();
+			break;
+		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysAddImageFeatureRsp();
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysAddWeiChatReq();
+			break;
+		case DBMSG_SYS_ADD_WEICHAT_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysAddWeiChatRsp();
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelReq();
+			break;
+		case DBMSG_SYS_INQ_CHANNEL_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelRsp();
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqImageFeatureReq();
+			break;
+		case DBMSG_SYS_INQ_IMAGE_FEATURE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqImageFeatureRsp();
+			break;
+		case DBMSG_SYS_INQ_IMAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqImageReq();
+			break;
+		case DBMSG_SYS_INQ_IMAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqImageRsp();
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqMuseumPageReq();
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_PAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqMuseumPageRsp();
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqMuseumReq();
+			break;
+		case DBMSG_SYS_INQ_MUSEUM_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqMuseumRsp();
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqPainterPageReq();
+			break;
+		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqPainterPageRsp();
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqWeiChatReq();
+			break;
+		case DBMSG_SYS_INQ_WEICHAT_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysInqWeiChatRsp();
+			break;
+		case HTTPMSG_CLOSE_REQ:
+				msg_len = t_rpc_ver3_sizeof_HTTPCloseReq();
+			break;
+		case HTTPMSG_CLOSE_RSP:
+				msg_len = t_rpc_ver3_sizeof_HTTPCloseRsp();
+			break;
+		case HTTPMSG_LISTEN_REQ:
+				msg_len = t_rpc_ver3_sizeof_HTTPListenReq();
+			break;
+		case HTTPMSG_LISTEN_RSP:
+				msg_len = t_rpc_ver3_sizeof_HTTPListenRsp();
+			break;
+		case HTTPMSG_POST_REQ:
+				msg_len = t_rpc_ver3_sizeof_HTTPPostReq();
+			break;
+		case HTTPMSG_POST_RSP:
+				msg_len = t_rpc_ver3_sizeof_HTTPPostRsp();
+			break;
+		case HTTPMSG_RECV_REQ:
+				msg_len = t_rpc_ver3_sizeof_HTTPRecvReq();
+			break;
+		case HTTPMSG_RECV_RSP:
+				msg_len = t_rpc_ver3_sizeof_HTTPRecvRsp();
+			break;
+		case MAINMSG_PYTHON_REQ:
+				msg_len = t_rpc_ver3_sizeof_MainMsgPythonReq();
+			break;
+		case MAINMSG_PYTHON_RSP:
+				msg_len = t_rpc_ver3_sizeof_MainMsgPythonRsp();
+			break;
+		case MSGID_BLOCKS_REQ:
+				msg_len = t_rpc_ver3_sizeof_MsgBlocksReq();
+			break;
+		case MSGID_BLOCKS_RSP:
+				msg_len = t_rpc_ver3_sizeof_MsgBlocksRsp();
+			break;
+		case MSGID_CFG_UPDATE:
+				msg_len = t_rpc_ver3_sizeof_CFGUpdate();
+			break;
+		case MSGID_CLIENT_BUSY:
+				msg_len = t_rpc_ver3_sizeof_ClientBusy();
+			break;
+		case MSGID_CLIENT_IDLE:
+				msg_len = t_rpc_ver3_sizeof_ClientIdle();
+			break;
+		case MSGID_COROUTINE_WAKEUP:
+				msg_len = t_rpc_ver3_sizeof_CoroutineWakeup();
+			break;
+		case MSGID_DEBUG_REQ:
+				msg_len = t_rpc_ver3_sizeof_DebugReq();
+			break;
+		case MSGID_DEBUG_RSP:
+				msg_len = t_rpc_ver3_sizeof_DebugRsp();
+			break;
+		case MSGID_ECHO:
+				msg_len = t_rpc_ver3_sizeof_MsgIdEcho();
+			break;
+		case MSGID_INNER_LOOP:
+				msg_len = t_rpc_ver3_sizeof_MsgInnerLoop();
+			break;
+		case MSGID_INTERNAL_EVENTS:
+				msg_len = t_rpc_ver3_sizeof_InternalEvents();
+			break;
+		case MSGID_INTERNAL_LOOP:
+				msg_len = t_rpc_ver3_sizeof_InternalLoop();
+			break;
+		case MSGID_LOCAL_THREAD_READY:
+				msg_len = t_rpc_ver3_sizeof_ThreadLocalReadyMsg();
+			break;
+		case MSGID_LOCAL_THREAD_REMOVE:
+				msg_len = t_rpc_ver3_sizeof_ThreadLocalRemoveMsg();
+			break;
+		case MSGID_MEMORY_WARNING:
+				msg_len = t_rpc_ver3_sizeof_MemoryWarning();
+			break;
+		case MSGID_OS_NOTIFY:
+				msg_len = t_rpc_ver3_sizeof_MsgOSNotify();
+			break;
+		case MSGID_POWER_OFF:
+				msg_len = t_rpc_ver3_sizeof_POWEROFFMSG();
+			break;
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				msg_len = t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg();
+			break;
+		case MSGID_REMOTE_THREAD_ID_READY:
+				msg_len = t_rpc_ver3_sizeof_ThreadRemoteIDReadyMsg();
+			break;
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+				msg_len = t_rpc_ver3_sizeof_ThreadRemoteIDRemoveMsg();
+			break;
+		case MSGID_REMOTE_THREAD_READY:
+				msg_len = t_rpc_ver3_sizeof_ThreadRemoteReadyMsg();
+			break;
+		case MSGID_REMOTE_THREAD_REMOVE:
+				msg_len = t_rpc_ver3_sizeof_ThreadRemoteRemoveMsg();
+			break;
+		case MSGID_RESTART_REQ:
+				msg_len = t_rpc_ver3_sizeof_RESTARTREQMSG();
+			break;
+		case MSGID_RESTART_RSP:
+				msg_len = t_rpc_ver3_sizeof_RESTARTRSPMSG();
+			break;
+		case MSGID_RPC_DEBUG_REQ:
+				msg_len = t_rpc_ver3_sizeof_RPCDebugReq();
+			break;
+		case MSGID_RPC_DEBUG_RSP:
+				msg_len = t_rpc_ver3_sizeof_RPCDebugRsp();
+			break;
+		case MSGID_RUN_FUNCTION:
+				msg_len = t_rpc_ver3_sizeof_RUNFUNCTIONMSG();
+			break;
+		case MSGID_SYSTEM_DECOUPLING:
+				msg_len = t_rpc_ver3_sizeof_SystemDecoupling();
+			break;
+		case MSGID_SYSTEM_MOUNT:
+				msg_len = t_rpc_ver3_sizeof_SystemMount();
+			break;
+		case MSGID_TEMPORARILY_DEFINE_MESSAGE:
+				msg_len = t_rpc_ver3_sizeof_TemporarilyDefineMessageMsg();
+			break;
+		case MSGID_TEST:
+				msg_len = t_rpc_ver3_sizeof_TESTMSG();
+			break;
+		case MSGID_THREAD_BUSY:
+				msg_len = t_rpc_ver3_sizeof_ThreadBusy();
+			break;
+		case MSGID_THREAD_IDLE:
+				msg_len = t_rpc_ver3_sizeof_ThreadIdle();
+			break;
+		case MSGID_TIMER:
+				msg_len = t_rpc_ver3_sizeof_TIMERMSG();
+			break;
+		case MSGID_TRACE_SWITCH:
+				msg_len = t_rpc_ver3_sizeof_TraceSwitchMsg();
+			break;
+		case MSGID_WAKEUP:
+				msg_len = t_rpc_ver3_sizeof_WAKEUPMSG();
+			break;
+		case SOCKET_BIND_REQ:
+				msg_len = t_rpc_ver3_sizeof_SocketBindReq();
+			break;
+		case SOCKET_BIND_RSP:
+				msg_len = t_rpc_ver3_sizeof_SocketBindRsp();
+			break;
+		case SOCKET_CONNECT_REQ:
+				msg_len = t_rpc_ver3_sizeof_SocketConnectReq();
+			break;
+		case SOCKET_CONNECT_RSP:
+				msg_len = t_rpc_ver3_sizeof_SocketConnectRsp();
+			break;
+		case SOCKET_DISCONNECT_REQ:
+				msg_len = t_rpc_ver3_sizeof_SocketDisconnectReq();
+			break;
+		case SOCKET_DISCONNECT_RSP:
+				msg_len = t_rpc_ver3_sizeof_SocketDisconnectRsp();
+			break;
+		case SOCKET_NOTIFY:
+				msg_len = t_rpc_ver3_sizeof_SocketNotify();
+			break;
+		case SOCKET_PLUGIN:
+				msg_len = t_rpc_ver3_sizeof_SocketPlugIn();
+			break;
+		case SOCKET_PLUGOUT:
+				msg_len = t_rpc_ver3_sizeof_SocketPlugOut();
+			break;
+		case SOCKET_RAW_EVENT:
+				msg_len = t_rpc_ver3_sizeof_SocketRawEvent();
+			break;
+		case SOCKET_READ:
+				msg_len = t_rpc_ver3_sizeof_SocketRead();
+			break;
+		case SOCKET_WRITE:
+				msg_len = t_rpc_ver3_sizeof_SocketWrite();
+			break;
+		case UIP_DATA_RECV_REQ:
+				msg_len = t_rpc_ver3_sizeof_UIPDataRecvReq();
+			break;
+		case UIP_DATA_RECV_RSP:
+				msg_len = t_rpc_ver3_sizeof_UIPDataRecvRsp();
+			break;
+		case UIP_DATA_SEND_REQ:
+				msg_len = t_rpc_ver3_sizeof_UIPDataSendReq();
+			break;
+		case UIP_DATA_SEND_RSP:
+				msg_len = t_rpc_ver3_sizeof_UIPDataSendRsp();
+			break;
+		case UIP_REGISTER_REQ:
+				msg_len = t_rpc_ver3_sizeof_UIPRegisterReq();
+			break;
+		case UIP_REGISTER_RSP:
+				msg_len = t_rpc_ver3_sizeof_UIPRegisterRsp();
+			break;
+		case UIP_UNREGISTER_REQ:
+				msg_len = t_rpc_ver3_sizeof_UIPUnregisterReq();
+			break;
+		case UIP_UNREGISTER_RSP:
+				msg_len = t_rpc_ver3_sizeof_UIPUnregisterRsp();
+			break;
+		default:
+				TOOLSLOG("msg_id:%d zip failed!", msg_id);
+ 				msg_len = 0;
+			break;
+	}
+
+	return msg_len;
+}
+
 // =====================================================================
 
 void *
@@ -1151,7 +1521,8 @@ t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
 	t_bson_add_int64(pBson, "rpc_time", (u64)dave_os_time_us());
 	#endif
 
-	t_bson_add_object(pBson, "chain", pChainBson);
+	if(pChainBson != NULL)
+		t_bson_add_object(pBson, "chain", pChainBson);
 
 	return pBson;
 }
@@ -1189,10 +1560,12 @@ t_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8
 void *
 t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr)
 {
-	void *ptr;
+	return _t_rpc_ptr(msg_id, msg_body, new_ptr);
+}
 
-	ptr = _t_rpc_ptr(msg_id, msg_body, new_ptr);
-
-	return ptr;
+ub
+t_rpc_ver3_sizeof(ub msg_id)
+{
+	return _t_rpc_sizeof(msg_id);
 }
 
