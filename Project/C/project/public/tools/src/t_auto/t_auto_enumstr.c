@@ -439,6 +439,12 @@ t_auto_ChainType_str(ChainType enum_value)
 		case ChainType_execution:
 				value_str = "'ChainType_execution'";
 			break;
+		case ChainType_coroutine:
+				value_str = "'ChainType_coroutine'";
+			break;
+		case ChainType_max:
+				value_str = "'ChainType_max-0xff'";
+			break;
 		default:
 				value_str = "'NULL'";
 			break;

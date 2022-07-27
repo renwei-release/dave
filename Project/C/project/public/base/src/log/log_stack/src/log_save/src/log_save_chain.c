@@ -13,35 +13,9 @@
 #include "dave_os.h"
 #include "dave_3rdparty.h"
 #include "thread_chain.h"
+#include "log_tracing.h"
 #include "log_lock.h"
 #include "log_log.h"
-
-static inline s8 *
-_log_save_chain_type_to_str(ChainType type)
-{
-	s8 *type_str;
-
-	switch(type)
-	{
-		case ChainType_none:
-				type_str = "none";
-			break;
-		case ChainType_calling:
-				type_str = "calling";
-			break;
-		case ChainType_called:
-				type_str = "called";
-			break;
-		case ChainType_execution:
-				type_str = "execution";
-			break;
-		default:
-				type_str = "unkonw";
-			break;
-	}
-
-	return type_str;
-}
 
 static inline s8 *
 _log_save_chain_time_str(s8 *time_ptr, ub time_len, ub microseconds)
@@ -56,7 +30,7 @@ _log_save_chain_time_str(s8 *time_ptr, ub time_len, ub microseconds)
 	return time_ptr;
 }
 
-static void *
+static inline void *
 _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
 {
 	void *pJson = dave_json_malloc();
@@ -66,7 +40,7 @@ _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_
 	dave_json_add_str(pJson, "chain_id", pChain->chain_id);
 	dave_json_add_ub(pJson, "msg_serial", pChain->msg_serial);
 	dave_json_add_ub(pJson, "generation", pChain->generation);
-	dave_json_add_str(pJson, "action", _log_save_chain_type_to_str(pChain->type));
+	dave_json_add_str(pJson, "type", t_auto_ChainType_str(pChain->type));
 
 	dave_json_add_ub(pJson, "chain_counter", pChain->chain_counter);
 
@@ -81,7 +55,7 @@ _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_
 	dave_json_add_str(pJson, "dst_thread", pChain->dst_thread);
 
 	dave_json_add_str(pJson, "msg_id", msgstr(pChain->msg_id));
-	if(pChain->type == ChainType_execution)
+	if(msg_len > 0)
 	{
 		dave_json_add_object(pJson, "msg_body", t_rpc_rebuild_to_json(msg_id, msg_len, msg_body));
 	}
@@ -89,15 +63,15 @@ _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_
 	return pJson;
 }
 
-static void
+static inline void
 _log_save_chain(sb file_id, s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
 {
 	void *pJson;
 	s8 *json_str;
 	ub json_len, file_len;
 
-	LOGDEBUG("device:%s chain:%s generation:%d %lx->%lx %s->%s %s->%s->%s msg_len:%d",
-		device_info,
+	LOGDEBUG("type:%s chain:%s generation:%d %lx->%lx %s->%s %s->%s->%s msg_len:%d",
+		t_auto_ChainType_str(pChain->type),
 		pChain->chain_id, pChain->generation,
 		pChain->send_time, pChain->recv_time,
 		pChain->src_gid, pChain->dst_gid,
@@ -116,10 +90,25 @@ _log_save_chain(sb file_id, s8 *device_info, ThreadChain *pChain, ub msg_id, ub 
 	file_len += dave_os_file_save(file_id, (ub)file_len, json_len, (u8 *)json_str);
 	dave_os_file_save(file_id, (ub)file_len, 1, (u8 *)"\n");
 
-	dave_json_free(pJson);
+	if(log_tracing(pChain->chain_id, pJson) == dave_false)
+	{
+		dave_json_free(pJson);
+	}
 }
 
 // =====================================================================
+
+void
+log_save_chain_init(void)
+{
+	log_tracing_init();
+}
+
+void
+log_save_chain_exit(void)
+{
+	log_tracing_exit();
+}
 
 void
 log_save_chain(sb file_id, s8 *device_info, s8 *content_ptr, ub content_len)
@@ -138,7 +127,10 @@ log_save_chain(sb file_id, s8 *device_info, s8 *content_ptr, ub content_len)
 
 	dave_byte_8_32(msg_id, content_ptr[content_index++], content_ptr[content_index++], content_ptr[content_index++], content_ptr[content_index++]);
 	dave_byte_8_32(msg_len, content_ptr[content_index++], content_ptr[content_index++], content_ptr[content_index++], content_ptr[content_index++]);
-	msg_body = (void *)(&content_ptr[content_index]);
+	if(msg_len > 0)
+		msg_body = (void *)(&content_ptr[content_index]);
+	else
+		msg_body = NULL;
 
 	if(chain_len != sizeof(ThreadChain))
 	{

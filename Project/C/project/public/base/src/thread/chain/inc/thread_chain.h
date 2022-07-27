@@ -9,13 +9,15 @@
 #define __THREAD_CHAIN_H__
 #include "base_define.h"
 
-#define DAVE_CHAIN_ID_LEN (64)
+#define DAVE_CHAIN_ID_LEN (56)
 
 typedef enum {
 	ChainType_none = 0,
 	ChainType_calling,
 	ChainType_called,
 	ChainType_execution,
+	ChainType_coroutine,
+	ChainType_max = 0xff
 } ChainType;
 
 typedef struct {
@@ -50,11 +52,18 @@ void thread_chain_reset(ThreadChain *pChain);
 
 dave_bool thread_chain_enable(ThreadId msg_src, ThreadId msg_dst, ub msg_id);
 
+void thread_chain_fill_msg(MSGBODY *msg, void *msg_chain);
+
 void thread_chain_build_msg(ThreadChain *pMsgChain, ThreadId msg_src, ThreadId msg_dst, ub msg_id);
 
 ThreadChain * thread_chain_run_msg(MSGBODY *msg);
 
 void thread_chain_run_clean(ThreadChain *pChain, MSGBODY *msg);
+
+void thread_chain_coroutine_msg(
+	ThreadChain *pMsgChain,
+	ThreadId src_id, ThreadId dst_id,
+	ub msg_id, ub msg_len, u8 *msg_body);
 
 void thread_chain_clean_msg(MSGBODY *msg);
 

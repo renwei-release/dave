@@ -149,6 +149,17 @@ thread_chain_enable(ThreadId msg_src, ThreadId msg_dst, ub msg_id)
 }
 
 void
+thread_chain_fill_msg(MSGBODY *msg, void *msg_chain)
+{
+	THREADDEBUG("%s->%s:%s",
+		thread_id_to_name(msg->msg_src),
+		thread_id_to_name(msg->msg_dst),
+		msgstr(msg->msg_id));
+
+	msg->msg_chain = msg_chain;
+}
+
+void
 thread_chain_build_msg(
 	ThreadChain *pMsgChain,
 	ThreadId msg_src, ThreadId msg_dst,
@@ -191,6 +202,11 @@ thread_chain_run_msg(MSGBODY *msg)
 		return NULL;
 	}
 
+	THREADDEBUG("%s->%s:%s",
+		thread_id_to_name(msg->msg_src),
+		thread_id_to_name(msg->msg_dst),
+		msgstr(msg->msg_id));
+
 	pThreadChain = thread_current_chain();
 	if(pThreadChain == NULL)
 	{
@@ -225,6 +241,27 @@ thread_chain_run_clean(ThreadChain *pChain, MSGBODY *msg)
 }
 
 void
+thread_chain_coroutine_msg(
+	ThreadChain *pMsgChain,
+	ThreadId msg_src, ThreadId msg_dst,
+	ub msg_id, ub msg_len, u8 *msg_body)
+{
+	if(pMsgChain != NULL)
+	{
+		pMsgChain->send_time = pMsgChain->recv_time;
+	
+		thread_chain_insert(
+			ChainType_coroutine,
+			pMsgChain,
+			pMsgChain->src_gid, pMsgChain->dst_gid,
+			msg_src, msg_dst,
+			msg_id, msg_len, msg_body);
+
+		thread_chain_free(pMsgChain);
+	}
+}
+
+void
 thread_chain_clean_msg(MSGBODY *msg)
 {
 	if(msg->msg_chain != NULL)
@@ -245,7 +282,7 @@ thread_chain_insert(
 	if(pChain == NULL)
 	{
 		THREADLOG("chain is empty! type:%s %s->%s %s->%s:%s",
-			type==ChainType_calling?"calling":type==ChainType_called?"called":"execution",
+			t_auto_ChainType_str(type),
 			src_gid, dst_gid,
 			thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));
 		return;
@@ -259,7 +296,7 @@ thread_chain_insert(
 	_thread_chain_insert_chain(pChain, type, src_gid, dst_gid, msg_src, msg_dst, msg_id);
 
 	THREADDEBUG("type:%s chain_id:%s chain_counter:%d generation:%d time:%lx/%lx %s->%s %s->%s:%s",
-		type==ChainType_calling?"calling":type==ChainType_called?"called":"execution",
+		t_auto_ChainType_str(type),
 		pChain->chain_id, pChain->chain_counter, pChain->generation,
 		pChain->send_time, pChain->recv_time,
 		pChain->src_gid, pChain->dst_gid,

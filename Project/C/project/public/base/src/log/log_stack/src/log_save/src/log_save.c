@@ -134,6 +134,8 @@ log_save_init(void)
 {
 	_log_file_kv = kv_malloc("logsave", KvAttrib_list, LOG_FILE_CLOSE_TIME, _log_save_timer_out);
 
+	log_save_chain_init();
+
 	dave_jaegertracing_init();
 }
 
@@ -141,6 +143,8 @@ void
 log_save_exit(void)
 {
 	dave_jaegertracing_exit();
+
+	log_save_chain_exit();
 
 	kv_free(_log_file_kv, _log_save_recycle);
 }

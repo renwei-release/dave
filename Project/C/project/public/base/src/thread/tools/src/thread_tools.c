@@ -99,7 +99,7 @@ _thread_build_msg_chain(
 	{
 		if(msg_chain != NULL)
 		{
-			thread_msg->msg_body.msg_chain = msg_chain;
+			thread_chain_fill_msg(&(thread_msg->msg_body), msg_chain);
 		}
 		else
 		{

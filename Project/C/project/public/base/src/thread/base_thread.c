@@ -380,7 +380,7 @@ _thread_write_msg(
 	ThreadStruct *pDstThread = &_thread[thread_get_local(dst_id)];
 	dave_bool hold_body;
 	ThreadMsg *pMsg;
-	RetCode ret;
+	RetCode ret = RetCode_OK;
 
 	if(thread_call_sync_catch(
 		src_id,
@@ -419,14 +419,11 @@ _thread_write_msg(
 	}
 	else
 	{
-		ret = RetCode_OK;
+		thread_chain_coroutine_msg(msg_chain, src_id, dst_id, msg_id, msg_len, msg_body);
+
 		if(hold_body == dave_false)
 		{
 			thread_clean_user_input_data(msg_body, msg_id);
-		}
-		if(msg_chain != NULL)
-		{
-			thread_chain_free(msg_chain);
 		}
 	}
 
@@ -1187,7 +1184,7 @@ _thread_safe_id_msg(
 		}
 		return dave_false;
 	}
-	thread_index =  thread_find_busy_index(thread_get_local(dst_id));
+	thread_index =  thread_get_local(dst_id);
 	if(thread_index >= THREAD_MAX)
 	{
 		THREADLTRACE(60,1,"Can not find thread, dst_id:%lx msg_id:%s (%s:%d)",

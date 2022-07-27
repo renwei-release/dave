@@ -13,7 +13,7 @@
 #include "thread_chain.h"
 #include "thread_log.h"
 
-#define CHAIN_BODY_MAX_LEN 128
+#define CHAIN_BODY_MAX_LEN 64
 
 typedef struct {
 	MBUF *chain_data;
@@ -44,7 +44,8 @@ _chain_buf_malloc(
 	data_index += dave_memcpy(&data_ptr[data_index], pChain, sizeof(ThreadChain));
 
 	dave_byte_32_8(data_ptr[data_index++], data_ptr[data_index++], data_ptr[data_index++], data_ptr[data_index++], msg_id);
-	if(pChain->type == ChainType_execution)
+	if((pChain->type == ChainType_execution)
+		|| (pChain->type == ChainType_coroutine))
 	{
 		if(msg_len > CHAIN_BODY_MAX_LEN)
 		{
