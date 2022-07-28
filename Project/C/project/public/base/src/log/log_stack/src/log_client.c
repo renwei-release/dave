@@ -34,6 +34,8 @@ static s8 _log_chain_name[128];
 static u16 _log_chain_name_len;
 static s8 _log_device_info[2048];
 static u16 _log_device_info_len;
+static s8 _log_version[128];
+static u16 _log_version_len;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static ThreadId _bdata_thread = INVALID_THREAD_ID;
 static s32 _log_client_socket = INVALID_SOCKET_ID;
@@ -167,6 +169,8 @@ _log_client_chain_log(void)
 		index += dave_memcpy(&frame[index], _log_chain_name, _log_chain_name_len);
 		dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
 		index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+		dave_byte_8(frame[index++], frame[index++], _log_version_len);
+		index += dave_memcpy(&frame[index], _log_version, _log_version_len);
 		dave_byte_32_8(frame[index++], frame[index++], frame[index++], frame[index++], chain_data->len);
 
 		data->tot_len = data->len = index;
@@ -405,6 +409,8 @@ _log_client_init(MSGBODY *msg)
 	_log_chain_name_len = dave_snprintf(_log_chain_name, sizeof(_log_chain_name), "CHAIN");
 	_log_client_get_device_info(_log_device_info, sizeof(_log_device_info));
 	_log_device_info_len = dave_strlen(_log_device_info);
+	dave_strcpy(_log_version, dave_verno(), sizeof(_log_version));
+	_log_version_len = dave_strlen(_log_version);
 
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 	_bdata_thread = INVALID_THREAD_ID;

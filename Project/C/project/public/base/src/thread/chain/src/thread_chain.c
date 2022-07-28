@@ -40,13 +40,16 @@ _thread_chain_clean(ThreadChain *pChain)
 	pChain->request = dave_true;
 	pChain->msg_src = pChain->msg_dst = 0;
 	pChain->msg_id = MSGID_RESERVED;
+
+	pChain->fun[0] = '\0';
+	pChain->line = 0;
 }
 
 static inline void
 _thread_chain_build_new(
 	ThreadChain *pMsgChain,
-	ThreadId msg_src, ThreadId msg_dst,
-	ub msg_id)
+	ThreadId msg_src, ThreadId msg_dst, ub msg_id,
+	s8 *fun, ub line)
 {
 	_thread_chain_clean(pMsgChain);
 
@@ -58,13 +61,16 @@ _thread_chain_build_new(
 	pMsgChain->msg_src = msg_src;
 	pMsgChain->msg_dst = msg_dst;
 	pMsgChain->msg_id = msg_id;
+
+	dave_strcpy(pMsgChain->fun, fun, sizeof(pMsgChain->fun));
+	pMsgChain->line = line;
 }
 
 static inline void
 _thread_chain_build_copy(
 	ThreadChain *pMsgChain, ThreadChain *pThreadChain,
-	ThreadId msg_src, ThreadId msg_dst,
-	ub msg_id)
+	ThreadId msg_src, ThreadId msg_dst, ub msg_id,
+	s8 *fun, ub line)
 {
 	_thread_chain_clean(pMsgChain);
 
@@ -96,6 +102,9 @@ _thread_chain_build_copy(
 	pMsgChain->msg_src = msg_src;
 	pMsgChain->msg_dst = msg_dst;
 	pMsgChain->msg_id = msg_id;
+
+	dave_strcpy(pMsgChain->fun, fun, sizeof(pMsgChain->fun));
+	pMsgChain->line = line;
 }
 
 static inline void
@@ -223,17 +232,19 @@ thread_chain_reset(ThreadChain *pChain)
 	_thread_chain_clean(pChain);
 }
 
-void
-thread_chain_fill_msg(MSGBODY *msg, void *msg_chain)
-{
-	msg->msg_chain = msg_chain;
-}
-
 ThreadChain *
-thread_chain_build_msg(ThreadId msg_src, ThreadId msg_dst, ub msg_id)
+thread_chain_build_msg(
+	void *msg_chain,
+	ThreadId msg_src, ThreadId msg_dst, ub msg_id,
+	s8 *fun, ub line)
 {
 	ThreadChain *pMsgChain;
 	ThreadChain *pThreadChain;
+
+	if(msg_chain != NULL)
+	{
+		return (ThreadChain *)msg_chain;
+	}
 
 	if(_thread_chain_msg_id_enable(msg_id) == dave_false)
 	{
@@ -252,9 +263,9 @@ thread_chain_build_msg(ThreadId msg_src, ThreadId msg_dst, ub msg_id)
 	pMsgChain = _thread_chain_malloc();
 
 	if(pThreadChain->type == ChainType_none)
-		_thread_chain_build_new(pMsgChain, msg_src, msg_dst, msg_id);
+		_thread_chain_build_new(pMsgChain, msg_src, msg_dst, msg_id, fun, line);
 	else
-		_thread_chain_build_copy(pMsgChain, pThreadChain, msg_src, msg_dst, msg_id);
+		_thread_chain_build_copy(pMsgChain, pThreadChain, msg_src, msg_dst, msg_id, fun, line);
 
 	return pMsgChain;
 }
@@ -389,6 +400,8 @@ thread_chain_to_bson(ThreadChain *pChain)
 	t_bson_add_int64(pBson, "3", pChain->generation);
 	t_bson_add_int64(pBson, "4", pChain->send_time);
 	t_bson_add_boolean(pBson, "5", pChain->request);
+	t_bson_add_string(pBson, "6", pChain->fun);
+	t_bson_add_int64(pBson, "7", pChain->line);
 
 	return pBson;
 }
@@ -397,7 +410,7 @@ ThreadChain *
 thread_bson_to_chain(void *pBson)
 {
 	ThreadChain *pChain;
-	size_t chain_id_len;
+	size_t chain_id_len, fun_len;
 
 	if(pBson == NULL)
 		return NULL;
@@ -406,6 +419,7 @@ thread_bson_to_chain(void *pBson)
 
 	_thread_chain_clean(pChain);
 	chain_id_len = sizeof(pChain->chain_id);
+	fun_len = sizeof(pChain->fun);
 
 	pChain->type = ChainType_called;
 	t_bson_cpy_string(pBson, "1", pChain->chain_id, &chain_id_len);
@@ -413,6 +427,8 @@ thread_bson_to_chain(void *pBson)
 	t_bson_inq_int64(pBson, "3", &(pChain->generation));
 	t_bson_inq_int64(pBson, "4", &(pChain->send_time));
 	t_bson_inq_boolean(pBson, "5", &(pChain->request));
+	t_bson_cpy_string(pBson, "6", pChain->fun, &fun_len);
+	t_bson_inq_int64(pBson, "7", &(pChain->line));
 
 	return pChain;
 }

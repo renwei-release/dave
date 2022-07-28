@@ -139,6 +139,8 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 	u16 chain_name_len;
 	s8 device_info[256];
 	u16 device_info_len;
+	s8 service_verno[256];
+	u16 service_verno_len;
 	u16 chain_len;
 	s8 log_file_name[256];
 
@@ -156,11 +158,17 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 	{
 		device_info[device_info_len] = '\0';
 	}
+	dave_byte_16(service_verno_len, frame[frame_index++], frame[frame_index++]);
+	frame_index += dave_memcpy(service_verno, &frame[frame_index], service_verno_len);
+	if(service_verno_len < sizeof(service_verno))
+	{
+		service_verno[service_verno_len] = '\0';
+	}
 	dave_byte_8_32(chain_len, frame[frame_index++], frame[frame_index++], frame[frame_index++], frame[frame_index++]);
 
 	_log_server_build_file_name(log_file_name, sizeof(log_file_name), chain_name, NULL);
 
-	log_save_chain_file(log_file_name, device_info, (s8 *)(&frame[frame_index]), chain_len);
+	log_save_chain_file(log_file_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
 }
 
 static void

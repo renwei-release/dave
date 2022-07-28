@@ -89,22 +89,6 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 	return msg_index;
 }
 
-static inline void
-_thread_build_msg_chain(
-	ThreadMsg *thread_msg,
-	void *msg_chain,
-	ThreadId src_id, ThreadId dst_id, ub msg_id)
-{
-	if(msg_chain != NULL)
-	{
-		thread_chain_fill_msg(&(thread_msg->msg_body), msg_chain);
-	}
-	else
-	{
-		thread_msg->msg_body.msg_chain = thread_chain_build_msg(src_id, dst_id, msg_id);
-	}
-}
-
 // =====================================================================
 
 void
@@ -328,12 +312,12 @@ thread_build_msg(
 	dave_bool data_is_here = thread_memory_at_here((void *)msg_body);
 	ThreadMsg *thread_msg;
 
-	thread_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, (s8 *)__func__, (ub)__LINE__);
+	thread_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, fun, line);
 	if(data_is_here == dave_false)
 	{
 		THREADDEBUG("Please use thread_msg function to build the msg:%s buffer! <%s:%d>",
 			msgstr(msg_id), fun, line);
-		thread_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, (s8 *)__func__, (ub)__LINE__);
+		thread_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, fun, line);
 		dave_memcpy(thread_msg->msg_body.msg_body, msg_body, msg_len);
 	}
 	else
@@ -378,7 +362,10 @@ thread_build_msg(
 	thread_msg->pQueue = NULL;
 	thread_msg->next = NULL;
 
-	_thread_build_msg_chain(thread_msg, msg_chain, src_id, dst_id, msg_id);
+	thread_msg->msg_body.msg_chain = thread_chain_build_msg(
+			msg_chain,
+			src_id, dst_id, msg_id,
+			fun, line);
 
 	return thread_msg;
 }

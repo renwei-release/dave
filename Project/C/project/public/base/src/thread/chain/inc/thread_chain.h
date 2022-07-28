@@ -11,6 +11,7 @@
 
 #define DAVE_CHAIN_ID_LEN (56)
 #define DAVE_CHAIN_THREAD_NAME_LEN (13)
+#define DAVE_CHAIN_FUN_LEN (48)
 
 typedef enum {
 	ChainType_none = 0,
@@ -42,6 +43,9 @@ typedef struct {
 	ThreadId msg_src;
 	ThreadId msg_dst;
 	ub msg_id;
+
+	s8 fun[DAVE_CHAIN_FUN_LEN];
+	ub line;
 } ThreadChain;
 
 void thread_chain_init(void);
@@ -52,11 +56,14 @@ void thread_chain_reset(ThreadChain *pChain);
 
 void thread_chain_fill_msg(MSGBODY *msg, void *msg_chain);
 
-ThreadChain * thread_chain_build_msg(ThreadId msg_src, ThreadId msg_dst, ub msg_id);
+ThreadChain * thread_chain_build_msg(
+	void *msg_chain,
+	ThreadId msg_src, ThreadId msg_dst, ub msg_id,
+	s8 *fun, ub line);
 
 ThreadChain * thread_chain_run_msg(MSGBODY *msg);
 
-void thread_chain_run_clean(ThreadChain *pChain, MSGBODY *msg);
+void thread_chain_run_clean(ThreadChain *pThreadChain, MSGBODY *msg);
 
 void thread_chain_coroutine_msg(
 	ThreadChain *pMsgChain,

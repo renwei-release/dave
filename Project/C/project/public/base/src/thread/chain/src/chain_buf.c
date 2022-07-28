@@ -13,7 +13,7 @@
 #include "thread_chain.h"
 #include "thread_log.h"
 
-#define CHAIN_BODY_MAX_LEN 64
+#define CHAIN_BODY_MAX_LEN 32
 
 typedef struct {
 	MBUF *chain_data;

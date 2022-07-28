@@ -38,7 +38,7 @@ dave_bool dave_array_add_json(void *array, void *object);
 dave_bool dave_json_add_ub(void *object, char *key, ub ub_data);
 
 dave_bool __dave_json_get_ub__(void *object, char *key, ub *ub_data, s8 *fun, ub line);
-#define dave_json_get_ub(object, key, ub_data) __dave_json_get_ub__(object, key, ub_data, (s8 *)__func__, (ub)__LINE__)
+#define dave_json_get_ub(object, key, ub_data) __dave_json_get_ub__(object, (char *)key, ub_data, (s8 *)__func__, (ub)__LINE__)
 
 dave_bool dave_json_add_sb(void *object, char *key, sb sb_data);
 

@@ -14,6 +14,7 @@
 #include "dave_3rdparty.h"
 #include "thread_chain.h"
 #include "log_tracing.h"
+#include "log_save_json.h"
 #include "log_lock.h"
 #include "log_log.h"
 
@@ -30,17 +31,18 @@ _log_save_chain_time_str(s8 *time_ptr, ub time_len, ub microseconds)
 }
 
 static inline void *
-_log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
+_log_save_chain_to_json(s8 *device_info, s8 *service_verno, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
 {
 	void *pJson = dave_json_malloc();
-	s8 time_str[128], id_str[64];
+	s8 time_str[128], ub_str[64];
 
 	dave_json_add_str(pJson, "type", t_auto_ChainType_str(pChain->type));
 
-	dave_json_add_str(pJson, "service_info", device_info);
-	dave_json_add_str(pJson, "chain_id", pChain->chain_id);
-	dave_json_add_ub(pJson, "call_id", pChain->call_id);
-	dave_json_add_ub(pJson, "generation", pChain->generation);
+	dave_json_add_str(pJson, "device_info", device_info);
+	dave_json_add_str(pJson, "service_verno", service_verno);
+	dave_json_add_str(pJson, JSON_LOG_chain_id, pChain->chain_id);
+	dave_json_add_ub(pJson, JSON_LOG_call_id, pChain->call_id);
+	dave_json_add_ub(pJson, JSON_LOG_generation, pChain->generation);
 	dave_json_add_ub(pJson, "chain_counter", pChain->chain_counter);
 
 	dave_json_add_str(pJson, "send_date", _log_save_chain_time_str(time_str, sizeof(time_str), pChain->send_time));
@@ -52,25 +54,27 @@ _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_
 	dave_json_add_str(pJson, "src_gid", pChain->src_gid);
 	dave_json_add_str(pJson, "dst_gid", pChain->dst_gid);
 
-	dave_json_add_str(pJson, "src_thread", pChain->src_thread);
-	dave_json_add_str(pJson, "dst_thread", pChain->dst_thread);
+	dave_json_add_str(pJson, JSON_LOG_src_thread, pChain->src_thread);
+	dave_json_add_str(pJson, JSON_LOG_dst_thread, pChain->dst_thread);
 
-	dave_json_add_str(pJson, "action", pChain->request==dave_true?"request":"answer");
-	dave_snprintf(id_str, sizeof(id_str), "%lx", pChain->msg_src);
-	dave_json_add_str(pJson, "msg_src", id_str);
-	dave_snprintf(id_str, sizeof(id_str), "%lx", pChain->msg_dst);
-	dave_json_add_str(pJson, "msg_dst", id_str);
+	dave_json_add_str(pJson, JSON_LOG_action, pChain->request==dave_true?JSON_LOG_action_request:JSON_LOG_action_answer);
+	dave_snprintf(ub_str, sizeof(ub_str), "%lx", pChain->msg_src);
+	dave_json_add_str(pJson, "msg_src", ub_str);
+	dave_snprintf(ub_str, sizeof(ub_str), "%lx", pChain->msg_dst);
+	dave_json_add_str(pJson, "msg_dst", ub_str);
 	dave_json_add_str(pJson, "msg_id", msgstr(pChain->msg_id));
 	if(msg_len > 0)
 	{
 		dave_json_add_object(pJson, "msg_body", t_rpc_rebuild_to_json(msg_id, msg_len, msg_body));
 	}
+	dave_json_add_str(pJson, "fun", pChain->fun);
+	dave_json_add_ub(pJson, "line", pChain->line);
 
 	return pJson;
 }
 
 static inline void
-_log_save_chain(sb file_id, s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
+_log_save_chain(sb file_id, s8 *device_info, s8 *service_verno, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
 {
 	void *pJson;
 	s8 *json_str;
@@ -84,7 +88,7 @@ _log_save_chain(sb file_id, s8 *device_info, ThreadChain *pChain, ub msg_id, ub 
 		pChain->src_thread, pChain->dst_thread, msgstr(pChain->msg_id),
 		msg_len);
 
-	pJson = _log_save_chain_to_json(device_info, pChain, msg_id, msg_len, msg_body);
+	pJson = _log_save_chain_to_json(device_info, service_verno, pChain, msg_id, msg_len, msg_body);
 
 	json_str = dave_json_to_string(pJson, &json_len);
 
@@ -117,7 +121,7 @@ log_save_chain_exit(void)
 }
 
 void
-log_save_chain(sb file_id, s8 *device_info, s8 *content_ptr, ub content_len)
+log_save_chain(sb file_id, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len)
 {
 	ub content_index = 0;
 	u16 chain_version;
@@ -159,7 +163,7 @@ log_save_chain(sb file_id, s8 *device_info, s8 *content_ptr, ub content_len)
 		return;
 	}
 
-	_log_save_chain(file_id, device_info, pChain, msg_id, msg_len, msg_body);
+	_log_save_chain(file_id, device_info, service_verno, pChain, msg_id, msg_len, msg_body);
 }
 
 #endif

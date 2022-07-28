@@ -16,7 +16,7 @@
 #include "tracing_logic.h"
 #include "log_log.h"
 
-#define LOG_TRACING_TIME 10
+#define LOG_TRACING_TIME 6
 #define LOG_TRACING_LIFE 3
 
 typedef struct {
@@ -75,12 +75,12 @@ _log_tracing_add(s8 *chain_id, void *pJson)
 			kv_add_key_ptr(_log_tracing_kv, pBody->chain_id, pBody);
 		}
 
-		if((pBody != NULL) && (pBody->pArrayJson != NULL))
-		{
-			add_json_ret = dave_json_array_add_object(pBody->pArrayJson, pJson);
-		}
-
 	} );
+
+	if((pBody != NULL) && (pBody->pArrayJson != NULL))
+	{
+		add_json_ret = dave_json_array_add_object(pBody->pArrayJson, pJson);
+	}
 
 	return add_json_ret;
 }
@@ -103,7 +103,10 @@ _log_tracing_logic(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	TracingBody *pBody = (TracingBody *)(pLoop->ptr);
 
-	tracing_logic(pBody->pArrayJson);
+	if(pBody->pArrayJson != NULL)
+	{
+		tracing_logic(pBody->pArrayJson);
+	}
 
 	_log_tracing_free(pBody);
 }
@@ -161,6 +164,8 @@ log_tracing_init(void)
 
 	t_lock_reset(&_log_tracing_pv);
 
+	tracing_logic_init();
+
 	reg_msg(MSGID_INNER_LOOP, _log_tracing_logic);
 }
 
@@ -170,6 +175,8 @@ log_tracing_exit(void)
 	unreg_msg(MSGID_INNER_LOOP);
 
 	kv_free(_log_tracing_kv, _log_tracing_recycle);
+
+	tracing_logic_exit();
 }
 
 dave_bool

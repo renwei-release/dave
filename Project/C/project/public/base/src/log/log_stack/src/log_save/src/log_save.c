@@ -135,15 +135,11 @@ log_save_init(void)
 	_log_file_kv = kv_malloc("logsave", KvAttrib_list, LOG_FILE_CLOSE_TIME, _log_save_timer_out);
 
 	log_save_chain_init();
-
-	dave_jaegertracing_init();
 }
 
 void
 log_save_exit(void)
 {
-	dave_jaegertracing_exit();
-
 	log_save_chain_exit();
 
 	kv_free(_log_file_kv, _log_save_recycle);
@@ -165,7 +161,7 @@ log_save_log_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_l
 }
 
 void
-log_save_chain_file(s8 *file_name, s8 *device_info, s8 *content_ptr, ub content_len)
+log_save_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len)
 {
 	LogFile *pLog = _log_save_file_id(file_name);
 
@@ -176,7 +172,7 @@ log_save_chain_file(s8 *file_name, s8 *device_info, s8 *content_ptr, ub content_
 		return;
 	}
 
-	SAFECODEv1(pLog->pv, log_save_chain(pLog->file_id, device_info, content_ptr, content_len); );
+	SAFECODEv1(pLog->pv, log_save_chain(pLog->file_id, device_info, service_verno, content_ptr, content_len); );
 }
 
 #endif
