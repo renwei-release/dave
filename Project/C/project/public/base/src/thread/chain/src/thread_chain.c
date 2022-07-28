@@ -37,6 +37,7 @@ _thread_chain_clean(ThreadChain *pChain)
 	pChain->src_thread[0] = '\0';
 	pChain->src_thread[0] = '\0';
 
+	pChain->request = dave_true;
 	pChain->msg_src = pChain->msg_dst = 0;
 	pChain->msg_id = MSGID_RESERVED;
 }
@@ -80,6 +81,7 @@ _thread_chain_build_copy(
 		 * 所以，应答消息的消息msg_id比请求的msg_id多1。
 		 * 此时，应答消息继承请求消息的call_id和generation。
 		 */
+		pMsgChain->request = dave_false;
 		pMsgChain->call_id = pThreadChain->call_id;
 		pMsgChain->generation = pThreadChain->generation;
 	}
@@ -386,6 +388,7 @@ thread_chain_to_bson(ThreadChain *pChain)
 	t_bson_add_int64(pBson, "2", pChain->call_id);
 	t_bson_add_int64(pBson, "3", pChain->generation);
 	t_bson_add_int64(pBson, "4", pChain->send_time);
+	t_bson_add_boolean(pBson, "5", pChain->request);
 
 	return pBson;
 }
@@ -409,6 +412,7 @@ thread_bson_to_chain(void *pBson)
 	t_bson_inq_int64(pBson, "2", &(pChain->call_id));
 	t_bson_inq_int64(pBson, "3", &(pChain->generation));
 	t_bson_inq_int64(pBson, "4", &(pChain->send_time));
+	t_bson_inq_boolean(pBson, "5", &(pChain->request));
 
 	return pChain;
 }

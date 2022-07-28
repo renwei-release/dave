@@ -38,6 +38,7 @@ typedef struct {
 	s8 src_thread[DAVE_CHAIN_THREAD_NAME_LEN];
 	s8 dst_thread[DAVE_CHAIN_THREAD_NAME_LEN];
 
+	dave_bool request;
 	ThreadId msg_src;
 	ThreadId msg_dst;
 	ub msg_id;
