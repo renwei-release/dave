@@ -95,25 +95,13 @@ _thread_build_msg_chain(
 	void *msg_chain,
 	ThreadId src_id, ThreadId dst_id, ub msg_id)
 {
-	if(thread_chain_enable(src_id, dst_id, msg_id) == dave_true)
+	if(msg_chain != NULL)
 	{
-		if(msg_chain != NULL)
-		{
-			thread_chain_fill_msg(&(thread_msg->msg_body), msg_chain);
-		}
-		else
-		{
-			thread_msg->msg_body.msg_chain = thread_chain_malloc();
-			thread_chain_build_msg(thread_msg->msg_body.msg_chain, src_id, dst_id, msg_id);
-		}
+		thread_chain_fill_msg(&(thread_msg->msg_body), msg_chain);
 	}
 	else
 	{
-		if(msg_chain != NULL)
-		{
-			thread_chain_free(msg_chain);
-		}
-		thread_msg->msg_body.msg_chain = NULL;	
+		thread_msg->msg_body.msg_chain = thread_chain_build_msg(src_id, dst_id, msg_id);
 	}
 }
 
@@ -419,11 +407,8 @@ thread_clean_msg(ThreadMsg *pMsg)
 				pMsg->msg_body.mem_state = MsgMemState_uncaptured;
 			}
 		}
-		if(pMsg->msg_body.msg_chain != NULL)
-		{
-			thread_chain_free(pMsg->msg_body.msg_chain);
-			pMsg->msg_body.msg_chain = NULL;
-		}
+
+		thread_chain_clean_msg(&(pMsg->msg_body));
 
 		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
 	}

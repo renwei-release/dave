@@ -16,7 +16,7 @@
 #include "tracing_logic.h"
 #include "log_log.h"
 
-#define LOG_TRACING_TIME 5
+#define LOG_TRACING_TIME 10
 #define LOG_TRACING_LIFE 3
 
 typedef struct {
@@ -62,7 +62,8 @@ _log_tracing_free(TracingBody *pBody)
 static inline dave_bool
 _log_tracing_add(s8 *chain_id, void *pJson)
 {
-	TracingBody *pBody;
+	TracingBody *pBody = NULL;
+	dave_bool add_json_ret = dave_false;
 
 	SAFECODEv1(_log_tracing_pv, {
 
@@ -74,11 +75,14 @@ _log_tracing_add(s8 *chain_id, void *pJson)
 			kv_add_key_ptr(_log_tracing_kv, pBody->chain_id, pBody);
 		}
 
-		dave_json_array_add_object(pBody->pArrayJson, pJson);
+		if((pBody != NULL) && (pBody->pArrayJson != NULL))
+		{
+			add_json_ret = dave_json_array_add_object(pBody->pArrayJson, pJson);
+		}
 
 	} );
 
-	return dave_true;
+	return add_json_ret;
 }
 
 static inline void *
@@ -97,7 +101,7 @@ static void
 _log_tracing_logic(MSGBODY *msg)
 {
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
-	TracingBody *pBody = pLoop->ptr;
+	TracingBody *pBody = (TracingBody *)(pLoop->ptr);
 
 	tracing_logic(pBody->pArrayJson);
 
@@ -124,10 +128,10 @@ _log_tracing_timer_out(void *ramkv, s8 *key)
 
 	if((-- pBody->life) <= 0)
 	{
+		loop.ptr = _log_tracing_del(pBody);
+
 		if(pBody->pArrayJson != NULL)
 		{
-			loop.ptr = _log_tracing_del(pBody);
-
 			id_msg(self(), MSGID_INNER_LOOP, &loop);
 		}
 	}
@@ -169,9 +173,15 @@ log_tracing_exit(void)
 }
 
 dave_bool
-log_tracing(s8 *chain_id, void *pJson)
+log_tracing(ThreadChain *pChain, void *pJson)
 {
-	return _log_tracing_add(chain_id, pJson);
+	if((pChain->type == ChainType_execution)
+		|| (pChain->type == ChainType_coroutine))
+	{
+		return _log_tracing_add(pChain->chain_id, pJson);
+	}
+
+	return dave_false;
 }
 
 #endif

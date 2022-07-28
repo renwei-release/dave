@@ -22,10 +22,9 @@ _log_save_chain_time_str(s8 *time_ptr, ub time_len, ub microseconds)
 {
 	DateStruct date = t_time_second_struct(microseconds/1000000);
 
-	dave_snprintf(time_ptr, time_len, "%04d-%02d-%02d %02d:%02d:%02d %ld",
+	dave_snprintf(time_ptr, time_len, "%04d-%02d-%02d %02d:%02d:%02d",
 		date.year, date.month, date.day,
-		date.hour, date.minute, date.second,
-		microseconds);
+		date.hour, date.minute, date.second);
 
 	return time_ptr;
 }
@@ -34,19 +33,21 @@ static inline void *
 _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_len, void *msg_body)
 {
 	void *pJson = dave_json_malloc();
-	s8 time_str[128];
+	s8 time_str[128], id_str[64];
+
+	dave_json_add_str(pJson, "type", t_auto_ChainType_str(pChain->type));
 
 	dave_json_add_str(pJson, "service_info", device_info);
 	dave_json_add_str(pJson, "chain_id", pChain->chain_id);
-	dave_json_add_ub(pJson, "msg_serial", pChain->msg_serial);
-	dave_json_add_ub(pJson, "generation", pChain->generation);
-	dave_json_add_str(pJson, "type", t_auto_ChainType_str(pChain->type));
-
+	dave_json_add_ub(pJson, "call_id", pChain->call_id);
 	dave_json_add_ub(pJson, "chain_counter", pChain->chain_counter);
+	dave_json_add_ub(pJson, "generation", pChain->generation);
 
-	dave_json_add_str(pJson, "send_time", _log_save_chain_time_str(time_str, sizeof(time_str), pChain->send_time));
-	dave_json_add_str(pJson, "recv_time", _log_save_chain_time_str(time_str, sizeof(time_str), pChain->recv_time));
-	dave_json_add_ub(pJson, "execution_time-us", pChain->recv_time-pChain->send_time);
+	dave_json_add_str(pJson, "send_date", _log_save_chain_time_str(time_str, sizeof(time_str), pChain->send_time));
+	dave_json_add_str(pJson, "recv_date", _log_save_chain_time_str(time_str, sizeof(time_str), pChain->recv_time));
+	dave_json_add_ub(pJson, "send_time", pChain->send_time);
+	dave_json_add_ub(pJson, "recv_time", pChain->recv_time);
+	dave_json_add_ub(pJson, "execution_time-us", pChain->recv_time - pChain->send_time);
 
 	dave_json_add_str(pJson, "src_gid", pChain->src_gid);
 	dave_json_add_str(pJson, "dst_gid", pChain->dst_gid);
@@ -54,6 +55,10 @@ _log_save_chain_to_json(s8 *device_info, ThreadChain *pChain, ub msg_id, ub msg_
 	dave_json_add_str(pJson, "src_thread", pChain->src_thread);
 	dave_json_add_str(pJson, "dst_thread", pChain->dst_thread);
 
+	dave_snprintf(id_str, sizeof(id_str), "%lx", pChain->msg_src);
+	dave_json_add_str(pJson, "msg_src", id_str);
+	dave_snprintf(id_str, sizeof(id_str), "%lx", pChain->msg_dst);
+	dave_json_add_str(pJson, "msg_dst", id_str);
 	dave_json_add_str(pJson, "msg_id", msgstr(pChain->msg_id));
 	if(msg_len > 0)
 	{
@@ -90,7 +95,7 @@ _log_save_chain(sb file_id, s8 *device_info, ThreadChain *pChain, ub msg_id, ub 
 	file_len += dave_os_file_save(file_id, (ub)file_len, json_len, (u8 *)json_str);
 	dave_os_file_save(file_id, (ub)file_len, 1, (u8 *)"\n");
 
-	if(log_tracing(pChain->chain_id, pJson) == dave_false)
+	if(log_tracing(pChain, pJson) == dave_false)
 	{
 		dave_json_free(pJson);
 	}

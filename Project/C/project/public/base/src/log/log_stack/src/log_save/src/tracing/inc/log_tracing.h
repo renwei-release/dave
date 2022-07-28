@@ -12,7 +12,7 @@ void log_tracing_init(void);
 
 void log_tracing_exit(void);
 
-dave_bool log_tracing(s8 *chain_id, void *pJson);
+dave_bool log_tracing(ThreadChain *pChain, void *pJson);
 
 #endif
 

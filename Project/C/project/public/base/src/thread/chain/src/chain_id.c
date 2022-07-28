@@ -11,16 +11,21 @@
 #include "base_tools.h"
 #include "base_lock.h"
 
+static ub _chain_start_time = 0;
 static ub _chain_id_serial = 0;
 static ub _chain_id_counter = 0;
-static ub _chain_msg_serial = 0;
+static ub _chain_call_id = 0;
+static s8 *_globally_identifier = NULL;
 
 // =====================================================================
 
 void
 chain_id_reset(void)
 {
-	_chain_msg_serial = t_rand();
+	_chain_start_time = dave_os_time_s() & 0xffffffff;
+	_chain_id_serial = 0;
+	_chain_call_id = t_rand();
+	_globally_identifier = globally_identifier();
 }
 
 s8 *
@@ -30,9 +35,14 @@ chain_id(s8 *chain_id_ptr, ub chain_id_len)
 
 	base_lock();
 	serial = _chain_id_serial ++;
+	if(serial >= 0xffffffff)
+	{
+		_chain_start_time = dave_os_time_s() & 0xffffffff;
+		serial = _chain_id_serial = 0;
+	}
 	base_unlock();
 
-	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", globally_identifier(), dave_os_time_us(), serial);
+	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", _globally_identifier, _chain_start_time, serial);
 
 	return chain_id_ptr;
 }
@@ -50,15 +60,15 @@ chain_counter(void)
 }
 
 ub
-chain_msg_serial(void)
+chain_call_id(void)
 {
-	ub msg_serial;
+	ub call_id;
 
 	base_lock();
-	msg_serial = _chain_msg_serial ++;
+	call_id = _chain_call_id ++;
 	base_unlock();
 
-	return msg_serial;
+	return call_id;
 }
 
 #endif

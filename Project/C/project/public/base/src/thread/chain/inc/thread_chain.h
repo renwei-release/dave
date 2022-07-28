@@ -10,6 +10,7 @@
 #include "base_define.h"
 
 #define DAVE_CHAIN_ID_LEN (56)
+#define DAVE_CHAIN_THREAD_NAME_LEN (13)
 
 typedef enum {
 	ChainType_none = 0,
@@ -24,6 +25,7 @@ typedef struct {
 	ChainType type;
 
 	s8 chain_id[DAVE_CHAIN_ID_LEN];
+	ub call_id;
 	ub chain_counter;
 	ub generation;
 
@@ -33,28 +35,23 @@ typedef struct {
 	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 
-	s8 src_thread[DAVE_THREAD_NAME_LEN];
-	s8 dst_thread[DAVE_THREAD_NAME_LEN];
+	s8 src_thread[DAVE_CHAIN_THREAD_NAME_LEN];
+	s8 dst_thread[DAVE_CHAIN_THREAD_NAME_LEN];
 
+	ThreadId msg_src;
+	ThreadId msg_dst;
 	ub msg_id;
-	ub msg_serial;
 } ThreadChain;
 
 void thread_chain_init(void);
 
 void thread_chain_exit(void);
 
-ThreadChain * thread_chain_malloc(void);
-
-void thread_chain_free(ThreadChain *pChain);
-
 void thread_chain_reset(ThreadChain *pChain);
-
-dave_bool thread_chain_enable(ThreadId msg_src, ThreadId msg_dst, ub msg_id);
 
 void thread_chain_fill_msg(MSGBODY *msg, void *msg_chain);
 
-void thread_chain_build_msg(ThreadChain *pMsgChain, ThreadId msg_src, ThreadId msg_dst, ub msg_id);
+ThreadChain * thread_chain_build_msg(ThreadId msg_src, ThreadId msg_dst, ub msg_id);
 
 ThreadChain * thread_chain_run_msg(MSGBODY *msg);
 

@@ -372,6 +372,40 @@ _tthread_find_self_map(pthread_t self, ThreadThread *pTThread, dave_bool find_ne
 	return pMap;
 }
 
+static inline ThreadSelfMap *
+_tthread_find_self_old_map(pthread_t self)
+{
+	ub map_index, safe_counter;
+	ThreadSelfMap *pMap;
+
+	if(_main_thread == self)
+	{
+		return NULL;
+	}
+
+	map_index = (((ub)self) % THREAD_THREAD_MAX);
+
+	pMap = NULL;
+
+	for(safe_counter=0; safe_counter<THREAD_THREAD_MAX; safe_counter++)
+	{
+		if(map_index >= THREAD_THREAD_MAX)
+		{
+			map_index = 0;
+		}
+
+		if((_self_map[map_index].self == self) && (_self_map[map_index].pTThread != NULL))
+		{
+			pMap = &_self_map[map_index];
+			break;
+		}
+
+		map_index ++;
+	}
+
+	return pMap;
+}
+
 static inline ThreadThread *
 _tthread_find_wakeup_thread(ub thread_index)
 {
@@ -904,7 +938,7 @@ thread_thread_self(ub *wakeup_index)
 	ThreadSelfMap *pMap;
 	ThreadId thread_id;
 
-	pMap = _tthread_find_self_map(_tthread_self_thread(), NULL, dave_false);
+	pMap = _tthread_find_self_old_map(_tthread_self_thread());
 
 	if(pMap == NULL)
 	{
@@ -931,7 +965,7 @@ thread_thread_chain(void)
 {
 	ThreadSelfMap *pMap;
 
-	pMap = _tthread_find_self_map(_tthread_self_thread(), NULL, dave_false);
+	pMap = _tthread_find_self_old_map(_tthread_self_thread());
 	if(pMap == NULL)
 	{
 		return NULL;
