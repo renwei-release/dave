@@ -14,15 +14,16 @@
 #include "dave_tools.h"
 #include "base_rxtx.h"
 #include "thread_chain.h"
+#include "log_buffer.h"
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
 #define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
 
-#define NUM_LOG_ONCE_SEND      (2048)
-#define LOG_ONCE_SEND_BYTE_MAX (4096)
-#define LOG_SEND_INTVL         (1000)
-#define BDATA_TRACE_BUF_MAX	   (1024)
+#define NUM_LOG_ONCE_SEND (LOG_BUFFER_MAX)
+#define NUM_CHAIN_ONCE_SEND (4096)
+#define LOG_ONCE_SEND_BYTE_MAX (LOG_BUFFER_LENGTH)
+#define LOG_SEND_INTVL (1000)
 
 static void _log_client_reconnect(TIMERID timer_id, ub thread_index);
 
@@ -148,13 +149,13 @@ _log_client_record_log(void)
 static void
 _log_client_chain_log(void)
 {
-	ub num_log;
+	ub num_chain;
 	MBUF *data;
 	MBUF *chain_data;
 	ub index;
 	s8 *frame;
 
-	for(num_log=0; num_log<NUM_LOG_ONCE_SEND; num_log++)
+	for(num_chain=0; num_chain<NUM_CHAIN_ONCE_SEND; num_chain++)
 	{
 		chain_data = thread_chain_report();
 		if(chain_data == NULL)

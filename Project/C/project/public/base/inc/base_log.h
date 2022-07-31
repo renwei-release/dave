@@ -23,7 +23,6 @@ dave_bool base_log_id_enable(s8 *trace_id);
 dave_bool base_log_line_enable(s8 *fun, ub line, ub time, ub number);
 
 ub base_log_load(s8 *log_buf, ub log_buf_len, TraceLevel *level);
-ub base_log_history(s8 *log_buf, ub log_buf_len);
 
 void base_log_init(void);
 void base_log_exit(void);

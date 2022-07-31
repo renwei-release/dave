@@ -20,6 +20,8 @@ void dave_os_release_thread(void *thread_id);
 
 void *dave_os_thread_self(u64 *dave_thread_id);
 
+ub dave_os_thread_id(void);
+
 dave_bool dave_os_thread_sleep(void *thread_id);
 
 dave_bool dave_os_thread_wakeup(void *thread_id);

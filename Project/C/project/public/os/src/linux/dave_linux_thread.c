@@ -30,6 +30,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#ifdef __DAVE_LINUX__
+#include <sys/syscall.h>
+#endif
+#ifdef __DAVE_CYGWIN__
+#include "processthreadsapi.h"
+#endif
 #include "dave_linux.h"
 #include "dave_os.h"
 #include "dave_base.h"
@@ -282,6 +288,16 @@ dave_os_thread_self(u64 *dave_thread_id)
 	}
 
 	return NULL;
+}
+
+ub
+dave_os_thread_id(void)
+{
+#if defined(__DAVE_LINUX__)
+	return (ub)syscall( __NR_gettid );
+#elif defined(__DAVE_CYGWIN__)
+	return (ub)GetCurrentThreadId();
+#endif
 }
 
 dave_bool

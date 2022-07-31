@@ -50,7 +50,7 @@
 #include "party_log.h"
 
 #define CALL_STACK_MAX 128
-#define TID_MAX 204800
+#define TID_MAX DAVE_SYS_THREAD_ID_MAX
 
 extern "C"
 {

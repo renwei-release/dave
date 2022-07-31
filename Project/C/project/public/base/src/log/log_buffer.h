@@ -9,15 +9,16 @@
 #ifndef __LOG_BUFFER_H__
 #define __LOG_BUFFER_H__
 
+#define LOG_BUFFER_MAX (1024)
+#define LOG_BUFFER_LENGTH (4096)
+
 void log_buffer_init(void);
 
 void log_buffer_exit(void);
 
-void log_buffer_put(TraceLevel level, s8 *log, ub log_len, dave_bool end_flag);
+void log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len);
 
-ub log_buffer_get(s8 *log_buf, ub log_buf_len, TraceLevel *level);
-
-ub log_buffer_history(s8 *log_buf, ub log_buf_len);
+ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
 #endif
 
