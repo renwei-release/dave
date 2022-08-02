@@ -30,9 +30,9 @@
 #else
  #define VERSION_SUB "8"
 #endif
-#define VERSION_REV "8"
+#define VERSION_REV "10"
 
-#define VERSION_DATE_TIME "20220724212408"
+#define VERSION_DATE_TIME "20220802150306"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"

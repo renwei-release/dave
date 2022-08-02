@@ -140,11 +140,11 @@ _trace_id_del(s8 *trace_id)
 }
 
 static inline dave_bool
-_trace_line_recording(s8 *fun, ub line, ub time, ub number)
+_trace_line_recording(s8 *fun, ub line, ub second, ub number)
 {
 	ub safe_counter, line_index;
 
-	if((fun == NULL) || (line == 0) || (time == 0) || (number == 0))
+	if((fun == NULL) || (line == 0) || (second == 0) || (number == 0))
 	{
 		return dave_false;
 	}
@@ -167,7 +167,7 @@ _trace_line_recording(s8 *fun, ub line, ub time, ub number)
 		{
 			_trace_line[line_index].set_fun = fun;
 			_trace_line[line_index].set_line = line;
-			_trace_line[line_index].set_time = time;
+			_trace_line[line_index].set_time = second;
 			_trace_line[line_index].set_number = number;
 
 			_trace_line[line_index].cur_time = TRACE_BASE_TIME_FUN;
@@ -216,12 +216,12 @@ _trace_line_safe_discriminator(TraceLine *pLine, ub cur_time)
 }
 
 static inline dave_bool
-_trace_line_safe_recording(s8 *fun, ub line, ub time, ub number)
+_trace_line_safe_recording(s8 *fun, ub line, ub second, ub number)
 {
 	dave_bool ret;
 
 	t_lock_spin(NULL);
-	ret = _trace_line_recording(fun, line, time, number);
+	ret = _trace_line_recording(fun, line, second, number);
 	t_unlock_spin(NULL);
 
 	if(ret == dave_false)
@@ -365,7 +365,7 @@ log_trace_id_enable(s8 *trace_id)
 }
 
 dave_bool
-log_trace_line_enable(s8 *fun, ub line, ub time, ub number)
+log_trace_line_enable(s8 *fun, ub line, ub second, ub number)
 {
 	sb ret;
 
@@ -380,7 +380,7 @@ log_trace_line_enable(s8 *fun, ub line, ub time, ub number)
 	}
 	else
 	{
-		_trace_line_safe_recording(fun, line, time, number);
+		_trace_line_safe_recording(fun, line, second, number);
 
 		return dave_true;
 	}

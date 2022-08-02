@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#ifdef FORM_PRODUCT_BIN
 #include <iostream>
 using namespace std;
 #include "gtest.h"
@@ -391,4 +392,6 @@ TEST(bson_case, bson_case_9) { _t_bson_test_cases_9(); }
 TEST(bson_case, bson_case_10) { _t_bson_test_cases_10(); }
 TEST(bson_case, bson_case_11) { _t_bson_test_cases_11(); }
 TEST(bson_case, bson_case_12) { _t_bson_test_cases_12(); }
+
+#endif
 

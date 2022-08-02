@@ -11,10 +11,10 @@
 
 #define LOG_SERVICE_PORT 6000
 
-#if defined(__DAVE_PRODUCT_LOG__) || defined(__DAVE_PRODUCT_BASE__)
+#if defined(__DAVE_PRODUCT_LOG__)
 #define LOG_STACK_SERVER
 #endif
-#if !defined(__DAVE_PRODUCT_LOG__)
+#if ! defined(LOG_STACK_SERVER)
 #define LOG_STACK_CLIENT
 #endif
 

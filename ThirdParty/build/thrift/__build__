@@ -1,0 +1,27 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=0.12.0
+INSTALL=${homepath}/setup
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+   wget https://github.com/apache/thrift/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./thrift-${VERSION} ]; then
+  tar -zxvf v${VERSION}.tar.gz
+fi
+
+cd thrift-${VERSION}
+
+./bootstrap.sh
+./configure --prefix=${INSTALL}
+
+if [ -d ${INSTALL} ]; then
+   rm -rf ${INSTALL}
+fi
+make && make install
+
+cd ${homepath}
+
+rm -rf thrift-${VERSION}

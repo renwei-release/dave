@@ -16,7 +16,7 @@ dave_bool log_trace_add_id(s8 *trace_id);
 dave_bool log_trace_del_id(s8 *trace_id);
 dave_bool log_trace_id_enable(s8 *trace_id);
 
-dave_bool log_trace_line_enable(s8 *fun, ub line, ub time, ub number);
+dave_bool log_trace_line_enable(s8 *fun, ub line, ub second, ub number);
 
 #endif
 

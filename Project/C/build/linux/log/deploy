@@ -12,6 +12,10 @@ HOMEPATH=$(cd `dirname $0`; pwd)
 FINDDEPLOY=0
 DEPLOYPATH=Deploy/deploy/${PROJECT}
 
+if [ "$DEPLOYMODEL" == "" ]; then
+   DEPLOYMODEL="log"
+fi
+
 if [ -f ../../../../../${DEPLOYPATH}/deploy.sh ]; then
    cd ../../../../../${DEPLOYPATH}
    FINDDEPLOY=1
@@ -29,5 +33,5 @@ fi
 if [ ${FINDDEPLOY} == 1 ]; then
    echo deploy ${PROJECT}
    chmod a+x *.sh
-   ./deploy.sh ${HOMEPATH} ${DEPLOYMODEL}
+   ./deploy.sh ${DEPLOYMODEL} ${HOMEPATH}
 fi

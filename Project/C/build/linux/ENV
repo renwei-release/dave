@@ -41,8 +41,14 @@ if [ ! -f ./ThirdParty/build/jaeger-client-cpp/setup/lib64/libjaegertracing.a ];
    cd ${homepath}
 fi
 
-if [ ! -f ./ThirdParty/build/yaml-cpp/setup/lib64/libyaml-cpp.a ]; then
+if [ ! -f ./ThirdParty/build/yaml-cpp/setup/lib/libyaml-cpp.a ]; then
    cd ./ThirdParty/build/yaml-cpp
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/opentracing-cpp/setup/lib/libopentracing.a ]; then
+   cd ./ThirdParty/build/opentracing-cpp
    ./build
    cd ${homepath}
 fi

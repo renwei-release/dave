@@ -43,10 +43,10 @@ _log_server_build_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_nam
 	}
 	else
 	{
-		dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%02d",
+		dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%02d/%02d",
 			project_name,
 			date.year, date.month, date.day,
-			date.hour);
+			date.hour, date.minute);
 	}
 }
 

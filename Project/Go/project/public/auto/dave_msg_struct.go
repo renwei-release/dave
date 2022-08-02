@@ -645,6 +645,7 @@ type RESTARTRSPMSG struct {
 /* for MSGID_RPC_DEBUG_REQ message */
 type RPCDebugReq struct {
 	Ret_debug int64
+	Str_debug [16] byte
 	S8_debug byte
 	U8_debug byte
 	S16_debug int16
@@ -664,6 +665,7 @@ type RPCDebugReq struct {
 /* for MSGID_RPC_DEBUG_RSP message */
 type RPCDebugRsp struct {
 	Ret_debug int64
+	Str_debug [16] byte
 	S8_debug byte
 	U8_debug byte
 	S16_debug int16

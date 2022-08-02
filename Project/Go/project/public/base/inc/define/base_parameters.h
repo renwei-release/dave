@@ -50,7 +50,7 @@
 #define DAVE_THREAD_EMPTY_VALUE NULL
 #endif
 
-#define DAVE_CHAIN_ID_LEN (128)
+#define DAVE_SYS_THREAD_ID_MAX 204800
 
 #endif
 

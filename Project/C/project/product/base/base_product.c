@@ -31,8 +31,9 @@ static ThreadId _base_thread = INVALID_THREAD_ID;
 static void
 _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 {
-	BASELOG("from:%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+	BASELOG("from:%s str:%s/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
 		thread_name(src),
+		pRsp->str_debug, pRsp->str_debug,
 		pRsp->s8_debug, pRsp->u8_debug,
 		pRsp->s16_debug, pRsp->u16_debug,
 		pRsp->s32_debug, pRsp->u32_debug,
@@ -47,6 +48,7 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	RPCDebugRsp *pRsp;
 
 	pReq->ret_debug = RET_DEBUG_VALUE;
+	dave_strcpy(pReq->str_debug, thread_name(pReady->remote_thread_id), sizeof(pReq->str_debug));
 	pReq->s8_debug = S8_DEBUG_VALUE;
 	pReq->u8_debug = U8_DEBUG_VALUE;
 	pReq->s16_debug = S16_DEBUG_VALUE;
@@ -74,6 +76,7 @@ _base_thread_rpc_debug_req_use_msg(ThreadRemoteIDReadyMsg *pReady)
 	RPCDebugReq *pReq = thread_reset_msg(pReq);
 
 	pReq->ret_debug = RET_DEBUG_VALUE;
+	dave_strcpy(pReq->str_debug, thread_name(pReady->remote_thread_id), sizeof(pReq->str_debug));
 	pReq->s8_debug = S8_DEBUG_VALUE;
 	pReq->u8_debug = U8_DEBUG_VALUE;
 	pReq->s16_debug = S16_DEBUG_VALUE;

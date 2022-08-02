@@ -88,10 +88,12 @@ _log_buffer_counter(void)
 static inline void
 _log_buffer_log_head(LogBuffer *pBuffer)
 {
+	DateStruct date = t_time_get_date(NULL);
+
 	pBuffer->buffer_length = dave_snprintf(pBuffer->buffer, sizeof(pBuffer->buffer),
-		"(%s.%s.%s)<%lu>{%lu}",
+		"(%s.%s.%s)<%04d.%02d.%02d %02d:%02d:%02d>{%lu}",
 		VERSION_MAIN, VERSION_SUB, VERSION_REV,
-		dave_os_time_s(),
+		date.year, date.month, date.day, date.hour, date.minute, date.second,
 		_log_buffer_counter());
 }
 
@@ -103,7 +105,7 @@ _log_buffer_list_set(LogBuffer *pBuffer)
 	log_lock();
 	if((_log_list_w_index - _log_list_r_index) < LOG_LIST_MAX)
 	{
-		_log_list[_log_list_w_index ++] = pBuffer;
+		_log_list[(_log_list_w_index ++) % LOG_LIST_MAX] = pBuffer;
 	}
 	else
 	{
@@ -122,13 +124,9 @@ _log_buffer_list_get(void)
 	LogBuffer *pBuffer;
 
 	log_lock();
-	if(_log_lost_buffer.level != TRACELEVEL_MAX)
+	if(_log_list_w_index > _log_list_r_index)
 	{
-		pBuffer = &_log_lost_buffer;
-	}
-	else if(_log_list_w_index > _log_list_r_index)
-	{
-		pBuffer = _log_list[_log_list_r_index ++];
+		pBuffer = _log_list[(_log_list_r_index ++) % LOG_LIST_MAX];
 	}
 	else
 	{
@@ -156,6 +154,12 @@ _log_buffer_new(void)
 		pBuffer = NULL;
 	}
 	log_unlock();
+
+	if(pBuffer == NULL)
+	{
+		LOGLOG("The log is generated too fast, please define a larger cache(%d)!",
+			LOG_BUFFER_MAX);
+	}
 
 	return pBuffer;
 }
@@ -189,7 +193,9 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 	pBuffer = _log_buffer_thread_build(&tid);
 	if(pBuffer == NULL)
 	{
-		LOGLOG("_log_buffer_thread_build tid:%d failed!", tid);
+		LOGLOG("_log_buffer_thread_build tid:%d failed! lost:%d log:%d/%s",
+			tid, _log_lost_counter,
+			log_len, log_ptr);
 		return dave_false;
 	}
 
@@ -306,11 +312,26 @@ log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 			log_copy_len = pBuffer->buffer_length;
 		else
 			log_copy_len = log_len;
-	
+
 		dave_memcpy(log_ptr, pBuffer->buffer, log_copy_len);
 		*level = pBuffer->level;
 
 		_log_buffer_clean(pBuffer);
+	}
+	else if(_log_lost_buffer.level != TRACELEVEL_MAX)
+	{
+		log_lock();
+		if(log_len > _log_lost_buffer.buffer_length)
+			log_copy_len = _log_lost_buffer.buffer_length;
+		else
+			log_copy_len = log_len;
+
+		dave_memcpy(log_ptr, _log_lost_buffer.buffer, log_copy_len);
+		*level = _log_lost_buffer.level;
+
+		_log_lost_buffer.level = TRACELEVEL_MAX;
+		_log_lost_buffer.buffer_length = 0;
+		log_unlock();
 	}
 	else
 	{

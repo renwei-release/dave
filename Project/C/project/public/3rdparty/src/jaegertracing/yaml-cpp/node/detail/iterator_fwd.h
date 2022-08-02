@@ -20,8 +20,8 @@ template <typename V>
 class iterator_base;
 }
 
-using iterator = detail::iterator_base<detail::iterator_value>;
-using const_iterator = detail::iterator_base<const detail::iterator_value>;
+typedef detail::iterator_base<detail::iterator_value> iterator;
+typedef detail::iterator_base<const detail::iterator_value> const_iterator;
 }
 
 #endif  // VALUE_DETAIL_ITERATOR_FWD_H_62B23520_7C8E_11DE_8A39_0800200C9A66

@@ -5033,6 +5033,7 @@ t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret_debug", t_rpc_ver3_zip_RetCode(zip_data->ret_debug));
+	t_bson_add_object(pStructBson, "s8-str_debug", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->str_debug), 1, 16));
 	t_bson_add_object(pStructBson, "s8-s8_debug", t_rpc_ver3_zip_s8(zip_data->s8_debug));
 	t_bson_add_object(pStructBson, "u8-u8_debug", t_rpc_ver3_zip_u8(zip_data->u8_debug));
 	t_bson_add_object(pStructBson, "s16-s16_debug", t_rpc_ver3_zip_s16(zip_data->s16_debug));
@@ -5070,6 +5071,7 @@ t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_len = sizeof(RPCDebugReq);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->str_debug), 1, 16, t_bson_inq_object(pStructBson, "s8-str_debug"));
 		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));
 		t_rpc_ver3_unzip_u8(&(pUnzip->u8_debug), t_bson_inq_object(pStructBson, "u8-u8_debug"));
 		t_rpc_ver3_unzip_s16(&(pUnzip->s16_debug), t_bson_inq_object(pStructBson, "s16-s16_debug"));
@@ -5118,6 +5120,7 @@ t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret_debug", t_rpc_ver3_zip_RetCode(zip_data->ret_debug));
+	t_bson_add_object(pStructBson, "s8-str_debug", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->str_debug), 1, 16));
 	t_bson_add_object(pStructBson, "s8-s8_debug", t_rpc_ver3_zip_s8(zip_data->s8_debug));
 	t_bson_add_object(pStructBson, "u8-u8_debug", t_rpc_ver3_zip_u8(zip_data->u8_debug));
 	t_bson_add_object(pStructBson, "s16-s16_debug", t_rpc_ver3_zip_s16(zip_data->s16_debug));
@@ -5155,6 +5158,7 @@ t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_len = sizeof(RPCDebugRsp);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->str_debug), 1, 16, t_bson_inq_object(pStructBson, "s8-str_debug"));
 		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));
 		t_rpc_ver3_unzip_u8(&(pUnzip->u8_debug), t_bson_inq_object(pStructBson, "u8-u8_debug"));
 		t_rpc_ver3_unzip_s16(&(pUnzip->s16_debug), t_bson_inq_object(pStructBson, "s16-s16_debug"));

@@ -83,9 +83,9 @@ _thread_chain_build_copy(
 		&& ((pThreadChain->msg_id + 1) == msg_id))
 	{
 		/*
-		 * ÒòÎªÓ¦´ðÏûÏ¢¶¼ÊÇÔÚÇëÇóÏûÏ¢µÄÃ¶¾ÙÁ¿Ö®ÏÂ¶¨ÒåµÄ£¬
-		 * ËùÒÔ£¬Ó¦´ðÏûÏ¢µÄÏûÏ¢msg_id±ÈÇëÇóµÄmsg_id¶à1¡£
-		 * ´ËÊ±£¬Ó¦´ðÏûÏ¢¼Ì³ÐÇëÇóÏûÏ¢µÄcall_idºÍgeneration¡£
+		 * å› ä¸ºåº”ç­”æ¶ˆæ¯éƒ½æ˜¯åœ¨è¯·æ±‚æ¶ˆæ¯çš„æžšä¸¾é‡ä¹‹ä¸‹å®šä¹‰çš„ï¼Œ
+		 * æ‰€ä»¥ï¼Œåº”ç­”æ¶ˆæ¯çš„æ¶ˆæ¯msg_idæ¯”è¯·æ±‚çš„msg_idå¤š1ã€‚
+		 * æ­¤æ—¶ï¼Œåº”ç­”æ¶ˆæ¯ç»§æ‰¿è¯·æ±‚æ¶ˆæ¯çš„call_idå’Œgenerationã€‚
 		 */
 		pMsgChain->request = dave_false;
 		pMsgChain->call_id = pThreadChain->call_id;
@@ -365,7 +365,7 @@ thread_chain_insert(
 
 	if(pChain == NULL)
 	{
-		THREADLOG("chain is empty! type:%s %s->%s %s->%s:%s",
+		THREADLTRACE(60,1,"chain is empty! type:%s %s->%s %s->%s:%s",
 			t_auto_ChainType_str(type),
 			src_gid, dst_gid,
 			thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));

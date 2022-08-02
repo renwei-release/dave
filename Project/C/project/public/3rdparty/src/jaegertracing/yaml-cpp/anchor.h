@@ -10,7 +10,7 @@
 #include <cstddef>
 
 namespace YAML {
-using anchor_t = std::size_t;
+typedef std::size_t anchor_t;
 const anchor_t NullAnchor = 0;
 }
 

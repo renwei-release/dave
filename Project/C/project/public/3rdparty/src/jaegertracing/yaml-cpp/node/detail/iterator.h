@@ -8,25 +8,25 @@
 #endif
 
 #include "yaml-cpp/dll.h"
-#include "yaml-cpp/node/detail/node_iterator.h"
 #include "yaml-cpp/node/node.h"
 #include "yaml-cpp/node/ptr.h"
+#include "yaml-cpp/node/detail/node_iterator.h"
 #include <cstddef>
 #include <iterator>
-
 
 namespace YAML {
 namespace detail {
 struct iterator_value;
 
 template <typename V>
-class iterator_base {
+class iterator_base : public std::iterator<std::forward_iterator_tag, V,
+                                           std::ptrdiff_t, V*, V> {
 
  private:
   template <typename>
   friend class iterator_base;
   struct enabler {};
-  using base_type = node_iterator;
+  typedef node_iterator base_type;
 
   struct proxy {
     explicit proxy(const V& x) : m_ref(x) {}
@@ -37,11 +37,7 @@ class iterator_base {
   };
 
  public:
-  using iterator_category = std::forward_iterator_tag;
-  using value_type = V;
-  using difference_type = std::ptrdiff_t;
-  using pointer = V*;
-  using reference = V;
+  typedef typename iterator_base::value_type value_type;
 
  public:
   iterator_base() : m_iterator(), m_pMemory() {}
@@ -90,7 +86,7 @@ class iterator_base {
   base_type m_iterator;
   shared_memory_holder m_pMemory;
 };
-}  // namespace detail
-}  // namespace YAML
+}
+}
 
 #endif  // VALUE_DETAIL_ITERATOR_H_62B23520_7C8E_11DE_8A39_0800200C9A66

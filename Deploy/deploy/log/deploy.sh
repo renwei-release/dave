@@ -7,16 +7,15 @@
 # */
 
 PROJECT=${PWD##*/}
-if [ "$1" == "" ]; then
+DEPLOYMODEL=$1
+if [ "$2" == "" ]; then
    HOMEPATH=$(cd `dirname $0`; pwd)
 else
-   HOMEPATH=$1
+   HOMEPATH=$2
 fi
-DEPLOYMODEL=$2
-
 SHHOMEPATH=$(cd `dirname $0`; pwd)
 
-if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
+if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "log" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cp log_Dockerfile Dockerfile
    IMAGE="log_docker_image"
    TAG="latest"

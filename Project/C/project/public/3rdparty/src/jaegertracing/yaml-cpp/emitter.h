@@ -7,18 +7,16 @@
 #pragma once
 #endif
 
-#include <cmath>
 #include <cstddef>
-#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <type_traits>
 
 #include "yaml-cpp/binary.h"
 #include "yaml-cpp/dll.h"
 #include "yaml-cpp/emitterdef.h"
 #include "yaml-cpp/emittermanip.h"
+#include "yaml-cpp/noncopyable.h"
 #include "yaml-cpp/null.h"
 #include "yaml-cpp/ostream_wrapper.h"
 
@@ -30,12 +28,10 @@ struct _Null;
 namespace YAML {
 class EmitterState;
 
-class YAML_CPP_API Emitter {
+class YAML_CPP_API Emitter : private noncopyable {
  public:
   Emitter();
   explicit Emitter(std::ostream& stream);
-  Emitter(const Emitter&) = delete;
-  Emitter& operator=(const Emitter&) = delete;
   ~Emitter();
 
   // output
@@ -50,7 +46,6 @@ class YAML_CPP_API Emitter {
   bool SetOutputCharset(EMITTER_MANIP value);
   bool SetStringFormat(EMITTER_MANIP value);
   bool SetBoolFormat(EMITTER_MANIP value);
-  bool SetNullFormat(EMITTER_MANIP value);
   bool SetIntBase(EMITTER_MANIP value);
   bool SetSeqFormat(EMITTER_MANIP value);
   bool SetMapFormat(EMITTER_MANIP value);
@@ -59,7 +54,6 @@ class YAML_CPP_API Emitter {
   bool SetPostCommentIndent(std::size_t n);
   bool SetFloatPrecision(std::size_t n);
   bool SetDoublePrecision(std::size_t n);
-  void RestoreGlobalModifiedSettings();
 
   // local setters
   Emitter& SetLocalValue(EMITTER_MANIP value);
@@ -125,7 +119,6 @@ class YAML_CPP_API Emitter {
   void SpaceOrIndentTo(bool requireSpace, std::size_t indent);
 
   const char* ComputeFullBoolName(bool b) const;
-  const char* ComputeNullName() const;
   bool CanEmitNewline() const;
 
  private:
@@ -159,27 +152,7 @@ inline Emitter& Emitter::WriteStreamable(T value) {
 
   std::stringstream stream;
   SetStreamablePrecision<T>(stream);
-
-  bool special = false;
-  if (std::is_floating_point<T>::value) {
-    if ((std::numeric_limits<T>::has_quiet_NaN ||
-         std::numeric_limits<T>::has_signaling_NaN) &&
-        std::isnan(value)) {
-      special = true;
-      stream << ".nan";
-    } else if (std::numeric_limits<T>::has_infinity && std::isinf(value)) {
-      special = true;
-      if (std::signbit(value)) {
-        stream << "-.inf";
-      } else {
-        stream << ".inf";
-      }
-    }
-  }
-
-  if (!special) {
-    stream << value;
-  }
+  stream << value;
   m_stream << stream.str();
 
   StartedScalar();
@@ -276,6 +249,6 @@ inline Emitter& operator<<(Emitter& emitter, _Indent indent) {
 inline Emitter& operator<<(Emitter& emitter, _Precision precision) {
   return emitter.SetLocalPrecision(precision);
 }
-}  // namespace YAML
+}
 
 #endif  // EMITTER_H_62B23520_7C8E_11DE_8A39_0800200C9A66

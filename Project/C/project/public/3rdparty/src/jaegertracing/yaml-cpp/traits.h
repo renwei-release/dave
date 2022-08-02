@@ -7,11 +7,6 @@
 #pragma once
 #endif
 
-#include <type_traits>
-#include <utility>
-#include <string>
-#include <sstream>
-
 namespace YAML {
 template <typename>
 struct is_numeric {
@@ -84,7 +79,7 @@ struct is_numeric<long double> {
 
 template <bool, class T = void>
 struct enable_if_c {
-  using type = T;
+  typedef T type;
 };
 
 template <class T>
@@ -95,7 +90,7 @@ struct enable_if : public enable_if_c<Cond::value, T> {};
 
 template <bool, class T = void>
 struct disable_if_c {
-  using type = T;
+  typedef T type;
 };
 
 template <class T>
@@ -105,31 +100,4 @@ template <class Cond, class T = void>
 struct disable_if : public disable_if_c<Cond::value, T> {};
 }
 
-template <typename S, typename T>
-struct is_streamable {
-  template <typename SS, typename TT>
-  static auto test(int)
-      -> decltype(std::declval<SS&>() << std::declval<TT>(), std::true_type());
-
-  template <typename, typename>
-  static auto test(...) -> std::false_type;
-
-  static const bool value = decltype(test<S, T>(0))::value;
-};
-
-template<typename Key, bool Streamable>
-struct streamable_to_string {
-  static std::string impl(const Key& key) {
-    std::stringstream ss;
-    ss << key;
-    return ss.str();
-  }
-};
-
-template<typename Key>
-struct streamable_to_string<Key, false> {
-  static std::string impl(const Key&) {
-    return "";
-  }
-};
 #endif  // TRAITS_H_62B23520_7C8E_11DE_8A39_0800200C9A66

@@ -20,9 +20,9 @@ void __base_assert__(int assert_flag, const char *fun, int line, const char *arg
 dave_bool base_log_id_add(s8 *trace_id);
 dave_bool base_log_id_del(s8 *trace_id);
 dave_bool base_log_id_enable(s8 *trace_id);
-dave_bool base_log_line_enable(s8 *fun, ub line, ub time, ub number);
+dave_bool base_log_line_enable(s8 *fun, ub line, ub second, ub number);
 
-ub base_log_load(s8 *log_buf, ub log_buf_len, TraceLevel *level);
+ub base_log_load(s8 *log_ptr, ub log_len, TraceLevel *level);
 
 void base_log_init(void);
 void base_log_exit(void);
@@ -33,7 +33,7 @@ void base_log_stack_exit(void);
 #define TRACEFLAG DAVEDEBUG("%s:%d\n", (s8 *)__func__, (ub)__LINE__);
 #define TRACETENABLE if(base_thread_trace_state() == dave_true)
 #define TRACEIENABLE(ID) if(base_log_id_enable(ID) == dave_true)
-#define TRACELENABLE(TIME, NUMBER) if(base_log_line_enable((s8 *)__func__, (ub)__LINE__, TIME, NUMBER) == dave_true)
+#define TRACELENABLE(SECOND, NUMBER) if(base_log_line_enable((s8 *)__func__, (ub)__LINE__, SECOND, NUMBER) == dave_true)
 
 #define DAVEDEBUG __base_debug__
 #define DAVECATCHER __base_catcher__

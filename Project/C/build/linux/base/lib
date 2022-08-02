@@ -26,15 +26,13 @@ build_static_lib()
    rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
 
-   GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
-   echo lib build ${GOLIB}
-   rm -f ${GOLIB}
-   ar cru ${GOLIB} ${obj_list}
-
    CLIB=${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
    echo lib build ${CLIB}
    rm -f ${CLIB}
    ar cru ${CLIB} ${obj_list}
+   
+   GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+   cp ${CLIB} ${GOLIB}
 }
 
 build_dynamic_lib()

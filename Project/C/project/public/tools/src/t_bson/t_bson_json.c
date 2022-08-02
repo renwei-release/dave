@@ -94,10 +94,10 @@ _t_bson_json_string(json_object *pJson, tBsonData *pData)
 	if(pJson->o_type == json_type_object)
 		json_object_object_add(pJson,
 			(const char *)pData->key_ptr,
-			json_object_new_string(pData->value_ptr.mem_value));
+			json_object_new_string_len(pData->value_ptr.mem_value, pData->value_len));
 	else
 		json_object_array_add(pJson,
-			json_object_new_string(pData->value_ptr.mem_value));		
+			json_object_new_string_len(pData->value_ptr.mem_value, pData->value_len));		
 }
 
 static inline void
@@ -112,27 +112,35 @@ _t_json_bson_string(tBsonObject *pBson, char *key, json_object *pJson)
 static inline void
 _t_bson_json_bin(json_object *pJson, tBsonData *pData)
 {
-	int base64_str_len = 256 + pData->value_len * 2;
-	int base64_str_index = 0;
+	int base64_str_len;
+	int base64_str_index;
 	char *base64_str_ptr;
 
-	base64_str_ptr = dave_malloc(base64_str_len);
-
-	base64_str_index = dave_snprintf((s8 *)base64_str_ptr, base64_str_len, "__BSON_BIN__:%d:", pData->value_len);
-
-	t_crypto_base64_encode(
-		(u8 *)(pData->value_ptr.mem_value), pData->value_len,
-		(s8 *)(&base64_str_ptr[base64_str_index]), base64_str_len-base64_str_index);
-
-	if(pJson->o_type == json_type_object)
-		json_object_object_add(pJson,
-			(const char *)pData->key_ptr,
-			json_object_new_string(base64_str_ptr));
+	if(t_is_all_show_char_or_rn((u8 *)(pData->value_ptr.mem_value), pData->value_len) == dave_true)
+	{
+		_t_bson_json_string(pJson, pData);
+	}
 	else
-		json_object_array_add(pJson,
-			json_object_new_string(base64_str_ptr));		
+	{
+		base64_str_len = 256 + pData->value_len * 2;
+		base64_str_ptr = dave_malloc(base64_str_len);
 
-	dave_free(base64_str_ptr);
+		base64_str_index = dave_snprintf((s8 *)base64_str_ptr, base64_str_len, "__BSON_BIN__:%d:", pData->value_len);
+
+		t_crypto_base64_encode(
+			(u8 *)(pData->value_ptr.mem_value), pData->value_len,
+			(s8 *)(&base64_str_ptr[base64_str_index]), base64_str_len-base64_str_index);
+
+		if(pJson->o_type == json_type_object)
+			json_object_object_add(pJson,
+				(const char *)pData->key_ptr,
+				json_object_new_string_len(base64_str_ptr, base64_str_index));
+		else
+			json_object_array_add(pJson,
+				json_object_new_string_len(base64_str_ptr, base64_str_index));		
+
+		dave_free(base64_str_ptr);
+	}
 }
 
 static inline void

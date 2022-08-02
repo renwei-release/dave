@@ -17,7 +17,7 @@
 #include <stdlib.h>
 
 #define MAXBUF (32)
-#define MAXCHARS (LOG_BUFFER_LENGTH)
+#define MAXCHARS (4096)
 
 static s8 _trace_buf[MAXBUF][MAXCHARS];
 static ub _trace_index = 0;
@@ -142,27 +142,15 @@ base_log_id_enable(s8 *trace_id)
 }
 
 dave_bool
-base_log_line_enable(s8 *fun, ub line, ub time, ub number)
+base_log_line_enable(s8 *fun, ub line, ub second, ub number)
 {
-	return log_trace_line_enable(fun, line, time, number);
+	return log_trace_line_enable(fun, line, second, number);
 }
 
 ub
-base_log_load(s8 *log_buf, ub log_buf_len, TraceLevel *level)
+base_log_load(s8 *log_ptr, ub log_len, TraceLevel *level)
 {
-	if((log_buf == NULL) || (log_buf_len == 0))
-	{
-        if(log_buf != NULL)
-        {
-            log_buf[0] = '\0';
-        }
-		*level = TRACELEVEL_MAX;
-		return 0;
-	}
-	else
-	{
-		return log_buffer_get(log_buf, log_buf_len, level);
-	}
+	return log_buffer_get(log_ptr, log_len, level);
 }
 
 void

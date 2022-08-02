@@ -185,6 +185,7 @@ typedef struct {
 /* for MSGID_RPC_DEBUG_REQ message */
 typedef struct {
 	RetCode ret_debug;
+	s8 str_debug[16];
 	s8 s8_debug;
 	u8 u8_debug;
 	s16 s16_debug;
@@ -204,6 +205,7 @@ typedef struct {
 /* for MSGID_RPC_DEBUG_RSP message */
 typedef struct {
 	RetCode ret_debug;
+	s8 str_debug[16];
 	s8 s8_debug;
 	u8 u8_debug;
 	s16 s16_debug;

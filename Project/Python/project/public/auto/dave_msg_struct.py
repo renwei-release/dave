@@ -730,6 +730,7 @@ class RESTARTRSPMSG (Structure):
 class RPCDebugReq (Structure):
 	_fields_ = [
 		("ret_debug", c_ulonglong),
+		("str_debug", c_char * 16),
 		("s8_debug", c_char),
 		("u8_debug", c_char),
 		("s16_debug", c_short),
@@ -750,6 +751,7 @@ class RPCDebugReq (Structure):
 class RPCDebugRsp (Structure):
 	_fields_ = [
 		("ret_debug", c_ulonglong),
+		("str_debug", c_char * 16),
 		("s8_debug", c_char),
 		("u8_debug", c_char),
 		("s16_debug", c_short),

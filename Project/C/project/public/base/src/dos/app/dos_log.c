@@ -32,18 +32,14 @@ _dos_trace_on_off(s8 *thread_name, dave_bool on)
 }
 
 static RetCode
-_dos_show_log(s8 *param_ptr, ub param_len)
+_dos_show_mac(s8 *param_ptr, ub param_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
-	RetCode ret = RetCode_OK;
 
-	if(dave_strcmp(param_ptr, (s8 *)"mac"))
-	{
-		dave_os_load_mac(mac);
-		dos_print("%s", macstr(mac));
-	}
+	dave_os_load_mac(mac);
+	dos_print("%s", macstr(mac));
 
-	return ret;
+	return RetCode_OK;
 }
 
 static RetCode
@@ -79,7 +75,7 @@ _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 void
 dos_log_reset(void)
 {
-	dos_cmd_reg("log", _dos_show_log, NULL);
+	dos_cmd_reg("mac", _dos_show_mac, NULL);
 	dos_cmd_reg("trace", _dos_trace_log, NULL);
 }
 

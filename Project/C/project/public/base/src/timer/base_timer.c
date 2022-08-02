@@ -229,10 +229,8 @@ _timer_opt_hardware_timer(TimerOPType op_type, s8 *name)
 		{
 			if(_cur_hardware_alarm_ms != divisor_alarm)
 			{
-				TIMEDEBUG("stop hardware timer");
 				dave_os_stop_hardware_timer();
 				_cur_hardware_alarm_ms = divisor_alarm;
-				TIMEDEBUG("start hardware timer:%d", _cur_hardware_alarm_ms);
 				if(dave_os_start_hardware_timer(_timer_hardware_timer_notify, _cur_hardware_alarm_ms) == dave_false)
 				{
 					base_restart("HARDWARE TIMER");
@@ -246,14 +244,9 @@ _timer_opt_hardware_timer(TimerOPType op_type, s8 *name)
 	}
 	else if(op_type == STOP_TIMER)
 	{
-		TIMEDEBUG("stop hardware timer");
 		dave_os_stop_hardware_timer();
 		_cur_hardware_alarm_ms = 0;
 		_new_hardware_alarm_ms = 0;
-	}
-	else
-	{
-		TIMEDEBUG("TimerOPType wrong: %d", op_type);
 	}
 
 	TIMEDEBUG("current alarm time = %d", _cur_hardware_alarm_ms);
@@ -352,6 +345,45 @@ _timer_the_thread_has_timer(ThreadId owner)
 	}
 
 	return dave_false;
+}
+
+static void
+_timer_assert_file(s8 *file_name, s8 *file_data_ptr, ub file_data_len)
+{
+	dave_os_file_write(CREAT_WRITE_FLAG, file_name, dave_os_file_len(file_name, -1), file_data_len, (u8 *)file_data_ptr);
+}
+
+static void
+_timer_assert(void)
+{
+	DateStruct date;
+	s8 file_name[64];
+	ub timer_id;
+	TIMER *pTimer;
+	s8 file_data_ptr[1024];
+	ub file_data_len;
+
+	date = t_time_get_date(NULL);
+
+	dave_snprintf(file_name, sizeof(file_name), "TIMER-DUMP-%04d-%02d-%02d_%02d:%02d:%02d",
+		date.year, date.month, date.day,
+		date.hour, date.minute, date.second);
+
+	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
+	{
+		pTimer = &_timer[timer_id];
+		if(pTimer->name[0] != '\0')
+		{
+			file_data_len = dave_snprintf(file_data_ptr, sizeof(file_data_ptr),
+				"timer_id:%lu name:%s owner:%s alarm_ms:%lu\n",
+				pTimer->timer_id, pTimer->name,
+				thread_name(pTimer->owner), pTimer->alarm_ms);
+
+			_timer_assert_file(file_name, file_data_ptr, file_data_len);
+		}
+	}
+
+	dave_os_power_off("timer resource exhausted!");
 }
 
 static void
@@ -554,6 +586,11 @@ _timer_safe_creat_timer(s8 *name, ThreadId owner, void *fun, void *param, ub ala
 		}
 
 	} );
+
+	if(timer_id == INVALID_TIMER_ID)
+	{
+		_timer_assert();
+	}
 
 	return timer_id;
 }
