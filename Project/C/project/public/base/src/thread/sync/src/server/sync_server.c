@@ -17,6 +17,7 @@
 #include "sync_base_package.h"
 #include "sync_server_param.h"
 #include "sync_server_broadcadt.h"
+#include "sync_server_config.h"
 #include "sync_server_tx.h"
 #include "sync_server_rx.h"
 #include "sync_server_data.h"
@@ -191,6 +192,8 @@ _sync_server_reboot(RESTARTREQMSG *pRestart)
 
 		sync_server_data_exit();
 
+		sync_server_config_exit();
+
 		sync_server_broadcadt_exit();
 
 		sync_server_run_exit();
@@ -332,6 +335,8 @@ _sync_server_init(MSGBODY *msg)
 
 	sync_server_broadcadt_init();
 
+	sync_server_config_init();
+
 	sync_server_msg_buffer_init();
 
 	_sync_server_bind_req();
@@ -391,7 +396,7 @@ _sync_server_exit(MSGBODY *msg)
 void
 sync_server_init(void)
 {
-	ub thread_number = dave_os_cpu_process_number();
+	ub thread_number = 1;
 
 	_sync_server_thread = base_thread_creat(SYNC_SERVER_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _sync_server_init, _sync_server_main, _sync_server_exit);
 	if(_sync_server_thread == INVALID_THREAD_ID)

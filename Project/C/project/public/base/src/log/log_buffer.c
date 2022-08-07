@@ -20,6 +20,7 @@ typedef struct {
 	TraceLevel level;
 	s8 buffer[LOG_BUFFER_LENGTH];
 	ub buffer_length;
+	ub history_length;
 } LogBuffer;
 
 static ub _log_log_counter = 0;
@@ -42,7 +43,7 @@ _log_buffer_reset(LogBuffer *pBuffer)
 	dave_memset(pBuffer, 0x00, sizeof(LogBuffer));
 
 	pBuffer->level = TRACELEVEL_MAX;
-	pBuffer->buffer_length = 0;
+	pBuffer->buffer_length = pBuffer->history_length = 0;
 }
 
 static inline void
@@ -230,7 +231,7 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 }
 
 static inline void
-_log_buffer_lost_build(void)
+_log_buffer_lost_msg(void)
 {
 	log_lock();
 	_log_lost_buffer.level = TRACELEVEL_LOG;
@@ -250,9 +251,34 @@ _log_buffer_clean(LogBuffer *pBuffer)
 	{
 		log_lock();
 		pBuffer->level = TRACELEVEL_MAX;
+		pBuffer->history_length = pBuffer->buffer_length;
 		pBuffer->buffer_length = 0;
 		log_unlock();
 	}
+}
+
+static inline ub
+_log_buffer_history_index(ub log_len)
+{
+	ub history_index = _log_buffer_index - 1;
+	ub safe_counter, log_index;
+	LogBuffer *pBuffer;
+
+	safe_counter = log_index = 0;
+
+	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < log_len))
+	{
+		pBuffer = &_log_buffer[history_index % LOG_BUFFER_MAX];
+	
+		if(pBuffer->history_length == 0)
+			break;
+
+		log_index += pBuffer->history_length;
+
+		history_index --;
+	}
+
+	return history_index;
 }
 
 // =====================================================================
@@ -289,7 +315,7 @@ log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
 
 	if(_log_lost_counter > 0)
 	{
-		_log_buffer_lost_build();
+		_log_buffer_lost_msg();
 	}
 
 	if(_log_buffer_build(level, log_ptr, log_len) == dave_false)
@@ -345,5 +371,27 @@ log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 	}
 
 	return log_copy_len;
+}
+
+ub
+log_buffer_history(s8 *log_ptr, ub log_len)
+{
+	ub history_start_index = _log_buffer_history_index(log_len);
+	ub safe_counter, log_index;
+	LogBuffer *pBuffer;
+
+	safe_counter = log_index = 0;
+	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < log_len))
+	{
+		pBuffer = &_log_buffer[(history_start_index ++) % LOG_BUFFER_MAX];
+		if((log_index + pBuffer->history_length) > log_len)
+		{
+			break;
+		}
+
+		log_index += dave_memcpy(&log_ptr[log_index], pBuffer->buffer, pBuffer->history_length);
+	}
+
+	return log_index;
 }
 

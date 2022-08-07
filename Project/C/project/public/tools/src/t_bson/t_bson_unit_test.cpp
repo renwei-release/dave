@@ -5,7 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifdef FORM_PRODUCT_BIN
+#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
 #include <iostream>
 using namespace std;
 #include "gtest.h"

@@ -32,7 +32,7 @@ dos_app_reset(void)
 	dos_cfg_reset();
 	dos_sync_reset();
 	dos_log_reset();
-#if defined(__DAVE_BASE__) && defined(FORM_PRODUCT_BIN)
+#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
 	dos_test_reset();
 #endif
 }

@@ -182,46 +182,6 @@ typedef struct {
 	void *ptr;
 } MsgInnerLoop;
 
-/* for MSGID_RPC_DEBUG_REQ message */
-typedef struct {
-	RetCode ret_debug;
-	s8 str_debug[16];
-	s8 s8_debug;
-	u8 u8_debug;
-	s16 s16_debug;
-	u16 u16_debug;
-	s32 s32_debug;
-	u32 u32_debug;
-	s64 s64_debug;
-	u64 u64_debug;
-	float float_debug;
-	double double_debug;
-	void *void_debug;
-	DateStruct date_debug;
-	MBUF *mbuf_debug;
-	void *ptr;
-} RPCDebugReq;
-
-/* for MSGID_RPC_DEBUG_RSP message */
-typedef struct {
-	RetCode ret_debug;
-	s8 str_debug[16];
-	s8 s8_debug;
-	u8 u8_debug;
-	s16 s16_debug;
-	u16 u16_debug;
-	s32 s32_debug;
-	u32 u32_debug;
-	s64 s64_debug;
-	u64 u64_debug;
-	float float_debug;
-	double double_debug;
-	void *void_debug;
-	DateStruct date_debug;
-	MBUF *mbuf_debug;
-	void *ptr;
-} RPCDebugRsp;
-
 /* for MSGID_CFG_UPDATE message */
 typedef struct {
 	s8 cfg_name[DAVE_NORMAL_NAME_LEN];
@@ -265,6 +225,53 @@ typedef struct {
 	s8 some_string[256];
 	void *ptr;
 } CoroutineWakeup;
+
+/* for MSGID_RPC_DEBUG_REQ message */
+typedef struct {
+	RetCode ret_debug;
+	s8 str_debug[16];
+	s8 s8_debug;
+	u8 u8_debug;
+	s16 s16_debug;
+	u16 u16_debug;
+	s32 s32_debug;
+	u32 u32_debug;
+	s64 s64_debug;
+	u64 u64_debug;
+	float float_debug;
+	double double_debug;
+	void *void_debug;
+	DateStruct date_debug;
+	MBUF *mbuf_debug;
+	void *ptr;
+} RPCDebugReq;
+
+/* for MSGID_RPC_DEBUG_RSP message */
+typedef struct {
+	RetCode ret_debug;
+	s8 str_debug[16];
+	s8 s8_debug;
+	u8 u8_debug;
+	s16 s16_debug;
+	u16 u16_debug;
+	s32 s32_debug;
+	u32 u32_debug;
+	s64 s64_debug;
+	u64 u64_debug;
+	float float_debug;
+	double double_debug;
+	void *void_debug;
+	DateStruct date_debug;
+	MBUF *mbuf_debug;
+	void *ptr;
+} RPCDebugRsp;
+
+/* for MSGID_CFG_REMOTE_UPDATE message */
+typedef struct {
+	dave_bool put_flag;
+	s8 cfg_name[1024];
+	s8 cfg_value[8196];
+} CFGRemoteUpdate;
 
 #endif
 

@@ -12,15 +12,17 @@ CONTAINER=$1
 
 cd ${homepath}
 
-exit_container=`docker ps | grep ${CONTAINER}`
-if [ "$exit_container" == "" ]; then
-   echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
-   cd ./Deploy/deploy/${CONTAINER}
-   chmod a+x deploy.sh
-   ./deploy.sh
-   echo -e "The build \033[35m${CONTAINER}\033[0m is ready, now start building the project:"
-   echo
-   cd ${homepath}
+if [ ! "$CONTAINER" == "" ]; then
+   exit_container=`docker ps | grep ${CONTAINER}`
+   if [ "$exit_container" == "" ]; then
+      echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
+      cd ./Deploy/deploy/${CONTAINER}
+      chmod a+x deploy.sh
+      ./deploy.sh
+      echo -e "The build \033[35m${CONTAINER}\033[0m is ready, now start building the project:"
+      echo
+      cd ${homepath}
+   fi
 fi
 
 if [ ! -f ./ThirdParty/build/jemalloc/setup/lib/libjemalloc.a ]; then
@@ -29,7 +31,7 @@ if [ ! -f ./ThirdParty/build/jemalloc/setup/lib/libjemalloc.a ]; then
    cd ${homepath}
 fi
 
-if [ ! -f ./ThirdParty/build/gtest/setup/lib/libgtest.a ]; then
+if [ ! -f ./ThirdParty/build/gtest/setup/lib64/libgtest.a ]; then
    cd ./ThirdParty/build/gtest
    ./build
    cd ${homepath}
@@ -49,6 +51,18 @@ fi
 
 if [ ! -f ./ThirdParty/build/opentracing-cpp/setup/lib/libopentracing.a ]; then
    cd ./ThirdParty/build/opentracing-cpp
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/thrift/setup/lib/libthrift.a ]; then
+   cd ./ThirdParty/build/thrift
+   ./build
+   cd ${homepath}
+fi
+
+if [ ! -f ./ThirdParty/build/etcd-cpp-apiv3/setup/lib64/libetcd-cpp-api.so ]; then
+   cd ./ThirdParty/build/etcd-cpp-apiv3
    ./build
    cd ${homepath}
 fi

@@ -29,6 +29,7 @@ base_init(void *main_thread_id)
 	booting_lock();
 	base_log_init();
 	base_mem_init();
+	base_cfg_init();
 	base_thread_init(main_thread_id);
 	base_timer_init();
 	base_socket_init();
@@ -58,6 +59,7 @@ base_exit(void)
 	base_socket_exit();
 	base_timer_exit();
 	base_thread_exit();
+	base_cfg_exit();
 	base_mem_exit();
 	base_log_exit();
 }

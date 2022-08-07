@@ -153,6 +153,12 @@ base_log_load(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return log_buffer_get(log_ptr, log_len, level);
 }
 
+ub
+base_log_history(s8 *log_ptr, ub log_len)
+{
+	return log_buffer_history(log_ptr, log_len);
+}
+
 void
 base_log_init(void)
 {

@@ -76,6 +76,10 @@ _thread_broadcast_name_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub msg
 	}
 
 	syncc_id = thread_id(SYNC_CLIENT_THREAD_NAME);
+	if(syncc_id == INVALID_THREAD_ID)
+	{
+		return dave_false;
+	}
 
 	if(((type == BaseMsgType_Broadcast_remote) || (type == BaseMsgType_Broadcast_total))
 		&& (base_thread_attrib(self_id) == LOCAL_TASK_ATTRIB)
@@ -138,6 +142,14 @@ thread_broadcast_msg(
 	s8 *fun, ub line)
 {
 	ThreadId self_id = self();
+
+	if(self_id == INVALID_THREAD_ID)
+	{
+		THREADDEBUG("who is me? type:%s msg_id:%s msg_len:%d <%s:%d>",
+			t_auto_BaseMsgType_str(type),
+			msgstr(msg_id), msg_len,
+			fun, line);
+	}
 
 	_thread = thread_struct;
 

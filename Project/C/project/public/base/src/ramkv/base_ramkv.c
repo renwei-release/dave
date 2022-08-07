@@ -247,6 +247,40 @@ __base_ramkv_del_bin_ptr__(void *ramkv, u8 *bin_data, ub bin_len, s8 *fun, ub li
 	}
 }
 
+dave_bool
+__base_ramkv_add_key_value__(void *ramkv, s8 *key, s8 *value, s8 *fun, ub line)
+{
+	ub value_len = dave_strlen(value);
+
+	if(value_len > 0)
+	{
+		return ramkv_add((KV *)ramkv, (u8 *)key, dave_strlen(key), (void *)value, value_len, fun, line);
+	}
+	else
+	{
+		return __base_ramkv_del_key_value__(ramkv, key, fun, line);
+	}
+}
+
+ub
+__base_ramkv_inq_key_value__(void *ramkv, s8 *key, s8 *value_ptr, ub value_len, s8 *fun, ub line)
+{
+	return ramkv_inq((KV *)ramkv, -1, (u8 *)key, dave_strlen(key), (void *)value_ptr, value_len, fun, line);
+}
+
+ub
+__base_ramkv_index_key_value__(void *ramkv, sb index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len, s8 *fun, ub line)
+{
+	return ramkv_inq((KV *)ramkv, index, (void *)key_ptr, key_len, (void *)value_ptr, value_len, fun, line);
+}
+
+dave_bool
+__base_ramkv_del_key_value__(void *ramkv, s8 *key, s8 *fun, ub line)
+{
+	ramkv_del((KV *)ramkv, (u8 *)key, dave_strlen(key), NULL, 0, fun, line);
+	return dave_true;
+}
+
 void *
 __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line)
 {

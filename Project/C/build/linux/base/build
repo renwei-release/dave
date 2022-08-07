@@ -14,5 +14,7 @@ if [ "$FORM" == "" ]; then
    FORM="BIN"
 fi
 
+../ENV
+
 cd ../
 ./BUILD ${PROJECT} ${LEVEL} ${FORM}

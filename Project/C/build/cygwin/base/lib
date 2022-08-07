@@ -16,27 +16,25 @@ HOMEPATH=$(cd `dirname $0`; pwd)/../../../
 ############## build_lib function ##############
 build_static_lib()
 {
+   mkdir -p ${HOMEPATH}../Go/project/public/base/inc
+   mkdir -p ${HOMEPATH}../Go/project/public/base/lib/
+
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
    echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
    rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
 
-   echo lib build ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib
-   rm -f ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib
-   ar cru ${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.lib ${obj_list}
-
-   echo lib build ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib
-   rm -f ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib
-   ar cru ${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.lib ${obj_list}
+   GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+   echo lib build ${GOLIB}
+   rm -f ${GOLIB}
+   ar cru ${GOLIB} ${obj_list}
 }
 
 build_lib()
 {
-   ./clean >> $LOGFILE
-
-   echo lib build $LEVEL ...
-   ./build $LEVEL >> $LOGFILE
+   echo lib build $LEVEL LIB ...
+   ./build $LEVEL LIB >> $LOGFILE
 
    build_static_lib
 }
@@ -56,10 +54,10 @@ if [ "$LEVEL" == "all" ]; then
    LEVEL=alpha
    build_lib
 
+   ./clean >> $LOGFILE
+
    LEVEL=beta
    build_lib
 fi
-
-./clean >> $LOGFILE
 
 rm -rf $LOGFILE

@@ -16,7 +16,7 @@
 #include "tracing_logic.h"
 #include "log_log.h"
 
-#define LOG_TRACING_TIME 6
+#define LOG_TRACING_TIME 10
 #define LOG_TRACING_LIFE 3
 
 typedef struct {

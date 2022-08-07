@@ -6,7 +6,7 @@
  */
 
 #include "base_macro.h"
-#if defined(__DAVE_BASE__) && defined(FORM_PRODUCT_BIN)
+#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
 #include <iostream>
 using namespace std;
 #include "gtest.h"

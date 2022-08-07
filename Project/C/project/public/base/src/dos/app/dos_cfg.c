@@ -16,19 +16,6 @@
 #include "dos_cmd.h"
 #include "dos_log.h"
 
-static s8 *
-_dos_cfg_dir(s8 *dir_ptr, ub dir_len)
-{
-	dir_len = dave_snprintf(dir_ptr, dir_len, "%s", dave_os_file_home_dir());
-
-	if(dir_ptr[dir_len- 1] == '/')
-	{
-		dir_ptr[dir_len- 1] = '\0';
-	}
-
-	return dir_ptr;
-}
-
 static RetCode
 _dos_cfg_get_help(void)
 {
@@ -40,7 +27,6 @@ static ub
 _dos_cfg_get_one(s8 *cmd_ptr, ub cmd_len, s8 *show_ptr, ub show_len)
 {
 	ub cmd_index, show_index;
-	s8 dir[128];
 	s8 cfg_name[1024];
 	s8 cfg_value[2048];
 
@@ -54,7 +40,7 @@ _dos_cfg_get_one(s8 *cmd_ptr, ub cmd_len, s8 *show_ptr, ub show_len)
 
 		dave_memset(cfg_value, 0x00, sizeof(cfg_value));
 
-		if(base_cfg_dir_get(_dos_cfg_dir(dir, sizeof(dir)), cfg_name, (u8 *)cfg_value, sizeof(cfg_value)) == dave_false)
+		if(cfg_get(cfg_name, (u8 *)cfg_value, sizeof(cfg_value)) == dave_false)
 		{
 			show_index += dave_snprintf(&show_ptr[show_index], show_len-show_index, "%s:[EMPTY DATA]\n", cfg_name);
 		}
@@ -77,14 +63,13 @@ _dos_cfg_get_one(s8 *cmd_ptr, ub cmd_len, s8 *show_ptr, ub show_len)
 static ub
 _dos_cfg_get_dir_all(s8 *show_ptr, ub show_len, void *pJson)
 {
-	s8 dir[128];
 	s8 config_path[1024];
 	s8 json_data[128];
 	ub json_len;
 	MBUF *pList, *pConfigKey;
 	ub show_index = 0;
 
-	dave_snprintf(config_path, sizeof(config_path), "%s/config", _dos_cfg_dir(dir, sizeof(dir)));
+	dave_snprintf(config_path, sizeof(config_path), "%s/config", dave_os_file_home_dir());
 
 	pList = pConfigKey = dave_os_dir_subdir_list(config_path);
 
@@ -110,7 +95,6 @@ _dos_cfg_get_dir_all(s8 *show_ptr, ub show_len, void *pJson)
 static ub
 _dos_cfg_get_json_all(s8 *show_ptr, ub show_len, void **ppJson)
 {
-	s8 dir[128];
 	s8 config_json_path[1024];
 	ub data_len = 3 * 1024 * 1024;
 	ub read_len;
@@ -119,7 +103,7 @@ _dos_cfg_get_json_all(s8 *show_ptr, ub show_len, void **ppJson)
 
 	data_ptr = dave_malloc(data_len);
 
-	dave_snprintf(config_json_path, sizeof(config_json_path), "%s/config/CONFIG.json", _dos_cfg_dir(dir, sizeof(dir)));
+	dave_snprintf(config_json_path, sizeof(config_json_path), "%s/config/CONFIG.json", dave_os_file_home_dir());
 
 	read_len = dave_os_file_read(DIRECT_FLAG|READ_FLAG, config_json_path, 0, data_len, data_ptr);
 	if(read_len < data_len)
@@ -182,19 +166,11 @@ _dos_cfg_get(s8 *cmd_ptr, ub cmd_len)
 }
 
 static RetCode
-_dos_cfg_set_help(void)
-{
-	dos_print("Usage: echo [true]|[false] [thread name]\nStart the echo test to test the link connection performance.!");
-	return RetCode_OK;
-}
-
-static RetCode
 _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index;
 	s8 cfg_name[1024];
 	s8 cfg_value[2048];
-	s8 dir[128];
 
 	cmd_index = 0;
 
@@ -206,7 +182,7 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 		return RetCode_Invalid_parameter;
 	}
 
-	if(base_cfg_dir_set(_dos_cfg_dir(dir, sizeof(dir)), cfg_name, (u8 *)cfg_value, dave_strlen(cfg_value)) != RetCode_OK)
+	if(cfg_set(cfg_name, (u8 *)cfg_value, dave_strlen(cfg_value)) != RetCode_OK)
 	{
 		dos_print("%s set %s failed!", cfg_name, cfg_value);
 	}
@@ -218,13 +194,103 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
+static void
+_dos_cfg_remote_get_one(s8 *cfg_name)
+{
+	s8 cfg_value[2048];
+
+	if(rcfg_get(cfg_name, cfg_value, sizeof(cfg_value)) == 0)
+	{
+		dos_print("%s remote get failed!", cfg_name);
+	}
+	else
+	{
+		dos_print("%s : %s", cfg_name, cfg_value);
+	}
+}
+
+static void
+_dos_cfg_remote_get_all(void)
+{
+	ub index;
+	s8 cfg_name[256];
+	s8 cfg_value[2048];
+	dave_bool empty_flag = dave_true;
+
+	for(index=0; index<102400; index++)
+	{
+		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, sizeof(cfg_value)) == 0)
+		{
+			break;
+		}
+
+		dos_print("%s : %s", cfg_name, cfg_value);
+
+		empty_flag = dave_false;
+	}
+
+	if(empty_flag == dave_true)
+	{
+		dos_print("Empty message!");
+	}
+}
+
+static RetCode
+_dos_cfg_remote_get(s8 *cmd_ptr, ub cmd_len)
+{
+	s8 cfg_name[1024];
+
+	dos_load_string(cmd_ptr, cmd_len, cfg_name, sizeof(cfg_name));
+	if(dave_strlen(cfg_name) == 0)
+	{
+		_dos_cfg_remote_get_all();
+	}
+	else
+	{
+		_dos_cfg_remote_get_one(cfg_name);
+	}
+
+	return RetCode_OK;
+}
+
+static RetCode
+_dos_cfg_remote_set(s8 *cmd_ptr, ub cmd_len)
+{
+	ub cmd_index;
+	s8 cfg_name[1024];
+	s8 cfg_value[2048];
+
+	cmd_index = 0;
+
+	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
+	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
+
+	if((cfg_name[0] == '\0') || (cfg_value[0] == '\0'))
+	{
+		return RetCode_Invalid_parameter;
+	}
+
+	if(rcfg_set(cfg_name, cfg_value) != RetCode_OK)
+	{
+		dos_print("%s remote set %s failed!", cfg_name, cfg_value);
+	}
+	else
+	{
+		dos_print("%s remote set %s success!", cfg_name, cfg_value);
+	}
+
+	return RetCode_OK;
+}
+
 // =====================================================================
 
 void
 dos_cfg_reset(void)
 {
 	dos_cmd_reg("get", _dos_cfg_get, _dos_cfg_get_help);
-	dos_cmd_reg("set", _dos_cfg_set, _dos_cfg_set_help);
+	dos_cmd_reg("set", _dos_cfg_set, NULL);
+	dos_cmd_reg("rget", _dos_cfg_remote_get, NULL);
+	dos_cmd_reg("rset", _dos_cfg_remote_set, NULL);
 }
 
 #endif

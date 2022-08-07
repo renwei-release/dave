@@ -19,7 +19,7 @@ build_static_lib()
    mkdir -p ${HOMEPATH}project/public/base/lib/${LEVEL}
    mkdir -p ${HOMEPATH}../Go/project/public/base/inc
    mkdir -p ${HOMEPATH}../Go/project/public/base/lib/
-   
+
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
 
    echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
@@ -30,7 +30,7 @@ build_static_lib()
    echo lib build ${CLIB}
    rm -f ${CLIB}
    ar cru ${CLIB} ${obj_list}
-   
+
    GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
    cp ${CLIB} ${GOLIB}
 }

@@ -14,7 +14,7 @@
 
 #define SYNC_THREAD_MAX (THREAD_MAX)					/* 这个参数决定了系统最大支持的线程名数量，最好与 THREAD_MAX 参数保持一致 */
 
-#define SYNC_CLIENT_MAX (32)							/* 对于某个服务，这个参数决定了系统最大支持的服务的数量 */
+#define SYNC_CLIENT_MAX (128)							/* 对于某个服务，这个参数决定了系统最大支持的服务的数量 */
 
 #define SYNC_SERSER_MAX (1)								/* 这个参数决定了每个服务能连接的SYNC服务的最大数量 */
 

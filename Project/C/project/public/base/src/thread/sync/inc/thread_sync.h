@@ -9,15 +9,16 @@
 #define __THREAD_SYNC_H__
 #include "dave_base.h"
 
-#if defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_BASE__)
+#if defined(__DAVE_PRODUCT_SYNC__)
 #define SYNC_STACK_SERVER
 #endif
-#if !(defined(__DAVE_PRODUCT_SYNC__) || defined(__DAVE_PRODUCT_LOG__))
+#if !(defined(SYNC_STACK_SERVER) || defined(__DAVE_PRODUCT_LOG__))
 #define SYNC_STACK_CLIENT
 #endif
 
 void thread_sync_init(void);
 void thread_sync_exit(void);
+
 ThreadId thread_sync_thread_id(ThreadId thread_id);
 
 #endif

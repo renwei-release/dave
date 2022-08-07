@@ -59,30 +59,43 @@ _ramkv_list_data_copy_from_user(KVValue *pValue, void *value_ptr, ub value_len)
 static inline ub
 _ramkv_list_data_copy_to_user(KVValue *pValue, void *value_ptr, ub value_len)
 {
+	ub copy_value_len;
+
+	if(value_ptr != NULL)
+	{
+		((s8 *)value_ptr)[0] = '\0';
+	}
+
 	if(pValue->value_len == 0)
+	{
 		return 0;
+	}
 
 	if(ramkv_list_check_value_checksum(pValue) == dave_false)
 	{
 		KVLTRACE(60,1,"value check failed:%lx/%lx!", pValue->value_ptr, pValue->value_checksum);
 	}
 
-	if(value_len > pValue->value_len)
+	copy_value_len = value_len;
+	if(copy_value_len > pValue->value_len)
 	{
-		value_len = pValue->value_len;
+		copy_value_len = pValue->value_len;
 	}
 
 	if(pValue->value_len > sizeof(void *))
 	{
-		dave_memcpy(value_ptr, pValue->value_ptr, value_len);
+		dave_memcpy(value_ptr, pValue->value_ptr, copy_value_len);
+		if(value_len > copy_value_len)
+		{
+			((s8 *)value_ptr)[copy_value_len] = '\0';
+		}
 	}
 	else
 	{
-		KVDEBUG("%lx", pValue->value_ptr);
-		dave_memcpy(value_ptr, &(pValue->value_ptr), value_len);
+		dave_memcpy(value_ptr, &(pValue->value_ptr), copy_value_len);
 	}
 
-	return value_len;
+	return copy_value_len;
 }
 
 static inline void

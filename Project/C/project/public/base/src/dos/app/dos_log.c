@@ -32,14 +32,36 @@ _dos_trace_on_off(s8 *thread_name, dave_bool on)
 }
 
 static RetCode
-_dos_show_mac(s8 *param_ptr, ub param_len)
+_dos_show_log(s8 *param_ptr, ub param_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
+	s8 log_length_str[64];
+	ub log_length;
+	s8 *log_buf;
 
-	dave_os_load_mac(mac);
-	dos_print("%s", macstr(mac));
+	if(dave_strcmp(param_ptr, "mac") == dave_true)
+	{
+		dave_os_load_mac(mac);
+		dos_print("%s", macstr(mac));
+	}
+	else
+	{
+		dos_get_one_parameters(param_ptr, param_len, log_length_str, 64);
+		log_length = stringdigital(log_length_str);
+		if(log_length == 0)
+		{
+			log_length = 4096;
+		}
 
-	return RetCode_OK;
+		log_buf = dave_malloc(log_length);
+		log_length = base_log_history(log_buf, log_length - 1);
+		log_buf[log_length] = '\0';
+		dos_write("=========================");
+		dos_write(log_buf);
+		dave_free(log_buf);
+	}
+
+	return ERRCODE_OK;
 }
 
 static RetCode
@@ -75,7 +97,7 @@ _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 void
 dos_log_reset(void)
 {
-	dos_cmd_reg("mac", _dos_show_mac, NULL);
+	dos_cmd_reg("log", _dos_show_log, NULL);
 	dos_cmd_reg("trace", _dos_trace_log, NULL);
 }
 

@@ -14,12 +14,74 @@
 #include "sync_base_package.h"
 #include "sync_param.h"
 #include "sync_server_msg_buffer.h"
+#include "sync_server_config.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
 
 static void
+_sync_server_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+{
+	if(pUpdate->put_flag == dave_true)
+	{
+		sync_server_config_set(pUpdate->cfg_name, pUpdate->cfg_value);
+	}
+	else
+	{
+		SYNCLOG("Delete operation is not currently supported! %s:%s",
+			pUpdate->cfg_name, pUpdate->cfg_value);
+	}
+}
+
+static dave_bool
+_sync_server_run_special_internal(
+	SyncClient *pClient,
+	s8 *src, s8 *dst,
+	ub msg_id,
+	ub msg_len, u8 *msg_body)
+{
+	dave_bool ret = dave_true;
+
+	switch(msg_id)
+	{
+		case MSGID_CLIENT_BUSY:
+				((ClientBusy *)(msg_body))->ptr = pClient;
+			break;
+		case MSGID_CLIENT_IDLE:
+				((ClientIdle *)(msg_body))->ptr = pClient;
+			break;
+		default:
+				ret = dave_false;
+			break;
+	}
+
+	return ret;
+}
+
+static dave_bool
 _sync_server_run_internal(
+	SyncClient *pClient,
+	s8 *src, s8 *dst,
+	ub msg_id,
+	ub msg_len, u8 *msg_body)
+{
+	dave_bool process_flag = dave_true;
+
+	switch(msg_id)
+	{
+		case MSGID_CFG_REMOTE_UPDATE:
+				_sync_server_run_cfg_remote_update((CFGRemoteUpdate *)(msg_body));
+			break;
+		default:
+				process_flag = dave_false;
+			break;
+	}
+
+	return process_flag;
+}
+
+static void
+_sync_server_snd_internal(
 	SyncClient *pClient,
 	s8 *src, s8 *dst,
 	ub msg_id,
@@ -49,31 +111,6 @@ _sync_server_run_internal(
 	}
 }
 
-static dave_bool
-_sync_server_run_special_internal(
-	SyncClient *pClient,
-	s8 *src, s8 *dst,
-	ub msg_id,
-	ub msg_len, u8 *msg_body)
-{
-	dave_bool ret = dave_true;
-
-	switch(msg_id)
-	{
-		case MSGID_CLIENT_BUSY:
-				((ClientBusy *)(msg_body))->ptr = pClient;
-			break;
-		case MSGID_CLIENT_IDLE:
-				((ClientIdle *)(msg_body))->ptr = pClient;
-			break;
-		default:
-				ret = dave_false;
-			break;
-	}
-
-	return ret;
-}
-
 // =====================================================================
 
 void
@@ -101,11 +138,18 @@ sync_server_run_internal(
 			msg_id,
 			msg_len, msg_body);
 
-	_sync_server_run_internal(
+	if(_sync_server_run_internal(
 			pClient,
 			src, dst,
 			msg_id,
-			msg_len, msg_body);
+			msg_len, msg_body) == dave_false)
+	{
+		_sync_server_snd_internal(
+				pClient,
+				src, dst,
+				msg_id,
+				msg_len, msg_body);
+	}
 }
 
 #endif

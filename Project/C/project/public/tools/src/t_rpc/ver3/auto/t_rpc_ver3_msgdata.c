@@ -1140,6 +1140,64 @@ t_rpc_ver3_sizeof_BdataTalkRecord(void)
 }
 
 void *
+t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(CFGRemoteUpdate) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(CFGRemoteUpdate) does not match(%d/%d), please contact the message settlers!", sizeof(CFGRemoteUpdate), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "dave_bool-put_flag", t_rpc_ver3_zip_dave_bool(zip_data->put_flag));
+	t_bson_add_object(pStructBson, "s8-cfg_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_name), 1, 1024));
+	t_bson_add_object(pStructBson, "s8-cfg_value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_value), 1, 8196));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		CFGRemoteUpdate *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(CFGRemoteUpdate);
+
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->put_flag), t_bson_inq_object(pStructBson, "dave_bool-put_flag"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_name), 1, 1024, t_bson_inq_object(pStructBson, "s8-cfg_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_value), 1, 8196, t_bson_inq_object(pStructBson, "s8-cfg_value"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_CFGRemoteUpdate(CFGRemoteUpdate *struct_data, void *new_ptr)
+{
+	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_CFGRemoteUpdate(void)
+{
+	return sizeof(CFGRemoteUpdate);
+}
+
+void *
 t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len)
 {
 	void *pStructBson;

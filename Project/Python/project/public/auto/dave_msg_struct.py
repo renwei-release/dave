@@ -169,6 +169,14 @@ class BdataTalkRecord (Structure):
 		("label", UniversalLabel),
 ]
 
+#* for MSGID_CFG_REMOTE_UPDATE message *#
+class CFGRemoteUpdate (Structure):
+	_fields_ = [
+		("put_flag", c_char),
+		("cfg_name", c_char * 1024),
+		("cfg_value", c_char * 8196),
+]
+
 #* for MSGID_CFG_UPDATE message *#
 class CFGUpdate (Structure):
 	_fields_ = [

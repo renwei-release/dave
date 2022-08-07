@@ -53,7 +53,6 @@ if [[ "$DEPLOYMODEL" == "stash" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    rm -rf Dockerfile
 fi
 
-
 if [[ "$DEPLOYMODEL" == "kibana" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cp kibana_Dockerfile Dockerfile
    IMAGE="kibana_docker_image"

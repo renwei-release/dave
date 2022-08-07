@@ -41,6 +41,9 @@ extern "C"{
 #ifdef TENSORFLOW_3RDPARTY
 #include "dave_tensorflow.h"
 #endif
+#ifdef ETCD_3RDPARTY
+#include "dave_etcd.h"
+#endif
 
 #ifdef __cplusplus
 }

@@ -179,8 +179,50 @@ _sync_client_run_thread(
 	return ret;
 }
 
-static inline void
+static void
+_sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+{
+	CFGRemoteUpdate boradcast_update = *pUpdate;
+
+	SYNCLOG("put_flag:%d %s : %s",
+		pUpdate->put_flag,
+		pUpdate->cfg_name, pUpdate->cfg_value);
+
+	if(pUpdate->put_flag == dave_true)
+	{
+		base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+	}
+	else
+	{
+		base_cfg_remote_internal_del(pUpdate->cfg_name);
+	}
+
+	broadcast_local(MSGID_CFG_REMOTE_UPDATE, &boradcast_update);
+}
+
+static inline dave_bool
 _sync_client_run_internal(
+	s8 *src, s8 *dst,
+	ub msg_id,
+	ub msg_len, u8 *msg_body)
+{
+	dave_bool process_flag = dave_true;
+
+	switch(msg_id)
+	{
+		case MSGID_CFG_REMOTE_UPDATE:
+				_sync_client_run_cfg_remote_update((CFGRemoteUpdate *)(msg_body));
+			break;
+		default:
+				process_flag = dave_false;
+			break;
+	}
+
+	return process_flag;
+}
+
+static inline void
+_sync_client_snd_internal(
 	s8 *src, s8 *dst,
 	ub msg_id,
 	ub msg_len, u8 *msg_body)
@@ -295,10 +337,16 @@ sync_client_run_internal(
 	ub msg_id,
 	ub msg_len, u8 *msg_body)
 {
-	_sync_client_run_internal(
-		src, dst,
-		msg_id,
-		msg_len, msg_body);
+	if(_sync_client_run_internal(
+			src, dst,
+			msg_id,
+			msg_len, msg_body) == dave_false)
+	{
+		_sync_client_snd_internal(
+			src, dst,
+			msg_id,
+			msg_len, msg_body);
+	}
 }
 
 #endif

@@ -11,6 +11,7 @@
 #include "dave_tools.h"
 #include "des_cfg.h"
 #include "json_cfg.h"
+#include "remote_cfg.h"
 #include "cfg_log.h"
 
 static dave_bool
@@ -102,13 +103,28 @@ _base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
 	pUpdate->cfg_length = value_len;
 	dave_memcpy(pUpdate->cfg_value, value_ptr, value_len);
 
-	broadcast_total(MSGID_CFG_UPDATE, pUpdate);
+	if(broadcast_local(MSGID_CFG_UPDATE, pUpdate) == dave_false)
+	{
+		CFGABNOR("name:%s update failed!", name);
+	}
 }
 
 // =====================================================================
 
+void
+base_cfg_init(void)
+{
+	base_remote_cfg_init();
+}
+
+void
+base_cfg_exit(void)
+{
+	base_remote_cfg_exit();
+}
+
 RetCode
-base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
+base_cfg_local_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
 	dave_bool ret;
 
@@ -130,7 +146,7 @@ base_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 }
 
 dave_bool
-base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
+base_cfg_local_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 {
 	dave_bool ret;
 
@@ -146,12 +162,42 @@ base_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 
 			if(_base_cfg_can_be_set_json_value(value_ptr, value_len) == dave_true)
 			{
-				base_cfg_dir_set(dir, name, value_ptr, value_len);
+				base_cfg_local_set(dir, name, value_ptr, value_len);
 			}
 		}
 	}
 
 	return ret;
+}
+
+RetCode
+base_cfg_remote_set(s8 *name, s8 *value)
+{
+	return base_remote_cfg_set(name, value);
+}
+
+ub
+base_cfg_remote_get(s8 *name, s8 *value_ptr, ub value_len)
+{
+	return base_remote_cfg_get(name, value_ptr, value_len);
+}
+
+ub
+base_cfg_remote_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len)
+{
+	return base_remote_cfg_index(index, key_ptr, key_len, value_ptr, value_len);
+}
+
+dave_bool
+base_cfg_remote_internal_add(s8 *name, s8 *value)
+{
+	return base_remote_cfg_internal_add(name, value);
+}
+
+dave_bool
+base_cfg_remote_internal_del(s8 *name)
+{
+	return base_remote_cfg_internal_del(name);
 }
 
 RetCode

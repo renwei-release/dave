@@ -19,6 +19,7 @@
 #include "sync_server_data.h"
 #include "sync_server_tools.h"
 #include "sync_server_broadcadt.h"
+#include "sync_server_config.h"
 #include "sync_server_sync.h"
 #include "sync_lock.h"
 #include "sync_test.h"
@@ -38,6 +39,24 @@ _sync_server_sync_the_thread_on_client(SyncThread *pThread, SyncClient *pClient)
 	}
 
 	return dave_false;
+}
+
+static void
+_sync_server_sync_client_ready_follow_up(SyncClient *pClient)
+{
+	SYNCTRACE("%s/%s ip:%s sync remote done! sync_thread_index:%d",
+		pClient->globally_identifier, pClient->verno,
+		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
+		pClient->sync_thread_index);
+
+	sync_server_tx_blocks_state(pClient);
+
+	pClient->sync_resynchronization_counter = 0;
+	pClient->sync_thread_index = 0;
+	
+	sync_server_sync_auto_link(pClient);
+	
+	sync_server_config_tell_client(pClient);
 }
 
 static void
@@ -88,17 +107,7 @@ _sync_server_sync_add_remote_thread(SyncClient *pClient)
 		}
 		pClient->ready_flag = dave_true;
 
-		sync_server_tx_blocks_state(pClient);
-
-		SYNCTRACE("%s/%s ip:%s sync remote done! sync_thread_index:%d",
-			pClient->globally_identifier, pClient->verno,
-			ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
-			pClient->sync_thread_index);
-
-		pClient->sync_resynchronization_counter = 0;
-		pClient->sync_thread_index = 0;
-
-		sync_server_sync_auto_link(pClient);
+		_sync_server_sync_client_ready_follow_up(pClient);
 	}
 	else
 	{

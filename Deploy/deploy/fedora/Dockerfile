@@ -1,4 +1,4 @@
-FROM fedora:26
+FROM fedora:30
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -24,6 +24,13 @@ RUN yum install -y boost.x86_64
 RUN yum install -y boost-devel.x86_64
 RUN yum install -y openssl.x86_64
 RUN yum install -y openssl-devel.x86_64
+RUN yum install -y protobuf.x86_64
+RUN yum install -y protobuf-devel.x86_64
+RUN yum install -y grpc.x86_64
+RUN yum install -y grpc-devel.x86_64
+RUN yum install -y grpc-plugins.x86_64
+RUN yum install -y cpprest.x86_64
+RUN yum install -y cpprest-devel.x86_64
 
 RUN mkdir -p /project/DAVE
 

@@ -7,7 +7,7 @@
 # */
 
 PROJECT=${PWD##*/}
-CONTAINER="ubuntu"
+CONTAINER="fedora"
 
 ../ENV ${CONTAINER}
 

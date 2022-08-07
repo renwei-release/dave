@@ -147,6 +147,13 @@ type BdataTalkRecord struct {
 	Label UniversalLabel
 }
 
+/* for MSGID_CFG_REMOTE_UPDATE message */
+type CFGRemoteUpdate struct {
+	Put_flag int8
+	Cfg_name [1024] byte
+	Cfg_value [8196] byte
+}
+
 /* for MSGID_CFG_UPDATE message */
 type CFGUpdate struct {
 	Cfg_name [DAVE_NORMAL_NAME_LEN] byte

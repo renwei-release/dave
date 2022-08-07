@@ -8,9 +8,14 @@
 
 PROJECT=$1
 LEVEL=$2
+FORM=$3
 PROCESSOR=`cat /proc/cpuinfo| grep "processor"| wc -l`
 PROJECT=${PROJECT^^}
 
+if [ "$FORM" == "" ]; then
+   FORM="BIN"
+fi
+
 make NAME_PRODUCT=${PROJECT} LEVEL_PRODUCT=${LEVEL} pre_build
-make -j${PROCESSOR} NAME_PRODUCT=${PROJECT} LEVEL_PRODUCT=${LEVEL}
+make -j${PROCESSOR} NAME_PRODUCT=${PROJECT} LEVEL_PRODUCT=${LEVEL} FORM=${FORM}
 make NAME_PRODUCT=${PROJECT} LEVEL_PRODUCT=${LEVEL} end_build

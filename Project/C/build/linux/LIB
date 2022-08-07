@@ -8,7 +8,7 @@
 
 LIB := -Wl,-Bstatic
 LIB += -L../../../../ThirdParty/build/jemalloc/setup/lib -ljemalloc
-LIB += -L../../../../ThirdParty/build/gtest/setup/lib -lgmock -lgtest
+LIB += -L../../../../ThirdParty/build/gtest/setup/lib64 -lgmock -lgtest
 
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIB)), 1)
 LIB += -L../../../../ThirdParty/build/fastdfs/setup/lib -lfdfsclient -lfastcommon
@@ -35,6 +35,9 @@ LIB += -L/dave/tools/opencv/lib64 -lopencv_stitching -lopencv_superres -lopencv_
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L/dave/tools/tensorflow/lib -ltensorflow_cc -ltensorflow_framework
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), SYNC)), 1)
+LIB += -L/dave/tools/etcd-cpp-apiv3/lib64 -letcd-cpp-api -lcpprest
 endif
 
 LIB += -lpthread -lrt -ldl -lm -lgomp -lstdc++ -lutil -lgcov

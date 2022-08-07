@@ -20,7 +20,7 @@
 #include "jaegertracing/SpanContext.h"
 #include "jaegertracing/metrics/Metrics.h"
 #include "jaegertracing/net/URI.h"
-#include "jaegertracing/platform/Endian.h"
+#include "jaegertracing/platform/__Endian__.h"
 #include "jaegertracing/propagation/Extractor.h"
 #include "jaegertracing/propagation/HeadersConfig.h"
 #include "jaegertracing/propagation/Injector.h"

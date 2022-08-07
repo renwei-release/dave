@@ -11,23 +11,35 @@
 #ifdef __DAVE_LINUX__
 #define JEMALLOC_3RDPARTY
 #endif
+
 #define JSON_3RDPARTY
+
 #if defined(__DAVE_LINUX__) || defined(__DAVE_CYGWIN__)
 #define COROUTINE_3RDPARTY
 #endif
+
 #define NGINX_3RDPARTY
+
 #define MONGO_3RDPARTY
+
 #ifdef __DAVE_PRODUCT_AIB__
 #define FASTDFS_3RDPARTY
 #endif
+
 #ifdef __DAVE_PRODUCT_AIB__
 #define ICONV_3RDPARTY
 #endif
+
 #ifdef __DAVE_PRODUCT_AIX__
 #define OPENCV_3RDPARTY
 #endif
+
 #ifdef __DAVE_PRODUCT_AIX__
 #define TENSORFLOW_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_SYNC__
+#define ETCD_3RDPARTY
 #endif
 
 #endif

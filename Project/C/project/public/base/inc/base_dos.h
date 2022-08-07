@@ -7,7 +7,6 @@
 
 #ifndef __BASE_DOS_H__
 #define __BASE_DOS_H__
-#include "dave_base.h"
 
 #define DOS_THREAD_NAME "dos"
 

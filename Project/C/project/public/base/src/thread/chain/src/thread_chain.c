@@ -16,6 +16,9 @@
 #include "chain_buf.h"
 #include "chain_cfg.h"
 
+#define CHAIN_FUN_EMPTY_FLAG NULL
+#define CHAIN_FUN_PTR_FLAG (s8 *)0x55aa55aa55aa
+
 static inline void
 _thread_chain_clean(ThreadChain *pChain)
 {
@@ -41,7 +44,8 @@ _thread_chain_clean(ThreadChain *pChain)
 	pChain->msg_src = pChain->msg_dst = 0;
 	pChain->msg_id = MSGID_RESERVED;
 
-	pChain->fun[0] = '\0';
+	((s8 **)(pChain->fun))[0] = CHAIN_FUN_EMPTY_FLAG;
+	((s8 **)(pChain->fun))[1] = NULL;
 	pChain->line = 0;
 }
 
@@ -62,7 +66,8 @@ _thread_chain_build_new(
 	pMsgChain->msg_dst = msg_dst;
 	pMsgChain->msg_id = msg_id;
 
-	dave_strcpy(pMsgChain->fun, fun, sizeof(pMsgChain->fun));
+	((s8 **)(pMsgChain->fun))[0] = CHAIN_FUN_PTR_FLAG;
+	((s8 **)(pMsgChain->fun))[1] = fun;
 	pMsgChain->line = line;
 }
 
@@ -103,7 +108,8 @@ _thread_chain_build_copy(
 	pMsgChain->msg_dst = msg_dst;
 	pMsgChain->msg_id = msg_id;
 
-	dave_strcpy(pMsgChain->fun, fun, sizeof(pMsgChain->fun));
+	((s8 **)(pMsgChain->fun))[0] = CHAIN_FUN_PTR_FLAG;
+	((s8 **)(pMsgChain->fun))[1] = fun;
 	pMsgChain->line = line;
 }
 
@@ -195,6 +201,16 @@ _thread_chain_msg_id_enable(ub msg_id)
 		case MSGID_INNER_LOOP:
 		case MSGID_OS_NOTIFY:
 		case MSGID_INTERNAL_LOOP:
+		case SOCKET_BIND_REQ:
+		case SOCKET_BIND_RSP:
+		case SOCKET_CONNECT_REQ:
+		case SOCKET_CONNECT_RSP:
+		case SOCKET_DISCONNECT_REQ:
+		case SOCKET_DISCONNECT_RSP:
+		case SOCKET_PLUGIN:
+		case SOCKET_PLUGOUT:
+		case SOCKET_READ:
+		case SOCKET_WRITE:
 		case SOCKET_NOTIFY:
 		case SOCKET_RAW_EVENT:
 				enable = dave_false;
@@ -374,6 +390,12 @@ thread_chain_insert(
 
 	_thread_chain_insert_chain(pChain, type, src_gid, dst_gid, msg_src, msg_dst, msg_id);
 
+	if(((s8 **)(pChain->fun))[0] == CHAIN_FUN_PTR_FLAG)
+	{
+		s8 *fun_ptr = ((s8 **)(pChain->fun))[1];
+		dave_strcpy(pChain->fun, fun_ptr, sizeof(pChain->fun));
+	}
+
 	chain_buf_set(pChain, msg_id, msg_len, msg_body);
 }
 
@@ -387,6 +409,7 @@ void *
 thread_chain_to_bson(ThreadChain *pChain)
 {
 	void *pBson;
+	s8 *fun_ptr;
 
 	if(pChain == NULL)
 		return NULL;
@@ -400,7 +423,15 @@ thread_chain_to_bson(ThreadChain *pChain)
 	t_bson_add_int64(pBson, "3", pChain->generation);
 	t_bson_add_int64(pBson, "4", pChain->send_time);
 	t_bson_add_boolean(pBson, "5", pChain->request);
-	t_bson_add_string(pBson, "6", pChain->fun);
+	if(((s8 **)(pChain->fun))[0] == CHAIN_FUN_PTR_FLAG)
+	{
+		fun_ptr = ((s8 **)(pChain->fun))[1];
+	}
+	else
+	{
+		fun_ptr = pChain->fun;
+	}
+	t_bson_add_string(pBson, "6", fun_ptr);
 	t_bson_add_int64(pBson, "7", pChain->line);
 
 	return pBson;

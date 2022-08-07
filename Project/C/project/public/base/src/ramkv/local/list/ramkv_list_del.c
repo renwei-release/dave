@@ -29,13 +29,13 @@ __ramkv_list_del__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 	if((key_ptr == NULL) || (key_len == 0))
 	{
 		KVDEBUG("invalid param, key_ptr:%x key_len:%d", key_ptr, key_len);
-		return dave_false;
+		return 0;
 	}
 
 	if(ramkv_hash(pKV, &hash, key_ptr, key_len, fun, line) == dave_false)
 	{
 		KVLOG("invalid key_len:%d <%s:%d>", key_len, fun, line);
-		return dave_false;
+		return 0;
 	}
 
 	ret = 0;

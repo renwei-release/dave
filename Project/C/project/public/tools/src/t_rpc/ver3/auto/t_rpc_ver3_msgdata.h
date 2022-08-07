@@ -116,6 +116,11 @@ dave_bool t_rpc_ver3_unzip_BdataTalkRecord(void **unzip_data, ub *unzip_len, voi
 void * t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_BdataTalkRecord(void);
 
+void * t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_CFGRemoteUpdate(CFGRemoteUpdate *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_CFGRemoteUpdate(void);
+
 void * t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CFGUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_CFGUpdate(CFGUpdate *struct_data, void *new_ptr);

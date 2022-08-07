@@ -97,13 +97,13 @@ static pid_t GetPid()
 #elif defined(__DAVE_LINUX__) 
         tid = syscall( __NR_gettid );
 #elif defined(__DAVE_CYGWIN__)
-		tid = (pid_t)GetCurrentThreadId() % TID_MAX;;
+		tid = (pid_t)GetCurrentThreadId();
 #else
 #error Please define platform!
 #endif
     }
 
-    return tid;
+    return tid % TID_MAX;
 }
 
 /////////////////for copy stack //////////////////////////

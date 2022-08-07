@@ -15,7 +15,7 @@
 #include "dos_log.h"
 
 static void
-_dos_show(s8 *msg)
+_dos_show(s8 *msg, dave_bool record)
 {
 	ub msg_len, prompt_len;
 	s8 *data;
@@ -35,7 +35,10 @@ _dos_show(s8 *msg)
 		data[data_index ++] = '\r';
 		data[data_index ++] = '\n';
 		data[data_index] = '\0';
-		DOSLOG("%s", data);
+		if(record == dave_true)
+		{
+			DOSLOG("%s", data);
+		}
 		dos_tty_write((u8 *)data, data_index);
 		dave_free(data);
 	}
@@ -58,17 +61,35 @@ dos_show_exit(void)
 void
 dos_print(const char *fmt, ...)
 {
-	#define MAXSHOWBUF 16384
+	#define MAXPRINTBUF 16384
 	va_list args;
 	char *show_buf;
 
-	show_buf = dave_malloc(MAXSHOWBUF);
+	show_buf = dave_malloc(MAXPRINTBUF);
 
 	va_start(args, fmt);
-	vsnprintf(show_buf, MAXSHOWBUF, fmt, args);
+	vsnprintf(show_buf, MAXPRINTBUF, fmt, args);
 	va_end(args);
 
-	_dos_show((s8 *)show_buf);
+	_dos_show(show_buf, dave_true);
+
+	dave_free(show_buf);
+}
+
+void
+dos_write(const char *fmt, ...)
+{
+	#define MAXWRITEBUF 65536
+	va_list args;
+	char *show_buf;
+
+	show_buf = dave_malloc(MAXWRITEBUF);
+
+	va_start(args, fmt);
+	vsnprintf(show_buf, MAXWRITEBUF, fmt, args);
+	va_end(args);
+
+	_dos_show(show_buf, dave_false);
 
 	dave_free(show_buf);
 }

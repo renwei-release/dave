@@ -20,5 +20,7 @@ void log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len);
 
 ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
+ub log_buffer_history(s8 *log_ptr, ub log_len);
+
 #endif
 

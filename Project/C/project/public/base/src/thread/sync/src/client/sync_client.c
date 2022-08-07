@@ -670,7 +670,9 @@ _sync_client_safe_plugin(SocketPlugIn *pPlugIn)
 	SAFECODEv2W(_sync_client_system_lock, { pServer = _sync_client_plugin(pPlugIn); });
 
 	if(pServer != NULL)
+	{
 		sync_client_tx_heartbeat(pServer, dave_true);
+	}
 }
 
 static void
@@ -721,6 +723,16 @@ _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 }
 
 static void
+_sync_client_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+{
+	if(sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), pUpdate) == dave_false)
+	{
+		SYNCLOG("SYNC is disconnected, set %s:%s failed!",
+			pUpdate->cfg_name, pUpdate->cfg_value);
+	}
+}
+
+static void
 _sync_client_init(MSGBODY *msg)
 {
 	t_lock_reset(&_sync_client_system_lock);
@@ -749,6 +761,9 @@ _sync_client_main(MSGBODY *msg)
 			break;
 		case MSGID_CFG_UPDATE:
 				_sync_client_safe_cfg_update((CFGUpdate *)(msg->msg_body));
+			break;
+		case MSGID_CFG_REMOTE_UPDATE:
+				_sync_client_cfg_remote_update((CFGRemoteUpdate *)(msg->msg_body));
 			break;
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
