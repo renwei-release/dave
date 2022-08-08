@@ -195,6 +195,15 @@ _show_run_help_failed_screen(s8 *cmd_ptr, ub cmd_len)
 }
 
 static void
+_dos_record_cmd(s8 *cmd_ptr, s8 *param)
+{
+	if(dave_strcmp(cmd_ptr, "log") == dave_false)
+	{
+		DOSLOG("%s %s", cmd_ptr, param);
+	}
+}
+
+static void
 _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len)
 {
 	DOSCmdStruct *pCmd;
@@ -213,7 +222,7 @@ _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, u
 		return;
 	}
 
-	DOSLOG("%s %s", cmd_ptr, param);
+	_dos_record_cmd(cmd_ptr, param);
 
 	ret = RetCode_Arithmetic_error;
 	if(pCmd->cmd_fun != NULL)

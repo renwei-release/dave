@@ -79,6 +79,8 @@ _sync_server_reset_client(SyncClient *pClient)
 
 	pClient->notify_blocks_flag = 1234567;
 	pClient->release_quantity = 0;
+
+	pClient->remote_config_dir[0] = '\0';
 }
 
 static void

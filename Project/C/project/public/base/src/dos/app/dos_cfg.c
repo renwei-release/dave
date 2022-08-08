@@ -107,7 +107,9 @@ _dos_cfg_get_json_all(s8 *show_ptr, ub show_len, void **ppJson)
 
 	read_len = dave_os_file_read(DIRECT_FLAG|READ_FLAG, config_json_path, 0, data_len, data_ptr);
 	if(read_len < data_len)
+	{
 		data_ptr[read_len] = '\0';
+	}
 
 	if(read_len > 0)
 	{
@@ -212,10 +214,12 @@ _dos_cfg_remote_get_one(s8 *cfg_name)
 static void
 _dos_cfg_remote_get_all(void)
 {
+	ub print_len = 1024 * 16;
+	ub print_index = 0;
+	s8 *print_ptr = dave_malloc(print_len);
 	ub index;
 	s8 cfg_name[256];
 	s8 cfg_value[2048];
-	dave_bool empty_flag = dave_true;
 
 	for(index=0; index<102400; index++)
 	{
@@ -224,15 +228,21 @@ _dos_cfg_remote_get_all(void)
 			break;
 		}
 
-		dos_print("%s : %s", cfg_name, cfg_value);
-
-		empty_flag = dave_false;
+		print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index,
+			"%s : %s\n",
+			cfg_name, cfg_value);
 	}
 
-	if(empty_flag == dave_true)
+	if(print_index == 0)
 	{
 		dos_print("Empty message!");
 	}
+	else
+	{
+		dos_print(print_ptr);
+	}
+
+	dave_free(print_ptr);
 }
 
 static RetCode

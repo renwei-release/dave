@@ -19,9 +19,9 @@
 #define DOSDEBUG(a, ...)
 #endif
 
-#define DOSTRACE(a, ...) { TRACETENABLE{ DAVETRACE("[UI]<%s:%d>", __func__, __LINE__); DAVETRACE((const char*)a, ##__VA_ARGS__); DAVETRACE("\n"); } }
+#define DOSTRACE(a, ...) { TRACETENABLE{ DAVETRACE("[DOS]<%s:%d>", __func__, __LINE__); DAVETRACE((const char*)a, ##__VA_ARGS__); DAVETRACE("\n"); } }
 
-#define DOSLOG(a, ...) { DAVECATCHER("[UI]"); DAVECATCHER((const char*)a, ##__VA_ARGS__); DAVECATCHER("\n"); }
+#define DOSLOG(a, ...) { DAVECATCHER("[DOS]"); DAVECATCHER((const char*)a, ##__VA_ARGS__); DAVECATCHER("\n"); }
 
 #endif
 

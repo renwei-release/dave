@@ -71,6 +71,38 @@ dave_dll_cfg_get(char *cfg_name, char *cfg_ptr, int cfg_len)
 	}
 }
 
+int
+dave_dll_cfg_remote_set(char *cfg_name, char *cfg_ptr)
+{
+	u32 cfg_len = dave_strlen(cfg_ptr);
+
+	if((cfg_len == 0) || (cfg_len > 8192))
+	{
+		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, cfg_len);
+		return -1;
+	}
+
+	if(rcfg_set((s8 *)cfg_name, (s8 *)cfg_ptr) != RetCode_OK)
+		return -1;
+	else
+		return 0;
+}
+
+int
+dave_dll_cfg_remote_get(char *cfg_name, char *cfg_ptr, int cfg_len)
+{
+	dave_memset(cfg_ptr, 0x00, cfg_len);
+
+	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_ptr, cfg_len) == dave_false)
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 void
 dave_dll_poweroff(void)
 {

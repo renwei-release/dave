@@ -79,6 +79,8 @@ typedef struct {
 	ub notify_blocks_flag;
 	ub release_quantity;
 
+	s8 remote_config_dir[256];
+
 	ub client_index;
 } SyncClient;
 

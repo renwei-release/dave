@@ -56,6 +56,10 @@ API int dave_dll_cfg_set(char *cfg_name, char *cfg_ptr);
 
 API int dave_dll_cfg_get(char *cfg_name, char *cfg_ptr, int cfg_len);
 
+API int dave_dll_cfg_remote_set(char *cfg_name, char *cfg_ptr);
+
+API int dave_dll_cfg_remote_get(char *cfg_name, char *cfg_ptr, int cfg_len);
+
 API void dave_dll_poweroff(void);
 
 #ifdef __cplusplus

@@ -183,21 +183,36 @@ static void
 _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
 	CFGRemoteUpdate boradcast_update = *pUpdate;
+	dave_bool broadcast_flag = dave_false;
+	s8 cfg_value[8196];
 
-	SYNCLOG("put_flag:%d %s : %s",
+	SYNCTRACE("put_flag:%d %s : %s",
 		pUpdate->put_flag,
 		pUpdate->cfg_name, pUpdate->cfg_value);
 
 	if(pUpdate->put_flag == dave_true)
 	{
-		base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+		if(rcfg_get(pUpdate->cfg_name, cfg_value, sizeof(cfg_value)) == 0)
+		{
+			broadcast_flag = base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+		}
+		else
+		{
+			if(dave_strcmp(cfg_value, pUpdate->cfg_value) == dave_false)
+			{
+				broadcast_flag = base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+			}
+		}
 	}
 	else
 	{
-		base_cfg_remote_internal_del(pUpdate->cfg_name);
+		broadcast_flag = base_cfg_remote_internal_del(pUpdate->cfg_name);
 	}
 
-	broadcast_local(MSGID_CFG_REMOTE_UPDATE, &boradcast_update);
+	if(broadcast_flag == dave_true)
+	{
+		broadcast_local(MSGID_CFG_REMOTE_UPDATE, &boradcast_update);
+	}
 }
 
 static inline dave_bool

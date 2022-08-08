@@ -12,7 +12,7 @@ void sync_server_config_init(void);
 
 void sync_server_config_exit(void);
 
-dave_bool sync_server_config_set(s8 *key, s8 *value);
+dave_bool sync_server_config_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate);
 
 void sync_server_config_tell_client(SyncClient *pClient);
 

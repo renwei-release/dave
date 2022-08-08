@@ -10,17 +10,21 @@
 #if defined(SYNC_STACK_SERVER)
 #include "dave_3rdparty.h"
 #include "dave_tools.h"
+#include "dave_verno.h"
 #include "sync_server_config.h"
 #include "sync_server_app_tx.h"
 #include "sync_log.h"
 
 #define CFG_ETCD_LIST "ETCDServerList"
-#define CFG_ETCD_DIR "ETCDServerDir"
+#define CFG_ETCD_SERVER_DIR "ETCDServerDir"
+#define CFG_ETCD_WATCHER_DIR "ETCDWatcherDir"
 
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
-#define DEFAULT_ETCD_DIR "/sync"
+#define DEFAULT_ETCD_SERVER_DIR "/sync"
+#define DEFAULT_ETCD_WATCHER_DIR "/sync"
 
 static s8 _etcd_dir[128] = { "\0" };
+static s8 _etcd_watcher[128] = { "\0" };
 
 typedef struct {
 	dave_bool put_flag;
@@ -46,13 +50,45 @@ _sync_server_load_dir(void)
 	s8 *dir_ptr = _etcd_dir;
 	ub dir_len = sizeof(_etcd_dir);
 
-	if(cfg_get(CFG_ETCD_DIR, dir_ptr, dir_len) == 0)
+	if(cfg_get(CFG_ETCD_SERVER_DIR, dir_ptr, dir_len) == 0)
 	{
-		dave_strcpy(dir_ptr, DEFAULT_ETCD_DIR, dir_len);
-		cfg_set(CFG_ETCD_DIR, dir_ptr, dave_strlen(dir_ptr));
+		dave_strcpy(dir_ptr, DEFAULT_ETCD_SERVER_DIR, dir_len);
+		cfg_set(CFG_ETCD_SERVER_DIR, dir_ptr, dave_strlen(dir_ptr));
 	}
 
 	return dir_ptr;
+}
+
+static s8 *
+_sync_server_load_watcher(void)
+{
+	s8 *watcher_ptr = _etcd_watcher;
+	ub watcher_len = sizeof(_etcd_watcher);
+
+	if(cfg_get(CFG_ETCD_WATCHER_DIR, watcher_ptr, watcher_len) == 0)
+	{
+		dave_strcpy(watcher_ptr, DEFAULT_ETCD_WATCHER_DIR, watcher_len);
+		cfg_set(CFG_ETCD_WATCHER_DIR, watcher_ptr, dave_strlen(watcher_ptr));
+	}
+
+	return watcher_ptr;
+}
+
+static s8 *
+_sync_server_load_set_dir(SyncClient *pClient)
+{
+	if(pClient->remote_config_dir[0] == '\0')
+	{
+		s8 product_str[128];
+
+		dave_snprintf(pClient->remote_config_dir, sizeof(pClient->remote_config_dir),
+			"%s/%s/%s",
+			_etcd_dir,
+			dave_verno_product(pClient->verno, product_str, sizeof(product_str)),
+			pClient->globally_identifier);
+	}
+
+	return pClient->remote_config_dir;
 }
 
 static void
@@ -94,7 +130,7 @@ _sync_server_process_watcher(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	ETCDWatcher *pWatcher = (ETCDWatcher *)(pLoop->ptr);
 
-	SYNCLOG("%s key:%s value:%s",
+	SYNCTRACE("%s key:%s value:%s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
 		pWatcher->key, pWatcher->value);
 
@@ -127,6 +163,34 @@ _sync_server_watcher(dave_bool put_flag, s8 *key, s8 *value)
 	name_msg(SYNC_SERVER_THREAD_NAME, MSGID_INNER_LOOP, pLoop);
 }
 
+static void
+_sync_server_take_watcher(void)
+{
+	void *pArray = dave_etcd_get(_sync_server_load_watcher());
+	ub array_len, array_index;
+	void *pPutJson;
+	s8 key[1024], value[1024];
+
+	if(pArray != NULL)
+	{
+		array_len = dave_json_get_array_length(pArray);
+
+		for(array_index=0; array_index<array_len; array_index++)
+		{
+			pPutJson = dave_json_get_array_idx(pArray, array_index);
+			if(pPutJson != NULL)
+			{
+				dave_json_get_str_v2(pPutJson, (char *)"key", key, sizeof(key));
+				dave_json_get_str_v2(pPutJson, (char *)"value", value, sizeof(value));
+
+				_sync_server_watcher(dave_true, key, value);
+			}
+		}
+	}
+
+	dave_json_free(pArray);
+}
+
 // =====================================================================
 
 void
@@ -135,8 +199,12 @@ sync_server_config_init(void)
 	s8 etcd_list[2049];
 
 	_sync_server_load_list(etcd_list, sizeof(etcd_list));
+	_sync_server_load_dir();
+	_sync_server_load_watcher();
 
-	dave_etcd_init(etcd_list, _sync_server_load_dir(), _sync_server_watcher);
+	dave_etcd_init(etcd_list, _sync_server_load_watcher(), _sync_server_watcher);
+
+	_sync_server_take_watcher();
 
 	reg_msg(MSGID_INNER_LOOP, _sync_server_process_watcher);
 }
@@ -150,21 +218,23 @@ sync_server_config_exit(void)
 }
 
 dave_bool
-sync_server_config_set(s8 *key, s8 *value)
+sync_server_config_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 {
 	s8 dir_key[1024];
 	dave_bool ret;
 
-	dave_snprintf(dir_key, sizeof(dir_key), "%s/%s", _etcd_dir, key);
+	dave_snprintf(dir_key, sizeof(dir_key),
+		"%s/%s",
+		_sync_server_load_set_dir(pClient), pUpdate->cfg_name);
 
-	ret = dave_etcd_set(dir_key, value);
+	ret = dave_etcd_set(dir_key, pUpdate->cfg_value);
 	if(ret == dave_false)
 	{
-		SYNCLOG("set %s:%s failed!", dir_key, value);
+		SYNCLOG("set %s:%s failed!", dir_key, pUpdate->cfg_value);
 	}
 	else
 	{
-		SYNCTRACE("set %s:%s success!", dir_key, value);
+		SYNCTRACE("set %s:%s success!", dir_key, pUpdate->cfg_value);
 	}
 
 	return ret;

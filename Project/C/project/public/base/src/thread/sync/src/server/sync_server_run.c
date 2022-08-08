@@ -20,11 +20,11 @@
 #include "sync_log.h"
 
 static void
-_sync_server_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+_sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 {
 	if(pUpdate->put_flag == dave_true)
 	{
-		sync_server_config_set(pUpdate->cfg_name, pUpdate->cfg_value);
+		sync_server_config_set(pClient, pUpdate);
 	}
 	else
 	{
@@ -70,7 +70,7 @@ _sync_server_run_internal(
 	switch(msg_id)
 	{
 		case MSGID_CFG_REMOTE_UPDATE:
-				_sync_server_run_cfg_remote_update((CFGRemoteUpdate *)(msg_body));
+				_sync_server_run_cfg_remote_update(pClient, (CFGRemoteUpdate *)(msg_body));
 			break;
 		default:
 				process_flag = dave_false;

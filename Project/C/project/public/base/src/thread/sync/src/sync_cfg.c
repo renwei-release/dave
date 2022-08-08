@@ -62,7 +62,9 @@ sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
 		_sync_cfg_get_syncs_ip(ip);
 		*port = _sync_cfg_get_syncs_port();
 
-		dave_snprintf(domain, sizeof(domain), "%d.%d.%d.%d:%d", ip[0], ip[1], ip[2], ip[3], *port);
+		dave_snprintf(domain, sizeof(domain),
+			"%d.%d.%d.%d:%d",
+			ip[0], ip[1], ip[2], ip[3], *port);
 		cfg_set(CFG_SYNC_SERVER_DOMAIN, domain, dave_strlen(domain));
 	}
 	else
@@ -86,6 +88,7 @@ sync_cfg_get_syncs_port(void)
 	{
 		port = _sync_cfg_get_syncs_port();
 		dave_snprintf(port_str, sizeof(port_str), "%d", port);
+		cfg_set(CFG_SYNC_SERVER_PORT, port_str, dave_strlen(port_str));
 	}
 	else
 	{
