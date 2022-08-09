@@ -35,6 +35,7 @@ _socket_external_raw_event(SOCEVENT event, s32 socket, s32 os_socket)
 	pEvent->os_socket = os_socket;
 	pEvent->event = event;
 	pEvent->data = NULL;
+	pEvent->ptr = NULL;
 
 	snd_from_msg(_socket_thread, _socket_thread, SOCKET_RAW_EVENT, sizeof(SocketRawEvent), pEvent);
 }
@@ -72,9 +73,12 @@ _socket_external_send_counter(SocketCore *pCore, ub send_length)
 static inline void
 _socket_external_recv_counter(SocketCore *pCore, ub recv_length)
 {
-	t_lock_spin(&(pCore->opt_pv));
-	pCore->data_recv_length += recv_length;
-	t_unlock_spin(&(pCore->opt_pv));
+	if(pCore != NULL)
+	{
+		t_lock_spin(&(pCore->opt_pv));
+		pCore->data_recv_length += recv_length;
+		t_unlock_spin(&(pCore->opt_pv));
+	}
 }
 
 static inline void

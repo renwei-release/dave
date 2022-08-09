@@ -13,7 +13,7 @@ package base
 /*
 #cgo CFLAGS: -I./inc -I./inc/define
 #cgo LDFLAGS: -Wl,-rpath,./lib
-#cgo LDFLAGS: -lpthread -lrt -ldl -lm -lstdc++ -lutil -L./lib -llinuxBASE -ljemalloc
+#cgo LDFLAGS: -L./lib -llinuxBASE -ljemalloc -lpthread -lrt -ldl -lm -lstdc++ -lutil
 #include <dave_base.h>
 #include <stdio.h>
 #include <stdlib.h>

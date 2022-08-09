@@ -158,6 +158,7 @@ _base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
 	pEvent->event = SOC_EVENT_REV;
 	T_CopyNetInfo(&(pEvent->NetInfo), &(pUpEvent->NetInfo));
 	pEvent->data = NULL;
+	pEvent->ptr = pUpEvent->ptr;
 
 	id_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
 }
