@@ -56,5 +56,13 @@
 
 #define DAVE_UIP_JSON_BODY_DATA "__BODY_DATA__"
 
+#define DAVE_SMS_String_len_64 (64)
+
+#define DAVE_SMS_String_LEN_128 (128)
+
+#define DAVE_SMS_String_LEN_256 (256)
+
+#define DAVE_SMS_String_LEN_1024 (1024)
+
 #endif
 

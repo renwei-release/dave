@@ -1,0 +1,35 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+INSTALL=/dave/tools/etcd-cpp-apiv3
+SETUP=${homepath}/setup
+
+VERSION=0.2.6
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+   wget https://github.com/etcd-cpp-apiv3/etcd-cpp-apiv3/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./etcd-cpp-apiv3-${VERSION} ]; then
+  tar -zxvf v${VERSION}.tar.gz
+fi
+
+if [ -d ${INSTALL} ]; then
+   rm -rf ${INSTALL}
+fi
+
+cd etcd-cpp-apiv3-${VERSION}
+
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DBUILD_SHARED_LIBS=ON ..
+make && make install
+
+cd ${homepath}
+
+if [ -d ${SETUP} ]; then
+   rm -rf ${SETUP}
+fi
+mkdir ${SETUP}
+cp -r ${INSTALL}/* ${SETUP}
+
+rm -rf etcd-cpp-apiv3-${VERSION}

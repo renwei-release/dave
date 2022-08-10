@@ -77,12 +77,12 @@ func _dave_go_self_check() C.int {
 
 // =====================================================================
 
-func Dave_go_init(init_fun func(), exit_fun func()) {
+func Dave_go_init(mode string, init_fun func(), exit_fun func()) {
 	_product_init_fun = init_fun
 	_product_exit_fun = exit_fun
 
 	my_verno := C.CString(Dave_verno())
-	model := C.CString("Coroutine Loop")
+	model := C.CString(mode)
 	thread_number := 8
 
 	C.dave_dll_init(my_verno, model, C.int(thread_number), C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit))
@@ -96,7 +96,6 @@ func Dave_go_running() {
 	if ret == 0 {
 		C.dave_dll_running()
 	}
-	C.dave_dll_wait_dll_exit()
 }
 
 func Dave_go_exit() {

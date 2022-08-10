@@ -23,46 +23,8 @@ if [ ! "$CONTAINER" == "" ]; then
       echo
       cd ${homepath}
    fi
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./lib-ENV"
+else
+   `pwd`/Project/C/build/linux/lib-ENV
 fi
 
-if [ ! -f ./ThirdParty/build/jemalloc/setup/lib/libjemalloc.a ]; then
-   cd ./ThirdParty/build/jemalloc
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/gtest/setup/lib64/libgtest.a ]; then
-   cd ./ThirdParty/build/gtest
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/jaeger-client-cpp/setup/lib64/libjaegertracing.a ]; then
-   cd ./ThirdParty/build/jaeger-client-cpp
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/yaml-cpp/setup/lib/libyaml-cpp.a ]; then
-   cd ./ThirdParty/build/yaml-cpp
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/opentracing-cpp/setup/lib/libopentracing.a ]; then
-   cd ./ThirdParty/build/opentracing-cpp
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/thrift/setup/lib/libthrift.a ]; then
-   cd ./ThirdParty/build/thrift
-   ./build
-   cd ${homepath}
-fi
-
-if [ ! -f ./ThirdParty/build/etcd-cpp-apiv3/setup/lib64/libetcd-cpp-api.so ]; then
-   cd ./ThirdParty/build/etcd-cpp-apiv3
-   ./build
-   cd ${homepath}
-fi

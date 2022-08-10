@@ -28,6 +28,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 
 	switch((sb)msg_id)
 	{
+		case A2PBIZROUTE_REQ:
+				pBson = t_rpc_ver3_zip_A2pBizRouteReq((A2pBizRouteReq *)msg_body, msg_len);
+			break;
+		case A2PBIZROUTE_RSP:
+				pBson = t_rpc_ver3_zip_A2pBizRouteRsp((A2pBizRouteRsp *)msg_body, msg_len);
+			break;
 		case AIXMSG_AESTHETICS_REQ:
 				pBson = t_rpc_ver3_zip_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, msg_len);
 			break;
@@ -401,6 +407,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 
 	switch((sb)msg_id)
 	{
+		case A2PBIZROUTE_REQ:
+				ret = t_rpc_ver3_unzip_A2pBizRouteReq(msg_body, msg_len, pBson);
+			break;
+		case A2PBIZROUTE_RSP:
+				ret = t_rpc_ver3_unzip_A2pBizRouteRsp(msg_body, msg_len, pBson);
+			break;
 		case AIXMSG_AESTHETICS_REQ:
 				ret = t_rpc_ver3_unzip_AIXMsgAestheticsReq(msg_body, msg_len, pBson);
 			break;
@@ -774,6 +786,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 
 	switch((sb)msg_id)
 	{
+		case A2PBIZROUTE_REQ:
+				ptr = t_rpc_ver3_ptr_A2pBizRouteReq((A2pBizRouteReq *)msg_body, new_ptr);
+			break;
+		case A2PBIZROUTE_RSP:
+				ptr = t_rpc_ver3_ptr_A2pBizRouteRsp((A2pBizRouteRsp *)msg_body, new_ptr);
+			break;
 		case AIXMSG_AESTHETICS_REQ:
 				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, new_ptr);
 			break;
@@ -1147,6 +1165,12 @@ _t_rpc_sizeof(ub msg_id)
 
 	switch((sb)msg_id)
 	{
+		case A2PBIZROUTE_REQ:
+				msg_len = t_rpc_ver3_sizeof_A2pBizRouteReq();
+			break;
+		case A2PBIZROUTE_RSP:
+				msg_len = t_rpc_ver3_sizeof_A2pBizRouteRsp();
+			break;
 		case AIXMSG_AESTHETICS_REQ:
 				msg_len = t_rpc_ver3_sizeof_AIXMsgAestheticsReq();
 			break;

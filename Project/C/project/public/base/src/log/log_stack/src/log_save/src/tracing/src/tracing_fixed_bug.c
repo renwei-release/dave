@@ -51,7 +51,7 @@ _tracing_fixed_bug(void *pArrayJson)
 // =====================================================================
 
 /*
- * 似乎Jaerer有一个BUG，不能显示很大的整数，这里转换成字符串显示
+ * JavaScript有一个BUG，不能显示很大的整数，这里转换成字符串显示
  */
 void
 tracing_fixed_bug(void *pArrayJson)

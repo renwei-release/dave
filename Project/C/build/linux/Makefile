@@ -59,7 +59,7 @@ $(NAME_PRODUCT)-BIN: $(OBJS)
 
 pre_build:
 	python3 ../../../../Tools/refresh_version/refresh_version.py "../../../../" $(NAME_PRODUCT)
-	../../../../Tools/auto_code/AUTOCODE > /dev/null
+	../../../../Tools/auto_code/AUTOCODE
 
 end_build:
 	$(shell if [ ! -d $(DEPLOYPATH) ]; then mkdir -p $(DEPLOYPATH); fi)

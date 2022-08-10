@@ -14,6 +14,21 @@ package auto
 
 import "unsafe"
 
+/* for A2PBIZROUTE_REQ message */
+type A2pBizRouteReq struct {
+	User_id [DAVE_SMS_String_LEN_128] byte
+	Addres_code int32
+	Isp [DAVE_SMS_String_LEN_128] byte
+	Ptr uint64
+}
+
+/* for A2PBIZROUTE_RSP message */
+type A2pBizRouteRsp struct {
+	Route [DAVE_SMS_String_LEN_128] byte
+	Ret int32
+	Ptr uint64
+}
+
 /* for AIXMSG_AESTHETICS_REQ message */
 type AIXMsgAestheticsReq struct {
 	Image_path [DAVE_PATH_LEN] byte

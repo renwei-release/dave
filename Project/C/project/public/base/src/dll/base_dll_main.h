@@ -12,7 +12,8 @@
 typedef enum {
 	BaseDllRunningMode_Inner_Loop,
 	BaseDllRunningMode_Outer_Loop,
-	BaseDllRunningMode_Coroutine_Loop,
+	BaseDllRunningMode_Coroutine_Inner_Loop,
+	BaseDllRunningMode_Coroutine_Outer_Loop,
 	BaseDllRunningMode_max
 } BaseDllRunningMode;
 

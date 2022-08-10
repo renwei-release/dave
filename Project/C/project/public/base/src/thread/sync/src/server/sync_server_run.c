@@ -14,7 +14,7 @@
 #include "sync_base_package.h"
 #include "sync_param.h"
 #include "sync_server_msg_buffer.h"
-#include "sync_server_config.h"
+#include "sync_server_remote_cfg.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -24,7 +24,7 @@ _sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteUpdate *pUpdate
 {
 	if(pUpdate->put_flag == dave_true)
 	{
-		sync_server_config_set(pClient, pUpdate);
+		sync_server_remote_cfg_set(pClient, pUpdate);
 	}
 	else
 	{

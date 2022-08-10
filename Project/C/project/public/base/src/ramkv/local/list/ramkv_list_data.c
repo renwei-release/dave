@@ -85,14 +85,15 @@ _ramkv_list_data_copy_to_user(KVValue *pValue, void *value_ptr, ub value_len)
 	if(pValue->value_len > sizeof(void *))
 	{
 		dave_memcpy(value_ptr, pValue->value_ptr, copy_value_len);
-		if(value_len > copy_value_len)
-		{
-			((s8 *)value_ptr)[copy_value_len] = '\0';
-		}
 	}
 	else
 	{
 		dave_memcpy(value_ptr, &(pValue->value_ptr), copy_value_len);
+	}
+
+	if(value_len > copy_value_len)
+	{
+		((s8 *)value_ptr)[copy_value_len] = '\0';
 	}
 
 	return copy_value_len;

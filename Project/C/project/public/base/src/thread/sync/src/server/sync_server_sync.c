@@ -19,7 +19,7 @@
 #include "sync_server_data.h"
 #include "sync_server_tools.h"
 #include "sync_server_broadcadt.h"
-#include "sync_server_config.h"
+#include "sync_server_remote_cfg.h"
 #include "sync_server_sync.h"
 #include "sync_lock.h"
 #include "sync_test.h"
@@ -56,7 +56,7 @@ _sync_server_sync_client_ready_follow_up(SyncClient *pClient)
 	
 	sync_server_sync_auto_link(pClient);
 	
-	sync_server_config_tell_client(pClient);
+	sync_server_remote_cfg_tell_client(pClient);
 }
 
 static void

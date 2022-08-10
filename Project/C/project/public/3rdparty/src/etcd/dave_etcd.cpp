@@ -63,7 +63,7 @@ _etcd_watcher_response(etcd::Response const & resp)
 static void *
 _etcd_thread_fun(void *arg)
 {
-	etcd::Watcher watcher(_etcd_url, _etcd_watcher_dir, _etcd_watcher_response, true);
+	etcd::Watcher watcher(_etcd_url, "\0", _etcd_watcher_response, true);
 
 	PARTYLOG("etcd watcher on url:%s watcher dir:%s", _etcd_url, _etcd_watcher_dir);
 
@@ -121,14 +121,14 @@ dave_etcd_set(s8 *key, s8 *value)
 }
 
 extern "C" void *
-dave_etcd_get(s8 *key)
+dave_etcd_get(s8 *key, ub limit)
 {
 	void *pArray;
 	int index, size;
 
 	etcd::SyncClient etcd(_etcd_url);
 
-	etcd::Response resp = etcd.ls(key);
+	etcd::Response resp = etcd.ls(key, limit);
 
 	if(resp.error_code())
 	{
@@ -142,6 +142,9 @@ dave_etcd_get(s8 *key)
 	pArray = dave_json_array_malloc();
 
 	size = (int)(resp.keys().size());
+
+	PARTYDEBUG("url:%s key:%s size:%d", _etcd_url, key, size);
+
 	for(index=0; index<size; index++)
 	{
 		s8 key[1024], value[1024];

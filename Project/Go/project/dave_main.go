@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	base.Dave_go_init(product.Product_init, product.Product_exit)
+	base.Dave_go_init("Coroutine Outer Loop", product.Product_init, product.Product_exit)
 	base.Dave_go_running()
 	base.Dave_go_exit()
 }

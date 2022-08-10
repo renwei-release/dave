@@ -11,4 +11,3 @@
 #include "database_msg.h"
 
 #endif
-

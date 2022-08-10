@@ -131,7 +131,8 @@ dave_dll_main_init(
 	ub thread_flag;
 
 	thread_flag = THREAD_THREAD_FLAG;
-	if(mode == BaseDllRunningMode_Coroutine_Loop)
+	if((mode == BaseDllRunningMode_Coroutine_Inner_Loop)
+		|| (mode == BaseDllRunningMode_Coroutine_Outer_Loop))
 	{
 		thread_flag |= THREAD_COROUTINE_FLAG;
 	}

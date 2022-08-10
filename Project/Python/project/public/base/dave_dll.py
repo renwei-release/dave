@@ -117,7 +117,6 @@ def dave_python_running():
    ret = _dll_python_self_check()
    if ret == True:
       davelib.dave_dll_running()
-   davelib.dave_dll_wait_dll_exit()
    return
 
 

@@ -4135,6 +4135,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case APPMSG_SMS_RECV_RSP:
 				value_str = "'APPMSG_SMS_RECV_RSP-15058'";
 			break;
+		case A2PBIZROUTE_REQ:
+				value_str = "'A2PBIZROUTE_REQ-15059'";
+			break;
+		case A2PBIZROUTE_RSP:
+				value_str = "'A2PBIZROUTE_RSP-15060'";
+			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID-0xffffffffffffffff'";
 			break;

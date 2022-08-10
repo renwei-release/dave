@@ -16,6 +16,6 @@ void dave_etcd_exit(void);
 
 dave_bool dave_etcd_set(s8 *key, s8 *value);
 
-void * dave_etcd_get(s8 *key);
+void * dave_etcd_get(s8 *key, ub limit);
 
 #endif

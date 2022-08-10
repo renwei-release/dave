@@ -33,12 +33,6 @@ dave_dll_mfree(void *m, char *func, int line)
 	return (int)__base_mfree__((MBUF *)m, (s8 *)__func__, (ub)__LINE__);
 }
 
-void
-dave_dll_wait_dll_exit(void)
-{
-	while(base_power_state() == dave_true) dave_os_sleep(1000); ;
-}
-
 int
 dave_dll_cfg_set(char *cfg_name, char *cfg_ptr)
 {

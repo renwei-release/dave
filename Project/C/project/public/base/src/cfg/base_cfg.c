@@ -170,6 +170,18 @@ base_cfg_local_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	return ret;
 }
 
+s8 *
+base_cfg_local_get_by_default(s8 *dir, s8 *name, s8 *value_ptr, ub value_len, s8 *default_value)
+{
+	if(base_cfg_local_get(dir, name, (u8 *)value_ptr, value_len) == dave_false)
+	{
+		value_len = dave_strcpy(value_ptr, default_value, value_len);
+		base_cfg_local_set(dir, name, (u8 *)value_ptr, value_len);
+	}
+
+	return value_ptr;
+}
+
 RetCode
 base_cfg_remote_set(s8 *name, s8 *value)
 {

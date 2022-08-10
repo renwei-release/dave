@@ -1,0 +1,34 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+INSTALL=${homepath}/setup
+
+VERSION=7.0.4
+
+if [ ! -f ${VERSION}.tar.gz ]; then
+   wget https://github.com/redis/redis/archive/refs/tags/${VERSION}.tar.gz
+fi
+if [ ! -d ./redis-${VERSION} ]; then
+  tar -zxvf ${VERSION}.tar.gz
+fi
+
+cd redis-${VERSION}
+
+make CFLAGS="-march=x86-64" && make install
+
+cd ${homepath}
+
+if [ -d ./setup ]; then
+   rm -rf setup
+fi
+mkdir setup && mkdir setup/inc && mkdir setup/lib && mkdir setup/bin
+
+cp -r ./redis-${VERSION}/deps/hiredis/*.h ./setup/inc
+cp -r ./redis-${VERSION}/deps/hiredis/*.a ./setup/lib
+cp -r ./redis-${VERSION}/src/redis-benchmark ./setup/bin
+cp -r ./redis-${VERSION}/src/redis-check-aof ./setup/bin
+cp -r ./redis-${VERSION}/src/redis-server ./setup/bin
+cp -r ./redis-${VERSION}/src/redis-cli ./setup/bin
+cp -r ./redis-${VERSION}/src/redis-trib.rb ./setup/bin
+
+rm -rf redis-${VERSION}

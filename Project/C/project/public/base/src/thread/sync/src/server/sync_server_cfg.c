@@ -23,14 +23,6 @@
 
 #define CFG_SYNC_BLOCKS_DEFAULT_FLAG (s8 *)"SyncBlocksDefaultFlag"
 
-static dave_bool
-_sync_server_default_blocks_flag(s8 *value)
-{
-	dave_snprintf(value, sizeof(value), "true");
-	cfg_set(CFG_SYNC_BLOCKS_DEFAULT_FLAG, value, dave_strlen(value));
-	return dave_true;
-}
-
 // =====================================================================
 
 dave_bool
@@ -38,14 +30,12 @@ sync_server_default_blocks_flag(SyncClient *pClient)
 {
 	s8 value[64];
 
-	if(cfg_get(CFG_SYNC_BLOCKS_DEFAULT_FLAG, (u8 *)value, sizeof(value)) == dave_false)
-	{
-		return _sync_server_default_blocks_flag(value);
-	}
+	cfg_get_by_default(CFG_SYNC_BLOCKS_DEFAULT_FLAG, value, sizeof(value), "true");
 
 	if(t_is_all_show_char((u8 *)value, dave_strlen(value)) == dave_false)
 	{
-		return _sync_server_default_blocks_flag(value);
+		cfg_set(CFG_SYNC_BLOCKS_DEFAULT_FLAG, value, dave_strlen(value));
+		return dave_true;
 	}
 
 	t_stdio_tolowers((s8 *)value);
