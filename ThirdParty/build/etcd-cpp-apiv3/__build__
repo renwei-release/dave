@@ -2,7 +2,6 @@
 
 homepath=$(cd `dirname $0`; pwd)
 INSTALL=/dave/tools/etcd-cpp-apiv3
-SETUP=${homepath}/setup
 
 VERSION=0.2.6
 
@@ -25,11 +24,5 @@ cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DBUILD_SHARED_LIBS=ON ..
 make && make install
 
 cd ${homepath}
-
-if [ -d ${SETUP} ]; then
-   rm -rf ${SETUP}
-fi
-mkdir ${SETUP}
-cp -r ${INSTALL}/* ${SETUP}
 
 rm -rf etcd-cpp-apiv3-${VERSION}

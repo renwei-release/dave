@@ -115,45 +115,35 @@ _log_save_log_load_key_value(
 	s8 *content_ptr, ub content_len)
 {
 	ub content_index;
-	s8 *head;
 
 	content_index = 0;
 
-key_value_find_start:
+load_key_value_start:
 	*key_start = *key_end = *value_start = *value_end = NULL;
-	head = NULL;
 
 	while(content_index < content_len)
 	{
 		if(content_ptr[content_index] != ' ')
 		{
-			head = &content_ptr[content_index];
+			*key_start = &content_ptr[content_index];
+			content_index ++;
 			break;
 		}
 		content_index ++;
 	}
-	if(head != NULL)
+	if(*key_start != NULL)
 	{
 		while(content_index < content_len)
 		{
 			if(content_ptr[content_index] == ' ')
 			{
-				if(*key_start == NULL)
+				if(*key_end == NULL)
 				{
-					content_index ++;
-					goto key_value_find_start; 
-				}
-				else
-				{
-					if(*key_end == NULL)
-					{
-						*key_end = &content_ptr[content_index];
-					}
+					*key_end = &content_ptr[content_index];
 				}
 			}
 			else if(content_ptr[content_index] == ':')
 			{
-				*key_start = head;
 				if(*key_end == NULL)
 				{
 					*key_end = &content_ptr[content_index];
@@ -161,37 +151,38 @@ key_value_find_start:
 				content_index ++;
 				break;
 			}
+			else
+			{
+				if(*key_end != NULL)
+				{
+					goto load_key_value_start;
+				}
+			}
 			content_index ++;
 		}
-		if(*key_start != NULL)
+		while(content_index < content_len)
 		{
-			while(content_index < content_len)
+			if(content_ptr[content_index] != ' ')
 			{
-				if(content_ptr[content_index] != ' ')
-				{
-					*value_start = &content_ptr[content_index];
-					break;
-				}
-				content_index ++;
+				*value_start = &content_ptr[content_index];
+				break;
 			}
-			if(*value_start != NULL)
+			content_index ++;
+		}
+		while(content_index < content_len)
+		{
+			if((content_ptr[content_index] == ' ')
+				|| (content_ptr[content_index] == '\n')
+				|| (content_ptr[content_index] == '\0'))
 			{
-				while(content_index < content_len)
-				{
-					if((content_ptr[content_index] == ' ')
-						|| (content_ptr[content_index] == '\n')
-						|| (content_ptr[content_index] == '\0'))
-					{
-						*value_end = &content_ptr[content_index];
-						break;
-					}
-					content_index ++;
-				}
-				if(content_index == content_len)
-				{
-					*value_end = &content_ptr[content_index];
-				}
+				*value_end = &content_ptr[content_index];
+				break;
 			}
+			content_index ++;
+		}
+		if(content_index == content_len)
+		{
+			*value_end = &content_ptr[content_index];
 		}
 	}
 
@@ -210,10 +201,29 @@ log_save_load_record(
 
 ub
 log_save_load_key_value(
-	s8 **key_start, s8 **key_end, s8 **value_start, s8 **value_end,
+	s8 **key_ptr, ub *key_len, s8 **value_ptr, ub *value_len,
 	s8 *content_ptr, ub content_len)
 {
-	return _log_save_log_load_key_value(key_start, key_end, value_start, value_end, content_ptr, content_len);
+	s8 *key_start, *key_end, *value_start, *value_end;
+	ub process_len;
+
+	*key_ptr = *value_ptr = NULL;
+	*key_len = *value_len = 0;
+
+	process_len = _log_save_log_load_key_value(
+		&key_start, &key_end, &value_start, &value_end,
+		content_ptr, content_len);
+
+	if((key_start != NULL) && (key_end != NULL) && (value_start != NULL) && (value_end != NULL))
+	{
+		*key_ptr = key_start;
+		*key_len = (ub)(key_end) - (ub)(key_start);
+
+		*value_ptr = value_start;
+		*value_len = (ub)(value_end) - (ub)(value_start);
+	}
+
+	return process_len;
 }
 
 #endif

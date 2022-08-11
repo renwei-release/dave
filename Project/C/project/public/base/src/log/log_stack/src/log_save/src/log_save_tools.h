@@ -12,9 +12,13 @@
 extern "C"{
 #endif
 
-ub log_save_load_record(s8 *separator, s8 **record_ptr, ub *record_len, s8 *content_ptr, ub content_len);
+ub log_save_load_record(
+	s8 *separator, s8 **record_ptr, ub *record_len,
+	s8 *content_ptr, ub content_len);
 
-ub log_save_load_key_value(s8 **key_start, s8 **key_end, s8 **value_start, s8 **value_end, s8 *content_ptr, ub content_len);
+ub log_save_load_key_value(
+	s8 **key_ptr, ub *key_len, s8 **value_ptr, ub *value_len,
+	s8 *content_ptr, ub content_len);
 
 #ifdef __cplusplus
 } //extern "C"

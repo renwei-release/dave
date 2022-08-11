@@ -120,7 +120,8 @@ static inline void
 _log_save_log_insert_key_value(void *pJson, s8 *content_ptr, ub content_len)
 {
 	ub content_index;
-	s8 *key_start, *key_end, *value_start, *value_end;
+	s8 *key_ptr, *value_ptr;
+	ub key_len, value_len;
 	ub safe_counter;
 	s8 backup_key_end;
 
@@ -128,17 +129,20 @@ _log_save_log_insert_key_value(void *pJson, s8 *content_ptr, ub content_len)
 	while((content_index< content_len) && ((safe_counter ++) < content_len))
 	{
 		content_index += log_save_load_key_value(
-			&key_start, &key_end, &value_start, &value_end,
+			&key_ptr, &key_len, &value_ptr, &value_len,
 			&content_ptr[content_index], content_len-content_index);
-		if((key_start == NULL) || (key_end == NULL)
-			|| ((value_start == NULL) || (value_end == NULL)))
+
+		if((key_ptr == NULL)
+			|| (key_len == 0)
+			|| ((value_ptr == NULL)
+			|| (value_len == 0)))
 			break;
 
-		backup_key_end = *key_end; *key_end = '\0';
+		backup_key_end = key_ptr[key_len]; key_ptr[key_len] = '\0';
 
-		dave_json_add_str_len(pJson, key_start, value_start, (ub)value_end-(ub)value_start);
+		dave_json_add_str_len(pJson, key_ptr, value_ptr, value_len);
 
-		*key_end = backup_key_end;
+		key_ptr[key_len] = backup_key_end;
 	}
 }
 
