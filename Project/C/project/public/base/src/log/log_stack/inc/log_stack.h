@@ -14,9 +14,7 @@
 #if defined(__DAVE_PRODUCT_LOG__)
 #define LOG_STACK_SERVER
 #endif
-#if ! defined(LOG_STACK_SERVER)
 #define LOG_STACK_CLIENT
-#endif
 
 void log_stack_init(void);
 void log_stack_exit(void);

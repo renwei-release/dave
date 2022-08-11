@@ -8,8 +8,24 @@
 #ifndef __TRACING_LEVEL_H__
 #define __TRACING_LEVEL_H__
 
+/*
+ * GenerationLevel: 
+ *
+ * [ req <-> call_id <-> rsp ]
+ *  ^- the GenerationList has one GenerationAction
+ *    [ req <-> call_id <-> rsp ] ... [ req <-> call_id <-> rsp ]
+ *     ^- the GenerationList has two GenerationAction
+ *       [ req <-> call_id <-> rsp ]
+ *        ^- the GenerationList has one GenerationAction
+ */
+
 typedef struct {
-	void *pJson;
+	void *pReqJson;
+	void *pRspJson;
+} GenerationAction;
+
+typedef struct {
+	GenerationAction action;
 	void *next;
 } GenerationList;
 

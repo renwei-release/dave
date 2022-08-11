@@ -26,37 +26,16 @@ typedef enum {
 	LOG_MAX,
 } LOGType;
 
-#if defined(LOG_STACK_CLIENT) || defined(LOG_STACK_SERVER)
-static LOGType
-_thread_log_server_flag(void)
-{
-	if(dave_strcmp(dave_verno_my_product(), "LOG") == dave_true)
-	{
-		return LOG_SERVER;
-	}
-	else
-	{
-		return LOG_CLIENT;
-	}
-}
-#endif
-
 // =====================================================================
 
 void
 log_stack_init(void)
 {
 #ifdef LOG_STACK_CLIENT
-	if(_thread_log_server_flag() == LOG_CLIENT)
-	{
-		log_client_init();
-	}
+	log_client_init();
 #endif
 #ifdef LOG_STACK_SERVER
-	if(_thread_log_server_flag() == LOG_SERVER)
-	{
-		log_server_init();
-	}
+	log_server_init();
 #endif
 }
 
@@ -64,16 +43,10 @@ void
 log_stack_exit(void)
 {
 #ifdef LOG_STACK_SERVER
-	if(_thread_log_server_flag() == LOG_SERVER)
-	{
-		log_server_exit();
-	}
+	log_server_exit();
 #endif
 #ifdef LOG_STACK_CLIENT
-	if(_thread_log_server_flag() == LOG_CLIENT)
-	{
-		log_client_exit();
-	}
+	log_client_exit();
 #endif
 }
 

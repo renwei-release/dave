@@ -9,9 +9,11 @@
 #include "log_stack.h"
 #ifdef LOG_STACK_SERVER
 #include <iostream>
+#include <chrono>
 #include "yaml-cpp/yaml.h"
 #include "jaegertracing/Tracer.h"
 #include "opentracing/span.h"
+#include "opentracing/noop.h"
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_os.h"
@@ -21,6 +23,8 @@
 #include "tracing_level.h"
 #include "tracing_fixed_bug.h"
 #include "log_log.h"
+
+using namespace opentracing;
 
 #define TRACING_CONFIG_FILE "/dave/tools/jaeger-client-cpp/config/config.yml"
 #define TRACING_SERVER_NAME "DAVE-CHAIN"
@@ -50,138 +54,137 @@ _tracing_global_exit(void)
 }
 
 static s8 *
-_tracing_span_name(s8 *name_ptr, ub name_len, GenerationList *pList)
+_tracing_span_name(s8 *name_ptr, ub name_len, void *pJson)
 {
-	ub name_index;
-	s8 action[16];
-	s8 src_thread[DAVE_CHAIN_THREAD_NAME_LEN];
-	s8 dst_thread[DAVE_CHAIN_THREAD_NAME_LEN];
-	s8 msg_id[128];
-	GenerationList *pWhileList, *pAnswerList = NULL;
+	ub name_index = 0;
 
-	name_ptr[0] = '\0';
-	name_index = 0;
-
-	pWhileList = pList;
-	while(pWhileList != NULL)
-	{
-		if(dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_action, action, sizeof(action)) > 0)
-		{
-			if(dave_strcmp(action, JSON_LOG_action_request) == dave_true)
-			{
-				dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_src_thread, src_thread, sizeof(src_thread));
-				dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_dst_thread, dst_thread, sizeof(dst_thread));
-				dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_msg_id, msg_id, sizeof(msg_id));
-				name_index += dave_snprintf(&name_ptr[name_index], name_len-name_index, "%s(%s)->%s", src_thread, msg_id, dst_thread);
-				break;
-			}
-			else
-			{
-				pAnswerList = pWhileList;
-			}
-		}
-		pWhileList = (GenerationList *)(pWhileList->next);
-	}
-
-	if(pAnswerList != NULL)
-		pWhileList = pAnswerList;
-	else
-		pWhileList = pList;
-	while(pWhileList != NULL)
-	{
-		if(dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_action, action, sizeof(action)) > 0)
-		{
-			if(dave_strcmp(action, JSON_LOG_action_answer) == dave_true)
-			{
-				dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_dst_thread, dst_thread, sizeof(dst_thread));
-				dave_json_get_str_v2(pWhileList->pJson, JSON_LOG_msg_id, msg_id, sizeof(msg_id));
-				name_index += dave_snprintf(&name_ptr[name_index], name_len-name_index, "(%s)->%s", msg_id, dst_thread);
-				break;
-			}
-		}
-		pWhileList = (GenerationList *)(pWhileList->next);
-	}
-
-	if(name_index == 0)
-	{
-		LOGLOG("can't get any name!");
-	}
+	name_index += dave_json_get_str_v2(pJson, JSON_LOG_src_thread, &name_ptr[name_index], name_len-name_index);
+	name_index += dave_snprintf(&name_ptr[name_index], name_len-name_index, "->");
+	name_index += dave_json_get_str_v2(pJson, JSON_LOG_dst_thread, &name_ptr[name_index], name_len-name_index);
+	name_index += dave_snprintf(&name_ptr[name_index], name_len-name_index, ":");
+	dave_json_get_str_v2(pJson, JSON_LOG_msg_id, &name_ptr[name_index], name_len-name_index);
 
 	return name_ptr;
 }
 
 static s8 *
-_tracing_tag_name(s8 *name_ptr, ub name_len, GenerationList *pList)
+_tracing_tag_name(s8 *name_ptr, ub name_len, void *pJson)
 {
-	s8 src_thread[DAVE_CHAIN_THREAD_NAME_LEN];
-	s8 dst_thread[DAVE_CHAIN_THREAD_NAME_LEN];
+	ub name_index = 0;
 
-	dave_json_get_str_v2(pList->pJson, JSON_LOG_src_thread, src_thread, sizeof(src_thread));
-	dave_json_get_str_v2(pList->pJson, JSON_LOG_dst_thread, dst_thread, sizeof(dst_thread));
-	dave_snprintf(name_ptr, name_len, "%s->%s", src_thread, dst_thread);
+	name_index += dave_json_get_str_v2(pJson, JSON_LOG_src_thread, &name_ptr[name_index], name_len-name_index);
+	name_index += dave_snprintf(&name_ptr[name_index], name_len-name_index, "->");
+	dave_json_get_str_v2(pJson, JSON_LOG_dst_thread, &name_ptr[name_index], name_len-name_index);
 
 	return name_ptr;
+}
+
+static s8 *
+_tracing_tag_value(void *pJson)
+{
+	return dave_json_to_string(pJson, NULL);
+}
+
+static s8 *
+_tracing_span_param(s8 *span_ptr, ub span_len, s8 *tag_ptr, ub tag_len, void *pJson)
+{
+	if(pJson == NULL)
+		return NULL;
+
+	_tracing_span_name(span_ptr, span_len, pJson);
+	_tracing_tag_name(tag_ptr, tag_len, pJson);
+	return _tracing_tag_value(pJson);
+}
+
+static const opentracing::SpanContext *
+_tracing_span_rsp(const opentracing::SpanContext *parent_context, void *pJson)
+{
+	s8 span_name[128];
+	s8 tag_name[128];
+	s8 *tag_value;
+
+	if(pJson == NULL)
+	{
+		return parent_context;
+	}
+
+	tag_value = _tracing_span_param(
+		span_name, sizeof(span_name),
+		tag_name, sizeof(tag_name),
+		pJson);
+
+	auto rsp_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_context) });
+
+	rsp_span->SetTag(tag_name, tag_value);
+
+	rsp_span->Finish();
+
+	return &rsp_span->context();
+}
+
+static const opentracing::SpanContext *
+_tracing_save_level_(const opentracing::SpanContext *parent_context, GenerationLevel *pLevel)
+{
+	s8 span_name[128];
+	s8 tag_name[128];
+	s8 *tag_value;
+	GenerationList *pList;
+	const opentracing::SpanContext *return_context;
+
+	if((parent_context == NULL) || (pLevel == NULL))
+	{
+		return parent_context;
+	}
+
+	pList = pLevel->pList;
+	while(pList != NULL)
+	{
+		tag_value = _tracing_span_param(
+			span_name, sizeof(span_name),
+			tag_name, sizeof(tag_name),
+			pList->action.pReqJson);
+		auto req_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_context) });
+		req_span->SetTag(tag_name, tag_value);
+
+		return_context = _tracing_save_level_(&req_span->context(), (GenerationLevel *)(pLevel->next));
+
+		return_context = _tracing_span_rsp(return_context, pList->action.pRspJson);
+
+		req_span->Finish();
+
+		pList = (GenerationList *)(pList->next);
+	}
+
+	return return_context;
 }
 
 static void
 _tracing_save_level(GenerationLevel *pLevel)
 {
-	GenerationList *pParentList, *pChildList;
-	const opentracing::SpanContext *parent_span_context;
-	s8 span_name[512];
+	s8 span_name[128];
 	s8 tag_name[128];
 	s8 *tag_value;
+	const opentracing::SpanContext *return_context;
 
-	if(pLevel == NULL)
+	if((pLevel == NULL)
+		|| (pLevel->pList == NULL)
+		|| (pLevel->pList->action.pReqJson == NULL))
 	{
 		return;
 	}
 
-	pParentList = pLevel->pList;
-	if(pParentList == NULL)
-	{
-		return;
-	}
+	tag_value = _tracing_span_param(
+		span_name, sizeof(span_name),
+		tag_name, sizeof(tag_name),
+		pLevel->pList->action.pReqJson);
+	auto req_span = opentracing::Tracer::Global()->StartSpan(span_name);
+	req_span->SetTag(tag_name, tag_value);
 
-	_tracing_span_name(span_name, sizeof(span_name), pParentList);
-	auto parent_span = opentracing::Tracer::Global()->StartSpan(span_name);
+	return_context = _tracing_save_level_(&req_span->context(), (GenerationLevel *)(pLevel->next));
 
-	while(pParentList != NULL)
-	{
-		_tracing_tag_name(tag_name, sizeof(tag_name), pParentList);
-		tag_value = dave_json_to_string(pParentList->pJson, NULL);
+	_tracing_span_rsp(return_context, pLevel->pList->action.pRspJson);
 
-		parent_span->SetTag(tag_name, tag_value);
-
-		pParentList = (GenerationList *)(pParentList->next);
-	}
-
-	parent_span_context = &parent_span->context();
-	pLevel = (GenerationLevel *)(pLevel->next);
-
-	while(pLevel != NULL)
-	{
-		pChildList = (GenerationList *)(pLevel->pList);
-	
-		_tracing_span_name(span_name, sizeof(span_name), pChildList);
-		auto child_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_span_context) } );
-
-		while(pChildList != NULL)
-		{
-			_tracing_tag_name(tag_name, sizeof(tag_name), pChildList);
-			tag_value = dave_json_to_string(pChildList->pJson, NULL);
-
-			child_span->SetTag(tag_name, tag_value);
-		
-			pChildList = (GenerationList *)(pChildList->next);
-		}
-		child_span->Finish();
-
-		parent_span_context = &child_span->context();
-		pLevel = (GenerationLevel *)(pLevel->next);
-	}
-
-	parent_span->Finish();
+	req_span->Finish();
 }
 
 // =====================================================================

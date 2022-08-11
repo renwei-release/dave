@@ -43,7 +43,7 @@ _tracing_fixed_bug(void *pArrayJson)
 		pJson = dave_json_get_array_idx(pArrayJson, array_index);
 		if(pJson != NULL)
 		{
-			_tracing_update_ub(pJson, (s8 *)JSON_LOG_call_id);
+			_tracing_update_ub(pJson, JSON_LOG_call_id);
 		}
 	}
 }
