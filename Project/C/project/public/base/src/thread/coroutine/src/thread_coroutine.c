@@ -42,7 +42,6 @@ typedef struct {
 	void *co;
 
 	ThreadId src_thread;
-	ThreadId dst_thread;
 	ub msg_id;
 	ub msg_site;
 	ub wakeup_index;
@@ -83,19 +82,14 @@ _thread_coroutine_set_index(ThreadId thread_id, ub *wakeup_index)
 
 static inline s8 *
 _thread_coroutine_key_kv(
-	ThreadId src_thread,
-	ThreadId dst_thread,
 	ub msg_id,
 	ub wakeup_index,
 	ub msg_site,
 	s8 *key_ptr, ub key_len)
 {
-	src_thread = thread_get_local(src_thread);
-	dst_thread = thread_get_local(dst_thread);
-
 	dave_snprintf(key_ptr, key_len,
-		"%lx->%lx:%lx-%lx-%lx",
-		src_thread, dst_thread, msg_id,
+		"%lx-%lx-%lx",
+		msg_id,
 		wakeup_index,
 		msg_site);
 
@@ -177,8 +171,6 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 		return;
 
 	_thread_coroutine_key_kv(
-		pSite->src_thread,
-		pSite->dst_thread,
 		pSite->msg_id,
 		pSite->wakeup_index,
 		pSite->msg_site,
@@ -189,8 +181,6 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 
 static inline CoroutineSite *
 _thread_coroutine_del_kv(
-	ThreadId src_thread,
-	ThreadId dst_thread,
 	ub msg_id,
 	ub wakeup_index,
 	ub msg_site)
@@ -201,8 +191,6 @@ _thread_coroutine_del_kv(
 		return NULL;
 
 	_thread_coroutine_key_kv(
-		dst_thread,
-		src_thread,
 		msg_id,
 		wakeup_index,
 		msg_site,
@@ -286,7 +274,6 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 	pSite->co = NULL;
 
 	pSite->src_thread = INVALID_THREAD_ID;
-	pSite->dst_thread = INVALID_THREAD_ID;
 	pSite->msg_id = MSGID_RESERVED;
 	pSite->msg_site = 0;
 	pSite->wakeup_index = msg->thread_wakeup_index;
@@ -352,7 +339,7 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 	dave_co_resume(pSite->co);
 }
 
-static dave_bool
+static inline dave_bool
 _thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
 {
 	ub wakeup_index, msg_site;
@@ -361,7 +348,7 @@ _thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, Thre
 	wakeup_index = thread_get_wakeup(dst_id);
 	msg_site = (ub)(t_rpc_ptr(msg_id, msg_body, NULL));
 
-	pSite = _thread_coroutine_del_kv(src_id, dst_id, msg_id, wakeup_index, msg_site);
+	pSite = _thread_coroutine_del_kv(msg_id, wakeup_index, msg_site);
 	if(pSite == NULL)
 	{
 		return dave_false;
@@ -426,12 +413,14 @@ _thread_coroutine_running_step_4(void *param)
 static inline void *
 _thread_coroutine_running_step_3(
 	ThreadStruct *pSrcThread,
-	ThreadId *src_id, ThreadId dst_id,
+	ThreadId *src_id,
 	ub req_msg_id, u8 *req_msg_body,
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 	ub wakeup_index;
 	CoroutineSite *pSite;
+
+	*src_id = pSrcThread->thread_id;
 
 	*src_id = _thread_coroutine_set_index(*src_id, &wakeup_index);
 
@@ -444,7 +433,6 @@ _thread_coroutine_running_step_3(
 	}
 
 	pSite->src_thread = *src_id;
-	pSite->dst_thread = dst_id;
 	pSite->msg_id = rsp_msg_id;
 	pSite->msg_site = (ub)(pSite);
 	pSite->wakeup_index = wakeup_index;
@@ -531,9 +519,9 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 	pSite = _thread_coroutine_inq_kv_(key);
 	if(pSite != NULL)
 	{
-		THREADLOG("%s %lx->%lx:%lx pSite:%lx co:%lx",
+		THREADLOG("%s %lx:%lx pSite:%lx co:%lx",
 			key,
-			pSite->src_thread, pSite->dst_thread, pSite->msg_id,
+			pSite->src_thread, pSite->msg_id,
 			pSite, pSite->co);
 	
 		_thread_coroutine_wakeup_me(pSite, wakeupevent_timer_out, key);
@@ -613,13 +601,13 @@ thread_coroutine_running_step_go(
 void *
 thread_coroutine_running_step_setup(
 	ThreadStruct *pSrcThread,
-	ThreadId *src_id, ThreadId dst_id,
+	ThreadId *src_id,
 	ub req_msg_id, u8 *req_msg_body,
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 	return _thread_coroutine_running_step_3(
 		pSrcThread,
-		src_id, dst_id,
+		src_id,
 		req_msg_id, req_msg_body,
 		rsp_msg_id, rsp_msg_body, rsp_msg_len);
 }

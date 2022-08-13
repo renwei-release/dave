@@ -24,7 +24,7 @@ dave_bool thread_coroutine_running_step_go(
 
 void * thread_coroutine_running_step_setup(
 	ThreadStruct *pSrcThread,
-	ThreadId *src_id, ThreadId dst_id,
+	ThreadId *src_id,
 	ub req_msg_id, u8 *req_msg_body,
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len);
 

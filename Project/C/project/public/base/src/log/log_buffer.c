@@ -381,7 +381,7 @@ log_buffer_history(s8 *log_ptr, ub log_len)
 	LogBuffer *pBuffer;
 
 	safe_counter = log_index = 0;
-	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < log_len))
+	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < (log_len - 1)))
 	{
 		pBuffer = &_log_buffer[(history_start_index ++) % LOG_BUFFER_MAX];
 		if((log_index + pBuffer->history_length) > log_len)
@@ -391,6 +391,8 @@ log_buffer_history(s8 *log_ptr, ub log_len)
 
 		log_index += dave_memcpy(&log_ptr[log_index], pBuffer->buffer, pBuffer->history_length);
 	}
+
+	log_ptr[log_index] = '\0';
 
 	return log_index;
 }

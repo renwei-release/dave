@@ -19,7 +19,7 @@ if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "sync" ]] || [[ "$DEPLOYMO
    cp sync_Dockerfile Dockerfile
    IMAGE="sync_docker_image"
    TAG="latest"
-   EXTEND=""
+   EXTEND="-v /dave/sync:/dave/sync"
    cd ../../
    chmod a+x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-sync -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}

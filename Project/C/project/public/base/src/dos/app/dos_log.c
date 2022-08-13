@@ -35,9 +35,9 @@ static RetCode
 _dos_show_log(s8 *param_ptr, ub param_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
-	s8 log_length_str[64];
-	ub log_length;
-	s8 *log_buf;
+	s8 log_len_str[64];
+	ub log_len;
+	s8 *log_ptr;
 
 	if(dave_strcmp(param_ptr, "mac") == dave_true)
 	{
@@ -46,19 +46,18 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 	}
 	else
 	{
-		dos_get_one_parameters(param_ptr, param_len, log_length_str, 64);
-		log_length = stringdigital(log_length_str);
-		if(log_length == 0)
+		dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
+		log_len = stringdigital(log_len_str);
+		if(log_len < 1024)
 		{
-			log_length = 4096;
+			log_len = 1024;
 		}
 
-		log_buf = dave_malloc(log_length);
-		log_length = base_log_history(log_buf, log_length - 1);
-		log_buf[log_length] = '\0';
+		log_ptr = dave_malloc(log_len);
+		base_log_history(log_ptr, log_len);
 		dos_write("=========================");
-		dos_write(log_buf);
-		dave_free(log_buf);
+		dos_write(log_ptr);
+		dave_free(log_ptr);
 	}
 
 	return ERRCODE_OK;

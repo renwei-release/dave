@@ -13,6 +13,21 @@
 #include "base_dll_main.h"
 #include "dll_log.h"
 
+static ThreadId
+_dll_thread_src_id(ThreadId src_id)
+{
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = dave_dll_main_thread_id();
+	}
+
+	return src_id;
+}
+
 // =====================================================================
 
 void *
@@ -37,12 +52,14 @@ dave_dll_thread_msg_release(void *ptr, char *fun, int line)
 int
 dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
-	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
-		thread_name, msg_id, msg_len, msg_body, fun, line);
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("dst_id:%lx msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		dst_id, msg_id, msg_len, msg_body, fun, line);
 
 	if(base_thread_id_msg(
 		NULL,
-		dave_dll_main_thread_id(), (ThreadId)dst_id,
+		src_id, (ThreadId)dst_id,
 		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		0,
@@ -57,13 +74,16 @@ dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void 
 }
 
 int
-dave_dll_thread_name_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
-	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
-		thread_name, msg_id, msg_len, msg_body, fun, line);
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("dst_thread:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		dst_thread, msg_id, msg_len, msg_body, fun, line);
 
 	if(base_thread_name_msg(
-		(s8 *)thread_name, (ub)msg_id, (ub)msg_len, (u8 *)msg_body,
+		src_id, (s8 *)dst_thread,
+		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{
 		return 0;
@@ -75,13 +95,15 @@ dave_dll_thread_name_msg(char *thread_name, int msg_id, int msg_len, void *msg_b
 }
 
 int
-dave_dll_thread_gid_msg(char *gid, char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
-	DLLDEBUG("thread_name:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
-		thread_name, msg_id, msg_len, msg_body, fun, line);
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("dst_thread:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		dst_thread, msg_id, msg_len, msg_body, fun, line);
 
 	if(base_thread_gid_msg(
-		(s8 *)gid, (s8 *)thread_name,
+		src_id, (s8 *)gid, (s8 *)dst_thread,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{
@@ -98,11 +120,7 @@ dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_bo
 {
 	ThreadId src_id, dst_id;
 
-	src_id = self();
-	if(src_id == INVALID_THREAD_ID)
-	{
-		src_id = dave_dll_main_thread_id();
-	}
+	src_id = _dll_thread_src_id(INVALID_THREAD_ID);
 	dst_id = thread_id(dst_thread);
 	if(dst_id == INVALID_THREAD_ID)
 	{

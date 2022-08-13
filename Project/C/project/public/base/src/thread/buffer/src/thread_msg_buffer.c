@@ -21,7 +21,7 @@
 #define THREAD_MSG_BUFFER_BASE_TIMER 3
 
 typedef struct {
-	s8 src_thread[THREAD_NAME_MAX];
+	ThreadId src_id;
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 dst_thread[THREAD_NAME_MAX];
 	BaseMsgType msg_type;
@@ -67,18 +67,16 @@ _thread_msg_buffer_malloc(
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	s8 *src_thread;
 	MsgBuffer *pBuffer;
 
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
 	}
-	src_thread = thread_name(src_id);
 
 	pBuffer = dave_malloc(sizeof(MsgBuffer));
 
-	dave_strcpy(pBuffer->src_thread, src_thread, sizeof(pBuffer->src_thread));
+	pBuffer->src_id = src_id;
 	if(gid != NULL)
 	{
 		dave_strcpy(pBuffer->gid, gid, sizeof(pBuffer->gid));
@@ -260,26 +258,34 @@ static void
 _thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
 {
 	MsgBuffer *pBuffer;
-	ThreadId src_id, dst_id;
+	ThreadId dst_id;
 
 	do {
 		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, dst_thread);
 		if(pBuffer == NULL)
 			break;
 
-		src_id = thread_id(pBuffer->src_thread);
 		dst_id = thread_id(pBuffer->dst_thread);
 
-		if(base_thread_id_msg(
-			NULL,
-			src_id, dst_id,
-			pBuffer->msg_type,
-			pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
-			0,
-			pBuffer->fun, pBuffer->line) == dave_false)
+		if(dst_id != INVALID_THREAD_ID)
 		{
-			THREADABNOR("%s->%s:%s send failed! <%s:%d>",
-				pBuffer->src_thread, pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+			if(base_thread_id_msg(
+				NULL,
+				pBuffer->src_id, dst_id,
+				pBuffer->msg_type,
+				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
+				0,
+				pBuffer->fun, pBuffer->line) == dave_false)
+			{
+				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
+					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+					pBuffer->fun, pBuffer->line);
+			}
+		}
+		else
+		{
+			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
+				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
 				pBuffer->fun, pBuffer->line);
 		}
 
@@ -291,35 +297,34 @@ static void
 _thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
 {
 	MsgBuffer *pBuffer;
-	ThreadId src_id, dst_id;
+	ThreadId dst_id;
 
 	do {
 		pBuffer = _thread_msg_buffer_pop(ramkv, gid, dst_thread);
 		if(pBuffer == NULL)
 			break;
 
-		src_id = thread_id(pBuffer->src_thread);
 		dst_id = thread_gid_table_inq(gid, dst_thread);
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
 			if(base_thread_id_msg(
 				NULL,
-				src_id, dst_id,
+				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
 				0,
 				pBuffer->fun, pBuffer->line) == dave_false)
 			{
 				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
-					pBuffer->src_thread, pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
 					pBuffer->fun, pBuffer->line);
 			}
 		}
 		else
 		{
 			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
-				pBuffer->src_thread, pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
 				pBuffer->fun, pBuffer->line);
 		}
 
@@ -338,9 +343,9 @@ _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 
 	THREADLOG("msg_id:%s(%s/%s) timer out to:%s",
 		msgstr(pMsg->msg_id), pBuffer->gid, pBuffer->dst_thread,
-		pBuffer->src_thread);
+		thread_id_to_name(pBuffer->src_id));
 
-	name_msg(pBuffer->src_thread, MSGID_PROCESS_MSG_TIMER_OUT, pMsg);
+	id_msg(pBuffer->src_id, MSGID_PROCESS_MSG_TIMER_OUT, pMsg);
 }
 
 static MsgBuffer *
@@ -389,7 +394,7 @@ _thread_msg_buffer_is_ready(void *ramkv, MsgList *pMsgList)
 	else
 	{
 		THREADABNOR("find invalid buffer! %s->%s:%s gid:%s <%s:%d>",
-			pReady->src_thread, pReady->dst_thread, msgstr(pReady->msg_id),
+			thread_id_to_name(pReady->src_id), pReady->dst_thread, msgstr(pReady->msg_id),
 			pReady->gid,
 			pReady->fun, pReady->line);
 	}
@@ -407,7 +412,7 @@ _thread_msg_buffer_tick(void *ramkv, s8 *buffer_key)
 	else
 	{
 		THREADDEBUG("%s->%s:%s life:%d/%d",
-			pMsgList->head->src_thread, pMsgList->head->dst_thread,
+			thread_id_to_name(pMsgList->head->src_id), pMsgList->head->dst_thread,
 			msgstr(pMsgList->head->msg_id),
 			pMsgList->head->life, pMsgList->life);
 

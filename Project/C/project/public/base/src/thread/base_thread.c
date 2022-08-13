@@ -30,6 +30,7 @@
 #include "thread_running.h"
 #include "thread_coroutine.h"
 #include "thread_chain.h"
+#include "thread_go.h"
 #include "thread_log.h"
 
 #define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
@@ -1271,7 +1272,7 @@ _thread_check_sync_param(
 	ThreadStruct **ppSrcThread, ThreadStruct **ppDstThread,
 	ThreadId *src_id, ThreadId *dst_id,
 	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id, ub rsp_len, u8 *rsp_body,
+	ub rsp_id,
 	s8 *fun, ub line)
 {
 	if((*src_id == *dst_id) || (self() == *dst_id))
@@ -1757,6 +1758,11 @@ base_thread_id_event(
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
 	thread_check_pair_msg(req_id, rsp_id);
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
@@ -1771,16 +1777,48 @@ base_thread_id_event(
 	return dave_false;
 }
 
+void *
+base_thread_co_id_msg(
+	ThreadId src_id, ThreadId dst_id,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadStruct *pSrcThread;
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	pSrcThread = thread_find_busy_thread(src_id);
+	if(pSrcThread == NULL)
+	{
+		THREADABNOR("src_id:%lx dst_id:%lx req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			src_id, dst_id,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	return thread_go_id(
+		pSrcThread,
+		dst_id,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
 dave_bool
 base_thread_name_msg(
-	s8 *thread_name,
+	ThreadId src_id, s8 *dst_thread,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	ThreadId src_id, dst_id;
+	ThreadId dst_id;
 	dave_bool ret;
 
-	if((thread_name == NULL) || (thread_name[0] == '\0'))
+	if((dst_thread == NULL) || (dst_thread[0] == '\0'))
 	{
 		thread_clean_user_input_data(msg_body, msg_id);
 		dst_id = INVALID_THREAD_ID;
@@ -1788,8 +1826,11 @@ base_thread_name_msg(
 	}
 	else
 	{
-		src_id = self();
-		dst_id = _thread_get_id(thread_name);
+		if(src_id == INVALID_THREAD_ID)
+		{
+			src_id = self();
+		}
+		dst_id = _thread_get_id(dst_thread);
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
@@ -1797,14 +1838,14 @@ base_thread_name_msg(
 		}
 		else
 		{
-			ret = thread_msg_buffer_thread_push(src_id, thread_name, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
+			ret = thread_msg_buffer_thread_push(src_id, dst_thread, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
 
 	if(ret == dave_false)
 	{
 		THREADLTRACE(60,1,"%lx/%s->%lx/%s:%s <%s:%d>",
-			self(), _thread_get_name(self()), dst_id, thread_name, msgstr(msg_id),
+			self(), _thread_get_name(self()), dst_id, dst_thread, msgstr(msg_id),
 			fun, line);
 	}
 
@@ -1813,56 +1854,135 @@ base_thread_name_msg(
 
 dave_bool
 base_thread_name_event(
-	s8 *thread_name,
+	ThreadId src_id, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
 	thread_check_pair_msg(req_id, rsp_id);
 
-	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == RetCode_OK)
+	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_name_msg(thread_name, req_id, req_len, req_body, fun, line);
+		return base_thread_name_msg(src_id, dst_thread, req_id, req_len, req_body, fun, line);
 	}
 
 	return dave_false;
 }
 
+void *
+base_thread_co_name_msg(
+	ThreadId src_id, s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadStruct *pSrcThread;
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	pSrcThread = thread_find_busy_thread(src_id);
+	if(pSrcThread == NULL)
+	{
+		THREADABNOR("src_id:%lx thread_name:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			src_id, dst_thread,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	return thread_go_msg(
+		pSrcThread,
+		NULL, dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
 dave_bool
 base_thread_gid_msg(
-	s8 *gid, s8 *thread_name,
+	ThreadId src_id, s8 *gid, s8 *dst_thread,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	ThreadId thread_id = thread_gid_table_inq(gid, thread_name);
+	ThreadId dst_id = thread_gid_table_inq(gid, dst_thread);
 
-	if(thread_id == INVALID_THREAD_ID)
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	if(dst_id == INVALID_THREAD_ID)
 	{
 		return thread_msg_buffer_gid_push(
-			INVALID_THREAD_ID, gid, thread_name,
+			src_id, gid, dst_thread,
 			BaseMsgType_Unicast,
 			msg_id, msg_len, msg_body,
 			fun, line);
 	}
 
-	return base_thread_id_msg(NULL, INVALID_THREAD_ID, thread_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+	return base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 }
 
 dave_bool
 base_thread_gid_event(
-	s8 *gid, s8 *thread_name,
+	ThreadId src_id, s8 *gid, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
 	thread_check_pair_msg(req_id, rsp_id);
 
-	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == RetCode_OK)
+	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_gid_msg(gid, thread_name, req_id, req_len, req_body, fun, line);
+		return base_thread_gid_msg(src_id, gid, dst_thread, req_id, req_len, req_body, fun, line);
 	}
 
 	return dave_false;
+}
+
+void *
+base_thread_co_gid_msg(
+	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadStruct *pSrcThread;
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	pSrcThread = thread_find_busy_thread(src_id);
+	if(pSrcThread == NULL)
+	{
+		THREADABNOR("src_id:%lx gid:%s dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			src_id, gid, dst_thread,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	return thread_go_msg(
+		pSrcThread,
+		gid, dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
 }
 
 void *
@@ -1880,7 +2000,7 @@ base_thread_sync_msg(
 		&pSrcThread, &pDstThread,
 		&src_id, &dst_id,
 		req_id, req_len, req_body,
-		rsp_id, rsp_len, rsp_body,
+		rsp_id,
 		fun, line) == dave_false)
 	{
 		thread_clean_user_input_data(req_body, req_id);

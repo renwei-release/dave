@@ -32,15 +32,23 @@ _t_a2b_bin_to_hex_str(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len)
 	return buf_index;
 }
 
-static ub
+static inline ub
 _t_a2b_string_to_digital(s8 *str_ptr, ub str_len, ub base)
 {
 	ub digital, str_index;
 
+	if(str_len == 0)
+		return 0;
+
 	digital = 0;
 	str_index = 0;
 
-	while(str_index < 64)
+	if(str_len > 64)
+	{
+		str_len = 64;
+	}
+
+	while(str_index < str_len)
 	{
 		if((str_ptr[str_index] == ' ')
 			|| (str_ptr[str_index] == '\0')
@@ -54,7 +62,7 @@ _t_a2b_string_to_digital(s8 *str_ptr, ub str_len, ub base)
 		}
 	}
 
-	while(str_index < 64)
+	while(str_index < str_len)
 	{
 		if((str_ptr[str_index] >= '0') && (str_ptr[str_index] <= '9'))
 		{

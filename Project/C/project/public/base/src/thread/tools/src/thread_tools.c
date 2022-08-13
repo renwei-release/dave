@@ -108,7 +108,7 @@ thread_tools_exit(void)
 ThreadStruct *
 __thread_find_busy_thread__(ThreadId thread_id, s8 *fun, ub line)
 {
-	ub thread_index, safe_count;
+	ub thread_index;
 
 	thread_id = thread_get_local(thread_id);
 
@@ -119,29 +119,16 @@ __thread_find_busy_thread__(ThreadId thread_id, s8 *fun, ub line)
 	}
 
 	thread_index = (ub)(thread_id % THREAD_MAX);
+	if(_thread[thread_index].thread_name[0] == '\0')
+		return NULL;
 
-	for(safe_count=0; safe_count<THREAD_MAX; safe_count++)
-	{
-		if(thread_index >= THREAD_MAX)
-		{
-			thread_index = 0;
-		}
-
-		if(_thread[thread_index].thread_id == thread_id)
-		{
-			return &_thread[thread_index];
-		}
-
-		thread_index ++;
-	}
-
-	return NULL;
+	return &_thread[thread_index];
 }
 
 ub
 __thread_find_busy_index__(ThreadId thread_id, s8 *fun, ub line)
 {
-	ub thread_index, safe_count;
+	ub thread_index;
 
 	thread_id = thread_get_local(thread_id);
 
@@ -153,23 +140,10 @@ __thread_find_busy_index__(ThreadId thread_id, s8 *fun, ub line)
 	}
 
 	thread_index = (ub)(thread_id % THREAD_MAX);
+	if(_thread[thread_index].thread_name[0] == '\0')
+		return THREAD_MAX;
 
-	for(safe_count=0; safe_count<THREAD_MAX; safe_count++)
-	{
-		if(thread_index >= THREAD_MAX)
-		{
-			thread_index = 0;
-		}
-
-		if(_thread[thread_index].thread_id == thread_id)
-		{
-			return thread_index;
-		}
-
-		thread_index ++;
-	}
-
-	return THREAD_MAX;
+	return thread_index;
 }
 
 ub
