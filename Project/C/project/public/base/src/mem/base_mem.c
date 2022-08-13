@@ -15,7 +15,7 @@
 #include "mem_log.h"
 #include "mem_test.h"
 
-extern ub base_thread_info(s8 *msg, ub msg_len);
+extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
 static ub __memory_init_flag = 0x12345678;
 

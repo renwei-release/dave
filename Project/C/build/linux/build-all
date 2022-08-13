@@ -1,6 +1,8 @@
 #!/bin/bash
 
 LEVEL=$1
+homepath=$(cd `dirname $0`; pwd)
+OUTPUTFILE=${homepath}/build-all-`date +%Y-%m-%d-%H-%M-%S`.txt
 
 build()
 {
@@ -8,9 +10,11 @@ build()
 
    for project_name in $(ls ./)
       do
-         [ -d $project_name ] && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && ./clean > /dev/null && ./build $LEVEL > /dev/null && cd ../
+         [ -d $project_name ] && last_project=$project_name && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && ./clean > /dev/null && ./build $LEVEL >> ${OUTPUTFILE} && cd ../
       done
-   cd $project_name && ./clean > /dev/null && cd ../
+   if [ -d $last_project ]; then
+      cd $last_project && ./clean > /dev/null && cd ../
+   fi
    echo -e "done!"
 }
 
@@ -30,4 +34,11 @@ if [ "$LEVEL" == "all" ]; then
    echo
    LEVEL="beta"
    build
+fi
+
+if [[ `grep -c "warning:" $OUTPUTFILE` -ne '0' ]] || [[ `grep -c "error:" $OUTPUTFILE` -ne '0' ]];then
+   echo -e "\033[31mfound some problems!\033[0m"
+   echo -e "For details, please check:${OUTPUTFILE}"
+else
+   rm -rf $OUTPUTFILE
 fi

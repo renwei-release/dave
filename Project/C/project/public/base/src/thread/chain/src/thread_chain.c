@@ -270,9 +270,10 @@ thread_chain_build_msg(
 	pThreadChain = thread_current_chain();
 	if(pThreadChain == NULL)
 	{
-		THREADABNOR("pThreadChain is NULL! %x/%s->%x/%s:%s",
+		THREADABNOR("pThreadChain is NULL! %x/%s->%x/%s:%s <%s:%d>",
 			msg_src, thread_id_to_name(msg_src), msg_dst, thread_id_to_name(msg_dst),
-			msgstr(msg_id));
+			msgstr(msg_id),
+			fun, line);
 		return NULL;
 	}
 

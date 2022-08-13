@@ -642,7 +642,7 @@ _thread_remove_genealogy(ub child_msg_index)
 	}
 }
 
-static void
+static inline void
 _thread_build_tick_message(void)
 {
 	ub priority_index;
@@ -1266,7 +1266,7 @@ _thread_exit(void)
 	}
 }
 
-static dave_bool
+static inline dave_bool
 _thread_check_sync_param(
 	ThreadStruct **ppSrcThread, ThreadStruct **ppDstThread,
 	ThreadId *src_id, ThreadId *dst_id,
@@ -1620,9 +1620,9 @@ base_thread_name_array(s8 thread_name[][64], ub thread_number)
 			}
 			else
 			{
-				if(thread_must_in_local((s8 *)(_thread[thread_index].thread_name)) == dave_false)
+				if(thread_must_in_local(_thread[thread_index].thread_name) == dave_false)
 				{
-					dave_strcpy(&thread_name[name_index ++][0], (const s8 *)(_thread[thread_index].thread_name), 64);
+					dave_strcpy(&thread_name[name_index ++][0], _thread[thread_index].thread_name, 64);
 				}
 			}
 		}
@@ -1681,12 +1681,6 @@ base_thread_msg_unregister(ThreadId thread_id, ub msg_id)
 	}
 
 	thread_call_msg_unregister(thread_id, msg_id);
-}
-
-ub
-base_thread_info(s8 *msg, ub msg_len)
-{
-	return thread_show_all_info(_thread, NULL, msg, msg_len, dave_true);
 }
 
 void *
@@ -1759,7 +1753,7 @@ dave_bool
 base_thread_id_event(
 	ThreadId src_id, ThreadId dst_id,
 	BaseMsgType msg_type,
-	ub req_id, ub msg_len, u8 *msg_body,
+	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
@@ -1767,11 +1761,11 @@ base_thread_id_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_id_msg(NULL, src_id, dst_id, msg_type, req_id, msg_len, msg_body, 0, fun, line);
+		return base_thread_id_msg(NULL, src_id, dst_id, msg_type, req_id, req_len, req_body, 0, fun, line);
 	}
 	else
 	{
-		thread_clean_user_input_data(msg_body, req_id);
+		thread_clean_user_input_data(req_body, req_id);
 	}
 
 	return dave_false;
@@ -1803,7 +1797,7 @@ base_thread_name_msg(
 		}
 		else
 		{
-			ret = thread_msg_buffer_push(src_id, thread_name, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
+			ret = thread_msg_buffer_thread_push(src_id, thread_name, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
 
@@ -1820,7 +1814,7 @@ base_thread_name_msg(
 dave_bool
 base_thread_name_event(
 	s8 *thread_name,
-	ub req_id, ub msg_len, u8 *msg_body,
+	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
@@ -1828,10 +1822,7 @@ base_thread_name_event(
 
 	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		if(base_thread_name_msg(thread_name, req_id, msg_len, msg_body, fun, line) == dave_true)
-		{
-			return dave_true;
-		}
+		return base_thread_name_msg(thread_name, req_id, req_len, req_body, fun, line);
 	}
 
 	return dave_false;
@@ -1847,8 +1838,11 @@ base_thread_gid_msg(
 
 	if(thread_id == INVALID_THREAD_ID)
 	{
-		thread_clean_user_input_data(msg_body, msg_id);
-		return dave_false;
+		return thread_msg_buffer_gid_push(
+			INVALID_THREAD_ID, gid, thread_name,
+			BaseMsgType_Unicast,
+			msg_id, msg_len, msg_body,
+			fun, line);
 	}
 
 	return base_thread_id_msg(NULL, INVALID_THREAD_ID, thread_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
@@ -1857,19 +1851,18 @@ base_thread_gid_msg(
 dave_bool
 base_thread_gid_event(
 	s8 *gid, s8 *thread_name,
-	ub req_id, ub msg_len, u8 *msg_body,
+	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
-	ThreadId thread_id = thread_gid_table_inq(gid, thread_name);
+	thread_check_pair_msg(req_id, rsp_id);
 
-	if(thread_id == INVALID_THREAD_ID)
+	if(base_thread_msg_register(INVALID_THREAD_ID, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		thread_clean_user_input_data(msg_body, req_id);
-		return dave_false;
+		return base_thread_gid_msg(gid, thread_name, req_id, req_len, req_body, fun, line);
 	}
 
-	return base_thread_id_event(INVALID_THREAD_ID, thread_id, BaseMsgType_Unicast, req_id, msg_len, msg_body, rsp_id, rsp_fun, fun, line);
+	return dave_false;
 }
 
 void *
@@ -1930,6 +1923,12 @@ dave_bool
 base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
 {
 	return thread_broadcast_msg(_thread, type, dst_name, msg_id, msg_len, msg_body, fun, line);
+}
+
+ub
+base_thread_info(s8 *msg_ptr, ub msg_len)
+{
+	return thread_show_all_info(_thread, NULL, msg_ptr, msg_len, dave_true);
 }
 
 #endif

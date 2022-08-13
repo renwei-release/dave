@@ -22,9 +22,5 @@
 #include "dave_application.h"
 #include "dave_general_main.h"
 
-#include "pyregister.h"
-
-#include "dave_toolbox.h"
-
 #endif
 

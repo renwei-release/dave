@@ -26,6 +26,35 @@ _base_ramkv_system_recycle(void *ramkv, s8 *key)
 		return RetCode_empty_data;
 }
 
+static void
+_base_ramkv_recycle_run(void *ramkv, ramkv_recycle_callback recycle_fun, s8 *fun, ub line)
+{
+	ub safe_counter;
+	u8 key_ptr[RAMKV_KEY_MAX];
+	RetCode ret;
+
+	safe_counter = 0;
+
+	while((++ safe_counter) < RECYCLE_LOOP_MAX)
+	{
+		if(ramkv_top(ramkv, key_ptr, sizeof(key_ptr)) == dave_true)
+			ret = recycle_fun(ramkv, (s8 *)key_ptr);
+		else
+			ret = recycle_fun(ramkv, NULL);
+
+		if(ret != RetCode_OK)
+		{
+			KVDEBUG("key:%s get error code:%s <%s:%d>", key_ptr, retstr(ret), fun, line);
+			break;
+		}
+	}
+
+	if(safe_counter >= RECYCLE_LOOP_MAX)
+	{
+		KVABNOR("while out times:%d <%s:%d>", safe_counter, fun, line);
+	}
+}
+
 // ====================================================================
 
 void
@@ -65,36 +94,14 @@ __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out
 }
 
 void
-__base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback callback_fun, s8 *fun, ub line)
+__base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback recycle_fun, s8 *fun, ub line)
 {
-	ub safe_counter;
-	u8 key_ptr[RAMKV_KEY_MAX];
-	RetCode ret;
-
-	if(callback_fun == NULL)
+	if(recycle_fun == NULL)
 	{
-		callback_fun = _base_ramkv_system_recycle;
+		recycle_fun = _base_ramkv_system_recycle;
 	}
 
-	safe_counter = 0;
-
-	while((++ safe_counter) < RECYCLE_LOOP_MAX)
-	{
-		if(ramkv_top(ramkv, key_ptr, sizeof(key_ptr)) == dave_true)
-			ret = callback_fun(ramkv, (s8 *)key_ptr);
-		else
-			ret = callback_fun(ramkv, NULL);
-		if(ret != RetCode_OK)
-		{
-			KVDEBUG("key:%s get error code:%s <%s:%d>", key_ptr, retstr(ret), fun, line);
-			break;
-		}
-	}
-
-	if(safe_counter >= RECYCLE_LOOP_MAX)
-	{
-		KVABNOR("while out times:%d <%s:%d>", safe_counter, fun, line);
-	}
+	_base_ramkv_recycle_run(ramkv, recycle_fun, fun, line);
 
 	KVDEBUG("name:%s", ((KV *)(ramkv))->name);
 

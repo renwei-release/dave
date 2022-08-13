@@ -275,7 +275,7 @@ _thread_guardian_remote_thread_ready(ThreadRemoteReadyMsg *pReady)
 {
 	THREADDEBUG("%s", pReady->remote_thread_name);
 
-	thread_msg_buffer_pop(pReady->remote_thread_name);
+	thread_msg_buffer_thread_pop(pReady->remote_thread_name);
 }
 
 static void
@@ -283,7 +283,7 @@ _thread_guardian_remote_thread_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	THREADDEBUG("%s", pReady->remote_thread_name);
 
-	thread_msg_buffer_pop(pReady->remote_thread_name);
+	thread_msg_buffer_thread_pop(pReady->remote_thread_name);
 }
 
 static void
@@ -291,7 +291,7 @@ _thread_guardian_local_thread_ready(ThreadLocalReadyMsg *pReady)
 {
 	THREADDEBUG("%s", pReady->local_thread_name);
 
-	thread_msg_buffer_pop(pReady->local_thread_name);
+	thread_msg_buffer_thread_pop(pReady->local_thread_name);
 }
 
 static void

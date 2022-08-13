@@ -54,7 +54,7 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 		}
 		else
 		{
-			ret = thread_msg_buffer_push(self_id, dst_name, type, msg_id, broadcast_len, broadcast_msg, fun, line);
+			ret = thread_msg_buffer_thread_push(self_id, dst_name, type, msg_id, broadcast_len, broadcast_msg, fun, line);
 		}
 	}
 

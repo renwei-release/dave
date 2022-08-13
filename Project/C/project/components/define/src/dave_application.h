@@ -8,6 +8,7 @@
 #ifndef __DAVE_APPLICATION_H__
 #define __DAVE_APPLICATION_H__
 #include "dave_error_code.h"
+#include "dave_define.h"
 
 /* for APPMSG_MCARD_REQ message */
 typedef struct {

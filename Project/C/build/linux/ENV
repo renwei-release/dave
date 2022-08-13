@@ -9,6 +9,8 @@
 homepath=$(cd `dirname $0`; pwd)/../../../../
 
 CONTAINER=$1
+PROJECT=$2
+LEVEL=$3
 
 cd ${homepath}
 
@@ -23,8 +25,8 @@ if [ ! "$CONTAINER" == "" ]; then
       echo
       cd ${homepath}
    fi
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./lib-ENV"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./lib-ENV ${PROJECT} ${LEVEL}"
 else
-   `pwd`/Project/C/build/linux/lib-ENV
+   `pwd`/Project/C/build/linux/lib-ENV ${PROJECT} ${LEVEL}
 fi
 

@@ -14,7 +14,7 @@
 #include "thread_exter_mem.h"
 #include "thread_log.h"
 
-extern ub base_thread_info(s8 *msg, ub msg_len);
+extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
 static dave_bool _thread_mem_init_flag_ = dave_false;
 
