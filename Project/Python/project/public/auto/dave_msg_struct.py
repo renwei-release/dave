@@ -18,23 +18,6 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
-#* for A2PBIZROUTE_REQ message *#
-class A2pBizRouteReq (Structure):
-	_fields_ = [
-		("user_id", c_char * DAVE_SMS_String_LEN_128),
-		("addres_code", c_int),
-		("isp", c_char * DAVE_SMS_String_LEN_128),
-		("ptr", POINTER(c_char)),
-]
-
-#* for A2PBIZROUTE_RSP message *#
-class A2pBizRouteRsp (Structure):
-	_fields_ = [
-		("route", c_char * DAVE_SMS_String_LEN_128),
-		("ret", c_int),
-		("ptr", POINTER(c_char)),
-]
-
 #* for AIXMSG_AESTHETICS_REQ message *#
 class AIXMsgAestheticsReq (Structure):
 	_fields_ = [

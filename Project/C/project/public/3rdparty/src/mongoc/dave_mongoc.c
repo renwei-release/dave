@@ -384,7 +384,11 @@ _mongoc_server_stop(void)
 
 	dave_sprintf(kill_cmd, "killall -2 %s", MONGODB_BIN_NAME);
 
-	system((const char *)kill_cmd);
+	int ret = system((const char *)kill_cmd);
+	if(ret != 0)
+	{
+		PARTYLOG("kill_cmd:%s ret:%d", kill_cmd, ret);
+	}
 }
 
 static dave_bool  

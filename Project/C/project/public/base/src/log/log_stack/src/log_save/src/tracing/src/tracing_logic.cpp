@@ -129,7 +129,7 @@ _tracing_save_level_(const opentracing::SpanContext *parent_context, GenerationL
 	s8 tag_name[128];
 	s8 *tag_value;
 	GenerationList *pList;
-	const opentracing::SpanContext *return_context;
+	const opentracing::SpanContext *return_context = NULL;
 
 	if((parent_context == NULL) || (pLevel == NULL))
 	{

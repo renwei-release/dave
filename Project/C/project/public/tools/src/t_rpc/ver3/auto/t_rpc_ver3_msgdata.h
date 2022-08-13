@@ -17,7 +17,6 @@
 #include "cv_msg.h"
 #include "database_msg.h"
 #include "dave_application.h"
-#include "dave_billing.h"
 #include "dave_general_main.h"
 #include "http_msg.h"
 #include "uip_msg.h"
@@ -26,16 +25,6 @@
 #include "dave_bdata.h"
 #include "base_msg.h"
 #include "base_socket.h"
-
-void * t_rpc_ver3_zip_A2pBizRouteReq(A2pBizRouteReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_A2pBizRouteReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_A2pBizRouteReq(A2pBizRouteReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_A2pBizRouteReq(void);
-
-void * t_rpc_ver3_zip_A2pBizRouteRsp(A2pBizRouteRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_A2pBizRouteRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_A2pBizRouteRsp(A2pBizRouteRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_A2pBizRouteRsp(void);
 
 void * t_rpc_ver3_zip_AIXMsgAestheticsReq(AIXMsgAestheticsReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_AIXMsgAestheticsReq(void **unzip_data, ub *unzip_len, void *pStructBson);

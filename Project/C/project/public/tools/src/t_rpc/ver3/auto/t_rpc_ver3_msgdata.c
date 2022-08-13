@@ -22,7 +22,6 @@
 #include "cv_msg.h"
 #include "database_msg.h"
 #include "dave_application.h"
-#include "dave_billing.h"
 #include "dave_general_main.h"
 #include "http_msg.h"
 #include "uip_msg.h"
@@ -33,130 +32,6 @@
 #include "base_socket.h"
 
 // =====================================================================
-
-void *
-t_rpc_ver3_zip_A2pBizRouteReq(A2pBizRouteReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(A2pBizRouteReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(A2pBizRouteReq) does not match(%d/%d), please contact the message settlers!", sizeof(A2pBizRouteReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-user_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->user_id), 1, DAVE_SMS_String_LEN_128));
-	t_bson_add_object(pStructBson, "int-addres_code", t_rpc_ver3_zip_int(zip_data->addres_code));
-	t_bson_add_object(pStructBson, "s8-isp", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->isp), 1, DAVE_SMS_String_LEN_128));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_A2pBizRouteReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		A2pBizRouteReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(A2pBizRouteReq);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->user_id), 1, DAVE_SMS_String_LEN_128, t_bson_inq_object(pStructBson, "s8-user_id"));
-		t_rpc_ver3_unzip_int(&(pUnzip->addres_code), t_bson_inq_object(pStructBson, "int-addres_code"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->isp), 1, DAVE_SMS_String_LEN_128, t_bson_inq_object(pStructBson, "s8-isp"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_A2pBizRouteReq(A2pBizRouteReq *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_A2pBizRouteReq(void)
-{
-	return sizeof(A2pBizRouteReq);
-}
-
-void *
-t_rpc_ver3_zip_A2pBizRouteRsp(A2pBizRouteRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(A2pBizRouteRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(A2pBizRouteRsp) does not match(%d/%d), please contact the message settlers!", sizeof(A2pBizRouteRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-route", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->route), 1, DAVE_SMS_String_LEN_128));
-	t_bson_add_object(pStructBson, "int-ret", t_rpc_ver3_zip_int(zip_data->ret));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_A2pBizRouteRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		A2pBizRouteRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(A2pBizRouteRsp);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->route), 1, DAVE_SMS_String_LEN_128, t_bson_inq_object(pStructBson, "s8-route"));
-		t_rpc_ver3_unzip_int(&(pUnzip->ret), t_bson_inq_object(pStructBson, "int-ret"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_A2pBizRouteRsp(A2pBizRouteRsp *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_A2pBizRouteRsp(void)
-{
-	return sizeof(A2pBizRouteRsp);
-}
 
 void *
 t_rpc_ver3_zip_AIXMsgAestheticsReq(AIXMsgAestheticsReq *zip_data, ub zip_len)

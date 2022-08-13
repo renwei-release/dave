@@ -128,7 +128,11 @@ dave_os_system(char *cmdstring, char *result_ptr, int result_len)
 
 	if(result_ptr != NULL)
 	{
-		fread(result_ptr, 1, result_len, result_file);
+		size_t rread = fread(result_ptr, 1, result_len, result_file);
+		if(rread != 0)
+		{
+			OSLOG("%d:%s", result_len, result_ptr);
+		}
 	}
 
 	pclose(result_file);
