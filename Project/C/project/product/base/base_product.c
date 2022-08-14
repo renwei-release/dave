@@ -31,7 +31,7 @@ static ThreadId _base_thread = INVALID_THREAD_ID;
 static void
 _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 {
-	BASELOG("from:%s str:%s/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+	BASEDEBUG("from:%s str:%s/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
 		thread_name(src),
 		pRsp->str_debug, pRsp->str_debug,
 		pRsp->s8_debug, pRsp->u8_debug,
@@ -44,29 +44,49 @@ _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 static void
 _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 {
-	RPCDebugReq *pReq = thread_reset_msg(pReq);
+	RPCDebugReq req;
 	RPCDebugRsp *pRsp;
 
-	pReq->ret_debug = RET_DEBUG_VALUE;
-	dave_strcpy(pReq->str_debug, thread_name(pReady->remote_thread_id), sizeof(pReq->str_debug));
-	pReq->s8_debug = S8_DEBUG_VALUE;
-	pReq->u8_debug = U8_DEBUG_VALUE;
-	pReq->s16_debug = S16_DEBUG_VALUE;
-	pReq->u16_debug = U16_DEBUG_VALUE;
-	pReq->s32_debug = S32_DEBUG_VALUE;
-	pReq->u32_debug = U32_DEBUG_VALUE;
-	pReq->s64_debug = S64_DEBUG_VALUE;
-	pReq->u64_debug = U64_DEBUG_VALUE;
-	pReq->float_debug = FLOAT_DEBUG_VALUE;
-	pReq->double_debug = DOUBLE_DEBUG_VALUE;
-	pReq->void_debug = VOID_DEBUG_VALUE;
-	pReq->ptr = pReq;
+	dave_memset(&req, 0x00, sizeof(RPCDebugReq));
 
-	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
+	req.ret_debug = RET_DEBUG_VALUE;
+	dave_strcpy(req.str_debug, thread_name(pReady->remote_thread_id), sizeof(req.str_debug));
+	req.s8_debug = S8_DEBUG_VALUE;
+	req.u8_debug = U8_DEBUG_VALUE;
+	req.s16_debug = S16_DEBUG_VALUE;
+	req.u16_debug = U16_DEBUG_VALUE;
+	req.s32_debug = S32_DEBUG_VALUE;
+	req.u32_debug = U32_DEBUG_VALUE;
+	req.s64_debug = S64_DEBUG_VALUE;
+	req.u64_debug = U64_DEBUG_VALUE;
+	req.float_debug = FLOAT_DEBUG_VALUE;
+	req.double_debug = DOUBLE_DEBUG_VALUE;
+	req.void_debug = VOID_DEBUG_VALUE;
+	req.ptr = NULL;
+
+	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("id_go successfully! ptr:%lx/%lx", pReq, pRsp->ptr);
+		BASELOG("id_go(%lx) successfully! ptr:%lx/%lx", pReady->remote_thread_id, &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
+	}
+	pRsp = name_go(pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	if(pRsp != NULL)
+	{
+		BASELOG("name_go(%s) successfully! ptr:%lx/%lx", pReady->remote_thread_name, &req, pRsp->ptr);
+		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
+	}
+	pRsp = gid_go(pReady->globally_identifier, pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	if(pRsp != NULL)
+	{
+		BASELOG("gid_go(%s/%s) successfully! ptr:%lx/%lx", pReady->globally_identifier, pReady->remote_thread_name, &req, pRsp->ptr);
+		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
+	}
+	pRsp = name_go("bbs", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	if(pRsp != NULL)
+	{
+		BASELOG("name_go(%s) successfully! ptr:%lx/%lx", "bbs", &req, pRsp->ptr);
+		_base_thread_rpc_debug_rsp(thread_id("bbs"), pRsp);
 	}
 }
 
@@ -90,7 +110,7 @@ _base_thread_rpc_debug_req_use_msg(ThreadRemoteIDReadyMsg *pReady)
 	pReq->void_debug = VOID_DEBUG_VALUE;
 	pReq->ptr = pReq;
 
-	BASELOG("%lx u64_debug:%ld", pReady->remote_thread_id, pReq->u64_debug);
+	BASEDEBUG("%lx u64_debug:%ld", pReady->remote_thread_id, pReq->u64_debug);
 
 	id_msg(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, pReq);
 }
@@ -102,7 +122,7 @@ _base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
 
 	*pRsp = (*(RPCDebugRsp *)(pReq));
 
-	BASELOG("from:%lx/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+	BASEDEBUG("from:%lx/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
 		src, thread_name(src),
 		pRsp->s8_debug, pRsp->u8_debug,
 		pRsp->s16_debug, pRsp->u16_debug,
@@ -116,7 +136,7 @@ _base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
 static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
-	BASELOG("%lx/%s/%s/%s",
+	BASEDEBUG("%lx/%s/%s/%s",
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
@@ -133,7 +153,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 static void
 _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 {
-	BASELOG("%lx/%s/%s",
+	BASEDEBUG("%lx/%s/%s",
 		pReady->remote_thread_id,
 		pReady->remote_thread_name, pReady->globally_identifier);
 }

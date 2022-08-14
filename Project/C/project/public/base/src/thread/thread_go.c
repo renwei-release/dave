@@ -194,7 +194,7 @@ thread_go_id(
 		THREADABNOR("dst_id:%lx not ready! src:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			dst_id, pSrcThread->thread_name,
 			msgstr(req_id), req_len, msgstr(rsp_id),
-			fun, line);		
+			fun, line);
 		return NULL;
 	}
 

@@ -67,7 +67,7 @@ _sync_server_broadcadt_the_msg_to_all_client(
 					&& (pDstClient->ready_flag == dave_true))
 				{
 					dst_name = pDstThread->thread_name;
-					dst_id = thread_set_remote(0, pDstThread->thread_index, pDstThread->thread_index, pDstClient->client_index);
+					dst_id = thread_set_remote(pDstThread->thread_index, pDstThread->thread_index, pDstClient->client_index);
 					dst_attrib = REMOTE_TASK_ATTRIB;
 
 					ret = sync_server_tx_run_thread_msg_req(
@@ -122,7 +122,7 @@ _sync_server_broadcadt_tx_the_thread_all_client(
 		if((pDstClient != NULL) && (pSrcClient != pDstClient))
 		{
 			dst_name = pDstThread->thread_name;
-			dst_id = thread_set_remote(0, pDstThread->thread_index, pDstThread->thread_index, SYNC_NET_INDEX_MAX);
+			dst_id = thread_set_remote(pDstThread->thread_index, pDstThread->thread_index, SYNC_NET_INDEX_MAX);
 			dst_attrib = REMOTE_TASK_ATTRIB;
 
 			ret = sync_server_tx_run_thread_msg_req(
@@ -202,11 +202,11 @@ sync_server_broadcadt_tx_the_msg_to_client(
 	RetCode ret;
 
 	src_name = pSrcThread->thread_name;
-	src_id = thread_set_remote(0, thread_get_local(src_id), pSrcThread->thread_index, pSrcClient->client_index);
+	src_id = thread_set_remote(thread_get_local(src_id), pSrcThread->thread_index, pSrcClient->client_index);
 	src_attrib = REMOTE_TASK_ATTRIB;
 
 	dst_name = pDstThread->thread_name;
-	dst_id = thread_set_remote(0, thread_get_local(dst_id), pDstThread->thread_index, pDstClient->client_index);
+	dst_id = thread_set_remote(thread_get_local(dst_id), pDstThread->thread_index, pDstClient->client_index);
 	dst_attrib = REMOTE_TASK_ATTRIB;
 
 	ret = sync_server_tx_run_thread_msg_req(

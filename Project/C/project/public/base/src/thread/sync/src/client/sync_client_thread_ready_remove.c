@@ -205,7 +205,7 @@ _sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 	ThreadId thread_id, shadow_id;
 	dave_bool ret;
 
-	thread_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
+	thread_id = thread_set_remote(get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
 	thread_id = sync_client_thread_id_change_to_user(thread_id, _sync_thread_id);
 	thread_remote_id_table_add(thread_id, pThread->thread_name);
 
@@ -214,7 +214,7 @@ _sync_client_thread_ready(SyncServer *pServer, LinkThread *pThread)
 
 	if(ret == dave_true)
 	{
-		shadow_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->shadow_index);
+		shadow_id = thread_set_remote(get_thread_id(pThread->thread_name), pThread->thread_index, pServer->shadow_index);
 		shadow_id = sync_client_thread_id_change_to_user(shadow_id, _sync_thread_id);
 		thread_remote_id_table_add(shadow_id, pThread->thread_name);
 		thread_gid_table_add(pServer->globally_identifier, pThread->thread_name, shadow_id);
@@ -236,7 +236,7 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 	ThreadId thread_id, shadow_id;
 	dave_bool ret;
 
-	thread_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
+	thread_id = thread_set_remote(get_thread_id(pThread->thread_name), pThread->thread_index, pServer->server_index);
 	thread_id = sync_client_thread_id_change_to_user(thread_id, _sync_thread_id);
 	thread_remote_id_table_del(thread_id, pThread->thread_name);
 
@@ -252,7 +252,7 @@ _sync_client_thread_remove(SyncServer *pServer, LinkThread *pThread)
 		}
 		else
 		{
-			shadow_id = thread_set_remote(0, get_thread_id(pThread->thread_name), pThread->thread_index, backup_shadow_index);
+			shadow_id = thread_set_remote(get_thread_id(pThread->thread_name), pThread->thread_index, backup_shadow_index);
 			shadow_id = sync_client_thread_id_change_to_user(shadow_id, _sync_thread_id);
 			thread_remote_id_table_del(shadow_id, pThread->thread_name);
 			thread_gid_table_del(pServer->globally_identifier, pThread->thread_name);

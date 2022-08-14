@@ -63,8 +63,8 @@ _sync_client_message_route_to_remote(SyncServer *pServer, MSGBODY *pMsg)
 		return;
 	}
 
-	route_src = thread_set_remote(0, pMsg->msg_src, SYNC_THREAD_INDEX_MAX, pServer->server_index);
-	route_dst = thread_set_remote(0, pMsg->msg_dst, thread_get_thread(pMsg->msg_dst), thread_get_net(pMsg->msg_dst));
+	route_src = thread_set_remote(pMsg->msg_src, SYNC_THREAD_INDEX_MAX, pServer->server_index);
+	route_dst = thread_set_remote(pMsg->msg_dst, thread_get_thread(pMsg->msg_dst), thread_get_net(pMsg->msg_dst));
 
 	SYNCDEBUG("%s<%lx/%lx>->%s<%lx/%lx> %d",
 		src, route_src, pMsg->msg_src,

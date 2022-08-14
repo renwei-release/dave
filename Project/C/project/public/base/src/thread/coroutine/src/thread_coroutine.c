@@ -380,12 +380,6 @@ _thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, Thre
 	}
 	t_rpc_ptr(msg_id, msg_body, pSite->user_msg_ptr);
 
-	THREADDEBUG("%lx/%s->%lx/%s:%lx/%s-%lx-%lx pSite:%lx co:%lx",
-		src_id, thread_name(src_id), dst_id, thread_name(dst_id), msg_id, msgstr(msg_id),
-		pSite->wakeup_index,
-		pSite->msg_site,
-		pSite, pSite->co);
-
 	_thread_coroutine_wakeup_me(pSite, wakeupevent_get_msg, NULL);
 
 	return dave_true;
@@ -420,9 +414,7 @@ _thread_coroutine_running_step_3(
 	ub wakeup_index;
 	CoroutineSite *pSite;
 
-	*src_id = pSrcThread->thread_id;
-
-	*src_id = _thread_coroutine_set_index(*src_id, &wakeup_index);
+	*src_id = _thread_coroutine_set_index(pSrcThread->thread_id, &wakeup_index);
 
 	pSite = (CoroutineSite *)thread_thread_get_coroutine_site(pSrcThread->thread_index, wakeup_index);
 	if(pSite == NULL)
@@ -446,12 +438,6 @@ _thread_coroutine_running_step_3(
 	pSite->user_msg_ptr = t_rpc_ptr(req_msg_id, req_msg_body, (void *)(pSite->msg_site));
 
 	_thread_coroutine_add_kv(pSite);
-
-	THREADDEBUG("%lx/%s->%lx/%s:%lx/%s-%lx-%lx pSite:%lx co:%lx",
-		*src_id, thread_name(*src_id), dst_id, thread_name(dst_id), rsp_msg_id, msgstr(rsp_msg_id),
-		pSite->wakeup_index,
-		pSite->msg_site,
-		pSite, pSite->co);
 
 	return pSite;
 }

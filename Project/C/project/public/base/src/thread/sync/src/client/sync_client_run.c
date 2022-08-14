@@ -56,9 +56,9 @@ _sync_client_run_thread_msg(
 		/*
 		 * 来自SYNC服务器的消息，参数沿用SYNC服务器本地值。
 		 */
-		route_src = thread_set_remote(0, route_src, thread_get_thread(route_src), thread_get_net(route_src));
+		route_src = thread_set_remote(route_src, thread_get_thread(route_src), thread_get_net(route_src));
 		route_src = thread_set_sync(route_src);
-		route_dst = thread_set_remote(0, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst));
+		route_dst = thread_set_remote(route_dst, thread_get_thread(route_dst), thread_get_net(route_dst));
 		route_dst = thread_set_sync(route_dst);
 	}
 	else
@@ -78,8 +78,8 @@ _sync_client_run_thread_msg(
 		/*
 		 * 来自LINK链路的消息，参数按本地实际值计算。
 		 */
-		route_src = thread_set_remote(0, route_src, sync_client_data_thread_index_on_name(src), net_index);
-		route_dst = thread_set_remote(0, route_dst, INVALID_THREAD_ID, net_index);
+		route_src = thread_set_remote(route_src, sync_client_data_thread_index_on_name(src), net_index);
+		route_dst = thread_set_remote(route_dst, INVALID_THREAD_ID, net_index);
 	}
 
 	SYNCDEBUG("%s/%lx->%s/%lx:%s", src, route_src, dst, route_dst, msgstr(msg_id));
@@ -283,6 +283,11 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 		&route_src, &route_dst, src, dst, &msg_id,
 		&msg_type, NULL, NULL,
 		&package_len, &package_ptr);
+
+	SYNCDEBUG("%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
+		src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
+		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
+		msg_type, msgstr(msg_id), package_len);
 
 	if(t_rpc_unzip(&pChainBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{

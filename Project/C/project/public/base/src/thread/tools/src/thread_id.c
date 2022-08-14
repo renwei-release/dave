@@ -170,9 +170,11 @@ thread_clean_wakeup(ThreadId thread_id)
 }
 
 ThreadId
-thread_set_remote(ThreadId thread_id, ThreadId local_id, ub thread_index, ub net_index)
+thread_set_remote(ThreadId local_id, ub thread_index, ub net_index)
 {
-	thread_id = thread_set_local(thread_id, local_id);
+	ThreadId thread_id;
+
+	thread_id = local_id & LOCAL_ID_MASK;
 	thread_id = thread_set_thread(thread_id, thread_index);
 	thread_id = thread_set_net(thread_id, net_index);
 	if(thread_is_wakeup(local_id) == dave_true)

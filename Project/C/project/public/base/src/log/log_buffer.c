@@ -206,6 +206,11 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 		_log_buffer_log_head(pBuffer);
 	}
 
+	LOGDEBUG("level:%d log:%d/%s pBuffer:%d/%lx/%d/%s",
+		level, log_len, log_ptr,
+		_log_buffer_index,
+		pBuffer, pBuffer->buffer_length, pBuffer->buffer);
+
 	if((pBuffer->buffer_length + log_len) < sizeof(pBuffer->buffer))
 	{
 		pBuffer->buffer_length += dave_memcpy(&pBuffer->buffer[pBuffer->buffer_length], log_ptr, log_len);
@@ -384,7 +389,7 @@ log_buffer_history(s8 *log_ptr, ub log_len)
 	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < (log_len - 1)))
 	{
 		pBuffer = &_log_buffer[(history_start_index ++) % LOG_BUFFER_MAX];
-		if((log_index + pBuffer->history_length) > log_len)
+		if((log_index + pBuffer->history_length) >= (log_len - 1))
 		{
 			break;
 		}

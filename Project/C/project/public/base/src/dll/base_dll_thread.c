@@ -73,6 +73,21 @@ dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void 
 	}
 }
 
+void *
+dave_dll_thread_id_go(unsigned long long dst_id, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line)
+{
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("dst_id:%lx req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
+		dst_id, req_id, req_len, req_body, rsp_id, fun, line);
+
+	return base_thread_co_id_msg(
+		src_id, (ThreadId)dst_id,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
 int
 dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
@@ -94,6 +109,21 @@ dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_bo
 	}
 }
 
+void *
+dave_dll_thread_name_go(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line)
+{
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
+		dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
+
+	return base_thread_co_name_msg(
+		src_id, (s8 *)dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
 int
 dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line)
 {
@@ -113,6 +143,21 @@ dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, vo
 	{
 		return -1;
 	}
+}
+
+void *
+dave_dll_thread_gid_go(char *gid, char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line)
+{
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("gid:%s dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
+		gid, dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
+
+	return base_thread_co_gid_msg(
+		src_id, (s8 *)gid, (s8 *)dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
 }
 
 void *

@@ -173,8 +173,8 @@ sync_server_tx_run_thread_msg_req(
 	}
 	dst_thread_index = pDstThread->thread_index;
 
-	route_src = thread_set_remote(0, thread_get_local(route_src), src_thread_index, pSrcClient->client_index);
-	route_dst = thread_set_remote(0, thread_get_local(route_dst), dst_thread_index, pDstClient->client_index);
+	route_src = thread_set_remote(route_src, src_thread_index, pSrcClient->client_index);
+	route_dst = thread_set_remote(route_dst, dst_thread_index, pDstClient->client_index);
 
 	SYNCDEBUG("%s/%lx->%s/%lx msg_id:%d msg_type:%d msg_len:%d client:%d/%d/%s->%d/%d/%s",
 		src, route_src, dst, route_dst,

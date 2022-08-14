@@ -48,9 +48,9 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 	{
 		dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
 		log_len = stringdigital(log_len_str);
-		if(log_len < 1024)
+		if(log_len < 1500)
 		{
-			log_len = 1024;
+			log_len = 1500;
 		}
 
 		log_ptr = dave_malloc(log_len);

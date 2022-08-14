@@ -341,7 +341,7 @@ _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 	pMsg->msg_len = pBuffer->msg_len;
 	pMsg->msg_body = &(((u8 *)pMsg)[sizeof(ProcessMsgTimerOutMsg)]);
 
-	THREADLOG("msg_id:%s(%s/%s) timer out to:%s",
+	THREADLOG("msg_id:%s(gid:%s dst_thread:%s) timer out to:%s",
 		msgstr(pMsg->msg_id), pBuffer->gid, pBuffer->dst_thread,
 		thread_id_to_name(pBuffer->src_id));
 
@@ -545,8 +545,6 @@ thread_msg_buffer_thread_push(
 void
 thread_msg_buffer_thread_pop(s8 *dst_thread)
 {
-	thread_msg_buffer_init();
-
 	_thread_msg_buffer_safe_thread_pop(dst_thread);
 }
 
@@ -569,8 +567,6 @@ thread_msg_buffer_gid_push(
 void
 thread_msg_buffer_gid_pop(s8 *gid, s8 *dst_thread)
 {
-	thread_msg_buffer_init();
-
 	_thread_msg_buffer_safe_gid_pop(gid, dst_thread);
 }
 

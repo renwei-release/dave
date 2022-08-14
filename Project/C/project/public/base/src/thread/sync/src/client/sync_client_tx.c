@@ -213,12 +213,6 @@ sync_client_tx_run_thread_msg_req(
 
 	sync_client_detected_rpc_efficiency(msg_len, zip_body->len, msg_id);
 
-	/*
-	 * +1 为多加一个\0结束符，
-	 * dave_json_to_string 会自动以\0结束，
-	 * 以方便字符串协议做截止。
-	 */
-
 	msg_head = dave_mmalloc(SYNC_STACK_HEAD_MAX_LEN);
 
 	msg_head->len = msg_head->tot_len = sync_msg_packet(

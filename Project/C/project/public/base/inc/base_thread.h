@@ -131,13 +131,13 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define id_event(dst_id, req_id, req_body, rsp_id, rsp_fun) base_thread_id_event(INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
 #define id_go(dst_id, req_id, req_body, rsp_id) base_thread_co_id_msg(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
 
-#define name_msg(dst_thread, msg_id, msg_body) base_thread_name_msg(INVALID_THREAD_ID, dst_thread, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
-#define name_event(dst_thread, req_id, req_body, rsp_id, rsp_fun) base_thread_name_event(INVALID_THREAD_ID, dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
-#define name_go(dst_thread, req_id, req_body, rsp_id) base_thread_co_name_msg(INVALID_THREAD_ID, dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)req_body, (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
+#define name_msg(dst_thread, msg_id, msg_body) base_thread_name_msg(INVALID_THREAD_ID, (s8 *)dst_thread, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
+#define name_event(dst_thread, req_id, req_body, rsp_id, rsp_fun) base_thread_name_event(INVALID_THREAD_ID, (s8 *)dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
+#define name_go(dst_thread, req_id, req_body, rsp_id) base_thread_co_name_msg(INVALID_THREAD_ID, (s8 *)dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)req_body, (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
 
-#define gid_msg(gid, dst_thread, msg_id, msg_body) base_thread_gid_msg(gid, dst_thread, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
-#define gid_event(gid, dst_thread, req_id, req_body, rsp_id, rsp_fun) base_thread_gid_event(gid, dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
-#define gid_go(gid, dst_thread, req_id, req_body, rsp_id) base_thread_co_gid_msg(INVALID_THREAD_ID, gid, dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)req_body, (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
+#define gid_msg(gid, dst_thread, msg_id, msg_body) base_thread_gid_msg(gid, (s8 *)dst_thread, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
+#define gid_event(gid, dst_thread, req_id, req_body, rsp_id, rsp_fun) base_thread_gid_event(gid, (s8 *)dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
+#define gid_go(gid, dst_thread, req_id, req_body, rsp_id) base_thread_co_gid_msg(INVALID_THREAD_ID, gid, (s8 *)dst_thread, (ub)req_id, sizeof(*req_body), (u8 *)req_body, (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
 
 #define sync_msg(dst_id, req_id, req_body, rsp_id, rsp_body) base_thread_sync_msg(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, sizeof(*rsp_body), (u8 *)(rsp_body), (s8 *)__func__, (ub)__LINE__)
 

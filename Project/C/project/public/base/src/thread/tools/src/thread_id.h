@@ -19,7 +19,7 @@ ub __thread_get_net__(ThreadId thread_id, s8 *fun, ub line);
 ThreadId thread_set_wakeup(ThreadId thread_id, ub wakeup_index);
 ub thread_get_wakeup(ThreadId thread_id);
 ub thread_clean_wakeup(ThreadId thread_id);
-ThreadId thread_set_remote(ThreadId thread_id, ThreadId local_id, ub thread_index, ub sync_index);
+ThreadId thread_set_remote(ThreadId local_id, ub thread_index, ub sync_index);
 void thread_get_remote(ThreadId thread_id, ThreadId *local_id, ub *thread_index, ub *net_index);
 ThreadId thread_set_sync(ThreadId thread_id);
 dave_bool thread_is_sync(ThreadId thread_id);
