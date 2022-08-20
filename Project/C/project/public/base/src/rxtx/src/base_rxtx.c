@@ -827,7 +827,9 @@ _base_rxtx_input(dave_bool preloading, RXTX *pRxTx, u8 *data_ptr, ub data_len, R
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
 	{
-		RTLOG("receive_fun is empty!");
+		RTLOG("receive_fun is empty! port:%d <%s:%d>",
+			pRxTx->port,
+			pRxTx->owner_file_name, pRxTx->owner_file_line);
 		return data_len;
 	}
 

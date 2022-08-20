@@ -18,28 +18,21 @@
 #include "thread_msg_buffer.h"
 #include "thread_log.h"
 
-static inline dave_bool
-_thread_go_is_ready(ThreadId *dst_id, s8 *gid, s8 *dst_thread)
+static inline ThreadId
+_thread_go_name_is_ready(s8 *dst_thread)
 {
-	if((gid != NULL) && (dst_thread != NULL))
-	{
-		*dst_id = thread_gid_table_inq(gid, dst_thread);
-	}
-	else
-	{
-		*dst_id = thread_id(dst_thread);
-	}
+	return thread_id(dst_thread);
+}
 
-	if(*dst_id == INVALID_THREAD_ID)
-	{
-		return dave_false;
-	}
-
-	return dave_true;
+static inline ThreadId
+_thread_go_gid_is_ready(s8 *gid, s8 *dst_thread)
+{
+	return thread_gid_table_inq(gid, dst_thread);
 }
 
 static inline void *
 _thread_ready_go_msg(
+	void *msg_router,
 	ThreadStruct *pSrcThread,
 	ThreadId dst_id,
 	ub req_id, ub req_len, u8 *req_body,
@@ -57,7 +50,7 @@ _thread_ready_go_msg(
 		rsp_id, NULL, 0);
 
 	if(base_thread_id_msg(
-		NULL,
+		NULL, msg_router,
 		src_id, dst_id,
 		BaseMsgType_Unicast,
 		req_id, req_len, req_body,
@@ -80,7 +73,7 @@ _thread_ready_go_msg(
 static inline void *
 _thread_no_ready_go_msg(
 	ThreadStruct *pSrcThread,
-	s8 *gid, s8 *dst_thread,
+	s8 *gid, s8 *dst_thread, s8 *uid,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -117,6 +110,17 @@ _thread_no_ready_go_msg(
 			rsp_body = thread_coroutine_running_step_yield(coroutine_site);
 		}
 	}
+	else if(uid != NULL)
+	{
+		if(thread_msg_buffer_uid_push(
+			src_id, uid,
+			BaseMsgType_Unicast,
+			req_id, req_len, req_body,
+			fun, line) == dave_true)
+		{
+			rsp_body = thread_coroutine_running_step_yield(coroutine_site);
+		}
+	}
 
 	if(rsp_body == NULL)
 	{
@@ -131,45 +135,6 @@ _thread_no_ready_go_msg(
 // =====================================================================
 
 void *
-thread_go_msg(
-	ThreadStruct *pSrcThread,
-	s8 *gid, s8 *dst_thread,
-	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id,
-	s8 *fun, ub line)
-{
-	ThreadId dst_id;
-
-	if(thread_enable_coroutine(pSrcThread) == dave_false)
-	{
-		THREADABNOR("%s disable coroutine! gid:%s dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
-			pSrcThread->thread_name, gid, dst_thread,
-			msgstr(req_id), req_len, msgstr(rsp_id),
-			fun, line);
-		return NULL;
-	}
-
-	if(_thread_go_is_ready(&dst_id, gid, dst_thread) == dave_true)
-	{
-		return _thread_ready_go_msg(
-			pSrcThread,
-			dst_id,
-			req_id, req_len, req_body,
-			rsp_id,
-			fun, line);
-	}
-	else
-	{
-		return _thread_no_ready_go_msg(
-			pSrcThread,
-			gid, dst_thread,
-			req_id, req_len, req_body,
-			rsp_id,
-			fun, line);
-	}
-}
-
-void *
 thread_go_id(
 	ThreadStruct *pSrcThread,
 	ThreadId dst_id,
@@ -177,7 +142,13 @@ thread_go_id(
 	ub rsp_id,
 	s8 *fun, ub line)
 {
-	s8 *dst_thread;
+	if(pSrcThread == NULL)
+	{
+		THREADLOG("invalid param, pSrcThread:%lx",
+			pSrcThread);
+		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
 
 	if(thread_enable_coroutine(pSrcThread) == dave_false)
 	{
@@ -188,8 +159,7 @@ thread_go_id(
 		return NULL;
 	}
 
-	dst_thread = thread_name(dst_id);
-	if(dave_strcmp(dst_thread, "NULL") == dave_true)
+	if(dave_strcmp(thread_name(dst_id), "NULL") == dave_true)
 	{
 		THREADABNOR("dst_id:%lx not ready! src:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			dst_id, pSrcThread->thread_name,
@@ -199,11 +169,161 @@ thread_go_id(
 	}
 
 	return _thread_ready_go_msg(
+		NULL,
 		pSrcThread,
 		dst_id,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
+}
+
+void *
+thread_go_name(
+	ThreadStruct *pSrcThread,
+	s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadId dst_id;
+
+	if((pSrcThread == NULL) || (dst_thread == NULL))
+	{
+		THREADLOG("invalid param, pSrcThread:%lx dst_thread:%lx",
+			pSrcThread, dst_thread);
+		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	{
+		THREADABNOR("%s disable coroutine! dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			pSrcThread->thread_name, dst_thread,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	dst_id = _thread_go_name_is_ready(dst_thread);
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		return _thread_ready_go_msg(
+			NULL,
+			pSrcThread,
+			dst_id,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
+	else
+	{
+		return _thread_no_ready_go_msg(
+			pSrcThread,
+			NULL, dst_thread, NULL,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
+}
+
+void *
+thread_go_gid(
+	ThreadStruct *pSrcThread,
+	s8 *gid, s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadId dst_id;
+
+	if((pSrcThread == NULL) || (gid == NULL) || (dst_thread == NULL))
+	{
+		THREADLOG("invalid param, pSrcThread:%lx gid:%lx dst_thread:%lx",
+			pSrcThread, gid, dst_thread);
+		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	{
+		THREADABNOR("%s disable coroutine! gid:%s dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			pSrcThread->thread_name, gid, dst_thread,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	dst_id = _thread_go_gid_is_ready(gid, dst_thread);
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		return _thread_ready_go_msg(
+			NULL,
+			pSrcThread,
+			dst_id,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
+	else
+	{
+		return _thread_no_ready_go_msg(
+			pSrcThread,
+			gid, dst_thread, NULL,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
+}
+
+void *
+thread_go_uid(
+	ThreadStruct *pSrcThread,
+	s8 *uid,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadRouter *pRouter;
+	ThreadId dst_id;
+
+	if((pSrcThread == NULL) || (uid == NULL))
+	{
+		THREADLOG("invalid param, pSrcThread:%lx uid:%lx",
+			pSrcThread, uid);
+		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	{
+		THREADABNOR("%s disable coroutine! uid:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			pSrcThread->thread_name, uid,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		return NULL;
+	}
+
+	dst_id = thread_router_build_router(&pRouter, uid);
+
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		return _thread_ready_go_msg(
+			pRouter,
+			pSrcThread,
+			dst_id,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
+	else
+	{
+		return _thread_no_ready_go_msg(
+			pSrcThread,
+			NULL, NULL, uid,
+			req_id, req_len, req_body,
+			rsp_id,
+			fun, line);
+	}
 }
 
 #endif

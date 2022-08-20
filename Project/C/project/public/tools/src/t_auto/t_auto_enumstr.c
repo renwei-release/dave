@@ -4123,23 +4123,11 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case BBSMSG_INQ_COMMENT_RSP:
 				value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'";
 			break;
-		case APPMSG_SMS_SEND_REQ:
-				value_str = "'APPMSG_SMS_SEND_REQ-15055'";
+		case DBMSG_SYS_BILLING_SMS_REQ:
+				value_str = "'DBMSG_SYS_BILLING_SMS_REQ-15005'";
 			break;
-		case APPMSG_SMS_SEND_RSP:
-				value_str = "'APPMSG_SMS_SEND_RSP-15056'";
-			break;
-		case APPMSG_SMS_RECV_REQ:
-				value_str = "'APPMSG_SMS_RECV_REQ-15057'";
-			break;
-		case APPMSG_SMS_RECV_RSP:
-				value_str = "'APPMSG_SMS_RECV_RSP-15058'";
-			break;
-		case A2PBIZROUTE_REQ:
-				value_str = "'A2PBIZROUTE_REQ-15059'";
-			break;
-		case A2PBIZROUTE_RSP:
-				value_str = "'A2PBIZROUTE_RSP-15060'";
+		case DBMSG_SYS_BILLING_SMS_RSP:
+				value_str = "'DBMSG_SYS_BILLING_SMS_RSP-15006'";
 			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID-0xffffffffffffffff'";

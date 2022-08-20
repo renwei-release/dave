@@ -7,11 +7,8 @@
 # */
 
 PROJECT=${PWD##*/}
-if [ "$USER" == "root" ]; then
-   PROJECTNAME=${PROJECT}
-else
-   PROJECTNAME=${PROJECT}-${USER}
-fi
+
+PROJECTNAME=${PROJECT}-log
 
 cd ../../
 chmod a+x *.sh

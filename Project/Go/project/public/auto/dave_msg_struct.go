@@ -341,6 +341,24 @@ type DBSysAddWeiChatRsp struct {
 	Ptr uint64
 }
 
+/* for DBMSG_SYS_BILLING_SMS_REQ message */
+type DBSysBillingSMSReq struct {
+	Ret int64
+	Sql_object [DAVE_BILLING_SMS_DB_LEN] byte
+	Status uint64
+	Data *MBUF
+	Ptr uint64
+}
+
+/* for DBMSG_SYS_BILLING_SMS_RSP message */
+type DBSysBillingSMSRsp struct {
+	Ret int64
+	Data_object [DAVE_BILLING_SMS_DB_LEN] byte
+	Status uint64
+	Data *MBUF
+	Ptr uint64
+}
+
 /* for DBMSG_SYS_INQ_CHANNEL_REQ message */
 type DBSysInqChannelReq struct {
 	Channel_name [DAVE_NORMAL_NAME_LEN] byte
@@ -652,6 +670,7 @@ type RESTARTRSPMSG struct {
 /* for MSGID_RPC_DEBUG_REQ message */
 type RPCDebugReq struct {
 	Ret_debug int64
+	Req_thread [64] byte
 	Str_debug [16] byte
 	S8_debug byte
 	U8_debug byte
@@ -672,6 +691,7 @@ type RPCDebugReq struct {
 /* for MSGID_RPC_DEBUG_RSP message */
 type RPCDebugRsp struct {
 	Ret_debug int64
+	Rsp_thread [64] byte
 	Str_debug [16] byte
 	S8_debug byte
 	U8_debug byte

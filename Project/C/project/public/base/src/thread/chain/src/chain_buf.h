@@ -13,7 +13,7 @@ void chain_buf_init(void);
 void chain_buf_exit(void);
 
 void chain_buf_set(
-	ThreadChain *pChain,
+	ThreadChain *pChain, ThreadRouter *pRouter,
 	ub msg_id, ub msg_len, void *msg_body);
 
 MBUF * chain_buf_get(void);

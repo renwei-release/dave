@@ -142,6 +142,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				pBson = t_rpc_ver3_zip_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, msg_len);
 			break;
+		case DBMSG_SYS_BILLING_SMS_REQ:
+				pBson = t_rpc_ver3_zip_DBSysBillingSMSReq((DBSysBillingSMSReq *)msg_body, msg_len);
+			break;
+		case DBMSG_SYS_BILLING_SMS_RSP:
+				pBson = t_rpc_ver3_zip_DBSysBillingSMSRsp((DBSysBillingSMSRsp *)msg_body, msg_len);
+			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				pBson = t_rpc_ver3_zip_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, msg_len);
 			break;
@@ -514,6 +520,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ret = t_rpc_ver3_unzip_DBSysAddWeiChatRsp(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_BILLING_SMS_REQ:
+				ret = t_rpc_ver3_unzip_DBSysBillingSMSReq(msg_body, msg_len, pBson);
+			break;
+		case DBMSG_SYS_BILLING_SMS_RSP:
+				ret = t_rpc_ver3_unzip_DBSysBillingSMSRsp(msg_body, msg_len, pBson);
 			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				ret = t_rpc_ver3_unzip_DBSysInqChannelReq(msg_body, msg_len, pBson);
@@ -888,6 +900,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, new_ptr);
 			break;
+		case DBMSG_SYS_BILLING_SMS_REQ:
+				ptr = t_rpc_ver3_ptr_DBSysBillingSMSReq((DBSysBillingSMSReq *)msg_body, new_ptr);
+			break;
+		case DBMSG_SYS_BILLING_SMS_RSP:
+				ptr = t_rpc_ver3_ptr_DBSysBillingSMSRsp((DBSysBillingSMSRsp *)msg_body, new_ptr);
+			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				ptr = t_rpc_ver3_ptr_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, new_ptr);
 			break;
@@ -1261,6 +1279,12 @@ _t_rpc_sizeof(ub msg_id)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				msg_len = t_rpc_ver3_sizeof_DBSysAddWeiChatRsp();
 			break;
+		case DBMSG_SYS_BILLING_SMS_REQ:
+				msg_len = t_rpc_ver3_sizeof_DBSysBillingSMSReq();
+			break;
+		case DBMSG_SYS_BILLING_SMS_RSP:
+				msg_len = t_rpc_ver3_sizeof_DBSysBillingSMSRsp();
+			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelReq();
 			break;
@@ -1505,8 +1529,6 @@ _t_rpc_sizeof(ub msg_id)
 				msg_len = t_rpc_ver3_sizeof_UIPUnregisterRsp();
 			break;
 		default:
-				TOOLSLOG("msg_id:%d zip failed!", msg_id);
- 				msg_len = 0;
 			break;
 	}
 
@@ -1516,7 +1538,7 @@ _t_rpc_sizeof(ub msg_id)
 // =====================================================================
 
 void *
-t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
+t_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len)
 {
 	void *pBson;
 
@@ -1536,11 +1558,14 @@ t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)
 	if(pChainBson != NULL)
 		t_bson_add_object(pBson, "chain", pChainBson);
 
+	if(pRouterBson != NULL)
+		t_bson_add_object(pBson, "router", pRouterBson);
+
 	return pBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {	void *pBson;
 	dave_bool ret = dave_false;
 
@@ -1556,13 +1581,15 @@ t_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8
 	if(t_bson_inq_int64(pBson, "rpc_time", (u64 *)(&rpc_time)) == true) {
 		rpc_time = (s64)dave_os_time_us() - rpc_time;
 		if(rpc_time > 3000000)
-			TOOLSLOG("msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.", msgstr(msg_id), rpc_time);
+			TOOLSLTRACE(60,1,"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.", msgstr(msg_id), rpc_time);
 	}
 	#endif
 
 	ret = _t_rpc_unzip(msg_body, msg_len, msg_id, pBson);
 
 	*ppChainBson = t_bson_clone_object(pBson, "chain");
+
+	*ppRouterBson = t_bson_clone_object(pBson, "router");
 
 	t_bson_free_object(pBson);
 

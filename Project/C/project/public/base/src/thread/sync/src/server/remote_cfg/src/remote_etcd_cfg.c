@@ -19,7 +19,7 @@
 #define CFG_ETCD_WATCHER_DIR "ETCDWatcherDir"
 
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
-#define DEFAULT_ETCD_SERVER_DIR "sync"
+#define DEFAULT_ETCD_SERVER_DIR "/sync"
 #define DEFAULT_ETCD_WATCHER_DIR "/"
 #define DEFAULT_ETCD_GET_LIMIT 20480
 
@@ -62,10 +62,11 @@ _sync_server_make_dir(s8 *dir_ptr, ub dir_len, s8 *verno, s8 *globally_identifie
 	s8 product_str[128];
 
 	dave_snprintf(dir_ptr, dir_len,
-		"%s/%s/%s",
+		"%s/%s/%s/%s",
 		_sync_server_load_dir(),
 		dave_verno_product(verno, product_str, sizeof(product_str)),
-		globally_identifier);
+		globally_identifier,
+		cfg_name);
 
 	return dir_ptr;
 }
@@ -168,6 +169,9 @@ _sync_server_take_watcher(void)
 			key_str[1] = '\0';
 			_sync_server_take_watcher_(key_str);
 		}
+		key_str[0] = '/';
+		key_str[1] = '\0';
+		_sync_server_take_watcher_(key_str);
 	}
 	else
 	{
@@ -198,7 +202,7 @@ remote_etcd_cfg_exit(void)
 dave_bool
 remote_etcd_cfg_set(s8 *verno, s8 *globally_identifier, s8 *cfg_name, s8 *cfg_value)
 {
-	s8 dir_key[1024];
+	s8 dir_key[512];
 	dave_bool ret;
 
 	_sync_server_make_dir(

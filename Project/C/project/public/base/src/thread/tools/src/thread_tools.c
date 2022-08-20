@@ -277,7 +277,7 @@ thread_enable_coroutine(ThreadStruct *pThread)
 ThreadMsg *
 thread_build_msg(
 	ThreadStruct *pThread,
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	BaseMsgType msg_type,
@@ -313,7 +313,7 @@ thread_build_msg(
 	}
 	thread_msg->msg_body.msg_id = msg_id;
 	thread_msg->msg_body.msg_type = msg_type;
-	thread_msg->msg_body.src_attrib = base_thread_attrib(src_id);
+	thread_msg->msg_body.src_attrib = thread_id_to_attrib(src_id);
 	if(dst_id != INVALID_THREAD_ID)
 	{
 		thread_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
@@ -340,6 +340,8 @@ thread_build_msg(
 			msg_chain,
 			src_id, dst_id, msg_id,
 			fun, line);
+
+	thread_msg->msg_body.msg_router = thread_router_build_msg(msg_router, msg_id);
 
 	return thread_msg;
 }
@@ -371,6 +373,8 @@ thread_clean_msg(ThreadMsg *pMsg)
 
 		thread_chain_clean_msg(&(pMsg->msg_body));
 
+		thread_router_clean_msg(&(pMsg->msg_body));
+
 		thread_free((void *)pMsg, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
 	}
 }
@@ -393,6 +397,27 @@ thread_current_chain(void)
 	else
 	{
 		return thread_thread_chain();
+	}
+}
+
+ThreadRouter *
+thread_current_router(void)
+{
+	ThreadId current_id;
+
+	if(thread_thread_is_main() == dave_true)
+	{
+		current_id = self();
+		if(current_id == INVALID_THREAD_ID)
+		{
+			return NULL;
+		}
+
+		return &(_thread[current_id].router);
+	}
+	else
+	{
+		return thread_thread_router();
 	}
 }
 
@@ -420,6 +445,50 @@ thread_id_to_attrib(ThreadId thread_id)
 	}
 
 	return _thread[thread_id].attrib;
+}
+
+dave_bool
+thread_internal_msg(ub msg_id)
+{
+	dave_bool internal;
+
+	switch(msg_id)
+	{
+		case MSGID_TIMER:
+		case MSGID_WAKEUP:
+		case MSGID_RUN_FUNCTION:
+		case MSGID_POWER_OFF:
+		case MSGID_REMOTE_THREAD_READY:
+		case MSGID_REMOTE_THREAD_REMOVE:
+		case MSGID_CALL_FUNCTION:
+		case MSGID_INTERNAL_EVENTS:
+		case MSGID_REMOTE_THREAD_ID_READY:
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+		case MSGID_LOCAL_THREAD_READY:
+		case MSGID_LOCAL_THREAD_REMOVE:
+		case MSGID_INNER_LOOP:
+		case MSGID_OS_NOTIFY:
+		case MSGID_INTERNAL_LOOP:
+		case SOCKET_BIND_REQ:
+		case SOCKET_BIND_RSP:
+		case SOCKET_CONNECT_REQ:
+		case SOCKET_CONNECT_RSP:
+		case SOCKET_DISCONNECT_REQ:
+		case SOCKET_DISCONNECT_RSP:
+		case SOCKET_PLUGIN:
+		case SOCKET_PLUGOUT:
+		case SOCKET_READ:
+		case SOCKET_WRITE:
+		case SOCKET_NOTIFY:
+		case SOCKET_RAW_EVENT:
+				internal = dave_true;
+			break;
+		default:
+				internal = dave_false;
+			break;
+	}
+
+	return internal;
 }
 
 #endif

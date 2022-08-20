@@ -34,7 +34,7 @@ RUN yum install -y cpprest-devel.x86_64
 
 RUN mkdir -p /project/DAVE
 
-ENV GOPROXY=https://goproxy.io,direct
+ENV GOPROXY=https://goproxy.io
 
 WORKDIR /project
 COPY dave-running.sh .

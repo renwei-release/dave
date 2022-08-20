@@ -64,5 +64,15 @@
 
 #define DAVE_SMS_String_LEN_1024 (1024)
 
+#define DAVE_BILLING_SMS_DB_LEN (4096) 
+
+#define DAVE_BILLING_SMS_DB_INQ   (1)
+
+#define DAVE_BILLING_SMS_DB_USER_TABLE_INQ  (13)
+
+#define BILLING_SMS_DB_COUNT    (0)
+
+#define DAVE_BILLING_SMS_DB_NOT_ENOUGH  (2)
+
 #endif
 

@@ -38,3 +38,17 @@ if [[ "$DEPLOYMODEL" == "etcd" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
 fi
+
+if [[ "$DEPLOYMODEL" == "etcdkeeper" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
+   cp etcdkeeper_Dockerfile Dockerfile
+   IMAGE="etcdkeeper_docker_image"
+   TAG="latest"
+   EXTEND=""
+   cd ../../
+   chmod a+x *.sh
+   ./deploy.sh -p ${PROJECT} -n ${PROJECT}-etcdkeeper -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
+   cd ${SHHOMEPATH}
+   rm -rf Dockerfile
+   echo -e "Now \033[35metcdkeeper\033[0m is ready!"
+   echo -e "Please browse the web: \033[35mhttp://[your IP address]:8080/etcdkeeper\033[0m"
+fi

@@ -2697,6 +2697,136 @@ t_rpc_ver3_sizeof_DBSysAddWeiChatRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_DBSysBillingSMSReq(DBSysBillingSMSReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(DBSysBillingSMSReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(DBSysBillingSMSReq) does not match(%d/%d), please contact the message settlers!", sizeof(DBSysBillingSMSReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-sql_object", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->sql_object), 1, DAVE_BILLING_SMS_DB_LEN));
+	t_bson_add_object(pStructBson, "ub-status", t_rpc_ver3_zip_ub(zip_data->status));
+	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_DBSysBillingSMSReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		DBSysBillingSMSReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(DBSysBillingSMSReq);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->sql_object), 1, DAVE_BILLING_SMS_DB_LEN, t_bson_inq_object(pStructBson, "s8-sql_object"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->status), t_bson_inq_object(pStructBson, "ub-status"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_DBSysBillingSMSReq(DBSysBillingSMSReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysBillingSMSReq(void)
+{
+	return sizeof(DBSysBillingSMSReq);
+}
+
+void *
+t_rpc_ver3_zip_DBSysBillingSMSRsp(DBSysBillingSMSRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(DBSysBillingSMSRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(DBSysBillingSMSRsp) does not match(%d/%d), please contact the message settlers!", sizeof(DBSysBillingSMSRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-data_object", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->data_object), 1, DAVE_BILLING_SMS_DB_LEN));
+	t_bson_add_object(pStructBson, "ub-status", t_rpc_ver3_zip_ub(zip_data->status));
+	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_DBSysBillingSMSRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		DBSysBillingSMSRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(DBSysBillingSMSRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->data_object), 1, DAVE_BILLING_SMS_DB_LEN, t_bson_inq_object(pStructBson, "s8-data_object"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->status), t_bson_inq_object(pStructBson, "ub-status"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_DBSysBillingSMSRsp(DBSysBillingSMSRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DBSysBillingSMSRsp(void)
+{
+	return sizeof(DBSysBillingSMSRsp);
+}
+
+void *
 t_rpc_ver3_zip_DBSysInqChannelReq(DBSysInqChannelReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -5091,6 +5221,7 @@ t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret_debug", t_rpc_ver3_zip_RetCode(zip_data->ret_debug));
+	t_bson_add_object(pStructBson, "s8-req_thread", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->req_thread), 1, 64));
 	t_bson_add_object(pStructBson, "s8-str_debug", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->str_debug), 1, 16));
 	t_bson_add_object(pStructBson, "s8-s8_debug", t_rpc_ver3_zip_s8(zip_data->s8_debug));
 	t_bson_add_object(pStructBson, "u8-u8_debug", t_rpc_ver3_zip_u8(zip_data->u8_debug));
@@ -5129,6 +5260,7 @@ t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_len = sizeof(RPCDebugReq);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->req_thread), 1, 64, t_bson_inq_object(pStructBson, "s8-req_thread"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->str_debug), 1, 16, t_bson_inq_object(pStructBson, "s8-str_debug"));
 		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));
 		t_rpc_ver3_unzip_u8(&(pUnzip->u8_debug), t_bson_inq_object(pStructBson, "u8-u8_debug"));
@@ -5178,6 +5310,7 @@ t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret_debug", t_rpc_ver3_zip_RetCode(zip_data->ret_debug));
+	t_bson_add_object(pStructBson, "s8-rsp_thread", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->rsp_thread), 1, 64));
 	t_bson_add_object(pStructBson, "s8-str_debug", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->str_debug), 1, 16));
 	t_bson_add_object(pStructBson, "s8-s8_debug", t_rpc_ver3_zip_s8(zip_data->s8_debug));
 	t_bson_add_object(pStructBson, "u8-u8_debug", t_rpc_ver3_zip_u8(zip_data->u8_debug));
@@ -5216,6 +5349,7 @@ t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_len = sizeof(RPCDebugRsp);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret_debug), t_bson_inq_object(pStructBson, "RetCode-ret_debug"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->rsp_thread), 1, 64, t_bson_inq_object(pStructBson, "s8-rsp_thread"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->str_debug), 1, 16, t_bson_inq_object(pStructBson, "s8-str_debug"));
 		t_rpc_ver3_unzip_s8(&(pUnzip->s8_debug), t_bson_inq_object(pStructBson, "s8-s8_debug"));
 		t_rpc_ver3_unzip_u8(&(pUnzip->u8_debug), t_bson_inq_object(pStructBson, "u8-u8_debug"));

@@ -58,7 +58,7 @@ dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void 
 		dst_id, msg_id, msg_len, msg_body, fun, line);
 
 	if(base_thread_id_msg(
-		NULL,
+		NULL, NULL,
 		src_id, (ThreadId)dst_id,
 		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
@@ -81,7 +81,7 @@ dave_dll_thread_id_go(unsigned long long dst_id, int req_id, int req_len, void *
 	DLLDEBUG("dst_id:%lx req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		dst_id, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_co_id_msg(
+	return base_thread_id_go(
 		src_id, (ThreadId)dst_id,
 		req_id, req_len, req_body,
 		rsp_id,
@@ -117,7 +117,7 @@ dave_dll_thread_name_go(char *dst_thread, int req_id, int req_len, void *req_bod
 	DLLDEBUG("dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_co_name_msg(
+	return base_thread_name_go(
 		src_id, (s8 *)dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
@@ -129,8 +129,8 @@ dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, vo
 {
 	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
 
-	DLLDEBUG("dst_thread:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
-		dst_thread, msg_id, msg_len, msg_body, fun, line);
+	DLLDEBUG("gid:%s dst_thread:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		gid, dst_thread, msg_id, msg_len, msg_body, fun, line);
 
 	if(base_thread_gid_msg(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
@@ -153,8 +153,44 @@ dave_dll_thread_gid_go(char *gid, char *dst_thread, int req_id, int req_len, voi
 	DLLDEBUG("gid:%s dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		gid, dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_co_gid_msg(
+	return base_thread_gid_go(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
+int
+dave_dll_thread_uid_msg(char *uid, int msg_id, int msg_len, void *msg_body, char *fun, int line)
+{
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("uid:%s msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
+		uid, msg_id, msg_len, msg_body, fun, line);
+
+	if(base_thread_uid_msg(
+		src_id, (s8 *)uid,
+		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
+		(s8 *)fun, (ub)line) == dave_true)
+	{
+		return 0;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+void *
+dave_dll_thread_uid_go(char *uid, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line)
+{
+	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	DLLDEBUG("uid:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
+		uid, req_id, req_len, req_body, rsp_id, fun, line);
+
+	return base_thread_uid_go(
+		src_id, (s8 *)uid,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);

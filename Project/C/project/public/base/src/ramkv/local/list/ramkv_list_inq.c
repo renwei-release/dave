@@ -29,7 +29,7 @@ _ramkv_list_inq_data(KVSlot *pSlot, u8 *key_ptr, ub key_len)
 }
 
 static inline ub
-_ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_ptr, ub value_len)
+_ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	KVData *pData;
 	sb inq_index = 0;
@@ -49,7 +49,13 @@ _ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_
 		{
 			KVDEBUG("pData:%s", pData->key.key_ptr);
 
-			dave_strcpy(key_ptr, pData->key.key_ptr, key_len);
+			if((key_ptr != NULL) && (dave_strcpy(key_ptr, pData->key.key_ptr, key_len) != pData->key.key_len))
+			{
+				KVLOG("name:%s index:%d key_len:%d/%d invalid strcpy on <%s:%d>",
+					pKV->name, index,
+					pData->key.key_len, key_len,
+					fun, line);
+			}
 
 			inq_len = ramkv_list_data_copy_to_user(pData, value_ptr, value_len);
 		}
@@ -136,19 +142,19 @@ __ramkv_list_inq__(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, 
 {
 	if((value_ptr == NULL) || (value_len == 0))
 	{
-		KVLOG("invalid param, key_ptr:%x key_len:%d value_ptr:%x value_len:%d, fun:%s:%d",
+		KVLTRACE(60,1,"invalid param, key_ptr:%x key_len:%d value_ptr:%x value_len:%d <%s:%d>",
 			key_ptr, key_len, value_ptr, value_len, fun, line);
 		return 0;
 	}
 
 	if(index >= 0)
 	{
-		return _ramkv_list_inq_index(pKV, index, key_ptr, key_len, value_ptr, value_len);
+		return _ramkv_list_inq_index(pKV, index, key_ptr, key_len, value_ptr, value_len, fun, line);
 	}
 	else if(key_ptr == NULL)
 	{
 		/* 如果没有给出索引KEY，那么就给出第一个数据 */
-		return _ramkv_list_inq_index(pKV, 0, NULL, 0, value_ptr, value_len);
+		return _ramkv_list_inq_index(pKV, 0, NULL, 0, value_ptr, value_len, fun, line);
 	}
 	else if(key_len == 0)
 	{

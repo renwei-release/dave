@@ -17,14 +17,14 @@
 #include "dos_log.h"
 
 static RetCode
-_dos_restart_help(void)
+_dos_exit_help(void)
 {
-	dos_print("Usage: restart\nRestart the system!");
+	dos_print("Usage: restart\nExit the system!");
 	return RetCode_OK;
 }
 
 static RetCode
-_dos_restart_user(s8 *param_ptr, ub param_len)
+_dos_exit_user(s8 *param_ptr, ub param_len)
 {
 	const char *msg = "User exit the system!";
 
@@ -41,11 +41,7 @@ dos_exit_reset(void)
 {
 	if(dave_os_on_docker() == dave_false)
 	{
-		dos_cmd_reg("exit", _dos_restart_user, _dos_restart_help);
-	}
-	else
-	{
-		dos_cmd_reg("restart", _dos_restart_user, _dos_restart_help);
+		dos_cmd_reg("exit", _dos_exit_user, _dos_exit_help);
 	}
 }
 

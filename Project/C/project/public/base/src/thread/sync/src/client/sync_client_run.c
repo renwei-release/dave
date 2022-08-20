@@ -36,7 +36,7 @@ static ThreadId _sync_client_thread = INVALID_THREAD_ID;
 static inline dave_bool
 _sync_client_run_thread_msg(
 	SyncServer *pServer,
-	void *pChainBson,
+	void *pChainBson, void *pRouterBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ThreadId src_thread, ThreadId dst_thread,
@@ -46,6 +46,7 @@ _sync_client_run_thread_msg(
 {
 	ub net_index;
 	ThreadChain *pChain;
+	ThreadRouter *pRouter;
 	dave_bool ret;
 
 	route_src = thread_set_local(route_src, src_thread);
@@ -87,16 +88,19 @@ _sync_client_run_thread_msg(
 	route_src = sync_client_thread_id_change_to_user(route_src, _sync_client_thread);
 
 	pChain = thread_bson_to_chain(pChainBson);
+	pRouter = thread_bson_to_router(pRouterBson);
 
 	thread_chain_insert(
 		ChainType_called,
-		pChain,
+		pChain, pRouter,
 		pServer->globally_identifier, globally_identifier(),
 		route_src, route_dst,
 		msg_id, msg_len, msg_body);
 
+	thread_router_next_route(pRouter);
+
 	ret = base_thread_id_msg(
-		pChain,
+		pChain, pRouter,
 		route_src, route_dst,
 		BaseMsgType_Unicast,
 		msg_id, msg_len, msg_body,
@@ -104,6 +108,7 @@ _sync_client_run_thread_msg(
 		(s8 *)__func__, (ub)__LINE__);
 
 	t_bson_free_object(pChainBson);
+	t_bson_free_object(pRouterBson);
 
 	return ret;
 }
@@ -111,7 +116,7 @@ _sync_client_run_thread_msg(
 static inline dave_bool
 _sync_client_run_thread(
 	SyncServer *pServer,
-	void *pChainBson,
+	void *pChainBson, void *pRouterBson,
 	s8 *src, ThreadId route_src,
 	s8 *dst, ThreadId route_dst,
 	ub msg_id,
@@ -141,7 +146,7 @@ _sync_client_run_thread(
 		{
 			sync_client_msg_buffer_push(
 				pServer,
-				pChainBson,
+				pChainBson, pRouterBson,
 				src, route_src,
 				dst, route_dst,
 				msg_id, msg_type,
@@ -159,7 +164,7 @@ _sync_client_run_thread(
 	{
 		ret = _sync_client_run_thread_msg(
 			pServer,
-			pChainBson,
+			pChainBson, pRouterBson,
 			src, route_src,
 			dst, route_dst,
 			src_thread, dst_thread,
@@ -274,7 +279,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	u8 *package_ptr = NULL;
 	ub package_len = 0;
 	void *msg_body = NULL;
-	void *pChainBson = NULL;
+	void *pChainBson = NULL, *pRouterBson = NULL;
 	ub msg_len = 0;
 	RetCode ret = RetCode_OK;
 
@@ -289,7 +294,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 		msg_type, msgstr(msg_id), package_len);
 
-	if(t_rpc_unzip(&pChainBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
+	if(t_rpc_unzip(&pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{
 		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
@@ -305,7 +310,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	{
 		if(_sync_client_run_thread(
 			pServer,
-			pChainBson,
+			pChainBson, pRouterBson,
 			src, route_src,
 			dst, route_dst,
 			msg_id,
@@ -326,6 +331,10 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	if(ret != RetCode_OK)
 	{
 		SYNCLTRACE(60,1,"%s, %s->%s:%s/%d", retstr(ret), src, dst, msgstr(msg_id), msg_len);
+
+		t_bson_free_object(pChainBson);
+
+		t_bson_free_object(pRouterBson);
 
 		thread_msg_release(msg_body);
 	}

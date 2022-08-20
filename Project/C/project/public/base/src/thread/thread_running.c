@@ -49,14 +49,20 @@ static inline void
 _thread_running_function(base_thread_fun thread_fun, MSGBODY *msg)
 {
 	ThreadChain *pThreadChain;
+	ThreadRouter *pThreadRouter;
 
 	pThreadChain = thread_chain_run_msg(msg);
+	pThreadRouter = thread_router_run_msg(msg);
 
 	thread_fun(msg);
 
 	if(pThreadChain != NULL)
 	{
 		thread_chain_run_clean(pThreadChain, msg);
+	}
+	if(pThreadRouter != NULL)
+	{
+		thread_router_run_clean(pThreadRouter);
 	}
 }
 

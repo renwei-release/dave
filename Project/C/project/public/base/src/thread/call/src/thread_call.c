@@ -91,6 +91,7 @@ thread_call_sync_wait(
 
 dave_bool
 thread_call_sync_catch(
+	void *msg_chain, void *msg_router,
 	ThreadId src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
 	ub msg_id, void *msg_body, ub msg_len,
@@ -101,7 +102,11 @@ thread_call_sync_catch(
 #ifdef ENABLE_THREAD_COROUTINE
 	if(thread_enable_coroutine(pDstThread) == dave_true)
 	{
-		catch_flag = *hold_body = thread_coroutine_running_step_resume(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
+		catch_flag = *hold_body = thread_coroutine_running_step_resume(
+			msg_chain, msg_router,
+			src_id,
+			pDstThread, dst_id,
+			msg_id, msg_body, msg_len);
 	}
 	else
 #endif

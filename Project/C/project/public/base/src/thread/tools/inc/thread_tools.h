@@ -41,7 +41,7 @@ dave_bool thread_enable_coroutine(ThreadStruct *pThread);
 
 ThreadMsg * thread_build_msg(
 	ThreadStruct *pThread,
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub data_len, u8 *data,
 	BaseMsgType msg_type,
@@ -51,9 +51,13 @@ void thread_clean_msg(ThreadMsg *pMsg);
 
 ThreadChain * thread_current_chain(void);
 
+ThreadRouter * thread_current_router(void);
+
 s8 * thread_id_to_name(ThreadId thread_id);
 
 TaskAttribute thread_id_to_attrib(ThreadId thread_id);
+
+dave_bool thread_internal_msg(ub msg_id);
 
 #endif
 

@@ -31,6 +31,7 @@ void * thread_coroutine_running_step_setup(
 void * thread_coroutine_running_step_yield(void *param);
 
 dave_bool thread_coroutine_running_step_resume(
+	void *msg_chain, void *msg_router,
 	ThreadId src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
 	ub msg_id, void *msg_body, ub msg_len);

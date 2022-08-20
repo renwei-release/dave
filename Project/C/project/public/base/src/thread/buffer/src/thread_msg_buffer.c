@@ -24,6 +24,7 @@ typedef struct {
 	ThreadId src_id;
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 dst_thread[THREAD_NAME_MAX];
+	s8 uid[DAVE_UID_LEN];
 	BaseMsgType msg_type;
 	ub msg_id;
 	ub msg_len;
@@ -54,7 +55,7 @@ _thread_msg_buffer_key(s8 *buffer_key_ptr, ub buffer_ken_len, s8 *gid, s8 *dst_t
 	{
 		THREADABNOR("gid:%s has empty dst_thread!", gid);
 	}
-	
+
 	dave_snprintf(buffer_key_ptr, buffer_ken_len, "%s-%s", gid, dst_thread);
 
 	return buffer_key_ptr;
@@ -62,7 +63,7 @@ _thread_msg_buffer_key(s8 *buffer_key_ptr, ub buffer_ken_len, s8 *gid, s8 *dst_t
 
 static MsgBuffer *
 _thread_msg_buffer_malloc(
-	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	ThreadId src_id, s8 *gid, s8 *dst_thread, s8 *uid,
 	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -93,6 +94,14 @@ _thread_msg_buffer_malloc(
 	{
 		pBuffer->dst_thread[0] = '\0';
 	}
+	if(uid != NULL)
+	{
+		dave_strcpy(pBuffer->uid, uid, sizeof(pBuffer->uid));
+	}
+	else
+	{
+		pBuffer->uid[0] = '\0';
+	}
 	pBuffer->msg_type = msg_type;
 	pBuffer->msg_id = msg_id;
 	pBuffer->msg_len = msg_len;
@@ -115,7 +124,7 @@ _thread_msg_buffer_free(MsgBuffer *pBuffer)
 }
 
 static MsgList *
-_thread_msg_buffer_list_inq(void *ramkv, s8 *gid, s8 *dst_thread, s8 *buffer_key)
+_thread_msg_buffer_list_inq(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid, s8 *buffer_key)
 {
 	if((gid != NULL) && (gid[0] != '\0'))
 	{
@@ -126,6 +135,10 @@ _thread_msg_buffer_list_inq(void *ramkv, s8 *gid, s8 *dst_thread, s8 *buffer_key
 	{
 		return (MsgList *)kv_inq_key_ptr(ramkv, dst_thread);
 	}
+	else if((uid != NULL) && (uid[0] != '\0'))
+	{
+		return (MsgList *)kv_inq_key_ptr(ramkv, uid);
+	}
 	else if((buffer_key != NULL) && (buffer_key[0] != '\0'))
 	{
 		return (MsgList *)kv_inq_key_ptr(ramkv, buffer_key);
@@ -135,30 +148,36 @@ _thread_msg_buffer_list_inq(void *ramkv, s8 *gid, s8 *dst_thread, s8 *buffer_key
 }
 
 static MsgList *
-_thread_msg_buffer_list_malloc(void *ramkv, s8 *gid, s8 *dst_thread)
+_thread_msg_buffer_list_malloc(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
 {
 	MsgList *pMsgList = dave_ralloc(sizeof(MsgList));
+
+	pMsgList->head = pMsgList->tail = NULL;
+	pMsgList->life = THREAD_MSG_BUFFER_LIFE_MAX;
 
 	if((gid != NULL) && (gid[0] != '\0'))
 	{
 		s8 buffer_key[256];
 		kv_add_key_ptr(ramkv, _thread_msg_buffer_key(buffer_key, sizeof(buffer_key), gid, dst_thread), pMsgList);
 	}
-	else
+	else if((dst_thread != NULL) && (dst_thread[0] != '\0'))
 	{
 		kv_add_key_ptr(ramkv, dst_thread, pMsgList);
 	}
-
-	pMsgList->head = pMsgList->tail = NULL;
-	pMsgList->life = THREAD_MSG_BUFFER_LIFE_MAX;
-
-	THREADDEBUG("%s", dst_thread);
+	else if((uid != NULL) && (uid[0] != '\0'))
+	{
+		kv_add_key_ptr(ramkv, uid, pMsgList);
+	}
+	else
+	{
+		THREADABNOR("gid:%s dst_thread:%s uid:%s malloc failed!", gid, dst_thread, uid);
+	}
 
 	return pMsgList;
 }
 
 static RetCode
-_thread_msg_buffer_list_free(void *ramkv, s8 *gid, s8 *dst_thread, s8 *buffer_key)
+_thread_msg_buffer_list_free(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid, s8 *buffer_key)
 {
 	MsgList *pMsgList;
 	MsgBuffer *pBuffer, *pNextBuffer;
@@ -171,6 +190,10 @@ _thread_msg_buffer_list_free(void *ramkv, s8 *gid, s8 *dst_thread, s8 *buffer_ke
 	else if((dst_thread != NULL) && (dst_thread[0] != '\0'))
 	{
 		pMsgList = kv_del_key_ptr(ramkv, dst_thread);
+	}
+	else if((uid != NULL) && (uid[0] != '\0'))
+	{
+		pMsgList = kv_del_key_ptr(ramkv, uid);
 	}
 	else if((buffer_key != NULL) && (buffer_key[0] != '\0'))
 	{
@@ -205,10 +228,10 @@ _thread_msg_buffer_push(void *ramkv, MsgBuffer *pBuffer)
 {
 	MsgList *pMsgList;
 
-	pMsgList = _thread_msg_buffer_list_inq(ramkv, pBuffer->gid, pBuffer->dst_thread, NULL);
+	pMsgList = _thread_msg_buffer_list_inq(ramkv, pBuffer->gid, pBuffer->dst_thread, pBuffer->uid, NULL);
 	if(pMsgList == NULL)
 	{
-		pMsgList = _thread_msg_buffer_list_malloc(ramkv, pBuffer->gid, pBuffer->dst_thread);
+		pMsgList = _thread_msg_buffer_list_malloc(ramkv, pBuffer->gid, pBuffer->dst_thread, pBuffer->uid);
 	}
 
 	pBuffer->life = pMsgList->life;
@@ -228,9 +251,9 @@ _thread_msg_buffer_push(void *ramkv, MsgBuffer *pBuffer)
 }
 
 static MsgBuffer *
-_thread_msg_buffer_pop(void *ramkv, s8 *gid, s8 *dst_thread)
+_thread_msg_buffer_pop(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
 {
-	MsgList *pMsgList = _thread_msg_buffer_list_inq(ramkv, gid, dst_thread, NULL);
+	MsgList *pMsgList = _thread_msg_buffer_list_inq(ramkv, gid, dst_thread, uid, NULL);
 	MsgBuffer *pBuffer;
 
 	if(pMsgList == NULL)
@@ -255,22 +278,22 @@ _thread_msg_buffer_pop(void *ramkv, s8 *gid, s8 *dst_thread)
 }
 
 static void
-_thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
+_thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
 {
 	MsgBuffer *pBuffer;
 	ThreadId dst_id;
 
 	do {
-		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, dst_thread);
+		pBuffer = _thread_msg_buffer_pop(ramkv, gid, dst_thread, NULL);
 		if(pBuffer == NULL)
 			break;
 
-		dst_id = thread_id(pBuffer->dst_thread);
+		dst_id = thread_gid_table_inq(gid, dst_thread);
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
 			if(base_thread_id_msg(
-				NULL,
+				NULL, NULL,
 				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
@@ -294,22 +317,62 @@ _thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
 }
 
 static void
-_thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
+_thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
 {
 	MsgBuffer *pBuffer;
 	ThreadId dst_id;
 
 	do {
-		pBuffer = _thread_msg_buffer_pop(ramkv, gid, dst_thread);
+		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, dst_thread, NULL);
 		if(pBuffer == NULL)
 			break;
 
-		dst_id = thread_gid_table_inq(gid, dst_thread);
+		dst_id = thread_id(pBuffer->dst_thread);
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
 			if(base_thread_id_msg(
-				NULL,
+				NULL, NULL,
+				pBuffer->src_id, dst_id,
+				pBuffer->msg_type,
+				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
+				0,
+				pBuffer->fun, pBuffer->line) == dave_false)
+			{
+				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
+					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+					pBuffer->fun, pBuffer->line);
+			}
+		}
+		else
+		{
+			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
+				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+				pBuffer->fun, pBuffer->line);
+		}
+
+		_thread_msg_buffer_free(pBuffer);
+	} while(pBuffer != NULL);
+}
+
+static void
+_thread_msg_buffer_uid_pop(void *ramkv, s8 *uid)
+{
+	MsgBuffer *pBuffer;
+	ThreadId dst_id;
+	ThreadRouter *pRouter;
+
+	do {
+		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, NULL, uid);
+		if(pBuffer == NULL)
+			break;
+
+		dst_id = thread_router_pop_msg(&pRouter, uid);
+
+		if(dst_id != INVALID_THREAD_ID)
+		{
+			if(base_thread_id_msg(
+				NULL, pRouter,
 				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
@@ -341,8 +404,9 @@ _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 	pMsg->msg_len = pBuffer->msg_len;
 	pMsg->msg_body = &(((u8 *)pMsg)[sizeof(ProcessMsgTimerOutMsg)]);
 
-	THREADLOG("msg_id:%s(gid:%s dst_thread:%s) timer out to:%s",
-		msgstr(pMsg->msg_id), pBuffer->gid, pBuffer->dst_thread,
+	THREADLOG("msg_id:%s(gid:%s dst_thread:%s uid:%s) timer out to:%s",
+		msgstr(pMsg->msg_id),
+		pBuffer->gid, pBuffer->dst_thread, pBuffer->uid,
 		thread_id_to_name(pBuffer->src_id));
 
 	id_msg(pBuffer->src_id, MSGID_PROCESS_MSG_TIMER_OUT, pMsg);
@@ -391,6 +455,13 @@ _thread_msg_buffer_is_ready(void *ramkv, MsgList *pMsgList)
 			_thread_msg_buffer_thread_pop(ramkv, pReady->dst_thread);	
 		}
 	}
+	else if(pReady->uid[0] != '\0')
+	{
+		if(thread_router_check_uid(pReady->uid) != INVALID_THREAD_ID)
+		{
+			_thread_msg_buffer_uid_pop(ramkv, pReady->uid);
+		}
+	}
 	else
 	{
 		THREADABNOR("find invalid buffer! %s->%s:%s gid:%s <%s:%d>",
@@ -403,11 +474,11 @@ _thread_msg_buffer_is_ready(void *ramkv, MsgList *pMsgList)
 static void
 _thread_msg_buffer_tick(void *ramkv, s8 *buffer_key)
 {
-	MsgList *pMsgList = _thread_msg_buffer_list_inq(ramkv, NULL, NULL, buffer_key);
+	MsgList *pMsgList = _thread_msg_buffer_list_inq(ramkv, NULL, NULL, NULL, buffer_key);
 
 	if((pMsgList == NULL) || (pMsgList->head == NULL))
 	{
-		_thread_msg_buffer_list_free(ramkv, NULL, NULL, buffer_key);
+		_thread_msg_buffer_list_free(ramkv, NULL, NULL, NULL, buffer_key);
 	}
 	else
 	{
@@ -452,19 +523,25 @@ _thread_msg_buffer_safe_gid_pop(s8 *gid, s8 *dst_thread)
 	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_gid_pop(_thread_msg_buf_ramkv, gid, dst_thread); );
 }
 
+static void
+_thread_msg_buffer_safe_uid_pop(s8 *uid)
+{
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_uid_pop(_thread_msg_buf_ramkv, uid); );
+}
+
 static RetCode
 _thread_msg_buffer_safe_recycle(void *ramkv, s8 *buffer_key)
 {
 	RetCode ret;
 
-	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_list_free(ramkv, NULL, NULL, buffer_key); );
+	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_list_free(ramkv, NULL, NULL, NULL, buffer_key); );
 
 	return ret;
 }
 
 static dave_bool
 _thread_msg_buffer_public_push(
-	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	ThreadId src_id, s8 *gid, s8 *dst_thread, s8 *uid,
 	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -472,7 +549,7 @@ _thread_msg_buffer_public_push(
 	MsgBuffer *pBuffer;
 
 	pBuffer = _thread_msg_buffer_malloc(
-		src_id, gid, dst_thread,
+		src_id, gid, dst_thread, uid,
 		msg_type,
 		msg_id, msg_len, msg_body,
 		fun, line);
@@ -536,7 +613,7 @@ thread_msg_buffer_thread_push(
 	thread_msg_buffer_init();
 
 	return _thread_msg_buffer_public_push(
-		src_id, NULL, dst_thread,
+		src_id, NULL, dst_thread, NULL,
 		msg_type,
 		msg_id, msg_len, msg_body,
 		fun, line);
@@ -558,7 +635,7 @@ thread_msg_buffer_gid_push(
 	thread_msg_buffer_init();
 
 	return _thread_msg_buffer_public_push(
-		src_id, gid, dst_thread,
+		src_id, gid, dst_thread, NULL,
 		msg_type,
 		msg_id, msg_len, msg_body,
 		fun, line);
@@ -568,6 +645,28 @@ void
 thread_msg_buffer_gid_pop(s8 *gid, s8 *dst_thread)
 {
 	_thread_msg_buffer_safe_gid_pop(gid, dst_thread);
+}
+
+dave_bool
+thread_msg_buffer_uid_push(
+	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	thread_msg_buffer_init();
+
+	return _thread_msg_buffer_public_push(
+		src_id, NULL, NULL, uid,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
+}
+
+void
+thread_msg_buffer_uid_pop(s8 *uid)
+{
+	_thread_msg_buffer_safe_uid_pop(uid);
 }
 
 #endif

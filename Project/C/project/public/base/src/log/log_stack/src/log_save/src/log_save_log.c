@@ -146,6 +146,12 @@ _log_save_log_insert_key_value(void *pJson, s8 *content_ptr, ub content_len)
 	}
 }
 
+static inline void
+_log_save_log_insert_log_body(void *pJson, s8 *content_ptr, ub content_len)
+{
+	dave_json_add_str_len(pJson, "log_body", content_ptr, content_len);
+}
+
 // =====================================================================
 
 void
@@ -163,15 +169,8 @@ log_save_log(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 	dave_json_add_str(pJson, "level", t_auto_TraceLevel_str(level));
 	process_len = _log_save_log_insert_public(pJson, content_ptr, content_len);
 	_log_save_log_insert_key_value(pJson, &content_ptr[process_len], content_len-process_len);
+	_log_save_log_insert_log_body(pJson, &content_ptr[process_len], content_len-process_len);
 
-	if(process_len == 0)
-	{
-		dave_json_add_str_len(pJson, "log_body", content_ptr, content_len);
-	}
-	else if(process_len < content_len)
-	{
-		dave_json_add_str_len(pJson, "log_body", &content_ptr[process_len], content_len-process_len);
-	}
 	dave_json_add_str_len(pJson, "content", content_ptr, content_len);
 
 	file_len = dave_os_file_len(NULL, file_id);

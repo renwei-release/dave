@@ -388,6 +388,26 @@ class DBSysAddWeiChatRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for DBMSG_SYS_BILLING_SMS_REQ message *#
+class DBSysBillingSMSReq (Structure):
+	_fields_ = [
+		("ret", c_ulonglong),
+		("sql_object", c_char * DAVE_BILLING_SMS_DB_LEN),
+		("status", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for DBMSG_SYS_BILLING_SMS_RSP message *#
+class DBSysBillingSMSRsp (Structure):
+	_fields_ = [
+		("ret", c_ulonglong),
+		("data_object", c_char * DAVE_BILLING_SMS_DB_LEN),
+		("status", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
 #* for DBMSG_SYS_INQ_CHANNEL_REQ message *#
 class DBSysInqChannelReq (Structure):
 	_fields_ = [
@@ -738,6 +758,7 @@ class RESTARTRSPMSG (Structure):
 class RPCDebugReq (Structure):
 	_fields_ = [
 		("ret_debug", c_ulonglong),
+		("req_thread", c_char * 64),
 		("str_debug", c_char * 16),
 		("s8_debug", c_char),
 		("u8_debug", c_char),
@@ -759,6 +780,7 @@ class RPCDebugReq (Structure):
 class RPCDebugRsp (Structure):
 	_fields_ = [
 		("ret_debug", c_ulonglong),
+		("rsp_thread", c_char * 64),
 		("str_debug", c_char * 16),
 		("s8_debug", c_char),
 		("u8_debug", c_char),

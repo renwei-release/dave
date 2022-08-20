@@ -18,6 +18,8 @@ forgettable_path_list = [
     "../../Project/C/project/public/tools/inc/t_rpc.h",
     "../../Project/C/project/public/tools/src",
     "../../Project/C/project/public/verno",
+	"../../Project/C/project/inc/third_party",
+	"../../Project/C/project/src/verno"
 ]
 
 

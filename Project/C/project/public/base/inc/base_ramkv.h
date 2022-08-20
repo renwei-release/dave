@@ -9,7 +9,7 @@
 #define __BASE_KV_H__
 
 typedef enum {
-	KvAttrib_ram,		/* A memory KV, if there are not many storage nodes, you can use it, the fastest, but it takes up a lot of memory */
+	KvAttrib_ram,		/* ***Not perfect*** A memory KV, if there are not many storage nodes, you can use it, the fastest, but it takes up a lot of memory */
 	KvAttrib_list,		/* A memory KV, if there are many storage nodes, you can use it, the speed is slower than ram, and it takes up less memory */
 	KvAttrib_remote,	/* A remote KV can realize clustering */
 } KvAttrib;
@@ -22,10 +22,9 @@ void base_ramkv_exit(void);
 
 dave_bool base_ramkv_check(void *ramkv);
 ub base_ramkv_info(void *ramkv, s8 *info_ptr, ub info_len);
-void base_ramkv_test(s8 *cmd);
 
 void * __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line);
-void __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback callback_fun, s8 *fun, ub line);
+void __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback recycle_fun, s8 *fun, ub line);
 
 dave_bool __base_ramkv_add_key_ptr__(void *ramkv, s8 *key, void *ptr, s8 *fun, ub line);
 void * __base_ramkv_inq_key_ptr__(void *ramkv, s8 *key, s8 *fun, ub line);
@@ -44,7 +43,7 @@ dave_bool __base_ramkv_del_key_value__(void *ramkv, s8 *key, s8 *fun, ub line);
 void * __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line);
 
 #define base_ramkv_malloc(name, attrib, out_second, callback_fun) __base_ramkv_malloc__(dave_true, name, attrib, out_second, callback_fun, (s8 *)__func__, (ub)__LINE__)
-#define base_ramkv_free(ramkv, callback_fun) __base_ramkv_free__(dave_true, ramkv, callback_fun, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_free(ramkv, recycle_fun) __base_ramkv_free__(dave_true, ramkv, recycle_fun, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_add_key_ptr(ramkv, key, ptr) __base_ramkv_add_key_ptr__(ramkv, key, ptr, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_inq_key_ptr(ramkv, key) __base_ramkv_inq_key_ptr__(ramkv, key, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_inq_index_ptr(ramkv, index) __base_ramkv_inq_index_ptr__(ramkv, index, (s8 *)__func__, (ub)__LINE__)

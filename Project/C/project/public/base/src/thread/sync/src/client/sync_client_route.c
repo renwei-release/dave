@@ -66,14 +66,9 @@ _sync_client_message_route_to_remote(SyncServer *pServer, MSGBODY *pMsg)
 	route_src = thread_set_remote(pMsg->msg_src, SYNC_THREAD_INDEX_MAX, pServer->server_index);
 	route_dst = thread_set_remote(pMsg->msg_dst, thread_get_thread(pMsg->msg_dst), thread_get_net(pMsg->msg_dst));
 
-	SYNCDEBUG("%s<%lx/%lx>->%s<%lx/%lx> %d",
-		src, route_src, pMsg->msg_src,
-		dst, route_dst, pMsg->msg_dst,
-		pMsg->msg_id);
-
 	sync_client_tx_run_thread_msg_req(
 		pServer,
-		pMsg->msg_chain,
+		pMsg->msg_chain, pMsg->msg_router,
 		route_src, route_dst,
 		src, dst, pMsg->msg_id,
 		pMsg->msg_type, pMsg->src_attrib, pMsg->dst_attrib,
@@ -93,7 +88,7 @@ sync_client_message_route(MSGBODY *pMsg)
 	{		
 		thread_chain_insert(
 			ChainType_calling,
-			pMsg->msg_chain,
+			pMsg->msg_chain, NULL,
 			globally_identifier(), pServer->globally_identifier,
 			pMsg->msg_src, pMsg->msg_dst,
 			pMsg->msg_id, pMsg->msg_len, pMsg->msg_body);

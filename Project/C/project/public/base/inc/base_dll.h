@@ -52,6 +52,10 @@ API int dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg
 
 API void * dave_dll_thread_gid_go(char *gid, char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
 
+API int dave_dll_thread_uid_msg(char *uid, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
+API void * dave_dll_thread_uid_go(char *uid, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
+
 API void * dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line);
 
 API int dave_dll_thread_broadcast_msg(char *thread_name, int msg_id, int msg_len, void *msg_body, char *fun, int line);

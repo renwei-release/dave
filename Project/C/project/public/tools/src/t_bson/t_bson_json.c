@@ -293,8 +293,8 @@ tBsonObject *
 t_json_bson(json_object *pJson)
 {
 	tBsonObject *pBson;
-	char *key = NULL;
 	struct lh_entry *entry = NULL;
+	char *key = NULL;
 	struct json_object* val = NULL;
 
 	if(pJson->o_type == json_type_object)

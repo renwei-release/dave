@@ -204,7 +204,9 @@ _thread_coroutine_del_kv(
  * 我们把与这个线程有关的消息都在该线程自己的消息队列去排队执行。
  */
 static inline void
-_thread_coroutine_wakeup_me(CoroutineSite *pSite, wakeupevent event, s8 *some_string)
+_thread_coroutine_wakeup_me(
+	void *msg_chain, void *msg_router,
+	CoroutineSite *pSite, wakeupevent event, s8 *some_string)
 {
 	CoroutineWakeup *pWakeup;
 
@@ -220,7 +222,7 @@ _thread_coroutine_wakeup_me(CoroutineSite *pSite, wakeupevent event, s8 *some_st
 	}
 	pWakeup->ptr = pSite;
 
-	thread_thread_write(pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
+	thread_thread_write(msg_chain, msg_router, pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
 }
 
 static inline void *
@@ -340,7 +342,11 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 }
 
 static inline dave_bool
-_thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, ThreadId dst_id, ub msg_id, void *msg_body, ub msg_len)
+_thread_coroutine_running_step_5(
+	void *msg_chain, void *msg_router,
+	ThreadId src_id,
+	ThreadStruct *pDstThread, ThreadId dst_id,
+	ub msg_id, void *msg_body, ub msg_len)
 {
 	ub wakeup_index, msg_site;
 	CoroutineSite *pSite;
@@ -380,7 +386,9 @@ _thread_coroutine_running_step_5(ThreadId src_id, ThreadStruct *pDstThread, Thre
 	}
 	t_rpc_ptr(msg_id, msg_body, pSite->user_msg_ptr);
 
-	_thread_coroutine_wakeup_me(pSite, wakeupevent_get_msg, NULL);
+	_thread_coroutine_wakeup_me(
+		msg_chain, msg_router,
+		pSite, wakeupevent_get_msg, NULL);
 
 	return dave_true;
 }
@@ -510,7 +518,7 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 			pSite->src_thread, pSite->msg_id,
 			pSite, pSite->co);
 	
-		_thread_coroutine_wakeup_me(pSite, wakeupevent_timer_out, key);
+		_thread_coroutine_wakeup_me(NULL, NULL, pSite, wakeupevent_timer_out, key);
 	}
 }
 
@@ -606,11 +614,16 @@ thread_coroutine_running_step_yield(void *param)
 
 dave_bool
 thread_coroutine_running_step_resume(
+	void *msg_chain, void *msg_router,
 	ThreadId src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
 	ub msg_id, void *msg_body, ub msg_len)
 {
-	return _thread_coroutine_running_step_5(src_id, pDstThread, dst_id, msg_id, msg_body, msg_len);
+	return _thread_coroutine_running_step_5(
+		msg_chain, msg_router,
+		src_id,
+		pDstThread, dst_id,
+		msg_id, msg_body, msg_len);
 }
 
 #endif

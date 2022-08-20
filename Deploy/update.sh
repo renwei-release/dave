@@ -72,6 +72,7 @@ copy_bin_project_file()
 
    if [ -f ${PRJBINFILE} ]; then
       echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
+      chmod a+x ${PRJBINFILE}
       docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
       docker exec -it ${PROJECTNAME} sh -c "chmod a+x /project/${PROJECT^^}-BIN"
    fi

@@ -20,6 +20,7 @@
 #include "thread_quit.h"
 #include "thread_tools.h"
 #include "thread_chain.h"
+#include "thread_router.h"
 #include "thread_log.h"
 
 typedef enum {
@@ -36,6 +37,7 @@ typedef struct {
 	ThreadId thread_id;
 	ThreadQueue thread_queue[THREAD_THREAD_QUEUE_NUM];
 	ThreadChain chain;
+	ThreadRouter router;
 
 	volatile ThreadState state;
 
@@ -86,6 +88,7 @@ _tthread_reset(ThreadThread *pTThread)
 	pTThread->thread_id = INVALID_THREAD_ID;
 	thread_queue_reset(pTThread->thread_queue, THREAD_THREAD_QUEUE_NUM);
 	thread_chain_reset(&(pTThread->chain));
+	thread_router_reset(&(pTThread->router));
 
 	pTThread->state = ThreadState_INIT;
 
@@ -974,6 +977,20 @@ thread_thread_chain(void)
 	return &(pMap->pTThread->chain);
 }
 
+ThreadRouter *
+thread_thread_router(void)
+{
+	ThreadSelfMap *pMap;
+
+	pMap = _tthread_find_self_old_map(_tthread_self_thread());
+	if(pMap == NULL)
+	{
+		return NULL;
+	}
+
+	return &(pMap->pTThread->router);
+}
+
 ThreadSync *
 thread_thread_sync(ub thread_index, ub wakeup_index)
 {
@@ -990,6 +1007,7 @@ thread_thread_sync(ub thread_index, ub wakeup_index)
 
 void
 __thread_thread_write__(
+	void *msg_chain, void *msg_router,
 	ub thread_index, ub wakeup_index,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -1010,7 +1028,7 @@ __thread_thread_write__(
 
 	pMsg = thread_build_msg(
 		pThread,
-		NULL,
+		msg_chain, msg_router,
 		pThread->thread_id, pThread->thread_id,
 		msg_id, msg_len, msg_body,
 		BaseMsgType_Unicast,

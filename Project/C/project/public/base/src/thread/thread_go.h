@@ -11,16 +11,30 @@
 #include "dave_base.h"
 #include "thread_struct.h"
 
-void * thread_go_msg(
+void * thread_go_id(
+	ThreadStruct *pSrcThread,
+	ThreadId dst_id,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line);
+
+void * thread_go_name(
+	ThreadStruct *pSrcThread,
+	s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line);
+
+void * thread_go_gid(
 	ThreadStruct *pSrcThread,
 	s8 *gid, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line);
 
-void * thread_go_id(
+void * thread_go_uid(
 	ThreadStruct *pSrcThread,
-	ThreadId dst_id,
+	s8 *uid,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line);

@@ -20,19 +20,24 @@ build_static_lib()
    mkdir -p ${HOMEPATH}../Go/project/public/base/inc
    mkdir -p ${HOMEPATH}../Go/project/public/base/lib/
 
-   obj_list=$(find `pwd`/../../../project/public -name '*.o')
-
    echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
    rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
 
+   obj_list=$(find `pwd`/../../../project/public \
+      ! -path "`pwd`/../../../project/public/tools/src/t_auto/*" \
+      ! -path "`pwd`/../../../project/public/tools/src/t_rpc/*" \
+      -name '*.o')
    CLIB=${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
    echo lib build ${CLIB}
    rm -f ${CLIB}
    ar cru ${CLIB} ${obj_list}
 
+   obj_list=$(find `pwd`/../../../project/public -name '*.o')
    GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
-   cp ${CLIB} ${GOLIB}
+   echo lib build ${GOLIB}
+   rm -f ${GOLIB}
+   ar cru ${GOLIB} ${obj_list}
 }
 
 build_dynamic_lib()
@@ -51,7 +56,7 @@ build_lib()
 {
    ./clean >> $LOGFILE
 
-   echo lib build $LEVEL LIB ...
+   echo -e "lib build \033[35m$LEVEL\033[0m LIB ..."
    ./build $LEVEL LIB >> $LOGFILE
 
    build_dynamic_lib

@@ -191,7 +191,7 @@ sync_client_tx_run_thread_msg_rsp(SyncServer *pServer, s8 *src, s8 *dst, ub msg_
 dave_bool
 sync_client_tx_run_thread_msg_req(
 	SyncServer *pServer,
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId route_src, ThreadId route_dst,
 	s8 *src, s8 *dst, ub msg_id,
 	BaseMsgType msg_type, TaskAttribute src_attrib, TaskAttribute dst_attrib,
@@ -200,7 +200,7 @@ sync_client_tx_run_thread_msg_req(
 	MBUF *zip_body;
 	MBUF *msg_head;
 
-	zip_body = t_rpc_zip(pServer->rpc_version, thread_chain_to_bson(msg_chain), msg_id, msg_body, msg_len);
+	zip_body = t_rpc_zip(pServer->rpc_version, thread_chain_to_bson(msg_chain), thread_router_to_bson(msg_router), msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
 	{
 		SYNCLOG("%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%d msg_len:%d",

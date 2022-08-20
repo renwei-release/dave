@@ -52,5 +52,7 @@
 
 #define DAVE_SYS_THREAD_ID_MAX 204800
 
+#define DAVE_UID_LEN (64)
+
 #endif
 

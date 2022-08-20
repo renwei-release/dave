@@ -10,6 +10,7 @@
 #include "base_define.h"
 #include "base_tools.h"
 #include "thread_chain.h"
+#include "thread_router.h"
 #include "thread_tools.h"
 #include "thread_log.h"
 #include "chain_id.h"
@@ -168,58 +169,21 @@ _thread_chain_enable(ThreadId msg_src, ThreadId msg_dst)
 }
 
 static inline ThreadChain *
-_thread_chain_malloc(void)
+_thread_chain_malloc(s8 *fun, ub line)
 {
-	return (ThreadChain *)dave_malloc(sizeof(ThreadChain));
+	return (ThreadChain *)__base_malloc__(sizeof(ThreadChain), dave_false, 0x00, fun, line);
 }
 
 static inline void
 _thread_chain_free(ThreadChain *pChain)
 {
-	dave_free(pChain);
-}
-
-static inline dave_bool
-_thread_chain_msg_id_enable(ub msg_id)
-{
-	dave_bool enable = dave_true;
-
-	switch(msg_id)
+	if(pChain != NULL)
 	{
-		case MSGID_TIMER:
-		case MSGID_WAKEUP:
-		case MSGID_RUN_FUNCTION:
-		case MSGID_POWER_OFF:
-		case MSGID_REMOTE_THREAD_READY:
-		case MSGID_REMOTE_THREAD_REMOVE:
-		case MSGID_CALL_FUNCTION:
-		case MSGID_INTERNAL_EVENTS:
-		case MSGID_REMOTE_THREAD_ID_READY:
-		case MSGID_REMOTE_THREAD_ID_REMOVE:
-		case MSGID_LOCAL_THREAD_READY:
-		case MSGID_LOCAL_THREAD_REMOVE:
-		case MSGID_INNER_LOOP:
-		case MSGID_OS_NOTIFY:
-		case MSGID_INTERNAL_LOOP:
-		case SOCKET_BIND_REQ:
-		case SOCKET_BIND_RSP:
-		case SOCKET_CONNECT_REQ:
-		case SOCKET_CONNECT_RSP:
-		case SOCKET_DISCONNECT_REQ:
-		case SOCKET_DISCONNECT_RSP:
-		case SOCKET_PLUGIN:
-		case SOCKET_PLUGOUT:
-		case SOCKET_READ:
-		case SOCKET_WRITE:
-		case SOCKET_NOTIFY:
-		case SOCKET_RAW_EVENT:
-				enable = dave_false;
-			break;
-		default:
-			break;
-	}
+		pChain->type = ChainType_none;
+		pChain->chain_id[0] = '\0';
 
-	return enable;
+		dave_free(pChain);
+	}
 }
 
 // =====================================================================
@@ -248,6 +212,12 @@ thread_chain_reset(ThreadChain *pChain)
 	_thread_chain_clean(pChain);
 }
 
+void
+thread_chain_free(ThreadChain *pChain)
+{
+	_thread_chain_free(pChain);
+}
+
 ThreadChain *
 thread_chain_build_msg(
 	void *msg_chain,
@@ -262,7 +232,7 @@ thread_chain_build_msg(
 		return (ThreadChain *)msg_chain;
 	}
 
-	if(_thread_chain_msg_id_enable(msg_id) == dave_false)
+	if(thread_internal_msg(msg_id) == dave_true)
 	{
 		return NULL;
 	}
@@ -270,14 +240,14 @@ thread_chain_build_msg(
 	pThreadChain = thread_current_chain();
 	if(pThreadChain == NULL)
 	{
-		THREADABNOR("pThreadChain is NULL! %x/%s->%x/%s:%s <%s:%d>",
+		THREADDEBUG("pThreadChain is NULL! %x/%s->%x/%s:%s <%s:%d>",
 			msg_src, thread_id_to_name(msg_src), msg_dst, thread_id_to_name(msg_dst),
 			msgstr(msg_id),
 			fun, line);
 		return NULL;
 	}
 
-	pMsgChain = _thread_chain_malloc();
+	pMsgChain = _thread_chain_malloc(fun, line);
 
 	if(pThreadChain->type == ChainType_none)
 		_thread_chain_build_new(pMsgChain, msg_src, msg_dst, msg_id, fun, line);
@@ -285,6 +255,16 @@ thread_chain_build_msg(
 		_thread_chain_build_copy(pMsgChain, pThreadChain, msg_src, msg_dst, msg_id, fun, line);
 
 	return pMsgChain;
+}
+
+void
+thread_chain_clean_msg(MSGBODY *msg)
+{
+	if(msg->msg_chain != NULL)
+	{
+		_thread_chain_free((ThreadChain *)(msg->msg_chain));
+		msg->msg_chain = NULL;
+	}
 }
 
 ThreadChain *
@@ -298,7 +278,7 @@ thread_chain_run_msg(MSGBODY *msg)
 		return NULL;
 	}
 
-	if(_thread_chain_msg_id_enable(msg->msg_id) == dave_false)
+	if(thread_internal_msg(msg->msg_id) == dave_true)
 	{
 		return NULL;
 	}
@@ -328,7 +308,7 @@ thread_chain_run_clean(ThreadChain *pThreadChain, MSGBODY *msg)
 
 	thread_chain_insert(
 		ChainType_execution,
-		pMsgChain,
+		pMsgChain, NULL,
 		pMsgChain->src_gid, pMsgChain->dst_gid,
 		msg->msg_src, msg->msg_dst,
 		msg->msg_id, msg->msg_len, msg->msg_body);
@@ -338,7 +318,7 @@ thread_chain_run_clean(ThreadChain *pThreadChain, MSGBODY *msg)
 
 void
 thread_chain_coroutine_msg(
-	ThreadChain *pMsgChain,
+	ThreadChain *pMsgChain, ThreadRouter *pMsgRouter,
 	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id, ub msg_len, u8 *msg_body)
 {
@@ -348,29 +328,17 @@ thread_chain_coroutine_msg(
 	
 		thread_chain_insert(
 			ChainType_coroutine,
-			pMsgChain,
+			pMsgChain, pMsgRouter,
 			pMsgChain->src_gid, pMsgChain->dst_gid,
 			msg_src, msg_dst,
 			msg_id, msg_len, msg_body);
-
-		_thread_chain_free(pMsgChain);
-	}
-}
-
-void
-thread_chain_clean_msg(MSGBODY *msg)
-{
-	if(msg->msg_chain != NULL)
-	{
-		_thread_chain_free((ThreadChain *)(msg->msg_chain));
-		msg->msg_chain = NULL;
 	}
 }
 
 void
 thread_chain_insert(
 	ChainType type,
-	ThreadChain *pChain,
+	ThreadChain *pChain, ThreadRouter *pRouter,
 	s8 *src_gid, s8 *dst_gid,
 	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id, ub msg_len, void *msg_body)
@@ -382,8 +350,8 @@ thread_chain_insert(
 
 	if(pChain == NULL)
 	{
-		THREADLTRACE(60,1,"chain is empty! type:%s %s->%s %s->%s:%s",
-			t_auto_ChainType_str(type),
+		THREADLTRACE(60,1,"chain is empty! type:%d %s->%s %s->%s:%s",
+			type,
 			src_gid, dst_gid,
 			thread_id_to_name(msg_src), thread_id_to_name(msg_dst), msgstr(msg_id));
 		return;
@@ -397,7 +365,7 @@ thread_chain_insert(
 		dave_strcpy(pChain->fun, fun_ptr, sizeof(pChain->fun));
 	}
 
-	chain_buf_set(pChain, msg_id, msg_len, msg_body);
+	chain_buf_set(pChain, pRouter, msg_id, msg_len, msg_body);
 }
 
 MBUF *
@@ -442,24 +410,21 @@ ThreadChain *
 thread_bson_to_chain(void *pBson)
 {
 	ThreadChain *pChain;
-	size_t chain_id_len, fun_len;
 
 	if(pBson == NULL)
 		return NULL;
 
-	pChain = _thread_chain_malloc();
+	pChain = _thread_chain_malloc((s8 *)__func__, (ub)__LINE__);
 
 	_thread_chain_clean(pChain);
-	chain_id_len = sizeof(pChain->chain_id);
-	fun_len = sizeof(pChain->fun);
 
 	pChain->type = ChainType_called;
-	t_bson_cpy_string(pBson, "1", pChain->chain_id, &chain_id_len);
+	t_bson_cpy_string(pBson, "1", pChain->chain_id, sizeof(pChain->chain_id));
 	t_bson_inq_int64(pBson, "2", &(pChain->call_id));
 	t_bson_inq_int64(pBson, "3", &(pChain->generation));
 	t_bson_inq_int64(pBson, "4", &(pChain->send_time));
 	t_bson_inq_boolean(pBson, "5", &(pChain->request));
-	t_bson_cpy_string(pBson, "6", pChain->fun, &fun_len);
+	t_bson_cpy_string(pBson, "6", pChain->fun, sizeof(pChain->fun));
 	t_bson_inq_int64(pBson, "7", &(pChain->line));
 
 	return pChain;

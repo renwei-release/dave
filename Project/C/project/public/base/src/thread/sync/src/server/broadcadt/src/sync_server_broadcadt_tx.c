@@ -51,10 +51,7 @@ _sync_server_broadcadt_the_msg_to_all_client(
 	{
 		pDstThread = sync_server_thread(thread_index);
 
-		if((pDstThread->thread_name[0] != '\0')
-			&& (pSrcThread != pDstThread)
-			&& (sync_server_client_on_thread(pDstThread, pSrcClient) == dave_false)
-			&& (dave_strcmp(pDstThread->thread_name, src_name) == dave_false))
+		if(pDstThread->thread_name[0] != '\0')
 		{
 			SYNCTRACE("%s->%s:%d", pSrcThread->thread_name, pDstThread->thread_name, msg_id);
 

@@ -42,7 +42,7 @@ _tracing_config_build(const char* configFilePath)
 static void
 _tracing_global_init(void)
 {
-    auto tracer = jaegertracing::Tracer::make(TRACING_SERVER_NAME, _tracing_config, jaegertracing::logging::consoleLogger());
+    auto tracer = jaegertracing::Tracer::make(TRACING_SERVER_NAME, _tracing_config, jaegertracing::logging::nullLogger());
 
     opentracing::Tracer::InitGlobal(std::static_pointer_cast<opentracing::Tracer>(tracer));
 }
@@ -123,7 +123,7 @@ _tracing_span_rsp(const opentracing::SpanContext *parent_context, void *pJson)
 }
 
 static const opentracing::SpanContext *
-_tracing_save_level_(const opentracing::SpanContext *parent_context, GenerationLevel *pLevel)
+_tracing_save_level_recursion(const opentracing::SpanContext *parent_context, GenerationLevel *pLevel)
 {
 	s8 span_name[128];
 	s8 tag_name[128];
@@ -146,7 +146,7 @@ _tracing_save_level_(const opentracing::SpanContext *parent_context, GenerationL
 		auto req_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_context) });
 		req_span->SetTag(tag_name, tag_value);
 
-		return_context = _tracing_save_level_(&req_span->context(), (GenerationLevel *)(pLevel->next));
+		return_context = _tracing_save_level_recursion(&req_span->context(), (GenerationLevel *)(pLevel->next));
 
 		return_context = _tracing_span_rsp(return_context, pList->action.pRspJson);
 
@@ -161,6 +161,9 @@ _tracing_save_level_(const opentracing::SpanContext *parent_context, GenerationL
 static void
 _tracing_save_level(GenerationLevel *pLevel)
 {
+// renwei debug
+	return;
+//
 	s8 span_name[128];
 	s8 tag_name[128];
 	s8 *tag_value;
@@ -180,7 +183,7 @@ _tracing_save_level(GenerationLevel *pLevel)
 	auto req_span = opentracing::Tracer::Global()->StartSpan(span_name);
 	req_span->SetTag(tag_name, tag_value);
 
-	return_context = _tracing_save_level_(&req_span->context(), (GenerationLevel *)(pLevel->next));
+	return_context = _tracing_save_level_recursion(&req_span->context(), (GenerationLevel *)(pLevel->next));
 
 	_tracing_span_rsp(return_context, pLevel->pList->action.pRspJson);
 

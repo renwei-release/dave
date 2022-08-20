@@ -33,6 +33,7 @@ void * thread_call_sync_wait(
 	void *pSync);
 
 dave_bool thread_call_sync_catch(
+	void *msg_chain, void *msg_router,
 	ThreadId src_id,
 	ThreadStruct *pDstThread, ThreadId dst_id,
 	ub msg_id, void *msg_body, ub msg_len,

@@ -102,9 +102,9 @@ t_bson_inq_string(void *pBson, char *key, char **ppStringValue, size_t *pStringL
 }
 
 bool
-t_bson_cpy_string(void *pBson, char *key, char *pStringValue, size_t *pStringLen)
+t_bson_cpy_string(void *pBson, char *key, char *pStringValue, size_t StringLen)
 {
-	return t_bson_string_cpy((tBsonObject *)pBson, key, 0, pStringValue, pStringLen);
+	return t_bson_string_cpy((tBsonObject *)pBson, key, 0, pStringValue, &StringLen);
 }
 
 void

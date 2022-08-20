@@ -10,6 +10,7 @@
 #include "dave_tools.h"
 #include "thread_parameter.h"
 #include "thread_chain.h"
+#include "thread_router.h"
 
 typedef struct {
 	MSGBODY msg_body;
@@ -75,6 +76,9 @@ typedef struct {
 
 	// call chain
 	ThreadChain chain;
+
+	// call router
+	ThreadRouter router;
 
 	dave_bool has_not_wakeup_flag;
 

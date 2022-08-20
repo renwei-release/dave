@@ -14,6 +14,27 @@
 #include "dos_tools.h"
 #include "dos_log.h"
 
+static ThreadId
+_dos_debug_loose_match(s8 *thread_name)
+{
+	s8 thread_detect_name[128];
+	ThreadId debug_thread;
+
+	dave_strcpy(thread_detect_name, thread_name, sizeof(thread_detect_name));
+
+	debug_thread = thread_id(thread_detect_name);
+	if(debug_thread == INVALID_THREAD_ID)
+	{
+		debug_thread = thread_id(lower(thread_detect_name));
+	}
+	if(debug_thread == INVALID_THREAD_ID)
+	{
+		debug_thread = thread_id(upper(thread_detect_name));
+	}
+
+	return debug_thread;
+}
+
 static void
 _dos_debug_rsp(MSGBODY *ptr)
 {
@@ -44,11 +65,7 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
 	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, pReq->msg, sizeof(pReq->msg));
 
-	debug_thread = thread_id(upper(thread_name));
-	if(debug_thread == INVALID_THREAD_ID)
-	{
-		debug_thread = thread_id(lower(thread_name));
-	}
+	debug_thread = _dos_debug_loose_match(thread_name);
 	if(debug_thread == INVALID_THREAD_ID)
 	{
 		if(thread_name[0] != '\0')
@@ -57,13 +74,13 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 			thread_msg_release(pReq);
 			return RetCode_can_not_find_thread;
 		}
-		else
-		{
-			dave_strcpy(thread_name, GUARDIAN_THREAD_NAME, sizeof(thread_name));
-		}
-	}
 
-	name_event(thread_name, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+		name_event(GUARDIAN_THREAD_NAME, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+	}
+	else
+	{
+		id_event(debug_thread, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+	}
 
 	return RetCode_OK;
 }

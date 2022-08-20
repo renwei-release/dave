@@ -8,6 +8,7 @@
 #ifndef __THREAD_CHAIN_H__
 #define __THREAD_CHAIN_H__
 #include "base_define.h"
+#include "thread_router.h"
 
 #define DAVE_CHAIN_ID_LEN (56)
 #define DAVE_CHAIN_THREAD_NAME_LEN (13)
@@ -54,6 +55,8 @@ void thread_chain_exit(void);
 
 void thread_chain_reset(ThreadChain *pChain);
 
+void thread_chain_free(ThreadChain *pChain);
+
 void thread_chain_fill_msg(MSGBODY *msg, void *msg_chain);
 
 ThreadChain * thread_chain_build_msg(
@@ -61,20 +64,20 @@ ThreadChain * thread_chain_build_msg(
 	ThreadId msg_src, ThreadId msg_dst, ub msg_id,
 	s8 *fun, ub line);
 
+void thread_chain_clean_msg(MSGBODY *msg);
+
 ThreadChain * thread_chain_run_msg(MSGBODY *msg);
 
 void thread_chain_run_clean(ThreadChain *pThreadChain, MSGBODY *msg);
 
 void thread_chain_coroutine_msg(
-	ThreadChain *pMsgChain,
-	ThreadId src_id, ThreadId dst_id,
+	ThreadChain *pMsgChain, ThreadRouter *pMsgRouter,
+	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id, ub msg_len, u8 *msg_body);
-
-void thread_chain_clean_msg(MSGBODY *msg);
 
 void thread_chain_insert(
 	ChainType type,
-	ThreadChain *pChain,
+	ThreadChain *pChain, ThreadRouter *pRouter,
 	s8 *src_gid, s8 *dst_gid,
 	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id, ub msg_len, void *msg_body);

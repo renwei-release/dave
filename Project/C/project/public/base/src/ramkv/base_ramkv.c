@@ -81,12 +81,6 @@ base_ramkv_info(void *ramkv, s8 *info_ptr, ub info_len)
 	return ramkv_info((KV *)ramkv, info_ptr, info_len);
 }
 
-void
-base_ramkv_test(s8 *cmd)
-{
-	ramkv_test(cmd);
-}
-
 void *
 __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line)
 {

@@ -27,30 +27,7 @@ _dos_cfg_get_help(void)
 static void *
 _dos_cfg_json_object(void)
 {
-	s8 config_json_path[1024];
-	ub data_len = 3 * 1024 * 1024;
-	ub read_len;
-	u8 *data_ptr;
-	void *pJson = NULL;
-
-	data_ptr = dave_malloc(data_len);
-
-	dave_snprintf(config_json_path, sizeof(config_json_path), "%s/config/CONFIG.json", dave_os_file_home_dir());
-
-	read_len = dave_os_file_read(DIRECT_FLAG|READ_FLAG, config_json_path, 0, data_len, data_ptr);
-	if(read_len < data_len)
-	{
-		data_ptr[read_len] = '\0';
-	}
-
-	if(read_len > 0)
-	{
-		pJson = dave_string_to_json(data_ptr, read_len);
-	}
-
-	dave_free(data_ptr);
-
-	return pJson;
+	return dave_json_read("config/CONFIG.json", dave_false);
 }
 
 static ub

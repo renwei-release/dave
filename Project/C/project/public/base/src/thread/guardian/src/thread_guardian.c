@@ -26,6 +26,7 @@
 #include "thread_gid_table.h"
 #include "thread_wakeup_the_sleep.h"
 #include "thread_running.h"
+#include "thread_orchestration.h"
 #include "thread_log.h"
 
 static void _thread_guardian_exit(MSGBODY *msg);
@@ -201,12 +202,15 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 
 	pThread = &_thread[thread_index];
 
+	dave_memset(&msg, 0x00, sizeof(MSGBODY));
+
 	msg.msg_src = get_self();
 	msg.msg_dst = run->thread_dst;
 	msg.msg_id = MSGID_RUN_FUNCTION;
 	msg.msg_len = 0;
 	msg.msg_body = NULL;
 	msg.msg_chain = NULL;
+	msg.msg_router = NULL;
 
 	if(run->initialization_flag == dave_true)
 	{
@@ -345,11 +349,13 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_gid_table_init();
 	thread_busy_idle_init(_thread);
 	thread_sync_init();
+	thread_orchestration_init();
 }
 
 static void
 _thread_guardian_exit(MSGBODY *msg)
 {
+	thread_orchestration_exit();
 	thread_sync_exit();
 	thread_busy_idle_exit();
 	thread_gid_table_exit();

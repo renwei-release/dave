@@ -104,15 +104,13 @@ def _creat_rpc_data_msg_sizeof_file(file_id, msg_table):
         file_id.write("\t			msg_len = t_rpc_ver3_sizeof_"+struct_name+"();\n")
         file_id.write("\t		break;\n")
     file_id.write("		default:\n")
-    file_id.write("				TOOLSLOG(\"msg_id:%d zip failed!\", msg_id);\n")
-    file_id.write(" 				msg_len = 0;\n")
     file_id.write("			break;\n")
     file_id.write("	}\n")
     file_id.write("\n\treturn msg_len;\n}\n\n")
 
 
 def _creat_rpcdata_zip_file(file_id):
-    file_id.write("void *\nt_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len)\n")
+    file_id.write("void *\nt_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len)\n")
     file_id.write("{\n")
     file_id.write("	void *pBson;\n")
     file_id.write("\n\tpBson = _t_rpc_zip(msg_id, msg_body, msg_len);\n")
@@ -126,13 +124,15 @@ def _creat_rpcdata_zip_file(file_id):
     file_id.write("\n\t#endif\n")
     file_id.write("\n\tif(pChainBson != NULL)\n")
     file_id.write("\t\tt_bson_add_object(pBson, \"chain\", pChainBson);\n")
+    file_id.write("\n\tif(pRouterBson != NULL)\n")
+    file_id.write("\t\tt_bson_add_object(pBson, \"router\", pRouterBson);\n")
     file_id.write("\n\treturn pBson;\n")
     file_id.write("}\n")
     return
 
 
 def _creat_rpcdata_unzip_file(file_id):
-    file_id.write("dave_bool\nt_rpc_ver3_unzip(void **ppChainBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
+    file_id.write("dave_bool\nt_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
     file_id.write("{\r\tvoid *pBson;\n")
     file_id.write("\tdave_bool ret = dave_false;\n")
     file_id.write("\n")
@@ -147,11 +147,12 @@ def _creat_rpcdata_unzip_file(file_id):
     file_id.write("\n\tif(t_bson_inq_int64(pBson, \"rpc_time\", (u64 *)(&rpc_time)) == true) {")
     file_id.write("\n\t\trpc_time = (s64)dave_os_time_us() - rpc_time;")
     file_id.write("\n\t\tif(rpc_time > 3000000)")
-    file_id.write("\n\t\t\tTOOLSLOG(\"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.\", msgstr(msg_id), rpc_time);")
+    file_id.write("\n\t\t\tTOOLSLTRACE(60,1,\"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.\", msgstr(msg_id), rpc_time);")
     file_id.write("\n\t}")
     file_id.write("\n\t#endif\n")
     file_id.write("\n\tret = _t_rpc_unzip(msg_body, msg_len, msg_id, pBson);\n")
     file_id.write("\n\t*ppChainBson = t_bson_clone_object(pBson, \"chain\");\n")
+    file_id.write("\n\t*ppRouterBson = t_bson_clone_object(pBson, \"router\");\n")
     file_id.write("\n\tt_bson_free_object(pBson);\n")
     file_id.write("\n")
     file_id.write("\treturn ret;\n")
@@ -199,8 +200,8 @@ def _creat_rpcdata_inc_file(file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(_rpcdata_inc_head)
-        file_id.write("void * t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len);\n")
-        file_id.write("dave_bool t_rpc_ver3_unzip(void **msg_chain, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
+        file_id.write("void * t_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);\n")
+        file_id.write("dave_bool t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
         file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n")
         file_id.write("ub t_rpc_ver3_sizeof(ub msg_id);\n\n")
         file_id.write(_rpcdata_inc_end)

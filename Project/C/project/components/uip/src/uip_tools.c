@@ -65,12 +65,12 @@ uip_write_stack(char *stack_name, UIPStack *pStack)
 	if(pStack->auto_release_json == NULL)
 	{
 		pJson = uip_encode(pStack);
-		dave_json_write(pJson, file_name);
+		dave_json_write(pJson, file_name, dave_true);
 		dave_json_free(pJson);
 	}
 	else
 	{
-		dave_json_write(pStack->auto_release_json, file_name);
+		dave_json_write(pStack->auto_release_json, file_name, dave_true);
 	}
 }
 

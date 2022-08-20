@@ -286,6 +286,75 @@ t_stdio_strfind(s8 *str, s8 end_char, s8 *find_ptr, ub find_len)
 }
 
 s8 *
+t_stdio_strfindfrist(s8 *str, s8 find_char)
+{
+	ub safe_counter;
+
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	safe_counter = 0;
+
+	while((safe_counter ++) < 102400)
+	{
+		if(*str == '\0')
+		{
+			break;
+		}
+
+		if(*str == find_char)
+		{
+			str ++;
+
+			if(*str == '\0')
+			{
+				return NULL;
+			}
+
+			return str;
+		}
+
+		str ++;
+	}
+
+	return NULL;
+}
+
+s8 *
+t_stdio_strfindlast(s8 *str, s8 find_char)
+{
+	ub safe_counter;
+	s8 *last_char_position;
+
+	if(str == NULL)
+	{
+		return NULL;
+	}
+
+	safe_counter = 0;
+	last_char_position = NULL;
+
+	while((safe_counter ++) < 102400)
+	{
+		if(*str == '\0')
+		{
+			break;
+		}
+
+		if(*str == find_char)
+		{
+			last_char_position = (str + 1);
+		}
+
+		str ++;
+	}
+
+	return last_char_position;
+}
+
+s8 *
 t_stdio_tolowers(s8 *str)
 {
 	s8 *opt_str = str;

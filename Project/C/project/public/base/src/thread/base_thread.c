@@ -30,6 +30,7 @@
 #include "thread_running.h"
 #include "thread_coroutine.h"
 #include "thread_chain.h"
+#include "thread_router.h"
 #include "thread_go.h"
 #include "thread_log.h"
 
@@ -112,6 +113,8 @@ _thread_reset(ThreadStruct *pThread)
 	thread_reset_sync(&(pThread->sync));
 
 	thread_chain_reset(&(pThread->chain));
+
+	thread_router_reset(&(pThread->router));
 
 	pThread->has_not_wakeup_flag = dave_false;
 
@@ -372,7 +375,7 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 
 static inline RetCode
 _thread_write_msg(
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	dave_bool wakeup, BaseMsgType msg_type,
@@ -384,6 +387,7 @@ _thread_write_msg(
 	RetCode ret = RetCode_OK;
 
 	if(thread_call_sync_catch(
+		msg_chain, msg_router,
 		src_id,
 		pDstThread, dst_id,
 		msg_id, msg_body, msg_len,
@@ -391,7 +395,7 @@ _thread_write_msg(
 	{
 		pMsg = thread_build_msg(
 					pDstThread,
-					msg_chain,
+					msg_chain, msg_router,
 					src_id, dst_id,
 					msg_id, msg_len, msg_body,
 					msg_type,
@@ -416,11 +420,16 @@ _thread_write_msg(
 				pMsg->msg_body.msg_id);
 
 			thread_clean_msg(pMsg);
+
+			ret = RetCode_OK;
 		}
 	}
 	else
 	{
-		thread_chain_coroutine_msg(msg_chain, src_id, dst_id, msg_id, msg_len, msg_body);
+		thread_chain_coroutine_msg(
+			msg_chain, msg_router,
+			src_id, dst_id,
+			msg_id, msg_len, msg_body);
 
 		if(hold_body == dave_false)
 		{
@@ -668,7 +677,7 @@ _thread_build_tick_message(void)
 						pWakeup = thread_msg(pWakeup);
 
 						_thread_write_msg(
-							NULL,
+							NULL, NULL,
 							_guardian_thread, pThread->thread_id,
 							MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
 							dave_false, BaseMsgType_Unicast,
@@ -1156,7 +1165,7 @@ _thread_safe_del(ThreadId thread_id)
 
 static inline dave_bool
 _thread_safe_id_msg(
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -1203,7 +1212,7 @@ _thread_safe_id_msg(
 	src_id = _thread_src_id_change(src_id, dst_id);
 
 	ret = _thread_write_msg(
-		msg_chain,
+		msg_chain, msg_router,
 		src_id, dst_id,
 		msg_id, msg_len, msg_body,
 		dave_true, msg_type,
@@ -1707,7 +1716,7 @@ base_thread_msg_release(void *ptr, s8 *fun, ub line)
 
 dave_bool
 base_thread_id_msg(
-	void *msg_chain,
+	void *msg_chain, void *msg_router,
 	ThreadId src_id, ThreadId dst_id,
 	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
@@ -1715,6 +1724,7 @@ base_thread_id_msg(
 	s8 *fun, ub line)
 {
 	dave_bool ret;
+	dave_bool free_input = dave_false;
 
 	if(msg_id == MSGID_RESERVED)
 	{
@@ -1733,17 +1743,20 @@ base_thread_id_msg(
 			&& (dst_id != INVALID_THREAD_ID)
 			&& (_thread_num_msg(thread_find_busy_thread(dst_id), msg_id) > msg_number))
 		{
-			ret  = dave_true;
-			thread_clean_user_input_data(msg_body, msg_id);			
+			ret  = dave_true; free_input = dave_true;		
 		}
 		else
 		{
-			ret  = _thread_safe_id_msg(msg_chain, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
+			ret  = _thread_safe_id_msg(msg_chain, msg_router, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
 		}
 	}
 
-	if(ret == dave_false)
+	if((ret == dave_false) || (free_input == dave_true))
 	{
+		thread_chain_free((ThreadChain *)msg_chain);
+
+		thread_router_free((ThreadRouter *)msg_router);
+
 		thread_clean_user_input_data(msg_body, msg_id);
 	}
 
@@ -1767,7 +1780,7 @@ base_thread_id_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_id_msg(NULL, src_id, dst_id, msg_type, req_id, req_len, req_body, 0, fun, line);
+		return base_thread_id_msg(NULL, NULL, src_id, dst_id, msg_type, req_id, req_len, req_body, 0, fun, line);
 	}
 	else
 	{
@@ -1778,7 +1791,7 @@ base_thread_id_event(
 }
 
 void *
-base_thread_co_id_msg(
+base_thread_id_go(
 	ThreadId src_id, ThreadId dst_id,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -1834,7 +1847,7 @@ base_thread_name_msg(
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
-			ret = base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+			ret = base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 		}
 		else
 		{
@@ -1871,11 +1884,13 @@ base_thread_name_event(
 		return base_thread_name_msg(src_id, dst_thread, req_id, req_len, req_body, fun, line);
 	}
 
+	thread_clean_user_input_data(req_body, req_id);
+
 	return dave_false;
 }
 
 void *
-base_thread_co_name_msg(
+base_thread_name_go(
 	ThreadId src_id, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -1898,9 +1913,9 @@ base_thread_co_name_msg(
 		return NULL;
 	}
 
-	return thread_go_msg(
+	return thread_go_name(
 		pSrcThread,
-		NULL, dst_thread,
+		dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -1928,7 +1943,7 @@ base_thread_gid_msg(
 			fun, line);
 	}
 
-	return base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+	return base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 }
 
 dave_bool
@@ -1950,11 +1965,13 @@ base_thread_gid_event(
 		return base_thread_gid_msg(src_id, gid, dst_thread, req_id, req_len, req_body, fun, line);
 	}
 
+	thread_clean_user_input_data(req_body, req_id);
+
 	return dave_false;
 }
 
 void *
-base_thread_co_gid_msg(
+base_thread_gid_go(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -1977,9 +1994,100 @@ base_thread_co_gid_msg(
 		return NULL;
 	}
 
-	return thread_go_msg(
+	return thread_go_gid(
 		pSrcThread,
 		gid, dst_thread,
+		req_id, req_len, req_body,
+		rsp_id,
+		fun, line);
+}
+
+dave_bool
+base_thread_uid_msg(
+	ThreadId src_id, s8 *uid,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	ThreadRouter *pRouter;
+	ThreadId dst_id;
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	dst_id = thread_router_build_router(&pRouter, uid);
+
+	if(dst_id ==INVALID_THREAD_ID)
+	{
+		return thread_msg_buffer_uid_push(
+			src_id, uid,
+			BaseMsgType_Unicast,
+			msg_id, msg_len, msg_body,
+			fun, line);		
+	}
+
+	return base_thread_id_msg(
+		NULL, pRouter,
+		src_id, dst_id,
+		BaseMsgType_Unicast,
+		msg_id, msg_len, msg_body,
+		0,
+		fun, line);
+}
+
+dave_bool
+base_thread_uid_event(
+	ThreadId src_id, s8 *uid,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id, base_thread_fun rsp_fun,
+	s8 *fun, ub line)
+{
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	thread_check_pair_msg(req_id, rsp_id);
+
+	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
+	{
+		return base_thread_uid_msg(src_id, uid, req_id, req_len, req_body, fun, line);
+	}
+
+	thread_clean_user_input_data(req_body, req_id);
+
+	return dave_false;
+}
+
+void *
+base_thread_uid_go(
+	ThreadId src_id, s8 *uid,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	ThreadStruct *pSrcThread;
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+
+	pSrcThread = thread_find_busy_thread(src_id);
+	if(pSrcThread == NULL)
+	{
+		THREADABNOR("src_id:%lx uid:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
+			src_id, uid,
+			msgstr(req_id), req_len, msgstr(rsp_id),
+			fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	return thread_go_uid(
+		pSrcThread,
+		uid,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -2022,7 +2130,7 @@ base_thread_sync_msg(
 		return NULL;
 	}
 
-	if(base_thread_id_msg(NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
+	if(base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
 	{
 		return NULL;
 	}

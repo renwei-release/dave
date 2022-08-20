@@ -29,7 +29,7 @@ bool t_bson_inq_double(void *pBson, char *key, double *value);
 
 void t_bson_add_string(void *pBson, char *key, char *value);
 bool t_bson_inq_string(void *pBson, char *key, char **ppStringValue, size_t *pStringLen);
-bool t_bson_cpy_string(void *pBson, char *key, char *pStringValue, size_t *pStringLen);
+bool t_bson_cpy_string(void *pBson, char *key, char *pStringValue, size_t StringLen);
 
 void t_bson_add_bin(void *pBson, char *key, char *value_ptr, size_t value_len);
 bool t_bson_inq_bin(void *pBson, char *key, char **ppBinValue, size_t *pBinLen);

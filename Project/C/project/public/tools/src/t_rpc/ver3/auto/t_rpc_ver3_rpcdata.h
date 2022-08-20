@@ -15,8 +15,8 @@
 #define _T_RPC_RPCDATA_H__
 #include "dave_base.h"
 
-void * t_rpc_ver3_zip(void *pChainBson, ub msg_id, void *msg_body, ub msg_len);
-dave_bool t_rpc_ver3_unzip(void **msg_chain, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
+void * t_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);
+dave_bool t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
 void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);
 ub t_rpc_ver3_sizeof(ub msg_id);
 

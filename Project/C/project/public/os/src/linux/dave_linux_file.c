@@ -194,6 +194,7 @@ dave_os_file_open(FileOptFlag flag, s8 *file_name)
 {
     sw_int32 oflag;
     s8 file_full_name[512];
+	sb file_id;
 
 	_linux_file_load_full_name(file_full_name, sizeof(file_full_name), flag, file_name);
 
@@ -204,9 +205,13 @@ dave_os_file_open(FileOptFlag flag, s8 *file_name)
         oflag |= O_CREAT;
     }
 
-	OSDEBUG("flag:%x %s->%s", flag, file_name, file_full_name);
+    file_id = (sb)open((char *)file_full_name, oflag, 0777);
+	if(file_id < 0)
+	{
+		OSDEBUG("flag:%x %s->%s open failed!", flag, file_name, file_full_name);		
+	}
 
-    return (sb)open((char *)file_full_name, oflag, 0777);
+	return file_id;
 }
 
 dave_bool

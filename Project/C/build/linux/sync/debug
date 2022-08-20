@@ -9,11 +9,7 @@
 PROJECT=${PWD##*/}
 FINDDEBUG=0
 
-if [ "$USER" == "root" ]; then
-   PROJECTNAME=${PROJECT}
-else
-   PROJECTNAME=${PROJECT}-${USER}
-fi
+PROJECTNAME=${PROJECT}-sync
 
 if [ -f ../../../../Deploy/deploy/${PROJECT}/debug.sh ]; then
    cd ../../../../Deploy/deploy/${PROJECT}/
