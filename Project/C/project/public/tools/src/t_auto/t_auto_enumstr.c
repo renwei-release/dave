@@ -4123,12 +4123,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case BBSMSG_INQ_COMMENT_RSP:
 				value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'";
 			break;
-		case DBMSG_SYS_BILLING_SMS_REQ:
-				value_str = "'DBMSG_SYS_BILLING_SMS_REQ-15005'";
-			break;
-		case DBMSG_SYS_BILLING_SMS_RSP:
-				value_str = "'DBMSG_SYS_BILLING_SMS_RSP-15006'";
-			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID-0xffffffffffffffff'";
 			break;

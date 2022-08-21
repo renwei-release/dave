@@ -14,6 +14,8 @@
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 
+static dave_bool _work_local_flag = dave_true;
+
 static inline void *
 _t_rpc_ver3_zip_bin(u8 *zip_data, ub zip_len)
 {
@@ -137,7 +139,104 @@ _t_rpc_ver3_unzip_void_ptr(void **unzip_data, void *pArrayBson, s8 *fun, ub line
 	return dave_true;
 }
 
+static inline void *
+__t_rpc_ver3_zip_MBUF_ptr_local__(MBUF *zip_data, s8 *fun, ub line)
+{
+	void *pBson, *pArrayBson;
+	ub array_index, array_len;
+	MBUF *zip_data_loop = zip_data;
+	s8 temp_buffer[128];
+
+	pBson = t_bson_malloc_object();
+
+	array_index = 0;
+
+	while((zip_data_loop != NULL) && (zip_data_loop->len > 0) && (array_index < 10240))
+	{
+		pArrayBson = t_rpc_ver3_zip_u8_d((u8 *)(zip_data_loop->payload), zip_data_loop->len);
+		array_len = zip_data_loop->len;
+
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
+		t_bson_add_int(pBson, (char *)temp_buffer, array_len);
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
+		t_bson_add_object(pBson, (char *)temp_buffer, pArrayBson);
+
+		array_index ++;
+		zip_data_loop = zip_data_loop->next;
+	}
+
+	if(array_index >= 10240)
+	{
+		TOOLSABNOR("invalid array_index:%d <%s:%d>", array_index, fun, line);
+	}
+
+	t_bson_add_int(pBson, "array_number", array_index);
+
+	dave_mfree(zip_data);
+
+	return pBson;
+}
+
+static dave_bool
+__t_rpc_ver3_unzip_MBUF_ptr_local__(MBUF **unzip_data, void *pBson, s8 *fun, ub line)
+{
+	int array_index, array_number, array_len;
+	void *pArrayBson;
+	s8 temp_buffer[128];
+	MBUF *unzip_data_loop;
+
+	*unzip_data = NULL;
+
+	t_bson_inq_int(pBson, "array_number", &array_number);
+
+	array_index = 0;
+
+	while(array_index < array_number)
+	{
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
+		t_bson_inq_int(pBson, (char *)temp_buffer, &array_len);
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
+		pArrayBson = t_bson_inq_object(pBson, (char *)temp_buffer);
+
+		unzip_data_loop = __base_mmalloc__(array_len + 1, fun, line);
+		if(t_rpc_ver3_unzip_u8_d((u8 *)(unzip_data_loop->payload), (ub)array_len, pArrayBson) == dave_false)
+		{
+			TOOLSLTRACE(360,1,"can't find data on bson");
+			dave_mfree(unzip_data_loop);
+		}
+		else
+		{
+			unzip_data_loop->tot_len = unzip_data_loop->len = array_len;
+			((s8 *)(unzip_data_loop->payload))[unzip_data_loop->len] = '\0';
+
+			*unzip_data = dave_mchain(*unzip_data, unzip_data_loop);
+		}
+
+		array_index ++;
+	}
+
+	return dave_true;
+}
+
+static inline void *
+__t_rpc_ver3_zip_MBUF_ptr_remote__(MBUF *zip_data, s8 *fun, ub line)
+{
+	return _t_rpc_ver3_zip_void_ptr((void *)zip_data);
+}
+
+static inline dave_bool
+__t_rpc_ver3_unzip_MBUF_ptr_remote__(MBUF **unzip_data, void *pArrayBson, s8 *fun, ub line)
+{
+	return _t_rpc_ver3_unzip_void_ptr((void **)unzip_data, pArrayBson, fun, line);
+}
+
 // =====================================================================
+
+void
+t_rpc_ver3_metadata_work(dave_bool work_flag)
+{
+	_work_local_flag = work_flag;
+}
 
 void *
 __t_rpc_ver3_zip_dave_bool__(dave_bool zip_data, s8 *fun, ub line)
@@ -550,80 +649,27 @@ __t_rpc_ver3_unzip_ThreadId__(ThreadId *unzip_data, void *pArrayBson, s8 *fun, u
 void *
 __t_rpc_ver3_zip_MBUF_ptr__(MBUF *zip_data, s8 *fun, ub line)
 {
-	void *pBson, *pArrayBson;
-	ub array_index, array_len;
-	MBUF *zip_data_loop = zip_data;
-	s8 temp_buffer[128];
-
-	pBson = t_bson_malloc_object();
-
-	array_index = 0;
-
-	while((zip_data_loop != NULL) && (zip_data_loop->len > 0) && (array_index < 10240))
+	if(_work_local_flag == dave_true)
 	{
-		pArrayBson = t_rpc_ver3_zip_u8_d((u8 *)(zip_data_loop->payload), zip_data_loop->len);
-		array_len = zip_data_loop->len;
-
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
-		t_bson_add_int(pBson, (char *)temp_buffer, array_len);
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
-		t_bson_add_object(pBson, (char *)temp_buffer, pArrayBson);
-
-		array_index ++;
-		zip_data_loop = zip_data_loop->next;
+		return __t_rpc_ver3_zip_MBUF_ptr_local__(zip_data, fun, line);
 	}
-
-	if(array_index >= 10240)
+	else
 	{
-		TOOLSABNOR("invalid array_index:%d <%s:%d>", array_index, fun, line);
+		return __t_rpc_ver3_zip_MBUF_ptr_remote__(zip_data, fun, line);
 	}
-
-	t_bson_add_int(pBson, "array_number", array_index);
-
-	dave_mfree(zip_data);
-
-	return pBson;
 }
 
 dave_bool
 __t_rpc_ver3_unzip_MBUF_ptr__(MBUF **unzip_data, void *pBson, s8 *fun, ub line)
 {
-	int array_index, array_number, array_len;
-	void *pArrayBson;
-	s8 temp_buffer[128];
-	MBUF *unzip_data_loop;
-
-	*unzip_data = NULL;
-
-	t_bson_inq_int(pBson, "array_number", &array_number);
-
-	array_index = 0;
-
-	while(array_index < array_number)
+	if(_work_local_flag == dave_true)
 	{
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
-		t_bson_inq_int(pBson, (char *)temp_buffer, &array_len);
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
-		pArrayBson = t_bson_inq_object(pBson, (char *)temp_buffer);
-
-		unzip_data_loop = __base_mmalloc__(array_len + 1, fun, line);
-		if(t_rpc_ver3_unzip_u8_d((u8 *)(unzip_data_loop->payload), (ub)array_len, pArrayBson) == dave_false)
-		{
-			TOOLSLTRACE(360,1,"can't find data on bson");
-			dave_mfree(unzip_data_loop);
-		}
-		else
-		{
-			unzip_data_loop->tot_len = unzip_data_loop->len = array_len;
-			((s8 *)(unzip_data_loop->payload))[unzip_data_loop->len] = '\0';
-
-			*unzip_data = dave_mchain(*unzip_data, unzip_data_loop);
-		}
-
-		array_index ++;
+		return __t_rpc_ver3_unzip_MBUF_ptr_local__(unzip_data, pBson, fun, line);
 	}
-
-	return dave_true;
+	else
+	{
+		return __t_rpc_ver3_unzip_MBUF_ptr_remote__(unzip_data, pBson, fun, line);
+	}
 }
 
 void *

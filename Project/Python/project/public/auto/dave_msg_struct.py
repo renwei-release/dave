@@ -388,26 +388,6 @@ class DBSysAddWeiChatRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for DBMSG_SYS_BILLING_SMS_REQ message *#
-class DBSysBillingSMSReq (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("sql_object", c_char * DAVE_BILLING_SMS_DB_LEN),
-		("status", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
-#* for DBMSG_SYS_BILLING_SMS_RSP message *#
-class DBSysBillingSMSRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("data_object", c_char * DAVE_BILLING_SMS_DB_LEN),
-		("status", c_ulonglong),
-		("data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
 #* for DBMSG_SYS_INQ_CHANNEL_REQ message *#
 class DBSysInqChannelReq (Structure):
 	_fields_ = [

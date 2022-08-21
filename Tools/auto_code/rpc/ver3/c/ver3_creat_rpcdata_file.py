@@ -104,6 +104,7 @@ def _creat_rpc_data_msg_sizeof_file(file_id, msg_table):
         file_id.write("\t			msg_len = t_rpc_ver3_sizeof_"+struct_name+"();\n")
         file_id.write("\t		break;\n")
     file_id.write("		default:\n")
+    file_id.write("		        msg_len = 0;\n")
     file_id.write("			break;\n")
     file_id.write("	}\n")
     file_id.write("\n\treturn msg_len;\n}\n\n")

@@ -8,6 +8,8 @@
 #ifndef _T_RPC_VER3_METADATA_H__
 #define _T_RPC_VER3_METADATA_H__
 
+void t_rpc_ver3_metadata_work(dave_bool work_flag);
+
 void * __t_rpc_ver3_zip_dave_bool__(dave_bool zip_data, s8 *fun, ub line);
 #define t_rpc_ver3_zip_dave_bool(zip_data) __t_rpc_ver3_zip_dave_bool__(zip_data, (s8 *)__func__, (ub)__LINE__)
 dave_bool __t_rpc_ver3_unzip_dave_bool__(dave_bool *unzip_data, void *pArrayJson, s8 *fun, ub line);

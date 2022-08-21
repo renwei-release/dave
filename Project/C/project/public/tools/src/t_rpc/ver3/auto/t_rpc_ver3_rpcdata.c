@@ -142,12 +142,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				pBson = t_rpc_ver3_zip_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, msg_len);
 			break;
-		case DBMSG_SYS_BILLING_SMS_REQ:
-				pBson = t_rpc_ver3_zip_DBSysBillingSMSReq((DBSysBillingSMSReq *)msg_body, msg_len);
-			break;
-		case DBMSG_SYS_BILLING_SMS_RSP:
-				pBson = t_rpc_ver3_zip_DBSysBillingSMSRsp((DBSysBillingSMSRsp *)msg_body, msg_len);
-			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				pBson = t_rpc_ver3_zip_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, msg_len);
 			break;
@@ -520,12 +514,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ret = t_rpc_ver3_unzip_DBSysAddWeiChatRsp(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_SYS_BILLING_SMS_REQ:
-				ret = t_rpc_ver3_unzip_DBSysBillingSMSReq(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_SYS_BILLING_SMS_RSP:
-				ret = t_rpc_ver3_unzip_DBSysBillingSMSRsp(msg_body, msg_len, pBson);
 			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				ret = t_rpc_ver3_unzip_DBSysInqChannelReq(msg_body, msg_len, pBson);
@@ -900,12 +888,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, new_ptr);
 			break;
-		case DBMSG_SYS_BILLING_SMS_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysBillingSMSReq((DBSysBillingSMSReq *)msg_body, new_ptr);
-			break;
-		case DBMSG_SYS_BILLING_SMS_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysBillingSMSRsp((DBSysBillingSMSRsp *)msg_body, new_ptr);
-			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				ptr = t_rpc_ver3_ptr_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, new_ptr);
 			break;
@@ -1279,12 +1261,6 @@ _t_rpc_sizeof(ub msg_id)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				msg_len = t_rpc_ver3_sizeof_DBSysAddWeiChatRsp();
 			break;
-		case DBMSG_SYS_BILLING_SMS_REQ:
-				msg_len = t_rpc_ver3_sizeof_DBSysBillingSMSReq();
-			break;
-		case DBMSG_SYS_BILLING_SMS_RSP:
-				msg_len = t_rpc_ver3_sizeof_DBSysBillingSMSRsp();
-			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelReq();
 			break;
@@ -1529,6 +1505,7 @@ _t_rpc_sizeof(ub msg_id)
 				msg_len = t_rpc_ver3_sizeof_UIPUnregisterRsp();
 			break;
 		default:
+		        msg_len = 0;
 			break;
 	}
 

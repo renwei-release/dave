@@ -9,6 +9,7 @@
 
 package metrics
 
+
 import (
     "fmt"
     "net/http"
@@ -17,7 +18,7 @@ import (
 
 func _StartMetricsListen(addr string, bPanicIfFailed bool) {
     http.Handle("/metrics", promhttp.Handler())
-
+    
     var err error = http.ListenAndServe(addr, nil)
     sErrMsg := fmt.Sprintf("[metrics] %s http.ListenAndServe failed, err:%v", addr, err)
     fmt.Printf(sErrMsg)

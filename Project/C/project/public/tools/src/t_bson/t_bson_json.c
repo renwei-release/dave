@@ -236,6 +236,11 @@ t_bson_json(tBsonObject *pBson)
 	json_object *pJson;
 	tBsonData *pData;
 
+	if(pBson == NULL)
+	{
+		return NULL;
+	}
+
 	if(pBson->type == tBsonType_object)
 	{
 		pJson = json_object_new_object();
@@ -296,6 +301,11 @@ t_json_bson(json_object *pJson)
 	struct lh_entry *entry = NULL;
 	char *key = NULL;
 	struct json_object* val = NULL;
+
+	if(pJson == NULL)
+	{
+		return NULL;
+	}
 
 	if(pJson->o_type == json_type_object)
 	{

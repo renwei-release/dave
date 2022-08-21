@@ -241,16 +241,6 @@ dave_bool t_rpc_ver3_unzip_DBSysAddWeiChatRsp(void **unzip_data, ub *unzip_len, 
 void * t_rpc_ver3_ptr_DBSysAddWeiChatRsp(DBSysAddWeiChatRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_DBSysAddWeiChatRsp(void);
 
-void * t_rpc_ver3_zip_DBSysBillingSMSReq(DBSysBillingSMSReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DBSysBillingSMSReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysBillingSMSReq(DBSysBillingSMSReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_DBSysBillingSMSReq(void);
-
-void * t_rpc_ver3_zip_DBSysBillingSMSRsp(DBSysBillingSMSRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DBSysBillingSMSRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBSysBillingSMSRsp(DBSysBillingSMSRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_DBSysBillingSMSRsp(void);
-
 void * t_rpc_ver3_zip_DBSysInqChannelReq(DBSysInqChannelReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysInqChannelReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_DBSysInqChannelReq(DBSysInqChannelReq *struct_data, void *new_ptr);

@@ -254,23 +254,5 @@ typedef struct {
 	void *ptr;
 } DBHybridInqListRsp;
 
-/* for DBMSG_SYS_BILLING_SMS_REQ message */
-typedef struct {
-	ErrCode ret;
-    s8 sql_object[DAVE_BILLING_SMS_DB_LEN];
-	ub status;
-	MBUF * data;
-	void *ptr;
-} DBSysBillingSMSReq;
-
-/* for DBMSG_SYS_BILLING_SMS_RSP message */
-typedef struct {
-	ErrCode ret;
-	s8 data_object[DAVE_BILLING_SMS_DB_LEN];
-	ub status;
-	MBUF * data;
-	void *ptr;
-} DBSysBillingSMSRsp;
-
 #endif
 

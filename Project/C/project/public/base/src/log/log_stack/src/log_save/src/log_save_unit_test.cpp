@@ -13,7 +13,9 @@ using namespace std;
 #include "gtest.h"
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_3rdparty.h"
 #include "log_save_tools.h"
+#include "log_save_msg_to_json.h"
 #include "log_log.h"
 
 static void
@@ -204,6 +206,28 @@ _log_save_test_cases_5(void)
 	value_ptr[value_len] = backup_value;
 }
 
+static void
+_log_save_test_cases_6(void)
+{
+	#define DBMSG_SYS_PTLNAME_STATUS_RSP 15898
+	typedef struct {
+		ErrCode Ret;
+		MBUF *pJson;
+		void *Ptr;
+	} DBSysSmsPtlnameStatusRsp;
+
+	DBSysSmsPtlnameStatusRsp rsp;
+	void *pJson;
+
+	pJson = log_save_msg_to_json(DBMSG_SYS_PTLNAME_STATUS_RSP, sizeof(DBSysSmsPtlnameStatusRsp), &rsp);
+	if(pJson != NULL)
+	{
+		LOGLOG("%s", dave_json_to_string(pJson, NULL));
+
+		dave_json_free(pJson);
+	}
+}
+
 // =====================================================================
 
 TEST(log_save_case, log_save_case_1) { _log_save_test_cases_1(); }
@@ -211,6 +235,7 @@ TEST(log_save_case, log_save_case_2) { _log_save_test_cases_2(); }
 TEST(log_save_case, log_save_case_3) { _log_save_test_cases_3(); }
 TEST(log_save_case, log_save_case_4) { _log_save_test_cases_4(); }
 TEST(log_save_case, log_save_case_5) { _log_save_test_cases_5(); }
+TEST(log_save_case, log_save_case_6) { _log_save_test_cases_6(); }
 
 #endif
 

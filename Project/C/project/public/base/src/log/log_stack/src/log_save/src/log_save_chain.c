@@ -16,62 +16,9 @@
 #include "thread_chain.h"
 #include "log_tracing.h"
 #include "log_save_json.h"
+#include "log_save_msg_to_json.h"
 #include "log_lock.h"
 #include "log_log.h"
-
-static void *_rebuild_dll_handle = NULL;
-static void (* dll_booting_lock)(void) = NULL;
-static void (* dll_base_log_init)(void) = NULL;
-static void (* dll_base_mem_init)(void) = NULL;
-static void * (* dll_t_rpc_rebuild_to_json)(ub msg_id, ub msg_len, void *msg_body) = NULL;
-
-static void
-_log_save_rebuild_dll_init(void)
-{
-	s8 *dll_file = "/dave/tools/rpc/liblinuxBASE.so";
-
-	_rebuild_dll_handle = dlopen(dll_file, RTLD_LAZY);
-	if(_rebuild_dll_handle != NULL)
-	{
-		dll_booting_lock = dlsym(_rebuild_dll_handle, "booting_lock");
-		dll_base_log_init = dlsym(_rebuild_dll_handle, "base_log_init");
-		dll_base_mem_init = dlsym(_rebuild_dll_handle, "base_mem_init");
-	
-		dll_t_rpc_rebuild_to_json = dlsym(_rebuild_dll_handle, "t_rpc_rebuild_to_json");
-
-		if(dll_t_rpc_rebuild_to_json != NULL)
-		{
-			dll_booting_lock();
-			dll_base_log_init();
-			dll_base_mem_init();
-		
-			LOGLOG("dll_file:%s open success!", dll_file);
-		}
-	}
-}
-
-static void
-_log_save_rebuild_dll_exit(void)
-{
-	if(_rebuild_dll_handle != NULL)
-	{
-		dlclose(_rebuild_dll_handle);
-		_rebuild_dll_handle = NULL;
-	}
-}
-
-static inline void *
-_log_save_rebuild_to_json(ub msg_id, ub msg_len, void *msg_body)
-{
-	if(dll_t_rpc_rebuild_to_json != NULL)
-	{
-		return dll_t_rpc_rebuild_to_json(msg_id, msg_len, msg_body);
-	}
-	else
-	{
-		return t_rpc_rebuild_to_json(msg_id, msg_len, msg_body);
-	}
-}
 
 static inline s8 *
 _log_save_chain_time_str(s8 *time_ptr, ub time_len, ub microseconds)
@@ -153,7 +100,7 @@ _log_save_chain_to_json(s8 *device_info, s8 *service_verno, ThreadChain *pChain,
 	}
 	if(msg_len > 0)
 	{
-		dave_json_add_object(pJson, "msg_body", _log_save_rebuild_to_json(msg_id, msg_len, msg_body));
+		dave_json_add_object(pJson, "msg_body", log_save_msg_to_json(msg_id, msg_len, msg_body));
 	}
 	dave_json_add_str(pJson, "fun", pChain->fun);
 	dave_json_add_ub(pJson, "line", pChain->line);
@@ -330,17 +277,17 @@ _log_save_chain_load_version_2(sb file_id, s8 *device_info, s8 *service_verno, u
 void
 log_save_chain_init(void)
 {
-	_log_save_rebuild_dll_init();
-
 	log_tracing_init();
+
+	log_save_msg_to_json_init();
 }
 
 void
 log_save_chain_exit(void)
 {
-	log_tracing_exit();
+	log_save_msg_to_json_exit();
 
-	_log_save_rebuild_dll_exit();
+	log_tracing_exit();
 }
 
 void
