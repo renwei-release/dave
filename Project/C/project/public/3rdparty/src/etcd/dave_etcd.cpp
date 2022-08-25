@@ -20,10 +20,9 @@
 #include "dave_tools.h"
 #include "party_log.h"
 
-static s8 _etcd_url[2048];
+static s8 _etcd_url[256];
 static s8 _etcd_watcher_dir[256];
 static etcd_watcher_fun _watcher_fun = NULL;
-static void *_etcd_thread = NULL;
 
 static void
 _etcd_watcher_response(etcd::Response const & resp)
@@ -35,6 +34,8 @@ _etcd_watcher_response(etcd::Response const & resp)
 			resp.error_message().c_str());
 		return;
 	}
+
+	PARTYLOG("");
 
 	for(auto const &ev: resp.events())
 	{
@@ -60,26 +61,6 @@ _etcd_watcher_response(etcd::Response const & resp)
 	}
 }
 
-static void *
-_etcd_thread_fun(void *arg)
-{
-	etcd::Watcher watcher(_etcd_url, "\0", _etcd_watcher_response, true);
-
-	PARTYLOG("etcd watcher on url:%s watcher dir:%s", _etcd_url, _etcd_watcher_dir);
-
-	while(dave_os_thread_canceled(_etcd_thread) == dave_false)
-	{
-    	dave_os_sleep(1000 * 1000);
-	}
-
-	watcher.Cancel();
-
-	dave_os_thread_exit(_etcd_thread);
-	_etcd_thread = NULL;
-
-	return NULL;
-}
-
 // =====================================================================
 
 extern "C" void
@@ -87,19 +68,17 @@ dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
 {
 	dave_strcpy(_etcd_url, url, sizeof(_etcd_url));
 	dave_strcpy(_etcd_watcher_dir, watcher_dir, sizeof(_etcd_watcher_dir));
-
 	_watcher_fun = watcher_fun;
 
-	_etcd_thread = dave_os_create_thread((char *)"etcd", _etcd_thread_fun, NULL);
+	etcd::Watcher watcher(_etcd_url, _etcd_watcher_dir, _etcd_watcher_response, true);
+
+	PARTYLOG("etcd watcher on url:%s watcher dir:%s", _etcd_url, _etcd_watcher_dir);
 }
 
 extern "C" void
 dave_etcd_exit(void)
 {
-	if(_etcd_thread != NULL)
-	{
-		dave_os_release_thread(_etcd_thread);
-	}
+
 }
 
 extern "C" dave_bool
@@ -147,14 +126,9 @@ dave_etcd_get(s8 *key, ub limit)
 
 	for(index=0; index<size; index++)
 	{
-		s8 key[1024], value[1024];
-
-		std::strcpy(key, resp.keys()[index].c_str());
-		std::strcpy(value, resp.values()[index].as_string().c_str());
-
 		void *pPutJson = dave_json_malloc();
-		dave_json_add_str(pPutJson, (char *)"key", key);
-		dave_json_add_str(pPutJson, (char *)"value", value);
+		dave_json_add_str(pPutJson, (char *)"key", (s8 *)(resp.keys()[index].c_str()));
+		dave_json_add_str(pPutJson, (char *)"value", (s8 *)(resp.values()[index].as_string().c_str()));
 		dave_json_array_add_object(pArray, pPutJson);
 	}
 

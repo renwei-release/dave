@@ -1402,7 +1402,7 @@ _thread_local_remove(ThreadId thread_id)
 // =====================================================================
 
 void
-base_thread_init(void *main_thread_id)
+base_thread_init(void *main_thread_id, s8 *sync_domain)
 {
 	__system_startup__ = dave_true;
 
@@ -1430,7 +1430,7 @@ base_thread_init(void *main_thread_id)
 
 	thread_chain_init();
 
-	_top_msg_stack.thread_id = _guardian_thread = thread_guardian_init(_thread);
+	_top_msg_stack.thread_id = _guardian_thread = thread_guardian_init(_thread, sync_domain);
 }
 
 void
@@ -2016,7 +2016,7 @@ base_thread_uid_msg(
 		src_id = self();
 	}
 
-	dst_id = thread_router_build_router(&pRouter, uid);
+	dst_id = __thread_router_build_router__(&pRouter, uid, fun, line);
 
 	if(dst_id ==INVALID_THREAD_ID)
 	{

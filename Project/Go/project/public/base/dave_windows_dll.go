@@ -76,18 +76,24 @@ func _dave_go_self_check() C.int {
 
 // =====================================================================
 
-func Dave_go_init(mode string, init_fun func(), exit_fun func()) {
+func Dave_go_init(work_mode string, sync_domain string, init_fun func(), exit_fun func()) {
 	_product_init_fun = init_fun
 	_product_exit_fun = exit_fun
 
-	my_verno := C.CString(Dave_verno())
-	model := C.CString(mode)
+	c_my_verno := C.CString(Dave_verno())
+	c_work_mode := C.CString(work_mode)
+	c_sync_domain := C.CString(sync_domain)
 	thread_number := 8
 
-	C.dave_dll_init(my_verno, model, C.int(thread_number), C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit))
+	C.dave_dll_init(
+		c_my_verno, c_work_mode,
+		C.int(thread_number),
+		C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit),
+		c_sync_domain)
 
-	C.free(unsafe.Pointer(my_verno))
-	C.free(unsafe.Pointer(model))
+	C.free(unsafe.Pointer(c_my_verno))
+	C.free(unsafe.Pointer(c_work_mode))
+	C.free(unsafe.Pointer(c_sync_domain))
 }
 
 func Dave_go_running() {
@@ -95,7 +101,6 @@ func Dave_go_running() {
 	if ret == 0 {
 		C.dave_dll_running()
 	}
-	C.dave_dll_wait_dll_exit()
 }
 
 func Dave_go_exit() {

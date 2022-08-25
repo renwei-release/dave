@@ -625,7 +625,7 @@ which is usually the reason for the delayed message processing.\
 			else
 			{
 				SYNCABNOR("This is a serious system conflict! You can use command: \
-cfgset GLOBALLYIDENTIFIER [16Byte] to modify one of the globally identifier. \
+set GLOBALLYIDENTIFIER [16Byte] to modify one of the globally identifier. \
 %s/%s/%s(%d%d%d) %s/%s/%s(%d%d%d)",
 					pCheckClient->verno, pCheckClient->globally_identifier,
 					ipv4str(pCheckClient->NetInfo.addr.ip.ip_addr, pCheckClient->NetInfo.port),

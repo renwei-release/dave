@@ -106,7 +106,7 @@ _ramkv_local_listmap_del_mid(KVLocalMultiMap *pMultiMap, KVLocalMultiBaseMap *pB
 	}
 }
 
-static inline ub
+static inline sb
 _ramkv_local_listmap_inq(KVLocalMultiMap *pMultiMap, sb index, void *value_ptr, ub value_len)
 {
 	KVLocalMultiBaseMap *pBaseMap;
@@ -119,12 +119,12 @@ _ramkv_local_listmap_inq(KVLocalMultiMap *pMultiMap, sb index, void *value_ptr, 
 
 	if((pMultiMap == NULL) || (pMultiMap->ramkv_number == 0))
 	{
-		return 0;
+		return -1;
 	}
 
 	if((index < 0) || (index >= pMultiMap->ramkv_number))
 	{
-		return 0;
+		return -1;
 	}
 
 	if((pMultiMap->ramkv_number < 256)
@@ -162,7 +162,7 @@ _ramkv_local_listmap_inq(KVLocalMultiMap *pMultiMap, sb index, void *value_ptr, 
 			pMultiMap->current_index = 0;
 			pMultiMap->current_pBaseMap = NULL;
 		}
-		return 0;
+		return -1;
 	}
 	else
 	{
@@ -170,7 +170,7 @@ _ramkv_local_listmap_inq(KVLocalMultiMap *pMultiMap, sb index, void *value_ptr, 
 		pMultiMap->current_index = index;
 		pMultiMap->current_pBaseMap = pBaseMap;
 
-		return ramkv_local_basemap_copy_value_to_user(pBaseMap, value_ptr, value_len);		
+		return (sb)ramkv_local_basemap_copy_value_to_user(pBaseMap, value_ptr, value_len);		
 	}
 }
 
@@ -215,7 +215,7 @@ ramkv_local_listmap_add(KVLocalMultiMap *pMultiMap, KVLocalMultiBaseMap *pBaseMa
 	pMultiMap->ramkv_number ++;
 }
 
-ub
+sb
 ramkv_local_listmap_inq(KVLocalMultiMap *pMultiMap, sb index, void *value_ptr, ub value_len)
 {
 	return _ramkv_local_listmap_inq(pMultiMap, index, value_ptr, value_len);

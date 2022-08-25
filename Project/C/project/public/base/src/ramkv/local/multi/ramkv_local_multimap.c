@@ -92,21 +92,21 @@ _ramkv_local_multimap_add(KVLocalMultiMap *pMultiMap, u8 *key_ptr, ub key_len, v
 	return dave_true;
 }
 
-static inline ub
+static inline sb
 _ramkv_local_multimap_inq(KVLocalMultiMap *pMultiMap, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 {
 	KVLocalMultiBaseMap *pBaseMap;
 
 	if(pMultiMap == NULL)
 	{
-		return 0;
+		return -1;
 	}
 
 	pBaseMap = ramkv_local_basemap_inq((KVLocalMultiBaseMap **)(pMultiMap->base_map), key_ptr, key_len, dave_false);
 	if(pBaseMap == NULL)
 	{
 		KVDEBUG("key:%s is NULL!", key_ptr);
-		return 0;
+		return -1;
 	}
 
 	if((pBaseMap->value_ptr == NULL) || (pBaseMap->value_len == 0))
@@ -117,7 +117,7 @@ _ramkv_local_multimap_inq(KVLocalMultiMap *pMultiMap, u8 *key_ptr, ub key_len, v
 
 	KVDEBUG("%s", key_ptr);
 
-	return ramkv_local_basemap_copy_value_to_user(pBaseMap, value_ptr, value_len);
+	return (sb)ramkv_local_basemap_copy_value_to_user(pBaseMap, value_ptr, value_len);
 }
 
 static inline ub
@@ -192,10 +192,10 @@ ramkv_local_multimap_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub v
 	return ret;
 }
 
-ub
+sb
 ramkv_local_multimap_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 {
-	ub inq_value_len = 0;
+	sb inq_value_len = -1;
 
 	SAFECODEv2R(pKV->ramkv_pv, {
 

@@ -23,7 +23,7 @@ sb base_mlen(MBUF *data);
 ub base_mlnumber(MBUF *data);
 void base_mem_init(void);
 void base_mem_exit(void);
-ub base_mem_info(s8 *info, ub info_len, dave_bool base_flag);
+ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 
 #define base_ralloc(a) __base_malloc__((ub)(a), dave_true, 0x00, (s8 *)__func__, (ub)__LINE__)
 #define base_malloc(a) __base_malloc__((ub)(a), dave_false, 0x00, (s8 *)__func__, (ub)__LINE__)

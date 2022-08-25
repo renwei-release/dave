@@ -37,23 +37,22 @@ ThreadRouter * thread_router_build_msg(void *msg_router, ub msg_id);
 
 void thread_router_clean_msg(MSGBODY *msg);
 
-ThreadId thread_router_build_router(ThreadRouter **ppRouter, s8 *uid);
+ThreadId __thread_router_build_router__(ThreadRouter **ppRouter, s8 *uid, s8 *fun, ub line);
+#define thread_router_build_router(ppRouter, uid) __thread_router_build_router__(ppRouter, uid, (s8 *)__func__, (ub)__LINE__)
 
-ThreadId thread_router_pop_msg(ThreadRouter **ppRouter, s8 *uid);
+ThreadId __thread_router_pop_msg__(ThreadRouter **ppRouter, s8 *uid, s8 *fun, ub line);
+#define thread_router_pop_msg(ppRouter, uid) __thread_router_pop_msg__(ppRouter, uid, (s8 *)__func__, (ub)__LINE__)
 
 ThreadRouter * thread_router_run_msg(MSGBODY *msg);
 
 void thread_router_run_clean(ThreadRouter *pThreadRouter);
 
-ThreadId thread_router_check_uid(s8 *uid);
-
-void thread_router_next_route(ThreadRouter *pRouter);
+ThreadId __thread_router_check_uid__(s8 *uid, s8 *fun, ub line);
+#define thread_router_check_uid(uid) __thread_router_check_uid__(uid, (s8 *)__func__, (ub)__LINE__)
 
 void * thread_router_to_bson(ThreadRouter *pRouter);
 
 ThreadRouter * thread_bson_to_router(void *pBson);
-
-s8 * thread_router_info(s8 *msg, ThreadRouter *pRouter);
 
 #endif
 

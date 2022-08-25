@@ -191,7 +191,7 @@ _thread_chain_free(ThreadChain *pChain)
 void
 thread_chain_init(void)
 {
-	chain_cfg_reset();
+	chain_cfg_reset(NULL);
 
 	chain_buf_init();
 
@@ -202,6 +202,12 @@ void
 thread_chain_exit(void)
 {
 	chain_buf_exit();
+}
+
+void
+thread_chain_reload_cfg(CFGUpdate *pUpdate)
+{
+	chain_cfg_reset(pUpdate);
 }
 
 void
@@ -232,7 +238,8 @@ thread_chain_build_msg(
 		return (ThreadChain *)msg_chain;
 	}
 
-	if(thread_internal_msg(msg_id) == dave_true)
+	if((thread_internal_msg(msg_id) == dave_true)
+		|| (chain_enable() == dave_false))
 	{
 		return NULL;
 	}
@@ -308,7 +315,7 @@ thread_chain_run_clean(ThreadChain *pThreadChain, MSGBODY *msg)
 
 	thread_chain_insert(
 		ChainType_execution,
-		pMsgChain, NULL,
+		msg->msg_chain, msg->msg_router,
 		pMsgChain->src_gid, pMsgChain->dst_gid,
 		msg->msg_src, msg->msg_dst,
 		msg->msg_id, msg->msg_len, msg->msg_body);

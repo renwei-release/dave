@@ -98,7 +98,7 @@ def dave_dll():
    return davelib
 
 
-def dave_python_init(product_name):
+def dave_python_init(product_name, work_mode, sync_domain):
    global _my_product_name
 
    _my_product_name = str(product_name)
@@ -106,10 +106,13 @@ def dave_python_init(product_name):
    _dll_setup_product_verno_name(_my_product_name)
 
    my_verno = dave_verno()
-   model = b"Outer Loop"
-   thread_number = 3
+   thread_number = 0
 
-   davelib.dave_dll_init(c_char_p(my_verno), c_char_p(model), c_int(thread_number), _c_python_init, _c_python_main, _c_python_exit)
+   davelib.dave_dll_init(
+      c_char_p(my_verno), c_char_p(work_mode),
+      c_int(thread_number),
+      _c_python_init, _c_python_main, _c_python_exit,
+      c_char_p(sync_domain))
    return
 
 

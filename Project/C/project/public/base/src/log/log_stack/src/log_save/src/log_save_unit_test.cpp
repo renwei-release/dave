@@ -15,7 +15,7 @@ using namespace std;
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
 #include "log_save_tools.h"
-#include "log_save_msg_to_json.h"
+#include "log_save_dll.h"
 #include "log_log.h"
 
 static void

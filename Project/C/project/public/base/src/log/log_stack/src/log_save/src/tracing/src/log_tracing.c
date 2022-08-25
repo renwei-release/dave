@@ -112,7 +112,7 @@ _log_tracing_logic(MSGBODY *msg)
 }
 
 static void
-_log_tracing_timer_out(void *ramkv, s8 *key)	
+_log_tracing_timer_out(void *ramkv, s8 *key)
 {
 	TracingBody *pBody = kv_inq_key_ptr(_log_tracing_kv, key);
 	MsgInnerLoop loop;
@@ -182,13 +182,7 @@ log_tracing_exit(void)
 dave_bool
 log_tracing(ThreadChain *pChain, void *pJson)
 {
-	if((pChain->type == ChainType_execution)
-		|| (pChain->type == ChainType_coroutine))
-	{
-		return _log_tracing_add(pChain->chain_id, pJson);
-	}
-
-	return dave_false;
+	return _log_tracing_add(pChain->chain_id, pJson);
 }
 
 #endif

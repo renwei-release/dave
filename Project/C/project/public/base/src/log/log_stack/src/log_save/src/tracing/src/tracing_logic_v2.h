@@ -5,12 +5,10 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __THREAD_GUARDIAN_H__
-#define __THREAD_GUARDIAN_H__
+#ifndef __TRACING_LOGIC_V2_H__
+#define __TRACING_LOGIC_V2_H__
 
-ThreadId thread_guardian_init(ThreadStruct *thread_struct, s8 *sync_domain);
-
-void thread_guardian_exit(void);
+void tracing_save_level_v2(GenerationLevel *pLevel);
 
 #endif
 

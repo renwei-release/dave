@@ -17,5 +17,7 @@ void thread_orchestration_exit(void);
 
 dave_bool thread_orchestration_router(ThreadRouter *pRouter, s8 *uid);
 
+ub thread_orchestration_info(s8 *info_ptr, ub info_len);
+
 #endif
 

@@ -92,5 +92,11 @@ thread_orchestration_router(ThreadRouter *pRouter, s8 *uid)
 	return dave_true;
 }
 
+ub
+thread_orchestration_info(s8 *info_ptr, ub info_len)
+{
+	return orchestration_config_info(info_ptr, info_len);
+}
+
 #endif
 

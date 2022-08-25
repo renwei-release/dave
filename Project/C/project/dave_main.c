@@ -61,7 +61,7 @@ _linux_parse_the_command_line(int argc, char **argv)
 static void *
 _linux_main_thread(void *arg)
 {
-	base_init(_dave_main_thread_id);
+	base_init(_dave_main_thread_id, NULL);
 
 	product_init();
 

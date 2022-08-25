@@ -16,7 +16,8 @@
 #include "thread_chain.h"
 #include "log_tracing.h"
 #include "log_save_json.h"
-#include "log_save_msg_to_json.h"
+#include "log_save_dll.h"
+#include "log_save_cfg.h"
 #include "log_lock.h"
 #include "log_log.h"
 
@@ -93,7 +94,7 @@ _log_save_chain_to_json(s8 *device_info, s8 *service_verno, ThreadChain *pChain,
 	dave_json_add_str(pJson, "msg_src", ub_str);
 	dave_snprintf(ub_str, sizeof(ub_str), "%lx", pChain->msg_dst);
 	dave_json_add_str(pJson, "msg_dst", ub_str);
-	dave_json_add_str(pJson, "msg_id", msgstr(pChain->msg_id));
+	dave_json_add_str(pJson, "msg_id", log_save_RPCMSG_str(pChain->msg_id));
 	if((pRouter != NULL) && (pRouter->uid[0] != '\0'))
 	{
 		dave_json_add_object(pJson, "router", _log_save_router_to_json(pRouter));
@@ -222,6 +223,10 @@ _log_save_chain_load_version_1(sb file_id, s8 *device_info, s8 *service_verno, u
 	void *msg_body;
 
 	content_index += _log_save_chain_load_chain(&pChain, &chain_len, &content_ptr[content_index], content_len-content_index);
+	if(log_save_type_enable(pChain->type) == dave_false)
+	{
+		return;
+	}
 	content_index += _log_save_chain_load_msg(&msg_id, &msg_len, &msg_body, &content_ptr[content_index], content_len-content_index);
 
 	if(chain_len != sizeof(ThreadChain))
@@ -249,11 +254,16 @@ _log_save_chain_load_version_2(sb file_id, s8 *device_info, s8 *service_verno, u
 	ub content_index = 0;
 	ub chain_len;
 	ThreadChain *pChain;
-	ThreadRouter *pRouter = dave_malloc(sizeof(ThreadRouter));
+	ThreadRouter *pRouter;
 	ub msg_id, msg_len;
 	void *msg_body;
 
 	content_index += _log_save_chain_load_chain(&pChain, &chain_len, &content_ptr[content_index], content_len-content_index);
+	if(log_save_type_enable(pChain->type) == dave_false)
+	{
+		return;
+	}
+	pRouter = dave_malloc(sizeof(ThreadRouter));
 	content_index += _log_save_chain_load_router(pRouter, &content_ptr[content_index], content_len-content_index);
 	content_index += _log_save_chain_load_msg(&msg_id, &msg_len, &msg_body, &content_ptr[content_index], content_len-content_index);
 
@@ -279,13 +289,13 @@ log_save_chain_init(void)
 {
 	log_tracing_init();
 
-	log_save_msg_to_json_init();
+	log_save_dll_init();
 }
 
 void
 log_save_chain_exit(void)
 {
-	log_save_msg_to_json_exit();
+	log_save_dll_exit();
 
 	log_tracing_exit();
 }

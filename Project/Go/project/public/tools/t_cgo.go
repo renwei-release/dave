@@ -39,7 +39,7 @@ func stringStructOf(sp *string) *stringStruct {
 	return (*stringStruct)(unsafe.Pointer(sp))
 }
 
-func byteStructOf(sp *byte) *sliceStruct {
+func byteStructOf(sp *[]byte) *sliceStruct {
 	return (*sliceStruct)(unsafe.Pointer(sp))
 }
 
@@ -63,8 +63,18 @@ func T_cgo_gostring2cbin(bin_len int64, bin_ptr unsafe.Pointer, go_string string
     C.go_string_copy_to_c_bin(bin_ptr, C.int(bin_len), go_string_struct.str, C.int(go_string_struct.len))
 }
 
+func T_cgo_gobyte2cbin(bin_len int64, bin_ptr unsafe.Pointer, go_byte []byte) {
+    go_byte_struct := byteStructOf(&go_byte)
+
+    C.go_string_copy_to_c_bin(bin_ptr, C.int(bin_len), go_byte_struct.str, C.int(go_byte_struct.len))
+}
+
 func T_cgo_cbin2gostring(bin_len int64, bin_ptr unsafe.Pointer) string {
     return C.GoStringN((*C.char)(bin_ptr), C.int(bin_len))
+}
+
+func T_cgo_cbin2gobyte(bin_len int64, bin_ptr unsafe.Pointer) []byte {
+	return C.GoBytes((unsafe.Pointer)(bin_ptr), C.int(bin_len))
 }
 
 func T_cgo_gostring2cstring(go_string string) *C.char {

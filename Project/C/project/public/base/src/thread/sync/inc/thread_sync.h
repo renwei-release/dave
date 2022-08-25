@@ -16,7 +16,7 @@
 #define SYNC_STACK_CLIENT
 #endif
 
-void thread_sync_init(void);
+void thread_sync_init(s8 *sync_domain);
 void thread_sync_exit(void);
 
 ThreadId thread_sync_thread_id(ThreadId thread_id);

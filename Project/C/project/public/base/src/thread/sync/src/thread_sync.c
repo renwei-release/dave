@@ -14,7 +14,7 @@
 #include "sync_lock.h"
 
 #ifdef SYNC_STACK_CLIENT
-extern void sync_client_init(void);
+extern void sync_client_init(s8 *sync_domain);
 extern void sync_client_exit(void);
 extern ThreadId sync_client_thread_id(ThreadId thread_id);
 #endif
@@ -26,16 +26,16 @@ extern void sync_server_exit(void);
 // =====================================================================
 
 void
-thread_sync_init(void)
+thread_sync_init(s8 *sync_domain)
 {
 #if defined(SYNC_STACK_CLIENT) || defined(SYNC_STACK_SERVER)
 	sync_lock_init();
 #endif
-    
+
 #ifdef SYNC_STACK_CLIENT
 	if(T_sync_type() == SYNC_CLIENT)
 	{
-		sync_client_init();
+		sync_client_init(sync_domain);
 	}
 #endif
 #ifdef SYNC_STACK_SERVER

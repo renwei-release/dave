@@ -50,6 +50,7 @@ var system_function_table = map[int]msg_function_define{
 	auto.MSGID_LOCAL_THREAD_READY:         fun_None,
 	auto.MSGID_LOCAL_THREAD_REMOVE:        fun_None,
 	auto.MSGID_CFG_UPDATE:                 fun_None,
+	auto.MSGID_CFG_REMOTE_UPDATE:          fun_None,
 }
 
 func Dave_system_function_table_add(msg_id int, msg_function msg_function_define) {

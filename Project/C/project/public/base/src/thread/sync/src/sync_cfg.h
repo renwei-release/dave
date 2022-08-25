@@ -16,6 +16,8 @@
 #define CFG_SYNC_SERVER_DOMAIN "SYNCServerDomain"
 #define CFG_SYNC_SERVER_PORT "SYNCServerPort"
 
+void sync_cfg_external_incoming_sync_domain(s8 *sync_domain);
+
 dave_bool sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port);
 
 u16 sync_cfg_get_syncs_port(void);

@@ -87,7 +87,7 @@ dave_dll_cfg_remote_get(char *cfg_name, char *cfg_ptr, int cfg_len)
 {
 	dave_memset(cfg_ptr, 0x00, cfg_len);
 
-	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_ptr, cfg_len) == dave_false)
+	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_ptr, cfg_len) < 0)
 	{
 		return -1;
 	}

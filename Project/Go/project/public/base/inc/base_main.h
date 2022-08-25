@@ -8,7 +8,7 @@
 #ifndef __BASE_MAIN_H__
 #define __BASE_MAIN_H__
 
-void base_init(void *main_thread_id);
+void base_init(void *main_thread_id, s8 *sync_domain);
 dave_bool base_running(dave_bool platform_schedule);
 void base_exit(void);
 void base_restart(const char *args, ...);

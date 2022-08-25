@@ -10,7 +10,7 @@
 
 dave_bool ramkv_remote_add(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
 
-ub ramkv_remote_inq(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
+sb ramkv_remote_inq(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
 
 ub ramkv_remote_del(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len);
 

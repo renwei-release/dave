@@ -8,7 +8,7 @@
 #ifndef __CHAIN_CFG_H__
 #define __CHAIN_CFG_H__
 
-void chain_cfg_reset(void);
+void chain_cfg_reset(CFGUpdate *pUpdate);
 
 dave_bool chain_enable(void);
 

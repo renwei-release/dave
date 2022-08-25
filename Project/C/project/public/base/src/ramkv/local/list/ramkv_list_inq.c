@@ -28,12 +28,12 @@ _ramkv_list_inq_data(KVSlot *pSlot, u8 *key_ptr, ub key_len)
 	return ramkv_slot_data_inq(pSlot, key_ptr, key_len);
 }
 
-static inline ub
+static inline sb
 _ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	KVData *pData;
 	sb inq_index = 0;
-	ub inq_len = 0;
+	sb inq_len = -1;
 
 	SAFECODEv2R(pKV->ramkv_pv, {
 
@@ -57,7 +57,7 @@ _ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_
 					fun, line);
 			}
 
-			inq_len = ramkv_list_data_copy_to_user(pData, value_ptr, value_len);
+			inq_len = (sb)ramkv_list_data_copy_to_user(pData, value_ptr, value_len);
 		}
 
 	} );
@@ -98,13 +98,13 @@ _ramkv_list_inq_top(KV *pKV, u8 *key_ptr, ub key_len)
 	return ret;
 }
 
-static inline ub
+static inline sb
 _ramkv_list_inq_normal(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	KVHash hash;
 	KVSlot *pSlot;
 	KVData *pData;
-	ub inq_len = 0;
+	sb inq_len = -1;
 
 	if(ramkv_hash(pKV, &hash, key_ptr, key_len, fun, line) == dave_false)
 	{
@@ -124,7 +124,7 @@ _ramkv_list_inq_normal(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub val
 			{
 				KVDEBUG("key_ptr:%s pData:%x", key_ptr, pData);
 
-				inq_len = ramkv_list_data_copy_to_user(pData, value_ptr, value_len);
+				inq_len = (sb)ramkv_list_data_copy_to_user(pData, value_ptr, value_len);
 			}
 		}
 
@@ -137,7 +137,7 @@ _ramkv_list_inq_normal(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub val
 
 // ====================================================================
 
-ub
+sb
 __ramkv_list_inq__(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	if((value_ptr == NULL) || (value_len == 0))
@@ -159,7 +159,7 @@ __ramkv_list_inq__(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, 
 	else if(key_len == 0)
 	{
 		/* 如果给出索引KEY，但KEY为空，那么不能找到数据 */
-		return 0;
+		return -1;
 	}
 	else
 	{

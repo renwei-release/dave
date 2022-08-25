@@ -56,13 +56,13 @@ base_remote_cfg_set(s8 *name, s8 *value)
 	return RetCode_OK;
 }
 
-ub
+sb
 base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 {
 	return kv_inq_key_value(_remote_cfg_kv, name, value_ptr, value_len);
 }
 
-ub
+sb
 base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len)
 {
 	return kv_index_key_value(_remote_cfg_kv, index, key_ptr, key_len, value_ptr, value_len);

@@ -33,7 +33,7 @@
 #include "base_dll_main.h"
 #include "dll_log.h"
 
-#define DLL_MAIN_THREAD_MAX_NUMBER 128
+#define DLL_MAIN_THREAD_MAX_NUMBER 32
 
 typedef struct {
 	char msg_src_name[128];
@@ -68,7 +68,9 @@ _dll_main_number(void)
 	else
 	{
 		if(_dll_thread_number > DLL_MAIN_THREAD_MAX_NUMBER)
+		{
 			_dll_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
+		}
 	}
 
 	return _dll_thread_number;

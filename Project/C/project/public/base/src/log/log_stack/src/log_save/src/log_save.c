@@ -14,6 +14,7 @@
 #include "dave_os.h"
 #include "log_lock.h"
 #include "log_save_log.h"
+#include "log_save_cfg.h"
 #include "log_save_chain.h"
 #include "log_log.h"
 
@@ -132,6 +133,8 @@ _log_save_timer_out(void *ramkv, s8 *key)
 void
 log_save_init(void)
 {
+	log_save_cfg_reset();
+
 	_log_file_kv = kv_malloc("logsave", KvAttrib_list, LOG_FILE_CLOSE_TIME, _log_save_timer_out);
 
 	log_save_chain_init();

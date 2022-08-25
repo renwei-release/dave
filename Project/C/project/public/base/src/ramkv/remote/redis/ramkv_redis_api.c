@@ -27,10 +27,10 @@ ramkv_redis_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 	return ret;
 }
 
-ub
+sb
 ramkv_redis_inq(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 {
-	ub ret_value_len = 0;
+	sb ret_value_len = -1;
 
 	SAFECODEv2R(pKV->ramkv_pv, ret_value_len = ramkv_redis_bin_inq(&(pKV->remote.redis), key_ptr, key_len, value_ptr, value_len); );
 

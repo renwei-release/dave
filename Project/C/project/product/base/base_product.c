@@ -91,6 +91,7 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 		_base_thread_rpc_debug_rsp(thread_id("bbs"), pRsp);
 	}
 */
+
 	pRsp = uid_go("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
@@ -101,13 +102,16 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	{
 		BASELOG("uiddebug 2 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
-/*
 	pRsp = uid_go("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("uidtest uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+		BASELOG("uidtest 1 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
-*/
+	pRsp = uid_go("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	if(pRsp != NULL)
+	{
+		BASELOG("uidtest 2 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+	}
 }
 
 static void

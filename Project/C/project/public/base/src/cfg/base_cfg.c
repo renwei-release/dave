@@ -188,13 +188,13 @@ base_cfg_remote_set(s8 *name, s8 *value)
 	return base_remote_cfg_set(name, value);
 }
 
-ub
+sb
 base_cfg_remote_get(s8 *name, s8 *value_ptr, ub value_len)
 {
 	return base_remote_cfg_get(name, value_ptr, value_len);
 }
 
-ub
+sb
 base_cfg_remote_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len)
 {
 	return base_remote_cfg_index(index, key_ptr, key_len, value_ptr, value_len);

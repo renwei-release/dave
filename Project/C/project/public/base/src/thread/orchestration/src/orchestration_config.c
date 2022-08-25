@@ -22,24 +22,35 @@
 
 static void *_or_kv = NULL;
 
-static void
-_or_cfg_show(ORUIDConfig *pConfig)
+static ub
+_or_cfg_show(s8 *info_ptr, ub info_len, ORUIDConfig *pConfig)
 {
-	ub router_index, gid_index;
+	ub router_index, gid_index, info_index = 0;
 
-	THREADLOG("add uid:%s router_number:%d",
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+		"uid:%s router_number:%d\n",
 		pConfig->uid, pConfig->router_number);
+
 	for(router_index=0; router_index<pConfig->router_number; router_index++)
 	{
-		THREADLOG("\tthread:%s", pConfig->router_table[router_index].thread);
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+			"\tthread:%s",
+			pConfig->router_table[router_index].thread);
+
 		if(pConfig->router_table[router_index].pGIDTable != NULL)
 		{
 			for(gid_index=0; gid_index<pConfig->router_table[router_index].pGIDTable->gid_number; gid_index++)
 			{
-				THREADLOG("\t\tgid:%s", pConfig->router_table[router_index].pGIDTable->gid_table[gid_index]);
+				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+					"\t\tgid:%s",
+					pConfig->router_table[router_index].pGIDTable->gid_table[gid_index]);
 			}
 		}
+
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\n");
 	}
+
+	return info_index;
 }
 
 static RetCode
@@ -64,10 +75,7 @@ _or_cfg_add(void *ramkv, s8 *uid, void *pArrayConfig)
 	
 	if(pConfig != NULL)
 	{
-		if(kv_add_key_ptr(ramkv, uid, pConfig) == dave_true)
-		{
-			_or_cfg_show(pConfig);
-		}
+		kv_add_key_ptr(ramkv, uid, pConfig);
 	}
 }
 
@@ -166,6 +174,25 @@ ORUIDConfig *
 orchestration_config(s8 *uid)
 {
 	return kv_inq_key_ptr(_or_kv, uid);
+}
+
+ub
+orchestration_config_info(s8 *info_ptr, ub info_len)
+{
+	ub index;
+	ORUIDConfig *pConfig;
+	ub info_index = 0;
+
+	for(index=0; index<1024000; index++)
+	{
+		pConfig = base_ramkv_inq_index_ptr(_or_kv, index);
+		if(pConfig == NULL)
+			break;
+
+		info_index += _or_cfg_show(&info_ptr[info_index], info_len-info_index, pConfig);
+	}
+
+	return info_index;
 }
 
 #endif

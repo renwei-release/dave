@@ -40,10 +40,14 @@ _dos_exit_user(s8 *param_ptr, ub param_len)
 void
 dos_exit_reset(void)
 {
+	const char *cmd_name;
+
 	if(dave_os_on_docker() == dave_false)
-	{
-		dos_cmd_reg("exit", _dos_exit_user, _dos_exit_help);
-	}
+		cmd_name = "exit";
+	else
+		cmd_name = "restart";
+
+	dos_cmd_reg(cmd_name, _dos_exit_user, _dos_exit_help);
 }
 
 #endif

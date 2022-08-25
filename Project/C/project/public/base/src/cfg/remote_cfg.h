@@ -15,8 +15,8 @@ dave_bool base_remote_cfg_internal_add(s8 *name, s8 *value);
 dave_bool base_remote_cfg_internal_del(s8 *name);
 
 RetCode base_remote_cfg_set(s8 *name, s8 *value);
-ub base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len);
-ub base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len);
+sb base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len);
+sb base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len);
 
 #endif
 

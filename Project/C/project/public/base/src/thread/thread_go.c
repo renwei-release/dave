@@ -156,6 +156,7 @@ thread_go_id(
 			pSrcThread->thread_name, dst_id,
 			msgstr(req_id), req_len, msgstr(rsp_id),
 			fun, line);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
@@ -201,6 +202,7 @@ thread_go_name(
 			pSrcThread->thread_name, dst_thread,
 			msgstr(req_id), req_len, msgstr(rsp_id),
 			fun, line);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
@@ -250,6 +252,7 @@ thread_go_gid(
 			pSrcThread->thread_name, gid, dst_thread,
 			msgstr(req_id), req_len, msgstr(rsp_id),
 			fun, line);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
@@ -300,10 +303,11 @@ thread_go_uid(
 			pSrcThread->thread_name, uid,
 			msgstr(req_id), req_len, msgstr(rsp_id),
 			fun, line);
+		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
-	dst_id = thread_router_build_router(&pRouter, uid);
+	dst_id = __thread_router_build_router__(&pRouter, uid, fun, line);
 
 	if(dst_id != INVALID_THREAD_ID)
 	{

@@ -90,15 +90,6 @@ _sync_client_run_thread_msg(
 	pChain = thread_bson_to_chain(pChainBson);
 	pRouter = thread_bson_to_router(pRouterBson);
 
-	thread_chain_insert(
-		ChainType_called,
-		pChain, pRouter,
-		pServer->globally_identifier, globally_identifier(),
-		route_src, route_dst,
-		msg_id, msg_len, msg_body);
-
-	thread_router_next_route(pRouter);
-
 	ret = base_thread_id_msg(
 		pChain, pRouter,
 		route_src, route_dst,
@@ -197,7 +188,7 @@ _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 
 	if(pUpdate->put_flag == dave_true)
 	{
-		if(rcfg_get(pUpdate->cfg_name, cfg_value, sizeof(cfg_value)) == 0)
+		if(rcfg_get(pUpdate->cfg_name, cfg_value, sizeof(cfg_value)) < 0)
 		{
 			broadcast_flag = base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
 		}

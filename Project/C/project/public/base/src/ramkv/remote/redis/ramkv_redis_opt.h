@@ -14,7 +14,7 @@ void ramkv_redis_disconnect(KVRedis *pKV);
 
 dave_bool ramkv_redis_bin_add(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
 
-ub ramkv_redis_bin_inq(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
+sb ramkv_redis_bin_inq(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len);
 
 dave_bool ramkv_redis_bin_del(KVRedis *pKV, u8 *key_ptr, ub key_len);
 

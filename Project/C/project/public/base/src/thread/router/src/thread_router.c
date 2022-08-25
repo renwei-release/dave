@@ -24,6 +24,42 @@ _thread_router_valid(ThreadRouter *pRouter)
 		return dave_true;
 }
 
+static inline s8 *
+_thread_router_show(s8 *msg, ThreadRouter *pRouter)
+{
+#ifdef LEVEL_PRODUCT_alpha
+	ub info_index, info_len = sizeof(pRouter->router_info);
+	ub router_index;
+
+	info_index = 0;
+
+	info_index += dave_snprintf(
+		&pRouter->router_info[info_index], info_len-info_index,
+		"%s uid:%s router:%d/%d\n",
+		msg,
+		pRouter->uid, pRouter->current_router_index, pRouter->router_number);
+
+	for(router_index=0; (router_index<DAVE_ROUTER_SUB_MAX)&&(router_index<pRouter->router_number); router_index++)
+	{
+		if(router_index > 0)
+		{
+			info_index += dave_snprintf(
+				&pRouter->router_info[info_index], info_len-info_index,
+				"\n");
+		}
+
+		info_index += dave_snprintf(
+			&pRouter->router_info[info_index], info_len-info_index,
+			"\tthread:%s gid:%s",
+			pRouter->sub_router[router_index].thread, pRouter->sub_router[router_index].gid);
+	}
+
+	return pRouter->router_info;
+#else
+	return NULL;
+#endif
+}
+
 static inline void
 _thread_router_reset(ThreadRouter *pRouter)
 {
@@ -78,23 +114,33 @@ _thread_router_copy(ThreadRouter *pDst, ThreadRouter *pSrc)
 }
 
 static inline ThreadId
-_thread_router_current_thread_id(ThreadRouter *pRouter)
+_thread_router_current_thread_id(ThreadRouter *pRouter, s8 *fun, ub line)
 {
+	ub current_router_index;
 	s8 *gid, *thread;
 
-	if(pRouter == NULL)
+	if((pRouter->router_number == 0)
+		|| (pRouter->router_number > DAVE_ROUTER_SUB_MAX))
 	{
+		THREADABNOR("%s <%s:%d>", _thread_router_show("invalid router_number", pRouter), fun, line);
 		return INVALID_THREAD_ID;
 	}
 
 	if((pRouter->current_router_index >= pRouter->router_number)
 		|| (pRouter->current_router_index >= DAVE_ROUTER_SUB_MAX))
 	{
-		return INVALID_THREAD_ID;
+		THREADLOG("Has the end of the router:%s, the last route is now given! <%s:%d>",
+			_thread_router_show("", pRouter),
+			fun, line);
+		current_router_index = pRouter->router_number - 1;
+	}
+	else
+	{
+		current_router_index = pRouter->current_router_index;
 	}
 
-	gid = pRouter->sub_router[pRouter->current_router_index].gid;
-	thread = pRouter->sub_router[pRouter->current_router_index].thread;
+	gid = pRouter->sub_router[current_router_index].gid;
+	thread = pRouter->sub_router[current_router_index].thread;
 
 	if((gid[0] != '\0') && (thread[0] != '\0'))
 	{
@@ -106,6 +152,17 @@ _thread_router_current_thread_id(ThreadRouter *pRouter)
 	}
 
 	return INVALID_THREAD_ID;
+}
+
+static inline void
+_thread_router_next_route(ThreadRouter *pRouter)
+{
+	if(pRouter->current_router_index >= pRouter->router_number)
+	{
+		return;
+	}
+
+	pRouter->current_router_index ++;
 }
 
 static inline void *
@@ -167,7 +224,7 @@ thread_router_free(ThreadRouter *pRouter)
 }
 
 ThreadId
-thread_router_build_router(ThreadRouter **ppRouter, s8 *uid)
+__thread_router_build_router__(ThreadRouter **ppRouter, s8 *uid, s8 *fun, ub line)
 {
 	ThreadRouter *pThreadRouter, *pRouter;
 	ThreadId thread_id;
@@ -187,12 +244,14 @@ thread_router_build_router(ThreadRouter **ppRouter, s8 *uid)
 	load_thread_router = _thread_router_valid(pThreadRouter);
 	if(load_thread_router == dave_true)
 	{
-		_thread_router_copy(pRouter, pThreadRouter);
-
 		if(dave_strcmp(uid, pThreadRouter->uid) == dave_false)
 		{
 			THREADLOG("uid:%s->%s is changed, load new router!", pThreadRouter->uid, uid);
 			load_thread_router = dave_false;
+		}
+		else
+		{
+			_thread_router_copy(pRouter, pThreadRouter);
 		}
 	}
 
@@ -210,13 +269,33 @@ thread_router_build_router(ThreadRouter **ppRouter, s8 *uid)
 		return INVALID_THREAD_ID;
 	}
 
-	thread_id = _thread_router_current_thread_id(pRouter);
+	THREADDEBUG("%s pThreadRouter:%lx uid:%s \npThreadRouter:%s \npRouter:%s <%s:%d>",
+		load_thread_router==dave_true?"from thread":"from or",
+		pThreadRouter,
+		uid,
+		_thread_router_show("", pThreadRouter),
+		_thread_router_show("", pRouter),
+		fun, line);
+
+	thread_id = _thread_router_current_thread_id(pRouter, fun, line);
+
 	if(thread_id == INVALID_THREAD_ID)
 	{
 		_thread_router_free(pRouter);
 	}
 	else
 	{
+		_thread_router_next_route(pRouter);
+
+		if(load_thread_router == dave_true)
+		{
+			_thread_router_next_route(pThreadRouter);
+		}
+		else
+		{
+			_thread_router_copy(pThreadRouter, pRouter);
+		}
+
 		*ppRouter = pRouter;
 	}
 
@@ -269,7 +348,7 @@ thread_router_clean_msg(MSGBODY *msg)
 }
 
 ThreadId
-thread_router_pop_msg(ThreadRouter **ppRouter, s8 *uid)
+__thread_router_pop_msg__(ThreadRouter **ppRouter, s8 *uid, s8 *fun, ub line)
 {
 	ThreadRouter *pRouter;
 	ThreadId thread_id = INVALID_THREAD_ID;
@@ -280,7 +359,7 @@ thread_router_pop_msg(ThreadRouter **ppRouter, s8 *uid)
 
 	if(thread_orchestration_router(pRouter, uid) == dave_true)
 	{
-		thread_id = _thread_router_current_thread_id(pRouter);
+		thread_id = _thread_router_current_thread_id(pRouter, fun, line);
 	}
 	
 	if(thread_id == INVALID_THREAD_ID)
@@ -301,6 +380,11 @@ thread_router_run_msg(MSGBODY *msg)
 	ThreadRouter *pMsgRouter = (ThreadRouter *)(msg->msg_router);
 	ThreadRouter *pThreadRouter;
 
+	if(thread_internal_msg(msg->msg_id) == dave_true)
+	{
+		return NULL;
+	}
+
 	if(_thread_router_valid(pMsgRouter) == dave_false)
 	{
 		return NULL;
@@ -312,17 +396,13 @@ thread_router_run_msg(MSGBODY *msg)
 		return NULL;
 	}
 
-	if(_thread_router_valid(pThreadRouter) == dave_true)
-	{
-		THREADLOG("uid:%s has valid router, why?", pThreadRouter->uid);
-	}
+	THREADDEBUG("pThreadRouter:%lx uid:%s %s->%s:%s \npThreadRouter:%s \npMsgRouter:%s",
+		pThreadRouter, pThreadRouter->uid,
+		thread_name(msg->msg_src), thread_name(msg->msg_dst), msgstr(msg->msg_id),
+		_thread_router_show("", pThreadRouter),
+		_thread_router_show("", pMsgRouter));
 
 	_thread_router_copy(pThreadRouter, pMsgRouter);
-
-	THREADLOG("%s->%s:%s pThreadRouter:%lx\n%s",
-		thread_name(msg->msg_src), thread_name(msg->msg_dst), msgstr(msg->msg_id),
-		pThreadRouter,
-		thread_router_info("pThreadRouter", pThreadRouter));
 
 	return pThreadRouter;
 }
@@ -334,7 +414,7 @@ thread_router_run_clean(ThreadRouter *pThreadRouter)
 }
 
 ThreadId
-thread_router_check_uid(s8 *uid)
+__thread_router_check_uid__(s8 *uid, s8 *fun, ub line)
 {
 	ThreadRouter *pRouter;
 	ThreadId thread_id = INVALID_THREAD_ID;
@@ -343,28 +423,12 @@ thread_router_check_uid(s8 *uid)
 
 	if(thread_orchestration_router(pRouter, uid) == dave_true)
 	{
-		thread_id = _thread_router_current_thread_id(pRouter);
+		thread_id = _thread_router_current_thread_id(pRouter, fun, line);
 	}
 
 	_thread_router_free(pRouter);
 
 	return thread_id;
-}
-
-void
-thread_router_next_route(ThreadRouter *pRouter)
-{
-	if(pRouter == NULL)
-	{
-		return;
-	}
-
-	if(pRouter->current_router_index >= pRouter->router_number)
-	{
-		return;
-	}
-
-	pRouter->current_router_index ++;
 }
 
 void *
@@ -435,35 +499,6 @@ thread_bson_to_router(void *pBson)
 	}
 
 	return pRouter;
-}
-
-s8 *
-thread_router_info(s8 *msg, ThreadRouter *pRouter)
-{
-#ifdef LEVEL_PRODUCT_alpha
-	ub info_index, info_len = sizeof(pRouter->router_info);
-	ub router_index;
-
-	info_index = 0;
-
-	info_index += dave_snprintf(
-		&pRouter->router_info[info_index], info_len-info_index,
-		"%s uid:%s router:%d/%d\n",
-		msg,
-		pRouter->uid, pRouter->current_router_index, pRouter->router_number);
-
-	for(router_index=0; (router_index<DAVE_ROUTER_SUB_MAX)&&(router_index<pRouter->router_number); router_index++)
-	{
-		info_index += dave_snprintf(
-			&pRouter->router_info[info_index], info_len-info_index,
-			"\tthread:%s gid:%s\n",
-			pRouter->sub_router[router_index].thread, pRouter->sub_router[router_index].gid);
-	}
-
-	return pRouter->router_info;
-#else
-	return NULL;
-#endif
 }
 
 #endif

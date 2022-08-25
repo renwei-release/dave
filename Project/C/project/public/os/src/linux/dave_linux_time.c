@@ -120,24 +120,24 @@ dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms)
 
 	dave_os_stop_hardware_timer();
 
+	_linux_timer_notify = fun;
+
 	sev.sigev_notify = SIGEV_SIGNAL;
 	sev.sigev_signo = TIMER_SIG;
 	sev.sigev_value.sival_ptr = (void *)fun;
 
-	_linux_timer_notify = fun;
-
-	its.it_value.tv_sec = alarm_ms / 1000;
-	its.it_value.tv_nsec = (alarm_ms % 1000) * 1000;
-	its.it_interval.tv_sec = its.it_value.tv_sec;
-	its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-	if (timer_create(CLOCK_REALTIME, &sev, &(_hw_timer.id)) == -1)
+	if(timer_create(CLOCK_REALTIME, &sev, &(_hw_timer.id)) == -1)
 	{
 		OSABNOR("timer create failed:%d<%s>!", errno, strerror(errno));
 		return dave_false;
 	}
 
 	_hw_timer.start = dave_true;
+
+	its.it_value.tv_sec = alarm_ms / 1000;
+	its.it_value.tv_nsec = (alarm_ms % 1000) * 1000;
+	its.it_interval.tv_sec = its.it_value.tv_sec;
+	its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
 	if (timer_settime(_hw_timer.id, 0, &its, NULL) == -1)
 	{

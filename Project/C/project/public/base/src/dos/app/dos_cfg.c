@@ -46,7 +46,8 @@ _dos_cfg_get_one(s8 *cfg_name, s8 *print_ptr, ub print_len)
 	}
 	else
 	{
-		if(t_is_all_show_char((u8 *)cfg_value, dave_strlen(cfg_value)) == dave_true)
+		if((t_is_all_show_char((u8 *)cfg_value, dave_strlen(cfg_value)) == dave_true)
+			|| (dave_strlen(cfg_value) == 0))
 		{
 			print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index, "%s : %s\n", cfg_name, cfg_value);
 		}
@@ -123,7 +124,7 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_name, sizeof(cfg_name));
 	dos_get_last_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, cfg_value, sizeof(cfg_value));
 
-	if((cfg_name[0] == '\0') || (cfg_value[0] == '\0'))
+	if(cfg_name[0] == '\0')
 	{
 		return RetCode_Invalid_parameter;
 	}
@@ -145,7 +146,7 @@ _dos_cfg_remote_get_one(s8 *cfg_name)
 {
 	s8 cfg_value[2048];
 
-	if(rcfg_get(cfg_name, cfg_value, sizeof(cfg_value)) == 0)
+	if(rcfg_get(cfg_name, cfg_value, sizeof(cfg_value)) < 0)
 	{
 		dos_print("%s remote get failed!", cfg_name);
 	}
@@ -167,7 +168,7 @@ _dos_cfg_remote_get_all(void)
 
 	for(index=0; index<102400; index++)
 	{
-		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, sizeof(cfg_value)) == 0)
+		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, sizeof(cfg_value)) < 0)
 			break;
 
 		print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index,

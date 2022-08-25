@@ -33,6 +33,7 @@ static void _thread_guardian_exit(MSGBODY *msg);
 
 static ThreadId _guardian_thread = INVALID_THREAD_ID;
 static ThreadStruct *_thread;
+static s8 _sync_domain[256] = { '\0' };
 static DateStruct _system_work_start_date;
 
 static void
@@ -138,6 +139,10 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 	else if(pReq->msg[0] == 'd')
 	{
 		thread_show_all_info(_thread, &_system_work_start_date, pRsp->msg, sizeof(pRsp->msg), dave_false);
+	}
+	else if(pReq->msg[0] == 'o')
+	{
+		thread_orchestration_info(pRsp->msg, sizeof(pRsp->msg));
 	}
 	else
 	{
@@ -275,6 +280,14 @@ _thread_guardian_trace_switch(TraceSwitchMsg *pSwitch)
 }
 
 static void
+_thread_guardian_cfg_update(CFGUpdate *pUpdate)
+{
+	thread_chain_reload_cfg(pUpdate);
+
+	thread_busy_idle_cfg_update(pUpdate);
+}
+
+static void
 _thread_guardian_remote_thread_ready(ThreadRemoteReadyMsg *pReady)
 {
 	THREADDEBUG("%s", pReady->remote_thread_name);
@@ -325,7 +338,7 @@ _thread_guardian_main(MSGBODY *msg)
 				_thread_guardian_trace_switch((TraceSwitchMsg *)(msg->msg_body));
 			break;
 		case MSGID_CFG_UPDATE:
-				thread_busy_idle_cfg_update((CFGUpdate *)(msg->msg_body));
+				_thread_guardian_cfg_update((CFGUpdate *)(msg->msg_body));
 			break;
 		case MSGID_REMOTE_THREAD_READY:
 				_thread_guardian_remote_thread_ready((ThreadRemoteReadyMsg *)(msg->msg_body));
@@ -348,7 +361,7 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_remote_id_table_init();
 	thread_gid_table_init();
 	thread_busy_idle_init(_thread);
-	thread_sync_init();
+	thread_sync_init(_sync_domain);
 	thread_orchestration_init();
 }
 
@@ -366,11 +379,15 @@ _thread_guardian_exit(MSGBODY *msg)
 // =====================================================================
 
 ThreadId
-thread_guardian_init(ThreadStruct *thread_struct)
+thread_guardian_init(ThreadStruct *thread_struct, s8 *sync_domain)
 {
 	ub thread_flag = THREAD_TICK_WAKEUP|THREAD_PRIVATE_FLAG;
 
 	_thread = thread_struct;
+	if(sync_domain != NULL)
+		dave_strcpy(_sync_domain, sync_domain, sizeof(_sync_domain));
+	else
+		dave_memset(_sync_domain, 0x00, sizeof(_sync_domain));
 
 	t_time_get_date(&_system_work_start_date);
 

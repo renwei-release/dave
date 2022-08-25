@@ -42,10 +42,10 @@ ramkv_local_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len,
 	return ret;
 }
 
-ub
+sb
 ramkv_local_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
-	ub ret;
+	sb ret;
 
 	KVDEBUG("name:%s attrib:%d", pKV->name, pKV->attrib);
 
@@ -58,7 +58,7 @@ ramkv_local_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub 
 				ret = __ramkv_list_inq__(pKV, index, key_ptr, key_len, value_ptr, value_len, fun, line);
 			break;
 		default:
-				ret = 0;
+				ret = -1;
 			break;
 	}
 

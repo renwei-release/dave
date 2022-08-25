@@ -112,7 +112,7 @@ dave_json_c_to_string(void *object, ub *length)
 		return NULL;
 	}
 
-	string = json_object_to_json_string_length((struct json_object *)object, JSON_C_TO_STRING_PRETTY, &string_length);
+	string = json_object_to_json_string_length((struct json_object *)object, JSON_C_TO_STRING_PRETTY|JSON_C_TO_STRING_NOSLASHESCAPE, &string_length);
 
 	if(length != NULL)
 	{

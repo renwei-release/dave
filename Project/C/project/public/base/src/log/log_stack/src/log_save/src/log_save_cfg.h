@@ -5,12 +5,12 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __THREAD_GUARDIAN_H__
-#define __THREAD_GUARDIAN_H__
+#ifndef __LOG_SAVE_CFG_H__
+#define __LOG_SAVE_CFG_H__
 
-ThreadId thread_guardian_init(ThreadStruct *thread_struct, s8 *sync_domain);
+void log_save_cfg_reset(void);
 
-void thread_guardian_exit(void);
+dave_bool log_save_type_enable(ChainType type);
 
 #endif
 

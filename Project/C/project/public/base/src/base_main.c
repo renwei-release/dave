@@ -22,7 +22,7 @@ static void *_main_thread_id = NULL;
 // =====================================================================
 
 void
-base_init(void *main_thread_id)
+base_init(void *main_thread_id, s8 *sync_domain)
 {
 	_main_thread_id = main_thread_id;
 
@@ -30,7 +30,7 @@ base_init(void *main_thread_id)
 	base_log_init();
 	base_mem_init();
 	base_cfg_init();
-	base_thread_init(main_thread_id);
+	base_thread_init(main_thread_id, sync_domain);
 	base_timer_init();
 	base_socket_init();
 	base_rxtx_init();

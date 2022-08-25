@@ -74,7 +74,7 @@ typedef struct {
 
 typedef void (*base_thread_fun)(MSGBODY *thread_msg);
 
-void base_thread_init(void *main_thread_id);
+void base_thread_init(void *main_thread_id, s8 *sync_domain);
 void base_thread_exit(void);
 void base_thread_schedule(void);
 

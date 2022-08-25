@@ -249,11 +249,11 @@ base_mem_exit(void)
 }
 
 ub
-base_mem_info(s8 *info, ub info_len, dave_bool base_flag)
+base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag)
 {
 	ub info_index = 0;
 
-	info_index += __exter_memory_info__(&info[info_index], info_len-info_index, base_flag);
+	info_index += __exter_memory_info__(&info_ptr[info_index], info_len-info_index, base_flag);
 
 	return info_index;
 }

@@ -39,6 +39,7 @@ static int _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
+static s8 _dll_sync_domain[128] = { '\0' };
 static BaseDllRunningMode _base_dll_running_mode = BaseDllRunningMode_max;
 
 static void
@@ -51,24 +52,59 @@ _dave_dll_booting(char *my_verno)
 }
 
 static BaseDllRunningMode
-_dave_dll_mode_decode(char *mode_str)
+_dave_dll_mode_decode(char *work_mode)
 {
 	BaseDllRunningMode mode = BaseDllRunningMode_Coroutine_Inner_Loop;
 
-	if(dave_strcmp(mode_str, "Inner Loop") == dave_true)
+	if(dave_strcmp(work_mode, "Inner Loop") == dave_true)
 		mode = BaseDllRunningMode_Inner_Loop;
-	else if(dave_strcmp(mode_str, "Outer Loop") == dave_true)
+	else if(dave_strcmp(work_mode, "Outer Loop") == dave_true)
 		mode = BaseDllRunningMode_Outer_Loop;
-	else if(dave_strcmp(mode_str, "Coroutine Inner Loop") == dave_true)
+	else if(dave_strcmp(work_mode, "Coroutine Inner Loop") == dave_true)
 		mode = BaseDllRunningMode_Coroutine_Inner_Loop;
-	else if(dave_strcmp(mode_str, "Coroutine Outer Loop") == dave_true)
+	else if(dave_strcmp(work_mode, "Coroutine Outer Loop") == dave_true)
 		mode = BaseDllRunningMode_Coroutine_Outer_Loop;
 
 	return mode;
 }
 
+static void
+_dave_dll_sigaction_hander(int sig)
+{
+	if(sig == TIMER_SIG)
+	{
+		dave_os_timer_notify((unsigned long)sig);
+	}
+	else if(sig == KILL_SIG)
+	{
+		base_restart("KILL");
+	}
+}
+
+static void
+_dave_dll_sigaction_set(int sig)
+{
+	sigset_t sig_set;
+	struct sigaction act;	
+	struct sigaction oact;
+	
+	act.sa_handler = _dave_dll_sigaction_hander;
+	sigemptyset(&sig_set);
+	act.sa_mask = sig_set;
+	act.sa_flags = 0;
+
+	sigaction(sig, &act, &oact);
+}
+
+static void
+_dave_dll_inner_signo(void)
+{
+	_dave_dll_sigaction_set(TIMER_SIG);
+	_dave_dll_sigaction_set(KILL_SIG);
+}
+
 static void *
-_dave_dll_inner_loop(void *arg)
+_dave_dll_outer_loop(void)
 {
 	sigset_t set;
 	int sig;
@@ -86,15 +122,9 @@ _dave_dll_inner_loop(void *arg)
 
 		if (ret == 0)
 		{
-			if (sig == TIMER_SIG)
-			{
-				dave_os_timer_notify((unsigned long)sig);
-			}
-			else if (sig == KILL_SIG)
-			{
-				base_restart("KILL");
-			}
-			else if (sig == QUIT_SIG)
+			_dave_dll_sigaction_hander(sig);
+
+			if (sig == QUIT_SIG)
 			{
 				break;
 			}
@@ -104,10 +134,23 @@ _dave_dll_inner_loop(void *arg)
 	return NULL;
 }
 
+static void
+_dave_dll_copy_sync_domain(char *sync_domain)
+{
+	if(sync_domain != NULL)
+	{
+		dave_strcpy(_dll_sync_domain, sync_domain, sizeof(_dll_sync_domain));
+	}
+	if(t_is_all_show_char((u8 *)_dll_sync_domain, dave_strlen(_dll_sync_domain)) == dave_false)
+	{
+		dave_memset(_dll_sync_domain, 0x00, sizeof(_dll_sync_domain));
+	}
+}
+
 static void *
 _dave_dll_main_thread(void *arg)
 {
-	base_init(_dave_main_thread_id);
+	base_init(_dave_main_thread_id, _dll_sync_domain);
 
 	dave_dll_main_init(
 		_base_dll_running_mode,
@@ -122,21 +165,29 @@ _dave_dll_main_thread(void *arg)
 
 	kill(getpid(), QUIT_SIG);
 
+	if((_base_dll_running_mode == BaseDllRunningMode_Inner_Loop)
+		|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Inner_Loop))
+	{
+		dave_os_power_off("Inner loop, Bye!");
+	}
+
 	return NULL;
 }
 
 static void
 _dave_dll_init(
-	char *my_verno, char *mode,
+	char *my_verno, char *work_mode,
 	int thread_number,
-	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun)
+	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
+	char *sync_domain)
 {
 	_dll_thread_number = thread_number;
 	_dll_init_fun = init_fun;
 	_dll_main_fun = main_fun;
 	_dll_exit_fun = exit_fun;
+	_dave_dll_copy_sync_domain(sync_domain);
 
-	_base_dll_running_mode = _dave_dll_mode_decode(mode);
+	_base_dll_running_mode = _dave_dll_mode_decode(work_mode);
 
 	_dave_dll_booting(my_verno);
 
@@ -149,12 +200,10 @@ _dave_dll_init(
 	}
 	else
 	{
-		dave_os_sleep(1000);
-
 		if((_base_dll_running_mode == BaseDllRunningMode_Inner_Loop)
 			|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Inner_Loop))
 		{
-			_dave_inner_loop_id = dave_os_create_thread("dave-inner-loop", _dave_dll_inner_loop, NULL);
+			_dave_dll_inner_signo();
 		}
 	}
 }
@@ -177,14 +226,16 @@ _dave_dll_exit(void)
 
 void
 dave_dll_init(
-	char *my_verno, char *mode,
+	char *my_verno, char *work_mode,
 	int thread_number,
-	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun)
+	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
+	char *sync_domain)
 {
 	_dave_dll_init(
-		my_verno, mode,
+		my_verno, work_mode,
 		thread_number,
-		init_fun, main_fun, exit_fun);
+		init_fun, main_fun, exit_fun,
+		sync_domain);
 }
 
 void
@@ -193,7 +244,7 @@ dave_dll_running(void)
 	if((_base_dll_running_mode == BaseDllRunningMode_Outer_Loop)
 		|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Outer_Loop))
 	{
-		_dave_dll_inner_loop(NULL);
+		_dave_dll_outer_loop();
 	}
 	else
 	{
@@ -208,10 +259,10 @@ dave_dll_exit(void)
 	{
 		if(base_power_state() == dave_false)
 		{
-			dave_os_sleep(1000);
+			dave_os_sleep(5000);
 			break;
 		}
-		dave_os_sleep(5000);
+		dave_os_sleep(3000);
 	}
 
 	_dave_dll_exit();

@@ -28,7 +28,7 @@ ramkv_remote_add(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_
 	return dave_false;
 }
 
-ub
+sb
 ramkv_remote_inq(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 {
 	if(attrib & KvAttrib_remote)
@@ -36,7 +36,7 @@ ramkv_remote_inq(KvAttrib attrib, KV *pKV, u8 *key_ptr, ub key_len, void *value_
 		return ramkv_redis_inq(pKV, key_ptr, key_len, value_ptr, value_len);
 	}
 
-	return 0;
+	return -1;
 }
 
 ub

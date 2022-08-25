@@ -38,5 +38,7 @@ void orchestration_config_exit(void);
 
 ORUIDConfig * orchestration_config(s8 *uid);
 
+ub orchestration_config_info(s8 *info_ptr, ub info_len);
+
 #endif
 

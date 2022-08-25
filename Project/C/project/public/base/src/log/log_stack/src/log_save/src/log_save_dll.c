@@ -26,9 +26,10 @@ static void (* dll_base_mem_init)(void) = NULL;
 static s8 * (* dll_dave_verno)(void) = NULL;
 static void (* dll_t_rpc_ver3_metadata_work)(dave_bool work_flag) = NULL;
 static void * (* dll_t_rpc_rebuild_to_json)(ub msg_id, ub msg_len, void *msg_body) = NULL;
+static s8 *(* dll_t_auto_RPCMSG_str)(RPCMSG enum_value) = NULL;
 
 static void
-_log_save_rebuild_dll_init(void)
+_log_save_dll_init(void)
 {
 	s8 *dll_file = "/dave/tools/rpc/liblinuxBASE.so";
 
@@ -40,27 +41,27 @@ _log_save_rebuild_dll_init(void)
 		dll_base_mem_init = dlsym(_rebuild_dll_handle, "base_mem_init");
 		dll_dave_verno = dlsym(_rebuild_dll_handle, "dave_verno");
 		dll_t_rpc_ver3_metadata_work = dlsym(_rebuild_dll_handle, "t_rpc_ver3_metadata_work");
-	
 		dll_t_rpc_rebuild_to_json = dlsym(_rebuild_dll_handle, "t_rpc_rebuild_to_json");
+		dll_t_auto_RPCMSG_str = dlsym(_rebuild_dll_handle, "t_auto_RPCMSG_str");
+
+		dll_booting_lock();
+		dll_base_log_init();
+		dll_base_mem_init();
 
 		if(dll_t_rpc_rebuild_to_json != NULL)
 		{
-			dll_booting_lock();
-			dll_base_log_init();
-			dll_base_mem_init();
-
 			if(dll_t_rpc_ver3_metadata_work != NULL)
 			{
 				dll_t_rpc_ver3_metadata_work(dave_false);
 			}
-
-			LOGLOG("dll_file:%s verno:%s open success!", dll_file, dll_dave_verno());
 		}
+
+		LOGLOG("dll_file:%s verno:%s open success!", dll_file, dll_dave_verno());
 	}
 }
 
 static void
-_log_save_rebuild_dll_exit(void)
+_log_save_dll_exit(void)
 {
 	if(_rebuild_dll_handle != NULL)
 	{
@@ -82,24 +83,43 @@ _log_save_rebuild_to_json(ub msg_id, ub msg_len, void *msg_body)
 	}
 }
 
+static inline s8 *
+_log_save_RPCMSG_str(RPCMSG enum_value)
+{
+	if(dll_t_auto_RPCMSG_str != NULL)
+	{
+		return dll_t_auto_RPCMSG_str(enum_value);
+	}
+	else
+	{
+		return t_auto_RPCMSG_str(enum_value);
+	}
+}
+
 // =====================================================================
 
 void
-log_save_msg_to_json_init(void)
+log_save_dll_init(void)
 {
-	_log_save_rebuild_dll_init();
+	_log_save_dll_init();
 }
 
 void
-log_save_msg_to_json_exit(void)
+log_save_dll_exit(void)
 {
-	_log_save_rebuild_dll_exit();
+	_log_save_dll_exit();
 }
 
 void *
 log_save_msg_to_json(ub msg_id, ub msg_len, void *msg_body)
 {
 	return _log_save_rebuild_to_json(msg_id, msg_len, msg_body);
+}
+
+s8 *
+log_save_RPCMSG_str(RPCMSG enum_value)
+{
+	return _log_save_RPCMSG_str(enum_value);
 }
 
 #endif

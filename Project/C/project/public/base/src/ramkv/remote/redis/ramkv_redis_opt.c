@@ -90,7 +90,7 @@ ramkv_redis_bin_add(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub v
 	return dave_true;
 }
 
-ub
+sb
 ramkv_redis_bin_inq(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len)
 {
 	void *argv_ptr[3];
@@ -113,10 +113,10 @@ ramkv_redis_bin_inq(KVRedis *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub v
 		{
 			KVLOG("invalid command:%s %s %s error:%s", argv_ptr[0], pKV->table_name, key_ptr, retstr(ret));
 		}
-		return 0;
+		return -1;
 	}
 
-	return value_len;
+	return (sb)value_len;
 }
 
 dave_bool

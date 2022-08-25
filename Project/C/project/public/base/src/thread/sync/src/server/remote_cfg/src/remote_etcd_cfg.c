@@ -21,7 +21,10 @@
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
 #define DEFAULT_ETCD_SERVER_DIR "/sync"
 #define DEFAULT_ETCD_WATCHER_DIR "/"
-#define DEFAULT_ETCD_GET_LIMIT 20480
+#define DEFAULT_ETCD_GET_LIMIT 512
+
+#define ETCD_KEY_MAX_SIZE 2048
+#define ETCD_VALUE_MAX_SIZE 8192
 
 static s8 _etcd_list[2048] = { "\0" };
 static s8 _etcd_dir[128] = { "\0" };
@@ -29,8 +32,8 @@ static s8 _etcd_watcher[128] = { "\0" };
 
 typedef struct {
 	dave_bool put_flag;
-	s8 key[2048];
-	s8 value[4096];
+	s8 key[ETCD_KEY_MAX_SIZE];
+	s8 value[ETCD_VALUE_MAX_SIZE];
 } ETCDWatcher;
 
 static s8 *
@@ -77,7 +80,7 @@ _sync_server_process_watcher(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	ETCDWatcher *pWatcher = (ETCDWatcher *)(pLoop->ptr);
 
-	SYNCTRACE("%s key:%s value:%s",
+	SYNCDEBUG("%s key:%s value:%s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
 		pWatcher->key, pWatcher->value);
 
@@ -113,10 +116,12 @@ _sync_server_watcher(dave_bool put_flag, s8 *key, s8 *value)
 static void
 _sync_server_take_watcher_(s8 *key)
 {
-	void *pArray = dave_etcd_get(key, DEFAULT_ETCD_GET_LIMIT);
+	void *pArray;
 	ub array_len, array_index;
 	void *pPutJson;
-	s8 json_key[1024], json_value[4096];
+	s8 json_key[ETCD_KEY_MAX_SIZE], json_value[ETCD_VALUE_MAX_SIZE];
+
+	pArray = dave_etcd_get(key, DEFAULT_ETCD_GET_LIMIT);
 
 	if(pArray != NULL)
 	{
@@ -127,8 +132,8 @@ _sync_server_take_watcher_(s8 *key)
 			pPutJson = dave_json_get_array_idx(pArray, array_index);
 			if(pPutJson != NULL)
 			{
-				dave_json_get_str_v2(pPutJson, (char *)"key", json_key, sizeof(json_key));
-				dave_json_get_str_v2(pPutJson, (char *)"value", json_value, sizeof(json_value));
+				dave_json_get_str_v2(pPutJson, "key", json_key, sizeof(json_key));
+				dave_json_get_str_v2(pPutJson, "value", json_value, sizeof(json_value));
 
 				_sync_server_watcher(dave_true, json_key, json_value);
 			}
@@ -179,11 +184,31 @@ _sync_server_take_watcher(void)
 	}
 }
 
+static dave_bool
+_sync_server_etcd_enable(void)
+{
+	_sync_server_load_list();
+
+	if(dave_strlen(_etcd_list) == 0)
+	{
+		return dave_false;
+	}
+	else
+	{
+		return dave_true;
+	}
+}
+
 // =====================================================================
 
 void
 remote_etcd_cfg_init(void)
 {
+	if(_sync_server_etcd_enable() == dave_false)
+	{
+		return;
+	}
+
 	dave_etcd_init(_sync_server_load_list(), _sync_server_load_watcher(), _sync_server_watcher);
 
 	_sync_server_take_watcher();
@@ -194,6 +219,11 @@ remote_etcd_cfg_init(void)
 void
 remote_etcd_cfg_exit(void)
 {
+	if(_sync_server_etcd_enable() == dave_false)
+	{
+		return;
+	}
+
 	unreg_msg(MSGID_INNER_LOOP);
 
 	dave_etcd_exit();
@@ -204,6 +234,11 @@ remote_etcd_cfg_set(s8 *verno, s8 *globally_identifier, s8 *cfg_name, s8 *cfg_va
 {
 	s8 dir_key[512];
 	dave_bool ret;
+
+	if(_sync_server_etcd_enable() == dave_false)
+	{
+		return dave_false;
+	}
 
 	_sync_server_make_dir(
 		dir_key, sizeof(dir_key),

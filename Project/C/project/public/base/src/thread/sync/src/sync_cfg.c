@@ -12,6 +12,7 @@
 #include "dave_tools.h"
 #include "dave_os.h"
 #include "sync_cfg.h"
+#include "sync_log.h"
 
 #define SYNC_SERVICE_PORT 6004
 #define SYNC_SERVER_DOMAIN "localhost:6004"
@@ -51,6 +52,25 @@ _sync_cfg_get_syncs_port(void)
 }
 
 // =====================================================================
+
+void
+sync_cfg_external_incoming_sync_domain(s8 *sync_domain)
+{
+	u8 ip[DAVE_IP_V4_ADDR_LEN];
+	u16 port;
+
+	if((sync_domain != NULL) && (t_is_all_show_char((u8 *)sync_domain, dave_strlen(sync_domain)) == dave_true))
+	{
+		if(domainip(ip, &port, sync_domain) == dave_false)
+		{
+			SYNCLOG("invalid sync_domain:%s", sync_domain);
+		}
+		else
+		{
+			cfg_set(CFG_SYNC_SERVER_DOMAIN, sync_domain, dave_strlen(sync_domain));
+		}
+	}
+}
 
 dave_bool
 sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)

@@ -53,6 +53,8 @@ void thread_chain_init(void);
 
 void thread_chain_exit(void);
 
+void thread_chain_reload_cfg(CFGUpdate *pUpdate);
+
 void thread_chain_reset(ThreadChain *pChain);
 
 void thread_chain_free(ThreadChain *pChain);
