@@ -350,7 +350,8 @@ thread_chain_insert(
 	ThreadId msg_src, ThreadId msg_dst,
 	ub msg_id, ub msg_len, void *msg_body)
 {
-	if(_thread_chain_enable(msg_src, msg_dst) == dave_false)
+	if((_thread_chain_enable(msg_src, msg_dst) == dave_false)
+		|| (chain_type_enable(type) == dave_false))
 	{
 		return;
 	}

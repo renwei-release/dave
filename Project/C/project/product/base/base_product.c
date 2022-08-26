@@ -65,7 +65,6 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	req.void_debug = VOID_DEBUG_VALUE;
 	req.ptr = NULL;
 
-/*
 	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
@@ -90,7 +89,6 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 		BASELOG("name_go(%s) successfully! ptr:%lx/%lx", "bbs", &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(thread_id("bbs"), pRsp);
 	}
-*/
 
 	pRsp = uid_go("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)

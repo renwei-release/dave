@@ -90,6 +90,13 @@ _sync_client_run_thread_msg(
 	pChain = thread_bson_to_chain(pChainBson);
 	pRouter = thread_bson_to_router(pRouterBson);
 
+	thread_chain_insert(
+		ChainType_called,
+		pChain, pRouter,
+		pServer->globally_identifier, globally_identifier(),
+		route_src, route_dst,
+		msg_id, msg_len, msg_body);
+
 	ret = base_thread_id_msg(
 		pChain, pRouter,
 		route_src, route_dst,
@@ -357,6 +364,8 @@ sync_client_run_internal(
 	ub msg_id,
 	ub msg_len, u8 *msg_body)
 {
+	SYNCDEBUG("%s->%s:%s:%d", src, dst, msgstr(msg_id), msg_len);
+
 	if(_sync_client_run_internal(
 			src, dst,
 			msg_id,

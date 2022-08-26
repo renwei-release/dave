@@ -86,6 +86,13 @@ sync_client_message_route(MSGBODY *pMsg)
 
 	if(pServer != NULL)
 	{
+		thread_chain_insert(
+			ChainType_calling,
+			pMsg->msg_chain, pMsg->msg_router,
+			globally_identifier(), pServer->globally_identifier,
+			pMsg->msg_src, pMsg->msg_dst,
+			pMsg->msg_id, pMsg->msg_len, pMsg->msg_body);
+
 		SAFECODEv2R(pServer->rxtx_pv, _sync_client_message_route_to_remote(pServer, pMsg););
 
 		thread_chain_clean_msg(pMsg);

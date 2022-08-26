@@ -73,10 +73,6 @@ __dave_string_to_json_c__(s8 *string_data, sb string_length, s8 *fun, ub line)
 		&& (string_data[string_length] != '\0')
 		&& (string_data[string_length - 1] != '\0'))
 	{
-		/*
-		 * (string_data[string_length - 1] != '\0')
-		 * 有时候 string_length的长度可能是加了\0的。
-		 */
 		PARTYLOG("The string is not 0 ending! %d <%s:%d>", string_length, fun, line);
 		return NULL;
 	}
@@ -84,7 +80,7 @@ __dave_string_to_json_c__(s8 *string_data, sb string_length, s8 *fun, ub line)
 	object = json_tokener_parse_verbose((const char *)string_data, &jerr_ignored);
 	if((object == NULL) || (jerr_ignored != json_tokener_success))
 	{
-		PARTYLOG("<%s:%d> json parse error:%d<%s>", fun, line, jerr_ignored, string_data);
+		PARTYLOG("<%s:%d> json(%lx) parse error:%d<%s>", fun, line, object, jerr_ignored, string_data);
 
 		if(object != NULL)
 		{

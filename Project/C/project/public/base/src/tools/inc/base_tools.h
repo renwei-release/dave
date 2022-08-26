@@ -14,6 +14,7 @@
 #include "netinfo_copy.h"
 #include "sync_type.h"
 #include "globally_identifier.h"
+#include "chain_config.h"
 
 #endif
 

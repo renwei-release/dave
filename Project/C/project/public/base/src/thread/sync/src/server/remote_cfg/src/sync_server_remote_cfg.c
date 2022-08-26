@@ -37,10 +37,10 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 	for(index=0; index<102400; index++)
 	{
 		update.put_flag = dave_true;
-		if(base_cfg_remote_index(
+		if(rcfg_index(
 			index,
 			update.cfg_name, sizeof(update.cfg_name),
-			update.cfg_value, sizeof(update.cfg_value)) == 0)
+			update.cfg_value, sizeof(update.cfg_value)) < 0)
 		{
 			break;
 		}
