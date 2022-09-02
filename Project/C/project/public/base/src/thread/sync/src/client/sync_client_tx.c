@@ -20,6 +20,7 @@
 #include "sync_client_tools.h"
 #include "sync_client_data.h"
 #include "sync_client_tx.h"
+#include "sync_client_internal_buffer.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -91,7 +92,7 @@ _sync_client_tx_busy(void)
 
 	dave_strcpy(busy.verno, dave_verno(), DAVE_VERNO_STR_LEN);
 
-	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_BUSY, sizeof(ClientBusy), &busy);
+	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_BUSY, sizeof(ClientBusy), &busy, dave_false);
 }
 
 static dave_bool
@@ -101,17 +102,24 @@ _sync_client_tx_idle(void)
 
 	dave_strcpy(idle.verno, dave_verno(), DAVE_VERNO_STR_LEN);
 
-	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_IDLE, sizeof(ClientIdle), &idle);
+	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_IDLE, sizeof(ClientIdle), &idle, dave_false);
 }
 
 // =====================================================================
 
 dave_bool
-sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body)
+sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_bool pop_flag)
 {
 	SyncServer *pServer = sync_client_data_sync_server();
+	dave_bool ret;
 
-	return _sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body);
+	ret = _sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body);
+	if((ret == dave_false) && (pop_flag == dave_false))
+	{
+		sync_client_internal_buffer_push(msg_id, msg_len, msg_body);
+	}
+
+	return ret;
 }
 
 void

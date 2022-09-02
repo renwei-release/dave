@@ -23,6 +23,8 @@
 #include <sys/poll.h>
 #include <pthread.h>
 
+#define STACKSIZE 128 * 1024
+
 //1.struct
 
 struct stCoRoutine_t;
@@ -34,7 +36,7 @@ struct stCoRoutineAttr_t
 	stShareStack_t*  share_stack;
 	stCoRoutineAttr_t()
 	{
-		stack_size = 128 * 1024;
+		stack_size = STACKSIZE;
 		share_stack = NULL;
 	}
 }__attribute__ ((packed));

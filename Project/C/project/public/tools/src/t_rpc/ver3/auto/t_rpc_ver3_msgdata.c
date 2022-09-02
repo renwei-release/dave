@@ -1155,6 +1155,7 @@ t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "dave_bool-put_flag", t_rpc_ver3_zip_dave_bool(zip_data->put_flag));
 	t_bson_add_object(pStructBson, "s8-cfg_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_name), 1, 1024));
 	t_bson_add_object(pStructBson, "s8-cfg_value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_value), 1, 8196));
+	t_bson_add_object(pStructBson, "sb-ttl", t_rpc_ver3_zip_sb(zip_data->ttl));
 
 	return pStructBson;
 }
@@ -1180,6 +1181,7 @@ t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStruct
 		t_rpc_ver3_unzip_dave_bool(&(pUnzip->put_flag), t_bson_inq_object(pStructBson, "dave_bool-put_flag"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_name), 1, 1024, t_bson_inq_object(pStructBson, "s8-cfg_name"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_value), 1, 8196, t_bson_inq_object(pStructBson, "s8-cfg_value"));
+		t_rpc_ver3_unzip_sb(&(pUnzip->ttl), t_bson_inq_object(pStructBson, "sb-ttl"));
 	}
 
 	return ret;

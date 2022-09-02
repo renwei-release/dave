@@ -25,10 +25,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "dave_linux.h"
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_os.h"
 #include "base_dll.h"
 #include "base_dll_main.h"
 #include "dll_log.h"

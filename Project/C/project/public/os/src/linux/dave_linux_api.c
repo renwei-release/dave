@@ -34,7 +34,6 @@
 #include "dave_tools.h"
 #include "dave_verno.h"
 #include "dave_base.h"
-#include "dave_linux.h"
 #include "os_log.h"
 
 // =====================================================================

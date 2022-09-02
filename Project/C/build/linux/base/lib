@@ -49,7 +49,7 @@ build_dynamic_lib()
    SOLIB=${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
    echo lib build ${SOLIB}
    rm -f ${SOLIB}
-   gcc -lpthread -lrt -ldl -lm -shared -o ${SOLIB} ${obj_list}
+   gcc -lpthread -lrt -ldl -lm -lstdc++ -shared -o ${SOLIB} ${obj_list}
 }
 
 build_lib()

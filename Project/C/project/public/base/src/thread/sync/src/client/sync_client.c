@@ -26,6 +26,7 @@
 #include "sync_client_rx.h"
 #include "sync_client_run.h"
 #include "sync_client_msg_buffer.h"
+#include "sync_client_internal_buffer.h"
 #include "sync_client_info.h"
 #include "sync_client_route.h"
 #include "sync_test.h"
@@ -725,11 +726,7 @@ _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 static void
 _sync_client_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
-	if(sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), pUpdate) == dave_false)
-	{
-		SYNCLOG("SYNC is disconnected, set %s:%s failed!",
-			pUpdate->cfg_name, pUpdate->cfg_value);
-	}
+	sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), pUpdate, dave_false);
 }
 
 static void
@@ -744,6 +741,7 @@ _sync_client_init(MSGBODY *msg)
 	sync_client_thread_init();
 	sync_client_link_init();
 	sync_client_msg_buffer_init();
+	sync_client_internal_buffer_init();
 
 	_sync_client_connect_all();
 
@@ -811,6 +809,7 @@ static void
 _sync_client_exit(MSGBODY *msg)
 {
 	sync_client_run_exit();
+	sync_client_internal_buffer_exit();
 	sync_client_msg_buffer_exit();
 	sync_client_thread_exit();
 	sync_client_link_exit();

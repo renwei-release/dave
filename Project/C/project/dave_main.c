@@ -23,13 +23,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "dave_linux.h"
 #include "dave_os.h"
 #include "dave_3rdparty.h"
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
-#include "os_log.h"
 
 void product_init(void);
 void product_exit(void);

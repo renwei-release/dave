@@ -237,10 +237,6 @@ _log_client_booting_message(void)
 	{
 		_log_client_snd_booting_message_flag = dave_true;
 	}
-	else
-	{
-		dave_mfree(data);
-	}
 }
 
 static void

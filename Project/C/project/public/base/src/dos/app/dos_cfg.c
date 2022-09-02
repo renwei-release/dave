@@ -163,13 +163,18 @@ _dos_cfg_remote_get_all(void)
 	ub print_index = 0;
 	s8 *print_ptr = dave_malloc(print_len);
 	ub index;
-	s8 cfg_name[256];
+	s8 cfg_name[1024];
 	s8 cfg_value[2048];
 
 	for(index=0; index<102400; index++)
 	{
 		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, sizeof(cfg_value)) < 0)
 			break;
+
+		if(index > 0)
+		{
+			print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index, "\n");
+		}
 
 		print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index,
 			"%s : %s\n",
@@ -223,7 +228,7 @@ _dos_cfg_remote_set(s8 *cmd_ptr, ub cmd_len)
 		return RetCode_Invalid_parameter;
 	}
 
-	if(rcfg_set(cfg_name, cfg_value) != RetCode_OK)
+	if(rcfg_set(cfg_name, cfg_value, 0) != RetCode_OK)
 	{
 		dos_print("%s remote set %s failed!", cfg_name, cfg_value);
 	}

@@ -154,6 +154,15 @@ _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 }
 
 static void
+_base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+{
+	BASELOG("%s %s : %s ttl:%d",
+		pUpdate->put_flag==dave_true?"PUT":"DELETE",
+		pUpdate->cfg_name, pUpdate->cfg_value,
+		pUpdate->ttl);
+}
+
+static void
 _base_thread_init(MSGBODY *msg)
 {
 
@@ -181,6 +190,9 @@ _base_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_RPC_DEBUG_RSP:
 				_base_thread_rpc_debug_rsp(msg->msg_src, (RPCDebugRsp *)(msg->msg_body));
+			break;
+		case MSGID_CFG_REMOTE_UPDATE:
+				_base_cfg_remote_update((CFGRemoteUpdate *)(msg->msg_body));
 			break;
 		default:
 			break;

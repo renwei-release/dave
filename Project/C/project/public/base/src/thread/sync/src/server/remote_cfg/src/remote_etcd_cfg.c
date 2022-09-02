@@ -11,7 +11,7 @@
 #include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
-#include "sync_server_remote_cfg.h"
+#include "remote_etcd_cfg.h"
 #include "sync_log.h"
 
 #define CFG_ETCD_LIST "ETCDServerList"
@@ -29,6 +29,7 @@
 static s8 _etcd_list[2048] = { "\0" };
 static s8 _etcd_dir[128] = { "\0" };
 static s8 _etcd_watcher[128] = { "\0" };
+static remote_cfg_get_callback _get_callback = NULL;
 
 typedef struct {
 	dave_bool put_flag;
@@ -64,12 +65,19 @@ _sync_server_make_dir(s8 *dir_ptr, ub dir_len, s8 *verno, s8 *globally_identifie
 {
 	s8 product_str[128];
 
-	dave_snprintf(dir_ptr, dir_len,
-		"%s/%s/%s/%s",
-		_sync_server_load_dir(),
-		dave_verno_product(verno, product_str, sizeof(product_str)),
-		globally_identifier,
-		cfg_name);
+	if(dave_strfindfrist(cfg_name, '/') == NULL)
+	{
+		dave_snprintf(dir_ptr, dir_len,
+			"%s/%s/%s/%s",
+			_sync_server_load_dir(),
+			dave_verno_product(verno, product_str, sizeof(product_str)),
+			globally_identifier,
+			cfg_name);
+	}
+	else
+	{
+		dave_snprintf(dir_ptr, dir_len, "%s", cfg_name);
+	}
 
 	return dir_ptr;
 }
@@ -80,20 +88,14 @@ _sync_server_process_watcher(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	ETCDWatcher *pWatcher = (ETCDWatcher *)(pLoop->ptr);
 
-	SYNCDEBUG("%s key:%s value:%s",
+	SYNCTRACE("%s %s : %s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
 		pWatcher->key, pWatcher->value);
 
-	if(pWatcher->put_flag == dave_true)
+	if(_get_callback != NULL)
 	{
-		base_cfg_remote_internal_add(pWatcher->key, pWatcher->value);
+		_get_callback(pWatcher->put_flag, pWatcher->key, pWatcher->value);
 	}
-	else
-	{
-		base_cfg_remote_internal_del(pWatcher->key);
-	}
-
-	sync_server_remote_cfg_tell_config(pWatcher->put_flag, pWatcher->key, pWatcher->value);
 
 	dave_free(pWatcher);
 }
@@ -202,8 +204,10 @@ _sync_server_etcd_enable(void)
 // =====================================================================
 
 void
-remote_etcd_cfg_init(void)
+remote_etcd_cfg_init(remote_cfg_get_callback get_callback)
 {
+	_get_callback = get_callback;
+
 	if(_sync_server_etcd_enable() == dave_false)
 	{
 		return;
@@ -230,7 +234,10 @@ remote_etcd_cfg_exit(void)
 }
 
 dave_bool
-remote_etcd_cfg_set(s8 *verno, s8 *globally_identifier, s8 *cfg_name, s8 *cfg_value)
+remote_etcd_cfg_set(
+	s8 *verno, s8 *globally_identifier,
+	s8 *cfg_name, s8 *cfg_value,
+	sb ttl)
 {
 	s8 dir_key[512];
 	dave_bool ret;
@@ -244,17 +251,23 @@ remote_etcd_cfg_set(s8 *verno, s8 *globally_identifier, s8 *cfg_name, s8 *cfg_va
 		dir_key, sizeof(dir_key),
 		verno, globally_identifier, cfg_name);
 
-	ret = dave_etcd_set(dir_key, cfg_value);
+	ret = dave_etcd_set(dir_key, cfg_value, ttl);
 	if(ret == dave_false)
 	{
-		SYNCLOG("set %s:%s failed!", dir_key, cfg_value);
+		SYNCLOG("set %s:%s failed! ttl:%d", dir_key, cfg_value, ttl);
 	}
 	else
 	{
-		SYNCTRACE("set %s:%s success!", dir_key, cfg_value);
+		SYNCTRACE("set %s:%s success! ttl:%d", dir_key, cfg_value, ttl);
 	}
 
 	return ret;
+}
+
+void
+remote_etcd_cfg_get(remote_cfg_get_callback get_callback)
+{
+	_get_callback = get_callback;
 }
 
 #endif

@@ -13,9 +13,8 @@ davelib = dave_dll()
 
 def cfg_set(key, value):
     key = bytes(key, encoding="utf8")
-    value_len = len(value)
     value = bytes(value, encoding="utf8")
-    davelib.dave_dll_cfg_set(c_char_p(key), c_char_p(value), c_int(value_len))
+    davelib.dave_dll_cfg_set(c_char_p(key), c_char_p(value))
     return
 
 
@@ -30,15 +29,14 @@ def cfg_get(key, default_value=None):
     return value
 
 
-def cfg_remote_set(key, value):
+def rcfg_set(key, value, ttl=0):
     key = bytes(key, encoding="utf8")
-    value_len = len(value)
     value = bytes(value, encoding="utf8")
-    davelib.dave_dll_remote_cfg_remote_set(c_char_p(key), c_char_p(value), c_int(value_len))
+    davelib.dave_dll_cfg_remote_set(c_char_p(key), c_char_p(value), c_int(ttl))
     return
 
 
-def cfg_remote_get(key, default_value=None):
+def rcfg_get(key, default_value=None):
     key = bytes(key, encoding="utf8")
     value = bytes(2048)
     davelib.dave_dll_cfg_get.restype = c_int
@@ -47,3 +45,9 @@ def cfg_remote_get(key, default_value=None):
         return default_value
     value = str(value, encoding="utf8").replace("\0", "")
     return value
+
+
+def rcfg_del(key):
+    key = bytes(key, encoding="utf8")
+    davelib.dave_dll_cfg_remote_del(c_char_p(key))
+    return

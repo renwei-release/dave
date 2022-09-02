@@ -211,7 +211,7 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 		_log_buffer_index,
 		pBuffer, pBuffer->buffer_length, pBuffer->buffer);
 
-	if((pBuffer->buffer_length + log_len) < sizeof(pBuffer->buffer))
+	if((pBuffer->buffer_length + log_len) <= sizeof(pBuffer->buffer))
 	{
 		pBuffer->buffer_length += dave_memcpy(&pBuffer->buffer[pBuffer->buffer_length], log_ptr, log_len);
 		if((pBuffer->buffer[pBuffer->buffer_length - 1] == '\n')
@@ -222,6 +222,12 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 	}
 	else
 	{
+		if(sizeof(pBuffer->buffer) > pBuffer->buffer_length)
+		{
+			log_len = sizeof(pBuffer->buffer) - pBuffer->buffer_length;
+			pBuffer->buffer_length += dave_memcpy(&pBuffer->buffer[pBuffer->buffer_length], log_ptr, log_len);
+		}
+	
 		push_list = dave_true;
 	}
 

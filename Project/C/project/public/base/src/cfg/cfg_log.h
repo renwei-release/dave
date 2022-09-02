@@ -19,6 +19,8 @@
 #define CFGDEBUG(a, ...) {}
 #endif
 
+#define CFGLOG(a, ...) { DAVELOG("[CFG]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
+
 #define CFGABNOR(a, ...) { DAVEDEBUG("[CFG Abnormal]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
 
 #endif

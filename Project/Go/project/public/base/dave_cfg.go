@@ -18,14 +18,14 @@ import (
 
 // =====================================================================
 
-func Cfg_set(cfg_name string, cfg_ptr string) bool {
+func Cfg_set(cfg_name string, cfg_value string) bool {
 	c_cfg_name := C.CString(cfg_name)
-	c_cfg_ptr := C.CString(cfg_ptr)
+	c_cfg_value := C.CString(cfg_value)
 
-	ret := C.dave_dll_cfg_set(c_cfg_name, c_cfg_ptr)
+	ret := C.dave_dll_cfg_set(c_cfg_name, c_cfg_value)
 
 	C.free(unsafe.Pointer(c_cfg_name))
-	C.free(unsafe.Pointer(c_cfg_ptr))
+	C.free(unsafe.Pointer(c_cfg_value))
 
 	if ret == 0 {
 		return true
@@ -38,28 +38,28 @@ func Cfg_get(cfg_name string) string {
 	var go_byte [4096]byte
 
 	c_cfg_name := C.CString(cfg_name)
-	c_cfg_ptr := C.CString(string(go_byte[:]))
+	c_cfg_value := C.CString(string(go_byte[:]))
 
 	go_string := ""
 
-	if C.dave_dll_cfg_get(c_cfg_name, c_cfg_ptr, C.int(len(go_byte))) >= 0 {
-		go_string = C.GoString(c_cfg_ptr)
+	if C.dave_dll_cfg_get(c_cfg_name, c_cfg_value, C.int(len(go_byte))) >= 0 {
+		go_string = C.GoString(c_cfg_value)
 	}
 
 	C.free(unsafe.Pointer(c_cfg_name))
-	C.free(unsafe.Pointer(c_cfg_ptr))
+	C.free(unsafe.Pointer(c_cfg_value))
 
 	return go_string
 }
 
-func Cfg_remote_set(cfg_name string, cfg_ptr string) bool {
+func Rcfg_set(cfg_name string, cfg_value string, ttl int) bool {
 	c_cfg_name := C.CString(cfg_name)
-	c_cfg_ptr := C.CString(cfg_ptr)
+	c_cfg_value := C.CString(cfg_value)
 
-	ret := C.dave_dll_cfg_remote_set(c_cfg_name, c_cfg_ptr)
+	ret := C.dave_dll_cfg_remote_set(c_cfg_name, c_cfg_value, C.int(ttl))
 
 	C.free(unsafe.Pointer(c_cfg_name))
-	C.free(unsafe.Pointer(c_cfg_ptr))
+	C.free(unsafe.Pointer(c_cfg_value))
 
 	if ret == 0 {
 		return true
@@ -68,7 +68,7 @@ func Cfg_remote_set(cfg_name string, cfg_ptr string) bool {
 	return false
 }
 
-func Cfg_remote_get(cfg_name string) string {
+func Rcfg_get(cfg_name string) string {
 	var go_byte [4096]byte
 
 	c_cfg_name := C.CString(cfg_name)

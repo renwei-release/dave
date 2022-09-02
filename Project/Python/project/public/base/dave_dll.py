@@ -50,7 +50,6 @@ def _python_import_product(product_name):
 INITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_init(NULL_DATA):
    _python_import_product(_my_product_name)
-
    if _product_init_fun != None:
       _product_init_fun()
    return
@@ -98,7 +97,7 @@ def dave_dll():
    return davelib
 
 
-def dave_python_init(product_name, work_mode, sync_domain):
+def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=b""):
    global _my_product_name
 
    _my_product_name = str(product_name)

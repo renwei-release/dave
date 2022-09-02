@@ -8,7 +8,7 @@
 #ifndef __SYNC_CLIENT_TX_H__
 #define __SYNC_CLIENT_TX_H__
 
-dave_bool sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body);
+dave_bool sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_bool pop_flag);
 
 void sync_client_tx_my_verno(SyncServer *pServer);
 

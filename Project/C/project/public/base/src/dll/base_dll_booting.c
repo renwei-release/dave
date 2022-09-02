@@ -25,7 +25,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "dave_linux.h"
+#include "dave_os.h"
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
@@ -35,6 +35,7 @@
 
 static void *_dave_main_thread_id = NULL;
 static void *_dave_inner_loop_id = NULL;
+static dave_bool _wait_main_thread_ready = dave_false;
 static int _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
@@ -157,6 +158,8 @@ _dave_dll_main_thread(void *arg)
 		_dll_thread_number,
 		_dll_init_fun, _dll_main_fun, _dll_exit_fun);
 
+	_wait_main_thread_ready = dave_true;
+
 	base_running(dave_false);
 
 	dave_dll_main_exit();
@@ -181,6 +184,8 @@ _dave_dll_init(
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
+	ub safe_counter;
+
 	_dll_thread_number = thread_number;
 	_dll_init_fun = init_fun;
 	_dll_main_fun = main_fun;
@@ -193,10 +198,12 @@ _dave_dll_init(
 
 	dave_os_init_thread();
 
+	_wait_main_thread_ready = dave_false;
+
 	_dave_main_thread_id = dave_os_create_thread("dave", _dave_dll_main_thread, NULL);
 	if(_dave_main_thread_id == NULL)
 	{
-		base_restart("main reboot");
+		base_restart("main exit");
 	}
 	else
 	{
@@ -204,6 +211,9 @@ _dave_dll_init(
 			|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Inner_Loop))
 		{
 			_dave_dll_inner_signo();
+
+			safe_counter = 0;
+			while(((++ safe_counter) < 9999999999) && (_wait_main_thread_ready == dave_false)) ;
 		}
 	}
 }

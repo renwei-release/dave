@@ -742,8 +742,8 @@ _socket_external_output(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, SOCK
 
 		data_buf = dave_malloc(data_length);
 
-		data_length = t_a2b_mbuf_to_buf(data, data_buf, data_length);
-		
+		data_length = t_a2b_mbuf_to_buf(data_buf, data_length, data);
+
 		ret = _socket_external_send(pCore, pIPInfo, (u8 *)(data_buf), (sb)(data_length), snd_flag);
 
 		dave_free(data_buf);

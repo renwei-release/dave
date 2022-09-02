@@ -14,7 +14,37 @@
 #include "cfg_param.h"
 #include "cfg_log.h"
 
+#define MIN_REMOTE_CFG_TTL 30
+
+typedef struct {
+	CFGRemoteUpdate update;
+} RemoteReflash;
+
 static void *_remote_cfg_kv = NULL;
+
+static void
+_base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
+{
+	CFGRemoteUpdate *pUpdate = thread_msg(pUpdate);
+
+	pUpdate->put_flag = put_flag;
+	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
+	dave_strcpy(pUpdate->cfg_value, value, sizeof(pUpdate->cfg_value));
+	pUpdate->ttl = ttl;
+
+	name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_UPDATE, pUpdate);
+}
+
+static void
+_base_remote_reflash(TIMERID timer_id, ub thread_index, void *param_ptr)
+{
+	RemoteReflash *pReflash = (RemoteReflash *)param_ptr;
+
+	_base_remote_update(
+		dave_true,
+		pReflash->update.cfg_name, pReflash->update.cfg_value,
+		pReflash->update.ttl);
+}
 
 // =====================================================================
 
@@ -43,15 +73,35 @@ base_remote_cfg_internal_del(s8 *name)
 }
 
 RetCode
-base_remote_cfg_set(s8 *name, s8 *value)
+base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 {
-	CFGRemoteUpdate *pUpdate = thread_msg(pUpdate);
+	RemoteReflash *pReflash;
 
-	pUpdate->put_flag = dave_true;
-	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
-	dave_strcpy(pUpdate->cfg_value, value, sizeof(pUpdate->cfg_value));
+	if(ttl <= 0)
+	{
+		ttl = 0;
+	}
 
-	name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_UPDATE, pUpdate);
+	CFGDEBUG("%s : %s ttl:%d", name, value, ttl);
+
+	if(ttl > 0)
+	{
+		if(ttl < MIN_REMOTE_CFG_TTL)
+		{
+			ttl = MIN_REMOTE_CFG_TTL;
+		}
+
+		pReflash = dave_malloc(sizeof(RemoteReflash));
+
+		pReflash->update.put_flag = dave_true;
+		dave_strcpy(pReflash->update.cfg_name, name, sizeof(pReflash->update.cfg_name));
+		dave_strcpy(pReflash->update.cfg_value, value, sizeof(pReflash->update.cfg_value));
+		pReflash->update.ttl = ttl;
+
+		base_timer_param_creat(name, _base_remote_reflash, pReflash, sizeof(pReflash), (ttl/2) * 1000);
+	}
+
+	_base_remote_update(dave_true, name, value, ttl);
 
 	return RetCode_OK;
 }
@@ -60,6 +110,19 @@ sb
 base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 {
 	return kv_inq_key_value(_remote_cfg_kv, name, value_ptr, value_len);
+}
+
+void
+base_remote_cfg_del(s8 *name)
+{
+	if(name == NULL)
+	{
+		return;
+	}
+
+	base_timer_kill(name);
+
+	_base_remote_update(dave_false, name, NULL, -1);
 }
 
 sb

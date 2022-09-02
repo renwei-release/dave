@@ -36,7 +36,6 @@
 #ifdef __DAVE_CYGWIN__
 #include "processthreadsapi.h"
 #endif
-#include "dave_linux.h"
 #include "dave_os.h"
 #include "dave_base.h"
 #include "dave_tools.h"

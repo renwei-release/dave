@@ -175,6 +175,7 @@ class CFGRemoteUpdate (Structure):
 		("put_flag", c_char),
 		("cfg_name", c_char * 1024),
 		("cfg_value", c_char * 8196),
+		("ttl", c_longlong),
 ]
 
 #* for MSGID_CFG_UPDATE message *#

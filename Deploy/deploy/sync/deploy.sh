@@ -15,18 +15,6 @@ else
 fi
 SHHOMEPATH=$(cd `dirname $0`; pwd)
 
-if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "sync" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
-   cp sync_Dockerfile Dockerfile
-   IMAGE="sync_docker_image"
-   TAG="latest"
-   EXTEND="-v /dave/sync:/dave/sync"
-   cd ../../
-   chmod a+x *.sh
-   ./deploy.sh -p ${PROJECT} -n ${PROJECT}-sync -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
-   cd ${SHHOMEPATH}
-   rm -rf Dockerfile
-fi
-
 if [[ "$DEPLOYMODEL" == "etcd" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cp etcd_Dockerfile Dockerfile
    IMAGE="etcd_docker_image"
@@ -51,4 +39,16 @@ if [[ "$DEPLOYMODEL" == "etcdkeeper" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    rm -rf Dockerfile
    echo -e "Now \033[35metcdkeeper\033[0m is ready!"
    echo -e "Please browse the web: \033[35mhttp://[your IP address]:8080/etcdkeeper\033[0m"
+fi
+
+if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "sync" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
+   cp sync_Dockerfile Dockerfile
+   IMAGE="sync_docker_image"
+   TAG="latest"
+   EXTEND="-v /dave/sync:/dave/sync"
+   cd ../../
+   chmod a+x *.sh
+   ./deploy.sh -p ${PROJECT} -n ${PROJECT}-sync -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
+   cd ${SHHOMEPATH}
+   rm -rf Dockerfile
 fi

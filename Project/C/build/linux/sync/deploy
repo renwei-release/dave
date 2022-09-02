@@ -9,29 +9,14 @@
 DEPLOYMODEL=$1
 PROJECT=${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)
-FINDDEPLOY=0
-DEPLOYPATH=Deploy/deploy/${PROJECT}
+DEPLOYPATH=../../../../../Deploy/deploy/${PROJECT}
 
 if [ "$DEPLOYMODEL" == "" ]; then
    DEPLOYMODEL="sync"
 fi
 
-if [ -f ../../../../../${DEPLOYPATH}/deploy.sh ]; then
-   cd ../../../../../${DEPLOYPATH}
-   FINDDEPLOY=1
-elif [ -f ../../../../${DEPLOYPATH}/deploy.sh ]; then
-   cd ../../../../${DEPLOYPATH}
-   FINDDEPLOY=1
-elif [ -f ../../../${DEPLOYPATH}/deploy.sh ]; then
-   cd ../../../${DEPLOYPATH}
-   FINDDEPLOY=1
-elif [ -f ../../${DEPLOYPATH}/deploy.sh ]; then
-   cd ../../${DEPLOYPATH}
-   FINDDEPLOY=1
-fi
+cd ${DEPLOYPATH}
 
-if [ ${FINDDEPLOY} == 1 ]; then
-   echo deploy ${PROJECT}
-   chmod a+x *.sh
-   ./deploy.sh ${DEPLOYMODEL} ${HOMEPATH}
-fi
+echo deploy ${PROJECT}
+chmod a+x *.sh
+./deploy.sh ${DEPLOYMODEL} ${HOMEPATH}

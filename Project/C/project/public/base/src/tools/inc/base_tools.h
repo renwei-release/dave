@@ -15,6 +15,7 @@
 #include "sync_type.h"
 #include "globally_identifier.h"
 #include "chain_config.h"
+#include "main_thread_id.h"
 
 #endif
 

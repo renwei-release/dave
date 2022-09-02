@@ -34,28 +34,28 @@ dave_dll_mfree(void *m, char *func, int line)
 }
 
 int
-dave_dll_cfg_set(char *cfg_name, char *cfg_ptr)
+dave_dll_cfg_set(char *cfg_name, char *cfg_value)
 {
-	u32 cfg_len = dave_strlen(cfg_ptr);
+	u32 value_len = dave_strlen(cfg_value);
 
-	if((cfg_len == 0) || (cfg_len > 8192))
+	if((value_len == 0) || (value_len > 8192))
 	{
-		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, cfg_len);
+		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, value_len);
 		return -1;
 	}
 
-	if(cfg_set((s8 *)cfg_name, (u8 *)cfg_ptr, cfg_len) != RetCode_OK)
+	if(cfg_set((s8 *)cfg_name, (u8 *)cfg_value, value_len) != RetCode_OK)
 		return -1;
 	else
 		return 0;
 }
 
 int
-dave_dll_cfg_get(char *cfg_name, char *cfg_ptr, int cfg_len)
+dave_dll_cfg_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len)
 {
-	dave_memset(cfg_ptr, 0x00, cfg_len);
+	dave_memset(cfg_value_ptr, 0x00, cfg_value_len);
 
-	if(cfg_get((s8 *)cfg_name, (u8 *)cfg_ptr, (u32)cfg_len) == dave_false)
+	if(cfg_get((s8 *)cfg_name, (u8 *)cfg_value_ptr, (u32)cfg_value_len) == dave_false)
 	{
 		return -1;
 	}
@@ -66,28 +66,28 @@ dave_dll_cfg_get(char *cfg_name, char *cfg_ptr, int cfg_len)
 }
 
 int
-dave_dll_cfg_remote_set(char *cfg_name, char *cfg_ptr)
+dave_dll_cfg_remote_set(char *cfg_name, char *cfg_value, int ttl)
 {
-	u32 cfg_len = dave_strlen(cfg_ptr);
+	u32 value_len = dave_strlen(cfg_value);
 
-	if((cfg_len == 0) || (cfg_len > 8192))
+	if((value_len == 0) || (value_len > 8192))
 	{
-		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, cfg_len);
+		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, value_len);
 		return -1;
 	}
 
-	if(rcfg_set((s8 *)cfg_name, (s8 *)cfg_ptr) != RetCode_OK)
+	if(rcfg_set((s8 *)cfg_name, (s8 *)cfg_value, (sb)ttl) != RetCode_OK)
 		return -1;
 	else
 		return 0;
 }
 
 int
-dave_dll_cfg_remote_get(char *cfg_name, char *cfg_ptr, int cfg_len)
+dave_dll_cfg_remote_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len)
 {
-	dave_memset(cfg_ptr, 0x00, cfg_len);
+	dave_memset(cfg_value_ptr, 0x00, cfg_value_len);
 
-	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_ptr, cfg_len) < 0)
+	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_value_ptr, cfg_value_len) < 0)
 	{
 		return -1;
 	}
@@ -95,6 +95,12 @@ dave_dll_cfg_remote_get(char *cfg_name, char *cfg_ptr, int cfg_len)
 	{
 		return 0;
 	}
+}
+
+void
+dave_dll_cfg_remote_del(char *cfg_name)
+{
+	rcfg_del(cfg_name);
 }
 
 void

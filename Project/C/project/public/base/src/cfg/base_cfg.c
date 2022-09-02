@@ -183,15 +183,21 @@ base_cfg_local_get_by_default(s8 *dir, s8 *name, s8 *value_ptr, ub value_len, s8
 }
 
 RetCode
-base_cfg_remote_set(s8 *name, s8 *value)
+base_cfg_remote_set(s8 *name, s8 *value, sb ttl)
 {
-	return base_remote_cfg_set(name, value);
+	return base_remote_cfg_set(name, value, ttl);
 }
 
 sb
 base_cfg_remote_get(s8 *name, s8 *value_ptr, ub value_len)
 {
 	return base_remote_cfg_get(name, value_ptr, value_len);
+}
+
+void
+base_cfg_remote_del(s8 *name)
+{
+	base_remote_cfg_del(name);
 }
 
 sb

@@ -6,7 +6,7 @@ OUTPUTFILE=${homepath}/build-all-`date +%Y-%m-%d-%H-%M-%S`.txt
 
 build()
 {
-   echo -e "build project on : \033[35m${LEVEL}\033[0m"
+   echo -e "build project on : \033[36m${LEVEL}\033[0m"
 
    for project_name in $(ls ./)
       do

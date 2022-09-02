@@ -147,6 +147,7 @@ void
 ramkv_timer(TIMERID timer_id, ub thread_index, void *param)
 {
 	KV *pKV = param;
+	dave_bool kv_check_flag = dave_true;
 
 	/*
 	 * 时间事件会在线程空间排队，如果排队的过程中KV已经被释放了，
@@ -155,12 +156,18 @@ ramkv_timer(TIMERID timer_id, ub thread_index, void *param)
 	 */
 	SAFECODEv2W(_ramkv_struct_global_pv, {
 
-		if(ramkv_check(pKV) == dave_true)
+		kv_check_flag = ramkv_check(pKV);
+		if(kv_check_flag == dave_true)
 		{
 			ramkv_timer_out(pKV);
 		}
 
 	} );
+
+	if(kv_check_flag == dave_false)
+	{
+		KVABNOR("kv check failed!");
+	}
 }
 
 dave_bool

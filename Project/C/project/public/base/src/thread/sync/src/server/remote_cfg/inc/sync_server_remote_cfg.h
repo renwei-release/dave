@@ -16,7 +16,5 @@ dave_bool sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpda
 
 void sync_server_remote_cfg_tell_client(SyncClient *pClient);
 
-void sync_server_remote_cfg_tell_config(dave_bool put_flag, s8 *key, s8 *value);
-
 #endif
 

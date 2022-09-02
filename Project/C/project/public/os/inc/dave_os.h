@@ -13,6 +13,12 @@
 extern "C"{
 #endif
 
+#define TIMER_SIG    (SIGALRM)
+#define QUIT_SIG     (SIGUSR1)
+#define BREAK_SIG    (SIGRTMIN)
+#define IO_SIG       (SIGIO)
+#define KILL_SIG     (SIGTERM)
+
 #include "dave_os_api.h"
 #include "dave_os_file.h"
 #include "dave_os_socket.h"

@@ -7,7 +7,9 @@
 # */
 
 PROJECT=${PWD##*/}
-FINDDEBUG=0
+DEPLOYPATH=../../../../../Deploy/deploy/${PROJECT}
+
+cd ${DEPLOYPATH}
 
 if [ "$USER" == "root" ]; then
    PROJECTNAME=${PROJECT}
@@ -15,19 +17,6 @@ else
    PROJECTNAME=${PROJECT}-${USER}
 fi
 
-if [ -f ../../../../Deploy/deploy/${PROJECT}/debug.sh ]; then
-   cd ../../../../Deploy/deploy/${PROJECT}/
-   FINDDEBUG=1
-elif [ -f ../../../Deploy/deploy/${PROJECT}/debug.sh ]; then
-   cd ../../../Deploy/deploy/${PROJECT}/
-   FINDDEBUG=1
-elif [ -f ../../Deploy/deploy/${PROJECT}/debug.sh ]; then
-   cd ../../Deploy/deploy/${PROJECT}/
-   FINDDEBUG=1
-fi
-
-if [ ${FINDDEBUG} == 1 ]; then
-   echo debug $PROJECTNAME
-   chmod a+x *.sh
-   ./debug.sh $PROJECTNAME
-fi
+echo debug $PROJECTNAME
+chmod a+x *.sh
+./debug.sh $PROJECTNAME

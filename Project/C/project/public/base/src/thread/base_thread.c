@@ -924,6 +924,7 @@ _thread_delay_notify_for_system_ready(ThreadId thread_id, s8 *name, ub thread_fl
 			timer_name,
 			_thread_delay_notify_for_system_ready_timer_out,
 			(void *)ub_thread_id,
+			sizeof(void *),
 			3000) == INVALID_TIMER_ID)
 		{
 			_thread_tell_everyone_that_i_already_exist(thread_id, name);

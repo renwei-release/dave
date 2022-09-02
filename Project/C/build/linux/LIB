@@ -28,9 +28,6 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
 LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib -lyaml-cpp
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), ROUTE)), 1)
-LIB += -L../../../../ThirdParty/build/redis/setup/lib -lhiredis
-endif
 
 LIB += -Wl,-Bdynamic
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)

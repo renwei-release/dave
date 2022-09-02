@@ -273,6 +273,7 @@ typedef struct {
 	dave_bool put_flag;
 	s8 cfg_name[1024];
 	s8 cfg_value[8196];
+	sb ttl;
 } CFGRemoteUpdate;
 
 #endif

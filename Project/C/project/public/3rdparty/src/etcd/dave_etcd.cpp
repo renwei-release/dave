@@ -23,6 +23,7 @@
 static s8 _etcd_url[256];
 static s8 _etcd_watcher_dir[256];
 static etcd_watcher_fun _watcher_fun = NULL;
+static void *_watcher_thread = NULL;
 
 static void
 _etcd_watcher_response(etcd::Response const & resp)
@@ -35,30 +36,57 @@ _etcd_watcher_response(etcd::Response const & resp)
 		return;
 	}
 
-	PARTYLOG("");
-
 	for(auto const &ev: resp.events())
 	{
 		etcd::Event::EventType event_type;
-		s8 key[1024], value[1024];
+		const char *key, *value;
 
 		event_type = ev.event_type();
-		std::strcpy(key, ev.kv().key().c_str());
-		std::strcpy(value, ev.kv().as_string().c_str());
+		key = ev.kv().key().c_str();
+		value = ev.kv().as_string().c_str();
 
 		if(event_type == etcd::Event::EventType::PUT)
 		{
-			_watcher_fun(dave_true, key, value);
+			_watcher_fun(dave_true, (s8 *)key, (s8 *)value);
 		}
 		else if(event_type == etcd::Event::EventType::DELETE_)
 		{
-			_watcher_fun(dave_false, key, value);
+			_watcher_fun(dave_false, (s8 *)key, (s8 *)value);
 		}
 		else
 		{
 			PARTYABNOR("%d %s:%s", event_type, key, value);
 		}
 	}
+}
+
+static void *
+_etcd_wather_thread(void *arg)
+{
+	if(dave_strcmp(_etcd_watcher_dir, "/") == dave_true)
+	{
+		dave_memset(_etcd_watcher_dir, 0x00, sizeof(_etcd_watcher_dir));
+	}
+
+	etcd::Watcher watcher(_etcd_url, _etcd_watcher_dir, _etcd_watcher_response, true);
+
+	PARTYLOG("etcd watcher on url:%s watcher dir:%s start!",
+		_etcd_url, _etcd_watcher_dir[0]=='\0'?"[WATCHER ALL]":_etcd_watcher_dir);
+
+	while(dave_os_thread_canceled(_watcher_thread) == dave_false)
+	{
+		dave_os_sleep(3000);
+	}
+
+	watcher.Cancel();
+
+	PARTYLOG("etcd watcher done!");
+
+	dave_os_thread_exit(_watcher_thread);
+
+	_watcher_thread = NULL;
+
+	return NULL;
 }
 
 // =====================================================================
@@ -70,23 +98,26 @@ dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
 	dave_strcpy(_etcd_watcher_dir, watcher_dir, sizeof(_etcd_watcher_dir));
 	_watcher_fun = watcher_fun;
 
-	etcd::Watcher watcher(_etcd_url, _etcd_watcher_dir, _etcd_watcher_response, true);
-
-	PARTYLOG("etcd watcher on url:%s watcher dir:%s", _etcd_url, _etcd_watcher_dir);
+	_watcher_thread = dave_os_create_thread((char *)"etcd", _etcd_wather_thread, NULL);
 }
 
 extern "C" void
 dave_etcd_exit(void)
 {
-
+	dave_os_release_thread(_watcher_thread);
 }
 
 extern "C" dave_bool
-dave_etcd_set(s8 *key, s8 *value)
+dave_etcd_set(s8 *key, s8 *value, sb ttl)
 {
 	etcd::SyncClient etcd(_etcd_url);
 
-	etcd::Response resp = etcd.set(key, value);
+	if(ttl < 0)
+	{
+		ttl = 0;
+	}
+
+	etcd::Response resp = etcd.set(key, value, (int)ttl);
 
 	if(0 != resp.error_code())
 	{

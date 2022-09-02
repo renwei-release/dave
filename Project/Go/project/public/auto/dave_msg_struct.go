@@ -152,6 +152,7 @@ type CFGRemoteUpdate struct {
 	Put_flag int8
 	Cfg_name [1024] byte
 	Cfg_value [8196] byte
+	Ttl int64
 }
 
 /* for MSGID_CFG_UPDATE message */

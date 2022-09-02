@@ -669,7 +669,7 @@ _ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_
 		pKV->ramkv_timer.out_times = 1;
 	}
 	pKV->ramkv_timer.callback_fun = callback_fun;
-	pKV->ramkv_timer.timer_id = base_timer_param_creat(name_buffer, ramkv_timer, pKV, pKV->ramkv_timer.base_timer * 1000);
+	pKV->ramkv_timer.timer_id = base_timer_param_creat(name_buffer, ramkv_timer, pKV, sizeof(void *), pKV->ramkv_timer.base_timer * 1000);
 	pKV->ramkv_timer.timer_line = NULL;
 	pKV->ramkv_timer.key_ramkv = __base_ramkv_malloc__(dave_false, name_buffer, KvAttrib_list, 0, NULL, (s8 *)__func__, (ub)__LINE__);
 

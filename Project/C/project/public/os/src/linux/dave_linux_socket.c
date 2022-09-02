@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <netinet/tcp.h>
-#include "dave_linux.h"
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "os_log.h"

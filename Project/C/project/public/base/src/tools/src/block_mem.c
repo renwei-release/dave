@@ -140,10 +140,64 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 	return has_top;
 }
 
+static inline dave_bool
+_block_mem_top_load(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
+{
+	ub block_index;
+	dave_bool has_top = dave_false;
+
+	for(block_index=0; block_index<pBlock->block_number; block_index++)
+	{
+		if(_block_mem_top_block_info(&pBlock[block_index], top_file, top_line, top_number) == dave_true)
+		{
+			has_top = dave_true;
+		}
+	}
+
+	return has_top;
+}
+
+static inline void
+_block_mem_top_sort(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
+{
+	ub top_1_index, top_2_index;
+	s8 *file;
+	ub line;
+	ub number;
+
+	for(top_1_index=0; top_1_index<TOP_INFO_MAX; top_1_index++)
+	{
+		if(top_file[top_1_index] == NULL)
+			break;
+	
+		for(top_2_index=top_1_index+1; top_2_index<TOP_INFO_MAX; top_2_index++)
+		{
+			if(top_file[top_2_index] == NULL)
+				break;
+
+			if(top_number[top_2_index] > top_number[top_1_index])
+			{
+				file = top_file[top_1_index];
+				line = top_line[top_1_index];
+				number = top_number[top_1_index];
+
+				top_file[top_1_index] = top_file[top_2_index];
+				top_line[top_1_index] = top_line[top_2_index];
+				top_number[top_1_index] = top_number[top_2_index];
+
+
+				top_file[top_2_index] = file;
+				top_line[top_2_index] = line;
+				top_number[top_2_index] = number;
+			}
+		}
+	}
+}
+
 static inline ub
 _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub warning_number_exceeded)
 {
-	ub block_index, info_index, top_index;
+	ub info_index, top_index;
 	s8 *top_file[TOP_INFO_MAX];
 	ub top_line[TOP_INFO_MAX];
 	ub top_number[TOP_INFO_MAX];
@@ -154,31 +208,27 @@ _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBloc
 	dave_memset(top_line, 0x00, sizeof(top_line));
 	dave_memset(top_number, 0x00, sizeof(top_number));
 
-	for(block_index=0; block_index<pBlock->block_number; block_index++)
-	{
-		if(_block_mem_top_block_info(&pBlock[block_index], top_file, top_line, top_number) == dave_true)
-		{
-			has_top = dave_true;
-		}
-	}
+	has_top = _block_mem_top_load(pBlock, top_file, top_line, top_number);
 
 	info_index = 0;
 
 	if(has_top == dave_true)
 	{
+		_block_mem_top_sort(top_file, top_line, top_number);
+
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 			"%s MEMORY TOP:\n", block_name);
-	}
 
-	for(top_index=0; top_index<TOP_INFO_MAX; top_index++)
-	{
-		if(top_number[top_index] > warning_number_exceeded)
+		for(top_index=0; top_index<TOP_INFO_MAX; top_index++)
 		{
-			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-				" %s:%d number:%d\n",
-				top_file[top_index], top_line[top_index], top_number[top_index]);
+			if(top_number[top_index] > warning_number_exceeded)
+			{
+				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+					" %s:%d number:%d\n",
+					top_file[top_index], top_line[top_index], top_number[top_index]);
 
-			has_number = dave_true;
+				has_number = dave_true;
+			}
 		}
 	}
 

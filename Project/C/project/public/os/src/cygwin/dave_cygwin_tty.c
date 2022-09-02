@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "dave_os.h"
-#include "dave_linux.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
 #include "dave_base.h"

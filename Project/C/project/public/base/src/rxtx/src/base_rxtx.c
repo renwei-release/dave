@@ -1298,8 +1298,6 @@ __base_rxtx_clean__(s32 socket, s8 *file, ub line)
 		}
 
 	} );
-
-	RTDEBUG("socket:%d", socket);
 }
 
 dave_bool
@@ -1313,15 +1311,16 @@ base_rxtx_writes(s32 socket, ORDER_CODE order_id, MBUF *data)
 		dave_mfree(data);
 	}
 
-	return dave_true;
+	return ret;
 }
 
 dave_bool
 base_rxtx_send_ct(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF *data)
 {
-	RTDEBUG("socket:%d order_id:%x length:%d", socket, order_id, data->len);
+	dave_bool ret;
 
-	if(rxtx_confirm_transfer_push(dst_ip, dst_port, socket, order_id, data) == dave_false)
+	ret = rxtx_confirm_transfer_push(dst_ip, dst_port, socket, order_id, data);
+	if(ret == dave_false)
 	{
 		RTABNOR("push failed:%x", order_id);
 		dave_mfree(data);
@@ -1329,7 +1328,7 @@ base_rxtx_send_ct(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, M
 
 	rxtx_confirm_transfer_out(socket, dave_false);
 
-	return dave_true;
+	return ret;
 }
 
 dave_bool
@@ -1343,7 +1342,7 @@ base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF
 		dave_mfree(data);
 	}
 
-	return dave_true;
+	return ret;
 }
 
 RetCode

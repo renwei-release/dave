@@ -14,7 +14,7 @@ void dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun);
 
 void dave_etcd_exit(void);
 
-dave_bool dave_etcd_set(s8 *key, s8 *value);
+dave_bool dave_etcd_set(s8 *key, s8 *value, sb ttl);
 
 void * dave_etcd_get(s8 *key, ub limit);
 

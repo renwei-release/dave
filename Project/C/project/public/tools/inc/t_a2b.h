@@ -13,10 +13,10 @@
 #define dave_byte_16(d, a0, a1) {u16 t; t=((((u16)(a0))<<8)&0xff00); t+=(((u16)(a1))&0xff); (d)=t;}
 #define dave_byte_8(a0, a1, d) {u16 t; t=d; (a0)=(u8)((t)>>8); (a1)=(u8)(t);}
 
+MBUF * t_a2b_bin_to_mbuf(s8 *bin_ptr, ub bin_len);
 MBUF * t_a2b_str_to_mbuf(s8 *str);
 MBUF * t_a2b_param_to_mbuf(const char *args, ...);
-ub t_a2b_mbuf_to_buf(MBUF *m, u8 *buf, ub buf_len);
-ub t_a2b_mbufs_to_mbuf(MBUF **dst, MBUF *src);
+ub t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m);
 
 ub t_a2b_digital_to_string(s8 *str_ptr, ub str_len, ub digital);
 ub t_a2b_string_to_digital(s8 *str_ptr);

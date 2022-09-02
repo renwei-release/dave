@@ -195,7 +195,7 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 	}
 	if( at.stack_size <= 0 )
 	{
-		at.stack_size = 128 * 1024;
+		at.stack_size = STACKSIZE;
 	}
 	else if( at.stack_size > 1024 * 1024 * 8 )
 	{
