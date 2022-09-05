@@ -17,7 +17,5 @@ void dos_print(const char *fmt, ...);
 
 void dos_write(const char *fmt, ...);
 
-void dos_show_prompt(void);
-
 #endif
 

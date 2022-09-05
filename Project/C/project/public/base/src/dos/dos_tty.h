@@ -13,7 +13,7 @@ void dos_tty_init(void);
 
 void dos_tty_exit(void);
 
-void dos_tty_write(u8 *msg, ub msg_len);
+void dos_tty_write(u8 *msg_ptr, ub msg_len);
 
 #endif
 

@@ -8,9 +8,15 @@
 #ifndef __LOG_SAVE_CFG_H__
 #define __LOG_SAVE_CFG_H__
 
-void log_save_cfg_reset(void);
+void log_save_cfg_init(void);
+
+void log_save_cfg_exit(void);
 
 dave_bool log_save_type_enable(ChainType type);
+
+dave_bool log_save_json_enable(void);
+
+dave_bool log_save_txt_enable(void);
 
 #endif
 

@@ -113,10 +113,18 @@ sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_
 	SyncServer *pServer = sync_client_data_sync_server();
 	dave_bool ret;
 
-	ret = _sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body);
+	if(pServer->server_cnt == dave_true)
+	{
+		ret = _sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body);
+	}
+	else
+	{
+		ret = dave_false;
+	}
+
 	if((ret == dave_false) && (pop_flag == dave_false))
 	{
-		sync_client_internal_buffer_push(msg_id, msg_len, msg_body);
+		sync_client_internal_buffer_push(pServer, msg_id, msg_len, msg_body);
 	}
 
 	return ret;

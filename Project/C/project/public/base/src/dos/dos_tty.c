@@ -136,9 +136,9 @@ dos_tty_exit(void)
 }
 
 void
-dos_tty_write(u8 *msg, ub msg_len)
+dos_tty_write(u8 *msg_ptr, ub msg_len)
 {
-	dave_os_tty_write(msg, msg_len);
+	dave_os_tty_write(msg_ptr, msg_len);
 }
 
 #endif

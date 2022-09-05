@@ -7,7 +7,6 @@
 # */
 
 LIB := -Wl,-Bstatic
-LIB += -L../../../../ThirdParty/build/jemalloc/setup/lib -ljemalloc
 LIB += -L../../../../ThirdParty/build/gtest/setup/lib64 -lgmock -lgtest
 
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIB)), 1)

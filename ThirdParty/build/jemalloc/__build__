@@ -1,0 +1,24 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=5.3.0
+
+if [ ! -f jemalloc-${VERSION}.tar.bz2 ]; then
+  wget https://github.com/jemalloc/jemalloc/releases/download/${VERSION}/jemalloc-${VERSION}.tar.bz2
+fi
+if [ ! -d ./jemalloc-${VERSION} ]; then
+  tar -jxvf jemalloc-${VERSION}.tar.bz2
+fi
+
+rm -rf ${homepath}/setup
+
+cd jemalloc-${VERSION}
+
+./autogen.sh --prefix=${homepath}/setup --disable-initial-exec-tls CFLAGS="-fPIC" CXXFLAGS="-fPIC"
+
+make && make install
+
+cd $homepath
+
+rm -rf jemalloc-${VERSION}

@@ -38,6 +38,8 @@ _chain_config_reset(void)
 	safe_counter = 0;
 	cfg_ptr = cfg_data;
 
+	_chain_enable_cfg = ChainCfg_none;
+
 	while(((safe_counter ++) <= cfg_len) && (cfg_ptr != NULL))
 	{
 		cfg_ptr = dave_strfind(cfg_ptr, '|', type_str, sizeof(type_str));

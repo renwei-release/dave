@@ -9,9 +9,6 @@
 action=debug # release debug test
 
 ldconfig
-if [ -f "/project/public/base/lib/libjemalloc.so" ]; then
-   export LD_PRELOAD="/project/public/base/lib/libjemalloc.so"
-fi
 
 function loop_notify()
 {

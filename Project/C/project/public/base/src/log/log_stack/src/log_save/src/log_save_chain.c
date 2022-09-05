@@ -15,7 +15,7 @@
 #include "dave_3rdparty.h"
 #include "thread_chain.h"
 #include "log_tracing.h"
-#include "log_save_json.h"
+#include "log_save_json_define.h"
 #include "log_save_dll.h"
 #include "log_save_cfg.h"
 #include "log_lock.h"

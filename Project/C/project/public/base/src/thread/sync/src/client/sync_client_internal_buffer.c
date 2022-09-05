@@ -17,6 +17,8 @@
 #define SYNC_CLIENT_INTERNAL_BUFFER_TIMER_NAME "scibp"
 
 typedef struct {
+	SyncServer *pServer;
+
 	ub msg_id;
 	ub msg_len;
 	void *msg_body;
@@ -28,9 +30,11 @@ static InternalBufferList *_head = NULL, *_tail = NULL;
 static TLock _internal_buffer_list_pv;
 
 static InternalBufferList *
-_sync_client_internal_buffer_malloc(ub msg_id, ub msg_len, void *msg_body)
+_sync_client_internal_buffer_malloc(SyncServer *pServer, ub msg_id, ub msg_len, void *msg_body)
 {
 	InternalBufferList *pList = dave_malloc(sizeof(InternalBufferList));
+
+	pList->pServer = pServer;
 
 	pList->msg_id = msg_id;
 	pList->msg_len = msg_len;
@@ -82,6 +86,9 @@ _sync_client_internal_buffer_pop(void)
 
 			while(_head != NULL)
 			{
+				if(_head->pServer->server_cnt == dave_false)
+					break;
+
 				if(sync_client_tx_run_internal_msg_req(_head->msg_id, _head->msg_len, _head->msg_body, dave_true) == dave_false)
 					break;
 
@@ -150,9 +157,9 @@ sync_client_internal_buffer_exit(void)
 }
 
 void
-sync_client_internal_buffer_push(ub msg_id, ub msg_len, void *msg_body)
+sync_client_internal_buffer_push(SyncServer *pServer, ub msg_id, ub msg_len, void *msg_body)
 {
-	InternalBufferList *pList = _sync_client_internal_buffer_malloc(msg_id, msg_len, msg_body);
+	InternalBufferList *pList = _sync_client_internal_buffer_malloc(pServer, msg_id, msg_len, msg_body);
 
 	_sync_client_internal_buffer_push(pList);
 

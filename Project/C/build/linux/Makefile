@@ -29,9 +29,9 @@ OBJS := $(patsubst %.S,%.o,$(OBJS))
 CC := gcc
 CPLUS := g++
 
-CFLAGS := -m64 -std=gnu99 -fPIC -Wall -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+CFLAGS := -m64 -std=gnu99 -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
 CFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
-CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -mcmodel=large -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+CPLUSFLAGS := -m64 -std=c++11 -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
 CPLUSFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 
 ifeq ($(LEVEL_PRODUCT), profiling)

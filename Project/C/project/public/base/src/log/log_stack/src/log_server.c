@@ -29,37 +29,55 @@ static ThreadId _log_server_thread = INVALID_THREAD_ID;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static s32 _log_server_socket = INVALID_SOCKET_ID;
 
-static void
-_log_server_build_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info)
+static inline ub
+_log_server_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info)
 {
 	DateStruct date = t_time_get_date(NULL);
 
-	if(device_info != NULL)
-	{
-		dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s",
-			project_name,
-			date.year, date.month, date.day,
-			device_info);
-	}
-	else
-	{
-		dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%02d/%02d",
-			project_name,
-			date.year, date.month, date.day,
-			date.hour, date.minute);
-	}
+	return dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s",
+		project_name,
+		date.year, date.month, date.day,
+		device_info);
 }
 
-static void
+static inline void
+_log_server_build_chain_file_name(s8 *file_name_ptr, ub file_name_len, s8 *chain_name)
+{
+	DateStruct date = t_time_get_date(NULL);
+
+	dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%02d/%02d",
+		chain_name,
+		date.year, date.month, date.day,
+		date.hour, date.minute);
+}
+
+static inline void
+_log_server_log_save(
+	s8 *project_name, s8 *device_info,
+	TraceLevel level,
+	s8 *log_ptr, ub log_len)
+{
+	s8 log_file_name[256];
+	ub log_file_len;
+
+	log_file_len = _log_server_build_log_file_name(log_file_name, sizeof(log_file_name), project_name, device_info);
+
+	dave_snprintf(&log_file_name[log_file_len], sizeof(log_file_name)-log_file_len, ".json");
+	log_save_json_file(log_file_name, level, log_ptr, log_len);
+
+	dave_snprintf(&log_file_name[log_file_len], sizeof(log_file_name)-log_file_len, ".txt");
+	log_save_txt_file(log_file_name, level, log_ptr, log_len);
+}
+
+static inline void
 _log_server_log_record(ub frame_len, u8 *frame)
 {
 	ub frame_index;
-	s8 log_file_name[256];
 	s8 product_name[256];
 	u16 product_name_len;
 	s8 device_info[256];
 	u16 device_info_len;
-	u16 content_len;
+	u16 log_len;
 
 	frame_index = 0;
 
@@ -77,21 +95,19 @@ _log_server_log_record(ub frame_len, u8 *frame)
 		device_info[device_info_len] = '\0';
 	}
 
-	dave_byte_16(content_len, frame[frame_index++], frame[frame_index++]);
+	dave_byte_16(log_len, frame[frame_index++], frame[frame_index++]);
 
-	if(content_len > (frame_len - frame_index))
+	if(log_len > (frame_len - frame_index))
 	{
 		LOGABNOR("invalid content_len:%d frame_len:%d frame_index:%d",
-			content_len, frame_len, frame_index);
-		content_len = frame_len - frame_index;
+			log_len, frame_len, frame_index);
+		log_len = frame_len - frame_index;
 	}
 
-	_log_server_build_file_name(log_file_name, sizeof(log_file_name), product_name, device_info);
-
-	log_save_log_file(log_file_name, TRACELEVEL_LOG, (s8 *)(&frame[frame_index]), content_len);
+	_log_server_log_save(product_name, device_info, TRACELEVEL_LOG, (s8 *)(&frame[frame_index]), log_len);
 }
 
-static void
+static inline void
 _log_server_log_record_v2(ub frame_len, u8 *frame)
 {
 	ub frame_index;
@@ -101,7 +117,6 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 	u16 device_info_len;
 	TraceLevel level;
 	u16 log_len;
-	s8 log_file_name[256];
 
 	frame_index = 0;
 
@@ -117,8 +132,10 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 	{
 		device_info[device_info_len] = '\0';
 	}
+
 	dave_byte_16(level, frame[frame_index++], frame[frame_index++]);
 	dave_byte_16(log_len, frame[frame_index++], frame[frame_index++]);
+
 	if(log_len > (frame_len - frame_index))
 	{
 		LOGABNOR("invalid content_len:%d frame_len:%d frame_index:%d",
@@ -126,12 +143,10 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 		log_len = frame_len - frame_index;
 	}
 
-	_log_server_build_file_name(log_file_name, sizeof(log_file_name), product_name, device_info);
-
-	log_save_log_file(log_file_name, level, (s8 *)(&frame[frame_index]), log_len);
+	_log_server_log_save(product_name, device_info, level, (s8 *)(&frame[frame_index]), log_len);
 }
 
-static void
+static inline void
 _log_server_log_chain(ub frame_len, u8 *frame)
 {
 	ub frame_index;
@@ -166,7 +181,7 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 	}
 	dave_byte_8_32(chain_len, frame[frame_index++], frame[frame_index++], frame[frame_index++], frame[frame_index++]);
 
-	_log_server_build_file_name(log_file_name, sizeof(log_file_name), chain_name, NULL);
+	_log_server_build_chain_file_name(log_file_name, sizeof(log_file_name), chain_name);
 
 	log_save_chain_file(log_file_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
 }

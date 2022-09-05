@@ -65,9 +65,11 @@ _dos_cfg_get_all(s8 *print_ptr, ub print_len)
 {
 	void *pJson;
 	struct lh_entry *entry = NULL;
-	ub print_index = 0;
+	ub print_index;
 
 	pJson = _dos_cfg_json_object();
+
+	print_index = 0;
 
 	if(pJson != NULL)
 	{
@@ -91,18 +93,17 @@ _dos_cfg_get(s8 *cmd_ptr, ub cmd_len)
 	s8 cfg_name[1024];
 	ub print_len = 1024 * 16;
 	s8 *print_ptr = dave_malloc(print_len);
-	ub print_index;
 
 	dos_load_string(cmd_ptr, cmd_len, cfg_name, sizeof(cfg_name));
 
 	if(dave_strlen(cfg_name) == 0)
-		print_index = _dos_cfg_get_all(print_ptr, print_len);
+		print_len = _dos_cfg_get_all(print_ptr, print_len);
 	else
-		print_index = _dos_cfg_get_one(cfg_name, print_ptr, print_len);
+		print_len = _dos_cfg_get_one(cfg_name, print_ptr, print_len);
 
-	if(print_index == 0)
+	if(print_len == 0)
 	{
-		dave_snprintf(print_ptr, print_len, "Empty message!");
+		dave_sprintf(print_ptr, "Empty message!");
 	}
 
 	dos_print("%s", print_ptr);

@@ -18,30 +18,31 @@ static void
 _dos_show(s8 *msg, dave_bool record)
 {
 	ub msg_len, prompt_len;
-	s8 *data;
-	ub data_index;
+	s8 *show_ptr;
+	ub show_index;
 
 	msg_len = dave_strlen(msg);
 	prompt_len = dave_strlen(dos_prompt());
-	data = dave_malloc(msg_len + prompt_len + 64);
-	if(data != NULL)
+
+	show_ptr = dave_malloc(msg_len + prompt_len + 64);
+
+	show_index = 0;
+
+	show_index += dave_memcpy(&show_ptr[show_index], msg, msg_len);
+	show_ptr[show_index ++] = '\n';
+
+	show_index += dave_sprintf(&show_ptr[show_index], "%s", dos_prompt());
+	show_ptr[show_index ++] = '\n';
+	show_ptr[show_index ++] = '\0';
+
+	if(record == dave_true)
 	{
-		data_index = 0;
-		dave_memcpy(&data[data_index], msg, msg_len);
-		data_index += msg_len;
-		data[data_index ++] = '\r';
-		data[data_index ++] = '\n';
-		data_index += dave_sprintf(&data[data_index], "%s", dos_prompt());
-		data[data_index ++] = '\r';
-		data[data_index ++] = '\n';
-		data[data_index] = '\0';
-		if(record == dave_true)
-		{
-			DOSLOG("%s", data);
-		}
-		dos_tty_write((u8 *)data, data_index);
-		dave_free(data);
+		DOSLOG("%s", show_ptr);
 	}
+
+	dos_tty_write((u8 *)show_ptr, show_index);
+
+	dave_free(show_ptr);
 }
 
 // =====================================================================
@@ -92,27 +93,6 @@ dos_write(const char *fmt, ...)
 	_dos_show(show_buf, dave_false);
 
 	dave_free(show_buf);
-}
-
-void
-dos_show_prompt(void)
-{
-	ub prompt_len;
-	s8 *data;
-	ub data_index;
-
-	prompt_len = dave_strlen(dos_prompt());
-	data = dave_malloc(prompt_len + 64);
-	if(data != NULL)
-	{
-		data_index = 0;
-		data_index += dave_sprintf(&data[data_index], "%s", dos_prompt());
-		data[data_index ++] = '\r';
-		data[data_index ++] = '\n';
-		data[data_index ++] = '\0';
-		dos_tty_write((u8 *)data, data_index);
-		dave_free(data);
-	}
 }
 
 #endif

@@ -124,11 +124,11 @@ dave_os_tty_exit(void)
 }
 
 void
-dave_os_tty_write(u8 *data, ub data_len)
+dave_os_tty_write(u8 *data_ptr, ub data_len)
 {
 	if(_is_on_backend_printf_disable == dave_false)
 	{
-		if(fprintf(stdout, "\033[34m%s\033[0m", data) < 0)
+		if(fprintf(stdout, "\033[34m%s\033[0m", data_ptr) < 0)
 		{
 			_is_on_backend_printf_disable = dave_true;
 		}
@@ -136,7 +136,7 @@ dave_os_tty_write(u8 *data, ub data_len)
 }
 
 ub
-dave_os_tty_read(u8 *data, ub data_len)
+dave_os_tty_read(u8 *data_ptr, ub data_len)
 {
 	ub keypad_index;
 	
@@ -144,14 +144,14 @@ dave_os_tty_read(u8 *data, ub data_len)
 	
 	while((keypad_index < data_len) && (_keypad_write > _keypad_read))
 	{
-		data[keypad_index ++] = (u8)((_keypad_char[(_keypad_read ++) % KEY_INPUT_MAX]));
+		data_ptr[keypad_index ++] = (u8)((_keypad_char[(_keypad_read ++) % KEY_INPUT_MAX]));
 	}
 
 	return keypad_index;
 }
 
 void
-dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf)
+dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
 {
 	sb result;
 
@@ -163,17 +163,17 @@ dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf)
 		 */
 
 		if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_CATCHER))
-			result = fprintf(stdout, "\033[36m%s\033[0m", (char *)buf);
+			result = fprintf(stdout, "\033[36m%s\033[0m", (char *)buf_ptr);
 		else if(level == TRACELEVEL_TRACE)
-			result = fprintf(stdout, "\033[33m%s\033[0m", (char *)buf);
+			result = fprintf(stdout, "\033[33m%s\033[0m", (char *)buf_ptr);
 		else if(level == TRACELEVEL_LOG)
-			result = fprintf(stdout, "\033[38m%s\033[0m", (char *)buf);	
+			result = fprintf(stdout, "\033[38m%s\033[0m", (char *)buf_ptr);	
 		else if(level == TRACELEVEL_ABNORMAL)
-			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf);
+			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
 		else if(level == TRACELEVEL_ASSERT)
-			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf);
+			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
 		else
-			result = fprintf(stdout, "\033[28m%s\033[0m", (char *)buf);
+			result = fprintf(stdout, "\033[28m%s\033[0m", (char *)buf_ptr);
 
 		if(result < 0)
 		{

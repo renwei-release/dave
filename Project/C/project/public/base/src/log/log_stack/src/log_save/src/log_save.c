@@ -13,7 +13,8 @@
 #include "dave_3rdparty.h"
 #include "dave_os.h"
 #include "log_lock.h"
-#include "log_save_log.h"
+#include "log_save_json.h"
+#include "log_save_txt.h"
 #include "log_save_cfg.h"
 #include "log_save_chain.h"
 #include "log_log.h"
@@ -33,7 +34,7 @@ typedef struct {
 
 static void *_log_file_kv = NULL;
 
-static LogFile *
+static inline LogFile *
 _log_save_log_file_malloc(s8 *file_name)
 {
 	LogFile *pLog;
@@ -87,19 +88,6 @@ _log_save_log_file_free(s8 *file_name)
 	log_unlock();
 }
 
-static LogFile *
-_log_save_file_id(s8 *file_name)
-{
-	LogFile *pLog = kv_inq_key_ptr(_log_file_kv, file_name);
-
-	if(pLog == NULL)
-	{
-		pLog = _log_save_log_file_malloc(file_name);
-	}
-
-	return pLog;
-}
-
 static RetCode
 _log_save_recycle(void *ramkv, s8 *key)
 {
@@ -128,12 +116,55 @@ _log_save_timer_out(void *ramkv, s8 *key)
 	_log_save_log_file_free(pLog->file_name);
 }
 
+static inline LogFile *
+_log_save_file_id(s8 *file_name)
+{
+	LogFile *pLog = kv_inq_key_ptr(_log_file_kv, file_name);
+
+	if(pLog == NULL)
+	{
+		pLog = _log_save_log_file_malloc(file_name);
+	}
+
+	return pLog;
+}
+
+static inline void
+_log_save_to_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
+{
+	LogFile *pLog = _log_save_file_id(file_name);
+
+	if(pLog == NULL)
+	{
+		LOGABNOR("save level:%d content:%d/%s to %s failed!",
+			level, content_len, content_ptr, file_name);
+		return;
+	}
+
+	SAFECODEv1(pLog->pv, log_save_json(pLog->file_id, level, content_ptr, content_len); );
+}
+
+static inline void
+_log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
+{
+	LogFile *pLog = _log_save_file_id(file_name);
+
+	if(pLog == NULL)
+	{
+		LOGABNOR("save level:%d content:%d/%s to %s failed!",
+			level, content_len, content_ptr, file_name);
+		return;
+	}
+
+	SAFECODEv1(pLog->pv, log_save_txt(pLog->file_id, level, content_ptr, content_len); );
+}
+
 // =====================================================================
 
 void
 log_save_init(void)
 {
-	log_save_cfg_reset();
+	log_save_cfg_init();
 
 	_log_file_kv = kv_malloc("logsave", KvAttrib_list, LOG_FILE_CLOSE_TIME, _log_save_timer_out);
 
@@ -146,21 +177,26 @@ log_save_exit(void)
 	log_save_chain_exit();
 
 	kv_free(_log_file_kv, _log_save_recycle);
+
+	log_save_cfg_exit();
 }
 
 void
-log_save_log_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
+log_save_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
 {
-	LogFile *pLog = _log_save_file_id(file_name);
-
-	if(pLog == NULL)
+	if(log_save_json_enable() == dave_true)
 	{
-		LOGABNOR("save level:%d content:%d/%s to %s failed!",
-			level, content_len, content_ptr, file_name);
-		return;
+		_log_save_to_json_file(file_name, level, content_ptr, content_len);
 	}
+}
 
-	SAFECODEv1(pLog->pv, log_save_log(pLog->file_id, level, content_ptr, content_len); );
+void
+log_save_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
+{
+	if(log_save_json_enable() == dave_true)
+	{
+		_log_save_to_txt_file(file_name, level, content_ptr, content_len);
+	}
 }
 
 void

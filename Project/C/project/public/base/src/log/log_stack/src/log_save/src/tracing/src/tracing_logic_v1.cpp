@@ -19,7 +19,7 @@
 #include "dave_os.h"
 #include "dave_3rdparty.h"
 #include "thread_chain.h"
-#include "log_save_json.h"
+#include "log_save_json_define.h"
 #include "tracing_level.h"
 #include "tracing_fixed_bug.h"
 #include "log_log.h"

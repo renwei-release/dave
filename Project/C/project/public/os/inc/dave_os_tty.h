@@ -12,11 +12,11 @@ dave_bool dave_os_tty_init(sync_notify_fun notify_fun);
 
 void dave_os_tty_exit(void);
 
-void dave_os_tty_write(u8 *data, ub data_len);
+void dave_os_tty_write(u8 *data_ptr, ub data_len);
 
-ub dave_os_tty_read(u8 *data, ub data_len);
+ub dave_os_tty_read(u8 *data_ptr, ub data_len);
 
-void dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf);
+void dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr);
 
 #endif
 

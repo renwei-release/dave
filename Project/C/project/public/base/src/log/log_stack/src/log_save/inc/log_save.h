@@ -12,7 +12,9 @@ void log_save_init(void);
 
 void log_save_exit(void);
 
-void log_save_log_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len);
+void log_save_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len);
+
+void log_save_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len);
 
 void log_save_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len);
 

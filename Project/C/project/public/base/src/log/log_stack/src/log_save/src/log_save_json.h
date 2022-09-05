@@ -6,17 +6,9 @@
  */
 
 #ifndef __LOG_SAVE_JSON_H__
-#define __LOG_SAVE_JSON_H__
+#define __LOG_SAVE_LOG_H__
 
-#define JSON_LOG_chain_id "chain_id"
-#define JSON_LOG_call_id  "call_id"
-#define JSON_LOG_generation "generation"
-#define JSON_LOG_action "action"
-#define JSON_LOG_action_request "request"
-#define JSON_LOG_action_answer "answer"
-#define JSON_LOG_src_thread "src_thread"
-#define JSON_LOG_dst_thread "dst_thread"
-#define JSON_LOG_msg_id "msg_id"
+void log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len);
 
 #endif
 

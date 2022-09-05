@@ -12,7 +12,7 @@ void sync_client_internal_buffer_init(void);
 
 void sync_client_internal_buffer_exit(void);
 
-void sync_client_internal_buffer_push(ub msg_id, ub msg_len, void *msg_body);
+void sync_client_internal_buffer_push(SyncServer *pServer, ub msg_id, ub msg_len, void *msg_body);
 
 void sync_client_internal_buffer_pop(void);
 
