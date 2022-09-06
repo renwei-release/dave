@@ -136,6 +136,42 @@ _dos_sync_blocks_req(s8 *cmd_ptr, ub cmd_len)
 	return ret;
 }
 
+static void
+_dos_sync_info_rsp(MSGBODY *ptr)
+{
+	DebugRsp *pRsp = (DebugRsp *)(ptr->msg_body);
+
+	if(dave_strlen(pRsp->msg) == 0)
+	{
+		dos_print("the empty message from %s!", thread_name(ptr->msg_src));
+	}
+	else
+	{
+		dos_print("%s", pRsp->msg);
+	}
+}
+
+static RetCode
+_dos_sync_info_req(s8 *cmd_ptr, ub cmd_len)
+{
+	dave_bool is_sync_server = dave_strcmp(dave_verno_product(NULL, NULL, 0), "SYNC");
+	s8 *sync_server = SYNC_SERVER_THREAD_NAME;
+	DebugReq *pReq;
+
+	if(is_sync_server == dave_true)
+		sync_server = SYNC_SERVER_THREAD_NAME;
+	else
+		sync_server = SYNC_CLIENT_THREAD_NAME;
+
+	pReq = thread_reset_msg(pReq);
+
+	pReq->msg[0] = 'i';
+
+	name_event(sync_server, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_sync_info_rsp);
+
+	return RetCode_OK;
+}
+
 // =====================================================================
 
 void
@@ -147,6 +183,8 @@ dos_sync_reset(void)
 	{
 		dos_cmd_reg("blocks", _dos_sync_blocks_req, _dos_sync_blocks_help);
 	}
+
+	dos_cmd_reg("sync", _dos_sync_info_req, NULL);
 }
 
 #endif

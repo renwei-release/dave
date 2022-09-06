@@ -16,7 +16,7 @@
 #ifndef _json_util_h_
 #define _json_util_h_
 
-#include "json_object.h"
+#include "json-c/json_object.h"
 
 #ifndef json_min
 #define json_min(a, b) ((a) < (b) ? (a) : (b))

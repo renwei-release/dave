@@ -25,8 +25,7 @@ _sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg
 		return;
 	}
 
-	if((pClient->client_socket != INVALID_SOCKET_ID)
-		&& (pClient->ready_flag == dave_true))
+	if(pClient->client_socket != INVALID_SOCKET_ID)
 	{
 		sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
 	}

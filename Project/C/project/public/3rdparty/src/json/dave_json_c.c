@@ -31,15 +31,15 @@
 extern "C" {
 #endif
 #include "debug.h"
-#include "linkhash.h"
-#include "arraylist.h"
-#include "json_util.h"
-#include "json_object.h"
-#include "json_pointer.h"
-#include "json_tokener.h"
-#include "json_object_iterator.h"
-#include "json_object_private.h"
-#include "json_c_version.h"
+#include "json-c/linkhash.h"
+#include "json-c/arraylist.h"
+#include "json-c/json_util.h"
+#include "json-c/json_object.h"
+#include "json-c/json_pointer.h"
+#include "json-c/json_tokener.h"
+#include "json-c/json_object_iterator.h"
+#include "json-c/json_object_private.h"
+#include "json-c/json_c_version.h"
 #ifdef __cplusplus
 }
 #endif

@@ -8,6 +8,8 @@
 #ifndef __BASE_CFG_H__
 #define __BASE_CFG_H__
 
+#define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
+
 void base_cfg_init(void);
 void base_cfg_exit(void);
 

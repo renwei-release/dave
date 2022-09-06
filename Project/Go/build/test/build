@@ -7,7 +7,7 @@
 # */
 
 PROJECT=${PWD##*/}
-CONTAINER="fedora"
+CONTAINER="golang"
 
 ../ENV ${CONTAINER}
 

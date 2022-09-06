@@ -9,7 +9,7 @@
 #define __DAVE_JEMALLOC_H__
 
 #ifdef FORM_PRODUCT_BIN
-#define ENABLE_JE_MALLOC
+ #define ENABLE_JE_MALLOC
 #endif
 
 extern void * je_malloc_for_dave(size_t size);

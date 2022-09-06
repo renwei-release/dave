@@ -48,14 +48,14 @@
 #define open _open
 #endif
 
-#include "snprintf_compat.h"
+#include "json-c/snprintf_compat.h"
 
-#include "debug.h"
-#include "json_inttypes.h"
-#include "json_object.h"
-#include "json_tokener.h"
-#include "json_util.h"
-#include "printbuf.h"
+#include "json-c/debug.h"
+#include "json-c/json_inttypes.h"
+#include "json-c/json_object.h"
+#include "json-c/json_tokener.h"
+#include "json-c/json_util.h"
+#include "json-c/printbuf.h"
 
 static int _json_object_to_fd(int fd, struct json_object *obj, int flags, const char *filename);
 

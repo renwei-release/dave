@@ -72,7 +72,7 @@ typedef struct {
 	void *msg_router;
 } MSGBODY;
 
-typedef void (*base_thread_fun)(MSGBODY *thread_msg);
+typedef void (*base_thread_fun)(MSGBODY *msg);
 
 void base_thread_init(void *main_thread_id, s8 *sync_domain);
 void base_thread_exit(void);

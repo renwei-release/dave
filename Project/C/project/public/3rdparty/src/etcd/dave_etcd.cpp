@@ -121,9 +121,10 @@ dave_etcd_set(s8 *key, s8 *value, sb ttl)
 
 	if(0 != resp.error_code())
 	{
-		PARTYLOG("set key:%s value:%s failed:%d",
+		PARTYLOG("set key:%s value:%s failed:%d/%s",
 			key, value,
-			resp.error_code());
+			resp.error_code(),
+			resp.error_message().c_str());
 		return dave_false;
 	}
 

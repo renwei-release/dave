@@ -18,7 +18,6 @@
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
-#define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
 
 #define NUM_LOG_ONCE_SEND (LOG_BUFFER_MAX)
 #define NUM_CHAIN_ONCE_SEND (4096)

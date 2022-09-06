@@ -183,6 +183,17 @@ _sync_client_run_thread(
 }
 
 static void
+_sync_client_run_cfg_update(CFGUpdate *pUpdate)
+{
+	if((t_is_all_show_char((u8 *)(pUpdate->cfg_name), dave_strlen(pUpdate->cfg_name)) == dave_true)
+		&& (pUpdate->cfg_length == dave_strlen(pUpdate->cfg_value))
+		&& (t_is_all_show_char((u8 *)(pUpdate->cfg_value), pUpdate->cfg_length) == dave_true))
+	{
+		cfg_set(pUpdate->cfg_name, pUpdate->cfg_value, pUpdate->cfg_length);
+	}
+}
+
+static void
 _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
 	CFGRemoteUpdate boradcast_update = *pUpdate;
@@ -228,6 +239,9 @@ _sync_client_run_internal(
 
 	switch(msg_id)
 	{
+		case MSGID_CFG_UPDATE:
+				_sync_client_run_cfg_update((CFGUpdate *)(msg_body));
+			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				_sync_client_run_cfg_remote_update((CFGRemoteUpdate *)(msg_body));
 			break;
