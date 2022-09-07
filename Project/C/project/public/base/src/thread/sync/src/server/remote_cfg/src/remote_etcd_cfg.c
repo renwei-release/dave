@@ -264,6 +264,36 @@ remote_etcd_cfg_set(
 	return ret;
 }
 
+dave_bool
+remote_etcd_cfg_del(
+	s8 *verno, s8 *globally_identifier,
+	s8 *cfg_name)
+{
+	s8 dir_key[512];
+	dave_bool ret;
+
+	if(_sync_server_etcd_enable() == dave_false)
+	{
+		return dave_false;
+	}
+
+	_sync_server_make_dir(
+		dir_key, sizeof(dir_key),
+		verno, globally_identifier, cfg_name);
+
+	ret = dave_etcd_del(dir_key);
+	if(ret == dave_false)
+	{
+		SYNCLOG("del %s failed!", dir_key);
+	}
+	else
+	{
+		SYNCTRACE("del %s success!", dir_key);
+	}
+
+	return ret;
+}
+
 void
 remote_etcd_cfg_get(remote_cfg_get_callback get_callback)
 {

@@ -18,4 +18,6 @@ dave_bool dave_etcd_set(s8 *key, s8 *value, sb ttl);
 
 void * dave_etcd_get(s8 *key, ub limit);
 
+dave_bool dave_etcd_del(s8 *key);
+
 #endif

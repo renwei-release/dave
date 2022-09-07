@@ -13,6 +13,7 @@
 #include "etcd/Client.hpp"
 #include "etcd/SyncClient.hpp"
 #include "etcd/Watcher.hpp"
+#include "etcd/KeepAlive.hpp"
 #include "etcd/Value.hpp"
 #include "dave_base.h"
 #include "dave_os.h"
@@ -20,10 +21,16 @@
 #include "dave_tools.h"
 #include "party_log.h"
 
-static s8 _etcd_url[256];
+#define ETCD_DEFAULT_KEEPALIVE 60
+
+static s8 _etcd_client_url[256];
 static s8 _etcd_watcher_dir[256];
 static etcd_watcher_fun _watcher_fun = NULL;
-static void *_watcher_thread = NULL;
+
+static etcd::SyncClient *_etcd_client = NULL;
+static etcd::Watcher *_etcd_watcher = NULL;
+static etcd::KeepAlive *_etcd_keepalive = NULL;
+static int64_t _etcd_leaseid = 0;
 
 static void
 _etcd_watcher_response(etcd::Response const & resp)
@@ -60,72 +67,67 @@ _etcd_watcher_response(etcd::Response const & resp)
 	}
 }
 
-static void *
-_etcd_wather_thread(void *arg)
-{
-	if(dave_strcmp(_etcd_watcher_dir, "/") == dave_true)
-	{
-		dave_memset(_etcd_watcher_dir, 0x00, sizeof(_etcd_watcher_dir));
-	}
-
-	etcd::Watcher watcher(_etcd_url, _etcd_watcher_dir, _etcd_watcher_response, true);
-
-	PARTYLOG("etcd watcher on url:%s watcher dir:%s start!",
-		_etcd_url, _etcd_watcher_dir[0]=='\0'?"[WATCHER ALL]":_etcd_watcher_dir);
-
-	while(dave_os_thread_canceled(_watcher_thread) == dave_false)
-	{
-		dave_os_sleep(3000);
-	}
-
-	watcher.Cancel();
-
-	PARTYLOG("etcd watcher done!");
-
-	dave_os_thread_exit(_watcher_thread);
-
-	_watcher_thread = NULL;
-
-	return NULL;
-}
-
 // =====================================================================
 
 extern "C" void
 dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
 {
-	dave_strcpy(_etcd_url, url, sizeof(_etcd_url));
+	dave_strcpy(_etcd_client_url, url, sizeof(_etcd_client_url));
 	dave_strcpy(_etcd_watcher_dir, watcher_dir, sizeof(_etcd_watcher_dir));
 	_watcher_fun = watcher_fun;
 
-	_watcher_thread = dave_os_create_thread((char *)"etcd", _etcd_wather_thread, NULL);
+	_etcd_client = new etcd::SyncClient(_etcd_client_url);
+	_etcd_watcher = new etcd::Watcher(_etcd_client_url, _etcd_watcher_dir, _etcd_watcher_response, true);
+
+	etcd::Response lease = _etcd_client->leasegrant((int)ETCD_DEFAULT_KEEPALIVE);
+	_etcd_leaseid = lease.value().lease();
+
+	_etcd_keepalive = new etcd::KeepAlive(_etcd_client_url, (int)ETCD_DEFAULT_KEEPALIVE, _etcd_leaseid);
 }
 
 extern "C" void
 dave_etcd_exit(void)
 {
-	dave_os_release_thread(_watcher_thread);
+	if(_etcd_client != NULL)
+	{
+		delete _etcd_client;
+		_etcd_client = NULL;
+	}
+	if(_etcd_watcher != NULL)
+	{
+		delete _etcd_watcher;
+		_etcd_watcher = NULL;
+	}
+	if(_etcd_keepalive != NULL)
+	{
+		delete _etcd_keepalive;
+		_etcd_keepalive = NULL;
+	}
 }
 
 extern "C" dave_bool
 dave_etcd_set(s8 *key, s8 *value, sb ttl)
 {
-	etcd::SyncClient etcd(_etcd_url);
-
-	if(ttl < 0)
+	if(ttl <= 0)
 	{
-		ttl = 0;
+		etcd::Response resp = _etcd_client->set(key, value, 0);
+
+		if(0 != resp.error_code())
+		{
+			PARTYLOG("set key:%s value:%s failed:%d/%s",
+				key, value,
+				resp.error_code(),
+				resp.error_message().c_str());
+			return dave_false;
+		}
 	}
-
-	etcd::Response resp = etcd.set(key, value, (int)ttl);
-
-	if(0 != resp.error_code())
+	else
 	{
-		PARTYLOG("set key:%s value:%s failed:%d/%s",
-			key, value,
-			resp.error_code(),
-			resp.error_message().c_str());
-		return dave_false;
+		etcd::Response resp = _etcd_client->set(key, value, _etcd_leaseid);
+		if(resp.is_ok() == false)
+		{
+			return dave_false;
+		}
 	}
 
 	return dave_true;
@@ -137,14 +139,12 @@ dave_etcd_get(s8 *key, ub limit)
 	void *pArray;
 	int index, size;
 
-	etcd::SyncClient etcd(_etcd_url);
-
-	etcd::Response resp = etcd.ls(key, limit);
+	etcd::Response resp = _etcd_client->ls(key, limit);
 
 	if(resp.error_code())
 	{
 		PARTYLOG("url:%s key:%s error_code:%d/%s",
-			_etcd_url, key,
+			_etcd_client_url, key,
 			resp.error_code(),
 			resp.error_message().c_str());
 		return NULL;
@@ -154,7 +154,7 @@ dave_etcd_get(s8 *key, ub limit)
 
 	size = (int)(resp.keys().size());
 
-	PARTYDEBUG("url:%s key:%s size:%d", _etcd_url, key, size);
+	PARTYDEBUG("url:%s key:%s size:%d", _etcd_client_url, key, size);
 
 	for(index=0; index<size; index++)
 	{
@@ -165,6 +165,17 @@ dave_etcd_get(s8 *key, ub limit)
 	}
 
 	return pArray;
+}
+
+extern "C" dave_bool
+dave_etcd_del(s8 *key)
+{
+	etcd::Response resp = _etcd_client->rm(key);
+
+	if(resp.is_ok() == false)
+		return dave_false;
+	else
+		return dave_true;
 }
 
 #endif

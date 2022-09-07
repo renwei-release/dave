@@ -19,6 +19,10 @@ dave_bool remote_etcd_cfg_set(
 	s8 *cfg_name, s8 *cfg_value,
 	sb ttl);
 
+dave_bool remote_etcd_cfg_del(
+	s8 *verno, s8 *globally_identifier,
+	s8 *cfg_name);
+
 void remote_etcd_cfg_get(remote_cfg_get_callback get_callback);
 
 #endif

@@ -248,7 +248,7 @@ _sync_client_msg_buffer_pop(void)
 					pBuffer->msg_len, pBuffer->msg_body,
 					dave_true) == dave_true)
 				{
-					SYNCLOG("%lx/%s->%lx/%s:%s buffer pop success!",
+					SYNCTRACE("%lx/%s->%lx/%s:%s buffer pop success!",
 						pBuffer->route_src, pBuffer->src,
 						pBuffer->route_dst, pBuffer->dst,
 						msgstr(pBuffer->msg_id));

@@ -11,8 +11,6 @@
 #include "base_tools.h"
 #include "thread_log.h"
 
-#define CFG_BASE_CHAIN_ENABLE "BaseChainEnable"
-
 static dave_bool _chain_enable = dave_false;
 
 static void

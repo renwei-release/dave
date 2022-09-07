@@ -28,8 +28,7 @@ _sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteUpdate *pUpdate
 	}
 	else
 	{
-		SYNCLOG("Delete operation is not currently supported! %s:%s",
-			pUpdate->cfg_name, pUpdate->cfg_value);
+		sync_server_remote_cfg_del(pClient, pUpdate);
 	}
 }
 

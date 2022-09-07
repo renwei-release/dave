@@ -11,8 +11,6 @@
 #include "dave_tools.h"
 #include "thread_chain.h"
 
-#define CFG_CHAIN_ENABLE_TYPE "ChainEnableType"
-
 typedef enum {
 	ChainCfg_none = 0,
 	ChainCfg_calling = 0x01,

@@ -14,6 +14,8 @@ void sync_server_remote_cfg_exit(void);
 
 dave_bool sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate);
 
+dave_bool sync_server_remote_cfg_del(SyncClient *pClient, CFGRemoteUpdate *pUpdate);
+
 void sync_server_remote_cfg_tell_client(SyncClient *pClient);
 
 #endif
