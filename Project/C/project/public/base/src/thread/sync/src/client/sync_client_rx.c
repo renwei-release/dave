@@ -320,8 +320,7 @@ _sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *fram
 	msg_len = packet_len;
 	if(msg_len > 0)
 	{
-		msg_body = base_thread_msg(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
-		dave_memcpy(msg_body, packet_ptr, msg_len);
+		msg_body = packet_ptr;
 	}
 
 	if((src[0] != '\0') && (dst[0] != '\0') && (msg_id != MSGID_RESERVED) && (msg_len > 0))
@@ -332,8 +331,6 @@ _sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *fram
 	{
 		SYNCABNOR("find invalid parameter, src:%s dst:%s msg_id:%d msg_len:%d",
 			src, dst, msg_id, msg_len);
-
-		thread_msg_release(msg_body);
 	}
 }
 

@@ -128,7 +128,7 @@ _log_save_chain(sb file_id, s8 *device_info, s8 *service_verno, ThreadChain *pCh
 
 	json_str = dave_json_to_string(pJson, &json_len);
 
-	file_len = dave_os_file_len(NULL, file_id);
+	file_len = dave_os_file_len(READ_FLAG, NULL, file_id);
 	if(file_len < 0)
 	{
 		file_len = 0;

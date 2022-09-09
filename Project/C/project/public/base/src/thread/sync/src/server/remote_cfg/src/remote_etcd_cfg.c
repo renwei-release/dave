@@ -20,7 +20,7 @@
 
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
 #define DEFAULT_ETCD_SERVER_DIR "/sync"
-#define DEFAULT_ETCD_WATCHER_DIR "/"
+#define DEFAULT_ETCD_WATCHER_DIR ""
 #define DEFAULT_ETCD_GET_LIMIT 512
 
 #define ETCD_KEY_MAX_SIZE 2048
@@ -88,7 +88,7 @@ _sync_server_process_watcher(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	ETCDWatcher *pWatcher = (ETCDWatcher *)(pLoop->ptr);
 
-	SYNCTRACE("%s %s : %s",
+	SYNCDEBUG("%s %s : %s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
 		pWatcher->key, pWatcher->value);
 
@@ -150,7 +150,7 @@ _sync_server_take_watcher(void)
 {
 	s8 *key = _sync_server_load_watcher();
 
-	if(dave_strcmp(key, "/") == dave_true)
+	if(dave_strcmp(key, "") == dave_true)
 	{
 		s8 key_loop;
 		s8 key_str[2];

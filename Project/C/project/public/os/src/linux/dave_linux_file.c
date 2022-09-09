@@ -163,13 +163,13 @@ _linux_dir_file_number(DIR *pDir, s8 *file_path)
 // =====================================================================
 
 sb
-dave_os_file_len(s8 *file_name, sb file_id)
+dave_os_file_len(FileOptFlag flag, s8 *file_name, sb file_id)
 {
 	sb file_len;
 
 	if(file_name != NULL)
 	{
-		file_id = dave_os_file_open(READ_FLAG|DIRECT_FLAG, file_name);
+		file_id = dave_os_file_open(flag, file_name);
 	}
 
 	if(file_id >= 0)
@@ -523,7 +523,7 @@ dave_os_file_read_mbuf(s8 *file_path)
 	sb file_len;
 	MBUF *file_data;
 
-	file_len = dave_os_file_len(file_path, 0);
+	file_len = dave_os_file_len(READ_FLAG|DIRECT_FLAG, file_path, 0);
 	if(file_len <= 0)
 	{
 		return NULL;

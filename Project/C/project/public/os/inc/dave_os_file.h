@@ -8,7 +8,7 @@
 #ifndef __DAVE_OS_FILE_H__
 #define __DAVE_OS_FILE_H__
 
-sb dave_os_file_len(s8 *file_name, sb file_id);
+sb dave_os_file_len(FileOptFlag flag, s8 *file_name, sb file_id);
 
 sb dave_os_file_open(FileOptFlag flag, s8 *file_name);
 
@@ -19,8 +19,6 @@ dave_bool dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub 
 sb dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data);
 
 sb dave_os_file_save(sb file_id, ub pos, ub data_len, u8 *data);
-
-sb dave_os_file_len(s8 *file_name, sb file_id);
 
 dave_bool dave_os_file_close(sb file_id);
 

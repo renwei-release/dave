@@ -17,7 +17,7 @@
 #include "orchestration_config.h"
 #include "thread_log.h"
 
-#define OR_THREAD_JSON_KEY "product"
+#define OR_THREAD_JSON_KEY "thread"
 #define OR_GID_JSON_KEY "gid"
 
 static dave_bool

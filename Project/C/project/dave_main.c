@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "dave_os.h"
+#include "public/os/inc/dave_os.h"
 #include "dave_3rdparty.h"
 #include "dave_base.h"
 #include "dave_tools.h"

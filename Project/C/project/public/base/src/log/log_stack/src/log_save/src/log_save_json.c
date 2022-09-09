@@ -173,7 +173,7 @@ log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 
 	dave_json_add_str_len(pJson, "content", content_ptr, content_len);
 
-	file_len = dave_os_file_len(NULL, file_id);
+	file_len = dave_os_file_len(READ_FLAG, NULL, file_id);
 	if(file_len < 0)
 	{
 		file_len = 0;

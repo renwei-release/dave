@@ -67,15 +67,9 @@ _etcd_watcher_response(etcd::Response const & resp)
 	}
 }
 
-// =====================================================================
-
-extern "C" void
-dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
+static void
+_etcd_init(void)
 {
-	dave_strcpy(_etcd_client_url, url, sizeof(_etcd_client_url));
-	dave_strcpy(_etcd_watcher_dir, watcher_dir, sizeof(_etcd_watcher_dir));
-	_watcher_fun = watcher_fun;
-
 	_etcd_client = new etcd::SyncClient(_etcd_client_url);
 	_etcd_watcher = new etcd::Watcher(_etcd_client_url, _etcd_watcher_dir, _etcd_watcher_response, true);
 
@@ -85,8 +79,8 @@ dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
 	_etcd_keepalive = new etcd::KeepAlive(_etcd_client_url, (int)ETCD_DEFAULT_KEEPALIVE, _etcd_leaseid);
 }
 
-extern "C" void
-dave_etcd_exit(void)
+static void
+_etcd_exit(void)
 {
 	if(_etcd_client != NULL)
 	{
@@ -105,8 +99,18 @@ dave_etcd_exit(void)
 	}
 }
 
-extern "C" dave_bool
-dave_etcd_set(s8 *key, s8 *value, sb ttl)
+static void
+_etcd_reset(void)
+{
+	_etcd_exit();
+
+	dave_os_sleep(1000);
+
+	_etcd_init();
+}
+
+static dave_bool
+_etcd_set(s8 *key, s8 *value, sb ttl)
 {
 	if(ttl <= 0)
 	{
@@ -124,8 +128,13 @@ dave_etcd_set(s8 *key, s8 *value, sb ttl)
 	else
 	{
 		etcd::Response resp = _etcd_client->set(key, value, _etcd_leaseid);
-		if(resp.is_ok() == false)
+
+		if(0 != resp.error_code())
 		{
+			PARTYLOG("set key:%s value:%s failed:%d/%s",
+				key, value,
+				resp.error_code(),
+				resp.error_message().c_str());
 			return dave_false;
 		}
 	}
@@ -133,8 +142,8 @@ dave_etcd_set(s8 *key, s8 *value, sb ttl)
 	return dave_true;
 }
 
-extern "C" void *
-dave_etcd_get(s8 *key, ub limit)
+static void *
+_etcd_get(s8 *key, ub limit)
 {
 	void *pArray;
 	int index, size;
@@ -167,15 +176,93 @@ dave_etcd_get(s8 *key, ub limit)
 	return pArray;
 }
 
-extern "C" dave_bool
-dave_etcd_del(s8 *key)
+static dave_bool
+_etcd_del(s8 *key)
 {
 	etcd::Response resp = _etcd_client->rm(key);
 
-	if(resp.is_ok() == false)
+	if(0 != resp.error_code())
+	{
+		PARTYLOG("del key:%s failed:%d/%s",
+			key,
+			resp.error_code(),
+			resp.error_message().c_str());
 		return dave_false;
-	else
-		return dave_true;
+	}
+
+	return dave_true;
+}
+
+// =====================================================================
+
+extern "C" void
+dave_etcd_init(s8 *url, s8 *watcher_dir, etcd_watcher_fun watcher_fun)
+{
+	dave_strcpy(_etcd_client_url, url, sizeof(_etcd_client_url));
+	dave_strcpy(_etcd_watcher_dir, watcher_dir, sizeof(_etcd_watcher_dir));
+	_watcher_fun = watcher_fun;
+
+	_etcd_init();
+}
+
+extern "C" void
+dave_etcd_exit(void)
+{
+	_etcd_exit();
+}
+
+extern "C" dave_bool
+dave_etcd_set(s8 *key, s8 *value, sb ttl)
+{
+	dave_bool ret;
+
+	ret = _etcd_set(key, value, ttl);
+	if(ret == dave_false)
+	{
+		PARTYLOG("find error! reset etcd client!");
+
+		_etcd_reset();
+
+		ret = _etcd_set(key, value, ttl);
+	}
+
+	return ret;
+}
+
+extern "C" void *
+dave_etcd_get(s8 *key, ub limit)
+{
+	void *pArray;
+
+	pArray = _etcd_get(key, limit);
+	if(pArray == NULL)
+	{
+		PARTYLOG("find error! reset etcd client!");
+
+		_etcd_reset();
+
+		pArray = _etcd_get(key, limit);			
+	}
+
+	return pArray;
+}
+
+extern "C" dave_bool
+dave_etcd_del(s8 *key)
+{
+	dave_bool ret;
+
+	ret = _etcd_del(key);
+	if(ret == dave_false)
+	{
+		PARTYLOG("find error! reset etcd client!");
+
+		_etcd_reset();
+
+		ret = _etcd_del(key);
+	}
+
+	return ret;
 }
 
 #endif
