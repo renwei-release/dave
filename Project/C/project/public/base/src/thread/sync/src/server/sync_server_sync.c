@@ -45,7 +45,7 @@ _sync_server_sync_the_thread_on_client(SyncThread *pThread, SyncClient *pClient)
 static void
 _sync_server_sync_client_ready_follow_up(SyncClient *pClient)
 {
-	SYNCTRACE("%s/%s ip:%s sync remote done! sync_thread_index:%d",
+	SYNCLOG("%s/%s ip:%s sync remote done! sync_thread_index:%d",
 		pClient->globally_identifier, pClient->verno,
 		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 		pClient->sync_thread_index);
@@ -56,7 +56,7 @@ _sync_server_sync_client_ready_follow_up(SyncClient *pClient)
 	pClient->sync_thread_index = 0;
 	
 	sync_server_sync_auto_link(pClient);
-	
+
 	sync_server_remote_cfg_tell_client(pClient);
 
 	sync_server_local_cfg_tell_client(pClient);
