@@ -17,7 +17,7 @@
 #define MEMADD_LEN (USERINDEX_LEN + OVERFLOW_LEN)
 #define OVERFLOW_CHAR (0xA5)
 
-#define TOP_INFO_MAX 64
+#define TOP_INFO_MAX 32
 
 #define BLOCKMEMABNOR(a, ...) { DAVEABNORMAL("[BLOCK MEM Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); }
 
@@ -83,7 +83,7 @@ _block_mem_top_on_here(s8 *top_file[TOP_INFO_MAX], ub *top_line, s8 *file, ub li
 }
 
 static inline void
-_block_mem_insert_new(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, s8 *file, ub line, ub number)
+_block_mem_insert_new(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length, s8 *file, ub line, ub number, ub length)
 {
 	ub top_index, min_index, min_number;
 
@@ -106,10 +106,11 @@ _block_mem_insert_new(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, 
 	top_file[min_index] = file;
 	top_line[min_index] = line;
 	top_number[min_index] = number;
+	total_length[min_index] = length;
 }
 
-static dave_bool
-_block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
+static inline dave_bool
+_block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
 {
 	ub core_index;
 	BlockMemCore *pCore;
@@ -126,11 +127,12 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 
 			if(top_index >= TOP_INFO_MAX)
 			{
-				_block_mem_insert_new(top_file, top_line, top_number, pCore->m_file, pCore->m_line, 1);
+				_block_mem_insert_new(top_file, top_line, top_number, total_length, pCore->m_file, pCore->m_line, 1, pCore->len);
 			}
 			else
 			{
 				top_number[top_index] += 1;
+				total_length[top_index] += pCore->len;
 			}
 
 			has_top = dave_true;
@@ -141,14 +143,14 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 }
 
 static inline dave_bool
-_block_mem_top_load(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
+_block_mem_top_load(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
 {
 	ub block_index;
 	dave_bool has_top = dave_false;
 
 	for(block_index=0; block_index<pBlock->block_number; block_index++)
 	{
-		if(_block_mem_top_block_info(&pBlock[block_index], top_file, top_line, top_number) == dave_true)
+		if(_block_mem_top_block_info(&pBlock[block_index], top_file, top_line, top_number, total_length) == dave_true)
 		{
 			has_top = dave_true;
 		}
@@ -158,12 +160,11 @@ _block_mem_top_load(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, 
 }
 
 static inline void
-_block_mem_top_sort(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
+_block_mem_top_sort(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
 {
 	ub top_1_index, top_2_index;
 	s8 *file;
-	ub line;
-	ub number;
+	ub line, number, length;
 
 	for(top_1_index=0; top_1_index<TOP_INFO_MAX; top_1_index++)
 	{
@@ -180,15 +181,18 @@ _block_mem_top_sort(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number)
 				file = top_file[top_1_index];
 				line = top_line[top_1_index];
 				number = top_number[top_1_index];
+				length = total_length[top_1_index];
 
 				top_file[top_1_index] = top_file[top_2_index];
 				top_line[top_1_index] = top_line[top_2_index];
 				top_number[top_1_index] = top_number[top_2_index];
+				total_length[top_1_index] = total_length[top_2_index];
 
 
 				top_file[top_2_index] = file;
 				top_line[top_2_index] = line;
 				top_number[top_2_index] = number;
+				total_length[top_2_index] = length;
 			}
 		}
 	}
@@ -201,20 +205,22 @@ _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBloc
 	s8 *top_file[TOP_INFO_MAX];
 	ub top_line[TOP_INFO_MAX];
 	ub top_number[TOP_INFO_MAX];
+	ub total_length[TOP_INFO_MAX];
 	dave_bool has_top = dave_false;
 	dave_bool has_number = dave_false;
 
 	dave_memset(top_file, 0x00, sizeof(top_file));
 	dave_memset(top_line, 0x00, sizeof(top_line));
 	dave_memset(top_number, 0x00, sizeof(top_number));
+	dave_memset(total_length, 0x00, sizeof(total_length));
 
-	has_top = _block_mem_top_load(pBlock, top_file, top_line, top_number);
+	has_top = _block_mem_top_load(pBlock, top_file, top_line, top_number, total_length);
 
 	info_index = 0;
 
 	if(has_top == dave_true)
 	{
-		_block_mem_top_sort(top_file, top_line, top_number);
+		_block_mem_top_sort(top_file, top_line, top_number, total_length);
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 			"%s MEMORY TOP:\n", block_name);
@@ -224,8 +230,8 @@ _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBloc
 			if(top_number[top_index] > warning_number_exceeded)
 			{
 				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-					" %s:%d number:%d\n",
-					top_file[top_index], top_line[top_index], top_number[top_index]);
+					" %s:%d total malloc -> (number:%lu length:%lu)\n",
+					top_file[top_index], top_line[top_index], top_number[top_index], total_length[top_index]);
 
 				has_number = dave_true;
 			}

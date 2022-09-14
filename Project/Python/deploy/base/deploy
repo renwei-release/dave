@@ -8,7 +8,6 @@
 
 PROJECT=${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)
-FINDDEPLOY=0
 DEPLOYPATH=../../../../Deploy/deploy/${PROJECT}
 
 cd ${DEPLOYPATH}

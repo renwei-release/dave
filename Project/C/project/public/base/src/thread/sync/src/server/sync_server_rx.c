@@ -364,7 +364,7 @@ _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame)
 
 	_sync_server_rx_snd_events(SyncServerEvents_version, pClient);
 
-	SYNCTRACE("socket:%d %s/%d %s/%s",
+	SYNCLOG("socket:%d %s/%d %s/%s",
 		pClient->client_socket,
 		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 		pClient->NetInfo.src_port,

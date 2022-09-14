@@ -661,6 +661,7 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 	ub info_index, printf_len;
 	TIMERID index;
 	TIMER *pTimer;
+	ub total_time_number;
 
 	if(owner[0] == '\0')
 	{
@@ -671,6 +672,8 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 
 	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 		"TIMER INFORMATION:\n");
+
+	total_time_number = 0;
 
 	for(index=0; index<BASE_TIMER_MAX; index++)
 	{
@@ -685,7 +688,7 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 				info_index += printf_len;
 
 				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s",
-					printf_len < 8 ? "\t\t" : printf_len < 16 ? "\t" : "");
+					printf_len < 8 ? "\t\t\t" : printf_len < 16 ? "\t\t" : printf_len < 24 ? "\t" : "");
 
 				printf_len = dave_snprintf(&info_ptr[info_index], info_len-info_index, "%s", thread_name(pTimer->owner));
 				info_index += printf_len;
@@ -693,15 +696,17 @@ _timer_info(s8 *info_ptr, ub info_len, s8 *owner)
 				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\t%s",
 					printf_len < 8 ? "\t\t" : printf_len < 16 ? "\t" : "");
 
-				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "alarm_ms:%ld life_ms:%ld time_out_counter:%lu\n",
-					pTimer->alarm_ms, pTimer->life_ms, pTimer->time_out_counter);
+				info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "timer_id:%lu alarm_ms:%lu life_ms:%lu time_out_counter:%lu\n",
+					pTimer->timer_id, pTimer->alarm_ms, pTimer->life_ms, pTimer->time_out_counter);
+
+				total_time_number ++;
 			}
 		}
 	}
 
 	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-		" -------------------\n HARDWARE TIMER:%ld",
-		_cur_hardware_alarm_ms);
+		" -------------------\n HARDWARE TIMER:%ld TIMER CAPACITY:%d/%d",
+		_cur_hardware_alarm_ms, total_time_number, BASE_TIMER_MAX);
 
 	return info_index;
 }
