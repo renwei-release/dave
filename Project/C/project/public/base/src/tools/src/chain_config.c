@@ -30,7 +30,7 @@ _chain_config_reset(void)
 	s8 *cfg_ptr;
 	s8 type_str[128];
 
-	cfg_get_by_default(CFG_CHAIN_ENABLE_TYPE, cfg_data, sizeof(cfg_data), "execution|coroutine");
+	cfg_get_by_default(CFG_BASE_CHAIN_TYPE, cfg_data, sizeof(cfg_data), "execution|coroutine");
 
 	cfg_len = dave_strlen(cfg_data);
 	safe_counter = 0;
@@ -95,7 +95,7 @@ void
 chain_config_reset(CFGUpdate *pUpdate)
 {
 	if((pUpdate == NULL)
-		|| (dave_strcmp(pUpdate->cfg_name, CFG_CHAIN_ENABLE_TYPE) == dave_true))
+		|| (dave_strcmp(pUpdate->cfg_name, CFG_BASE_CHAIN_TYPE) == dave_true))
 	{
 		_chain_config_reset();
 	}

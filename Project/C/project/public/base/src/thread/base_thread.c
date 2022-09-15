@@ -381,10 +381,17 @@ _thread_write_msg(
 	dave_bool wakeup, BaseMsgType msg_type,
 	s8 *fun, ub line)
 {
-	ThreadStruct *pDstThread = &_thread[thread_get_local(dst_id)];
+	ThreadStruct *pDstThread = &_thread[thread_get_local(dst_id) % THREAD_MAX];
 	dave_bool hold_body;
 	ThreadMsg *pMsg;
 	RetCode ret = RetCode_OK;
+
+	if(pDstThread->thread_id != thread_get_local(dst_id))
+	{
+		THREADLTRACE(60,1,"id:(%lx/%lx) mismatch! msg_id:%d can't sent! <%s:%d>",
+			pDstThread->thread_id, dst_id, msg_id, fun, line);
+		return RetCode_can_not_find_thread;
+	}
 
 	if(thread_call_sync_catch(
 		msg_chain, msg_router,

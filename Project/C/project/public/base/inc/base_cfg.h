@@ -10,7 +10,7 @@
 
 #define CFG_LOG_SERVER_DOMAIN "LogServerDomain"
 #define CFG_BASE_CHAIN_ENABLE "BaseChainEnable"
-#define CFG_CHAIN_ENABLE_TYPE "ChainEnableType"
+#define CFG_BASE_CHAIN_TYPE "BaseChainType"
 
 void base_cfg_init(void);
 void base_cfg_exit(void);
