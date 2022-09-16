@@ -117,13 +117,6 @@ const (
 )
 
 const (
-	CVSearchOpt_0 int = iota
-	CVSearchOpt_1
-	CVSearchOpt_2
-	CVSearchOpt_max
-)
-
-const (
 	KeepAlive_enable = 0x01234567 + iota
 	KeepAlive_disable = 0x09abcdef
 )

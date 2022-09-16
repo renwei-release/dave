@@ -18,37 +18,6 @@ from .dave_msg_id import *
 from .dave_struct import *
 from .dave_define import *
 
-#* for AIXMSG_AESTHETICS_REQ message *#
-class AIXMsgAestheticsReq (Structure):
-	_fields_ = [
-		("image_path", c_char * DAVE_PATH_LEN),
-		("ptr", POINTER(c_char)),
-]
-
-#* for AIXMSG_AESTHETICS_RSP message *#
-class AIXMsgAestheticsRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("score", c_float),
-		("ptr", POINTER(c_char)),
-]
-
-#* for AIXMSG_IMAGE_CLASSIFICATION_REQ message *#
-class AIXMsgImageClassificationReq (Structure):
-	_fields_ = [
-		("image_data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
-#* for AIXMSG_IMAGE_CLASSIFICATION_RSP message *#
-class AIXMsgImageClassificationRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("label", c_ulonglong),
-		("score", c_float),
-		("ptr", POINTER(c_char)),
-]
-
 #* for APPMSG_FUNCTION_REGISTER_REQ message *#
 class AppMsgFunctionRegReq (Structure):
 	_fields_ = [
@@ -115,60 +84,6 @@ class AppMsgTalkMCardRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for BBSMSG_ADD_COMMENT_REQ message *#
-class BBSMsgAddCommentReq (Structure):
-	_fields_ = [
-		("product_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("post_id", c_char * DAVE_KEY_LEN_MAX),
-		("mcard", MCard),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_ADD_COMMENT_RSP message *#
-class BBSMsgAddCommentRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_INQ_COMMENT_REQ message *#
-class BBSMsgInqCommentReq (Structure):
-	_fields_ = [
-		("product_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("post_or_comment_id", c_char * DAVE_KEY_LEN_MAX),
-		("page_id", c_ulonglong),
-		("page_number", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_INQ_COMMENT_RSP message *#
-class BBSMsgInqCommentRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("total_page_number", c_ulonglong),
-		("page_id", c_ulonglong),
-		("page_array_number", c_ulonglong),
-		("page_array", MCard * DAVE_COMMENT_MCARD_ARRAY_MAX),
-		("reply_array_number", c_ulonglong),
-		("reply_array", MCard * DAVE_COMMENT_MCARD_ARRAY_MAX),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BDATAMSG_MCARD_RECORD message *#
-class BdataMCardRecord (Structure):
-	_fields_ = [
-		("mcard", MCard),
-]
-
-#* for BDATAMSG_TALK_RECORD message *#
-class BdataTalkRecord (Structure):
-	_fields_ = [
-		("req_src", c_ulonglong),
-		("req_talk", MCardVerTalk),
-		("rsp_talk", MCardVerTalk),
-		("label", UniversalLabel),
-]
-
 #* for MSGID_CFG_REMOTE_UPDATE message *#
 class CFGRemoteUpdate (Structure):
 	_fields_ = [
@@ -184,73 +99,6 @@ class CFGUpdate (Structure):
 		("cfg_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("cfg_length", c_ulonglong),
 		("cfg_value", c_char * 8196),
-]
-
-#* for CVMSG_FEATURES_DETECTED_REQ message *#
-class CVMsgFeaturesDetectedReq (Structure):
-	_fields_ = [
-		("image_path", c_char * DAVE_PATH_LEN),
-		("nfeatures", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_FEATURES_DETECTED_RSP message *#
-class CVMsgFeaturesDetectedRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("image_path", c_char * DAVE_PATH_LEN),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_IMAGE_SEARCH_REQ message *#
-class CVMsgImageSearchReq (Structure):
-	_fields_ = [
-		("content_type", c_ulonglong),
-		("language_code", c_int),
-		("image_data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_IMAGE_SEARCH_RSP message *#
-class CVMsgImageSearchRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("cv_result", CVResult),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_PAINTING_AESTHETICS_REQ message *#
-class CVMsgPaintingAestheticsReq (Structure):
-	_fields_ = [
-		("content_type", c_ulonglong),
-		("language_code", c_int),
-		("image_data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_PAINTING_AESTHETICS_RSP message *#
-class CVMsgPaintingAestheticsRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("cv_result", CVResult),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_SCULPTURES_SEARCH_REQ message *#
-class CVMsgSculpturesSearchReq (Structure):
-	_fields_ = [
-		("content_type", c_ulonglong),
-		("language_code", c_int),
-		("image_data", POINTER(MBUF)),
-		("ptr", POINTER(c_char)),
-]
-
-#* for CVMSG_SCULPTURES_SEARCH_RSP message *#
-class CVMsgSculpturesSearchRsp (Structure):
-	_fields_ = [
-		("ret", c_ulonglong),
-		("cv_result", CVResult),
-		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_CLIENT_BUSY message *#

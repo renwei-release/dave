@@ -98,6 +98,33 @@ class MCardVerMedia (Structure):
 ]
 
 #* for None message *#
+class MCardContent (Structure):
+	_fields_ = [
+		("id", c_ulonglong),
+		("content_type", c_ulonglong),
+		("content_language", c_int),
+		("pContent", POINTER(MBUF)),
+]
+
+#* for None message *#
+class MCardVerTalk (Structure):
+	_fields_ = [
+		("version", c_ulonglong),
+		("type", c_ulonglong),
+		("channel", c_char * DAVE_NORMAL_NAME_LEN),
+		("uuid", c_char * DAVE_UUID_LEN),
+		("app_id", c_ulonglong),
+		("src_user", c_char * DAVE_USER_NAME_LEN),
+		("dst_user", c_char * DAVE_USER_NAME_LEN),
+		("location", MCardLocation),
+		("time", MCardTime),
+		("main_serial", c_ulonglong),
+		("sub_serial", c_ulonglong),
+		("total_sub_serial", c_ulonglong),
+		("content", MCardContent),
+]
+
+#* for None message *#
 class NoSQLHead (Structure):
 	_fields_ = [
 		("key_str", c_char * DAVE_NOSQL_KEY_STR_MAX),
@@ -164,62 +191,11 @@ class MCardCommentHead (Structure):
 ]
 
 #* for None message *#
-class MCardContent (Structure):
-	_fields_ = [
-		("id", c_ulonglong),
-		("content_type", c_ulonglong),
-		("content_language", c_int),
-		("pContent", POINTER(MBUF)),
-]
-
-#* for None message *#
 class MCardVerComment (Structure):
 	_fields_ = [
 		("version", c_ulonglong),
 		("head", MCardCommentHead),
 		("content", MCardContent),
-]
-
-#* for None message *#
-class CVRectangle (Structure):
-	_fields_ = [
-		("x1", c_float),
-		("y1", c_float),
-		("x2", c_float),
-		("y2", c_float),
-		("w", c_float),
-		("h", c_float),
-]
-
-#* for None message *#
-class CVModelResult (Structure):
-	_fields_ = [
-		("search_opt", c_int),
-		("content_type", c_ulonglong),
-		("language_code", c_int),
-		("image_local_path", c_char * DAVE_PATH_LEN),
-		("image_url_path", c_char * DAVE_PATH_LEN),
-		("opt_number", c_ulonglong),
-		("face_number", c_ulonglong),
-		("vgg_id", c_char * DAVE_KEY_OPT_MAX*DAVE_SHA1_IMAGE_ID),
-		("vgg_score", c_float * DAVE_KEY_OPT_MAX),
-		("rectangle", CVRectangle * DAVE_KEY_OPT_MAX),
-		("image_title", c_char * DAVE_KEY_OPT_MAX*DAVE_IMAGE_TITLE_LEN),
-		("image_painter", c_char * DAVE_KEY_OPT_MAX*DAVE_USER_NAME_LEN),
-		("inliners_num", c_ulonglong * DAVE_KEY_OPT_MAX),
-		("inliners_score", c_float * DAVE_KEY_OPT_MAX),
-		("keypoints_num", c_ulonglong * DAVE_KEY_OPT_MAX),
-		("keypoints_score", c_float * DAVE_KEY_OPT_MAX),
-		("confidence", c_char),
-		("label", c_char * DAVE_LABEL_STR_MAX),
-		("score", c_float),
-		("cnn_model_work_time", c_ulonglong),
-		("features_db_req_time", c_ulonglong),
-		("features_db_rsp_time", c_ulonglong),
-		("features_db_process_time", c_ulonglong),
-		("introduce_db_req_time", c_ulonglong),
-		("introduce_db_rsp_time", c_ulonglong),
-		("model_raw_data", POINTER(MBUF)),
 ]
 
 #* for None message *#
@@ -260,24 +236,6 @@ class GPSLocation (Structure):
 ]
 
 #* for None message *#
-class MCardVerTalk (Structure):
-	_fields_ = [
-		("version", c_ulonglong),
-		("type", c_ulonglong),
-		("channel", c_char * DAVE_NORMAL_NAME_LEN),
-		("uuid", c_char * DAVE_UUID_LEN),
-		("app_id", c_ulonglong),
-		("src_user", c_char * DAVE_USER_NAME_LEN),
-		("dst_user", c_char * DAVE_USER_NAME_LEN),
-		("location", MCardLocation),
-		("time", MCardTime),
-		("main_serial", c_ulonglong),
-		("sub_serial", c_ulonglong),
-		("total_sub_serial", c_ulonglong),
-		("content", MCardContent),
-]
-
-#* for None message *#
 class MCard (Structure):
 	_fields_ = [
 		("version", c_ulonglong),
@@ -294,44 +252,6 @@ class UniversalLabel (Structure):
 		("label_id", c_ulonglong),
 		("label_str", c_char * DAVE_LABEL_STR_MAX),
 		("label_score", c_float),
-]
-
-#* for None message *#
-class MuseumIntroduction (Structure):
-	_fields_ = [
-		("table_id", c_ulonglong),
-		("museum_id", c_char * DAVE_SHA1_IMAGE_ID),
-		("museum_name", c_char * 128),
-		("address", c_char * 1024),
-		("ticket", c_char * 256),
-		("phone", c_char * 128),
-		("web_url", c_char * 256),
-		("opening_hours", c_char * 256),
-		("museum_introduction", c_char * 16384),
-]
-
-#* for None message *#
-class ImageIntroduction (Structure):
-	_fields_ = [
-		("image_id", c_char * DAVE_SHA1_IMAGE_ID),
-		("painter", PainterIntroduction),
-		("museum", MuseumIntroduction),
-		("creat_time", c_char * 128),
-		("dimensions", c_char * 128),
-		("title", c_char * DAVE_IMAGE_TITLE_LEN),
-		("medium", c_char * 128),
-		("image_introduction", c_char * 16384),
-		("image_url", c_char * DAVE_URL_LEN),
-		("page_url", c_char * DAVE_URL_LEN),
-		("collection_location", c_char * 512),
-		("audio_url", c_char * DAVE_URL_LEN),
-]
-
-#* for None message *#
-class CVResult (Structure):
-	_fields_ = [
-		("model_result", CVModelResult),
-		("image_introduction", ImageIntroduction),
 ]
 
 #* for None message *#
@@ -372,6 +292,37 @@ class ChannelInfo (Structure):
 		("domain", c_char * DAVE_DOMAIN_LEN),
 		("tenant_name", c_char * DAVE_TENANT_NAME_LEN),
 		("tenant_id", c_ulonglong),
+]
+
+#* for None message *#
+class MuseumIntroduction (Structure):
+	_fields_ = [
+		("table_id", c_ulonglong),
+		("museum_id", c_char * DAVE_SHA1_IMAGE_ID),
+		("museum_name", c_char * 128),
+		("address", c_char * 1024),
+		("ticket", c_char * 256),
+		("phone", c_char * 128),
+		("web_url", c_char * 256),
+		("opening_hours", c_char * 256),
+		("museum_introduction", c_char * 16384),
+]
+
+#* for None message *#
+class ImageIntroduction (Structure):
+	_fields_ = [
+		("image_id", c_char * DAVE_SHA1_IMAGE_ID),
+		("painter", PainterIntroduction),
+		("museum", MuseumIntroduction),
+		("creat_time", c_char * 128),
+		("dimensions", c_char * 128),
+		("title", c_char * DAVE_IMAGE_TITLE_LEN),
+		("medium", c_char * 128),
+		("image_introduction", c_char * 16384),
+		("image_url", c_char * DAVE_URL_LEN),
+		("page_url", c_char * DAVE_URL_LEN),
+		("collection_location", c_char * 512),
+		("audio_url", c_char * DAVE_URL_LEN),
 ]
 
 #* for None message *#

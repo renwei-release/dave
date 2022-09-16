@@ -114,11 +114,6 @@ BuildingBlocksOpt_State_exchange = BuildingBlocksOpt_decoupling + 1
 BuildingBlocksOpt_valve = BuildingBlocksOpt_State_exchange + 1
 BuildingBlocksOpt_max = BuildingBlocksOpt_valve + 1
 
-CVSearchOpt_0 = 0
-CVSearchOpt_1 = CVSearchOpt_0 + 1
-CVSearchOpt_2 = CVSearchOpt_1 + 1
-CVSearchOpt_max = CVSearchOpt_2 + 1
-
 KeepAlive_enable = 0x01234567
 KeepAlive_disable = 0x09abcdef
 
