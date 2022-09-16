@@ -12,9 +12,9 @@
 
 typedef void (*coroutine_thread_fun)(base_thread_fun fun, MSGBODY *thread_msg);
 
-void thread_coroutine_malloc(ThreadStruct *pThread);
+void thread_coroutine_init(ThreadStruct *pThread);
 
-void thread_coroutine_free(ThreadStruct *pThread);
+void thread_coroutine_exit(ThreadStruct *pThread);
 
 dave_bool thread_coroutine_running_step_go(
 	ThreadStruct *pThread,

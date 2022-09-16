@@ -10,6 +10,7 @@ package base
 import (
 	"dave/public/auto"
 	"dave/public/tools"
+	"fmt"
 )
 
 // =====================================================================
@@ -31,7 +32,10 @@ func T_gobyte2mbuf(byte_data []byte) *auto.MBUF {
 	return mbuf_data
 }
 
-func T_mbuf2gobyte(mbuf_data *auto.MBUF) []byte {
+func T_mbuf2gobyte(mbuf_data *auto.MBUF) ([]byte, error) {
+	if mbuf_data == nil {
+		return nil, fmt.Errorf("mbuf_data is nil")
+	}
 	go_byte := tools.T_cgo_cbin2gobyte(mbuf_data.Len, mbuf_data.Payload)
-	return go_byte
+	return go_byte, nil
 }

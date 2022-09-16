@@ -7,9 +7,13 @@
 # */
 
 PROJECT=${PWD##*/}
-CONTAINER="fedora"
+CONTAINER=$1
 
 ../ENV ${CONTAINER}
 
-echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build__"
+if [ ! "$CONTAINER" == "" ]; then
+   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build__"
+else
+   ./__build__
+fi

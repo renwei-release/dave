@@ -10,45 +10,46 @@ homepath=$(cd `dirname $0`; pwd)/../../../../
 
 PROJECT=$1
 LEVEL=$2
+CONTAINER=$3
+
+if [ "$PROJECT" == "base" ]; then
+   echo -e "At present, ${PROJECT} project does not need any library."
+   exit 0
+fi
+
+build()
+{
+   ./build ${CONTAINER} 
+}
 
 THIRDPARTYDIR=/project/DAVE/ThirdParty/build
 if [ ! -d ${THIRDPARTYDIR} ]; then
    THIRDPARTYDIR=./ThirdParty/build
 fi
 
-if [ ! -f ${THIRDPARTYDIR}/jemalloc/setup/lib/libjemalloc.a ]; then
-   cd ${THIRDPARTYDIR}/jemalloc
-   ./build
-   cd ${homepath}
-fi
-if [ ! -f ${THIRDPARTYDIR}/gtest/setup/lib64/libgtest.a ]; then
-   cd ${THIRDPARTYDIR}/gtest
-   ./build
-   cd ${homepath}
-fi
 if [ ! -f ${THIRDPARTYDIR}/jaeger-client-cpp/setup/lib64/libjaegertracing.a ]; then
    cd ${THIRDPARTYDIR}/jaeger-client-cpp
-   ./build
+   build
    cd ${homepath}
 fi
 if [ ! -f ${THIRDPARTYDIR}/yaml-cpp/setup/lib/libyaml-cpp.a ]; then
    cd ${THIRDPARTYDIR}/yaml-cpp
-   ./build
+   build
    cd ${homepath}
 fi
 if [ ! -f ${THIRDPARTYDIR}/opentracing-cpp/setup/lib/libopentracing.a ]; then
    cd ${THIRDPARTYDIR}/opentracing-cpp
-   ./build
+   build
    cd ${homepath}
 fi
 if [ ! -f ${THIRDPARTYDIR}/thrift/setup/lib/libthrift.a ]; then
    cd ${THIRDPARTYDIR}/thrift
-   ./build
+   build
    cd ${homepath}
 fi
 if [ ! -f ${THIRDPARTYDIR}/redis/setup/lib/libhiredis.a ]; then
    cd ${THIRDPARTYDIR}/redis
-   ./build
+   build
    cd ${homepath}
 fi
 if [ "$PROJECT" == "SYNC" ]; then
@@ -60,6 +61,6 @@ if [ "$PROJECT" == "SYNC" ]; then
 fi
 if [ ! -f ${THIRDPARTYDIR}/protobuf/setup/lib/libprotobuf.a ]; then
    cd ${THIRDPARTYDIR}/protobuf
-   ./build
+   build
    cd ${homepath}
 fi

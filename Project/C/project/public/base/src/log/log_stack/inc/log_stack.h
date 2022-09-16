@@ -19,4 +19,4 @@
 void log_stack_init(void);
 void log_stack_exit(void);
 
-#endif
+#endif

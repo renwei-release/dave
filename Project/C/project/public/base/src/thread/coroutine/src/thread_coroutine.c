@@ -56,12 +56,6 @@ typedef struct {
 	void *user_msg_ptr;
 } CoroutineSite;
 
-typedef struct {
-	CoroutineSite *pSite;
-	void *next;
-	void *tail;
-} CoroutineSiteList;
-
 static void *_coroutine_kv = NULL;
 static void *_delayed_destruction_site_kv = NULL;
 
@@ -99,67 +93,13 @@ _thread_coroutine_key_kv(
 static inline void
 _thread_coroutine_add_kv_(s8 *key, CoroutineSite *pSite)
 {
-	CoroutineSiteList *pList, *pListHead;
-
-	pList = dave_malloc(sizeof(CoroutineSiteList));
-	pList->pSite = pSite;
-	pList->next = pList->tail = NULL;
-
-	pListHead = kv_inq_key_ptr(_coroutine_kv, key);
-	if(pListHead == NULL)
-	{
-		pListHead = pList;
-
-		kv_add_key_ptr(_coroutine_kv, key, pListHead);
-	}
-	else
-	{
-		((CoroutineSiteList *)(pListHead->tail))->next = pList;
-	}
-
-	pListHead->tail = pList;
+	kv_add_key_ptr(_coroutine_kv, key, pSite);
 }
 
 static inline CoroutineSite *
 _thread_coroutine_del_kv_(s8 *key)
 {
-	CoroutineSiteList *pListHead, *pList;
-	CoroutineSite *pSite;
-
-	if(_coroutine_kv == NULL)
-		return NULL;
-
-	pListHead = kv_inq_key_ptr(_coroutine_kv, key);
-	if(pListHead == NULL)
-		return NULL;
-
-	pList = pListHead;
-	pListHead = pListHead->next;
-
-	if(pListHead == NULL)
-		kv_del_key_ptr(_coroutine_kv, key);
-	else
-		kv_add_key_ptr(_coroutine_kv, key, pListHead);
-
-	pSite = pList->pSite;
-	dave_free(pList);
-
-	return pSite;
-}
-
-static inline CoroutineSite *
-_thread_coroutine_inq_kv_(s8 *key)
-{
-	CoroutineSiteList *pListHead;
-
-	if(_coroutine_kv == NULL)
-		return NULL;
-
-	pListHead = kv_inq_key_ptr(_coroutine_kv, key);
-	if(pListHead == NULL)
-		return NULL;
-
-	return pListHead->pSite;
+	return (CoroutineSite *)kv_del_key_ptr(_coroutine_kv, key);
 }
 
 static inline void
@@ -315,7 +255,7 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 }
 
 static inline void
-_thread_coroutine_running_step_7(void *ramkv, s8 *key)
+_thread_coroutine_running_step_8(void *ramkv, s8 *key)
 {
 	CoroutineSite *pSite;
 
@@ -325,6 +265,12 @@ _thread_coroutine_running_step_7(void *ramkv, s8 *key)
 	{
 		_thread_coroutine_info_free(pSite);
 	}
+}
+
+static inline void
+_thread_coroutine_running_step_7(CoroutineSite *pSite)
+{
+	kv_add_ub_ptr(_delayed_destruction_site_kv, (ub)pSite, pSite);
 }
 
 static inline void
@@ -461,7 +407,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
-	kv_add_ub_ptr(_delayed_destruction_site_kv, (ub)pSite, pSite);
+	_thread_coroutine_running_step_7(pSite);
 
 	return NULL;
 }
@@ -479,10 +425,8 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 static inline void
 _thread_coroutine_timer_out(CoroutineSite *pSite, s8 *key)
 {
-	if(pSite == _thread_coroutine_inq_kv_(key))
+	if(pSite == _thread_coroutine_del_kv_(key))
 	{
-		_thread_coroutine_del_kv_(key);
-
 		dave_co_resume(pSite->co);
 	}
 }
@@ -510,7 +454,7 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 {
 	CoroutineSite *pSite;
 
-	pSite = _thread_coroutine_inq_kv_(key);
+	pSite = _thread_coroutine_del_kv_(key);
 	if(pSite != NULL)
 	{
 		THREADLOG("%s %lx:%lx pSite:%lx co:%lx",
@@ -555,7 +499,7 @@ _thread_coroutine_booting(void)
 		}
 		if(_delayed_destruction_site_kv == NULL)
 		{
-			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_7);
+			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
 		}
 		thread_other_unlock();
 	}
@@ -564,13 +508,13 @@ _thread_coroutine_booting(void)
 // =====================================================================
 
 void
-thread_coroutine_malloc(ThreadStruct *pThread)
+thread_coroutine_init(ThreadStruct *pThread)
 {
 	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup, NULL);
 }
 
 void
-thread_coroutine_free(ThreadStruct *pThread)
+thread_coroutine_exit(ThreadStruct *pThread)
 {
 	base_thread_msg_unregister(pThread->thread_id, MSGID_COROUTINE_WAKEUP);
 }

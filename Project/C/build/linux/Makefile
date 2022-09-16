@@ -24,6 +24,7 @@ include LIB
 
 OBJS := $(patsubst %.c,%.o,$(SOURCES))
 OBJS := $(patsubst %.cpp,%.o,$(OBJS))
+OBJS := $(patsubst %.cc,%.o,$(OBJS))
 OBJS := $(patsubst %.S,%.o,$(OBJS))
 
 CC := gcc
@@ -51,6 +52,9 @@ $(NAME_PRODUCT)-BIN: $(OBJS)
 	@echo $<
 	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 %.o: %.cpp
+	@echo $<
+	@$(CPLUS) -o $@ -c $< $(CPLUSFLAGS) $(INCLUDE)
+%.o: %.cc
 	@echo $<
 	@$(CPLUS) -o $@ -c $< $(CPLUSFLAGS) $(INCLUDE)
 %.o: %.S

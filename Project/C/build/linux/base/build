@@ -8,13 +8,15 @@
 
 PROJECT=${PWD##*/}
 LEVEL=$1
+if [ "$LEVEL" == "" ]; then
+   LEVEL="alpha"
+fi
 FORM=$2
-
 if [ "$FORM" == "" ]; then
    FORM="BIN"
 fi
 
-../ENV
+../ENV ${PROJECT} ${LEVEL}
 
 cd ../
 ./BUILD ${PROJECT} ${LEVEL} ${FORM}

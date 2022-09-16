@@ -8,9 +8,9 @@
 
 homepath=$(cd `dirname $0`; pwd)/../../../../
 
-CONTAINER=$1
-PROJECT=$2
-LEVEL=$3
+PROJECT=$1
+LEVEL=$2
+CONTAINER=$3
 
 cd ${homepath}
 
@@ -25,6 +25,7 @@ if [ ! "$CONTAINER" == "" ]; then
       echo
       cd ${homepath}
    fi
+   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36mlib-ENV ${PROJECT} ${LEVEL}\033[0m library"
    docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && ./lib-ENV ${PROJECT} ${LEVEL}"
 else
    `pwd`/Project/C/build/linux/lib-ENV ${PROJECT} ${LEVEL}
