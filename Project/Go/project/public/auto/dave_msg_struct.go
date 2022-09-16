@@ -14,6 +14,33 @@ package auto
 
 import "unsafe"
 
+/* for AIXMSG_AESTHETICS_REQ message */
+type AIXMsgAestheticsReq struct {
+	Image_path [DAVE_PATH_LEN] byte
+	Ptr uint64
+}
+
+/* for AIXMSG_AESTHETICS_RSP message */
+type AIXMsgAestheticsRsp struct {
+	Ret int64
+	Score float32
+	Ptr uint64
+}
+
+/* for AIXMSG_IMAGE_CLASSIFICATION_REQ message */
+type AIXMsgImageClassificationReq struct {
+	Image_data *MBUF
+	Ptr uint64
+}
+
+/* for AIXMSG_IMAGE_CLASSIFICATION_RSP message */
+type AIXMsgImageClassificationRsp struct {
+	Ret int64
+	Label uint64
+	Score float32
+	Ptr uint64
+}
+
 /* for APPMSG_FUNCTION_REGISTER_REQ message */
 type AppMsgFunctionRegReq struct {
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
@@ -72,6 +99,54 @@ type AppMsgTalkMCardRsp struct {
 	Ptr uint64
 }
 
+/* for BBSMSG_ADD_COMMENT_REQ message */
+type BBSMsgAddCommentReq struct {
+	Product_name [DAVE_NORMAL_NAME_LEN] byte
+	Post_id [DAVE_KEY_LEN_MAX] byte
+	Mcard MCard
+	Ptr uint64
+}
+
+/* for BBSMSG_ADD_COMMENT_RSP message */
+type BBSMsgAddCommentRsp struct {
+	Ret int64
+	Ptr uint64
+}
+
+/* for BBSMSG_INQ_COMMENT_REQ message */
+type BBSMsgInqCommentReq struct {
+	Product_name [DAVE_NORMAL_NAME_LEN] byte
+	Post_or_comment_id [DAVE_KEY_LEN_MAX] byte
+	Page_id uint64
+	Page_number uint64
+	Ptr uint64
+}
+
+/* for BBSMSG_INQ_COMMENT_RSP message */
+type BBSMsgInqCommentRsp struct {
+	Ret int64
+	Total_page_number uint64
+	Page_id uint64
+	Page_array_number uint64
+	Page_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
+	Reply_array_number uint64
+	Reply_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
+	Ptr uint64
+}
+
+/* for BDATAMSG_MCARD_RECORD message */
+type BdataMCardRecord struct {
+	Mcard MCard
+}
+
+/* for BDATAMSG_TALK_RECORD message */
+type BdataTalkRecord struct {
+	Req_src uint64
+	Req_talk MCardVerTalk
+	Rsp_talk MCardVerTalk
+	Label UniversalLabel
+}
+
 /* for MSGID_CFG_REMOTE_UPDATE message */
 type CFGRemoteUpdate struct {
 	Put_flag int8
@@ -85,6 +160,65 @@ type CFGUpdate struct {
 	Cfg_name [DAVE_NORMAL_NAME_LEN] byte
 	Cfg_length uint64
 	Cfg_value [8196] byte
+}
+
+/* for CVMSG_FEATURES_DETECTED_REQ message */
+type CVMsgFeaturesDetectedReq struct {
+	Image_path [DAVE_PATH_LEN] byte
+	Nfeatures uint64
+	Ptr uint64
+}
+
+/* for CVMSG_FEATURES_DETECTED_RSP message */
+type CVMsgFeaturesDetectedRsp struct {
+	Ret int64
+	Image_path [DAVE_PATH_LEN] byte
+	Ptr uint64
+}
+
+/* for CVMSG_IMAGE_SEARCH_REQ message */
+type CVMsgImageSearchReq struct {
+	Content_type int64
+	Language_code int32
+	Image_data *MBUF
+	Ptr uint64
+}
+
+/* for CVMSG_IMAGE_SEARCH_RSP message */
+type CVMsgImageSearchRsp struct {
+	Ret int64
+	Cv_result CVResult
+	Ptr uint64
+}
+
+/* for CVMSG_PAINTING_AESTHETICS_REQ message */
+type CVMsgPaintingAestheticsReq struct {
+	Content_type int64
+	Language_code int32
+	Image_data *MBUF
+	Ptr uint64
+}
+
+/* for CVMSG_PAINTING_AESTHETICS_RSP message */
+type CVMsgPaintingAestheticsRsp struct {
+	Ret int64
+	Cv_result CVResult
+	Ptr uint64
+}
+
+/* for CVMSG_SCULPTURES_SEARCH_REQ message */
+type CVMsgSculpturesSearchReq struct {
+	Content_type int64
+	Language_code int32
+	Image_data *MBUF
+	Ptr uint64
+}
+
+/* for CVMSG_SCULPTURES_SEARCH_RSP message */
+type CVMsgSculpturesSearchRsp struct {
+	Ret int64
+	Cv_result CVResult
+	Ptr uint64
 }
 
 /* for MSGID_CLIENT_BUSY message */

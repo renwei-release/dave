@@ -171,6 +171,8 @@ ramkv_top(KV *pKV, u8 *key_ptr, ub key_len)
 ub
 ramkv_info(KV *pKV, s8 *info_ptr, ub info_len)
 {
+	dave_memset(info_ptr, 0x00, info_len);
+
 	if(ramkv_check(pKV) == dave_false)
 		return 0;
 

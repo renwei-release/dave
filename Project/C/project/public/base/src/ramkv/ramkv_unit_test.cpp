@@ -39,40 +39,40 @@ _ramkv_test_add_and_inq(void *ramkv, ub test_counter)
 		dave_snprintf(key_1, sizeof(key_1), "add_inq_1_%d", while_counter);
 		dave_snprintf(key_2, sizeof(key_2), "add_inq_2_%d", while_counter);
 
-		if(base_ramkv_add_key_ptr(ramkv, key_1, ptr_1) == dave_false)
+		if(kv_add_key_ptr(ramkv, key_1, ptr_1) == dave_false)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
-		if(base_ramkv_add_key_ptr(ramkv, key_2, ptr_2) == dave_false)
+		if(kv_add_key_ptr(ramkv, key_2, ptr_2) == dave_false)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
 
-		inq_ptr = base_ramkv_inq_key_ptr(ramkv, key_1);
+		inq_ptr = kv_inq_key_ptr(ramkv, key_1);
 		if(inq_ptr != ptr_1)
 		{
 			KVLOG("%s:%d failed! ptr:%lx/%lx ******", __func__, __LINE__, inq_ptr, ptr_1);
 		}
-		inq_ptr = base_ramkv_inq_key_ptr(ramkv, key_2);
+		inq_ptr = kv_inq_key_ptr(ramkv, key_2);
 		if(inq_ptr != ptr_2)
 		{
 			KVLOG("%s:%d failed! ptr:%lx/%lx ******", __func__, __LINE__, inq_ptr, ptr_1);
 		}
 
-		if(base_ramkv_add_key_ptr(ramkv, key_1, ptr_2) == dave_false)
+		if(kv_add_key_ptr(ramkv, key_1, ptr_2) == dave_false)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
-		if(base_ramkv_inq_key_ptr(ramkv, key_1) != ptr_2)
+		if(kv_inq_key_ptr(ramkv, key_1) != ptr_2)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
-		if(base_ramkv_inq_key_ptr(ramkv, key_2) != ptr_2)
+		if(kv_inq_key_ptr(ramkv, key_2) != ptr_2)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
 
-		if(base_ramkv_inq_key_ptr(ramkv, (s8 *)"dddasdasdfdd") != NULL)
+		if(kv_inq_key_ptr(ramkv, (s8 *)"dddasdasdfdd") != NULL)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
@@ -106,29 +106,29 @@ _ramkv_test_add_and_del(void *ramkv, ub test_counter)
 		dave_snprintf(key_1, sizeof(key_1), "add_del_1_%d", while_counter);
 		dave_snprintf(key_2, sizeof(key_2), "add_del_2_%d", while_counter);
 
-		if(base_ramkv_add_key_ptr(ramkv, key_1, ptr_1) == dave_false)
+		if(kv_add_key_ptr(ramkv, key_1, ptr_1) == dave_false)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
-		if(base_ramkv_add_key_ptr(ramkv, key_2, ptr_2) == dave_false)
-		{
-			KVLOG("%s:%d failed! ******", __func__, __LINE__);
-		}
-
-		if(base_ramkv_inq_key_ptr(ramkv, key_1) != ptr_1)
-		{
-			KVLOG("%s:%d failed! ******", __func__, __LINE__);
-		}
-		if(base_ramkv_inq_key_ptr(ramkv, key_2) != ptr_2)
+		if(kv_add_key_ptr(ramkv, key_2, ptr_2) == dave_false)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
 
-		if(base_ramkv_inq_key_ptr(ramkv, key_1) != NULL)
+		if(kv_inq_key_ptr(ramkv, key_1) != ptr_1)
+		{
+			KVLOG("%s:%d failed! ******", __func__, __LINE__);
+		}
+		if(kv_inq_key_ptr(ramkv, key_2) != ptr_2)
+		{
+			KVLOG("%s:%d failed! ******", __func__, __LINE__);
+		}
+
+		if(kv_inq_key_ptr(ramkv, key_1) == NULL)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}	
-		if(base_ramkv_inq_key_ptr(ramkv, key_2) != NULL)
+		if(kv_inq_key_ptr(ramkv, key_2) == NULL)
 		{
 			KVLOG("%s:%d failed! ******", __func__, __LINE__);
 		}
@@ -162,13 +162,13 @@ _ramkv_test_loop(KvAttrib attrib, s8 *test_counter_str)
 
 	KVLOG("start ramkv database test(attrib:%d loop:%d) ...", attrib, test_counter);
 
-	ramkv = base_ramkv_malloc((s8 *)"testramkv", attrib, 0, NULL);
+	ramkv = kv_malloc((s8 *)"testramkv", attrib, 0, NULL);
 
 	test_time = _ramkv_test_add_and_inq(ramkv, test_counter);
 
 	test_time += _ramkv_test_add_and_del(ramkv, test_counter);
 
-	base_ramkv_free(ramkv, NULL);
+	kv_free(ramkv, NULL);
 
 	KVLOG("end ramkv database test! attrib:%d counter:%d time:%ldus times:%ldus",
 		attrib, test_counter,  test_time, test_time/test_counter);
@@ -188,7 +188,7 @@ _ramkv_test_add_del_not_free(KvAttrib attrib, s8 *test_counter_str)
 
 	KVLOG("start ramkv database test(attrib:%d loop:%d) ...", attrib, test_counter);
 
-	ramkv = base_ramkv_malloc((s8 *)"testramkv", attrib, 0, NULL);
+	ramkv = kv_malloc((s8 *)"testramkv", attrib, 0, NULL);
 
 	test_time = _ramkv_test_add_and_del(ramkv, test_counter);
 
@@ -209,7 +209,7 @@ _ramkv_test_timer_out(void *ramkv, s8 *key_ptr)
 
 	if(del == dave_true)
 	{
-		ptr = base_ramkv_del_key_ptr(_timer_ramkv, key_ptr);
+		ptr = kv_del_key_ptr(_timer_ramkv, key_ptr);
 		if(ptr != NULL)
 		{
 			dave_free(ptr);
@@ -239,7 +239,7 @@ _ramkv_test_check_timer(TIMERID timer_id, ub thread_index)
 static RetCode
 _ramkv_test_recycle(void *ramkv, s8 *key)
 {
-	void *ptr = base_ramkv_del_key_ptr(ramkv, key);
+	void *ptr = kv_del_key_ptr(ramkv, key);
 
 	if(ptr == NULL)
 	{
@@ -267,7 +267,7 @@ _ramkv_test_timer_start(s8 *out_second_str)
 			out_second = 30;
 		}
 
-		_timer_ramkv = base_ramkv_malloc((s8 *)"testramkv", KvAttrib_list, out_second, _ramkv_test_timer_out);
+		_timer_ramkv = kv_malloc((s8 *)"testramkv", KvAttrib_list, out_second, _ramkv_test_timer_out);
 		t_lock_reset(&_timer_pv);
 
 		base_timer_creat((char *)"testramkv_check_timer", _ramkv_test_check_timer, 1000);
@@ -285,7 +285,7 @@ _ramkv_test_timer_stop(void)
 {
 	if(_timer_ramkv != NULL)
 	{
-		base_ramkv_free(_timer_ramkv, _ramkv_test_recycle);
+		kv_free(_timer_ramkv, _ramkv_test_recycle);
 
 		_timer_ramkv = NULL;
 		t_lock_destroy(&_timer_pv);
@@ -307,7 +307,7 @@ _ramkv_test_timer_add(void)
 
 	KVLOG("add key:%s", key);
 
-	base_ramkv_add_key_ptr(_timer_ramkv, key, ptr);
+	kv_add_key_ptr(_timer_ramkv, key, ptr);
 }
 
 static void
@@ -325,9 +325,9 @@ _ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
 		dave_snprintf(str_key, sizeof(str_key), "testramkv-%ld%ld%lx", thread_index, test_index, t_rand());
 		str_ptr = dave_malloc(sizeof(str_key));
 		dave_strcpy(str_ptr, str_key, sizeof(str_key));
-		if(base_ramkv_add_key_ptr(_timer_ramkv, str_key, str_ptr) == dave_true)
+		if(kv_add_key_ptr(_timer_ramkv, str_key, str_ptr) == dave_true)
 		{
-			inq_ptr = base_ramkv_inq_key_ptr(_timer_ramkv, str_key);
+			inq_ptr = kv_inq_key_ptr(_timer_ramkv, str_key);
 			if(inq_ptr != str_ptr)
 			{
 				base_restart("test failed on str_key:%s inq! %lx/%lx", str_key, inq_ptr, str_ptr);
@@ -339,9 +339,9 @@ _ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
 		ub_key = thread_index + test_index + t_rand();
 		ub_ptr = dave_malloc(sizeof(ub_key));
 		dave_strcpy(ub_ptr, &ub_key, sizeof(ub_key));
-		if(base_ramkv_add_ub_ptr(_timer_ramkv, ub_key, ub_ptr) == dave_true)
+		if(kv_add_ub_ptr(_timer_ramkv, ub_key, ub_ptr) == dave_true)
 		{
-			if(base_ramkv_inq_ub_ptr(_timer_ramkv, ub_key) != ub_ptr)
+			if(kv_inq_ub_ptr(_timer_ramkv, ub_key) != ub_ptr)
 			{
 				base_restart("test failed on ub_key:%ld inq!", ub_key);
 			}
@@ -353,7 +353,7 @@ _ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
 		{
 			if(static_str_key[0] != '\0')
 			{
-				str_ptr = base_ramkv_del_key_ptr(_timer_ramkv, static_str_key);
+				str_ptr = kv_del_key_ptr(_timer_ramkv, static_str_key);
 				if(str_ptr != NULL)
 				{
 					dave_free(str_ptr);
@@ -410,7 +410,7 @@ _ramkv_test_timer_thread(void)
 static void
 _ramkv_test_timer_del(s8 *key)
 {
-	void *ptr = base_ramkv_inq_key_ptr(_timer_ramkv, key);
+	void *ptr = kv_inq_key_ptr(_timer_ramkv, key);
 
 	if(ptr == NULL)
 	{
@@ -420,7 +420,7 @@ _ramkv_test_timer_del(s8 *key)
 
 	KVLOG("del key:%s", key);
 
-	base_ramkv_del_key_ptr(_timer_ramkv, key);
+	kv_del_key_ptr(_timer_ramkv, key);
 
 	dave_free(ptr);
 }
@@ -428,7 +428,7 @@ _ramkv_test_timer_del(s8 *key)
 static void
 _ramkv_test_timer_inq(s8 *key)
 {
-	void *ptr = base_ramkv_inq_key_ptr(_timer_ramkv, key);
+	void *ptr = kv_inq_key_ptr(_timer_ramkv, key);
 
 	if(ptr == NULL)
 	{
