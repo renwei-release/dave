@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -80,3 +82,5 @@ peak_dalloc_event_handler(tsd_t *tsd, uint64_t elapsed) {
 	peak_event_update(tsd);
 	peak_event_activity_callback(tsd);
 }
+
+#endif

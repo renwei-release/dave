@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -152,3 +154,5 @@ edata_cache_fast_disable(tsdn_t *tsdn, edata_cache_fast_t *ecs) {
 	edata_cache_fast_flush_all(tsdn, ecs);
 	ecs->disabled = true;
 }
+
+#endif

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 #include "jemalloc/internal/sz.h"
@@ -112,3 +114,5 @@ sz_boot(const sc_data_t *sc_data, bool cache_oblivious) {
 	sz_boot_index2size_tab(sc_data);
 	sz_boot_size2index_tab(sc_data);
 }
+
+#endif

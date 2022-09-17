@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -142,3 +144,5 @@ buf_writer_pipe(buf_writer_t *buf_writer, read_cb_t *read_cb,
 	} while (nread > 0);
 	buf_writer_flush(buf_writer);
 }
+
+#endif

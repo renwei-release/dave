@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -33,3 +35,5 @@ void
 ecache_postfork_child(tsdn_t *tsdn, ecache_t *ecache) {
 	malloc_mutex_postfork_child(tsdn, &ecache->mtx);
 }
+
+#endif

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -30,3 +32,5 @@ const uint8_t ticker_geom_table[1 << TICKER_GEOM_NBITS] = {
 	16, 15, 14, 13, 12, 10, 9, 8,
 	7, 6, 5, 4, 3, 2, 1, 0
 };
+
+#endif

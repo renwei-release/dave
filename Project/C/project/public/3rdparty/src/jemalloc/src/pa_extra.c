@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -189,3 +191,5 @@ pa_shard_mtx_stats_read(tsdn_t *tsdn, pa_shard_t *shard,
 		    &mutex_prof_data[arena_prof_mutex_hpa_sec]);
 	}
 }
+
+#endif

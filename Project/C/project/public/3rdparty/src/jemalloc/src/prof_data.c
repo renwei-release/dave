@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -1445,3 +1447,5 @@ prof_tctx_try_destroy(tsd_t *tsd, prof_tctx_t *tctx) {
 }
 
 /******************************************************************************/
+
+#endif

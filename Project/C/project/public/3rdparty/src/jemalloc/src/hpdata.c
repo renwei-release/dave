@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -323,3 +325,5 @@ hpdata_dehugify(hpdata_t *hpdata) {
 	hpdata->h_huge = false;
 	hpdata_assert_consistent(hpdata);
 }
+
+#endif

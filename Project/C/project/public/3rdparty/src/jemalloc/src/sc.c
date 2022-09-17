@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 
 #include "jemalloc/internal/conflict_rename_assert.h"
@@ -304,3 +306,5 @@ void
 sc_boot(sc_data_t *data) {
 	sc_data_init(data);
 }
+
+#endif

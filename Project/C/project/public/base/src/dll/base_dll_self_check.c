@@ -11,6 +11,9 @@
 #include "dave_tools.h"
 #include "dll_log.h"
 
+extern void (*__free_hook)(void *ptr);
+extern void *(*__malloc_hook)(size_t size);
+
 // =====================================================================
 
 int
@@ -20,19 +23,19 @@ dave_dll_self_check(char *string_data, int int_data, float float_data, dll_check
 
 	if(dave_strcmp(string_data, "123456") == dave_false)
 	{
-		DLLLOG("invalid string_data:%s", string_data);
+		DLLLOG("invalid string_data:%s\n", string_data);
 		return -1;
 	}
 
 	if(int_data != 123456)
 	{
-		DLLLOG("invalid int_data:%d", int_data);
+		DLLLOG("invalid int_data:%d\n", int_data);
 		return -1;
 	}
 
 	if(abs(float_data-123456.123456) > 0.1)
 	{
-		DLLLOG("invalid float_data:%f", float_data);
+		DLLLOG("invalid float_data:%f\n", float_data);
 		return -1;
 	}
 
@@ -41,10 +44,13 @@ dave_dll_self_check(char *string_data, int int_data, float float_data, dll_check
 		fun_ret = checkback(123456);
 		if(fun_ret != 123456)
 		{
-			DLLLOG("invalid fun_ret:%d", fun_ret);
+			DLLLOG("invalid fun_ret:%d\n", fun_ret);
 			return -1;
 		}
 	}
+
+	DLLLOG("malloc:%lx __malloc_hook:%lx free:%lx __free_hook:%lx",
+		malloc, __malloc_hook, free, __free_hook);
 
 	return 0;
 }

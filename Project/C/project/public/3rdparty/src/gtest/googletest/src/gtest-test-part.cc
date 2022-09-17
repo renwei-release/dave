@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2008, Google Inc.
 // All rights reserved.
 //
@@ -103,3 +105,5 @@ void HasNewFatalFailureHelper::ReportTestPartResult(
 }  // namespace internal
 
 }  // namespace testing
+
+#endif

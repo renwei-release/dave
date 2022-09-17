@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -695,3 +697,5 @@ malloc_printf(const char *format, ...) {
 #undef not_implemented
 #undef assert_not_implemented
 #include "jemalloc/internal/conflict_rename_assert.h"
+
+#endif

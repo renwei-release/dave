@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 
 /*
@@ -10,3 +12,5 @@ void (*test_hooks_arena_new_hook)() = NULL;
 
 JEMALLOC_EXPORT
 void (*test_hooks_libc_hook)() = NULL;
+
+#endif

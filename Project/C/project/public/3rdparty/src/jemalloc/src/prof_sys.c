@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #define JEMALLOC_PROF_SYS_C_
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
@@ -667,3 +669,5 @@ prof_gdump_impl(tsd_t *tsd) {
 	malloc_mutex_unlock(tsdn, &prof_dump_filename_mtx);
 	prof_dump(tsd, false, filename, false);
 }
+
+#endif

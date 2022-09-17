@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2007, Google Inc.
 // All rights reserved.
 //
@@ -248,3 +250,5 @@ bool Base64Unescape(const std::string& encoded, std::string* decoded) {
 
 }  // namespace internal
 }  // namespace testing
+
+#endif

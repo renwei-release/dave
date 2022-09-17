@@ -16,12 +16,12 @@
  * Define overrides for non-standard allocator-related functions if they are
  * present on the system.
  */
-#define JEMALLOC_OVERRIDE___LIBC_CALLOC 
-#define JEMALLOC_OVERRIDE___LIBC_FREE 
-#define JEMALLOC_OVERRIDE___LIBC_MALLOC 
-#define JEMALLOC_OVERRIDE___LIBC_MEMALIGN 
-#define JEMALLOC_OVERRIDE___LIBC_REALLOC 
-#define JEMALLOC_OVERRIDE___LIBC_VALLOC 
+//#define JEMALLOC_OVERRIDE___LIBC_CALLOC 
+//#define JEMALLOC_OVERRIDE___LIBC_FREE 
+//#define JEMALLOC_OVERRIDE___LIBC_MALLOC 
+//#define JEMALLOC_OVERRIDE___LIBC_MEMALIGN 
+//#define JEMALLOC_OVERRIDE___LIBC_REALLOC 
+//#define JEMALLOC_OVERRIDE___LIBC_VALLOC 
 /* #undef JEMALLOC_OVERRIDE___POSIX_MEMALIGN */
 
 /*
@@ -370,9 +370,11 @@
 
 /* glibc malloc hooks (__malloc_hook, __realloc_hook, __free_hook). */
 /* #undef JEMALLOC_GLIBC_MALLOC_HOOK */
+#define JEMALLOC_GLIBC_MALLOC_HOOK
 
 /* glibc memalign hook. */
 /* #undef JEMALLOC_GLIBC_MEMALIGN_HOOK */
+#define JEMALLOC_GLIBC_MEMALIGN_HOOK
 
 /* pthread support */
 #define JEMALLOC_HAVE_PTHREAD 

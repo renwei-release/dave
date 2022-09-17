@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -280,3 +282,5 @@ eset_fit(eset_t *eset, size_t esize, size_t alignment, bool exact_only,
 
 	return edata;
 }
+
+#endif

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -818,3 +820,5 @@ background_thread_boot1(tsdn_t *tsdn, base_t *base) {
 
 	return false;
 }
+
+#endif

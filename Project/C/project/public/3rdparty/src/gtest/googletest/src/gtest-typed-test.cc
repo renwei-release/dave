@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2008 Google Inc.
 // All Rights Reserved.
 //
@@ -102,3 +104,5 @@ const char* TypedTestSuitePState::VerifyRegisteredTestNames(
 
 }  // namespace internal
 }  // namespace testing
+
+#endif

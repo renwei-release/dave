@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 
 #include "jemalloc/internal/pages.h"
@@ -822,3 +824,5 @@ pages_boot(void) {
 
 	return false;
 }
+
+#endif

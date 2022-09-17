@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -320,3 +322,5 @@ large_prof_info_set(edata_t *edata, prof_tctx_t *tctx, size_t size) {
 	edata_prof_recent_alloc_init(edata);
 	large_prof_tctx_set(edata, tctx);
 }
+
+#endif

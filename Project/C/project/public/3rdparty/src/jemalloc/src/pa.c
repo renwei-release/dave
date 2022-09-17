@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -275,3 +277,5 @@ pa_shard_time_until_deferred_work(tsdn_t *tsdn, pa_shard_t *shard) {
 	}
 	return time;
 }
+
+#endif

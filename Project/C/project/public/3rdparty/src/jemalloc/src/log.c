@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -76,3 +78,5 @@ log_var_update_state(log_var_t *log_var) {
 		segment_begin = segment_end + 1;
 	}
 }
+
+#endif

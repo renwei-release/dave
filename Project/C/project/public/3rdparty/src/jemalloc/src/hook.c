@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 
 #include "jemalloc/internal/hook.h"
@@ -193,3 +195,5 @@ hook_invoke_expand(hook_expand_t type, void *address, size_t old_usize,
 	FOR_EACH_HOOK_END
 	HOOK_EPILOGUE
 }
+
+#endif

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -34,3 +36,5 @@ void safety_check_fail(const char *format, ...) {
 		safety_check_abort(buf);
 	}
 }
+
+#endif

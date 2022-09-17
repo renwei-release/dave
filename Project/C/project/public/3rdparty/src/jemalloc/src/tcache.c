@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -1099,3 +1101,5 @@ tcache_postfork_child(tsdn_t *tsdn) {
 void tcache_assert_initialized(tcache_t *tcache) {
 	assert(!cache_bin_still_zero_initialized(&tcache->bins[0]));
 }
+
+#endif

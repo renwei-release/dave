@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -120,3 +122,5 @@ witness_postfork_child(witness_tsd_t *witness_tsd) {
 #endif
 	witness_tsd->forking = false;
 }
+
+#endif

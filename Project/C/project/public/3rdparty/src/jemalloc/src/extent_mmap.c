@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -39,3 +41,5 @@ extent_dalloc_mmap(void *addr, size_t size) {
 	}
 	return opt_retain;
 }
+
+#endif

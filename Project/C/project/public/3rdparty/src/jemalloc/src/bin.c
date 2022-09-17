@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -67,3 +69,5 @@ void
 bin_postfork_child(tsdn_t *tsdn, bin_t *bin) {
 	malloc_mutex_postfork_child(tsdn, &bin->lock);
 }
+
+#endif

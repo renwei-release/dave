@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -75,3 +77,5 @@ inspect_extent_util_stats_verbose_get(tsdn_t *tsdn, const void *ptr,
 	*slabcur_addr = slab != NULL ? edata_addr_get(slab) : NULL;
 	malloc_mutex_unlock(tsdn, &bin->lock);
 }
+
+#endif

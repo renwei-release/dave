@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -4412,3 +4414,5 @@ prof_stats_lextents_i_index(tsdn_t *tsdn, const size_t *mib, size_t miblen,
 	}
 	return super_prof_stats_lextents_i_node;
 }
+
+#endif

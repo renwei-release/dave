@@ -35,10 +35,10 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 {
 	void *ptr;
 
-	ptr = base_thread_msg((ub)msg_len, dave_true, (s8 *)fun, (ub)line);
+	ptr = base_thread_msg((ub)msg_len, dave_true, (s8 *)__func__, (ub)__LINE__);
 
 	DLLDEBUG("msg_len:%d ptr:%lx fun:%s line:%d",
-		msg_len, ptr, fun, line);
+		msg_len, ptr, (s8 *)__func__, (ub)__LINE__);
 
 	return ptr;
 }
@@ -46,7 +46,7 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 void
 dave_dll_thread_msg_release(void *ptr, char *fun, int line)
 {
-	base_thread_msg_release(ptr, (s8 *)fun, (ub)line);
+	base_thread_msg_release(ptr, (s8 *)__func__, (ub)__LINE__);
 }
 
 int
@@ -55,7 +55,7 @@ dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void 
 	ThreadId src_id = _dll_thread_src_id(INVALID_THREAD_ID);
 
 	DLLDEBUG("dst_id:%lx msg_id:%d msg_len:%d msg_body:%lx fun:%s line:%d",
-		dst_id, msg_id, msg_len, msg_body, fun, line);
+		dst_id, msg_id, msg_len, msg_body, (s8 *)__func__, (ub)__LINE__);
 
 	if(base_thread_id_msg(
 		NULL, NULL,
@@ -63,7 +63,7 @@ dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void 
 		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		0,
-		(s8 *)fun, (ub)line) == dave_true)
+		(s8 *)__func__, (ub)__LINE__) == dave_true)
 	{
 		return 0;
 	}
@@ -85,7 +85,7 @@ dave_dll_thread_id_go(unsigned long long dst_id, int req_id, int req_len, void *
 		src_id, (ThreadId)dst_id,
 		req_id, req_len, req_body,
 		rsp_id,
-		fun, line);
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 int
@@ -99,7 +99,7 @@ dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_bo
 	if(base_thread_name_msg(
 		src_id, (s8 *)dst_thread,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
-		(s8 *)fun, (ub)line) == dave_true)
+		(s8 *)__func__, (ub)__LINE__) == dave_true)
 	{
 		return 0;
 	}
@@ -121,7 +121,7 @@ dave_dll_thread_name_go(char *dst_thread, int req_id, int req_len, void *req_bod
 		src_id, (s8 *)dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
-		fun, line);
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 int
@@ -135,7 +135,7 @@ dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, vo
 	if(base_thread_gid_msg(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
-		(s8 *)fun, (ub)line) == dave_true)
+		(s8 *)__func__, (ub)__LINE__) == dave_true)
 	{
 		return 0;
 	}
@@ -157,7 +157,7 @@ dave_dll_thread_gid_go(char *gid, char *dst_thread, int req_id, int req_len, voi
 		src_id, (s8 *)gid, (s8 *)dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
-		fun, line);
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 int
@@ -171,7 +171,7 @@ dave_dll_thread_uid_msg(char *uid, int msg_id, int msg_len, void *msg_body, char
 	if(base_thread_uid_msg(
 		src_id, (s8 *)uid,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
-		(s8 *)fun, (ub)line) == dave_true)
+		(s8 *)__func__, (ub)__LINE__) == dave_true)
 	{
 		return 0;
 	}
@@ -193,7 +193,7 @@ dave_dll_thread_uid_go(char *uid, int req_id, int req_len, void *req_body, int r
 		src_id, (s8 *)uid,
 		req_id, req_len, req_body,
 		rsp_id,
-		fun, line);
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 void *
@@ -209,7 +209,11 @@ dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_bo
 		return NULL;
 	}
 
-	return base_thread_sync_msg(src_id, dst_id, (ub)req_id, (ub)req_len, (u8 *)req_body, (ub)rsp_id, (ub)rsp_len, (u8 *)rsp_body, (s8 *)fun, (ub)line);
+	return base_thread_sync_msg(
+		src_id, dst_id,
+		(ub)req_id, (ub)req_len, (u8 *)req_body,
+		(ub)rsp_id, (ub)rsp_len, (u8 *)rsp_body,
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 int
@@ -225,7 +229,7 @@ dave_dll_thread_broadcast_msg(char *thread_name, int msg_id, int msg_len, void *
 	if(base_thread_broadcast_msg(
 		type,
 		(s8 *)thread_name, (ub)msg_id, (ub)msg_len, (u8 *)msg_body,
-		(s8 *)fun, (ub)line) == dave_true)
+		(s8 *)__func__, (ub)__LINE__) == dave_true)
 	{
 		return 0;
 	}

@@ -21,6 +21,8 @@
 #include "nlp_param.h"
 #include "http_param.h"
 #include "uip_msg.h"
+#include "talk_param.h"
+#include "bbs_param.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -442,6 +444,30 @@ t_auto_ChainType_str(ChainType enum_value)
 			break;
 		case ChainType_max:
 				value_str = "'ChainType_max-0xff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_CommentAttributes_str(CommentAttributes enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case CommentAttributes_NULL:
+				value_str = "'CommentAttributes_NULL-0'";
+			break;
+		case CommentAttributes_POST:
+				value_str = "'CommentAttributes_POST-1'";
+			break;
+		case CommentAttributes_REPLY:
+				value_str = "'CommentAttributes_REPLY-2'";
 			break;
 		default:
 				value_str = "'NULL'";
@@ -2788,6 +2814,30 @@ t_auto_PythonFun_str(PythonFun enum_value)
 			break;
 		case PythonFun_max:
 				value_str = "'PythonFun_max-0xffffffffffffffff'";
+			break;
+		default:
+				value_str = "'NULL'";
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_RegINAttrib_str(RegINAttrib enum_value)
+{
+	s8 *value_str = NULL;
+
+	switch(enum_value)
+	{
+		case RegINAttrib_FAQ:
+				value_str = "'RegINAttrib_FAQ'";
+			break;
+		case RegINAttrib_TASK:
+				value_str = "'RegINAttrib_TASK'";
+			break;
+		case RegINAttrib_max:
+				value_str = "'RegINAttrib_max'";
 			break;
 		default:
 				value_str = "'NULL'";

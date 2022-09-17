@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2005, Google Inc.
 // All rights reserved.
 //
@@ -6793,3 +6795,5 @@ ScopedTrace::~ScopedTrace() GTEST_LOCK_EXCLUDED_(&UnitTest::mutex_) {
 }
 
 }  // namespace testing
+
+#endif

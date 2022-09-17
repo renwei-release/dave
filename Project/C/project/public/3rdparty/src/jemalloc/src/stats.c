@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -1971,3 +1973,5 @@ void
 stats_postfork_child(tsdn_t *tsdn) {
 	counter_postfork_child(tsdn, &stats_interval_accumulated);
 }
+
+#endif

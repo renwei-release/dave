@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 /*
  *******************************************************************************
  * Implementation of (2^1+,2) cuckoo hashing, where 2^1+ indicates that each
@@ -567,3 +569,5 @@ bool
 ckh_pointer_keycomp(const void *k1, const void *k2) {
 	return (k1 == k2);
 }
+
+#endif

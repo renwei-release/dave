@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -1042,3 +1044,5 @@ hpa_shard_postfork_child(tsdn_t *tsdn, hpa_shard_t *shard) {
 	malloc_mutex_postfork_child(tsdn, &shard->grow_mtx);
 	malloc_mutex_postfork_child(tsdn, &shard->mtx);
 }
+
+#endif

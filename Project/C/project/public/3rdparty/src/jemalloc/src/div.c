@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 
 #include "jemalloc/internal/div.h"
@@ -53,3 +55,5 @@ div_init(div_info_t *div_info, size_t d) {
 	div_info->d = d;
 #endif
 }
+
+#endif

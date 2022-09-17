@@ -28,6 +28,18 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				pBson = t_rpc_ver3_zip_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, msg_len);
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				pBson = t_rpc_ver3_zip_AIXMsgAestheticsRsp((AIXMsgAestheticsRsp *)msg_body, msg_len);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				pBson = t_rpc_ver3_zip_AIXMsgImageClassificationReq((AIXMsgImageClassificationReq *)msg_body, msg_len);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				pBson = t_rpc_ver3_zip_AIXMsgImageClassificationRsp((AIXMsgImageClassificationRsp *)msg_body, msg_len);
+			break;
 		case APPMSG_FUNCTION_REGISTER_REQ:
 				pBson = t_rpc_ver3_zip_AppMsgFunctionRegReq((AppMsgFunctionRegReq *)msg_body, msg_len);
 			break;
@@ -51,6 +63,48 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				pBson = t_rpc_ver3_zip_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, msg_len);
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				pBson = t_rpc_ver3_zip_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, msg_len);
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				pBson = t_rpc_ver3_zip_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, msg_len);
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				pBson = t_rpc_ver3_zip_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, msg_len);
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				pBson = t_rpc_ver3_zip_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, msg_len);
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				pBson = t_rpc_ver3_zip_BdataMCardRecord((BdataMCardRecord *)msg_body, msg_len);
+			break;
+		case BDATAMSG_TALK_RECORD:
+				pBson = t_rpc_ver3_zip_BdataTalkRecord((BdataTalkRecord *)msg_body, msg_len);
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, msg_len);
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgFeaturesDetectedRsp((CVMsgFeaturesDetectedRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgImageSearchReq((CVMsgImageSearchReq *)msg_body, msg_len);
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgImageSearchRsp((CVMsgImageSearchRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgPaintingAestheticsReq((CVMsgPaintingAestheticsReq *)msg_body, msg_len);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgPaintingAestheticsRsp((CVMsgPaintingAestheticsRsp *)msg_body, msg_len);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				pBson = t_rpc_ver3_zip_CVMsgSculpturesSearchReq((CVMsgSculpturesSearchReq *)msg_body, msg_len);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				pBson = t_rpc_ver3_zip_CVMsgSculpturesSearchRsp((CVMsgSculpturesSearchRsp *)msg_body, msg_len);
 			break;
 		case DBMSG_HYBRID_ADD_LIST_REQ:
 				pBson = t_rpc_ver3_zip_DBHybridAddListReq((DBHybridAddListReq *)msg_body, msg_len);
@@ -347,6 +401,18 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				ret = t_rpc_ver3_unzip_AIXMsgAestheticsReq(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				ret = t_rpc_ver3_unzip_AIXMsgAestheticsRsp(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				ret = t_rpc_ver3_unzip_AIXMsgImageClassificationReq(msg_body, msg_len, pBson);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				ret = t_rpc_ver3_unzip_AIXMsgImageClassificationRsp(msg_body, msg_len, pBson);
+			break;
 		case APPMSG_FUNCTION_REGISTER_REQ:
 				ret = t_rpc_ver3_unzip_AppMsgFunctionRegReq(msg_body, msg_len, pBson);
 			break;
@@ -370,6 +436,48 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				ret = t_rpc_ver3_unzip_AppMsgTalkMCardRsp(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				ret = t_rpc_ver3_unzip_BBSMsgAddCommentReq(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				ret = t_rpc_ver3_unzip_BBSMsgAddCommentRsp(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				ret = t_rpc_ver3_unzip_BBSMsgInqCommentReq(msg_body, msg_len, pBson);
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				ret = t_rpc_ver3_unzip_BBSMsgInqCommentRsp(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				ret = t_rpc_ver3_unzip_BdataMCardRecord(msg_body, msg_len, pBson);
+			break;
+		case BDATAMSG_TALK_RECORD:
+				ret = t_rpc_ver3_unzip_BdataTalkRecord(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgFeaturesDetectedReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgFeaturesDetectedRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgImageSearchReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgImageSearchRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgPaintingAestheticsReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgPaintingAestheticsRsp(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				ret = t_rpc_ver3_unzip_CVMsgSculpturesSearchReq(msg_body, msg_len, pBson);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				ret = t_rpc_ver3_unzip_CVMsgSculpturesSearchRsp(msg_body, msg_len, pBson);
 			break;
 		case DBMSG_HYBRID_ADD_LIST_REQ:
 				ret = t_rpc_ver3_unzip_DBHybridAddListReq(msg_body, msg_len, pBson);
@@ -666,6 +774,18 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsReq((AIXMsgAestheticsReq *)msg_body, new_ptr);
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				ptr = t_rpc_ver3_ptr_AIXMsgAestheticsRsp((AIXMsgAestheticsRsp *)msg_body, new_ptr);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationReq((AIXMsgImageClassificationReq *)msg_body, new_ptr);
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				ptr = t_rpc_ver3_ptr_AIXMsgImageClassificationRsp((AIXMsgImageClassificationRsp *)msg_body, new_ptr);
+			break;
 		case APPMSG_FUNCTION_REGISTER_REQ:
 				ptr = t_rpc_ver3_ptr_AppMsgFunctionRegReq((AppMsgFunctionRegReq *)msg_body, new_ptr);
 			break;
@@ -689,6 +809,48 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, new_ptr);
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, new_ptr);
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, new_ptr);
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, new_ptr);
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, new_ptr);
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				ptr = t_rpc_ver3_ptr_BdataMCardRecord((BdataMCardRecord *)msg_body, new_ptr);
+			break;
+		case BDATAMSG_TALK_RECORD:
+				ptr = t_rpc_ver3_ptr_BdataTalkRecord((BdataTalkRecord *)msg_body, new_ptr);
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, new_ptr);
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedRsp((CVMsgFeaturesDetectedRsp *)msg_body, new_ptr);
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				ptr = t_rpc_ver3_ptr_CVMsgImageSearchReq((CVMsgImageSearchReq *)msg_body, new_ptr);
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				ptr = t_rpc_ver3_ptr_CVMsgImageSearchRsp((CVMsgImageSearchRsp *)msg_body, new_ptr);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsReq((CVMsgPaintingAestheticsReq *)msg_body, new_ptr);
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				ptr = t_rpc_ver3_ptr_CVMsgPaintingAestheticsRsp((CVMsgPaintingAestheticsRsp *)msg_body, new_ptr);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchReq((CVMsgSculpturesSearchReq *)msg_body, new_ptr);
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				ptr = t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp((CVMsgSculpturesSearchRsp *)msg_body, new_ptr);
 			break;
 		case DBMSG_HYBRID_ADD_LIST_REQ:
 				ptr = t_rpc_ver3_ptr_DBHybridAddListReq((DBHybridAddListReq *)msg_body, new_ptr);
@@ -985,6 +1147,18 @@ _t_rpc_sizeof(ub msg_id)
 
 	switch((sb)msg_id)
 	{
+		case AIXMSG_AESTHETICS_REQ:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgAestheticsReq();
+			break;
+		case AIXMSG_AESTHETICS_RSP:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgAestheticsRsp();
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgImageClassificationReq();
+			break;
+		case AIXMSG_IMAGE_CLASSIFICATION_RSP:
+				msg_len = t_rpc_ver3_sizeof_AIXMsgImageClassificationRsp();
+			break;
 		case APPMSG_FUNCTION_REGISTER_REQ:
 				msg_len = t_rpc_ver3_sizeof_AppMsgFunctionRegReq();
 			break;
@@ -1008,6 +1182,48 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				msg_len = t_rpc_ver3_sizeof_AppMsgTalkMCardRsp();
+			break;
+		case BBSMSG_ADD_COMMENT_REQ:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentReq();
+			break;
+		case BBSMSG_ADD_COMMENT_RSP:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentRsp();
+			break;
+		case BBSMSG_INQ_COMMENT_REQ:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentReq();
+			break;
+		case BBSMSG_INQ_COMMENT_RSP:
+				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentRsp();
+			break;
+		case BDATAMSG_MCARD_RECORD:
+				msg_len = t_rpc_ver3_sizeof_BdataMCardRecord();
+			break;
+		case BDATAMSG_TALK_RECORD:
+				msg_len = t_rpc_ver3_sizeof_BdataTalkRecord();
+			break;
+		case CVMSG_FEATURES_DETECTED_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgFeaturesDetectedReq();
+			break;
+		case CVMSG_FEATURES_DETECTED_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgFeaturesDetectedRsp();
+			break;
+		case CVMSG_IMAGE_SEARCH_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgImageSearchReq();
+			break;
+		case CVMSG_IMAGE_SEARCH_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgImageSearchRsp();
+			break;
+		case CVMSG_PAINTING_AESTHETICS_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgPaintingAestheticsReq();
+			break;
+		case CVMSG_PAINTING_AESTHETICS_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgPaintingAestheticsRsp();
+			break;
+		case CVMSG_SCULPTURES_SEARCH_REQ:
+				msg_len = t_rpc_ver3_sizeof_CVMsgSculpturesSearchReq();
+			break;
+		case CVMSG_SCULPTURES_SEARCH_RSP:
+				msg_len = t_rpc_ver3_sizeof_CVMsgSculpturesSearchRsp();
 			break;
 		case DBMSG_HYBRID_ADD_LIST_REQ:
 				msg_len = t_rpc_ver3_sizeof_DBHybridAddListReq();

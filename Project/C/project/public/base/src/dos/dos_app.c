@@ -8,6 +8,7 @@
 #include "base_macro.h"
 #if defined(__DAVE_BASE__)
 #include "dave_base.h"
+#include "dave_3rdparty.h"
 
 void dos_exit_reset(void);
 void dos_ls_reset(void);
@@ -32,7 +33,7 @@ dos_app_reset(void)
 	dos_cfg_reset();
 	dos_sync_reset();
 	dos_log_reset();
-#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
+#if defined(GTEST_3RDPARTY)
 	dos_test_reset();
 #endif
 }

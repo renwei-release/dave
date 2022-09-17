@@ -5,7 +5,8 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
+#include "dave_3rdparty.h"
+#if defined(GTEST_3RDPARTY)
 #include <iostream>
 using namespace std;
 #include "gtest.h"

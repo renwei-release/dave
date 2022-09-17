@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2008, Google Inc.
 // All rights reserved.
 //
@@ -1392,3 +1394,5 @@ const char* StringFromGTestEnv(const char* flag, const char* default_value) {
 
 }  // namespace internal
 }  // namespace testing
+
+#endif

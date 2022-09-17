@@ -83,3 +83,9 @@ func T_cgo_gostring2cstring(go_string string) *C.char {
 	}
 	return (*C.char)(stringStructOf(&go_string).str)
 }
+
+func T_cgo_byte_clone(src []byte) []byte {
+	dst := make([]byte, len(src))
+	copy(dst, src)
+	return dst
+}

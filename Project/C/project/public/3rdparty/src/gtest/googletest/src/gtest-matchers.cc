@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2007, Google Inc.
 // All rights reserved.
 //
@@ -96,3 +98,5 @@ Matcher<internal::StringView>::Matcher(internal::StringView s) {
 #endif  // GTEST_INTERNAL_HAS_STRING_VIEW
 
 }  // namespace testing
+
+#endif

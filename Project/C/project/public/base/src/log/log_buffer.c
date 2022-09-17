@@ -27,7 +27,7 @@ static ub _log_log_counter = 0;
 
 static LogBuffer *_log_thread[LOG_TID_MAX];
 
-static LogBuffer _log_buffer[LOG_BUFFER_MAX];
+static LogBuffer _log_buffer[LOG_BUFFER_MAX] = { 0x00 };
 static ub _log_buffer_index = 0;
 
 static LogBuffer *_log_list[LOG_LIST_MAX];

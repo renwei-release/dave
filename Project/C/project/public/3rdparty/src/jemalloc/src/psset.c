@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -383,3 +385,5 @@ psset_remove(psset_t *psset, hpdata_t *ps) {
 		hpdata_hugify_list_remove(&psset->to_hugify, ps);
 	}
 }
+
+#endif

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -273,3 +275,5 @@ const extent_hooks_t ehooks_default_extent_hooks = {
 	ehooks_default_split,
 	ehooks_default_merge
 };
+
+#endif

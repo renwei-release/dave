@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2007, Google Inc.
 // All rights reserved.
 //
@@ -153,3 +155,6 @@ GTEST_API_ Cardinality Between(int min, int max) {
 GTEST_API_ Cardinality Exactly(int n) { return Between(n, n); }
 
 }  // namespace testing
+
+
+#endif

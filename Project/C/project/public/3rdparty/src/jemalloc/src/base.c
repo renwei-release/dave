@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -527,3 +529,5 @@ base_boot(tsdn_t *tsdn) {
 	    /* metadata_use_hooks */ true);
 	return (b0 == NULL);
 }
+
+#endif

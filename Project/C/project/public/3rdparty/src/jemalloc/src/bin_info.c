@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -28,3 +30,5 @@ bin_info_boot(sc_data_t *sc_data, unsigned bin_shard_sizes[SC_NBINS]) {
 	assert(sc_data->initialized);
 	bin_infos_init(sc_data, bin_shard_sizes, bin_infos);
 }
+
+#endif

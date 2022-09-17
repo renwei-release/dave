@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -122,3 +124,5 @@ fxp_print(fxp_t a, char buf[FXP_BUF_SIZE]) {
 	malloc_snprintf(&buf[printed], FXP_BUF_SIZE - printed, "%"FMTu64,
 	    fraction_digits);
 }
+
+#endif

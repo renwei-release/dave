@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -61,3 +63,5 @@ static uint64_t
 hpa_hooks_ms_since(nstime_t *past_nstime) {
 	return nstime_ns_since(past_nstime) / 1000 / 1000;
 }
+
+#endif

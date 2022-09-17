@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -293,3 +295,5 @@ uint64_t decay_ns_until_purge(decay_t *decay, size_t npages_current,
 	}
 	return decay_interval_ns * (ub + lb) / 2;
 }
+
+#endif

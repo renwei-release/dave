@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -420,3 +422,5 @@ sec_postfork_child(tsdn_t *tsdn, sec_t *sec) {
 		malloc_mutex_postfork_child(tsdn, &sec->shards[i].mtx);
 	}
 }
+
+#endif

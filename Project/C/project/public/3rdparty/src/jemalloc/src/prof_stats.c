@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -55,3 +57,5 @@ prof_stats_get_accum(tsd_t *tsd, szind_t ind, prof_stats_t *stats) {
 	memcpy(stats, &prof_stats_accum[ind], sizeof(prof_stats_t));
 	prof_stats_leave(tsd);
 }
+
+#endif

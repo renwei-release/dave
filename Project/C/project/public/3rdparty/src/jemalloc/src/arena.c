@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -1889,3 +1891,5 @@ arena_postfork_child(tsdn_t *tsdn, arena_t *arena) {
 		malloc_mutex_postfork_child(tsdn, &arena->tcache_ql_mtx);
 	}
 }
+
+#endif

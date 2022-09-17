@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -29,3 +31,5 @@ pai_dalloc_batch_default(tsdn_t *tsdn, pai_t *self,
 		*deferred_work_generated |= deferred_by_dalloc;
 	}
 }
+
+#endif

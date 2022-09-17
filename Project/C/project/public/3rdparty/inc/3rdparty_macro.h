@@ -8,11 +8,15 @@
 #ifndef __3RDPARTY_MACRO_H__
 #define __3RDPARTY_MACRO_H__
 
-#ifdef __DAVE_LINUX__
+#if defined(__DAVE_LINUX__)
 #define JEMALLOC_3RDPARTY
 #endif
 
 #define JSON_3RDPARTY
+
+#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
+#define GTEST_3RDPARTY
+#endif
 
 #if defined(__DAVE_LINUX__) || defined(__DAVE_CYGWIN__)
 #define COROUTINE_3RDPARTY

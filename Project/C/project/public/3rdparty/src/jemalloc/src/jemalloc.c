@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #define JEMALLOC_C_
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
@@ -4473,30 +4475,6 @@ jemalloc_postfork_child(void) {
 	ctl_postfork_child(tsd_tsdn(tsd));
 }
 
-JEMALLOC_EXPORT void * JEMALLOC_NOTHROW
-je_malloc_for_dave(size_t size) {
-	return imalloc_fastpath(size, &malloc_default);
-}
-
-JEMALLOC_EXPORT void JEMALLOC_NOTHROW
-je_free_for_dave(void *ptr) {
-	LOG("core.free.entry", "ptr: %p", ptr);
-
-	if (!free_fastpath(ptr, 0, false)) {
-		free_default(ptr);
-	}
-
-	LOG("core.free.exit", "");
-}
-
-JEMALLOC_EXPORT size_t JEMALLOC_NOTHROW
-je_malloc_size_for_dave(void *ptr) {
-	LOG("core.malloc_size.entry", "ptr: %p", ptr);
-
-	size_t ret = je_malloc_usable_size_impl((void *)ptr);
-
-	LOG("core.malloc_size.exit", "result: %zu", ret);
-	return ret;
-}
-
 /******************************************************************************/
+
+#endif

@@ -178,14 +178,21 @@ _dave_dll_main_thread(void *arg)
 }
 
 static void
+_dave_dll_wait_main_thread_ready(void)
+{
+	ub safe_counter;
+
+	safe_counter = 0;
+	while(((++ safe_counter) < 9999999999) && (_wait_main_thread_ready == dave_false)) { dave_os_sleep(1); } ;
+}
+
+static void
 _dave_dll_init(
 	char *my_verno, char *work_mode,
 	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
-	ub safe_counter;
-
 	_dll_thread_number = thread_number;
 	_dll_init_fun = init_fun;
 	_dll_main_fun = main_fun;
@@ -211,10 +218,9 @@ _dave_dll_init(
 			|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Inner_Loop))
 		{
 			_dave_dll_inner_signo();
-
-			safe_counter = 0;
-			while(((++ safe_counter) < 9999999999) && (_wait_main_thread_ready == dave_false)) ;
 		}
+
+		_dave_dll_wait_main_thread_ready();
 	}
 }
 

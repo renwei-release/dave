@@ -7,7 +7,8 @@
 
 #include "base_macro.h"
 #include "log_stack.h"
-#ifdef LOG_STACK_SERVER
+#include "dave_3rdparty.h"
+#if defined(LOG_STACK_SERVER) && defined(GTEST_3RDPARTY)
 #include <iostream>
 using namespace std;
 #include "gtest.h"

@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef GTEST_3RDPARTY
 // Copyright 2007, Google Inc.
 // All rights reserved.
 //
@@ -551,3 +553,5 @@ void PrintWideStringTo(const ::std::wstring& s, ostream* os) {
 }  // namespace internal
 
 }  // namespace testing
+
+#endif

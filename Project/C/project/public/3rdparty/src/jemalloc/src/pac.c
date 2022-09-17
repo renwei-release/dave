@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -585,3 +587,5 @@ pac_destroy(tsdn_t *tsdn, pac_t *pac) {
 		extent_destroy_wrapper(tsdn, pac, ehooks, edata);
 	}
 }
+
+#endif

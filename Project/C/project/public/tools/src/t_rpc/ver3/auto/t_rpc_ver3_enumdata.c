@@ -18,6 +18,7 @@
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 #include "database_msg.h"
+#include "cv_param.h"
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
@@ -77,6 +78,25 @@ t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBs
 	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
 
 	*unzip_data = (BuildingBlocksOpt)sb_unzip_data;
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data)
+{
+	return _t_rpc_zip_enumdata((sb)zip_data);
+}
+
+dave_bool
+t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson)
+{
+	sb sb_unzip_data;
+	dave_bool ret;
+
+	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
+
+	*unzip_data = (CVSearchOpt)sb_unzip_data;
 
 	return ret;
 }

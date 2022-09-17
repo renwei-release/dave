@@ -1,3 +1,5 @@
+#include "3rdparty_macro.h"
+#ifdef JEMALLOC_3RDPARTY
 #include "jemalloc/internal/jemalloc_preamble.h"
 #include "jemalloc/internal/jemalloc_internal_includes.h"
 
@@ -206,3 +208,5 @@ san_init(ssize_t lg_san_uaf_align) {
 
 	san_cache_bin_nonfast_mask = ((uintptr_t)1 << lg_san_uaf_align) - 1;
 }
+
+#endif
