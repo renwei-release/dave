@@ -20,7 +20,7 @@
 #define LOGDEBUG(a, ...)
 #endif
 
-#define LOGABNOR(a, ...) { DAVEABNORMAL("[LOG Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); }
+#define LOGABNOR(a, ...) { DAVEDEBUG("[LOG Abnormal]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
 
 #define LOGLOG(a, ...) { DAVEDEBUG("[LOG]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
 
