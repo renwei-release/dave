@@ -190,8 +190,9 @@ thread_go_name(
 
 	if((pSrcThread == NULL) || (dst_thread == NULL))
 	{
-		THREADLOG("invalid param, pSrcThread:%lx dst_thread:%lx",
-			pSrcThread, dst_thread);
+		THREADLOG("invalid param, pSrcThread:%lx dst_thread:%lx <%s:%d>",
+			pSrcThread, dst_thread,
+			fun, line);
 		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
@@ -240,8 +241,9 @@ thread_go_gid(
 
 	if((pSrcThread == NULL) || (gid == NULL) || (dst_thread == NULL))
 	{
-		THREADLOG("invalid param, pSrcThread:%lx gid:%lx dst_thread:%lx",
-			pSrcThread, gid, dst_thread);
+		THREADLOG("invalid param, pSrcThread:%lx gid:%lx dst_thread:%lx <%s:%d>",
+			pSrcThread, gid, dst_thread,
+			fun, line);
 		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
@@ -291,8 +293,9 @@ thread_go_uid(
 
 	if((pSrcThread == NULL) || (uid == NULL))
 	{
-		THREADLOG("invalid param, pSrcThread:%lx uid:%lx",
-			pSrcThread, uid);
+		THREADLOG("invalid param, pSrcThread:%lx uid:%lx <%s:%d>",
+			pSrcThread, uid,
+			fun, line);
 		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}

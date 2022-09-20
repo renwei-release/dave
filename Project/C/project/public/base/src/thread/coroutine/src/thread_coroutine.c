@@ -471,7 +471,6 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 {
 	switch(msg->msg_id)
 	{
-		case MSGID_TIMER:
 		case MSGID_WAKEUP:
 		case MSGID_RESTART_REQ:
 		case MSGID_RESTART_RSP:
@@ -553,6 +552,12 @@ thread_coroutine_running_step_setup(
 void *
 thread_coroutine_running_step_yield(void *param)
 {
+	if(param == NULL)
+	{
+		THREADLOG("empty param!");
+		return NULL;
+	}
+
 	return _thread_coroutine_running_step_4(param);
 }
 

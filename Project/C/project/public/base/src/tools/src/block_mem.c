@@ -10,7 +10,28 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
+#include "dave_3rdparty.h"
+#include "dave_jemalloc.h"
+
 #include "block_mem.h"
+
+#if defined(PERFTOOLS_3RDPARTY)
+#define TCMALLOC_ENABLE
+#endif
+#if defined(JEMALLOC_3RDPARTY)
+#define JEMALLOC_ENABLE
+#endif
+
+#if defined(TCMALLOC_ENABLE)
+#define BLOCK_MALLOC dave_perftools_malloc
+#define BLOCK_FREE dave_perftools_free
+#elif defined(JEMALLOC_ENABLE)
+#define BLOCK_MALLOC dave_jemalloc
+#define BLOCK_FREE dave_jefree
+#else
+#define BLOCK_MALLOC malloc
+#define BLOCK_FREE free
+#endif
 
 #define USERINDEX_LEN (16)
 #define OVERFLOW_LEN (4)
@@ -22,6 +43,9 @@
 #define BLOCKMEMABNOR(a, ...) { DAVEABNORMAL("[BLOCK MEM Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); }
 
 #define BLOCKMEMLOG(a, ...) { DAVELOG("[BLOCK MEM]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
+
+block_mem_malloc_fun __block_mem_malloc__ = BLOCK_MALLOC;
+block_mem_free_fun __block_mem_free__ = BLOCK_FREE;
 
 static inline ub
 _block_mem_base_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock)
@@ -378,7 +402,7 @@ _block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *
 	if(pBlock->core_number >= CORE_MEM_MAX)
 	{
 		BLOCKMEMLOG("exter mem:%d!", pBlock->core_number);
-		BLOCK_FREE((void *)((u8 *)user_ptr - USERINDEX_LEN));
+		__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
 		return NULL;
 	}
 
@@ -409,7 +433,7 @@ _block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *
 		pBlock->core_search_index = _block_mem_free_get(++ pBlock->core_search_index, pBlock);
 	}
 
-	BLOCK_FREE((void *)((u8 *)user_ptr - USERINDEX_LEN));
+	__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
 	return NULL;
 }
 
@@ -460,7 +484,7 @@ _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 	void *ptr, *user_ptr;
 	ub malloc_len = len + MEMADD_LEN;
 
-	ptr = BLOCK_MALLOC(malloc_len);
+	ptr = __block_mem_malloc__(malloc_len);
 	if(ptr == NULL)
 	{
 		BLOCKMEMLOG("mem null<%d>!", pBlock->core_number);
@@ -519,7 +543,7 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 
 	if(ret == dave_true)
 	{
-		BLOCK_FREE((void *)((u8 *)user_ptr - USERINDEX_LEN));
+		__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
 	}
 	else
 	{

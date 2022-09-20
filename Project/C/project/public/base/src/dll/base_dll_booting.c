@@ -31,6 +31,7 @@
 #include "dave_verno.h"
 #include "base_dll.h"
 #include "base_dll_main.h"
+#include "base_dll_memory.h"
 #include "dll_log.h"
 
 static void *_dave_main_thread_id = NULL;
@@ -247,6 +248,8 @@ dave_dll_init(
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
+	dave_dll_memory();	
+
 	_dave_dll_init(
 		my_verno, work_mode,
 		thread_number,

@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXBUF (16)
+#define MAXBUF (32)
 #define MAXCHARS (LOG_BUFFER_LENGTH)
 
 static s8 _trace_buf[MAXBUF][MAXCHARS];

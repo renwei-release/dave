@@ -79,7 +79,7 @@ _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 void
 dave_dll_log(char *func, int line, char *log_msg)
 {
-	s8 log_buffer[2048];
+	s8 log_buffer[4096];
 	ub log_len;
 
 	if(log_msg != NULL)

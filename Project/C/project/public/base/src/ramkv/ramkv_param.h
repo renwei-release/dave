@@ -12,23 +12,9 @@
 #define RAMKV_NAME_MAX 64
 #define RAMKV_KEY_MAX 512
 
-#ifdef LEVEL_PRODUCT_alpha
 #define ramkvm_malloc dave_malloc
 #define ramkvm_malloc_line(len, fun, line) __base_malloc__(len, dave_false, 0x00, fun, line)
 #define ramkvm_free dave_free
-#elif defined(PERFTOOLS_3RDPARTY)
-#define ramkvm_malloc dave_perftools_malloc
-#define ramkvm_malloc_line(len, fun, line) dave_perftools_malloc(len)
-#define ramkvm_free dave_perftools_free
-#elif defined(JEMALLOC_3RDPARTY)
-#define ramkvm_malloc dave_jemalloc
-#define ramkvm_malloc_line(len, fun, line) dave_jemalloc(len)
-#define ramkvm_free dave_jefree
-#else
-#define ramkvm_malloc dave_os_malloc
-#define ramkvm_malloc_line(len, fun, line) dave_os_malloc(len)
-#define ramkvm_free dave_os_free
-#endif
 
 #include "ramkv_list_param.h"
 #include "ramkv_remote_param.h"

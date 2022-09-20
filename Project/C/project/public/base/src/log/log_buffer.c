@@ -168,11 +168,18 @@ _log_buffer_new(void)
 static inline LogBuffer *
 _log_buffer_thread_build(ub *tid)
 {
+	LogBuffer *pBuffer;
+
 	*tid = dave_os_thread_id() % LOG_TID_MAX;
 
 	if(_log_thread[*tid] == NULL)
 	{
-		_log_thread[*tid] = _log_buffer_new();
+		pBuffer = _log_buffer_new();
+
+		if(pBuffer != NULL)
+		{
+			_log_thread[*tid] = pBuffer;
+		}
 	}
 
 	return _log_thread[*tid];

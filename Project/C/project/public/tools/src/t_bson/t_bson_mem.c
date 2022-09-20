@@ -15,29 +15,8 @@
 
 #define SERIALIZE_BASE_LEN 32
 
-#if defined(__DAVE_BASE__)
-// #define DAVEMEM_ENABLE
-#endif
-#if defined(PERFTOOLS_3RDPARTY)
- #define TCMALLOC_ENABLE
-#endif
-#if defined(JEMALLOC_3RDPARTY)
- #define JEMALLOC_ENABLE
-#endif
-
-#if defined(DAVEMEM_ENABLE)
 #define BSON_MALLOC(len) dave_malloc(len)
 #define BSON_FREE(ptr) dave_free(ptr)
-#elif defined(TCMALLOC_ENABLE)
-#define BSON_MALLOC(len) dave_perftools_malloc(len)
-#define BSON_FREE(ptr) dave_perftools_free(ptr)
-#elif defined(JEMALLOC_ENABLE)
-#define BSON_MALLOC(len) dave_jemalloc(len)
-#define BSON_FREE(ptr) dave_jefree(ptr)
-#else
-#define BSON_MALLOC(len) dave_os_malloc(len)
-#define BSON_FREE(ptr) dave_os_free(ptr)
-#endif
 
 static inline void *
 _t_bson_mem_malloc(size_t len)

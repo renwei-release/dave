@@ -17,7 +17,22 @@
 #include "dos_welcome.h"
 #include "dos_log.h"
 
+#define CFG_DOS_IS_PRIVATE "DOSIsPrivate"
+
 static ThreadId _dos_thread = INVALID_THREAD_ID;
+
+static ub
+_base_dos_is_private(void)
+{
+	if(cfg_get_bool(CFG_DOS_IS_PRIVATE, dave_true) == dave_true)
+	{
+		return THREAD_PRIVATE_FLAG;
+	}
+	else
+	{
+		return 0x00;
+	}
+}
 
 static void
 _base_dos_init(MSGBODY *task_msg)
@@ -56,9 +71,11 @@ _base_dos_exit(MSGBODY *task_msg)
 void
 base_dos_init(void)
 {
+	ub thread_flag = THREAD_THREAD_FLAG|_base_dos_is_private();
+
 	dos_cmd_init();
 
-	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 1, THREAD_THREAD_FLAG, _base_dos_init, _base_dos_main, _base_dos_exit);
+	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 1, thread_flag, _base_dos_init, _base_dos_main, _base_dos_exit);
 	if(_dos_thread == INVALID_THREAD_ID)
 		base_restart(DOS_THREAD_NAME);
 }

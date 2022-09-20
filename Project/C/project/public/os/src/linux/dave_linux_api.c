@@ -39,7 +39,7 @@
 // =====================================================================
 
 void *
-dave_os_malloc(ub len)
+dave_os_malloc(size_t len)
 {
 	if(len == 0)
 	{

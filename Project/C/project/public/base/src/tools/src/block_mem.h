@@ -10,27 +10,6 @@
 #include "dave_3rdparty.h"
 #include "dave_os.h"
 
-#if defined(PERFTOOLS_3RDPARTY)
-#define TCMALLOC_ENABLE
-#endif
-#if defined(JEMALLOC_3RDPARTY)
-#define JEMALLOC_ENABLE
-#endif
-
-#if defined(TCMALLOC_ENABLE)
-#define BLOCK_MALLOC(len) dave_perftools_malloc(len)
-#define BLOCK_FREE(ptr) dave_perftools_free(ptr)
-#define BLOCK_SIZE(ptr) dave_perftools_size(ptr)
-#elif defined(JEMALLOC_ENABLE)
-#define BLOCK_MALLOC(len) dave_jemalloc(len)
-#define BLOCK_FREE(ptr) dave_jefree(ptr)
-#define BLOCK_SIZE(ptr) dave_jelen(ptr)
-#else
-#define BLOCK_MALLOC(len) dave_os_malloc(len)
-#define BLOCK_FREE(ptr) dave_os_free(ptr)
-#define BLOCK_SIZE(ptr) dave_os_size(ptr)
-#endif
-
 #define CORE_MEM_MAX 204800
 #define FREE_MEM_MAX 32
 
@@ -57,6 +36,12 @@ typedef struct {
 
 	BlockMemCore core[CORE_MEM_MAX];
 } BlockMem;
+
+typedef void * (* block_mem_malloc_fun)(size_t length);
+typedef void (* block_mem_free_fun)(void *ptr);
+
+extern block_mem_malloc_fun __block_mem_malloc__;
+extern block_mem_free_fun __block_mem_free__;
 
 void block_mem_reset(BlockMem *pBlock, ub block_number);
 

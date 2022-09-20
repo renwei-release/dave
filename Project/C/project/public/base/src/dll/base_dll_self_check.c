@@ -11,9 +11,6 @@
 #include "dave_tools.h"
 #include "dll_log.h"
 
-extern void (*__free_hook)(void *ptr);
-extern void *(*__malloc_hook)(size_t size);
-
 // =====================================================================
 
 int
@@ -48,9 +45,6 @@ dave_dll_self_check(char *string_data, int int_data, float float_data, dll_check
 			return -1;
 		}
 	}
-
-	DLLLOG("malloc:%lx __malloc_hook:%lx free:%lx __free_hook:%lx",
-		malloc, __malloc_hook, free, __free_hook);
 
 	return 0;
 }

@@ -58,6 +58,9 @@
 #ifdef JEMALLOC_DEFINE_MADVISE_FREE
 #  define JEMALLOC_MADV_FREE 8
 #endif
+#ifndef MADV_FREE
+#  define JEMALLOC_MADV_FREE 8
+#endif
 
 static const bool config_debug =
 #ifdef JEMALLOC_DEBUG

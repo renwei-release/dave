@@ -45,7 +45,7 @@ __exter_malloc__(ub len, s8 *file, ub line)
 #ifdef EXTER_ENABLE_BLOCK
 	return block_malloc(_exter_mem, len, file, line);
 #else
-	return BLOCK_MALLOC(len);
+	return __block_mem_malloc__((size_t)len);
 #endif
 }
 
@@ -55,7 +55,7 @@ __exter_free__(void *ptr, s8 *file, ub line)
 #ifdef EXTER_ENABLE_BLOCK
 	return block_free(_exter_mem, ptr, file, line);
 #else
-	BLOCK_FREE(ptr);
+	__block_mem_free__(ptr);
 	return dave_true;
 #endif
 }

@@ -20,7 +20,7 @@ _mem_test_memory_len_(ub len)
 
 	ptr = dave_jemalloc(len);
 
-	MEMLOG("ptr len:%d/%d", len, dave_jelen(ptr));
+	MEMLOG("ptr len:%d", len);
 
 	dave_jefree(ptr);
 #endif

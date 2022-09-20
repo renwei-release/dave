@@ -378,7 +378,6 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 {
 	u8 *last_data_ptr;
 	ub last_data_len;
-	u8 *new_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
 
 	if(process_len > pRxTx->rx_buffer_len)
 	{
@@ -393,17 +392,21 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 	*permutation_ptr = pRxTx->rx_buffer_ptr;
 	*permutation_len = process_len;
 
-	pRxTx->rx_buffer_ptr = new_buffer_ptr;
-	pRxTx->rx_buffer_len = last_data_len;
-
 	if(last_data_len > 0)
 	{
+		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
+		pRxTx->rx_buffer_len = last_data_len;
 		dave_memcpy(pRxTx->rx_buffer_ptr, last_data_ptr, last_data_len);
-	}
 
-	if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
+		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
+		{
+			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+		}
+	}
+	else
 	{
-		pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
+		pRxTx->rx_buffer_ptr = NULL;
+		pRxTx->rx_buffer_len = 0;
 	}
 }
 
@@ -827,8 +830,8 @@ _base_rxtx_input(dave_bool preloading, RXTX *pRxTx, u8 *data_ptr, ub data_len, R
 	receive_fun = pRxTx->receive_fun;
 	if(receive_fun == NULL)
 	{
-		RTLOG("receive_fun is empty! port:%d <%s:%d>",
-			pRxTx->port,
+		RTLOG("receive_fun is empty! port:%d data_len:%d <%s:%d>",
+			pRxTx->port, data_len,
 			pRxTx->owner_file_name, pRxTx->owner_file_line);
 		return data_len;
 	}
@@ -1081,7 +1084,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 		if((pRxTx->socket != INVALID_SOCKET_ID) && (pRxTx->socket >= 0))
 		{
-			while((++ safe_counter) <= RECV_COUNTER_MAX)
+			while((pRxTx->rx_buffer_ptr != NULL) && ((++ safe_counter) <= RECV_COUNTER_MAX))
 			{
 				backup_rx_buf_len = pRxTx->rx_buffer_len;
 
