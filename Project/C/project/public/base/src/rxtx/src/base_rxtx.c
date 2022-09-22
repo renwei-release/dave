@@ -405,7 +405,7 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 	}
 	else
 	{
-		pRxTx->rx_buffer_ptr = NULL;
+		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
 		pRxTx->rx_buffer_len = 0;
 	}
 }
@@ -1197,14 +1197,11 @@ _base_rxtx_show(void)
 static void
 _base_rxtx_update_buffer_length(void)
 {
-	_rxtx_buffer_cfg_length = cfg_get_ub(RXTX_BUFFER_CFG_NAME);
-	if(_rxtx_buffer_cfg_length == 0)
-	{
-		_rxtx_buffer_cfg_length = RX_TX_BUF_SETUP;
-		cfg_set_ub(RXTX_BUFFER_CFG_NAME, _rxtx_buffer_cfg_length);
-	}
+	_rxtx_buffer_cfg_length = cfg_get_ub(RXTX_BUFFER_CFG_NAME, RX_TX_BUF_SETUP);
 	if(_rxtx_buffer_cfg_length < RX_TX_BUF_MIN)
+	{
 		_rxtx_buffer_cfg_length = RX_TX_BUF_MIN;
+	}
 }
 
 // =====================================================================

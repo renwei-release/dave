@@ -71,29 +71,31 @@ _dave_dll_mode_decode(char *work_mode)
 }
 
 static void
-_dave_dll_sigaction_hander(int sig)
+_dave_dll_sigaction_hander(int signum, siginfo_t *info, void *secret)
 {
-	if(sig == TIMER_SIG)
+	if(signum == TIMER_SIG)
 	{
-		dave_os_timer_notify((unsigned long)sig);
+		dave_os_timer_notify((unsigned long)signum);
 	}
-	else if(sig == KILL_SIG)
+	else if(signum == KILL_SIG)
 	{
 		base_restart("KILL");
+	}
+	else
+	{
+		printf("========== sigaction hander (%d) ==========\n", signum);
 	}
 }
 
 static void
 _dave_dll_sigaction_set(int sig)
 {
-	sigset_t sig_set;
 	struct sigaction act;	
 	struct sigaction oact;
-	
-	act.sa_handler = _dave_dll_sigaction_hander;
-	sigemptyset(&sig_set);
-	act.sa_mask = sig_set;
-	act.sa_flags = 0;
+
+	memset(&act, 0X00, sizeof(act));
+	act.sa_sigaction = _dave_dll_sigaction_hander;
+	act.sa_flags = SA_ONSTACK | SA_SIGINFO;
 
 	sigaction(sig, &act, &oact);
 }
@@ -103,6 +105,8 @@ _dave_dll_inner_signo(void)
 {
 	_dave_dll_sigaction_set(TIMER_SIG);
 	_dave_dll_sigaction_set(KILL_SIG);
+	_dave_dll_sigaction_set(ABRT_SIG);
+	_dave_dll_sigaction_set(SEGV_SIG);
 }
 
 static void *
@@ -113,10 +117,13 @@ _dave_dll_outer_loop(void)
 	int ret;
 
 	sigemptyset(&set);
+
 	sigaddset(&set, TIMER_SIG);
 	sigaddset(&set, QUIT_SIG);
 	sigaddset(&set, IO_SIG);
 	sigaddset(&set, KILL_SIG);
+	sigaddset(&set, ABRT_SIG);
+	sigaddset(&set, SEGV_SIG);
 
 	while(1)
 	{
@@ -124,10 +131,16 @@ _dave_dll_outer_loop(void)
 
 		if (ret == 0)
 		{
-			_dave_dll_sigaction_hander(sig);
+			_dave_dll_sigaction_hander(sig, NULL, NULL);
 
-			if (sig == QUIT_SIG)
+			if(sig == QUIT_SIG)
 			{
+				printf("========== QUIT_SIG(%d) ==========\n", sig);
+				break;
+			}
+			if(sig == ABRT_SIG)
+			{
+				printf("========== ABRT_SIG(%d) ==========\n", sig);
 				break;
 			}
 		}

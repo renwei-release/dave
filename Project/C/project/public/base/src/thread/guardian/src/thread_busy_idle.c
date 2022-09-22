@@ -343,13 +343,7 @@ _thread_busy_idle_check(void)
 static void
 _thread_busy_idle_cfg_reset(void)
 {
-	_thread_busy_msg_notify_min = base_cfg_get_ub(CFG_THREAD_BUSY_MSG_MIN);
-
-	if(_thread_busy_msg_notify_min == 0)
-	{
-		_thread_busy_msg_notify_min = THREAD_BUSY_MSG_NOTIFY_MIN;
-		base_cfg_set_ub(CFG_THREAD_BUSY_MSG_MIN, _thread_busy_msg_notify_min);
-	}
+	_thread_busy_msg_notify_min = cfg_get_ub(CFG_THREAD_BUSY_MSG_MIN, THREAD_BUSY_MSG_NOTIFY_MIN);
 
 	THREADDEBUG("_thread_busy_msg_notify_min:%d", _thread_busy_msg_notify_min);
 }

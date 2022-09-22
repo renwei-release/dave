@@ -28,6 +28,35 @@
 static ThreadId _log_server_thread = INVALID_THREAD_ID;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static s32 _log_server_socket = INVALID_SOCKET_ID;
+static dave_bool _log_server_trace_enable = dave_false;
+
+static void
+_log_server_debug(ThreadId src, DebugReq *pReq)
+{
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
+
+	if(dave_strcmp(pReq->msg, "e") == dave_true)
+	{
+		dave_snprintf(pRsp->msg, sizeof(pRsp->msg), "enable log trace!");
+		_log_server_trace_enable = dave_true;
+	}
+	else if(dave_strcmp(pReq->msg, "d") == dave_true)
+	{
+		dave_snprintf(pRsp->msg, sizeof(pRsp->msg), "disable log trace!");
+		_log_server_trace_enable = dave_false;
+	}
+
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
+}
+
+static inline void
+_log_server_trace(s8 *log_file, s8 *log_ptr, ub log_len)
+{
+	if(_log_server_trace_enable == dave_false)
+		return;
+
+	LOGLOG("log_file:%s log_len:%d log_ptr:%s", log_file, log_len, log_ptr);
+}
 
 static inline ub
 _log_server_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info)
@@ -61,6 +90,8 @@ _log_server_log_save(
 	ub log_file_len;
 
 	log_file_len = _log_server_build_log_file_name(log_file_name, sizeof(log_file_name), project_name, device_info);
+
+	_log_server_trace(log_file_name, log_ptr, log_len);
 
 	dave_snprintf(&log_file_name[log_file_len], sizeof(log_file_name)-log_file_len, ".json");
 	log_save_json_file(log_file_name, level, log_ptr, log_len);
@@ -183,6 +214,8 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 
 	_log_server_build_chain_file_name(log_file_name, sizeof(log_file_name), chain_name);
 
+	_log_server_trace(log_file_name, (s8 *)(&frame[frame_index]), chain_len);
+
 	log_save_chain_file(log_file_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
 }
 
@@ -234,12 +267,7 @@ _log_server_bind_req(void)
 	pReq->NetInfo.addr_type = NetAddrIPType;
 	pReq->NetInfo.addr.ip.ver = IPVER_IPV4;
 	dave_memset(pReq->NetInfo.addr.ip.ip_addr, 0x00, 16);
-	pReq->NetInfo.port = cfg_get_ub(CFG_LOG_SERVER_PORT);
-	if(pReq->NetInfo.port == 0)
-	{
-		pReq->NetInfo.port = LOG_SERVICE_PORT;
-		cfg_set_ub(CFG_LOG_SERVER_PORT, pReq->NetInfo.port);
-	}
+	pReq->NetInfo.port = cfg_get_ub(CFG_LOG_SERVER_PORT, LOG_SERVICE_PORT);
 	pReq->NetInfo.fixed_src_flag = NotFixedPort;
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
@@ -300,6 +328,9 @@ _log_server_main(MSGBODY *msg)
 {	
 	switch((ub)msg->msg_id)
 	{
+		case MSGID_DEBUG_REQ:
+				_log_server_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
 		case MSGID_RESTART_REQ:
 		case MSGID_POWER_OFF:
 				_log_server_reboot((RESTARTREQMSG *)(msg->msg_body));

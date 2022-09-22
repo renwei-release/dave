@@ -73,6 +73,8 @@ _linux_main_thread(void *arg)
 
 	dave_os_thread_exit(_dave_main_thread_id);
 
+	printf("========== KILL ME:%d ==========\n", getpid());
+
 	kill(getpid(), QUIT_SIG);
 
 	return NULL;
@@ -86,10 +88,13 @@ _linux_handle_signal(void)
 	int ret;
 
 	sigemptyset(&set);
+
 	sigaddset(&set, TIMER_SIG);
 	sigaddset(&set, QUIT_SIG);
 	sigaddset(&set, IO_SIG);
 	sigaddset(&set, KILL_SIG);
+	sigaddset(&set, ABRT_SIG);
+	sigaddset(&set, SEGV_SIG);
 
 	while (1)
 	{

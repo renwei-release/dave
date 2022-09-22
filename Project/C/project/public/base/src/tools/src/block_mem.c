@@ -401,7 +401,6 @@ _block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *
 
 	if(pBlock->core_number >= CORE_MEM_MAX)
 	{
-		BLOCKMEMLOG("exter mem:%d!", pBlock->core_number);
 		__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
 		return NULL;
 	}
@@ -487,7 +486,6 @@ _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 	ptr = __block_mem_malloc__(malloc_len);
 	if(ptr == NULL)
 	{
-		BLOCKMEMLOG("mem null<%d>!", pBlock->core_number);
 		return NULL;
 	}
 
@@ -512,14 +510,14 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	core_index = _block_mem_user_ptr_to_core_index(user_ptr);
 	if(core_index >= CORE_MEM_MAX)
 	{
-		BLOCKMEMLOG("find invalid core_index:%d user_ptr:%lx <%s:%d>", core_index, user_ptr, file, line);
+		BLOCKMEMABNOR("find invalid core_index:%d user_ptr:%lx <%s:%d>", core_index, user_ptr, file, line);
 		return dave_false;
 	}
 
 	pCore = &(pBlock->core[core_index]);
 	if(pCore->user_ptr != user_ptr)
 	{
-		BLOCKMEMLOG("the ptr:%lx/%lx free failed! len:%d (c-%s:%d/m-%s:%d/f-%s:%d)",
+		BLOCKMEMABNOR("the ptr:%lx/%lx free failed! len:%d (c-%s:%d/m-%s:%d/f-%s:%d)",
 			user_ptr, pCore->user_ptr,
 			pCore->len,
 			file, line,
@@ -529,7 +527,7 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 	if(_block_mem_check_overflow(user_ptr, pCore->len) == dave_false)
 	{
-		BLOCKMEMLOG("%d Overflow<%x>:(c-%s:%d/m-%s:%d/f-%s:%d)",
+		BLOCKMEMABNOR("%d Overflow<%x>:(c-%s:%d/m-%s:%d/f-%s:%d)",
 			pCore->len,
 			((u8 *)(pCore->user_ptr))[pCore->len],
 			file, line,
@@ -547,7 +545,7 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 	else
 	{
-		BLOCKMEMLOG("the ptr:%lx free failed! <%s:%d>", user_ptr, file, line);
+		BLOCKMEMABNOR("the ptr:%lx free failed! <%s:%d>", user_ptr, file, line);
 	}
 
 	return ret;

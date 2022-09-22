@@ -26,7 +26,7 @@ dave_bool base_cfg_remote_internal_add(s8 *name, s8 *value);
 dave_bool base_cfg_remote_internal_del(s8 *name);
 
 RetCode base_cfg_set_ub(s8 *cfg_name, ub ub_value);
-ub base_cfg_get_ub(s8 *cfg_name);
+ub base_cfg_get_ub(s8 *cfg_name, ub default_value);
 RetCode base_cfg_set_bool(s8 *cfg_name, dave_bool bool_value);
 dave_bool base_cfg_get_bool(s8 *cfg_name, dave_bool default_value);
 

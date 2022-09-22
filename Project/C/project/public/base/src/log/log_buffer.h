@@ -9,8 +9,8 @@
 #ifndef __LOG_BUFFER_H__
 #define __LOG_BUFFER_H__
 
-#define LOG_BUFFER_MAX (4096)
-#define LOG_BUFFER_LENGTH (1400)
+#define LOG_BUFFER_MAX (1000)
+#define LOG_BUFFER_LENGTH (4096)
 
 void log_buffer_init(void);
 

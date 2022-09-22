@@ -18,6 +18,8 @@ extern "C"{
 #define BREAK_SIG    (SIGRTMIN)
 #define IO_SIG       (SIGIO)
 #define KILL_SIG     (SIGTERM)
+#define ABRT_SIG     (SIGABRT)
+#define SEGV_SIG     (SIGSEGV)
 
 #include "dave_os_api.h"
 #include "dave_os_file.h"

@@ -189,6 +189,7 @@ _sync_client_run_cfg_update(CFGUpdate *pUpdate)
 		&& (pUpdate->cfg_length == dave_strlen(pUpdate->cfg_value))
 		&& (t_is_all_show_char((u8 *)(pUpdate->cfg_value), pUpdate->cfg_length) == dave_true))
 	{
+		SYNCLOG("SYNC server write config ( %s : %s )", pUpdate->cfg_name, pUpdate->cfg_value);
 		cfg_set(pUpdate->cfg_name, pUpdate->cfg_value, pUpdate->cfg_length);
 	}
 }
@@ -196,7 +197,6 @@ _sync_client_run_cfg_update(CFGUpdate *pUpdate)
 static void
 _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
-	CFGRemoteUpdate boradcast_update = *pUpdate;
 	dave_bool broadcast_flag = dave_false;
 	s8 cfg_value[8196];
 
@@ -225,7 +225,9 @@ _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 
 	if(broadcast_flag == dave_true)
 	{
-		broadcast_local(MSGID_CFG_REMOTE_UPDATE, &boradcast_update);
+		CFGRemoteUpdate *boradcast_update = thread_msg(boradcast_update);
+		*boradcast_update = *pUpdate;
+		broadcast_local(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
 	}
 }
 

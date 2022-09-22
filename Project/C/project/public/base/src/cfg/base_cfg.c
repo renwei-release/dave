@@ -230,7 +230,7 @@ base_cfg_set_ub(s8 *cfg_name, ub ub_value)
 }
 
 ub
-base_cfg_get_ub(s8 *cfg_name)
+base_cfg_get_ub(s8 *cfg_name, ub default_value)
 {
 	s8 value_ptr[128];
 	ub ub_data;
@@ -241,7 +241,9 @@ base_cfg_get_ub(s8 *cfg_name)
 	}
 	else
 	{
-		ub_data = 0;
+		base_cfg_set_ub(cfg_name, default_value);
+	
+		ub_data = default_value;
 	}
 
 	return ub_data;
@@ -262,6 +264,7 @@ dave_bool
 base_cfg_get_bool(s8 *cfg_name, dave_bool default_value)
 {
 	s8 value_ptr[128];
+	ub bool_data;
 
 	if(cfg_get(cfg_name, (u8 *)value_ptr, sizeof(value_ptr)) == dave_true)
 	{
@@ -270,19 +273,21 @@ base_cfg_get_bool(s8 *cfg_name, dave_bool default_value)
 		if((dave_strcmp(value_ptr, "true") == dave_true)
 			|| (dave_strcmp(value_ptr, "enable") == dave_true))
 		{
-			return dave_true;
+			bool_data = dave_true;
 		}
 		else
 		{
-			return dave_false;
+			bool_data = dave_false;
 		}
 	}
 	else
 	{
 		base_cfg_set_bool(cfg_name, default_value);
 
-		return default_value;
+		bool_data = default_value;
 	}
+
+	return bool_data;
 }
 
 #endif

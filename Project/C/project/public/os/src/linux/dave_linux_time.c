@@ -166,13 +166,16 @@ dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uin
 	struct tm tnow;
 	
 	gettimeofday(&tv, &tz);
-	
+
+	dave_memset(&tnow, 0x00, sizeof(tnow));
+
 	tnow.tm_year = year - 1900;
 	tnow.tm_mon = month - 1;
 	tnow.tm_mday = day;
 	tnow.tm_hour = hour;
 	tnow.tm_min = minute;
 	tnow.tm_sec = second;
+
 	tv.tv_sec = mktime(&tnow);
 
 	if(settimeofday((const struct timeval *)&tv, NULL) == 0)
