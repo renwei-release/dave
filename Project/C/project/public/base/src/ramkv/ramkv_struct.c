@@ -33,7 +33,7 @@ ___ramkv_pv_booting___(void)
 }
 
 static KV *
-___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line)
+___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback outback_fun, s8 *fun, ub line)
 {
 	KV *pKV;
 
@@ -63,7 +63,7 @@ ___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback
 			break;
 	}
 
-	ramkv_timer_init(pKV, out_second, callback_fun);
+	ramkv_timer_init(pKV, out_second, outback_fun);
 
 	return pKV;
 }
@@ -110,7 +110,7 @@ ramkv_struct_exit(void)
 }
 
 KV *
-__ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line)
+__ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback outback_fun, s8 *fun, ub line)
 {
 	KV *pKV = NULL;
 
@@ -118,11 +118,11 @@ __ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_seco
 
 	if(external_call == dave_true)
 	{
-		SAFECODEv2W(_ramkv_struct_global_pv, pKV = ___ramkv_malloc___(name, attrib, out_second, callback_fun, fun, line););
+		SAFECODEv2W(_ramkv_struct_global_pv, pKV = ___ramkv_malloc___(name, attrib, out_second, outback_fun, fun, line););
 	}
 	else
 	{
-		pKV = ___ramkv_malloc___(name, attrib, out_second, callback_fun, fun, line);
+		pKV = ___ramkv_malloc___(name, attrib, out_second, outback_fun, fun, line);
 	}
 
 	return pKV;

@@ -41,7 +41,7 @@ _uip_server_input(HTTPRecvReq *pReq, void *pJson)
 static UIPType
 _uip_server_port_to_io_type(ub listen_port)
 {
-	if((listen_port == UIP_SERVER_HTTP_PORT) || (listen_port == UIP_SERVER_HTTPs_PORT))
+	if(listen_port == UIP_SERVER_HTTPs_PORT)
 	{
 		return UIPType_uip;
 	}

@@ -46,7 +46,7 @@ typedef struct {
 	ub base_timer;
 	ub out_times;
 	dave_bool inq_update_timer;
-	ramkv_time_callback callback_fun;
+	ramkv_time_callback outback_fun;
 	TIMERID timer_id;
 	KVTimerLineList *timer_line;
 	void *key_ramkv;

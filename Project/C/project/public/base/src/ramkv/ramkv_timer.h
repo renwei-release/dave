@@ -8,7 +8,7 @@
 #ifndef __RAMKV_TIMER_H__
 #define __RAMKV_TIMER_H__
 
-void ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback callback_fun);
+void ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback outback_fun);
 
 void ramkv_timer_exit(KV *pKV);
 

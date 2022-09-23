@@ -96,12 +96,15 @@ http_load_content_type(HttpContentType type)
 }
 
 s8 *
-http_find_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key)
+http_find_kv(HttpKeyValue *head_ptr, ub head_len, char *key)
 {
 	ub head_index;
 
 	for(head_index=0; head_index<head_len; head_index++)
 	{
+		if(head_ptr[head_index].key[0] == '\0')
+			break;
+	
 		if(dave_strcmp(head_ptr[head_index].key, key) == dave_true)
 		{
 			return head_ptr[head_index].value;
@@ -112,7 +115,7 @@ http_find_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key)
 }
 
 dave_bool
-http_build_ramkv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value)
+http_build_kv(HttpKeyValue *head_ptr, ub head_len, char *key, char *value)
 {
 	ub empty_index, head_index;
 

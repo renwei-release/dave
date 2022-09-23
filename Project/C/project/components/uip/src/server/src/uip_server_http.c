@@ -11,7 +11,7 @@
 #include "uip_server_http.h"
 #include "uip_log.h"
 
-#define UIP_HTTP_MAX_LINK 32
+#define UIP_HTTP_MAX_LINK 3
 
 typedef enum {
 	UIPHttpLinkState_idle,
@@ -29,7 +29,7 @@ typedef struct {
 	HTTPListenType type;
 	s8 path[DAVE_PATH_LEN];
 
-	http_server_recv_fun recv_fun;
+	uip_server_recv_fun recv_fun;
 } UIPHttpLink;
 
 static TLock _uip_http_link_pv;
@@ -282,7 +282,7 @@ _uip_server_http_stop_(u16 port)
 }
 
 static dave_bool
-_uip_server_http_start(u16 port, HTTPListenType type, s8 *path, http_server_recv_fun recv_fun)
+_uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
 {
 	UIPHttpLink *pLink;
 
@@ -368,7 +368,7 @@ uip_server_http_exit(void)
 }
 
 dave_bool
-uip_server_http_start(u16 port, HTTPListenType type, s8 *path, http_server_recv_fun recv_fun)
+uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
 {
 	dave_bool ret;
 
@@ -383,7 +383,7 @@ uip_server_http_stop(u16 port)
 	SAFECODEv1(_uip_http_link_pv, { _uip_server_http_stop(port); } );
 }
 
-http_server_recv_fun
+uip_server_recv_fun
 uip_server_http_recv_fun(u16 port)
 {
 	UIPHttpLink *pLink;

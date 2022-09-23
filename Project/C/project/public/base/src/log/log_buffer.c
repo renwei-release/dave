@@ -158,8 +158,8 @@ _log_buffer_new(void)
 
 	if(pBuffer == NULL)
 	{
-		LOGLOG("The log is generated too fast, please define a larger cache(%d)! lost:%d",
-			LOG_BUFFER_MAX, _log_lost_buffer);
+		LOGLTRACE(60,1,"The log is generated too fast, please define a larger cache(%d)! lost:%d",
+			LOG_BUFFER_MAX, _log_lost_counter);
 	}
 
 	return pBuffer;
@@ -201,8 +201,8 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 	pBuffer = _log_buffer_thread_build(&tid);
 	if(pBuffer == NULL)
 	{
-		LOGLOG("_log_buffer_thread_build tid:%d failed! log:%d/%s",
-			tid, log_len, log_ptr);
+		LOGDEBUG("_log_buffer_thread_build tid:%d failed! log:%d/%s lost:%d",
+			tid, log_len, log_ptr, _log_lost_counter);
 		return dave_false;
 	}
 

@@ -14,8 +14,8 @@
 #include "http_tools.h"
 #include "http_log.h"
 
-#define HTTPS_DISTRIBUTOR_SERVER_PORT 1823
-#define HTTP_DISTRIBUTOR_SERVER_PORT 1824
+static ub _distributor_port_list[] = { 443, 1823, 0 };
+
 #define DISTRIBUTOR_THREAD_MAX 8
 #define DISTRIBUTOR_ROOT_PATH "/"
 
@@ -85,7 +85,7 @@ _distributor_http_close_rsp(MSGBODY *ptr)
 static void
 _distributor_http_close_req(ub port)
 {
-	HTTPCloseReq *pReq = thread_msg(pReq);
+	HTTPCloseReq *pReq = thread_reset_msg(pReq);
 
 	pReq->listen_port = port;
 	pReq->ptr = NULL;
@@ -111,10 +111,7 @@ _distributor_http_listen_req(ub port)
 
 	pReq->listen_port = port;
 	pReq->rule = LocationMatch_CaseRegular;
-	if(port == HTTPS_DISTRIBUTOR_SERVER_PORT)
-		pReq->type = ListenHttps;
-	else
-		pReq->type = ListenHttp;
+	pReq->type = ListenHttps;
 	if(dave_strlen(DISTRIBUTOR_ROOT_PATH) > 0)
 	{
 		dave_snprintf(pReq->path, sizeof(pReq->path), "%s", DISTRIBUTOR_ROOT_PATH);
@@ -150,7 +147,7 @@ _distributor_clean_info(void *ramkv, s8 *key)
 {
 	HttpDistributorInfo *pInfo;
 
-	pInfo = base_ramkv_del_key_ptr(_distributor_ramkv, key);
+	pInfo = kv_del_key_ptr(_distributor_ramkv, key);
 	if(pInfo == NULL)
 	{
 		return RetCode_empty_data;
@@ -167,7 +164,6 @@ _distributor_listen_rsp(ThreadId dst, RetCode ret, s8 *path, void *ptr)
 	HTTPListenRsp *pRsp = thread_reset_msg(pRsp);
 
 	pRsp->ret = ret;
-	pRsp->listen_port = HTTP_DISTRIBUTOR_SERVER_PORT;
 	_distributor_copy_path(pRsp->path, path);
 	pRsp->ptr = ptr;
 
@@ -189,7 +185,7 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 	t_stdio_remove_the_char_on_frist(pReq->path, '/');
 	t_stdio_remove_the_char_on_frist(pReq->path, '\\');
 
-	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, pReq->path);
+	pInfo = kv_inq_key_ptr(_distributor_ramkv, pReq->path);
 	if(pInfo != NULL)
 	{
 		if(dave_strcmp(pInfo->thread_name, thread_name(src)) == dave_false)
@@ -202,7 +198,7 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 	{
 		pInfo = _distributor_malloc_info(src, pReq);
 
-		base_ramkv_add_key_ptr(_distributor_ramkv, pInfo->path, pInfo);
+		kv_add_key_ptr(_distributor_ramkv, pInfo->path, pInfo);
 	}
 
 	HTTPLOG("%s listen on path:%s success! %d/%d/%d/%d",
@@ -217,10 +213,9 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 static void
 _distributor_close_rsp(ThreadId dst, RetCode ret, void *ptr)
 {
-	HTTPCloseRsp *pRsp = thread_msg(pRsp);
+	HTTPCloseRsp *pRsp = thread_reset_msg(pRsp);
 
 	pRsp->ret = ret;
-	pRsp->listen_port = HTTP_DISTRIBUTOR_SERVER_PORT;
 	pRsp->ptr = ptr;
 
 	id_msg(dst, HTTPMSG_CLOSE_RSP, pRsp);
@@ -231,10 +226,10 @@ _distributor_close_req(ThreadId src, HTTPCloseReq *pReq)
 {
 	HttpDistributorInfo *pInfo;
 
-	pInfo = base_ramkv_inq_key_ptr(_distributor_ramkv, pReq->path);
+	pInfo = kv_inq_key_ptr(_distributor_ramkv, pReq->path);
 	if(pInfo != NULL)
 	{
-		base_ramkv_del_key_ptr(_distributor_ramkv, pInfo->path);
+		kv_del_key_ptr(_distributor_ramkv, pInfo->path);
 
 		_distributor_free_info(pInfo);
 	}
@@ -249,7 +244,7 @@ _distributor_close_req(ThreadId src, HTTPCloseReq *pReq)
 static void
 _distributor_recv_error_rsp(RetCode ret, void *ptr)
 {
-	HTTPRecvRsp *pRsp = thread_msg(pRsp);
+	HTTPRecvRsp *pRsp = thread_reset_msg(pRsp);
 
 	pRsp->ret = ret;
 	pRsp->content_type = HttpContentType_json;
@@ -260,24 +255,27 @@ _distributor_recv_error_rsp(RetCode ret, void *ptr)
 	id_msg(_http_thread, HTTPMSG_RECV_RSP, pRsp);
 }
 
-static void
+static inline void
 _distributor_process_path(s8 *path, HTTPRecvReq *pReq)
 {
 	s8 get_path[DAVE_URL_LEN];
 
-	dave_strcpy(path, http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"), DAVE_URL_LEN);
+	dave_strcpy(path, http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"), DAVE_URL_LEN);
+
 	if(pReq->method == HttpMethod_get)
 	{
 		dave_strfind(path, (s8)'?', get_path, DAVE_URL_LEN);
 		dave_strcpy(path, get_path, DAVE_URL_LEN);
-		http_build_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI", path);
+		http_build_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI", path);
 	}
 
 	t_stdio_remove_the_char_on_frist(path, '/');
 	t_stdio_remove_the_char_on_frist(path, '\\');
+
+	dave_strcpy(pReq->remote_address, path, sizeof(pReq->remote_address));
 }
 
-static HttpDistributorInfo *
+static inline HttpDistributorInfo *
 _distributor_recv_info(MSGBODY *msg)
 {
 	HTTPRecvReq *pReq = (HTTPRecvReq *)(msg->msg_body);
@@ -286,15 +284,15 @@ _distributor_recv_info(MSGBODY *msg)
 
 	_distributor_process_path(path, pReq);
 
-	pInfo = (HttpDistributorInfo *)base_ramkv_inq_key_ptr(_distributor_ramkv, path);
+	pInfo = (HttpDistributorInfo *)kv_inq_key_ptr(_distributor_ramkv, path);
 	if(pInfo == NULL)
 	{
 		HTTPLOG("remote:%s/%d method:%d can't find the path:%s REQUEST_URI:%s QUERY_STRING:%s content:%s!",
 			pReq->remote_address, pReq->remote_port,
 			pReq->method,
 			path,
-			http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"),
-			http_find_ramkv(pReq->head, DAVE_HTTP_HEAD_MAX, "QUERY_STRING"),
+			http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "REQUEST_URI"),
+			http_find_kv(pReq->head, DAVE_HTTP_HEAD_MAX, "QUERY_STRING"),
 			pReq->content==NULL ? "NULL" : pReq->content->payload);
 	}
 
@@ -336,21 +334,35 @@ _distributor_recv_rsp(MSGBODY *msg)
 static void
 _distributor_restart(RESTARTREQMSG *pRestart)
 {
+	ub list_index;
+
 	if(pRestart->times == 1)
 	{
-		_distributor_http_close_req(HTTPS_DISTRIBUTOR_SERVER_PORT);
-		_distributor_http_close_req(HTTP_DISTRIBUTOR_SERVER_PORT);
+		for(list_index=0; list_index<1024; list_index++)
+		{
+			if(_distributor_port_list[list_index] == 0)
+				break;
+
+			_distributor_http_close_req(_distributor_port_list[list_index]);
+		}
 	}
 }
 
 static void
 _distributor_init(MSGBODY *msg)
 {
-	_distributor_ramkv = base_ramkv_malloc("http-distributor", KvAttrib_list, 0, NULL);
+	ub list_index;
+
+	_distributor_ramkv = kv_malloc("http-distributor", KvAttrib_list, 0, NULL);
 	_http_thread = thread_id(HTTP_THREAD_NAME);
 
-	_distributor_http_listen_req(HTTPS_DISTRIBUTOR_SERVER_PORT);
-	_distributor_http_listen_req(HTTP_DISTRIBUTOR_SERVER_PORT);
+	for(list_index=0; list_index<1024; list_index++)
+	{
+		if(_distributor_port_list[list_index] == 0)
+			break;
+	
+		_distributor_http_listen_req(_distributor_port_list[list_index]);
+	}
 }
 
 static void
@@ -381,7 +393,7 @@ _distributor_main(MSGBODY *msg)
 static void
 _distributor_exit(MSGBODY *msg)
 {
-	base_ramkv_free(_distributor_ramkv, _distributor_clean_info);
+	kv_free(_distributor_ramkv, _distributor_clean_info);
 
 	_distributor_ramkv = NULL;
 }

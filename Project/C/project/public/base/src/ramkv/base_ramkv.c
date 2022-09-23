@@ -82,9 +82,9 @@ base_ramkv_info(void *ramkv, s8 *info_ptr, ub info_len)
 }
 
 void *
-__base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line)
+__base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback outback_fun, s8 *fun, ub line)
 {
-	return (void *)__ramkv_malloc__(external_call, name, attrib, out_second, callback_fun, fun, line);
+	return (void *)__ramkv_malloc__(external_call, name, attrib, out_second, outback_fun, fun, line);
 }
 
 void

@@ -523,17 +523,17 @@ _ramkv_timer_out_clone_notify(KV *pKV, dave_bool *timer_out_flag)
 static inline void
 _ramkv_timer_out_notify_user(KV *pKV, KVTimerKeyList *pCloneKeyHead)
 {
-	ramkv_time_callback callback_fun = pKV->ramkv_timer.callback_fun;
+	ramkv_time_callback outback_fun = pKV->ramkv_timer.outback_fun;
 	KVTimerKeyList *pNotifyKeyHead;
 
-	if(callback_fun == NULL)
+	if(outback_fun == NULL)
 		return;
 
 	pNotifyKeyHead = pCloneKeyHead;
 
 	while(pNotifyKeyHead != NULL)
 	{
-		callback_fun(pKV, (s8 *)(pNotifyKeyHead->key_data));
+		outback_fun(pKV, (s8 *)(pNotifyKeyHead->key_data));
 	
 		pNotifyKeyHead = pNotifyKeyHead->next;
 	}
@@ -635,11 +635,11 @@ _ramkv_timer_base_time(KV *pKV, ub out_second)
 }
 
 static inline void
-_ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_callback callback_fun)
+_ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_callback outback_fun)
 {
 	s8 name_buffer[256];
 
-	if((out_second == 0) || (callback_fun == NULL))
+	if((out_second == 0) || (outback_fun == NULL))
 	{
 		return;
 	}
@@ -668,7 +668,7 @@ _ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_
 	{
 		pKV->ramkv_timer.out_times = 1;
 	}
-	pKV->ramkv_timer.callback_fun = callback_fun;
+	pKV->ramkv_timer.outback_fun = outback_fun;
 	pKV->ramkv_timer.timer_id = base_timer_param_creat(name_buffer, ramkv_timer, pKV, sizeof(void *), pKV->ramkv_timer.base_timer * 1000);
 	pKV->ramkv_timer.timer_line = NULL;
 	pKV->ramkv_timer.key_ramkv = __base_ramkv_malloc__(dave_false, name_buffer, KvAttrib_list, 0, NULL, (s8 *)__func__, (ub)__LINE__);
@@ -697,7 +697,7 @@ _ramkv_timer_exit(KVTimer *pKV)
 	}
 
 	pKV->out_times = 0;
-	pKV->callback_fun = NULL;
+	pKV->outback_fun = NULL;
 	pKV->timer_line = NULL;
 	pKV->key_ramkv = NULL;
 }
@@ -733,18 +733,18 @@ _ramkv_timer_info(KVTimer *pKV, s8 *info_ptr, ub info_len)
 // ====================================================================
 
 void
-ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback callback_fun)
+ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback outback_fun)
 {
 	dave_memset(&(pKV->ramkv_timer), 0x00, sizeof(KVTimer));
 
 	pKV->ramkv_timer.out_times = 0;
 	pKV->ramkv_timer.inq_update_timer = dave_false;
-	pKV->ramkv_timer.callback_fun = NULL;
+	pKV->ramkv_timer.outback_fun = NULL;
 	pKV->ramkv_timer.timer_id = INVALID_TIMER_ID;
 	pKV->ramkv_timer.timer_line = NULL;
 	pKV->ramkv_timer.key_ramkv = NULL;
 
-	SAFECODEv2W(pKV->ramkv_pv, _ramkv_timer_init(pKV->thread_name, pKV->name, pKV, out_second, callback_fun););
+	SAFECODEv2W(pKV->ramkv_pv, _ramkv_timer_init(pKV->thread_name, pKV->name, pKV, out_second, outback_fun););
 }
 
 void
@@ -760,7 +760,7 @@ ramkv_timer_add(KV *pKV, u8 *key_ptr, ub key_len)
 {
 	KVTimerKeyList *pMemTimeKey, *pTimeKey;
 
-	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.callback_fun == NULL))
+	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.outback_fun == NULL))
 		return;
 
 	pMemTimeKey = _ramkv_timer_key_malloc(key_ptr, key_len);
@@ -794,7 +794,7 @@ ramkv_timer_inq(KV *pKV, u8 *key_ptr, ub key_len)
 {
 	KVTimerKeyList *pTimeKey;
 
-	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.callback_fun == NULL))
+	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.outback_fun == NULL))
 		return;
 
 	pTimeKey = base_ramkv_inq_bin_ptr(pKV->ramkv_timer.key_ramkv, key_ptr, key_len);
@@ -812,7 +812,7 @@ ramkv_timer_del(KV *pKV, u8 *key_ptr, ub key_len, s8 *fun, ub line)
 	if((key_ptr == NULL) || (key_len == 0))
 		return;
 
-	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.callback_fun == NULL))
+	if((pKV->ramkv_timer.out_times == 0) || (pKV->ramkv_timer.outback_fun == NULL))
 		return;
 
 	pTimeKey = base_ramkv_del_bin_ptr(pKV->ramkv_timer.key_ramkv, key_ptr, key_len);
