@@ -158,8 +158,8 @@ _log_buffer_new(void)
 
 	if(pBuffer == NULL)
 	{
-		LOGLOG("The log is generated too fast, please define a larger cache(%d)!",
-			LOG_BUFFER_MAX);
+		LOGLOG("The log is generated too fast, please define a larger cache(%d)! lost:%d",
+			LOG_BUFFER_MAX, _log_lost_buffer);
 	}
 
 	return pBuffer;
@@ -201,9 +201,8 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 	pBuffer = _log_buffer_thread_build(&tid);
 	if(pBuffer == NULL)
 	{
-		LOGLOG("_log_buffer_thread_build tid:%d failed! lost:%d log:%d/%s",
-			tid, _log_lost_counter,
-			log_len, log_ptr);
+		LOGLOG("_log_buffer_thread_build tid:%d failed! log:%d/%s",
+			tid, log_len, log_ptr);
 		return dave_false;
 	}
 
@@ -258,6 +257,7 @@ _log_buffer_lost_msg(void)
 			sizeof(_log_lost_buffer.buffer) - _log_lost_buffer.buffer_length,
 			"***** Please note that there is not enough log space and %d logs are lost! *****\n",
 			_log_lost_counter);
+
 	_log_lost_counter = 0;
 	log_unlock();
 }
@@ -325,7 +325,19 @@ log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
 		_log_lost_counter ++;
 	}
 	log_unlock();
+	if(overflow_flag == dave_true)
+	{
+		return;
+	}
 
+	if(_log_buffer_build(level, log_ptr, log_len) == dave_false)
+	{
+		overflow_flag = dave_true;
+
+		log_lock();
+		_log_lost_counter ++;
+		log_unlock();		
+	}
 	if(overflow_flag == dave_true)
 	{
 		return;
@@ -334,11 +346,6 @@ log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
 	if(_log_lost_counter > 0)
 	{
 		_log_buffer_lost_msg();
-	}
-
-	if(_log_buffer_build(level, log_ptr, log_len) == dave_false)
-	{
-		_log_lost_counter ++;
 	}
 }
 

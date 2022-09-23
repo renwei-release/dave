@@ -77,13 +77,6 @@ func T_cgo_cbin2gobyte(bin_len int64, bin_ptr unsafe.Pointer) []byte {
 	return C.GoBytes((unsafe.Pointer)(bin_ptr), C.int(bin_len))
 }
 
-func T_cgo_gostring2cstring(go_string string) *C.char {
-	if len(go_string) == 0 {
-		return nil
-	}
-	return (*C.char)(stringStructOf(&go_string).str)
-}
-
 func T_cgo_byte_clone(src []byte) []byte {
 	dst := make([]byte, len(src))
 	copy(dst, src)

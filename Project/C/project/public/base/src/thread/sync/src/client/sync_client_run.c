@@ -185,12 +185,26 @@ _sync_client_run_thread(
 static void
 _sync_client_run_cfg_update(CFGUpdate *pUpdate)
 {
+	u8 local_value[sizeof(pUpdate->cfg_value)];
+	dave_bool set_flag = dave_true;
+
 	if((t_is_all_show_char((u8 *)(pUpdate->cfg_name), dave_strlen(pUpdate->cfg_name)) == dave_true)
 		&& (pUpdate->cfg_length == dave_strlen(pUpdate->cfg_value))
 		&& (t_is_all_show_char((u8 *)(pUpdate->cfg_value), pUpdate->cfg_length) == dave_true))
 	{
-		SYNCLOG("SYNC server write config ( %s : %s )", pUpdate->cfg_name, pUpdate->cfg_value);
-		cfg_set(pUpdate->cfg_name, pUpdate->cfg_value, pUpdate->cfg_length);
+		if(cfg_get(pUpdate->cfg_name, local_value, sizeof(local_value)) == dave_true)
+		{
+			if(dave_strcmp(pUpdate->cfg_value, local_value) == dave_true)
+			{
+				set_flag = dave_false;
+			}
+		}
+
+		if(set_flag == dave_true)
+		{
+			SYNCLOG("SYNC server update config ( %s : %s )", pUpdate->cfg_name, pUpdate->cfg_value);
+			cfg_set(pUpdate->cfg_name, pUpdate->cfg_value, pUpdate->cfg_length);
+		}
 	}
 }
 

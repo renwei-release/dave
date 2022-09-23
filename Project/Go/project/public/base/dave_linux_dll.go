@@ -18,10 +18,10 @@ package base
 #include <stdio.h>
 #include <stdlib.h>
 
-int dave_go_self_check_callback(int callback_input);
 void dave_go_init(void *);
 void dave_go_main(void *);
 void dave_go_exit(void *);
+int dave_go_self_check_callback(int);
 */
 import "C"
 import (
@@ -45,7 +45,6 @@ var _product_exit_fun func()
 //export dave_go_init
 func dave_go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
-
 	dave_module_init()
 }
 
@@ -57,7 +56,6 @@ func dave_go_main(c_data unsafe.Pointer) {
 //export dave_go_exit
 func dave_go_exit(c_data unsafe.Pointer) {
 	dave_module_exit()
-
 	_product_exit_fun()
 }
 
