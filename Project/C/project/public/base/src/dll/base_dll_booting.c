@@ -43,6 +43,7 @@ static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
 static s8 _dll_sync_domain[128] = { '\0' };
 static BaseDllRunningMode _base_dll_running_mode = BaseDllRunningMode_max;
+static pthread_t _signal_thread;
 
 static void
 _dave_dll_booting(char *my_verno)
@@ -88,42 +89,26 @@ _dave_dll_sigaction_hander(int signum, siginfo_t *info, void *secret)
 }
 
 static void
-_dave_dll_sigaction_set(int sig)
+_dave_dll_boot_set(sigset_t *set)
 {
-	struct sigaction act;	
-	struct sigaction oact;
+	sigemptyset(set);
 
-	memset(&act, 0X00, sizeof(act));
-	act.sa_sigaction = _dave_dll_sigaction_hander;
-	act.sa_flags = SA_ONSTACK | SA_SIGINFO;
-
-	sigaction(sig, &act, &oact);
-}
-
-static void
-_dave_dll_inner_signo(void)
-{
-	_dave_dll_sigaction_set(TIMER_SIG);
-	_dave_dll_sigaction_set(KILL_SIG);
-	_dave_dll_sigaction_set(ABRT_SIG);
-	_dave_dll_sigaction_set(SEGV_SIG);
+	sigaddset(set, TIMER_SIG);
+	sigaddset(set, QUIT_SIG);
+	sigaddset(set, IO_SIG);
+	sigaddset(set, KILL_SIG);
+	sigaddset(set, ABRT_SIG);
+	sigaddset(set, SEGV_SIG);
 }
 
 static void *
-_dave_dll_outer_loop(void)
+_dave_dll_wait_signal(void *arg)
 {
 	sigset_t set;
 	int sig;
 	int ret;
 
-	sigemptyset(&set);
-
-	sigaddset(&set, TIMER_SIG);
-	sigaddset(&set, QUIT_SIG);
-	sigaddset(&set, IO_SIG);
-	sigaddset(&set, KILL_SIG);
-	sigaddset(&set, ABRT_SIG);
-	sigaddset(&set, SEGV_SIG);
+	_dave_dll_boot_set(&set);
 
 	while(1)
 	{
@@ -147,6 +132,29 @@ _dave_dll_outer_loop(void)
 	}
 
 	return NULL;
+}
+
+static void
+_dave_dll_signal_thread(void)
+{
+	sigset_t set;
+	int ret;
+
+	_dave_dll_boot_set(&set);
+
+	ret = pthread_sigmask(SIG_SETMASK, &set, NULL);
+	if(ret != 0)
+	{
+		printf("pthread_sigmask failed:%d! <%s:%d>", ret, __func__, __LINE__);
+		exit(EXIT_FAILURE);
+	}
+
+	ret = pthread_create(&_signal_thread, NULL, _dave_dll_wait_signal, NULL);
+	if(ret != 0)
+	{
+		printf("pthread_create failed:%d! <%s:%d>", ret, __func__, __LINE__);
+		exit(EXIT_FAILURE);
+	}
 }
 
 static void
@@ -231,7 +239,7 @@ _dave_dll_init(
 		if((_base_dll_running_mode == BaseDllRunningMode_Inner_Loop)
 			|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Inner_Loop))
 		{
-			_dave_dll_inner_signo();
+			_dave_dll_signal_thread();
 		}
 
 		_dave_dll_wait_main_thread_ready();
@@ -276,7 +284,7 @@ dave_dll_running(void)
 	if((_base_dll_running_mode == BaseDllRunningMode_Outer_Loop)
 		|| (_base_dll_running_mode == BaseDllRunningMode_Coroutine_Outer_Loop))
 	{
-		_dave_dll_outer_loop();
+		_dave_dll_wait_signal(NULL);
 	}
 	else
 	{
