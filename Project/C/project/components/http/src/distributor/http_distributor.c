@@ -201,7 +201,7 @@ _distributor_listen_req(ThreadId src, HTTPListenReq *pReq)
 		kv_add_key_ptr(_distributor_ramkv, pInfo->path, pInfo);
 	}
 
-	HTTPLOG("%s listen on path:%s success! %d/%d/%d/%d",
+	HTTPLOG("%s listen on path:%s success! %d/%d/%d/%lx",
 		thread_name(src), _distributor_copy_path(path, pReq->path),
 		pReq->listen_port,
 		pReq->rule, pReq->type,

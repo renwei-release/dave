@@ -129,10 +129,7 @@ _timer_hardware_timer_notify(ub notify_id)
 		}
 	}
 
-	if(notify_id >= 1)
-		return RetCode_Invalid_parameter;
-	else
-		return RetCode_OK;
+	return RetCode_OK;
 }
 
 static ub

@@ -31,7 +31,6 @@
 #include "dave_verno.h"
 #include "base_dll.h"
 #include "base_dll_main.h"
-#include "base_dll_memory.h"
 #include "dll_log.h"
 
 static void *_dave_main_thread_id = NULL;
@@ -44,6 +43,7 @@ static dll_callback_fun _dll_exit_fun = NULL;
 static s8 _dll_sync_domain[128] = { '\0' };
 static BaseDllRunningMode _base_dll_running_mode = BaseDllRunningMode_max;
 static pthread_t _signal_thread;
+static sigset_t _signal_set;
 
 static void
 _dave_dll_booting(char *my_verno)
@@ -89,30 +89,46 @@ _dave_dll_sigaction_hander(int signum, siginfo_t *info, void *secret)
 }
 
 static void
-_dave_dll_boot_set(sigset_t *set)
+_dave_dll_sigaction_kill(int signum, siginfo_t *info, void *secret)
+{
+	pthread_kill(_signal_thread, signum);
+}
+
+static void
+_dave_dll_sigaction_set(int sig)
+{
+	struct sigaction act;	
+	struct sigaction oact;
+
+	memset(&act, 0X00, sizeof(act));
+	act.sa_sigaction = _dave_dll_sigaction_kill;
+	act.sa_flags = SA_ONSTACK | SA_SIGINFO;
+
+	sigaction(sig, &act, &oact);
+}
+
+static void
+_dave_dll_reset_set(sigset_t *set)
 {
 	sigemptyset(set);
 
 	sigaddset(set, TIMER_SIG);
 	sigaddset(set, QUIT_SIG);
-	sigaddset(set, IO_SIG);
 	sigaddset(set, KILL_SIG);
-	sigaddset(set, ABRT_SIG);
-	sigaddset(set, SEGV_SIG);
 }
 
 static void *
 _dave_dll_wait_signal(void *arg)
 {
-	sigset_t set;
-	int sig;
-	int ret;
+	int sig, ret;
 
-	_dave_dll_boot_set(&set);
+	_dave_dll_sigaction_set(TIMER_SIG);
+	_dave_dll_sigaction_set(QUIT_SIG);
+	_dave_dll_sigaction_set(KILL_SIG);
 
 	while(1)
 	{
-		ret = sigwait(&set, &sig);
+		ret = sigwait(&_signal_set, &sig);
 
 		if (ret == 0)
 		{
@@ -137,19 +153,18 @@ _dave_dll_wait_signal(void *arg)
 static void
 _dave_dll_signal_thread(void)
 {
-	sigset_t set;
 	int ret;
 
-	_dave_dll_boot_set(&set);
+	_dave_dll_reset_set(&_signal_set);
 
-	ret = pthread_sigmask(SIG_SETMASK, &set, NULL);
+	ret = pthread_sigmask(SIG_BLOCK, &_signal_set, NULL);
 	if(ret != 0)
 	{
 		printf("pthread_sigmask failed:%d! <%s:%d>", ret, __func__, __LINE__);
 		exit(EXIT_FAILURE);
 	}
 
-	ret = pthread_create(&_signal_thread, NULL, _dave_dll_wait_signal, NULL);
+	ret = pthread_create(&_signal_thread, NULL, &_dave_dll_wait_signal, (void *)&_signal_set);
 	if(ret != 0)
 	{
 		printf("pthread_create failed:%d! <%s:%d>", ret, __func__, __LINE__);
@@ -269,8 +284,6 @@ dave_dll_init(
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
-	dave_dll_memory();	
-
 	_dave_dll_init(
 		my_verno, work_mode,
 		thread_number,

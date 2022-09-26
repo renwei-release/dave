@@ -235,6 +235,8 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 				&msg, dave_true);
 
 			pThread->has_initialization = dave_true;
+
+			thread_local_ready_notify(pThread->thread_name);
 		}
 	}
 	else
@@ -254,6 +256,8 @@ _thread_guardian_run_function(RUNFUNCTIONMSG *run)
 				&msg, dave_true);
 
 			_thread_guardian_thread_option(pThread, thread_index, run->initialization_flag);
+
+			thread_local_remove_notify(pThread->thread_name);
 		}
 	}
 

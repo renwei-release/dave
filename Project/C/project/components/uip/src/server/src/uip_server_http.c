@@ -35,9 +35,6 @@ typedef struct {
 static TLock _uip_http_link_pv;
 static UIPHttpLink _uip_http_link[UIP_HTTP_MAX_LINK];
 
-static void _uip_server_http_next_start(void);
-static void _uip_server_http_next_close(void);
-
 static void
 _uip_server_http_reset(UIPHttpLink *pLink)
 {
@@ -83,46 +80,16 @@ _uip_server_http_find(u16 port, dave_bool find_new)
 	return NULL;
 }
 
-static void
-_uip_server_http_listen_rsp(MSGBODY *ptr)
-{
-	HTTPListenRsp *pRsp = (HTTPListenRsp *)(ptr->msg_body);
-	UIPHttpLink *pLink = pRsp->ptr;
-
-	if(pRsp->ret == RetCode_OK)
-	{
-		if(pLink->port != pRsp->listen_port)
-		{
-			UIPLOG("port:%d/%d mismatch!", pLink->port, pRsp->listen_port);
-		}
-		if(pLink->state != UIPHttpLinkState_start)
-		{
-			UIPLOG("invalid state:%d, port:%d", pLink->state, pLink->port);
-		}
-
-		UIPTRACE("port:%d listen on:%s success!", pLink->port, pLink->path);
-
-		pLink->state = UIPHttpLinkState_work;
-	}
-	else
-	{
-		UIPABNOR("%s port:%d", retstr(pRsp->ret), pLink->port);
-
-		_uip_server_http_reset(pLink);
-	}
-
-	_uip_server_http_next_start();
-}
-
-static void
-_uip_server_http_listen_req(UIPHttpLink *pLink)
+static dave_bool
+_uip_server_http_listen(UIPHttpLink *pLink)
 {
 	HTTPListenReq *pReq;
+	HTTPListenRsp *pRsp;
 
 	if(pLink->state != UIPHttpLinkState_creat)
 	{
 		UIPLOG("invalid state:%d, port:%d", pLink->state, pLink->port);
-		return;
+		return dave_false;
 	}
 
 	pLink->state = UIPHttpLinkState_start;
@@ -134,33 +101,27 @@ _uip_server_http_listen_req(UIPHttpLink *pLink)
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", pLink->path);
 	pReq->ptr = pLink;
 
-	name_event(HTTP_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP, _uip_server_http_listen_rsp);
-}
-
-static void
-_uip_server_http_close_rsp(MSGBODY *ptr)
-{
-	HTTPCloseRsp *pRsp = (HTTPCloseRsp *)(ptr->msg_body);
-	UIPHttpLink *pLink = pRsp->ptr;
+	pRsp = name_go(HTTP_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
 
 	if(pRsp->ret == RetCode_OK)
 	{
-		UIPTRACE("port:%d close success! state:%d", pRsp->listen_port, pLink->state);
-
-		_uip_server_http_reset(pLink);
+		UIPLOG("port:%d listen on:%s success!", pLink->port, pLink->path);
+		pLink->state = UIPHttpLinkState_work;
+		return dave_true;
 	}
 	else
 	{
-		UIPABNOR("%s", retstr(pRsp->ret));
+		UIPABNOR("%s port:%d", retstr(pRsp->ret), pLink->port);
+		_uip_server_http_reset(pLink);
+		return dave_false;
 	}
-
-	_uip_server_http_next_close();
 }
 
 static void
-_uip_server_http_close_req(UIPHttpLink *pLink)
+_uip_server_http_close(UIPHttpLink *pLink)
 {
 	HTTPCloseReq *pReq;
+	HTTPCloseRsp *pRsp;
 
 	if(pLink->state == UIPHttpLinkState_release)
 	{
@@ -176,72 +137,15 @@ _uip_server_http_close_req(UIPHttpLink *pLink)
 	pReq->listen_port = pLink->port;
 	pReq->ptr = pLink;
 
-	name_event(HTTP_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP, _uip_server_http_close_rsp);
-}
-
-static dave_bool
-_uip_server_http_has_start(void)
-{
-	ub link_index;
-	dave_bool has_start = dave_false;
-
-	for(link_index=0; link_index<UIP_HTTP_MAX_LINK; link_index++)
+	pRsp = name_go(HTTP_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
+	if(pRsp->ret == RetCode_OK)
 	{
-		if(_uip_http_link[link_index].state == UIPHttpLinkState_start)
-		{
-			has_start = dave_true;
-			break;
-		}
+		UIPLOG("port:%d close success! state:%d", pRsp->listen_port, pLink->state);
+		_uip_server_http_reset(pLink);
 	}
-
-	return has_start;
-}
-
-static dave_bool
-_uip_server_http_has_stop(void)
-{
-	ub link_index;
-	dave_bool has_stop = dave_false;
-
-	for(link_index=0; link_index<UIP_HTTP_MAX_LINK; link_index++)
+	else
 	{
-		if(_uip_http_link[link_index].state == UIPHttpLinkState_stop)
-		{
-			has_stop = dave_true;
-			break;
-		}
-	}
-
-	return has_stop;
-}
-
-static void
-_uip_server_http_next_start(void)
-{
-	ub link_index;
-
-	for(link_index=0; link_index<UIP_HTTP_MAX_LINK; link_index++)
-	{
-		if(_uip_http_link[link_index].state == UIPHttpLinkState_creat)
-		{
-			_uip_server_http_listen_req(&_uip_http_link[link_index]);
-			break;
-		}
-	}
-}
-
-static void
-_uip_server_http_next_close(void)
-{
-	ub link_index;
-
-	for(link_index=0; link_index<UIP_HTTP_MAX_LINK; link_index++)
-	{
-		if(_uip_http_link[link_index].state == UIPHttpLinkState_release)
-		{
-			_uip_server_http_close_req(&_uip_http_link[link_index]);
-			break;
-		}
+		UIPABNOR("%s", retstr(pRsp->ret));
 	}
 }
 
@@ -299,12 +203,7 @@ _uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_
 	dave_strcpy(pLink->path, path, DAVE_PATH_LEN);
 	pLink->recv_fun = recv_fun;
 
-	if(_uip_server_http_has_start() == dave_false)
-	{
-		_uip_server_http_listen_req(pLink);
-	}
-
-	return dave_true;
+	return _uip_server_http_listen(pLink);
 }
 
 static void
@@ -320,10 +219,7 @@ _uip_server_http_stop(u16 port)
 
 	pLink->state = UIPHttpLinkState_release;
 
-	if(_uip_server_http_has_stop() == dave_false)
-	{
-		_uip_server_http_close_req(pLink);
-	}
+	_uip_server_http_close(pLink);
 }
 
 static void

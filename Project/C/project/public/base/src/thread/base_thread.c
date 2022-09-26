@@ -1329,78 +1329,6 @@ _thread_check_sync_param(
 	return dave_true;
 }
 
-static void
-_thread_local_ready(char *thread_name)
-{
-	ub thread_index;
-	ThreadId thread_id;
-	ThreadStruct *pThread;
-	ThreadLocalReadyMsg *pReady;
-
-	thread_index = thread_find_busy_index(thread_id(thread_name));
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADLOG("can't find thread:%s", thread_name);
-	}
-	else
-	{
-		pThread = &_thread[thread_index];
-		thread_id = pThread->thread_id;
-		if(pThread->attrib == LOCAL_TASK_ATTRIB)
-		{
-			pReady = thread_msg(pReady);
-
-			pReady->local_thread_id = thread_id;
-			dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
-
-			broadcast_local(MSGID_LOCAL_THREAD_READY, pReady);
-		}
-
-		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
-		{
-			pThread = &_thread[thread_index];
-			if((pThread->thread_id != INVALID_THREAD_ID)
-				&& (pThread->thread_id != thread_id)
-				&& (pThread->attrib == LOCAL_TASK_ATTRIB))
-			{
-				pReady = thread_msg(pReady);
-
-				pReady->local_thread_id = thread_id;
-				dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
-
-				id_msg(pThread->thread_id, MSGID_LOCAL_THREAD_READY, pReady);	
-			}
-		}
-	}
-}
-
-static void
-_thread_local_remove(ThreadId thread_id)
-{
-	ub thread_index;
-	ThreadStruct *pThread;
-	ThreadLocalRemoveMsg *pRemove;
-
-	thread_index = thread_find_busy_index(thread_id);
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADTRACE("can't find thread:%s", thread_name(thread_id));
-	}
-	else
-	{
-		pThread = &_thread[thread_index];
-		if(pThread->attrib == LOCAL_TASK_ATTRIB)
-		{
-			pRemove = thread_msg(pRemove);
-	
-			pRemove->local_thread_id = pThread->thread_id;
-			dave_strcpy(pRemove->local_thread_name, pThread->thread_name, sizeof(pRemove->local_thread_name));
-	
-			broadcast_local(MSGID_LOCAL_THREAD_REMOVE, pRemove);
-		}
-	}
-}
-
 // =====================================================================
 
 void
@@ -1496,8 +1424,6 @@ base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun t
 		thread_id = _thread_safe_creat((s8 *)name, level_number, thread_flag, thread_init, thread_main, thread_exit);
 	} );
 
-	_thread_local_ready(name);
-
 	return thread_id;
 }
 
@@ -1505,8 +1431,6 @@ dave_bool
 base_thread_del(ThreadId thread_id)
 {
 	dave_bool ret = dave_false;
-
-	_thread_local_remove(thread_id);
 
 	SAFECODEv2W(_system_thread_pv, {
 		ret = _thread_safe_del(thread_id);

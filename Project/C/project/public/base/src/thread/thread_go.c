@@ -150,6 +150,14 @@ thread_go_id(
 		return NULL;
 	}
 
+	if(pSrcThread->has_initialization == dave_false)
+	{
+		THREADLOG("This interface(%s->%s) is not allowed before initialization is not completed. <%s:%d>",
+			msgstr(req_id), msgstr(rsp_id), 
+			fun, line);
+		return NULL;
+	}
+
 	if(thread_enable_coroutine(pSrcThread) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! dst_id:%lx req_id:%s req_len:%d rsp_id:%s <%s:%d>",
@@ -194,6 +202,14 @@ thread_go_name(
 			pSrcThread, dst_thread,
 			fun, line);
 		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	if(pSrcThread->has_initialization == dave_false)
+	{
+		THREADLOG("This interface(%s->%s) is not allowed before initialization is not completed. <%s:%d>",
+			msgstr(req_id), msgstr(rsp_id), 
+			fun, line);
 		return NULL;
 	}
 
@@ -248,6 +264,14 @@ thread_go_gid(
 		return NULL;
 	}
 
+	if(pSrcThread->has_initialization == dave_false)
+	{
+		THREADLOG("This interface(%s->%s) is not allowed before initialization is not completed. <%s:%d>",
+			msgstr(req_id), msgstr(rsp_id), 
+			fun, line);
+		return NULL;
+	}
+
 	if(thread_enable_coroutine(pSrcThread) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! gid:%s dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
@@ -297,6 +321,14 @@ thread_go_uid(
 			pSrcThread, uid,
 			fun, line);
 		thread_clean_user_input_data(req_body, req_id);
+		return NULL;
+	}
+
+	if(pSrcThread->has_initialization == dave_false)
+	{
+		THREADLOG("This interface(%s->%s) is not allowed before initialization is not completed. <%s:%d>",
+			msgstr(req_id), msgstr(rsp_id), 
+			fun, line);
 		return NULL;
 	}
 

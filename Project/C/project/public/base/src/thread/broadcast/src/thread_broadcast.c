@@ -122,6 +122,10 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 				broadcast_msg = base_thread_msg(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 				dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
+				THREADDEBUG("%s>%s:%s",
+					thread_name(self_id), thread_name(_thread[thread_index].thread_id),
+					msgstr(msg_id));
+
 				base_thread_id_msg(NULL, NULL, self_id, _thread[thread_index].thread_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
 			}
 		}

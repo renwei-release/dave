@@ -22,20 +22,38 @@ static void
 _uip_server_distributor_start(s8 *path)
 {
 	HTTPListenReq *pReq = thread_reset_msg(pReq);
+	HTTPListenRsp *pRsp;
 
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", path);
 
-	name_msg(DISTRIBUTOR_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq);
+	pRsp = name_go(DISTRIBUTOR_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
+	if(pRsp->ret == RetCode_OK)
+	{
+		UIPLOG("port:%d listen on:%s success!", pRsp->listen_port, pRsp->path);
+	}
+	else
+	{
+		UIPABNOR("%s port:%d listen on:%s failed!", retstr(pRsp->ret), pRsp->listen_port, pRsp->path);
+	}
 }
 
 static void
 _uip_server_distributor_stop(s8 *path)
 {
 	HTTPCloseReq *pReq = thread_reset_msg(pReq);
+	HTTPCloseRsp *pRsp;
 
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", path);
 
-	name_msg(DISTRIBUTOR_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq);
+	pRsp = name_go(DISTRIBUTOR_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
+	if(pRsp->ret == RetCode_OK)
+	{
+		UIPLOG("port:%d close success!", pRsp->listen_port);
+	}
+	else
+	{
+		UIPABNOR("%s", retstr(pRsp->ret));
+	}
 }
 
 static UIPDistributorLink *

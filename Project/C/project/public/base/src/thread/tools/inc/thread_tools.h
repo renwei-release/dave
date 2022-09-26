@@ -59,5 +59,9 @@ TaskAttribute thread_id_to_attrib(ThreadId thread_id);
 
 dave_bool thread_internal_msg(ub msg_id);
 
+void thread_local_ready_notify(s8 *thread_name);
+
+void thread_local_remove_notify(s8 *thread_name);
+
 #endif
 

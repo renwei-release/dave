@@ -13,6 +13,7 @@
 #include "uip_client.h"
 #include "uip_channel.h"
 #include "uip_debug.h"
+#include "uip_log.h"
 
 static ThreadId _uip_thread = INVALID_THREAD_ID;
 static ub _uip_thread_number;
@@ -82,7 +83,10 @@ dave_uip_init(void)
 {
 	_uip_thread_number = dave_os_cpu_process_number();
 
-	_uip_thread = base_thread_creat(UIP_THREAD_NAME, _uip_thread_number, THREAD_THREAD_FLAG, _uip_init, _uip_main, _uip_exit);
+	_uip_thread = base_thread_creat(
+		UIP_THREAD_NAME, _uip_thread_number, THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG,
+		_uip_init, _uip_main, _uip_exit);
+
 	if(_uip_thread == INVALID_THREAD_ID)
 		base_restart(UIP_THREAD_NAME);
 }

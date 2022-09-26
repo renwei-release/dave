@@ -266,6 +266,15 @@ _uip_server_http_stop(void)
 	uip_server_distributor_exit();
 }
 
+static void 
+_uip_server_local_ready(ThreadLocalReadyMsg *pMsg)
+{
+	if(dave_strcmp(pMsg->local_thread_name, HTTP_THREAD_NAME) == dave_true)
+	{
+		_uip_server_http_start();
+	}
+}
+
 static void
 _uip_server_restart(RESTARTREQMSG *pRestart)
 {
@@ -289,8 +298,6 @@ uip_server_init(MSGBODY *pMsg)
 	uip_server_distributor_init();
 
 	uip_server_register_init();
-
-	_uip_server_http_start();
 }
 
 void
@@ -298,6 +305,9 @@ uip_server_main(MSGBODY *pMsg)
 {
 	switch((sb)(pMsg->msg_id))
 	{
+		case MSGID_LOCAL_THREAD_READY:
+				_uip_server_local_ready((ThreadLocalReadyMsg *)(pMsg->msg_body));
+			break;
 		case HTTPMSG_RECV_REQ:
 				_uip_server_http_req(pMsg->msg_src, (HTTPRecvReq *)(pMsg->msg_body));
 			break;

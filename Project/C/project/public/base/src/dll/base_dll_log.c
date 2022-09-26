@@ -15,7 +15,8 @@
 static void
 _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 {
-	s8 temp_buffer[2048];
+	ub temp_len = 4096;
+	s8 *temp_buffer = dave_malloc(temp_len);
 	ub temp_index;
 	ub log_index;
 	ub EXTRA_len;
@@ -28,7 +29,7 @@ _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 	/*
 	 * 此处是为了过滤python里面byte类型的b'xxxxxxx'表示符号b'与‘
 	 */
-	while((log_index < log_len) && (temp_index < (sizeof(temp_buffer) - 1)))
+	while((log_index < log_len) && (temp_index < (temp_len - 1)))
 	{
 		if(find_b_start == dave_true)
 		{
@@ -62,9 +63,9 @@ _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 	/*
 	 * 此处是为了过滤Go里面，如果在打印里面没有%d类似处理时，会在字符串最后
 	 * 携带%!(EXTRA []interface {}=[])
-	 * 这似乎时Go的BUG。Go版本：1.17.1
+	 * 这似乎是Go的BUG。Go版本：1.17.1
 	 */
-	EXTRA_len = dave_strlen("%!(EXTRA []interface {}=[])");
+	EXTRA_len = 27;
 	if((temp_index >= EXTRA_len)
 		&& (dave_strcmp(&temp_buffer[temp_index-EXTRA_len], "%!(EXTRA []interface {}=[])") == dave_true))
 	{
@@ -72,6 +73,8 @@ _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 	}
 
 	dave_strcpy(log_buffer, temp_buffer, log_len + 1);
+
+	dave_free(temp_buffer);
 }
 
 // =====================================================================
@@ -79,12 +82,12 @@ _dll_log_remove_some_data(s8 *log_buffer, ub log_len)
 void
 dave_dll_log(char *func, int line, char *log_msg)
 {
-	s8 log_buffer[4096];
-	ub log_len;
+	ub log_len = 4096;
+	s8 *log_buffer = dave_malloc(log_len);
 
 	if(log_msg != NULL)
 	{
-		log_len = dave_strcpy(log_buffer, log_msg, sizeof(log_buffer));
+		log_len = dave_strcpy(log_buffer, log_msg, log_len);
 	}
 	else
 	{
@@ -100,6 +103,8 @@ dave_dll_log(char *func, int line, char *log_msg)
 	}
 
 	DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_buffer);
+
+	dave_free(log_buffer);
 }
 
 #endif

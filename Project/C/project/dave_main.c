@@ -91,10 +91,7 @@ _linux_handle_signal(void)
 
 	sigaddset(&set, TIMER_SIG);
 	sigaddset(&set, QUIT_SIG);
-	sigaddset(&set, IO_SIG);
 	sigaddset(&set, KILL_SIG);
-	sigaddset(&set, ABRT_SIG);
-	sigaddset(&set, SEGV_SIG);
 
 	while (1)
 	{
