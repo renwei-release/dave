@@ -8,7 +8,7 @@
 #ifndef __3RDPARTY_MACRO_H__
 #define __3RDPARTY_MACRO_H__
 
-#if defined(__DAVE_LINUX__) && defined(FORM_PRODUCT_BIN)
+#if defined(__DAVE_LINUX__)
 #define JEMALLOC_3RDPARTY
 #endif
 

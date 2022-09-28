@@ -38,20 +38,14 @@ require (
 )
 
 require (
-	github.com/google/uuid v1.3.0 // indirect
-	github.com/huin/goupnp v1.0.2 // indirect
-	github.com/ipfs/go-log v1.0.5 // indirect
-	github.com/koron/go-ssdp v0.0.2 // indirect
+	github.com/elazarl/goproxy v0.0.0-20220901064549-fbd10ff4f5a1 // indirect
+	github.com/go-sql-driver/mysql v1.6.0
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/kr/text v0.2.0 // indirect
-	github.com/libp2p/go-libp2p-blankhost v0.3.0 // indirect
-	github.com/libp2p/go-libp2p-mplex v0.6.0 // indirect
-	github.com/libp2p/go-libp2p-swarm v0.10.2 // indirect
-	github.com/libp2p/go-libp2p-transport-upgrader v0.7.1 // indirect
-	github.com/libp2p/go-libp2p-yamux v0.8.2 // indirect
-	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/olivere/elastic/v7 v7.0.32
+	github.com/parnurzeal/gorequest v0.2.16
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
-	google.golang.org/grpc v1.40.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	moul.io/http2curl v1.0.0 // indirect
 )
