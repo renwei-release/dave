@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include "dave_base.h"
+#include "dave_tools.h"
 #include "tools_log.h"
 
 static inline unsigned char
@@ -240,6 +241,21 @@ __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line)
 	{
 		return dave_false;
 	}
+}
+
+s8 *
+t_stdio_strdup(s8 *str)
+{
+	ub len;
+	char *copy;
+
+	len = strlen(str);
+
+	copy = dave_malloc(len + 1);
+	memcpy(copy, str, len);
+	copy[len] = '\0';
+
+	return copy;
 }
 
 s8 *

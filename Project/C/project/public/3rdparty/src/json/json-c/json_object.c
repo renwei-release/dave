@@ -8,6 +8,11 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+#include "dave_tools.h"
+
 #include "config.h"
 
 #include "strerror_override.h"
@@ -342,7 +347,7 @@ static void json_object_generic_delete(struct json_object *jso)
 	lh_table_delete(json_object_table, jso);
 #endif /* REFCOUNT_DEBUG */
 	printbuf_free(jso->_pb);
-	free(jso);
+	dave_free(jso);
 }
 
 static inline struct json_object *json_object_new(enum json_type o_type, size_t alloc_size,
@@ -350,7 +355,7 @@ static inline struct json_object *json_object_new(enum json_type o_type, size_t 
 {
 	struct json_object *jso;
 
-	jso = (struct json_object *)malloc(alloc_size);
+	jso = (struct json_object *)dave_malloc(alloc_size);
 	if (!jso)
 		return NULL;
 
@@ -543,7 +548,8 @@ static int json_object_object_to_json_string(struct json_object *jso, struct pri
 static void json_object_lh_entry_free(struct lh_entry *ent)
 {
 	if (!ent->k_is_constant)
-		free(lh_entry_k(ent));
+		dave_free(lh_entry_k(ent));
+
 	json_object_put((struct json_object *)lh_entry_v(ent));
 }
 
@@ -605,7 +611,7 @@ int json_object_object_add_ex(struct json_object *jso, const char *const key,
 	if (!existing_entry)
 	{
 		const void *const k =
-		    (opts & JSON_C_OBJECT_KEY_IS_CONSTANT) ? (const void *)key : strdup(key);
+		    (opts & JSON_C_OBJECT_KEY_IS_CONSTANT) ? (const void *)key : dave_strdup((s8 *)key);
 		if (k == NULL)
 			return -1;
 		return lh_table_insert_w_hash(JC_OBJECT(jso)->c_object, k, val, hash, opts);
@@ -970,23 +976,23 @@ int json_c_set_serialization_double_format(const char *double_format, int global
 #if defined(HAVE___THREAD)
 		if (tls_serialization_float_format)
 		{
-			free(tls_serialization_float_format);
+			dave_free(tls_serialization_float_format);
 			tls_serialization_float_format = NULL;
 		}
 #endif
 		if (global_serialization_float_format)
-			free(global_serialization_float_format);
-		global_serialization_float_format = double_format ? strdup(double_format) : NULL;
+			dave_free(global_serialization_float_format);
+		global_serialization_float_format = double_format ? dave_strdup((s8 *)double_format) : NULL;
 	}
 	else if (global_or_thread == JSON_C_OPTION_THREAD)
 	{
 #if defined(HAVE___THREAD)
 		if (tls_serialization_float_format)
 		{
-			free(tls_serialization_float_format);
+			dave_free(tls_serialization_float_format);
 			tls_serialization_float_format = NULL;
 		}
-		tls_serialization_float_format = double_format ? strdup(double_format) : NULL;
+		tls_serialization_float_format = double_format ? dave_strdup((s8 *)double_format) : NULL;
 #else
 		_json_c_set_last_err("json_c_set_option: not compiled with __thread support\n");
 		return -1;
@@ -1125,7 +1131,7 @@ struct json_object *json_object_new_double_s(double d, const char *ds)
 	if (!jso)
 		return NULL;
 
-	new_ds = strdup(ds);
+	new_ds = dave_strdup((s8 *)ds);
 	if (!new_ds)
 	{
 		json_object_generic_delete(jso);
@@ -1158,7 +1164,7 @@ int json_object_userdata_to_json_string(struct json_object *jso, struct printbuf
 
 void json_object_free_userdata(struct json_object *jso, void *userdata)
 {
-	free(userdata);
+	dave_free(userdata);
 }
 
 double json_object_get_double(const struct json_object *jso)
@@ -1244,7 +1250,7 @@ static int json_object_string_to_json_string(struct json_object *jso, struct pri
 static void json_object_string_delete(struct json_object *jso)
 {
 	if (JC_STRING(jso)->len < 0)
-		free(JC_STRING(jso)->c_string.pdata);
+		dave_free(JC_STRING(jso)->c_string.pdata);
 	json_object_generic_delete(jso);
 }
 
@@ -1345,11 +1351,11 @@ static int _json_object_set_string_len(json_object *jso, const char *s, size_t l
 		// We have no way to return the new ptr from realloc(jso, newlen)
 		// and we have no way of knowing whether there's extra room available
 		// so we need to stuff a pointer in to pdata :(
-		dstbuf = (char *)malloc(len + 1);
+		dstbuf = (char *)dave_malloc(len + 1);
 		if (dstbuf == NULL)
 			return 0;
 		if (JC_STRING(jso)->len < 0)
-			free(JC_STRING(jso)->c_string.pdata);
+			dave_free(JC_STRING(jso)->c_string.pdata);
 		JC_STRING(jso)->c_string.pdata = dstbuf;
 		newlen = -(ssize_t)len;
 	}
@@ -1441,7 +1447,7 @@ struct json_object *json_object_new_array_ext(int initial_size)
 	jso->c_array = array_list_new2(&json_object_array_entry_free, initial_size);
 	if (jso->c_array == NULL)
 	{
-		free(jso);
+		dave_free(jso);
 		return NULL;
 	}
 	return &jso->base;
@@ -1628,7 +1634,7 @@ static int json_object_copy_serializer_data(struct json_object *src, struct json
 	if (dst->_to_json_string == json_object_userdata_to_json_string ||
 	    dst->_to_json_string == _json_object_userdata_to_json_string)
 	{
-		dst->_userdata = strdup(src->_userdata);
+		dst->_userdata = dave_strdup((s8 *)(src->_userdata));
 	}
 	// else if ... other supported serializers ...
 	else
@@ -1805,3 +1811,6 @@ static void json_abort(const char *message)
 		fprintf(stderr, "json-c aborts with error: %s\n", message);
 	abort();
 }
+
+#endif
+

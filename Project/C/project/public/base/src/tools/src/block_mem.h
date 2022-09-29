@@ -39,15 +39,19 @@ typedef struct {
 
 typedef void * (* block_mem_malloc_fun)(size_t length);
 typedef void (* block_mem_free_fun)(void *ptr);
+typedef ub (* block_mem_len_fun)(void *ptr);
 
 extern block_mem_malloc_fun __block_mem_malloc__;
 extern block_mem_free_fun __block_mem_free__;
+extern block_mem_len_fun __block_mem_len__;
 
 void block_mem_reset(BlockMem *pBlock, ub block_number);
 
 void * block_malloc(BlockMem *pBlock, ub len, s8 *file, ub line);
 
 dave_bool block_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line);
+
+ub block_len(BlockMem *pBlock, void *user_ptr, s8 *file, ub line);
 
 dave_bool block_memory(BlockMem *pBlock, void *user_ptr, s8 *file, ub line);
 

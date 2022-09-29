@@ -10,6 +10,7 @@
 
 void *__base_malloc__(ub len, dave_bool reset, u8 reset_data, s8 *file, ub line);
 void *__base_calloc__(ub num, ub len, s8 *file, ub line);
+void *__base_realloc__(void *old_ptr, ub new_len, s8 *file, ub line);
 dave_bool __base_free__(void *ptr, s8 *file, ub line);
 MBUF *__base_mmalloc__(ub length, s8 *file, ub line);
 sb __base_mheader__(MBUF *m, sb header_size_increment, s8 *file, ub line);
@@ -29,6 +30,7 @@ ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 #define base_malloc(a) __base_malloc__((ub)(a), dave_false, 0x00, (s8 *)__func__, (ub)__LINE__)
 #define base_falloc(a, b) __base_malloc__((ub)(a), dave_true, (u8)b, (s8 *)__func__, (ub)__LINE__)
 #define base_calloc(a,b) __base_calloc__((ub)(a), (ub)(b), (s8 *)__func__, (ub)__LINE__)
+#define base_realloc(a,b) __base_realloc__(a, (ub)b, (s8 *)__func__, (ub)__LINE__)
 #define base_free(a) __base_free__(a, (s8 *)__func__, (ub)__LINE__)
 #define base_mmalloc(a) __base_mmalloc__((ub)(a), (s8 *)__func__, (ub)__LINE__)
 #define base_mheader(a, b) __base_mheader__(a, (sb)b, (s8 *)__func__, (ub)__LINE__)
@@ -42,6 +44,7 @@ ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 #define dave_malloc base_malloc
 #define dave_falloc base_falloc
 #define dave_calloc base_calloc
+#define dave_realloc base_realloc
 #define dave_free base_free
 #define dave_mmalloc base_mmalloc
 #define dave_mheader base_mheader

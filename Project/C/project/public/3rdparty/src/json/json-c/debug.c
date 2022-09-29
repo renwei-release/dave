@@ -9,6 +9,10 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 
 #include <stdarg.h>
@@ -94,3 +98,6 @@ void mc_info(const char *msg, ...)
 		vfprintf(stderr, msg, ap);
 	va_end(ap);
 }
+
+#endif
+

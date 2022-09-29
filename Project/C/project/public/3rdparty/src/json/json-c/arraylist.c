@@ -9,6 +9,10 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 
 #include <limits.h>
@@ -45,15 +49,15 @@ struct array_list *array_list_new2(array_list_free_fn *free_fn, int initial_size
 {
 	struct array_list *arr;
 
-	arr = (struct array_list *)malloc(sizeof(struct array_list));
+	arr = (struct array_list *)dave_malloc(sizeof(struct array_list));
 	if (!arr)
 		return NULL;
 	arr->size = initial_size;
 	arr->length = 0;
 	arr->free_fn = free_fn;
-	if (!(arr->array = (void **)malloc(arr->size * sizeof(void *))))
+	if (!(arr->array = (void **)dave_malloc(arr->size * sizeof(void *))))
 	{
-		free(arr);
+		dave_free(arr);
 		return NULL;
 	}
 	return arr;
@@ -65,8 +69,8 @@ extern void array_list_free(struct array_list *arr)
 	for (i = 0; i < arr->length; i++)
 		if (arr->array[i])
 			arr->free_fn(arr->array[i]);
-	free(arr->array);
-	free(arr);
+	dave_free(arr->array);
+	dave_free(arr);
 }
 
 void *array_list_get_idx(struct array_list *arr, size_t i)
@@ -94,7 +98,7 @@ static int array_list_expand_internal(struct array_list *arr, size_t max)
 	}
 	if (new_size > (~((size_t)0)) / sizeof(void *))
 		return -1;
-	if (!(t = realloc(arr->array, new_size * sizeof(void *))))
+	if (!(t = dave_realloc(arr->array, new_size * sizeof(void *))))
 		return -1;
 	arr->array = (void **)t;
 	arr->size = new_size;
@@ -114,7 +118,7 @@ int array_list_shrink(struct array_list *arr, size_t empty_slots)
 	if (new_size == 0)
 		new_size = 1;
 
-	if (!(t = realloc(arr->array, new_size * sizeof(void *))))
+	if (!(t = dave_realloc(arr->array, new_size * sizeof(void *))))
 		return -1;
 	arr->array = (void **)t;
 	arr->size = new_size;
@@ -199,3 +203,6 @@ int array_list_del_idx(struct array_list *arr, size_t idx, size_t count)
 	arr->length -= count;
 	return 0;
 }
+
+#endif
+

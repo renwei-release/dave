@@ -122,12 +122,42 @@ __base_malloc__(ub len, dave_bool reset, u8 reset_data, s8 *file, ub line)
 void *
 __base_calloc__(ub num, ub len, s8 *file, ub line)
 {
-	void *ptr;
 	ub total_len = num * len;
 
-	ptr = __base_malloc__(total_len, dave_true, 0x00, file, line);
+	return __base_malloc__(total_len, dave_true, 0x00, file, line);
+}
 
-	return ptr;
+void *
+__base_realloc__(void *old_ptr, ub new_len, s8 *file, ub line)
+{
+	ub old_len, cpy_len;
+	void *new_ptr;
+
+	if(new_len == 0)
+	{
+		__base_free__(old_ptr, file, line);
+		return NULL;
+	}
+
+	if(old_ptr == NULL)
+	{
+		return __base_malloc__(new_len, dave_false, 0x00, file, line);
+	}
+
+	old_len = __exter_len__(old_ptr, file, line);
+
+	new_ptr = __base_malloc__(new_len, dave_false, 0x00, file, line);
+
+	if(old_len > new_len)
+		cpy_len = new_len;
+	else
+		cpy_len = old_len;
+
+	dave_memcpy(new_ptr, old_ptr, cpy_len);
+
+	__base_free__(old_ptr, file, line);
+
+	return new_ptr;
 }
 
 dave_bool

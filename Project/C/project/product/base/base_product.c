@@ -158,9 +158,10 @@ _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 static void
 _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
-	BASELOG("%s %s : %s ttl:%d",
+	BASELOG("%s (%d)%s : (%d)%s ttl:%d",
 		pUpdate->put_flag==dave_true?"PUT":"DELETE",
-		pUpdate->cfg_name, pUpdate->cfg_value,
+		dave_strlen(pUpdate->cfg_name), pUpdate->cfg_name,
+		dave_strlen(pUpdate->cfg_value), pUpdate->cfg_value,
 		pUpdate->ttl);
 }
 

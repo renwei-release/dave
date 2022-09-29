@@ -9,6 +9,10 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 #undef realloc
 
@@ -265,8 +269,8 @@ void *rpl_realloc(void *p, size_t n)
 	if (n == 0)
 		n = 1;
 	if (p == 0)
-		return malloc(n);
-	return realloc(p, n);
+		return dave_malloc(n);
+	return dave_realloc(p, n);
 }
 #endif
 
@@ -295,3 +299,6 @@ const char *json_type_to_name(enum json_type o_type)
 	}
 	return json_type_name[o_type];
 }
+
+#endif
+

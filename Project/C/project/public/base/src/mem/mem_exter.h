@@ -17,6 +17,8 @@ void * __exter_malloc__(ub len, s8 *file, ub line);
 
 dave_bool __exter_free__(void *ptr, s8 *file, ub line);
 
+ub __exter_len__(void *ptr, s8 *file, ub line);
+
 dave_bool __exter_memory__(void *ptr, s8 *file, ub line);
 
 ub __exter_len__(void *ptr, s8 *file, ub line);

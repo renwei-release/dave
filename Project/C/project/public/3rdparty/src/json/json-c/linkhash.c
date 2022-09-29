@@ -10,6 +10,10 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 
 #include <assert.h>
@@ -502,16 +506,16 @@ struct lh_table *lh_table_new(int size, lh_entry_free_fn *free_fn, lh_hash_fn *h
 
 	/* Allocate space for elements to avoid divisions by zero. */
 	assert(size > 0);
-	t = (struct lh_table *)calloc(1, sizeof(struct lh_table));
+	t = (struct lh_table *)dave_calloc(1, sizeof(struct lh_table));
 	if (!t)
 		return NULL;
 
 	t->count = 0;
 	t->size = size;
-	t->table = (struct lh_entry *)calloc(size, sizeof(struct lh_entry));
+	t->table = (struct lh_entry *)dave_calloc(size, sizeof(struct lh_entry));
 	if (!t->table)
 	{
-		free(t);
+		dave_free(t);
 		return NULL;
 	}
 	t->free_fn = free_fn;
@@ -553,12 +557,12 @@ int lh_table_resize(struct lh_table *t, int new_size)
 			return -1;
 		}
 	}
-	free(t->table);
+	dave_free(t->table);
 	t->table = new_t->table;
 	t->size = new_size;
 	t->head = new_t->head;
 	t->tail = new_t->tail;
-	free(new_t);
+	dave_free(new_t);
 
 	return 0;
 }
@@ -566,13 +570,15 @@ int lh_table_resize(struct lh_table *t, int new_size)
 void lh_table_free(struct lh_table *t)
 {
 	struct lh_entry *c;
+
 	if (t->free_fn)
 	{
 		for (c = t->head; c != NULL; c = c->next)
 			t->free_fn(c);
 	}
-	free(t->table);
-	free(t);
+
+	dave_free(t->table);
+	dave_free(t);
 }
 
 int lh_table_insert_w_hash(struct lh_table *t, const void *k, const void *v, const unsigned long h,
@@ -714,3 +720,6 @@ int lh_table_length(struct lh_table *t)
 {
 	return t->count;
 }
+
+#endif
+

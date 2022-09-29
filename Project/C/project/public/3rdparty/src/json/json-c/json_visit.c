@@ -5,6 +5,10 @@
  * it under the terms of the MIT license. See COPYING for details.
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include <stdio.h>
 
 #include "config.h"
@@ -126,3 +130,6 @@ static int _json_c_visit(json_object *jso, json_object *parent_jso, const char *
 	}
 	// NOTREACHED
 }
+
+#endif
+

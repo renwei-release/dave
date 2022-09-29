@@ -1,5 +1,8 @@
 #ifndef __vasprintf_compat_h
 #define __vasprintf_compat_h
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
 
 /**
  * @file
@@ -38,7 +41,7 @@ static int vasprintf(char **buf, const char *fmt, va_list ap)
 	} /* CAW: old glibc versions have this problem */
 #endif /* defined(WIN32) */
 
-	b = (char *)malloc(sizeof(char) * chars);
+	b = (char *)dave_malloc(sizeof(char) * chars);
 	if (!b)
 	{
 		return -1;
@@ -46,7 +49,7 @@ static int vasprintf(char **buf, const char *fmt, va_list ap)
 
 	if ((chars = vsprintf(b, fmt, ap)) < 0)
 	{
-		free(b);
+		dave_free(b);
 	}
 	else
 	{
@@ -56,5 +59,6 @@ static int vasprintf(char **buf, const char *fmt, va_list ap)
 	return chars;
 }
 #endif /* !HAVE_VASPRINTF */
+#endif
 
 #endif /* __vasprintf_compat_h */

@@ -12,7 +12,6 @@
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
 #include "dave_jemalloc.h"
-
 #include "block_mem.h"
 
 #if defined(PERFTOOLS_3RDPARTY)
@@ -28,9 +27,11 @@
 #elif defined(JEMALLOC_ENABLE)
 #define BLOCK_MALLOC dave_jemalloc
 #define BLOCK_FREE dave_jefree
+#define BLOCK_LEN dave_jelen
 #else
 #define BLOCK_MALLOC malloc
 #define BLOCK_FREE free
+#define BLOCK_LEN malloc_usable_size
 #endif
 
 #define USERINDEX_LEN (16)
@@ -46,6 +47,7 @@
 
 block_mem_malloc_fun __block_mem_malloc__ = BLOCK_MALLOC;
 block_mem_free_fun __block_mem_free__ = BLOCK_FREE;
+block_mem_len_fun __block_mem_len__ = BLOCK_LEN;
 
 static inline ub
 _block_mem_base_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock)
@@ -510,7 +512,8 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	core_index = _block_mem_user_ptr_to_core_index(user_ptr);
 	if(core_index >= CORE_MEM_MAX)
 	{
-		BLOCKMEMABNOR("find invalid core_index:%d user_ptr:%lx <%s:%d>", core_index, user_ptr, file, line);
+		BLOCKMEMABNOR("find invalid core_index:%d user_ptr:%lx <%s:%d>",
+			core_index, user_ptr, file, line);
 		return dave_false;
 	}
 
@@ -545,10 +548,40 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 	else
 	{
-		BLOCKMEMABNOR("the ptr:%lx free failed! <%s:%d>", user_ptr, file, line);
+		BLOCKMEMABNOR("the ptr:%lx free failed! <%s:%d>",
+			user_ptr, file, line);
 	}
 
 	return ret;
+}
+
+static inline ub
+_block_mem_safe_len(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
+{
+	ub core_index;
+	BlockMemCore *pCore;
+
+	core_index = _block_mem_user_ptr_to_core_index(user_ptr);
+	if(core_index >= CORE_MEM_MAX)
+	{
+		BLOCKMEMABNOR("find invalid core_index:%d user_ptr:%lx <%s:%d>",
+			core_index, user_ptr, file, line);
+		return 0;
+	}
+
+	pCore = &(pBlock->core[core_index]);
+	if(pCore->user_ptr != user_ptr)
+	{
+		BLOCKMEMABNOR("the ptr:%lx/%lx free failed! len:%d (c-%s:%d/m-%s:%d/f-%s:%d)",
+			user_ptr, pCore->user_ptr,
+			pCore->len,
+			file, line,
+			pCore->m_file, pCore->m_line,
+			pCore->f_file, pCore->f_line);
+		return 0;
+	}
+
+	return pCore->len;
 }
 
 static inline dave_bool
@@ -611,6 +644,29 @@ block_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 
 	return _block_mem_safe_free(&(pBlock[block_index]), user_ptr, file, line);
+}
+
+ub
+block_len(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
+{
+	ub block_index = _block_mem_user_ptr_to_block_index(user_ptr);
+
+	if(block_index >= pBlock->block_number)
+	{
+		BLOCKMEMABNOR("invalid block_index:%d block_number:%d user_ptr:%x <%s:%d>",
+			block_index, pBlock->block_number, user_ptr, file, line);
+		return dave_false;
+	}
+	if(block_index != pBlock[block_index].block_index)
+	{
+		BLOCKMEMABNOR("invalid block_index:%d/%d/%d user_ptr:%x <%s:%d>",
+			block_index, pBlock[block_index].block_index, pBlock->block_number,
+			user_ptr,
+			file, line);
+		return dave_false;
+	}
+
+	return _block_mem_safe_len(&(pBlock[block_index]), user_ptr, file, line);
 }
 
 dave_bool

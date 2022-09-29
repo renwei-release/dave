@@ -13,6 +13,10 @@
  * (http://www.opensource.org/licenses/mit-license.php)
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 
 #include <limits.h>
@@ -37,14 +41,14 @@ struct printbuf *printbuf_new(void)
 {
 	struct printbuf *p;
 
-	p = (struct printbuf *)calloc(1, sizeof(struct printbuf));
+	p = (struct printbuf *)dave_calloc(1, sizeof(struct printbuf));
 	if (!p)
 		return NULL;
 	p->size = 32;
 	p->bpos = 0;
-	if (!(p->buf = (char *)malloc(p->size)))
+	if (!(p->buf = (char *)dave_malloc(p->size)))
 	{
-		free(p);
+		dave_free(p);
 		return NULL;
 	}
 	p->buf[0] = '\0';
@@ -81,7 +85,7 @@ static int printbuf_extend(struct printbuf *p, int min_size)
 	         "bpos=%d min_size=%d old_size=%d new_size=%d\n",
 	         p->bpos, min_size, p->size, new_size);
 #endif /* PRINTBUF_DEBUG */
-	if (!(t = (char *)realloc(p->buf, new_size)))
+	if (!(t = (char *)dave_realloc(p->buf, new_size)))
 		return -1;
 	p->size = new_size;
 	p->buf = t;
@@ -153,7 +157,7 @@ int sprintbuf(struct printbuf *p, const char *msg, ...)
 		}
 		va_end(ap);
 		printbuf_memappend(p, t, size);
-		free(t);
+		dave_free(t);
 		return size;
 	}
 	else
@@ -173,7 +177,10 @@ void printbuf_free(struct printbuf *p)
 {
 	if (p)
 	{
-		free(p->buf);
-		free(p);
+		dave_free(p->buf);
+		dave_free(p);
 	}
 }
+
+#endif
+

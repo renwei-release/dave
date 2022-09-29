@@ -6,6 +6,11 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+#include "dave_tools.h"
+
 #include "config.h"
 
 #include "strerror_override.h"
@@ -203,13 +208,13 @@ int json_pointer_get(struct json_object *obj, const char *path, struct json_obje
 	}
 
 	/* pass a working copy to the recursive call */
-	if (!(path_copy = strdup(path)))
+	if (!(path_copy = dave_strdup((s8 *)path)))
 	{
 		errno = ENOMEM;
 		return -1;
 	}
 	rc = json_pointer_get_recursive(obj, path_copy, res);
-	free(path_copy);
+	dave_free(path_copy);
 
 	return rc;
 }
@@ -242,7 +247,7 @@ int json_pointer_getf(struct json_object *obj, struct json_object **res, const c
 
 	rc = json_pointer_get_recursive(obj, path_copy, res);
 out:
-	free(path_copy);
+	dave_free(path_copy);
 
 	return rc;
 }
@@ -281,14 +286,14 @@ int json_pointer_set(struct json_object **obj, const char *path, struct json_obj
 	}
 
 	/* pass a working copy to the recursive call */
-	if (!(path_copy = strdup(path)))
+	if (!(path_copy = dave_strdup((s8 *)path)))
 	{
 		errno = ENOMEM;
 		return -1;
 	}
 	path_copy[endp - path] = '\0';
 	rc = json_pointer_get_recursive(*obj, path_copy, &set);
-	free(path_copy);
+	dave_free(path_copy);
 
 	if (rc)
 		return rc;
@@ -351,6 +356,9 @@ set_single_path:
 	endp++;
 	rc = json_pointer_set_single_path(set, endp, value);
 out:
-	free(path_copy);
+	dave_free(path_copy);
 	return rc;
 }
+
+#endif
+

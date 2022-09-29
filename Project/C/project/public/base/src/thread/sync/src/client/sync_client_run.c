@@ -239,7 +239,7 @@ _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 
 	if(broadcast_flag == dave_true)
 	{
-		CFGRemoteUpdate *boradcast_update = thread_msg(boradcast_update);
+		CFGRemoteUpdate *boradcast_update = thread_reset_msg(boradcast_update);
 		*boradcast_update = *pUpdate;
 		broadcast_local(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
 	}

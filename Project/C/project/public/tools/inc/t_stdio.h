@@ -21,6 +21,7 @@ ub __t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line);
 #define t_stdio_strcpy(dst, src, max_length) __t_stdio_strcpy__((s8 *)(dst), (const s8 *)(src), (ub)(max_length), (s8 *)__func__, (ub)__LINE__)
 dave_bool __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line);
 #define t_stdio_strcmp(cmp1, cmp2) __t_stdio_strcmp__((s8 *)(cmp1), (s8 *)(cmp2), (s8 *)__func__, (ub)__LINE__)
+s8 * t_stdio_strdup(s8 *str);
 s8 * t_stdio_strfind(s8 *str, s8 end_char, s8 *find_ptr, ub find_len);
 s8 * t_stdio_strfindfrist(s8 *str, s8 find_char);
 s8 * t_stdio_strfindlast(s8 *str, s8 find_char);
@@ -38,6 +39,7 @@ void t_stdio_print_char(const char *msg, u8 *char_data, ub char_len);
 #define dave_snscanf t_stdio_snscanf
 #define dave_strcpy t_stdio_strcpy
 #define dave_strcmp t_stdio_strcmp
+#define dave_strdup t_stdio_strdup
 #define dave_memcpy(a, b, c) t_stdio_memcpy((u8 *)(a), (u8 *)(b), (ub)(c))
 #define dave_memmove(a, b, c) t_stdio_memmove((u8 *)(a), (u8 *)(b), (ub)(c))
 #define dave_memcmp(a, b, c) t_stdio_memcmp((u8 *)(a), (u8 *)(b), (ub)(c))

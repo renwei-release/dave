@@ -9,6 +9,10 @@
  *
  */
 
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "random_seed.h"
 #include "config.h"
 #include "strerror_override.h"
@@ -292,3 +296,6 @@ int json_c_get_random_seed(void)
 #endif
 	return get_time_seed();
 }
+
+#endif
+

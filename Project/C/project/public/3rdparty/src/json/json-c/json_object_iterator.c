@@ -9,6 +9,10 @@
 *
 *******************************************************************************
 */
+#include "3rdparty_macro.h"
+#if defined(JSON_3RDPARTY)
+#include "dave_base.h"
+
 #include "config.h"
 
 #include <stddef.h>
@@ -151,3 +155,6 @@ struct json_object_iterator json_object_iter_init_default(void)
 
 	return iter;
 }
+
+#endif
+

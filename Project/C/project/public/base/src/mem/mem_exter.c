@@ -60,6 +60,16 @@ __exter_free__(void *ptr, s8 *file, ub line)
 #endif
 }
 
+ub
+__exter_len__(void *ptr, s8 *file, ub line)
+{
+#ifdef EXTER_ENABLE_BLOCK
+	return block_len(_exter_mem, ptr, file, line);
+#else
+	return __block_mem_len__(ptr);
+#endif
+}
+
 dave_bool
 __exter_memory__(void *ptr, s8 *file, ub line)
 {
