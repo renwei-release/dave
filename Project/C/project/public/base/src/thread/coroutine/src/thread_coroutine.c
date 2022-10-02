@@ -9,13 +9,13 @@
 #include "thread_parameter.h"
 #if defined(__DAVE_BASE__) && defined(ENABLE_THREAD_COROUTINE)
 #include "dave_base.h"
-#include "dave_3rdparty.h"
 #include "dave_os.h"
 #include "thread_struct.h"
 #include "thread_mem.h"
 #include "thread_thread.h"
 #include "thread_tools.h"
 #include "thread_coroutine.h"
+#include "coroutine_core.h"
 #include "thread_log.h"
 
 #define COROUTINE_WAIT_TIMER 180
@@ -243,7 +243,7 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 
 	if(pSite->co != NULL)
 	{
-		dave_co_release(pSite->co);
+		coroutine_release(pSite->co);
 	}
 
 	while(pSite->rsp_msg_head != NULL)
@@ -284,7 +284,7 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 			pWakeup->wakeup_index, wakeup_index);
 	}
 
-	dave_co_resume(pSite->co);
+	coroutine_resume(pSite->co);
 }
 
 static inline dave_bool
@@ -349,7 +349,7 @@ _thread_coroutine_running_step_4(void *param)
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
-	dave_co_yield(pSite->co);
+	coroutine_yield(pSite->co);
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
@@ -417,9 +417,9 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 {
 	CoroutineSite *pSite = _thread_coroutine_info_malloc(pThread, coroutine_fun, thread_fun, msg);
 
-	pSite->co = dave_co_create(_thread_coroutine_running_step_2, pSite);
+	pSite->co = coroutine_create(_thread_coroutine_running_step_2, pSite);
 
-	dave_co_resume(pSite->co);
+	coroutine_resume(pSite->co);
 }
 
 static inline void
@@ -427,7 +427,7 @@ _thread_coroutine_timer_out(CoroutineSite *pSite, s8 *key)
 {
 	if(pSite == _thread_coroutine_del_kv_(key))
 	{
-		dave_co_resume(pSite->co);
+		coroutine_resume(pSite->co);
 	}
 }
 
@@ -509,6 +509,8 @@ _thread_coroutine_booting(void)
 void
 thread_coroutine_init(ThreadStruct *pThread)
 {
+	coroutine_core_init();
+
 	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup, NULL);
 }
 
@@ -516,6 +518,8 @@ void
 thread_coroutine_exit(ThreadStruct *pThread)
 {
 	base_thread_msg_unregister(pThread->thread_id, MSGID_COROUTINE_WAKEUP);
+
+	coroutine_core_exit();
 }
 
 dave_bool

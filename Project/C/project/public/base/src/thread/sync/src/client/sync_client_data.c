@@ -1016,8 +1016,7 @@ sync_client_data_server_add_client(s8 *verno, s8 *globally_identifier, u8 *ip, u
 {
 	SyncServer *pServer = NULL;
 
-	if(((ip[0] == 0) && (ip[1] == 0) && (ip[2] == 0) && (ip[3] == 0))
-		|| (port == 0))
+	if(port == 0)
 	{
 		SYNCLOG("invalid %s!", ipv4str(ip, port));
 		return NULL;

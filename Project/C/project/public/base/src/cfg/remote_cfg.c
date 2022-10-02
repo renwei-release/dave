@@ -25,7 +25,7 @@ static void *_remote_cfg_kv = NULL;
 static void
 _base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
 {
-	CFGRemoteUpdate *pUpdate = thread_msg(pUpdate);
+	CFGRemoteUpdate *pUpdate = thread_reset_msg(pUpdate);
 
 	pUpdate->put_flag = put_flag;
 	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));

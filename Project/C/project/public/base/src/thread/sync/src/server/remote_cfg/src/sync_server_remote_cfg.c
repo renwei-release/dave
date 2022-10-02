@@ -31,6 +31,8 @@ _sync_server_the_config_tell_all_client(dave_bool put_flag, s8 *key, s8 *value)
 {
 	CFGRemoteUpdate update;
 
+	dave_memset(&update, 0x00, sizeof(update));
+
 	update.put_flag = put_flag;
 	dave_strcpy(update.cfg_name, key, sizeof(update.cfg_name));
 	dave_strcpy(update.cfg_value, value, sizeof(update.cfg_value));
@@ -59,7 +61,10 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 		}
 		update.ttl = 0;
 
-		sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), &update);
+		if(update.cfg_name[0] != '\0')
+		{
+			sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), &update);
+		}
 	}
 }
 

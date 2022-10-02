@@ -26,17 +26,26 @@ static ThreadStruct *_thread = NULL;
 static ub
 _thread_msg_wait_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 {
-	ub msg_index, thread_index;
+	ub msg_index, wait_msg_index, thread_index;
 
 	msg_index = 0;
+
+	msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "MESSAGE WAITING FOR INFORMATION:\n");
+
+	wait_msg_index = 0;
 
 	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 	{
 		if(pThread[thread_index].thread_name[0] != '\0')
 		{
-			msg_index += thread_wait_msg_show(&pThread[thread_index], NULL, &msg_ptr[msg_index], msg_len-msg_index);
+			wait_msg_index += thread_wait_msg_show(&pThread[thread_index], NULL, &msg_ptr[msg_index], msg_len-msg_index);
+
+			msg_index += wait_msg_index;
 		}
 	}
+
+	if(wait_msg_index == 0)
+		return 0;
 
 	return msg_index;
 }
@@ -218,9 +227,9 @@ thread_show_all_info(ThreadStruct *pThread, DateStruct *pWorkDate, s8 *msg_ptr, 
 		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
 			"============================================================\n");
 	}
-	msg_index += _thread_msg_wait_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
 	msg_index += base_mem_info(&msg_ptr[msg_index], msg_len-msg_index, base_flag);
 	msg_index += thread_memory_info(&msg_ptr[msg_index], msg_len-msg_index, base_flag);
+	msg_index += _thread_msg_wait_info(pThread, &msg_ptr[msg_index], msg_len-msg_index);
 	if(pWorkDate != NULL)
 	{
 		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,

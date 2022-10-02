@@ -1757,35 +1757,33 @@ base_thread_name_msg(
 	ThreadId dst_id;
 	dave_bool ret;
 
-	if((dst_thread == NULL) || (dst_thread[0] == '\0'))
+	if(dst_thread == NULL)
 	{
+		THREADABNOR("dst_thread is NULL! <%s:%d>", fun, line);
 		thread_clean_user_input_data(msg_body, msg_id);
-		dst_id = INVALID_THREAD_ID;
-		ret = dave_false;
+		return dave_false;
+	}
+
+	if(dst_thread[0] == '\0')
+	{
+		THREADABNOR("dst_thread is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
+
+	if(src_id == INVALID_THREAD_ID)
+	{
+		src_id = self();
+	}
+	dst_id = _thread_get_id(dst_thread);
+
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		ret = base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 	}
 	else
 	{
-		if(src_id == INVALID_THREAD_ID)
-		{
-			src_id = self();
-		}
-		dst_id = _thread_get_id(dst_thread);
-
-		if(dst_id != INVALID_THREAD_ID)
-		{
-			ret = base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
-		}
-		else
-		{
-			ret = thread_msg_buffer_thread_push(src_id, dst_thread, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
-		}
-	}
-
-	if(ret == dave_false)
-	{
-		THREADLTRACE(60,1,"%lx/%s->%lx/%s:%s <%s:%d>",
-			self(), _thread_get_name(self()), dst_id, dst_thread, msgstr(msg_id),
-			fun, line);
+		ret = thread_msg_buffer_thread_push(src_id, dst_thread, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
 	}
 
 	return ret;
@@ -1798,6 +1796,20 @@ base_thread_name_event(
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if(dst_thread == NULL)
+	{
+		THREADABNOR("dst_thread is NULL! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if(dst_thread[0] == '\0')
+	{
+		THREADABNOR("dst_thread is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
@@ -1823,6 +1835,20 @@ base_thread_name_go(
 	s8 *fun, ub line)
 {
 	ThreadStruct *pSrcThread;
+
+	if(dst_thread == NULL)
+	{
+		THREADABNOR("dst_thread is NULL! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if(dst_thread[0] == '\0')
+	{
+		THREADABNOR("dst_thread is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
 
 	if(src_id == INVALID_THREAD_ID)
 	{
@@ -1853,12 +1879,27 @@ base_thread_gid_msg(
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	ThreadId dst_id = thread_gid_table_inq(gid, dst_thread);
+	ThreadId dst_id;
+
+	if((gid == NULL) || (dst_thread == NULL))
+	{
+		THREADABNOR("gid:%x or dst_thread:%x is NULL! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
+
+	if((gid[0] == '\0') || (dst_thread[0] == '\0'))
+	{
+		THREADABNOR("gid:%s or dst_thread:%s is empty! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
 
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
 	}
+	dst_id = thread_gid_table_inq(gid, dst_thread);
 
 	if(dst_id == INVALID_THREAD_ID)
 	{
@@ -1879,6 +1920,20 @@ base_thread_gid_event(
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if((gid == NULL) || (dst_thread == NULL))
+	{
+		THREADABNOR("gid:%x or dst_thread:%x is NULL! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if((gid[0] == '\0') || (dst_thread[0] == '\0'))
+	{
+		THREADABNOR("gid:%s or dst_thread:%s is empty! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
@@ -1904,6 +1959,20 @@ base_thread_gid_go(
 	s8 *fun, ub line)
 {
 	ThreadStruct *pSrcThread;
+
+	if((gid == NULL) || (dst_thread == NULL))
+	{
+		THREADABNOR("gid:%x or dst_thread:%x is NULL! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if((gid[0] == '\0') || (dst_thread[0] == '\0'))
+	{
+		THREADABNOR("gid:%s or dst_thread:%s is empty! <%s:%d>", gid, dst_thread, fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
 
 	if(src_id == INVALID_THREAD_ID)
 	{
@@ -1937,6 +2006,20 @@ base_thread_uid_msg(
 	ThreadRouter *pRouter;
 	ThreadId dst_id;
 
+	if(uid == NULL)
+	{
+		THREADABNOR("uid is NULL! <%s:%d>", fun, line);
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
+
+	if(uid[0] == '\0')
+	{
+		THREADABNOR("uid is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
+
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
@@ -1969,6 +2052,20 @@ base_thread_uid_event(
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
 {
+	if(uid == NULL)
+	{
+		THREADABNOR("uid is NULL! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if(uid[0] == '\0')
+	{
+		THREADABNOR("uid is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
 	if(src_id == INVALID_THREAD_ID)
 	{
 		src_id = self();
@@ -1994,6 +2091,20 @@ base_thread_uid_go(
 	s8 *fun, ub line)
 {
 	ThreadStruct *pSrcThread;
+
+	if(uid == NULL)
+	{
+		THREADABNOR("uid is NULL! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
+
+	if(uid[0] == '\0')
+	{
+		THREADABNOR("uid is empty! <%s:%d>", fun, line);
+		thread_clean_user_input_data(req_body, req_id);
+		return dave_false;
+	}
 
 	if(src_id == INVALID_THREAD_ID)
 	{

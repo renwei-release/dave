@@ -63,7 +63,7 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	req.float_debug = FLOAT_DEBUG_VALUE;
 	req.double_debug = DOUBLE_DEBUG_VALUE;
 	req.void_debug = VOID_DEBUG_VALUE;
-	req.ptr = NULL;
+	req.ptr = &req;
 
 	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
@@ -139,7 +139,8 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
-	if(dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true)
+	if((dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true)
+		|| (dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true))
 	{
 		_base_thread_rpc_debug_req_use_go(pReady);
 
@@ -158,7 +159,7 @@ _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 static void
 _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 {
-	BASELOG("%s (%d)%s : (%d)%s ttl:%d",
+	BASETRACE("%s (%d)%s : (%d)%s ttl:%d",
 		pUpdate->put_flag==dave_true?"PUT":"DELETE",
 		dave_strlen(pUpdate->cfg_name), pUpdate->cfg_name,
 		dave_strlen(pUpdate->cfg_value), pUpdate->cfg_value,
