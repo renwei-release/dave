@@ -18,10 +18,6 @@
 #define GTEST_3RDPARTY
 #endif
 
-#if defined(__DAVE_LINUX__) || defined(__DAVE_CYGWIN__)
-#define COROUTINE_3RDPARTY
-#endif
-
 #define NGINX_3RDPARTY
 
 #define MONGO_3RDPARTY

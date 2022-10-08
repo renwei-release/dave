@@ -49,9 +49,9 @@ _uip_server_port_to_io_type(ub listen_port)
 	{
 		return UIPType_h5_form;
 	}
-	else if(listen_port == UIP_SERVER_H5_PORT)
+	else if(listen_port == UIP_SERVER_WeChat_PORT)
 	{
-		return UIPType_weichat_form;
+		return UIPType_wechat_form;
 	}
 	else
 	{

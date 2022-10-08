@@ -21,7 +21,7 @@ typedef enum {
 	UIPType_uip,
 	UIPType_json,
 	UIPType_h5_form,
-	UIPType_weichat_form,
+	UIPType_wechat_form,
 } UIPType;
 
 /* for UIP_REGISTER_REQ message */

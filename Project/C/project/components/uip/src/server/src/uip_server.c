@@ -162,6 +162,8 @@ _uip_server_http_rsp(ThreadId dst, RetCode ret, void *ptr, void *pJson)
 	pRsp->local_creat_time = dave_os_time_us();
 	pRsp->ptr = ptr;
 
+	UIPTRACE("content:%s", dave_mptr(pRsp->content));
+
 	id_msg(dst, HTTPMSG_RECV_RSP, pRsp);
 }
 
@@ -172,6 +174,10 @@ _uip_server_http_req(ThreadId src, HTTPRecvReq *pReq)
 	RetCode ret;
 
 	recv_fun = _uip_server_recv_fun(pReq);
+
+	UIPTRACE("listen_port:%d recv_fun:%x content:%s",
+		pReq->listen_port, recv_fun,
+		dave_mptr(pReq->content));
 
 	if(recv_fun != NULL)
 	{

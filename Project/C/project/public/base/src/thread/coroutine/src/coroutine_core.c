@@ -9,7 +9,6 @@
 #include "thread_parameter.h"
 #if defined(__DAVE_BASE__) && defined(ENABLE_THREAD_COROUTINE)
 #include "dave_base.h"
-#include "dave_3rdparty.h"
 #include "dave_os.h"
 #include "thread_struct.h"
 #include "thread_mem.h"
@@ -18,10 +17,6 @@
 #include "thread_coroutine.h"
 #include "coroutine_core.h"
 #include "thread_log.h"
-
- #define ENABLE_THREAD_COROUTINE_CORE
-
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 
 #define COROUTINE_CORE_STACK_DEFAULT_SIZE 128 * 1024
 #define TID_MAX DAVE_SYS_THREAD_ID_MAX
@@ -288,64 +283,42 @@ _coroutine_release(void *co)
 	}
 }
 
-#endif
-
 // =====================================================================
 
 void
 coroutine_core_init(void)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	_coroutine_core_init();
-#endif
 }
 
 void
 coroutine_core_exit(void)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	_coroutine_core_exit();
-#endif
 }
 
 void *
 coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	return _coroutine_create(fun_ptr, fun_param);
-#else
-	return dave_co_create(fun_ptr, fun_param);
-#endif
 }
 
 void
 coroutine_resume(void *co)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	_coroutine_resume(co);
-#else
-	dave_co_resume(co);
-#endif
 }
 
 void
 coroutine_yield(void *co)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	_coroutine_yield(co);
-#else
-	dave_co_yield(co);
-#endif
 }
 
 void
 coroutine_release(void *co)
 {
-#ifdef ENABLE_THREAD_COROUTINE_CORE
 	_coroutine_release(co);
-#else
-	dave_co_release(co);
-#endif
 }
 
 #endif

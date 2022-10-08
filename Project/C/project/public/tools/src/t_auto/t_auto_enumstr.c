@@ -1282,11 +1282,26 @@ t_auto_ErrCode_str(ErrCode enum_value)
 		case ERRCODE_OK:
 				value_str = "'ERRCODE_OK-0'";
 			break;
+		case ERRCODE_Memory_full:
+				value_str = "'ERRCODE_Memory_full--1'";
+			break;
 		case ERRCODE_Limited_resources:
 				value_str = "'ERRCODE_Limited_resources--2'";
 			break;
 		case ERRCODE_Arithmetic_error:
 				value_str = "'ERRCODE_Arithmetic_error--3'";
+			break;
+		case ERRCODE_Unknown_error:
+				value_str = "'ERRCODE_Unknown_error--4'";
+			break;
+		case ERRCODE_Can_not_find_node:
+				value_str = "'ERRCODE_Can_not_find_node--5'";
+			break;
+		case ERRCODE_Send_failed:
+				value_str = "'ERRCODE_Send_failed--6'";
+			break;
+		case ERRCODE_Recv_failed:
+				value_str = "'ERRCODE_Recv_failed--7'";
 			break;
 		case ERRCODE_Invalid_data:
 				value_str = "'ERRCODE_Invalid_data--8'";
@@ -1294,14 +1309,89 @@ t_auto_ErrCode_str(ErrCode enum_value)
 		case ERRCODE_Unsupported_type:
 				value_str = "'ERRCODE_Unsupported_type--9'";
 			break;
+		case ERRCODE_Invalid_user_name:
+				value_str = "'ERRCODE_Invalid_user_name--10'";
+			break;
+		case ERRCODE_Parameter_conflicts:
+				value_str = "'ERRCODE_Parameter_conflicts--11'";
+			break;
+		case ERRCODE_Invalid_device:
+				value_str = "'ERRCODE_Invalid_device--12'";
+			break;
+		case ERRCODE_Invalid_Event:
+				value_str = "'ERRCODE_Invalid_Event--13'";
+			break;
+		case ERRCODE_Heartbeat_timeout:
+				value_str = "'ERRCODE_Heartbeat_timeout--14'";
+			break;
+		case ERRCODE_Invalid_password:
+				value_str = "'ERRCODE_Invalid_password--15'";
+			break;
 		case ERRCODE_save_failed:
 				value_str = "'ERRCODE_save_failed--16'";
+			break;
+		case ERRCODE_Invalid_data_too_short:
+				value_str = "'ERRCODE_Invalid_data_too_short--17'";
+			break;
+		case ERRCODE_Invalid_data_too_long:
+				value_str = "'ERRCODE_Invalid_data_too_long--18'";
+			break;
+		case ERRCODE_Invalid_data_crc_check:
+				value_str = "'ERRCODE_Invalid_data_crc_check--19'";
 			break;
 		case ERRCODE_Invalid_parameter:
 				value_str = "'ERRCODE_Invalid_parameter--20'";
 			break;
+		case ERRCODE_Send_msg_failed:
+				value_str = "'ERRCODE_Send_msg_failed--21'";
+			break;
+		case ERRCODE_Resource_conflicts:
+				value_str = "'ERRCODE_Resource_conflicts--22'";
+			break;
+		case ERRCODE_CREDIT_LIMIT_REACHED:
+				value_str = "'ERRCODE_CREDIT_LIMIT_REACHED--23'";
+			break;
+		case ERRCODE_Exceeded_number:
+				value_str = "'ERRCODE_Exceeded_number--24'";
+			break;
+		case ERRCODE_do_not_free:
+				value_str = "'ERRCODE_do_not_free--25'";
+			break;
 		case ERRCODE_Request_failed:
 				value_str = "'ERRCODE_Request_failed--26'";
+			break;
+		case ERRCODE_can_not_find_ret_code:
+				value_str = "'ERRCODE_can_not_find_ret_code--27'";
+			break;
+		case ERRCODE_user_is_registered:
+				value_str = "'ERRCODE_user_is_registered--28'";
+			break;
+		case ERRCODE_connect_error:
+				value_str = "'ERRCODE_connect_error--29'";
+			break;
+		case ERRCODE_function_not_supported:
+				value_str = "'ERRCODE_function_not_supported--30'";
+			break;
+		case ERRCODE_msg_queue_is_full:
+				value_str = "'ERRCODE_msg_queue_is_full--31'";
+			break;
+		case ERRCODE_msg_can_not_resend_wakeup:
+				value_str = "'ERRCODE_msg_can_not_resend_wakeup--32'";
+			break;
+		case ERRCODE_msg_memory_if_full:
+				value_str = "'ERRCODE_msg_memory_if_full--33'";
+			break;
+		case ERRCODE_msg_competition_for_resources:
+				value_str = "'ERRCODE_msg_competition_for_resources--34'";
+			break;
+		case ERRCODE_wait:
+				value_str = "'ERRCODE_wait--35'";
+			break;
+		case ERRCODE_Invalid_state:
+				value_str = "'ERRCODE_Invalid_state--36'";
+			break;
+		case ERRCODE_usr_default:
+				value_str = "'ERRCODE_usr_default--37'";
 			break;
 		case ERRCODE_timer_out:
 				value_str = "'ERRCODE_timer_out--38'";
@@ -1309,47 +1399,689 @@ t_auto_ErrCode_str(ErrCode enum_value)
 		case ERRCODE_invalid_type:
 				value_str = "'ERRCODE_invalid_type--39'";
 			break;
+		case ERRCODE_user_does_not_exist:
+				value_str = "'ERRCODE_user_does_not_exist--40'";
+			break;
+		case ERRCODE_version_new:
+				value_str = "'ERRCODE_version_new--41'";
+			break;
+		case ERRCODE_version_old:
+				value_str = "'ERRCODE_version_old--42'";
+			break;
 		case ERRCODE_ptr_null:
 				value_str = "'ERRCODE_ptr_null--43'";
+			break;
+		case ERRCODE_record_not_exist:
+				value_str = "'ERRCODE_record_not_exist--44'";
+			break;
+		case ERRCODE_db_store_failed:
+				value_str = "'ERRCODE_db_store_failed--45'";
+			break;
+		case ERRCODE_db_not_find:
+				value_str = "'ERRCODE_db_not_find--46'";
+			break;
+		case ERRCODE_Invalid_channel_name:
+				value_str = "'ERRCODE_Invalid_channel_name--47'";
+			break;
+		case ERRCODE_Invalid_db_store:
+				value_str = "'ERRCODE_Invalid_db_store--48'";
+			break;
+		case ERRCODE_version_mismatch:
+				value_str = "'ERRCODE_version_mismatch--49'";
+			break;
+		case ERRCODE_invalid_version_file:
+				value_str = "'ERRCODE_invalid_version_file--50'";
+			break;
+		case ERRCODE_version_identical:
+				value_str = "'ERRCODE_version_identical--51'";
+			break;
+		case ERRCODE_db_sql_failed:
+				value_str = "'ERRCODE_db_sql_failed--52'";
 			break;
 		case ERRCODE_invalid_option:
 				value_str = "'ERRCODE_invalid_option--53'";
 			break;
+		case ERRCODE_Invalid_domain:
+				value_str = "'ERRCODE_Invalid_domain--54'";
+			break;
+		case ERRCODE_Invalid_auth_key:
+				value_str = "'ERRCODE_Invalid_auth_key--55'";
+			break;
+		case ERRCODE_invalid_key:
+				value_str = "'ERRCODE_invalid_key--56'";
+			break;
+		case ERRCODE_no_account_found:
+				value_str = "'ERRCODE_no_account_found--57'";
+			break;
+		case ERRCODE_invalid_phone_number:
+				value_str = "'ERRCODE_invalid_phone_number--58'";
+			break;
+		case ERRCODE_not_match_domain:
+				value_str = "'ERRCODE_not_match_domain--59'";
+			break;
+		case ERRCODE_invalid_account:
+				value_str = "'ERRCODE_invalid_account--60'";
+			break;
+		case ERRCODE_please_help_free:
+				value_str = "'ERRCODE_please_help_free--61'";
+			break;
+		case ERRCODE_db_init_failed:
+				value_str = "'ERRCODE_db_init_failed--62'";
+			break;
+		case ERRCODE_update_fail:
+				value_str = "'ERRCODE_update_fail--63'";
+			break;
+		case ERRCODE_maybe_have_data:
+				value_str = "'ERRCODE_maybe_have_data--64'";
+			break;
+		case ERRCODE_do_not_restart:
+				value_str = "'ERRCODE_do_not_restart--65'";
+			break;
+		case ERRCODE_lost_auth_key:
+				value_str = "'ERRCODE_lost_auth_key--66'";
+			break;
+		case ERRCODE_lost_serial:
+				value_str = "'ERRCODE_lost_serial--67'";
+			break;
+		case ERRCODE_lost_time:
+				value_str = "'ERRCODE_lost_time--68'";
+			break;
 		case ERRCODE_lost_uuid:
 				value_str = "'ERRCODE_lost_uuid--69'";
+			break;
+		case ERRCODE_lost_user:
+				value_str = "'ERRCODE_lost_user--70'";
+			break;
+		case ERRCODE_can_not_find_record:
+				value_str = "'ERRCODE_can_not_find_record--71'";
+			break;
+		case ERRCODE_lost_dial_number:
+				value_str = "'ERRCODE_lost_dial_number--72'";
+			break;
+		case ERRCODE_call_prohibition:
+				value_str = "'ERRCODE_call_prohibition--73'";
+			break;
+		case ERRCODE_lost_link:
+				value_str = "'ERRCODE_lost_link--74'";
+			break;
+		case ERRCODE_record_not_found:
+				value_str = "'ERRCODE_record_not_found--75'";
+			break;
+		case ERRCODE_ims_account_incorrect:
+				value_str = "'ERRCODE_ims_account_incorrect--76'";
+			break;
+		case ERRCODE_invalid_dial_number:
+				value_str = "'ERRCODE_invalid_dial_number--77'";
+			break;
+		case ERRCODE_Invalid_balance:
+				value_str = "'ERRCODE_Invalid_balance--78'";
+			break;
+		case ERRCODE_user_exist:
+				value_str = "'ERRCODE_user_exist--79'";
+			break;
+		case ERRCODE_store_data_failed:
+				value_str = "'ERRCODE_store_data_failed--80'";
+			break;
+		case ERRCODE_Invalid_user_type:
+				value_str = "'ERRCODE_Invalid_user_type--81'";
+			break;
+		case ERRCODE_invalid_user:
+				value_str = "'ERRCODE_invalid_user--82'";
+			break;
+		case ERRCODE_unsupport:
+				value_str = "'ERRCODE_unsupport--83'";
+			break;
+		case ERRCODE_unpackage_failed:
+				value_str = "'ERRCODE_unpackage_failed--84'";
+			break;
+		case ERRCODE_creat_db_failed:
+				value_str = "'ERRCODE_creat_db_failed--85'";
+			break;
+		case ERRCODE_Invalid_channel:
+				value_str = "'ERRCODE_Invalid_channel--86'";
+			break;
+		case ERRCODE_heartbeat_timer_out:
+				value_str = "'ERRCODE_heartbeat_timer_out--87'";
+			break;
+		case ERRCODE_Invalid_package:
+				value_str = "'ERRCODE_Invalid_package--88'";
+			break;
+		case ERRCODE_Invalid_rules:
+				value_str = "'ERRCODE_Invalid_rules--89'";
+			break;
+		case ERRCODE_busy:
+				value_str = "'ERRCODE_busy--90'";
+			break;
+		case ERRCODE_data_overflow:
+				value_str = "'ERRCODE_data_overflow--91'";
+			break;
+		case ERRCODE_invalid_account_name:
+				value_str = "'ERRCODE_invalid_account_name--92'";
+			break;
+		case ERRCODE_Account_in_use:
+				value_str = "'ERRCODE_Account_in_use--93'";
+			break;
+		case ERRCODE_invalid_address:
+				value_str = "'ERRCODE_invalid_address--94'";
+			break;
+		case ERRCODE_can_not_find_rules:
+				value_str = "'ERRCODE_can_not_find_rules--95'";
+			break;
+		case ERRCODE_refuse_call_self:
+				value_str = "'ERRCODE_refuse_call_self--96'";
+			break;
+		case ERRCODE_Invalid_call:
+				value_str = "'ERRCODE_Invalid_call--97'";
 			break;
 		case ERRCODE_mismatch:
 				value_str = "'ERRCODE_mismatch--98'";
 			break;
+		case ERRCODE_Invalid_call_type:
+				value_str = "'ERRCODE_Invalid_call_type--99'";
+			break;
+		case ERRCODE_Invalid_billing:
+				value_str = "'ERRCODE_Invalid_billing--100'";
+			break;
+		case ERRCODE_invalid_magic:
+				value_str = "'ERRCODE_invalid_magic--101'";
+			break;
+		case ERRCODE_create_thread_failed:
+				value_str = "'ERRCODE_create_thread_failed--102'";
+			break;
+		case ERRCODE_execute_sql_failed:
+				value_str = "'ERRCODE_execute_sql_failed--103'";
+			break;
 		case ERRCODE_decode_failed:
 				value_str = "'ERRCODE_decode_failed--104'";
+			break;
+		case ERRCODE_encode_failed:
+				value_str = "'ERRCODE_encode_failed--105'";
+			break;
+		case ERRCODE_invalid_file:
+				value_str = "'ERRCODE_invalid_file--106'";
 			break;
 		case ERRCODE_file_open_failed:
 				value_str = "'ERRCODE_file_open_failed--107'";
 			break;
-		case ERRCODE_Failed_to_identify:
-				value_str = "'ERRCODE_Failed_to_identify--228'";
+		case ERRCODE_process_now:
+				value_str = "'ERRCODE_process_now--108'";
+			break;
+		case ERRCODE_queue_too_large:
+				value_str = "'ERRCODE_queue_too_large--109'";
+			break;
+		case ERRCODE_add_user_name_failed:
+				value_str = "'ERRCODE_add_user_name_failed--110'";
+			break;
+		case ERRCODE_call_time_limited:
+				value_str = "'ERRCODE_call_time_limited--111'";
+			break;
+		case ERRCODE_invalid_hour:
+				value_str = "'ERRCODE_invalid_hour--112'";
+			break;
+		case ERRCODE_invalid_day:
+				value_str = "'ERRCODE_invalid_day--113'";
+			break;
+		case ERRCODE_invalid_week:
+				value_str = "'ERRCODE_invalid_week--114'";
+			break;
+		case ERRCODE_invalid_month:
+				value_str = "'ERRCODE_invalid_month--115'";
+			break;
+		case ERRCODE_invalid_year:
+				value_str = "'ERRCODE_invalid_year--116'";
+			break;
+		case ERRCODE_invalid_unit:
+				value_str = "'ERRCODE_invalid_unit--117'";
+			break;
+		case ERRCODE_invalid_rules_number:
+				value_str = "'ERRCODE_invalid_rules_number--118'";
+			break;
+		case ERRCODE_invalid_package_private:
+				value_str = "'ERRCODE_invalid_package_private--119'";
+			break;
+		case ERRCODE_rules_id_mismatch:
+				value_str = "'ERRCODE_rules_id_mismatch--120'";
+			break;
+		case ERRCODE_channel_not_exist:
+				value_str = "'ERRCODE_channel_not_exist--121'";
+			break;
+		case ERRCODE_invalid_donation_account:
+				value_str = "'ERRCODE_invalid_donation_account--122'";
+			break;
+		case ERRCODE_channel_exist:
+				value_str = "'ERRCODE_channel_exist--123'";
+			break;
+		case ERRCODE_invalid_date:
+				value_str = "'ERRCODE_invalid_date--124'";
+			break;
+		case ERRCODE_not_my_data:
+				value_str = "'ERRCODE_not_my_data--125'";
+			break;
+		case ERRCODE_only_share_user_pwd_can_modify:
+				value_str = "'ERRCODE_only_share_user_pwd_can_modify--126'";
+			break;
+		case ERRCODE_can_not_find_thread:
+				value_str = "'ERRCODE_can_not_find_thread--127'";
+			break;
+		case ERRCODE_lost_register_e164_number:
+				value_str = "'ERRCODE_lost_register_e164_number--128'";
+			break;
+		case ERRCODE_lost_modify_impu_flag:
+				value_str = "'ERRCODE_lost_modify_impu_flag--129'";
+			break;
+		case ERRCODE_lost_country_code_of_e164_number:
+				value_str = "'ERRCODE_lost_country_code_of_e164_number--130'";
+			break;
+		case ERRCODE_lost_sip_password:
+				value_str = "'ERRCODE_lost_sip_password--131'";
+			break;
+		case ERRCODE_invalid_modify_impu_flag:
+				value_str = "'ERRCODE_invalid_modify_impu_flag--132'";
+			break;
+		case ERRCODE_invalid_country_code_of_e164_number:
+				value_str = "'ERRCODE_invalid_country_code_of_e164_number--133'";
+			break;
+		case ERRCODE_invalid_register_e164_number:
+				value_str = "'ERRCODE_invalid_register_e164_number--134'";
+			break;
+		case ERRCODE_modify_impu_failed:
+				value_str = "'ERRCODE_modify_impu_failed--135'";
+			break;
+		case ERRCODE_impu_not_existed:
+				value_str = "'ERRCODE_impu_not_existed--136'";
+			break;
+		case ERRCODE_script_execution_error:
+				value_str = "'ERRCODE_script_execution_error--137'";
+			break;
+		case ERRCODE_invalid_share_ram:
+				value_str = "'ERRCODE_invalid_share_ram--138'";
+			break;
+		case ERRCODE_Duplicate_MSISDN:
+				value_str = "'ERRCODE_Duplicate_MSISDN--139'";
+			break;
+		case ERRCODE_Duplicate_IMSI:
+				value_str = "'ERRCODE_Duplicate_IMSI--140'";
+			break;
+		case ERRCODE_Duplicate_VOIP_MSISDN:
+				value_str = "'ERRCODE_Duplicate_VOIP_MSISDN--141'";
+			break;
+		case ERRCODE_Not_found:
+				value_str = "'ERRCODE_Not_found--142'";
+			break;
+		case ERRCODE_Boot_in_the_territory:
+				value_str = "'ERRCODE_Boot_in_the_territory--143'";
+			break;
+		case ERRCODE_Other_errors:
+				value_str = "'ERRCODE_Other_errors--144'";
+			break;
+		case ERRCODE_lost_result_code:
+				value_str = "'ERRCODE_lost_result_code--145'";
+			break;
+		case ERRCODE_invalid_imsi:
+				value_str = "'ERRCODE_invalid_imsi--146'";
+			break;
+		case ERRCODE_invalid_msisdn:
+				value_str = "'ERRCODE_invalid_msisdn--147'";
+			break;
+		case ERRCODE_invalid_voip_msisdn:
+				value_str = "'ERRCODE_invalid_voip_msisdn--148'";
+			break;
+		case ERRCODE_processing_is_complete:
+				value_str = "'ERRCODE_processing_is_complete--149'";
+			break;
+		case ERRCODE_secondary_number_ass_repeated:
+				value_str = "'ERRCODE_secondary_number_ass_repeated--150'";
+			break;
+		case ERRCODE_secondary_number_not_available:
+				value_str = "'ERRCODE_secondary_number_not_available--151'";
+			break;
+		case ERRCODE_secondary_number_ret_failed:
+				value_str = "'ERRCODE_secondary_number_ret_failed--152'";
+			break;
+		case ERRCODE_secondary_number_inquiry_failed:
+				value_str = "'ERRCODE_secondary_number_inquiry_failed--153'";
+			break;
+		case ERRCODE_lost_secondary_number:
+				value_str = "'ERRCODE_lost_secondary_number--154'";
+			break;
+		case ERRCODE_invalid_e164_number_type:
+				value_str = "'ERRCODE_invalid_e164_number_type--155'";
+			break;
+		case ERRCODE_lost_number_request_type:
+				value_str = "'ERRCODE_lost_number_request_type--156'";
+			break;
+		case ERRCODE_secondary_number_not_existed:
+				value_str = "'ERRCODE_secondary_number_not_existed--157'";
 			break;
 		case ERRCODE_invalid_content:
 				value_str = "'ERRCODE_invalid_content--158'";
 			break;
+		case ERRCODE_invalid_email:
+				value_str = "'ERRCODE_invalid_email--159'";
+			break;
+		case ERRCODE_repeated_request:
+				value_str = "'ERRCODE_repeated_request--160'";
+			break;
+		case ERRCODE_rules_exist:
+				value_str = "'ERRCODE_rules_exist--161'";
+			break;
+		case ERRCODE_lack_of_donor:
+				value_str = "'ERRCODE_lack_of_donor--162'";
+			break;
+		case ERRCODE_lost_im_user_name:
+				value_str = "'ERRCODE_lost_im_user_name--163'";
+			break;
+		case ERRCODE_lost_im_password:
+				value_str = "'ERRCODE_lost_im_password--164'";
+			break;
+		case ERRCODE_invalid_im_nickname:
+				value_str = "'ERRCODE_invalid_im_nickname--165'";
+			break;
+		case ERRCODE_im_user_dereg_failed:
+				value_str = "'ERRCODE_im_user_dereg_failed--166'";
+			break;
+		case ERRCODE_im_user_not_existed:
+				value_str = "'ERRCODE_im_user_not_existed--167'";
+			break;
+		case ERRCODE_im_user_reg_failed:
+				value_str = "'ERRCODE_im_user_reg_failed--168'";
+			break;
+		case ERRCODE_invalid_im_user_name:
+				value_str = "'ERRCODE_invalid_im_user_name--169'";
+			break;
+		case ERRCODE_invalid_im_password:
+				value_str = "'ERRCODE_invalid_im_password--170'";
+			break;
+		case ERRCODE_lost_imsi:
+				value_str = "'ERRCODE_lost_imsi--171'";
+			break;
+		case ERRCODE_lost_binding_status:
+				value_str = "'ERRCODE_lost_binding_status--172'";
+			break;
+		case ERRCODE_invalid_binding_status:
+				value_str = "'ERRCODE_invalid_binding_status--173'";
+			break;
+		case ERRCODE_package_exist:
+				value_str = "'ERRCODE_package_exist--174'";
+			break;
+		case ERRCODE_invalid_billing_user_data:
+				value_str = "'ERRCODE_invalid_billing_user_data--175'";
+			break;
+		case ERRCODE_Failure_to_activate_validity:
+				value_str = "'ERRCODE_Failure_to_activate_validity--176'";
+			break;
+		case ERRCODE_Time_lapse:
+				value_str = "'ERRCODE_Time_lapse--177'";
+			break;
+		case ERRCODE_Billing_reached_the_limit:
+				value_str = "'ERRCODE_Billing_reached_the_limit--178'";
+			break;
+		case ERRCODE_invalid_recharge:
+				value_str = "'ERRCODE_invalid_recharge--179'";
+			break;
+		case ERRCODE_Date_expired:
+				value_str = "'ERRCODE_Date_expired--180'";
+			break;
+		case ERRCODE_lost_package_info:
+				value_str = "'ERRCODE_lost_package_info--181'";
+			break;
+		case ERRCODE_not_access:
+				value_str = "'ERRCODE_not_access--182'";
+			break;
+		case ERRCODE_invalid_minute:
+				value_str = "'ERRCODE_invalid_minute--183'";
+			break;
+		case ERRCODE_invalid_second:
+				value_str = "'ERRCODE_invalid_second--184'";
+			break;
+		case ERRCODE_not_do_anything:
+				value_str = "'ERRCODE_not_do_anything--185'";
+			break;
 		case ERRCODE_empty_data:
 				value_str = "'ERRCODE_empty_data--186'";
+			break;
+		case ERRCODE_not_group_rules:
+				value_str = "'ERRCODE_not_group_rules--187'";
+			break;
+		case ERRCODE_on_billing_operation_not_allowed:
+				value_str = "'ERRCODE_on_billing_operation_not_allowed--188'";
+			break;
+		case ERRCODE_roaming_not_allowed:
+				value_str = "'ERRCODE_roaming_not_allowed--189'";
 			break;
 		case ERRCODE_invalid_mcard:
 				value_str = "'ERRCODE_invalid_mcard--190'";
 			break;
+		case ERRCODE_Too_many_packages:
+				value_str = "'ERRCODE_Too_many_packages--191'";
+			break;
+		case ERRCODE_Too_many_rules:
+				value_str = "'ERRCODE_Too_many_rules--192'";
+			break;
+		case ERRCODE_can_not_find_mcard:
+				value_str = "'ERRCODE_can_not_find_mcard--193'";
+			break;
+		case ERRCODE_Failure_to_be_deactived:
+				value_str = "'ERRCODE_Failure_to_be_deactived--194'";
+			break;
+		case ERRCODE_operating_end:
+				value_str = "'ERRCODE_operating_end--195'";
+			break;
+		case ERRCODE_invalid_voip_setting:
+				value_str = "'ERRCODE_invalid_voip_setting--196'";
+			break;
+		case ERRCODE_Call_barring:
+				value_str = "'ERRCODE_Call_barring--197'";
+			break;
+		case ERRCODE_add_forbidden_user_failed:
+				value_str = "'ERRCODE_add_forbidden_user_failed--198'";
+			break;
+		case ERRCODE_forbidden_register_user:
+				value_str = "'ERRCODE_forbidden_register_user--199'";
+			break;
+		case ERRCODE_Unauthorized:
+				value_str = "'ERRCODE_Unauthorized--200'";
+			break;
+		case ERRCODE_is_rnm_user:
+				value_str = "'ERRCODE_is_rnm_user--201'";
+			break;
+		case ERRCODE_table_exist:
+				value_str = "'ERRCODE_table_exist--202'";
+			break;
+		case ERRCODE_record_empty:
+				value_str = "'ERRCODE_record_empty--203'";
+			break;
+		case ERRCODE_impu_existed:
+				value_str = "'ERRCODE_impu_existed--204'";
+			break;
+		case ERRCODE_invalid_context:
+				value_str = "'ERRCODE_invalid_context--205'";
+			break;
+		case ERRCODE_authorized_failed:
+				value_str = "'ERRCODE_authorized_failed--206'";
+			break;
+		case ERRCODE_logout:
+				value_str = "'ERRCODE_logout--207'";
+			break;
+		case ERRCODE_mute_set_failed:
+				value_str = "'ERRCODE_mute_set_failed--208'";
+			break;
+		case ERRCODE_invalid_url:
+				value_str = "'ERRCODE_invalid_url--209'";
+			break;
+		case ERRCODE_Threshold_limit:
+				value_str = "'ERRCODE_Threshold_limit--210'";
+			break;
+		case ERRCODE_Channel_closed:
+				value_str = "'ERRCODE_Channel_closed--211'";
+			break;
+		case ERRCODE_invalid_request:
+				value_str = "'ERRCODE_invalid_request--212'";
+			break;
+		case ERRCODE_Duplicate_name:
+				value_str = "'ERRCODE_Duplicate_name--213'";
+			break;
+		case ERRCODE_lost_parameter:
+				value_str = "'ERRCODE_lost_parameter--214'";
+			break;
+		case ERRCODE_lost_protocol:
+				value_str = "'ERRCODE_lost_protocol--215'";
+			break;
 		case ERRCODE_system_not_ready:
 				value_str = "'ERRCODE_system_not_ready--216'";
+			break;
+		case ERRCODE_package_check:
+				value_str = "'ERRCODE_package_check--217'";
+			break;
+		case ERRCODE_package_discard:
+				value_str = "'ERRCODE_package_discard--218'";
+			break;
+		case ERRCODE_resend:
+				value_str = "'ERRCODE_resend--219'";
+			break;
+		case ERRCODE_Invalid_object:
+				value_str = "'ERRCODE_Invalid_object--220'";
+			break;
+		case ERRCODE_over_max_package_types:
+				value_str = "'ERRCODE_over_max_package_types--221'";
+			break;
+		case ERRCODE_over_max_package_numbers:
+				value_str = "'ERRCODE_over_max_package_numbers--222'";
 			break;
 		case ERRCODE_wait_more_data:
 				value_str = "'ERRCODE_wait_more_data--223'";
 			break;
+		case ERRCODE_unregister:
+				value_str = "'ERRCODE_unregister--224'";
+			break;
+		case ERRCODE_maximum_intents:
+				value_str = "'ERRCODE_maximum_intents--225'";
+			break;
+		case ERRCODE_intercept:
+				value_str = "'ERRCODE_intercept--226'";
+			break;
+		case ERRCODE_repetitive_operation:
+				value_str = "'ERRCODE_repetitive_operation--227'";
+			break;
+		case ERRCODE_Failed_to_identify:
+				value_str = "'ERRCODE_Failed_to_identify--228'";
+			break;
 		case ERRCODE_Failed_to_features:
 				value_str = "'ERRCODE_Failed_to_features--229'";
 			break;
+		case ERRCODE_No_clear_intention:
+				value_str = "'ERRCODE_No_clear_intention--230'";
+			break;
+		case ERRCODE_db_no_data:
+				value_str = "'ERRCODE_db_no_data--231'";
+			break;
+		case ERRCODE_insufficient_balance:
+				value_str = "'ERRCODE_insufficient_balance--232'";
+			break;
+		case ERRCODE_lost_lock:
+				value_str = "'ERRCODE_lost_lock--233'";
+			break;
+		case ERRCODE_lost_req_type:
+				value_str = "'ERRCODE_lost_req_type--234'";
+			break;
+		case ERRCODE_can_not_find_client:
+				value_str = "'ERRCODE_can_not_find_client--235'";
+			break;
+		case ERRCODE_out_of_bounds:
+				value_str = "'ERRCODE_out_of_bounds--236'";
+			break;
+		case ERRCODE_valuation:
+				value_str = "'ERRCODE_valuation--237'";
+			break;
+		case ERRCODE_Invalid_version:
+				value_str = "'ERRCODE_Invalid_version--238'";
+			break;
+		case ERRCODE_auth_key_exist:
+				value_str = "'ERRCODE_auth_key_exist--239'";
+			break;
 		case ERRCODE_predict_failed:
 				value_str = "'ERRCODE_predict_failed--240'";
+			break;
+		case ERRCODE_internal_server_error:
+				value_str = "'ERRCODE_internal_server_error--241'";
+			break;
+		case ERRCODE_update:
+				value_str = "'ERRCODE_update--242'";
+			break;
+		case ERRCODE_lost_atom_ptl:
+				value_str = "'ERRCODE_lost_atom_ptl--243'";
+			break;
+		case ERRCODE_bs_repeat:
+				value_str = "'ERRCODE_bs_repeat--244'";
+			break;
+		case ERRCODE_can_not_find_user:
+				value_str = "'ERRCODE_can_not_find_user--245'";
+			break;
+		case ERRCODE_name_already_exist:
+				value_str = "'ERRCODE_name_already_exist--246'";
+			break;
+		case ERRCODE_can_not_find_cost_price:
+				value_str = "'ERRCODE_can_not_find_cost_price--247'";
+			break;
+		case ERRCODE_can_not_find_unit_price:
+				value_str = "'ERRCODE_can_not_find_unit_price--248'";
+			break;
+		case ERRCODE_cfg_already_exists:
+				value_str = "'ERRCODE_cfg_already_exists--249'";
+			break;
+		case ERRCODE_storage:
+				value_str = "'ERRCODE_storage--250'";
+			break;
+		case ERRCODE_Can_not_find_path:
+				value_str = "'ERRCODE_Can_not_find_path--251'";
+			break;
+		case ERRCODE_over_time:
+				value_str = "'ERRCODE_over_time--252'";
+			break;
+		case ERRCODE_soft_delete:
+				value_str = "'ERRCODE_soft_delete--253'";
+			break;
+		case ERRCODE_Not_found_ptl_name:
+				value_str = "'ERRCODE_Not_found_ptl_name--254'";
+			break;
+		case ERRCODE_RELEASE:
+				value_str = "'ERRCODE_RELEASE--255'";
+			break;
+		case ERRCODE_Not_found_billing:
+				value_str = "'ERRCODE_Not_found_billing--256'";
+			break;
+		case ERRCODE_Can_not_find_area:
+				value_str = "'ERRCODE_Can_not_find_area--257'";
+			break;
+		case ERRCODE_User_Unregister:
+				value_str = "'ERRCODE_User_Unregister--258'";
+			break;
+		case ERRCODE_Stateless_Sending:
+				value_str = "'ERRCODE_Stateless_Sending--259'";
+			break;
+		case ERRCODE_Can_not_find_business_rules:
+				value_str = "'ERRCODE_Can_not_find_business_rules--260'";
+			break;
+		case ERRCODE_reconnect:
+				value_str = "'ERRCODE_reconnect--261'";
+			break;
+		case ERRCODE_Blacklist_intercept:
+				value_str = "'ERRCODE_Blacklist_intercept--262'";
+			break;
+		case ERRCODE_data_not_exist:
+				value_str = "'ERRCODE_data_not_exist--263'";
+			break;
+		case ERRCODE_Invalid_length:
+				value_str = "'ERRCODE_Invalid_length--264'";
+			break;
+		case ERRCODE_Route_Direct:
+				value_str = "'ERRCODE_Route_Direct--265'";
+			break;
+		case ERRCODE_Can_not_find_isp:
+				value_str = "'ERRCODE_Can_not_find_isp--266'";
+			break;
+		case ERRCODE_DB_Already_Exist:
+				value_str = "'ERRCODE_DB_Already_Exist--267'";
 			break;
 		case ErrCode_max:
 				value_str = "'ErrCode_max-0x1fffffffffffffff'";
@@ -3649,8 +4381,8 @@ t_auto_UIPType_str(UIPType enum_value)
 		case UIPType_h5_form:
 				value_str = "'UIPType_h5_form'";
 			break;
-		case UIPType_weichat_form:
-				value_str = "'UIPType_weichat_form'";
+		case UIPType_wechat_form:
+				value_str = "'UIPType_wechat_form'";
 			break;
 		default:
 				value_str = "'NULL'";

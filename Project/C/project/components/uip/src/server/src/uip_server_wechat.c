@@ -157,7 +157,7 @@ _uip_server_wechat_data_type(s8 *data_ptr)
 	}
 	else
 	{
-		return UIPType_weichat_form;
+		return UIPType_wechat_form;
 	}
 }
 
@@ -177,7 +177,7 @@ _uip_server_wechat_load_content(s8 *http_data, ub http_length, s8 **content, ub 
 		case UIPType_h5_form:
 				*content = _uip_server_wechat_load_h5_content(http_data, http_length, content_length);
 			break;
-		case UIPType_weichat_form:
+		case UIPType_wechat_form:
 				*content = _uip_server_wechat_load_weichat_content(http_data, http_length, content_length);
 			break;
 		default:
@@ -296,7 +296,7 @@ _uip_server_wechat_form_json_decode(s8 *string_ptr, ub string_length, UIPType ty
 
 	while(((++ safe_counter) < UIP_WECHAT_KEY_VALUE_MAX) && (index < string_length))
 	{
-		if(type == UIPType_weichat_form)
+		if(type == UIPType_wechat_form)
 		{
 			index += _uip_server_weichat_form_key_value(&string_ptr[index], key, sizeof(key), value, sizeof(value));
 		}
@@ -388,7 +388,7 @@ uip_server_wechat(s8 *string_ptr, ub string_length)
 
 	switch(type)
 	{
-		case UIPType_weichat_form:
+		case UIPType_wechat_form:
 				pJson = _uip_server_wechat_form_decode(type, string_ptr, string_length-content_length, content_ptr, content_length);
 			break;
 		default:

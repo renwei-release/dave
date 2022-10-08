@@ -91,10 +91,10 @@ _thread_wait_queue_show(WaitMsgShow *show_ptr, ub show_num, ThreadQueue *pQueue_
 static ub
 _thread_wait_msg_show(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 {
-	WaitMsgShow *pShow;
+	WaitMsgShow pShow[MAX_WAIT_BUFFER];
 	ub buffer_index, msg_index = 0;
 
-	pShow = dave_ralloc(sizeof(WaitMsgShow) * MAX_WAIT_BUFFER);
+	dave_memset(pShow, 0x00, sizeof(pShow));
 
 	_thread_wait_queue_show(pShow, MAX_WAIT_BUFFER, pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
 	_thread_wait_queue_show(pShow, MAX_WAIT_BUFFER, pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
@@ -111,8 +111,6 @@ _thread_wait_msg_show(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 				pThread->thread_name);
 		}
 	}
-
-	dave_free(pShow);
 
 	return msg_index;
 }

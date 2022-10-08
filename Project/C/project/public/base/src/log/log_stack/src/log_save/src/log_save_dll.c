@@ -19,6 +19,8 @@
 #include "log_lock.h"
 #include "log_log.h"
 
+extern void t_rpc_ver3_metadata_work(dave_bool work_flag);
+
 static void *_rebuild_dll_handle = NULL;
 static void (* dll_booting_lock)(void) = NULL;
 static void (* dll_base_log_init)(void) = NULL;
@@ -102,6 +104,8 @@ void
 log_save_dll_init(void)
 {
 	_log_save_dll_init();
+
+	t_rpc_ver3_metadata_work(dave_false);
 }
 
 void

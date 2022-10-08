@@ -19,7 +19,7 @@
 #include "thread_log.h"
 
 #define COROUTINE_WAIT_TIMER 180
-#define COROUTINE_DELAY_RELEASE_TIMER 5
+#define COROUTINE_DELAY_RELEASE_TIMER 3
 
 typedef enum {
 	wakeupevent_get_msg,
@@ -467,6 +467,18 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 }
 
 static inline dave_bool
+_thread_coroutine_thread_can_be_go(ThreadStruct *pThread)
+{
+	if((pThread->thread_flag & THREAD_THREAD_FLAG) == 0x00)
+		return dave_false;
+
+	if(pThread->attrib == REMOTE_TASK_ATTRIB)
+		return dave_false;
+
+	return dave_true;
+}
+
+static inline dave_bool
 _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 {
 	switch(msg->msg_id)
@@ -482,6 +494,18 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 				return dave_true;
 			break;
 	}
+
+	return dave_true;
+}
+
+static inline dave_bool
+_thread_coroutine_can_be_go(ThreadStruct *pThread, MSGBODY *msg)
+{
+	if(_thread_coroutine_thread_can_be_go(pThread) == dave_false)
+		return dave_false;
+
+	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
+		return dave_false;
 
 	return dave_true;
 }
@@ -529,7 +553,7 @@ thread_coroutine_running_step_go(
 	base_thread_fun thread_fun,
 	MSGBODY *msg)
 {
-	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
+	if(_thread_coroutine_can_be_go(pThread, msg) == dave_false)
 		return dave_false;
 
 	_thread_coroutine_booting();
