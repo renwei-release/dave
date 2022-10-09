@@ -1,8 +1,13 @@
 #!/bin/sh
 
 homepath=$(cd `dirname $0`; pwd)
+INSTALL=${homepath}/setup
 
-VERSION=0.15-20200726
+if [ -d ${INSTALL} ]; then
+   rm -rf ${INSTALL}
+fi
+
+VERSION=0.16-20220414
 
 if [ ! -f json-c-${VERSION}.tar.gz ]; then
   wget https://github.com/json-c/json-c/archive/refs/tags/json-c-${VERSION}.tar.gz
@@ -15,14 +20,11 @@ cd json-c-json-c-${VERSION}
 
 mkdir build
 cd build
-../cmake-configure --prefix=/dave/tools/json-c
+../cmake-configure --prefix=${INSTALL}
 make && make install
 
 cd $homepath
 
-rm -rf setup
-mkdir setup
-cp -r /dave/tools/json-c/* ./setup
-cp -r json-c-json-c-${VERSION}/*.h ./setup/include/json-c
+cp -r json-c-json-c-${VERSION}/*.h ${INSTALL}/include/json-c
 
 rm -rf json-c-json-c-${VERSION}

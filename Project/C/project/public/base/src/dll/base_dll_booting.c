@@ -42,7 +42,7 @@ static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
 static s8 _dll_sync_domain[128] = { '\0' };
 static BaseDllRunningMode _base_dll_running_mode = BaseDllRunningMode_max;
-static pthread_t _signal_thread;
+static pthread_t _signal_thread = (pthread_t)NULL;
 static sigset_t _signal_set;
 
 static void
@@ -91,7 +91,10 @@ _dave_dll_sigaction_hander(int signum, siginfo_t *info, void *secret)
 static void
 _dave_dll_sigaction_kill(int signum, siginfo_t *info, void *secret)
 {
-	pthread_kill(_signal_thread, signum);
+	if(_signal_thread != (pthread_t)NULL)
+	{
+		pthread_kill(_signal_thread, signum);
+	}
 }
 
 static void
@@ -122,9 +125,15 @@ _dave_dll_wait_signal(void *arg)
 {
 	int sig, ret;
 
-	_dave_dll_sigaction_set(TIMER_SIG);
-	_dave_dll_sigaction_set(QUIT_SIG);
-	_dave_dll_sigaction_set(KILL_SIG);
+	if(arg != NULL)
+	{
+		// arg != NULL, on thread wait signal
+		_dave_dll_sigaction_set(TIMER_SIG);
+		_dave_dll_sigaction_set(QUIT_SIG);
+		_dave_dll_sigaction_set(KILL_SIG);
+	}
+
+	_dave_dll_reset_set(&_signal_set);
 
 	while(1)
 	{
@@ -164,7 +173,7 @@ _dave_dll_signal_thread(void)
 		exit(EXIT_FAILURE);
 	}
 
-	ret = pthread_create(&_signal_thread, NULL, &_dave_dll_wait_signal, (void *)&_signal_set);
+	ret = pthread_create(&_signal_thread, NULL, _dave_dll_wait_signal, (void *)&_signal_set);
 	if(ret != 0)
 	{
 		printf("pthread_create failed:%d! <%s:%d>", ret, __func__, __LINE__);
@@ -237,6 +246,8 @@ _dave_dll_init(
 	_dave_dll_copy_sync_domain(sync_domain);
 
 	_base_dll_running_mode = _dave_dll_mode_decode(work_mode);
+
+	_signal_thread = (pthread_t)NULL;
 
 	_dave_dll_booting(my_verno);
 
