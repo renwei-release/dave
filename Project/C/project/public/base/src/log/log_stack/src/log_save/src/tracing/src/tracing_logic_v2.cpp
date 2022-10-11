@@ -77,55 +77,13 @@ _tracing_v2_tag_value(void *pJson)
 	return dave_json_to_string(pJson, NULL);
 }
 
-static inline const opentracing::SpanContext *
-_tracing_save_action(const opentracing::SpanContext *parent_context, GenerationAction *pAction)
-{
-	s8 span_name[128];
-	s8 tag_name[128];
-
-	if(parent_context == NULL)
-		return NULL;
-
-	_tracing_v2_span_name(span_name, sizeof(span_name), pAction);
-
-	auto child_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_context) });
-
-	if(pAction->pReqJson != NULL)
-	{
-		child_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pAction->pReqJson), _tracing_v2_tag_value(pAction->pReqJson));
-	}
-	if(pAction->pRspJson != NULL)
-	{
-		child_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pAction->pRspJson), _tracing_v2_tag_value(pAction->pRspJson));
-	}
-
-	return &(child_span->context());
-}
-
-static inline const opentracing::SpanContext *
-_tracing_save_list(const opentracing::SpanContext *parent_context, GenerationList *pList)
-{
-	const opentracing::SpanContext *child_context = NULL;
-
-	if(parent_context == NULL)
-		return NULL;
-
-	while(pList != NULL)
-	{
-		child_context = _tracing_save_action(parent_context, &(pList->action));
-
-		pList = (GenerationList *)(pList->next);
-	}
-
-	return child_context;
-}
-
 static inline void
-_tracing_save_level(GenerationLevel *pLevel)
+_tracing_save_level_v2(GenerationLevel *pLevel)
 {
 	s8 span_name[128];
 	s8 tag_name[128];
 	const opentracing::SpanContext *parent_context;
+	GenerationList *pList;
 
 	if(pLevel->pList->next != NULL)
 	{
@@ -135,7 +93,6 @@ _tracing_save_level(GenerationLevel *pLevel)
 	}
 
 	_tracing_v2_span_name(span_name, sizeof(span_name), &(pLevel->pList->action));
-
 	auto parent_span = opentracing::Tracer::Global()->StartSpan(span_name);
 	parent_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pLevel->pList->action.pReqJson), _tracing_v2_tag_value(pLevel->pList->action.pReqJson));
 	parent_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pLevel->pList->action.pRspJson), _tracing_v2_tag_value(pLevel->pList->action.pRspJson));
@@ -145,7 +102,28 @@ _tracing_save_level(GenerationLevel *pLevel)
 
 	while(pLevel != NULL)
 	{
-		parent_context = _tracing_save_list(parent_context, pLevel->pList);
+		pList = pLevel->pList;
+
+		while(pList != NULL)
+		{
+			_tracing_v2_span_name(span_name, sizeof(span_name), &(pList->action));
+			auto child_span = opentracing::Tracer::Global()->StartSpan(span_name, { opentracing::ChildOf(parent_context) });			
+			if(pList->action.pReqJson != NULL)
+			{
+				child_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pList->action.pReqJson), _tracing_v2_tag_value(pList->action.pReqJson));
+			}
+			if(pList->action.pRspJson != NULL)
+			{
+				child_span->SetTag(_tracing_v2_tag_name(tag_name, sizeof(tag_name), pList->action.pRspJson), _tracing_v2_tag_value(pList->action.pRspJson));
+			}
+		
+			pList = (GenerationList *)(pList->next);
+		
+			if(pList == NULL)
+			{
+				parent_context = &(child_span->context());
+			}
+		}
 
 		pLevel = (GenerationLevel *)(pLevel->next);
 	}
@@ -163,7 +141,7 @@ tracing_save_level_v2(GenerationLevel *pLevel)
 		return;
 	}
 
-	_tracing_save_level(pLevel);
+	_tracing_save_level_v2(pLevel);
 }
 
 #endif

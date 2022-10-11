@@ -31,6 +31,7 @@ RUN yum install -y grpc-devel.x86_64
 RUN yum install -y grpc-plugins.x86_64
 RUN yum install -y cpprest.x86_64
 RUN yum install -y cpprest-devel.x86_64
+RUN yum install -y java-openjdk.x86_64
 
 RUN mkdir -p /project/DAVE
 

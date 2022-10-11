@@ -20,6 +20,7 @@ if [ -f ${BUILDSUMFILE} ]; then
 fi
 
 cd ../project
+echo tidy.sh go mod tidy
 go mod tidy
 
 cp -rf ${PROJECTMODFILE} ${BUILDMODFILE}

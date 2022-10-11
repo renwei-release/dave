@@ -31,13 +31,13 @@ build_static_lib()
    CLIB=${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
    echo lib build ${CLIB}
    rm -f ${CLIB}
-   ar cru ${CLIB} ${obj_list}
+   ar cr ${CLIB} ${obj_list}
 
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
    GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
    echo lib build ${GOLIB}
    rm -f ${GOLIB}
-   ar cru ${GOLIB} ${obj_list}
+   ar cr ${GOLIB} ${obj_list}
 }
 
 build_dynamic_lib()
