@@ -13,6 +13,8 @@ import (
 // =====================================================================
 
 func Dave_msg_process(pMsg * DllMsgBody) {
+	msg_src_gid := tools.T_cgo_gobyte2gostring(pMsg.msg_src_gid[:])
+
 	msg_src_name := tools.T_cgo_gobyte2gostring(pMsg.msg_src_name[:])
 	msg_dst_name := tools.T_cgo_gobyte2gostring(pMsg.msg_dst_name[:])
 
@@ -20,8 +22,8 @@ func Dave_msg_process(pMsg * DllMsgBody) {
 
 	fun, exists := Dave_system_function_table_inq(msg_id)
 	if exists {
-		fun(msg_src_name, pMsg.msg_src, pMsg.msg_len, pMsg.msg_body)
+		fun(msg_src_gid, msg_src_name, pMsg.msg_src, pMsg.msg_len, pMsg.msg_body)
 	} else {
-		DAVELOG("unprocess msg, %s->%s:%d", msg_src_name, msg_dst_name, pMsg.msg_id)
+		DAVELOG("unprocess msg, (%s)%s->%s:%d", msg_src_gid, msg_src_name, msg_dst_name, pMsg.msg_id)
 	}
 }

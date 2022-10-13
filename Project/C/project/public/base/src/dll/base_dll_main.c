@@ -36,6 +36,7 @@
 #define DLL_MAIN_THREAD_MAX_NUMBER 32
 
 typedef struct {
+	char msg_src_gid[64];
 	char msg_src_name[128];
 	unsigned long long msg_src;
 	char msg_dst_name[128];
@@ -94,6 +95,8 @@ _dll_main_main(MSGBODY *msg)
 	{
 		dave_memset(&msg_body, 0x00, sizeof(DllMsgBody));
 
+		dave_strcpy(msg_body.msg_src_gid, msg->src_gid, sizeof(msg_body.msg_src_gid));
+	
 		dave_strcpy(msg_body.msg_src_name, thread_name(msg->msg_src), sizeof(msg_body.msg_src_name));
 		msg_body.msg_src = msg->msg_src;
 		dave_strcpy(msg_body.msg_dst_name, thread_name(msg->msg_dst), sizeof(msg_body.msg_dst_name));

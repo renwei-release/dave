@@ -287,6 +287,7 @@ ThreadMsg *
 thread_build_msg(
 	ThreadStruct *pThread,
 	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	BaseMsgType msg_type,
@@ -351,6 +352,15 @@ thread_build_msg(
 			fun, line);
 
 	thread_msg->msg_body.msg_router = thread_router_build_msg(msg_router, msg_id);
+
+	if(src_gid != NULL)
+		dave_strcpy(thread_msg->msg_body.src_gid, src_gid, sizeof(thread_msg->msg_body.src_gid));
+	else
+		thread_msg->msg_body.src_gid[0] = '\0';
+	if(src_name != NULL)
+		dave_strcpy(thread_msg->msg_body.src_name, src_name, sizeof(thread_msg->msg_body.src_name));
+	else
+		thread_msg->msg_body.src_name[0] = '\0';
 
 	return thread_msg;
 }

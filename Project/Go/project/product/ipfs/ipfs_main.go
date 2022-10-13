@@ -22,7 +22,7 @@ func _fun_MSGID_DEBUG_RSP(src_id uint64, ptr uint64, debug_data_rsp string) {
 	base.Write_msg(src_id, auto.MSGID_DEBUG_RSP, int(unsafe.Sizeof(pRsp)), unsafe.Pointer(&pRsp))
 }
 
-func _fun_MSGID_DEBUG_REQ(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
+func _fun_MSGID_DEBUG_REQ(src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pReq := (*auto.DebugReq)(msg_body)
 	debug_data_req := tools.T_cgo_gobyte2gostring(pReq.Msg[:])
 

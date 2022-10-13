@@ -294,6 +294,7 @@ _thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
 		{
 			if(base_thread_id_msg(
 				NULL, NULL,
+				NULL, NULL,
 				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
@@ -332,6 +333,7 @@ _thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
 		if(dst_id != INVALID_THREAD_ID)
 		{
 			if(base_thread_id_msg(
+				NULL, NULL,
 				NULL, NULL,
 				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
@@ -373,6 +375,7 @@ _thread_msg_buffer_uid_pop(void *ramkv, s8 *uid)
 		{
 			if(base_thread_id_msg(
 				NULL, pRouter,
+				NULL, NULL,
 				pBuffer->src_id, dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,

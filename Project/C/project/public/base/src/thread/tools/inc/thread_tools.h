@@ -42,6 +42,7 @@ dave_bool thread_enable_coroutine(ThreadStruct *pThread);
 ThreadMsg * thread_build_msg(
 	ThreadStruct *pThread,
 	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub data_len, u8 *data,
 	BaseMsgType msg_type,

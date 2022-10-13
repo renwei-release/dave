@@ -99,6 +99,7 @@ _sync_client_run_thread_msg(
 
 	ret = base_thread_id_msg(
 		pChain, pRouter,
+		pServer->globally_identifier, src,
 		route_src, route_dst,
 		BaseMsgType_Unicast,
 		msg_id, msg_len, msg_body,

@@ -376,6 +376,7 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 static inline RetCode
 _thread_write_msg(
 	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	dave_bool wakeup, BaseMsgType msg_type,
@@ -403,6 +404,7 @@ _thread_write_msg(
 		pMsg = thread_build_msg(
 					pDstThread,
 					msg_chain, msg_router,
+					src_gid, src_name,
 					src_id, dst_id,
 					msg_id, msg_len, msg_body,
 					msg_type,
@@ -684,6 +686,7 @@ _thread_build_tick_message(void)
 						pWakeup = thread_msg(pWakeup);
 
 						_thread_write_msg(
+							NULL, NULL,
 							NULL, NULL,
 							_guardian_thread, pThread->thread_id,
 							MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
@@ -1168,6 +1171,7 @@ _thread_safe_del(ThreadId thread_id)
 static inline dave_bool
 _thread_safe_id_msg(
 	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
@@ -1215,6 +1219,7 @@ _thread_safe_id_msg(
 
 	ret = _thread_write_msg(
 		msg_chain, msg_router,
+		src_gid, src_name,
 		src_id, dst_id,
 		msg_id, msg_len, msg_body,
 		dave_true, msg_type,
@@ -1643,6 +1648,7 @@ base_thread_msg_release(void *ptr, s8 *fun, ub line)
 dave_bool
 base_thread_id_msg(
 	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
 	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
@@ -1673,7 +1679,12 @@ base_thread_id_msg(
 		}
 		else
 		{
-			ret  = _thread_safe_id_msg(msg_chain, msg_router, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, fun, line);
+			ret  = _thread_safe_id_msg(
+				msg_chain, msg_router,
+				src_gid, src_name,
+				src_id, dst_id, msg_type,
+				msg_id, msg_len, msg_body,
+				fun, line);
 		}
 	}
 
@@ -1706,7 +1717,7 @@ base_thread_id_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_id_msg(NULL, NULL, src_id, dst_id, msg_type, req_id, req_len, req_body, 0, fun, line);
+		return base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, msg_type, req_id, req_len, req_body, 0, fun, line);
 	}
 	else
 	{
@@ -1779,7 +1790,7 @@ base_thread_name_msg(
 
 	if(dst_id != INVALID_THREAD_ID)
 	{
-		ret = base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+		ret = base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 	}
 	else
 	{
@@ -1910,7 +1921,7 @@ base_thread_gid_msg(
 			fun, line);
 	}
 
-	return base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+	return base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
 }
 
 dave_bool
@@ -2038,6 +2049,7 @@ base_thread_uid_msg(
 
 	return base_thread_id_msg(
 		NULL, pRouter,
+		NULL, NULL,
 		src_id, dst_id,
 		BaseMsgType_Unicast,
 		msg_id, msg_len, msg_body,
@@ -2167,7 +2179,7 @@ base_thread_sync_msg(
 		return NULL;
 	}
 
-	if(base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
+	if(base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
 	{
 		return NULL;
 	}

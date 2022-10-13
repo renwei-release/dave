@@ -70,6 +70,9 @@ typedef struct {
 
 	void *msg_chain;
 	void *msg_router;
+
+	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 src_name[DAVE_THREAD_NAME_LEN];
 } MSGBODY;
 
 typedef void (*base_thread_fun)(MSGBODY *msg);
@@ -93,7 +96,7 @@ s8 *base_thread_get_name(ThreadId thread_id, s8 *fun, ub line);
 void * base_thread_msg(ub msg_len, dave_bool reset, s8 *fun, ub line);
 void base_thread_msg_release(void *ptr, s8 *fun, ub line);
 
-dave_bool base_thread_id_msg(void *msg_chain, void *msg_router, ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type, ub msg_id, ub msg_len, u8 *msg_body, ub msg_number, s8 *fun, ub line);
+dave_bool base_thread_id_msg(void *msg_chain, void *msg_router, s8 *src_gid, s8 *src_name, ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type, ub msg_id, ub msg_len, u8 *msg_body, ub msg_number, s8 *fun, ub line);
 dave_bool base_thread_id_event(ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type, ub req_id, ub req_len, u8 *req_body, ub rsp_id, base_thread_fun rsp_fun, s8 *fun, ub line);
 void * base_thread_id_go(ThreadId src_id, ThreadId dst_id, ub req_id, ub req_len, u8 *req_body, ub rsp_id, s8 *fun, ub line);
 
@@ -129,11 +132,11 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define thread_msg(msg_body) base_thread_msg(sizeof(*msg_body), dave_false, (s8 *)__func__, (ub)__LINE__)
 #define thread_msg_release(msg_body) base_thread_msg_release(msg_body, (s8 *)__func__, (ub)__LINE__)
 
-#define snd_msg(dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
-#define snd_from_msg(src_id, dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
+#define snd_msg(dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
+#define snd_from_msg(src_id, dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
 
-#define id_msg(dst_id, msg_id, msg_body) base_thread_id_msg(NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
-#define id_nmsg(dst_id, msg_id, msg_body, msg_number) base_thread_id_msg(NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), msg_number, (s8 *)__func__, (ub)__LINE__)
+#define id_msg(dst_id, msg_id, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
+#define id_nmsg(dst_id, msg_id, msg_body, msg_number) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), msg_number, (s8 *)__func__, (ub)__LINE__)
 #define id_event(dst_id, req_id, req_body, rsp_id, rsp_fun) base_thread_id_event(INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
 #define id_go(dst_id, req_id, req_body, rsp_id) base_thread_id_go(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)
 

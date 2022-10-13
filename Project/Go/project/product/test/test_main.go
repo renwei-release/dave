@@ -31,7 +31,7 @@ func _test_start_timer(second time.Duration) {
 	_test_timer = time.AfterFunc(time.Second*second, _test_service_test_exit)
 }
 
-func _fun_MSGID_REMOTE_THREAD_ID_READY(src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
+func _fun_MSGID_REMOTE_THREAD_ID_READY(src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pReady := (*auto.ThreadRemoteIDReadyMsg)(msg_body)
 	globally_identifier := tools.T_cgo_gobyte2gostring(pReady.Globally_identifier[:])
 	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])

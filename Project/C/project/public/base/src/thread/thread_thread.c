@@ -1029,6 +1029,7 @@ __thread_thread_write__(
 	pMsg = thread_build_msg(
 		pThread,
 		msg_chain, msg_router,
+		NULL, NULL,
 		pThread->thread_id, pThread->thread_id,
 		msg_id, msg_len, msg_body,
 		BaseMsgType_Unicast,

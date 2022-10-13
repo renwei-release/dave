@@ -51,6 +51,7 @@ _thread_ready_go_msg(
 
 	if(base_thread_id_msg(
 		NULL, msg_router,
+		NULL, NULL,
 		src_id, dst_id,
 		BaseMsgType_Unicast,
 		req_id, req_len, req_body,

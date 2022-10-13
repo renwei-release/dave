@@ -14,6 +14,7 @@ from product.dave_product import *
 
 class DllMsgBody(Structure):
     _fields_ = [
+        ("msg_src_gid", c_char * 64),
         ("msg_src_name", c_char * 128),
         ("msg_src", c_longlong),
         ("msg_dst_name", c_char * 128),

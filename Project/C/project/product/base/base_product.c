@@ -100,6 +100,7 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	{
 		BASELOG("uiddebug 2 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
+
 	pRsp = uid_go("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
@@ -139,8 +140,8 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
-	if((dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true)
-		|| (dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true))
+	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
+		|| (dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true))
 	{
 		_base_thread_rpc_debug_req_use_go(pReady);
 

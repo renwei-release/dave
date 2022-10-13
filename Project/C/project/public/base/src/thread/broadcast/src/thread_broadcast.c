@@ -50,7 +50,7 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
-			ret = base_thread_id_msg(NULL, NULL, self_id, dst_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
+			ret = base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, dst_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
 		}
 		else
 		{
@@ -91,7 +91,7 @@ _thread_broadcast_remote_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub m
 		broadcast_msg = base_thread_msg(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 		dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
-		base_thread_id_msg(NULL, NULL, self_id, syncc_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
+		base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, syncc_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
 	}
 
 	return dave_true;
@@ -126,7 +126,7 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 					thread_name(self_id), thread_name(_thread[thread_index].thread_id),
 					msgstr(msg_id));
 
-				base_thread_id_msg(NULL, NULL, self_id, _thread[thread_index].thread_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
+				base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, _thread[thread_index].thread_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
 			}
 		}
 	}

@@ -29,6 +29,7 @@ import (
 )
 
 type DllMsgBody struct {
+	msg_src_gid [64]byte
 	msg_src_name [128]byte
 	msg_src      uint64
 	msg_dst_name [128]byte

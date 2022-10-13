@@ -32,7 +32,7 @@ require (
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/shirou/gopsutil v2.21.11+incompatible
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.0
 	github.com/whyrusleeping/timecache v0.0.0-20160911033111-cfcb2f1abfee
 	go.opencensus.io v0.23.0
 )
@@ -40,8 +40,10 @@ require (
 require (
 	github.com/elazarl/goproxy v0.0.0-20220901064549-fbd10ff4f5a1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/hyperledger/fabric v1.4.12
+	github.com/hyperledger/fabric-chaincode-go v0.0.0-20220920210243-7bc6fa0dd58b
+	github.com/hyperledger/fabric-protos-go v0.0.0-20220827195505-ce4c067a561d
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/kr/text v0.2.0 // indirect
 	github.com/olivere/elastic/v7 v7.0.32
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
