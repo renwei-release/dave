@@ -34,13 +34,12 @@ static ub
 _dos_cfg_get_one(s8 *cfg_name, s8 *print_ptr, ub print_len)
 {
 	ub print_index;
-	s8 cfg_value[2048];
+	ub cfg_len = 1024 * 128;
+	s8 *cfg_value = dave_ralloc(cfg_len);
 
 	print_index = 0;
 
-	dave_memset(cfg_value, 0x00, sizeof(cfg_value));
-
-	if(cfg_get(cfg_name, (u8 *)cfg_value, sizeof(cfg_value)) == dave_false)
+	if(cfg_get(cfg_name, (u8 *)cfg_value, cfg_len) == dave_false)
 	{
 		print_index += dave_snprintf(&print_ptr[print_index], print_len-print_index, "%s : [EMPTY DATA]\n", cfg_name);
 	}
@@ -145,9 +144,10 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 static void
 _dos_cfg_remote_get_one(s8 *cfg_name)
 {
-	s8 cfg_value[2048];
+	ub cfg_len = 1024 * 128;
+	s8 *cfg_value = dave_ralloc(cfg_len);
 
-	if(rcfg_get(cfg_name, cfg_value, sizeof(cfg_value)) < 0)
+	if(rcfg_get(cfg_name, cfg_value, cfg_len) < 0)
 	{
 		dos_print("%s remote get failed!", cfg_name);
 	}
@@ -165,11 +165,12 @@ _dos_cfg_remote_get_all(void)
 	s8 *print_ptr = dave_malloc(print_len);
 	ub index;
 	s8 cfg_name[1024];
-	s8 cfg_value[2048];
+	ub cfg_len = 1024 * 128;
+	s8 *cfg_value = dave_malloc(cfg_len);
 
 	for(index=0; index<102400; index++)
 	{
-		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, sizeof(cfg_value)) < 0)
+		if(rcfg_index(index, cfg_name, sizeof(cfg_name), cfg_value, cfg_len) < 0)
 			break;
 
 		if(index > 0)

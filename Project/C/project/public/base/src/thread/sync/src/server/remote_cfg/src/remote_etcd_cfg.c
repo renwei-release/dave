@@ -23,9 +23,6 @@
 #define DEFAULT_ETCD_WATCHER_DIR ""
 #define DEFAULT_ETCD_GET_LIMIT 512
 
-#define ETCD_KEY_MAX_SIZE 2048
-#define ETCD_VALUE_MAX_SIZE 8192
-
 static s8 _etcd_list[2048] = { "\0" };
 static s8 _etcd_dir[128] = { "\0" };
 static s8 _etcd_watcher[128] = { "\0" };
@@ -33,8 +30,8 @@ static remote_cfg_get_callback _get_callback = NULL;
 
 typedef struct {
 	dave_bool put_flag;
-	s8 key[ETCD_KEY_MAX_SIZE];
-	s8 value[ETCD_VALUE_MAX_SIZE];
+	MBUF *key;
+	MBUF *value;
 } ETCDWatcher;
 
 static s8 *
@@ -90,12 +87,15 @@ _sync_server_process_watcher(MSGBODY *msg)
 
 	SYNCDEBUG("%s %s : %s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
-		pWatcher->key, pWatcher->value);
+		base_mptr(pWatcher->key), base_mptr(pWatcher->value));
 
 	if(_get_callback != NULL)
 	{
-		_get_callback(pWatcher->put_flag, pWatcher->key, pWatcher->value);
+		_get_callback(pWatcher->put_flag, base_mptr(pWatcher->key), base_mptr(pWatcher->value));
 	}
+
+	dave_mfree(pWatcher->key);
+	dave_mfree(pWatcher->value);
 
 	dave_free(pWatcher);
 }
@@ -106,9 +106,10 @@ _sync_server_watcher(dave_bool put_flag, s8 *key, s8 *value)
 	MsgInnerLoop *pLoop = thread_msg(pLoop);
 
 	ETCDWatcher *pWatcher = dave_malloc(sizeof(ETCDWatcher));
+
 	pWatcher->put_flag = put_flag;
-	dave_strcpy(pWatcher->key, key, sizeof(pWatcher->key));
-	dave_strcpy(pWatcher->value, value, sizeof(pWatcher->value));
+	pWatcher->key = t_a2b_str_to_mbuf(key, -1);
+	pWatcher->value = t_a2b_str_to_mbuf(value, -1);
 
 	pLoop->ptr = pWatcher;
 
@@ -121,7 +122,9 @@ _sync_server_take_watcher_(s8 *key)
 	void *pArray;
 	ub array_len, array_index;
 	void *pPutJson;
-	s8 json_key[ETCD_KEY_MAX_SIZE], json_value[ETCD_VALUE_MAX_SIZE];
+	s8 *key_key = "key", *value_key = "value";
+	ub key_len, value_len;
+	s8 *json_key, *json_value;
 
 	pArray = dave_etcd_get(key, DEFAULT_ETCD_GET_LIMIT);
 
@@ -134,10 +137,19 @@ _sync_server_take_watcher_(s8 *key)
 			pPutJson = dave_json_get_array_idx(pArray, array_index);
 			if(pPutJson != NULL)
 			{
-				dave_json_get_str_v2(pPutJson, "key", json_key, sizeof(json_key));
-				dave_json_get_str_v2(pPutJson, "value", json_value, sizeof(json_value));
+				key_len = dave_json_get_str_length(pPutJson, key_key) + 1;
+				value_len = dave_json_get_str_length(pPutJson, value_key) + 1;
+
+				json_key = dave_malloc(key_len);
+				json_value = dave_malloc(value_len);
+
+				dave_json_get_str_v2(pPutJson, key_key, json_key, key_len);
+				dave_json_get_str_v2(pPutJson, value_key, json_value, value_len);
 
 				_sync_server_watcher(dave_true, json_key, json_value);
+
+				dave_free(json_key);
+				dave_free(json_value);
 			}
 		}
 	}

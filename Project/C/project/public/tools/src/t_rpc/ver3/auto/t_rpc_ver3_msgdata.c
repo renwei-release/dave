@@ -1155,6 +1155,8 @@ t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "dave_bool-put_flag", t_rpc_ver3_zip_dave_bool(zip_data->put_flag));
 	t_bson_add_object(pStructBson, "s8-cfg_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_name), 1, 1024));
 	t_bson_add_object(pStructBson, "s8-cfg_value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_value), 1, 8196));
+	t_bson_add_object(pStructBson, "MBUF-cfg_mbuf_name", t_rpc_ver3_zip_MBUF_ptr(zip_data->cfg_mbuf_name));
+	t_bson_add_object(pStructBson, "MBUF-cfg_mbuf_value", t_rpc_ver3_zip_MBUF_ptr(zip_data->cfg_mbuf_value));
 	t_bson_add_object(pStructBson, "sb-ttl", t_rpc_ver3_zip_sb(zip_data->ttl));
 
 	return pStructBson;
@@ -1181,6 +1183,8 @@ t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStruct
 		t_rpc_ver3_unzip_dave_bool(&(pUnzip->put_flag), t_bson_inq_object(pStructBson, "dave_bool-put_flag"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_name), 1, 1024, t_bson_inq_object(pStructBson, "s8-cfg_name"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_value), 1, 8196, t_bson_inq_object(pStructBson, "s8-cfg_value"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->cfg_mbuf_name), t_bson_inq_object(pStructBson, "MBUF-cfg_mbuf_name"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->cfg_mbuf_value), t_bson_inq_object(pStructBson, "MBUF-cfg_mbuf_value"));
 		t_rpc_ver3_unzip_sb(&(pUnzip->ttl), t_bson_inq_object(pStructBson, "sb-ttl"));
 	}
 
@@ -6072,6 +6076,60 @@ ub
 t_rpc_ver3_sizeof_SocketWrite(void)
 {
 	return sizeof(SocketWrite);
+}
+
+void *
+t_rpc_ver3_zip_SupportConfig(SupportConfig *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SupportConfig) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SupportConfig) does not match(%d/%d), please contact the message settlers!", sizeof(SupportConfig), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-config_data", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->config_data), 1, 8192));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SupportConfig(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SupportConfig *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SupportConfig);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->config_data), 1, 8192, t_bson_inq_object(pStructBson, "s8-config_data"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_SupportConfig(SupportConfig *struct_data, void *new_ptr)
+{
+	return NULL;
+}
+
+ub
+t_rpc_ver3_sizeof_SupportConfig(void)
+{
+	return sizeof(SupportConfig);
 }
 
 void *

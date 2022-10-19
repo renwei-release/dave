@@ -175,6 +175,8 @@ class CFGRemoteUpdate (Structure):
 		("put_flag", c_char),
 		("cfg_name", c_char * 1024),
 		("cfg_value", c_char * 8196),
+		("cfg_mbuf_name", POINTER(MBUF)),
+		("cfg_mbuf_value", POINTER(MBUF)),
 		("ttl", c_longlong),
 ]
 
@@ -896,6 +898,12 @@ class SocketWrite (Structure):
 		("data_len", c_ulonglong),
 		("data", POINTER(MBUF)),
 		("close_flag", c_int),
+]
+
+#* for MSGID_SUPPORT_CONFIG message *#
+class SupportConfig (Structure):
+	_fields_ = [
+		("config_data", c_char * 8192),
 ]
 
 #* for MSGID_SYSTEM_DECOUPLING message *#

@@ -47,7 +47,7 @@ _sync_server_rx_disconnect(s32 socket)
 	pReq->socket = socket;
 	pReq->ptr = NULL;
 
-	id_msg(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq);
+	name_msg(SOCKET_THREAD_NAME, SOCKET_DISCONNECT_REQ, pReq);
 }
 
 static void
@@ -292,6 +292,17 @@ _sync_server_rx_run_alone_thread_msg(
 
 	if((pDstThread != NULL) && (pDstClient != NULL))
 	{
+		sync_lock();
+		if(pSrcClient != NULL)
+			pSrcClient->recv_msg_counter ++;
+		if(pDstClient != NULL)
+			pDstClient->send_msg_counter ++;
+		if(pSrcThread != NULL)
+			pSrcThread->thread_recv_message_counter ++;
+		if(pDstThread != NULL)
+			pDstThread->thread_send_message_counter ++;
+		sync_unlock();
+
 		ret = sync_server_tx_run_thread_msg_req(
 				pSrcThread, pDstThread,
 				pSrcClient, pDstClient,
@@ -327,6 +338,13 @@ _sync_server_rx_run_broadcadt_thread_msg(
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	u8 *msg_body, ub msg_len)
 {
+	sync_lock();
+	if(pSrcClient != NULL)
+		pSrcClient->recv_msg_counter ++;
+	if(pSrcThread != NULL)
+		pSrcThread->thread_recv_message_counter ++;
+	sync_unlock();
+
 	return sync_server_broadcadt(
 		pSrcClient,
 		route_src, src,
@@ -351,7 +369,13 @@ _sync_server_rx_snd_events(SyncServerEvents events, void *ptr)
 static void
 _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame)
 {
+	dave_bool frist_get_version;
 	ub frame_index = 0;
+
+	if(pClient->verno[0] == '\0')
+		frist_get_version = dave_true;
+	else
+		frist_get_version = dave_false;
 
 	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pClient->verno, sizeof(pClient->verno));
 	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pClient->globally_identifier, sizeof(pClient->globally_identifier));
@@ -364,15 +388,18 @@ _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame)
 
 	_sync_server_rx_snd_events(SyncServerEvents_version, pClient);
 
-	SYNCLOG("socket:%d %s/%d %s/%s",
-		pClient->client_socket,
-		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
-		pClient->NetInfo.src_port,
-		pClient->globally_identifier, pClient->verno);
+	if(frist_get_version == dave_true)
+	{
+		SYNCLOG("socket:%d %s/%d %s/%s",
+			pClient->client_socket,
+			ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
+			pClient->NetInfo.src_port,
+			pClient->globally_identifier, pClient->verno);
+	}
 }
 
 static void
-_sync_server_rx_heartbeat(SyncClient *pClient, ub frame_len, u8 *frame)
+_sync_server_rx_heartbeat_req(SyncClient *pClient, ub frame_len, u8 *frame)
 {
 	ub recv_data_counter, send_data_counter;
 
@@ -380,7 +407,7 @@ _sync_server_rx_heartbeat(SyncClient *pClient, ub frame_len, u8 *frame)
 
 	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, NULL);
 
-	sync_server_tx_heartbeat(pClient);
+	sync_server_tx_heartbeat(pClient, dave_false);
 }
 
 static void
@@ -612,6 +639,10 @@ _sync_server_rx_run_internal_msg_req(SyncClient *pClient, ub frame_len, u8 *fram
 	void *msg_body = NULL;
 	ub msg_len = 0;
 
+	sync_lock();
+	pClient->recv_msg_counter ++;
+	sync_unlock();
+
 	sync_msg_unpacket(
 		frame, frame_len,
 		&route_src, &route_dst, src, dst, &msg_id,
@@ -795,7 +826,7 @@ _sync_server_rx(SyncClient *pClient, ORDER_CODE order_id, ub frame_len, u8 *fram
 				_sync_server_rx_verno(pClient, frame_len, frame);
 			break;
 		case ORDER_CODE_HEARTBEAT_REQ:
-				_sync_server_rx_heartbeat(pClient, frame_len, frame);
+				_sync_server_rx_heartbeat_req(pClient, frame_len, frame);
 			break;
 		case ORDER_CODE_HEARTBEAT_RSP:
 			break;

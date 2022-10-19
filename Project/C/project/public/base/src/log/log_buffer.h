@@ -10,8 +10,8 @@
 #define __LOG_BUFFER_H__
 
 // Equivalent to (LOG_BUFFER_MAX) logs per second
-#define LOG_BUFFER_MAX (1000)
-#define LOG_BUFFER_LENGTH (4096)
+#define LOG_BUFFER_MAX (500)
+#define LOG_BUFFER_LENGTH (8192)
 
 void log_buffer_init(void);
 

@@ -230,7 +230,14 @@ _sync_server_check_client_time(SyncClient *pClient)
 
 			_sync_server_disconnect(pClient->client_socket);
 		}
-	
+		else
+		{
+			if((SYNC_CLIENT_LEFT_MAX - left_timer) > SYNC_SERVER_HEARTBEAT_TIME)
+			{
+				sync_server_tx_heartbeat(pClient, dave_true);
+			}
+		}
+
 		if((-- pClient->sync_timer) < 0)
 		{
 			if((pClient->receive_thread_done == dave_true) && (pClient->sync_thread_flag == dave_true))
@@ -401,7 +408,7 @@ _sync_server_exit(MSGBODY *msg)
 void
 sync_server_init(void)
 {
-	ub thread_number = 1;
+	ub thread_number = dave_os_cpu_process_number();
 
 	_sync_server_thread = base_thread_creat(SYNC_SERVER_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _sync_server_init, _sync_server_main, _sync_server_exit);
 	if(_sync_server_thread == INVALID_THREAD_ID)

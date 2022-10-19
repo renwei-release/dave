@@ -570,6 +570,43 @@ __dave_json_c_get_str_v2__(void *object, char *key, s8 *str_data, ub str_length,
 	return str_length;
 }
 
+ub
+__dave_json_c_get_str_length__(void *object, char *key, s8 *fun, ub line)
+{
+	struct json_object *string_object;
+
+	if(object == NULL)
+	{
+		return 0;
+	}
+
+	if(key != NULL)
+	{
+		if(json_object_get_type(object) != json_type_object)
+		{
+			return 0;
+		}
+
+		string_object = json_object_object_get(object, (const char *)key);
+		if(string_object == NULL)
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		string_object = object;
+	}
+
+	if(json_object_get_type(string_object) != json_type_string)
+	{
+		PARTYLOG("invalid string_object:%d key:%s!<%s:%d>", json_object_get_type(string_object), key, fun, line);
+		return 0;
+	}
+
+	return (ub)json_object_get_string_len(string_object);
+}
+
 sb
 dave_json_c_get_array_length(void *array)
 {

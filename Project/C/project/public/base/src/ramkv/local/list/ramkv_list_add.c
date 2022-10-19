@@ -52,10 +52,9 @@ dave_bool
 __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	KVHash hash;
-	KVData *pData, *pOldData = NULL;
+	KVData *pData, *pOldData;
 	KVSlot *pSlot;
 	dave_bool ret = dave_false;
-	dave_bool free_data_flag = dave_false;
 
 	if((key_ptr == NULL) || (key_len == 0) || (value_ptr == NULL))
 	{
@@ -71,8 +70,6 @@ __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 		return dave_false;
 	}
 
-	pData = __ramkv_list_data_malloc__(key_ptr, key_len, value_ptr, value_len, fun, line);
-
 	SAFECODEv2W(pKV->ramkv_pv, {
 
 		pSlot = ramkv_hash_to_slot(pKV->local.ramkv_list.slot, &hash, dave_false);
@@ -80,28 +77,30 @@ __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 		{
 			pOldData = ramkv_slot_data_inq(pSlot, key_ptr, key_len);
 		}
+		else
+		{
+			pOldData = NULL;
+		}
 
 		if(pOldData == NULL)
 		{
+			pData = __ramkv_list_data_malloc__(key_ptr, key_len, value_ptr, value_len, fun, line);
+
 			_ramkv_add_list(&(pKV->local.ramkv_list), pData);
 
 			ret = _ramkv_add_slot(&(pKV->local.ramkv_list), &hash, pData, fun, line);
+
+			if(ret == dave_false)
+				ramkv_list_data_free(pData);
 		}
 		else
 		{
-			free_data_flag = dave_true;
-
 			ramkv_list_data_copy_from_user(pOldData, value_ptr, value_len);
 
 			ret = dave_true;
 		}
 
 	});
-
-	if(free_data_flag == dave_true)
-	{
-		ramkv_list_data_free(pData);
-	}
 
 	return ret;
 }

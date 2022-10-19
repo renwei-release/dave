@@ -235,7 +235,7 @@ sync_client_tx_run_thread_msg_req(
 		dave_mptr(msg_head), msg_head->len,
 		route_src, route_dst, src, dst, msg_id,
 		msg_type, src_attrib, dst_attrib,
-		zip_body->len, NULL);
+		base_mlen(zip_body), NULL);
 
 	dave_mchain(msg_head, zip_body);
 

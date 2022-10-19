@@ -74,6 +74,37 @@ _sync_server_tx_run_internal_msg_req(
 }
 
 static dave_bool
+_sync_server_tx_run_internal_msg_v2_req(
+	SyncClient *pClient,
+	ub msg_id, ub msg_len, void *msg_body)
+{
+	MBUF *zip_body;
+	ub snd_max = SYNC_STACK_HEAD_MAX_LEN + msg_len;
+	MBUF *snd_buffer;
+
+	SYNCDEBUG("msg_id:%d msg_len:%d", msg_id, msg_len);
+
+	zip_body = t_rpc_zip(3, NULL, NULL, msg_id, msg_body, msg_len);
+	if(zip_body == NULL)
+	{
+		SYNCLOG("msg_id:%d msg_len:%d zip", msg_id, msg_len);
+		return dave_false;
+	}
+
+	snd_buffer = dave_mmalloc(snd_max);
+
+	snd_buffer->tot_len = snd_buffer->len = sync_msg_packet(
+		dave_mptr(snd_buffer), snd_max,
+		INVALID_THREAD_ID, INVALID_THREAD_ID, (s8 *)SYNC_SERVER_THREAD_NAME, (s8 *)SYNC_CLIENT_THREAD_NAME, msg_id,
+		BaseMsgType_Unicast, LOCAL_TASK_ATTRIB, LOCAL_TASK_ATTRIB,
+		base_mlen(zip_body), NULL);
+
+	dave_mchain(snd_buffer, zip_body);
+
+	return _sync_server_tx(pClient, ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ, snd_buffer);
+}
+
+static dave_bool
 _sync_server_tx_run_thread_msg_req(
 	SyncClient *pClient,
 	ThreadId route_src, ThreadId route_dst,
@@ -214,19 +245,6 @@ sync_server_tx_run_thread_msg_req(
 			src_thread_index, pSrcClient->client_index, pSrcClient->verno,
 			dst_thread_index, pDstClient->client_index, pDstClient->verno);
 	}
-	else
-	{
-		sync_lock();
-		if(pSrcClient != NULL)
-			pSrcClient->recv_msg_counter ++;
-		if(pDstClient != NULL)
-			pDstClient->send_msg_counter ++;
-		if(pSrcThread != NULL)
-			pSrcThread->thread_recv_message_counter ++;
-		if(pDstThread != NULL)
-			pDstThread->thread_send_message_counter ++;
-		sync_unlock();
-	}
 
 	return ret;
 }
@@ -236,7 +254,23 @@ sync_server_tx_run_internal_msg_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body)
 {
+	sync_lock();
+	pClient->send_msg_counter ++;
+	sync_unlock();
+
 	return _sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
+}
+
+dave_bool
+sync_server_tx_run_internal_msg_v2_req(
+	SyncClient *pClient,
+	ub msg_id, ub msg_len, void *msg_body)
+{
+	sync_lock();
+	pClient->send_msg_counter ++;
+	sync_unlock();
+
+	return _sync_server_tx_run_internal_msg_v2_req(pClient, msg_id, msg_len, msg_body);
 }
 
 dave_bool
@@ -306,13 +340,20 @@ sync_server_tx_module_verno(SyncClient *pClient, s8 *verno)
 }
 
 void
-sync_server_tx_heartbeat(SyncClient *pClient)
+sync_server_tx_heartbeat(SyncClient *pClient, dave_bool req_flag)
 {
 	MBUF *snd_buffer;
 
 	snd_buffer = sync_heartbeat_packet(pClient->recv_data_counter, pClient->send_data_counter, t_time_get_date(NULL));
 
-	_sync_server_tx(pClient, ORDER_CODE_HEARTBEAT_RSP, snd_buffer);
+	if(req_flag == dave_true)
+	{
+		_sync_server_tx(pClient, ORDER_CODE_HEARTBEAT_REQ, snd_buffer);
+	}
+	else
+	{
+		_sync_server_tx(pClient, ORDER_CODE_HEARTBEAT_RSP, snd_buffer);
+	}
 }
 
 void

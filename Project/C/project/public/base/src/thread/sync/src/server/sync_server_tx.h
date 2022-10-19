@@ -22,6 +22,10 @@ dave_bool sync_server_tx_run_internal_msg_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body);
 
+dave_bool sync_server_tx_run_internal_msg_v2_req(
+	SyncClient *pClient,
+	ub msg_id, ub msg_len, void *msg_body);
+
 dave_bool sync_server_tx_test_run_thread_msg_req(
 	SyncClient *pClient,
 	ThreadId route_src, ThreadId route_dst,
@@ -35,7 +39,7 @@ void sync_server_tx_my_verno(SyncClient *pClient);
 
 void sync_server_tx_module_verno(SyncClient *pClient, s8 *verno);
 
-void sync_server_tx_heartbeat(SyncClient *pClient);
+void sync_server_tx_heartbeat(SyncClient *pClient, dave_bool req_flag);
 
 void sync_server_tx_sync_thread_name_rsp(SyncClient *pClient, s8 *thread_name, sb thread_index);
 

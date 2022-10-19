@@ -152,6 +152,8 @@ type CFGRemoteUpdate struct {
 	Put_flag int8
 	Cfg_name [1024] byte
 	Cfg_value [8196] byte
+	Cfg_mbuf_name *MBUF
+	Cfg_mbuf_value *MBUF
 	Ttl int64
 }
 
@@ -796,6 +798,11 @@ type SocketWrite struct {
 	Data_len uint64
 	Data *MBUF
 	Close_flag int32
+}
+
+/* for MSGID_SUPPORT_CONFIG message */
+type SupportConfig struct {
+	Config_data [8192] byte
 }
 
 /* for MSGID_SYSTEM_DECOUPLING message */

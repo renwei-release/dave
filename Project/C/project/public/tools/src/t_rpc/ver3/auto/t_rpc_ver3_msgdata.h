@@ -506,6 +506,11 @@ dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *p
 void * t_rpc_ver3_ptr_SocketWrite(SocketWrite *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_SocketWrite(void);
 
+void * t_rpc_ver3_zip_SupportConfig(SupportConfig *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SupportConfig(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SupportConfig(SupportConfig *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SupportConfig(void);
+
 void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data, void *new_ptr);

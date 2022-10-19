@@ -3418,6 +3418,12 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 		case ORDER_CODE_RUN_INTERNAL_MSG_RSP:
 				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_RSP-0x0115'";
 			break;
+		case ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ:
+				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ-0x0116'";
+			break;
+		case ORDER_CODE_RUN_INTERNAL_MSG_V2_RSP:
+				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_V2_RSP-0x0117'";
+			break;
 		case ORDER_CODE_MY_VERNO:
 				value_str = "'ORDER_CODE_MY_VERNO-0x0201'";
 			break;
@@ -4515,6 +4521,9 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_UPDATE-38'";
+			break;
+		case MSGID_SUPPORT_CONFIG:
+				value_str = "'MSGID_SUPPORT_CONFIG-39'";
 			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";

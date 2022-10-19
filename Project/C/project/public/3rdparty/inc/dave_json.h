@@ -76,6 +76,9 @@ dave_bool __dave_json_c_get_str__(void *object, char *key, s8 *str_data, ub *str
 ub __dave_json_c_get_str_v2__(void *object, char *key, s8 *str_data, ub str_length, s8 *fun, ub line);
 #define dave_json_get_str_v2(object, key, str_data, str_length) __dave_json_c_get_str_v2__(object, (char *)key, (s8 *)str_data, str_length, (s8 *)__func__, (ub)__LINE__)
 
+ub __dave_json_c_get_str_length__(void *object, char *key, s8 *fun, ub line);
+#define dave_json_get_str_length(object, key) __dave_json_c_get_str_length__(object, key, (s8 *)__func__, (ub)__LINE__)
+
 dave_bool dave_json_c_add_boolean(void *object, char *key, dave_bool bool_data);
 #define dave_json_add_boolean dave_json_c_add_boolean
 

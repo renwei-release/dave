@@ -168,9 +168,10 @@ t_stdio_snscanf(const s8 *buf_ptr, ub buf_len, const char *fmt, ...)
 ub
 __t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line)
 {
-	ub copy_length;
+	s8 *original_dst;
+	ub copy_index;
 
-	if(dst == NULL)
+	if((dst == NULL) || (max_length <= 0))
 	{
 		TOOLSLOG("copy dest is NULL! <%s:%d>", file, line);
 		return 0;
@@ -179,30 +180,26 @@ __t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line)
 	if(src == NULL)
 	{
 		dst[0] = '\0';
-		TOOLSLOG("copy src is NULL! <%s:%d>\r\n", file, line);
+		TOOLSLOG("copy src is NULL! <%s:%d>", file, line);
 		return 0;
 	}
 
-	copy_length = 0;
+	// To insert '\0'
+	max_length -= 1;
+	original_dst = dst;
 
-	if(max_length > 0)
+	for(copy_index=0; copy_index<max_length; copy_index++)
 	{
-		// To insert '\0'
-		max_length -= 1;
-
-		while((copy_length < max_length) && ((*dst++ = *src++) != '\0')) { copy_length ++; }
-
-		if(copy_length >= max_length)
-		{
-			*dst = '\0';
-		}
-	}
-	else
-	{
-		*dst = '\0';
+		if((*dst++ = *src++) == '\0')
+			break;
 	}
 
-	return copy_length;
+	if(copy_index >= max_length)
+	{
+		original_dst[copy_index] = '\0';
+	}
+
+	return copy_index;
 }
 
 dave_bool

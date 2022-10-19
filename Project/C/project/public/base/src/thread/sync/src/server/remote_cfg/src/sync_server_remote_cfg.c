@@ -36,6 +36,8 @@ _sync_server_the_config_tell_all_client(dave_bool put_flag, s8 *key, s8 *value)
 	update.put_flag = put_flag;
 	dave_strcpy(update.cfg_name, key, sizeof(update.cfg_name));
 	dave_strcpy(update.cfg_value, value, sizeof(update.cfg_value));
+	update.cfg_mbuf_name = NULL;
+	update.cfg_mbuf_value = NULL;
 	update.ttl = 0;
 
 	sync_server_app_tx_all_client(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), &update);
@@ -54,11 +56,13 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 		update.put_flag = dave_true;
 		if(rcfg_index(
 			index,
-			update.cfg_name, sizeof(update.cfg_name),
-			update.cfg_value, sizeof(update.cfg_value)) < 0)
+			update.cfg_name, sizeof(update.cfg_name) - 1,
+			update.cfg_value, sizeof(update.cfg_value) - 1) < 0)
 		{
 			break;
 		}
+		update.cfg_mbuf_name = NULL;
+		update.cfg_mbuf_value = NULL;
 		update.ttl = 0;
 
 		if(update.cfg_name[0] != '\0')

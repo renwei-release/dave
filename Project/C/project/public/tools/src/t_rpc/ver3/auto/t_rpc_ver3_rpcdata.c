@@ -298,6 +298,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_RUN_FUNCTION:
 				pBson = t_rpc_ver3_zip_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, msg_len);
 			break;
+		case MSGID_SUPPORT_CONFIG:
+				pBson = t_rpc_ver3_zip_SupportConfig((SupportConfig *)msg_body, msg_len);
+			break;
 		case MSGID_SYSTEM_DECOUPLING:
 				pBson = t_rpc_ver3_zip_SystemDecoupling((SystemDecoupling *)msg_body, msg_len);
 			break;
@@ -670,6 +673,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_RUN_FUNCTION:
 				ret = t_rpc_ver3_unzip_RUNFUNCTIONMSG(msg_body, msg_len, pBson);
+			break;
+		case MSGID_SUPPORT_CONFIG:
+				ret = t_rpc_ver3_unzip_SupportConfig(msg_body, msg_len, pBson);
 			break;
 		case MSGID_SYSTEM_DECOUPLING:
 				ret = t_rpc_ver3_unzip_SystemDecoupling(msg_body, msg_len, pBson);
@@ -1044,6 +1050,9 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_RUN_FUNCTION:
 				ptr = t_rpc_ver3_ptr_RUNFUNCTIONMSG((RUNFUNCTIONMSG *)msg_body, new_ptr);
 			break;
+		case MSGID_SUPPORT_CONFIG:
+				ptr = t_rpc_ver3_ptr_SupportConfig((SupportConfig *)msg_body, new_ptr);
+			break;
 		case MSGID_SYSTEM_DECOUPLING:
 				ptr = t_rpc_ver3_ptr_SystemDecoupling((SystemDecoupling *)msg_body, new_ptr);
 			break;
@@ -1416,6 +1425,9 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_RUN_FUNCTION:
 				msg_len = t_rpc_ver3_sizeof_RUNFUNCTIONMSG();
+			break;
+		case MSGID_SUPPORT_CONFIG:
+				msg_len = t_rpc_ver3_sizeof_SupportConfig();
 			break;
 		case MSGID_SYSTEM_DECOUPLING:
 				msg_len = t_rpc_ver3_sizeof_SystemDecoupling();
