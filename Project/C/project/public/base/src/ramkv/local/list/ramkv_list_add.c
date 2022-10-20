@@ -56,7 +56,7 @@ __ramkv_list_add__(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_l
 	KVSlot *pSlot;
 	dave_bool ret = dave_false;
 
-	if((key_ptr == NULL) || (key_len == 0) || (value_ptr == NULL))
+	if((key_ptr == NULL) || (key_len == 0) || (key_len > (RAMKV_KEY_MAX - 1)) || (value_ptr == NULL))
 	{
 		KVLOG("invalid param, key_ptr:%x key_len:%d value_ptr:%x value_len:%d <%s:%d>",
 			key_ptr, key_len, value_ptr, value_len,
