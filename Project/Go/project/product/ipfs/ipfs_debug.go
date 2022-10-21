@@ -15,9 +15,9 @@ import (
 	"strings"
 )
 
-var _MyIPFSNodeServer string = "localhost:5002"
+var _MyIPFSNodeServer string = "127.0.0.1:5001"
 
-func ipfs_cat_data(cid string) {
+func _ipfs_cat_data(cid string) {
 	sh := shell.NewShell(_MyIPFSNodeServer)
 
 	base.DAVELOG("start cat cid:%s on %s", cid, _MyIPFSNodeServer)
@@ -31,7 +31,7 @@ func ipfs_cat_data(cid string) {
 	base.DAVELOG("cat the cid:%s -> %s", cid, buf)
 }
 
-func ipfs_new_build() {
+func _ipfs_new_build() {
 	sh := shell.NewShell(_MyIPFSNodeServer)
 
 	cid, err := sh.Add(strings.NewReader("Hello world"))
@@ -41,10 +41,10 @@ func ipfs_new_build() {
 	}
 	base.DAVELOG("add the cid:%s", cid)
 
-	ipfs_cat_data(cid)
+	_ipfs_cat_data(cid)
 }
 
-func ipfs_swarm_build() {
+func _ipfs_swarm_build() {
 	ctx := context.TODO()
 
 	sh := shell.NewShell(_MyIPFSNodeServer)
@@ -75,13 +75,13 @@ func ipfs_debug(debug_data_req string) string {
 	base.DAVELOG("%s", debug_data_req)
 
 	if debug_data_req == "new" {
-		ipfs_new_build()
+		_ipfs_new_build()
 	}
 	if debug_data_req[0:3] == "cat" {
-		ipfs_cat_data(debug_data_req[4:])
+		_ipfs_cat_data(debug_data_req[4:])
 	}
 	if debug_data_req == "swarm" {
-		ipfs_swarm_build()
+		_ipfs_swarm_build()
 	}
 
 	return debug_data_req

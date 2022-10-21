@@ -8,8 +8,8 @@ import (
 	"github.com/ipfs/go-datastore"
 	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/multiformats/go-base32"
-	"log"
 	"strings"
+	"dave/public/base"
 )
 
 var errInvalidKeyNamespaces = fmt.Errorf("not enough namespaces in provider record key")
@@ -57,7 +57,7 @@ func AfterPut(k datastore.Key, v []byte, err error) error {
 
 	pid, err := keyToPeerID(k)
 
-	log.Printf("[NEW] cid[%s] pid[%s] \n", cid, pid)
+	base.DAVELOG("[NEW] CID:%s PID:%s", cid, pid)
 
 	return err
 }

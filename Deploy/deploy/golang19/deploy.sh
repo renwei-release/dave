@@ -12,8 +12,8 @@ if [ "$1" == "" ]; then
 else
    HOMEPATH=$1
 fi
-IMAGE="golang_docker_image"
-TAG="latest"
+IMAGE="golang19_docker_image"
+TAG="1.19.2"
 EXTEND="-v `pwd`/../../../:/project/DAVE"
 
 cd ../../

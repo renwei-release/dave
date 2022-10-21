@@ -8,7 +8,7 @@
 
 PROJECT=${PWD##*/}
 TAGS="openssl"
-CONTAINER="golang"
+CONTAINER="golang15"
 
 ../ENV ${CONTAINER}
 

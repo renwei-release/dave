@@ -8,4 +8,4 @@
 
 CONTAINER=${PWD##*/}
 
-docker exec -it ${CONTAINER}-client bash
+docker exec -it ${CONTAINER} bash

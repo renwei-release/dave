@@ -13,9 +13,15 @@ PROJECTMODFILE=`pwd`/../project/go.mod
 PROJECTSUMFILE=`pwd`/../project/go.sum
 
 if [ -f ${BUILDMODFILE} ]; then
+   if [ -f ${PROJECTMODFILE} ]; then
+      rm -rf ${PROJECTMODFILE}
+   fi
    cp -rf ${BUILDMODFILE} ${PROJECTMODFILE}
 fi
 if [ -f ${BUILDSUMFILE} ]; then
+   if [ -f ${PROJECTSUMFILE} ]; then
+      rm -rf ${PROJECTSUMFILE}
+   fi
    cp -rf ${BUILDSUMFILE} ${PROJECTSUMFILE}
 fi
 

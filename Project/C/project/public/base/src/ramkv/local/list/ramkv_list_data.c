@@ -47,6 +47,10 @@ _ramkv_list_data_copy_from_user(KVValue *pValue, void *value_ptr, ub value_len)
 		}
 		else
 		{
+			if((pValue->value_ptr != NULL) && (pValue->value_len > sizeof(void *)))
+			{
+				ramkvm_free(pValue->value_ptr);
+			}
 			pValue->value_len = value_len;
 			dave_memcpy(&(pValue->value_ptr), value_ptr, pValue->value_len);
 		}

@@ -6,12 +6,17 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
+DEPLOYMODEL=$1
 PROJECT=${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)
 DEPLOYPATH=../../../../Deploy/deploy/${PROJECT}
+
+if [ "$DEPLOYMODEL" == "" ]; then
+   DEPLOYMODEL="client"
+fi
 
 cd ${DEPLOYPATH}
 
 echo deploy ${PROJECT}
 chmod a+x *.sh
-./deploy.sh ${HOMEPATH}
+./deploy.sh ${DEPLOYMODEL} ${HOMEPATH}
