@@ -134,6 +134,12 @@ _base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
 }
 
 static void
+_base_msg_timer_out(ProcessMsgTimerOutMsg *pTimerOut)
+{
+	BASELOG("msg_id:%s", msgstr(pTimerOut->msg_id));
+}
+
+static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	BASEDEBUG("%lx/%s/%s/%s",
@@ -168,9 +174,22 @@ _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 }
 
 static void
+_base_timer_go_test(TIMERID timer_id, ub timer_index)
+{
+	RPCDebugReq *pReq = thread_reset_msg(pReq);
+	RPCDebugRsp *pRsp;
+
+	BASELOG("TEST start ......");
+
+	pRsp = name_go("aaaaaaaaaaaa", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
+
+	BASELOG("TEST done! pRsp:%x", pRsp);
+}
+
+static void
 _base_thread_init(MSGBODY *msg)
 {
-
+	base_timer_creat("btgtest", _base_timer_go_test, 30000);
 }
 
 static void
@@ -183,6 +202,9 @@ _base_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_ECHO:
 				base_echo(msg->msg_src, (MsgIdEcho *)(msg->msg_body));
+			break;
+		case MSGID_PROCESS_MSG_TIMER_OUT:
+				_base_msg_timer_out((ProcessMsgTimerOutMsg *)(msg->msg_body));
 			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				_base_thread_remote_id_ready((ThreadRemoteIDReadyMsg *)(msg->msg_body));

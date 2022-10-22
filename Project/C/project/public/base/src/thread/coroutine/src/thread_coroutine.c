@@ -116,6 +116,9 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 		pSite->msg_site,
 		key, sizeof(key));
 
+	THREADDEBUG("msg_id:%s wakeup_index:%d msg_site:%lx key:%s",
+		msgstr(pSite->msg_id), pSite->wakeup_index, pSite->msg_site, key);
+
 	_thread_coroutine_add_kv_(key, pSite);
 }
 
@@ -146,7 +149,7 @@ _thread_coroutine_del_kv(
 static inline void
 _thread_coroutine_wakeup_me(
 	void *msg_chain, void *msg_router,
-	CoroutineSite *pSite, wakeupevent event, s8 *some_string)
+	CoroutineSite *pSite, wakeupevent event)
 {
 	CoroutineWakeup *pWakeup;
 
@@ -156,10 +159,6 @@ _thread_coroutine_wakeup_me(
 
 	pWakeup->thread_index = pSite->thread_index;
 	pWakeup->wakeup_index = pSite->wakeup_index;
-	if(some_string != NULL)
-	{
-		dave_strcpy(pWakeup->some_string, some_string, sizeof(pWakeup->some_string));
-	}
 	pWakeup->ptr = pSite;
 
 	thread_thread_write(msg_chain, msg_router, pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
@@ -334,7 +333,7 @@ _thread_coroutine_running_step_5(
 
 	_thread_coroutine_wakeup_me(
 		msg_chain, msg_router,
-		pSite, wakeupevent_get_msg, NULL);
+		pSite, wakeupevent_get_msg);
 
 	return dave_true;
 }
@@ -423,26 +422,17 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 }
 
 static inline void
-_thread_coroutine_timer_out(CoroutineSite *pSite, s8 *key)
-{
-	if(pSite == _thread_coroutine_del_kv_(key))
-	{
-		coroutine_resume(pSite->co);
-	}
-}
-
-static inline void
 _thread_coroutine_wakeup(MSGBODY *thread_msg)
 {
 	CoroutineWakeup *pWakeup = (CoroutineWakeup *)(thread_msg->msg_body);
 
+	THREADDEBUG("wakeup_id:%d", pWakeup->wakeup_id);
+
 	switch(pWakeup->wakeup_id)
 	{
 		case wakeupevent_get_msg:
-				_thread_coroutine_running_step_6(pWakeup, thread_msg->thread_wakeup_index);
-			break;
 		case wakeupevent_timer_out:
-				_thread_coroutine_timer_out((CoroutineSite *)(pWakeup->ptr), pWakeup->some_string);
+				_thread_coroutine_running_step_6(pWakeup, thread_msg->thread_wakeup_index);
 			break;
 		default:
 			break;
@@ -462,7 +452,9 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 			pSite->src_thread, pSite->msg_id,
 			pSite, pSite->co);
 	
-		_thread_coroutine_wakeup_me(NULL, NULL, pSite, wakeupevent_timer_out, key);
+		_thread_coroutine_wakeup_me(
+			NULL, NULL,
+			pSite, wakeupevent_timer_out);
 	}
 }
 

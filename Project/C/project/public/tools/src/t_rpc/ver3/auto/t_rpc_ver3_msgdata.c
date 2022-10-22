@@ -1889,7 +1889,6 @@ t_rpc_ver3_zip_CoroutineWakeup(CoroutineWakeup *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "ub-wakeup_id", t_rpc_ver3_zip_ub(zip_data->wakeup_id));
 	t_bson_add_object(pStructBson, "ub-thread_index", t_rpc_ver3_zip_ub(zip_data->thread_index));
 	t_bson_add_object(pStructBson, "ub-wakeup_index", t_rpc_ver3_zip_ub(zip_data->wakeup_index));
-	t_bson_add_object(pStructBson, "s8-some_string", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->some_string), 1, 256));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -1916,7 +1915,6 @@ t_rpc_ver3_unzip_CoroutineWakeup(void **unzip_data, ub *unzip_len, void *pStruct
 		t_rpc_ver3_unzip_ub(&(pUnzip->wakeup_id), t_bson_inq_object(pStructBson, "ub-wakeup_id"));
 		t_rpc_ver3_unzip_ub(&(pUnzip->thread_index), t_bson_inq_object(pStructBson, "ub-thread_index"));
 		t_rpc_ver3_unzip_ub(&(pUnzip->wakeup_index), t_bson_inq_object(pStructBson, "ub-wakeup_index"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->some_string), 1, 256, t_bson_inq_object(pStructBson, "s8-some_string"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

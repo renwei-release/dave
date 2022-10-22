@@ -275,7 +275,6 @@ class CoroutineWakeup (Structure):
 		("wakeup_id", c_ulonglong),
 		("thread_index", c_ulonglong),
 		("wakeup_index", c_ulonglong),
-		("some_string", c_char * 256),
 		("ptr", POINTER(c_char)),
 ]
 

@@ -66,6 +66,31 @@ _t_unlock_check(TLock *pLock, s8 *fun, ub line)
 	return dave_true;
 }
 
+static inline dave_bool
+_t_lock_try_check(TLock *pLock, s8 *fun, ub line)
+{
+	if(pLock->magic_data_1 != pLock->magic_data_2)
+	{
+		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
+		return dave_false;
+	}
+
+	return dave_true;
+}
+
+static inline dave_bool
+_t_unlock_try_check(TLock *pLock, s8 *fun, ub line)
+{
+	if(pLock->magic_data_1 != pLock->magic_data_2)
+	{
+		TOOLSABNOR("Found an invalid lock! [%s:%d magic:%lx/%lx]",
+			fun, line, pLock->magic_data_1, pLock->magic_data_2);
+		return dave_false;
+	}
+
+	return dave_true;
+}
+
 #endif
 
 // =====================================================================
@@ -290,14 +315,14 @@ __t_trylock_mutex__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_check(pLock, fun, line) == dave_true)
+	if(_t_lock_try_check(pLock, fun, line) == dave_true)
 	{
 #endif
 		ret = dave_os_mutex_trylock(&(pLock->m_mutex_t));
 #ifdef LEVEL_PRODUCT_alpha
 		if(ret == dave_false)
 		{
-			_t_unlock_check(pLock, fun, line);
+			_t_unlock_try_check(pLock, fun, line);
 		}
 	}
 	else

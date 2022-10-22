@@ -20,7 +20,7 @@ if [[ "$DEPLOYMODEL" == "server" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    if [ "$exit_server_contains" == "" ]; then
       SWARM_PORT=4002
 	  API_PORT=5001
-	  GATEWAY_PORT=8082
+	  GATEWAY_PORT=8088
       # Swarm listening on ${SWARM_PORT}/tcp/udp
       # API server listening on ${API_PORT}
 	  # WebUI: http://0.0.0.0:${API_PORT}/webui

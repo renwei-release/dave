@@ -322,16 +322,9 @@ _timer_event(MSGBODY *msg)
 
 		} );
 
-		/*
-		 * 此处确保用户层不会发生多线程竞争，
-		 * 且通过判断_timer[timer_id].fun来
-		 * 确保已经删除的定时器消息不会有机会执行。
-		 */
-
 		if((fun != NULL) || (param_fun != NULL))
 		{
 			SAFECODEidlev1(pTimer->run_pv, {
-
 					pTimer->time_out_counter ++;
 
 					_timer_run_function(fun, param_fun, param_ptr, timer_id, msg->thread_wakeup_index);
@@ -623,6 +616,12 @@ static TIMERID
 _timer_safe_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub param_len, ub alarm_ms)
 {
 	TIMERID timer_id = INVALID_TIMER_ID;
+
+	if((name == NULL) || (dave_strlen(name) == 0))
+	{
+		TIMEABNOR("invalid name:%s", name);
+		return INVALID_TIMER_ID;
+	}
 
 	SAFECODEv1(_timer_pv, {
 

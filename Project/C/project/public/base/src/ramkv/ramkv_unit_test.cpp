@@ -176,7 +176,7 @@ _ramkv_test_loop(KvAttrib attrib, s8 *test_counter_str)
 }
 
 static void
-_ramkv_test_add_del_not_free(KvAttrib attrib, s8 *test_counter_str)
+_ramkv_test_add_del_free(KvAttrib attrib, s8 *test_counter_str)
 {
 	ub test_time;
 	void *ramkv;
@@ -192,6 +192,8 @@ _ramkv_test_add_del_not_free(KvAttrib attrib, s8 *test_counter_str)
 	ramkv = kv_malloc((s8 *)"testramkv", attrib, 0, NULL);
 
 	test_time = _ramkv_test_add_and_del(ramkv, test_counter);
+
+	kv_free(ramkv, NULL);
 
 	KVLOG("end ramkv database test! attrib:%d counter:%d time:%ldus times:%ldus",
 		attrib, test_counter,  test_time, test_time/test_counter);
@@ -312,103 +314,6 @@ _ramkv_test_timer_add(void)
 }
 
 static void
-_ramkv_test_timer_thread_loop(ub thread_index, ub test_counter)
-{
-	static s8 static_str_key[64] = { '\0' };
-	ub test_index;
-	s8 str_key[64];
-	void *str_ptr, *inq_ptr;
-	ub ub_key;
-	void *ub_ptr;
-
-	for(test_index=0; test_index<test_counter; test_index++)
-	{
-		dave_snprintf(str_key, sizeof(str_key), "testramkv-%ld%ld%lx", thread_index, test_index, t_rand());
-		str_ptr = dave_malloc(sizeof(str_key));
-		dave_strcpy(str_ptr, str_key, sizeof(str_key));
-		if(kv_add_key_ptr(_timer_ramkv, str_key, str_ptr) == dave_true)
-		{
-			inq_ptr = kv_inq_key_ptr(_timer_ramkv, str_key);
-			if(inq_ptr != str_ptr)
-			{
-				base_restart("test failed on str_key:%s inq! %lx/%lx", str_key, inq_ptr, str_ptr);
-			}
-		}
-
-		dave_strcpy(static_str_key, str_key, sizeof(static_str_key));
-
-		ub_key = thread_index + test_index + t_rand();
-		ub_ptr = dave_malloc(sizeof(ub_key));
-		dave_strcpy(ub_ptr, &ub_key, sizeof(ub_key));
-		if(kv_add_ub_ptr(_timer_ramkv, ub_key, ub_ptr) == dave_true)
-		{
-			if(kv_inq_ub_ptr(_timer_ramkv, ub_key) != ub_ptr)
-			{
-				base_restart("test failed on ub_key:%ld inq!", ub_key);
-			}
-		}
-	}
-
-	SAFECODEv1( _timer_pv, {
-		if((t_rand() & 0x01) == 0x00)
-		{
-			if(static_str_key[0] != '\0')
-			{
-				str_ptr = kv_del_key_ptr(_timer_ramkv, static_str_key);
-				if(str_ptr != NULL)
-				{
-					dave_free(str_ptr);
-				}
-			}
-		}
-	} );
-}
-
-static void *
-_ramkv_test_timer_thread_(void *arg)
-{
-	ub thread_index = (ub)arg;
-	ub sleep_time, test_counter;
-
-	while(_timer_ramkv != NULL)
-	{
-		sleep_time = (t_rand() % 128);
-		if(sleep_time == 0)
-			sleep_time = 1;
-		dave_os_sleep(sleep_time);
-
-		test_counter = (t_rand() % 4);
-		if(test_counter == 0)
-			test_counter = 1;
-
-		_ramkv_test_timer_thread_loop(thread_index, test_counter);
-	}
-
-	KVLOG("exit timer thread!!!");
-
-	return NULL;
-}
-
-static void
-_ramkv_test_timer_thread(void)
-{
-	ub thread_number = dave_os_cpu_process_number() * 2;
-	ub thread_index;
-	s8 thread_name[128];
-
-	if(_timer_ramkv == NULL)
-		return;
-
-	KVLOG("start %d threads ...", thread_number);
-
-	for(thread_index=0; thread_index<thread_number; thread_index++)
-	{
-		dave_snprintf(thread_name, sizeof(thread_name), "testramkvdatabase_%d", thread_index);
-		dave_os_create_thread((char *)thread_name, _ramkv_test_timer_thread_, (void *)thread_index);
-	}
-}
-
-static void
 _ramkv_test_timer_del(s8 *key)
 {
 	void *ptr = kv_inq_key_ptr(_timer_ramkv, key);
@@ -450,6 +355,22 @@ _ramkv_test_timer_info(void)
 	KVLOG("%s", info_ptr);
 }
 
+static void
+_ramkv_test_add_short_add_long_add_short(void)
+{
+	void *kv;
+
+	kv = kv_malloc((s8 *)"shortlong", KvAttrib_list, 0, NULL);
+
+	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12");
+	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12");
+	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12ddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12");
+
+	kv_free(kv, NULL);
+}
+
 // =====================================================================
 
 TEST(ramkv_case, ramkv_case_1) { _ramkv_test_loop(KvAttrib_ram, (s8 *)"1000"); }
@@ -460,8 +381,9 @@ TEST(ramkv_case, ramkv_case_5) { _ramkv_test_timer_add(); }
 TEST(ramkv_case, ramkv_case_6) { _ramkv_test_timer_del((s8 *)"aaaaa"); }
 TEST(ramkv_case, ramkv_case_7) { _ramkv_test_timer_inq((s8 *)"bbbbb"); }
 TEST(ramkv_case, ramkv_case_8) { _ramkv_test_timer_info(); }
-TEST(ramkv_case, ramkv_case_9) { _ramkv_test_add_del_not_free(KvAttrib_list, (s8 *)"1000"); }
-TEST(ramkv_case, ramkv_case_10) { _ramkv_test_timer_thread(); }
+TEST(ramkv_case, ramkv_case_9) { _ramkv_test_add_del_free(KvAttrib_list, (s8 *)"1000"); }
+TEST(ramkv_case, ramkv_case_10) { _ramkv_test_add_short_add_long_add_short(); }
+
 
 #endif
 
