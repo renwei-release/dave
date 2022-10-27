@@ -5,6 +5,7 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+from ..tools import *
 from .dave_system_function import dave_system_function_table_inq
 
 

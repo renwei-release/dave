@@ -14,9 +14,9 @@ void uip_server_distributor_init(void);
 
 void uip_server_distributor_exit(void);
 
-dave_bool uip_server_distributor_start(s8 *path, uip_server_recv_fun recv_fun);
+dave_bool uip_server_distributor_start(s8 *path_user, uip_server_recv_fun recv_fun);
 
-void uip_server_distributor_stop(s8 *path);
+void uip_server_distributor_stop(s8 *path_user);
 
 uip_server_recv_fun uip_server_distributor_recv_fun(s8 *path);
 

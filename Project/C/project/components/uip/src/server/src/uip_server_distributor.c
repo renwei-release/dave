@@ -122,10 +122,17 @@ uip_server_distributor_exit(void)
 }
 
 dave_bool
-uip_server_distributor_start(s8 *path, uip_server_recv_fun recv_fun)
+uip_server_distributor_start(s8 *path_user, uip_server_recv_fun recv_fun)
 {
-	UIPDistributorLink *pLink = _uip_server_distributor_inq(path);
+	s8 path[128];
+	UIPDistributorLink *pLink;
 
+	dave_strcpy(path, path_user, sizeof(path));
+
+	t_stdio_remove_the_char_on_frist(path, '/');
+	t_stdio_remove_the_char_on_frist(path, '\\');
+
+	pLink = _uip_server_distributor_inq(path);
 	if(pLink != NULL)
 		return dave_true;
 
@@ -138,8 +145,15 @@ uip_server_distributor_start(s8 *path, uip_server_recv_fun recv_fun)
 }
 
 void
-uip_server_distributor_stop(s8 *path)
+uip_server_distributor_stop(s8 *path_user)
 {
+	s8 path[128];
+
+	dave_strcpy(path, path_user, sizeof(path));
+
+	t_stdio_remove_the_char_on_frist(path, '/');
+	t_stdio_remove_the_char_on_frist(path, '\\');
+
 	if(_uip_server_distributor_del(path) == dave_true)
 	{
 		_uip_server_distributor_stop(path);

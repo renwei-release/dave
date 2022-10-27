@@ -89,31 +89,34 @@ _dll_main_init(MSGBODY *msg)
 static void
 _dll_main_main(MSGBODY *msg)
 {
-	DllMsgBody msg_body;
+	DllMsgBody *pBody = dave_malloc(sizeof(DllMsgBody));
 
 	if(_dll_main_fun != NULL)
 	{
-		dave_memset(&msg_body, 0x00, sizeof(DllMsgBody));
+		dave_strcpy(pBody->msg_src_gid, msg->src_gid, sizeof(pBody->msg_src_gid));
 
-		dave_strcpy(msg_body.msg_src_gid, msg->src_gid, sizeof(msg_body.msg_src_gid));
-	
-		dave_strcpy(msg_body.msg_src_name, thread_name(msg->msg_src), sizeof(msg_body.msg_src_name));
-		msg_body.msg_src = msg->msg_src;
-		dave_strcpy(msg_body.msg_dst_name, thread_name(msg->msg_dst), sizeof(msg_body.msg_dst_name));
-		msg_body.msg_dst = msg->msg_dst;
-		msg_body.msg_id = msg->msg_id;
-		msg_body.msg_len = msg->msg_len;
-		msg_body.msg_check = 1234567890;
-		msg_body.msg_body = msg->msg_body;
+		dave_strcpy(pBody->msg_src_name, thread_name(msg->msg_src), sizeof(pBody->msg_src_name));
+		pBody->msg_src = msg->msg_src;
 
-		DLLDEBUG("msg_src:%s msg_id:%d msg_len:%d msg_body:%lx",
-			msg_body.msg_src,
-			msg_body.msg_id,
-			msg_body.msg_len,
-			msg_body.msg_body);
+		dave_strcpy(pBody->msg_dst_name, thread_name(msg->msg_dst), sizeof(pBody->msg_dst_name));
+		pBody->msg_dst = msg->msg_dst;
 
-		_dll_main_fun((void *)(&msg_body));
+		pBody->msg_id = msg->msg_id;
+		pBody->msg_len = msg->msg_len;
+
+		pBody->msg_check = 1234567890;
+
+		pBody->msg_body = msg->msg_body;
+
+		DLLDEBUG("%s->%s:%s/%d msg_body:%lx",
+			pBody->msg_src_name, pBody->msg_dst_name, msgstr(pBody->msg_id),
+			pBody->msg_len,
+			pBody->msg_body);
+
+		_dll_main_fun((void *)(pBody));
 	}
+
+	dave_free(pBody);
 }
 
 static void

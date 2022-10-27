@@ -222,7 +222,6 @@ typedef struct {
 
 	ub thread_index;
 	ub wakeup_index;
-	s8 some_string[256];
 	void *ptr;
 } CoroutineWakeup;
 

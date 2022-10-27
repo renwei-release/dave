@@ -29,6 +29,7 @@
 using namespace opentracing;
 
 typedef enum {
+	TracingSaveLevelType_v0,
 	TracingSaveLevelType_v1,
 	TracingSaveLevelType_v2,
 } TracingSaveLevelType;
@@ -47,15 +48,13 @@ _tracing_save_level_type(void)
 
 	cfg_get_by_default(CFG_TRACE_SAVE_LEVEL_TYPE, type_str, sizeof(type_str), (s8 *)"v2");
 
+	_save_level_type = TracingSaveLevelType_v0;
+
 	if(dave_strcmp(type_str, (s8 *)"v1") == dave_true)
 	{
 		_save_level_type = TracingSaveLevelType_v1;
 	}
 	else if(dave_strcmp(type_str, (s8 *)"v2") == dave_true)
-	{
-		_save_level_type = TracingSaveLevelType_v2;
-	}
-	else
 	{
 		_save_level_type = TracingSaveLevelType_v2;
 	}
@@ -86,13 +85,16 @@ _tracing_global_exit(void)
 static void
 _tracing_level_save(GenerationLevel *pLevel)
 {
-	if(_save_level_type == TracingSaveLevelType_v1)
+	switch(_save_level_type)
 	{
-		tracing_save_level_v1(pLevel);
-	}
-	else
-	{
-		tracing_save_level_v2(pLevel);
+		case TracingSaveLevelType_v1:
+				tracing_save_level_v1(pLevel);
+			break;
+		case TracingSaveLevelType_v2:
+				tracing_save_level_v2(pLevel);
+			break;
+		default:
+			break;
 	}
 }
 

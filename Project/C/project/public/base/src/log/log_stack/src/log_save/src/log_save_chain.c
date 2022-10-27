@@ -231,18 +231,23 @@ _log_save_chain_load_version_1(sb file_id, s8 *device_info, s8 *service_verno, u
 
 	if(chain_len != sizeof(ThreadChain))
 	{
-		LOGLOG("chain_len mismatch:%d/%d chain_version:%d",
-			chain_len, sizeof(ThreadChain), chain_version);
+		LOGLOG("chain_len mismatch:%d/%d chain_version:%d device_info:%s service_verno:%s",
+			chain_len, sizeof(ThreadChain), chain_version,
+			device_info, service_verno);
 	}
 	if(msg_len > (content_len - content_index))
 	{
-		LOGLOG("content_len mismatch:%d/%d/%d msg_id:%d",
+		LOGLOG("content_len mismatch:%d/%d/%d msg_id:%d device_info:%s service_verno:%s",
 			content_index, msg_len, content_len,
-			msg_id);
+			msg_id,
+			device_info, service_verno);
+		msg_len = 0;
 	}
 	if(pChain->msg_id != msg_id)
 	{
-		LOGLOG("msg_id mismatch:%d/%d", pChain->msg_id, msg_id);
+		LOGLOG("msg_id mismatch:%d/%d device_info:%s service_verno:%s",
+			pChain->msg_id, msg_id,
+			device_info, service_verno);
 	}
 
 	_log_save_chain(file_id, device_info, service_verno, pChain, NULL, msg_id, msg_len, msg_body);

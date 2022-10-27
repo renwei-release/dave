@@ -331,6 +331,57 @@ _distributor_recv_rsp(MSGBODY *msg)
 	}
 }
 
+static ub
+_distributor_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index = 0, index = 0;
+	HttpDistributorInfo *pInfo;
+
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen port:");
+	for(index=0; index<1024; index++)
+	{
+		if(_distributor_port_list[index] == 0)
+			break;
+
+		if(index > 0)
+			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,  " ", _distributor_port_list[index]);
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "%d", _distributor_port_list[index]);
+	}
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\n");
+
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen path:");
+	for(index=0; index<102400; index++)
+	{
+		pInfo = kv_index_key_ptr(_distributor_ramkv, index);
+		if(pInfo == NULL)
+			break;
+
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " thread:%s path:%s\n", pInfo->thread_name, pInfo->path);
+	}
+
+	return info_index;
+}
+
+static void
+_distributor_debug(ThreadId src, DebugReq *pReq)
+{
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
+
+	switch(pReq->msg[0])
+	{
+		case 'i':
+				_distributor_info(pRsp->msg, sizeof(pRsp->msg));				
+			break;
+		default:
+				dave_snprintf(pRsp->msg, sizeof(pRsp->msg), "%s", pReq->msg);
+			break;
+	}
+
+	pRsp->ptr = pReq->ptr;
+
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
+}
+
 static void
 _distributor_restart(RESTARTREQMSG *pRestart)
 {
@@ -370,6 +421,9 @@ _distributor_main(MSGBODY *msg)
 {
 	switch((ub)msg->msg_id)
 	{
+		case MSGID_DEBUG_REQ:
+				_distributor_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
 		case MSGID_RESTART_REQ:
 				_distributor_restart((RESTARTREQMSG *)(msg->msg_body));
 			break;

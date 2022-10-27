@@ -8,7 +8,7 @@
 from ..auto import *
 
 
-def fun_None(src_gid, src_name, src_id, msg_len, msg_body):
+def fun_None(src_name, src_id, msg_len, msg_body):
     return
 
 
