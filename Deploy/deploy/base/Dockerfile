@@ -9,7 +9,9 @@ RUN yum install -y vim
 RUN yum install -y libgomp
 RUN yum install -y python3
 
-RUN mkdir /dave
+WORKDIR /
+COPY ./file_system .
+
 WORKDIR /project
 COPY dave-running.sh .
 CMD ["./dave-running.sh"]

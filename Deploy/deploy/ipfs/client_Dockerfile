@@ -8,7 +8,9 @@ RUN apt install -y openssl
 RUN apt install -y libssl-dev
 RUN apt install -y vim
 
-RUN mkdir /dave
+WORKDIR /
+COPY ./file_system .
+
 WORKDIR /project
 COPY dave-running.sh .
 CMD ["./dave-running.sh"]

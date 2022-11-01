@@ -10,6 +10,8 @@ import sys
 import inspect
 from ctypes import *
 from .dave_dll import dave_dll
+from ..auto import *
+from ..tools import *
 
 
 davelib=dave_dll()

@@ -31,7 +31,7 @@ cd ../project
 GOOS=linux GOARCH=amd64 go build -gcflags=all="-N -l" -tags "${TAGS} __DAVE_PRODUCT_${PROJECT^^}__" -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
-   PROJECTDIR=../../../Deploy/deploy/${PROJECT,,}/project
+   PROJECTDIR=../../../Deploy/deploy/${PROJECT,,}/file_system/project
    PRIJECTFILE=${PROJECTDIR}/${PROJECT^^}-BIN
 
    if [ ! -d ${PROJECTDIR} ]; then

@@ -532,6 +532,7 @@ const (
 	MCardContentType_museum_recommend_page
 	MCardContentType_museum_sha1_id
 	MCardContentType_refresh_recommend_cache
+	MCardContentType_detection
 	MCardContentType_end
 	MCardContentType_max = 0xffffffffffffffff
 )
@@ -602,6 +603,7 @@ const (
 	PythonFun_painting_recommend_page
 	PythonFun_museum_recommend_page
 	PythonFun_refresh_recommend_cache
+	PythonFun_detection
 	PythonFun_max = 0xffffffffffffffff
 )
 

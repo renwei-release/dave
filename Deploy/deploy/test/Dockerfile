@@ -10,7 +10,6 @@ RUN apt install -y python3
 RUN apt install -y pip
 
 WORKDIR /
-
 COPY ./file_system .
 
 RUN mkdir /dave

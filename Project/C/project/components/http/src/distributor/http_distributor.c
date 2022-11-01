@@ -22,6 +22,9 @@ static ub _distributor_port_list[] = { 443, 1823, 0 };
 typedef struct {
 	s8 thread_name[DAVE_THREAD_NAME_LEN];
 	s8 path[DAVE_PATH_LEN];
+
+	TLock pv;
+	ub receive_counter;
 } HttpDistributorInfo;
 
 static ThreadId _distributor_thread = INVALID_THREAD_ID;
@@ -133,12 +136,17 @@ _distributor_malloc_info(ThreadId src, HTTPListenReq *pReq)
 	dave_strcpy(pInfo->thread_name, thread_name(src), sizeof(pInfo->thread_name));
 	dave_strcpy(pInfo->path, pReq->path, sizeof(pInfo->path));
 
+	t_lock_reset(&(pInfo->pv));
+	pInfo->receive_counter = 0;
+
 	return pInfo;
 }
 
 static void
 _distributor_free_info(HttpDistributorInfo *pInfo)
 {
+	t_lock_destroy(&(pInfo->pv));
+
 	dave_free(pInfo);
 }
 
@@ -313,6 +321,10 @@ _distributor_recv_req(MSGBODY *msg)
 		name_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
 
 		msg->mem_state = MsgMemState_captured;
+
+		t_lock_spin(&(pInfo->pv));
+		pInfo->receive_counter ++;
+		t_unlock_spin(&(pInfo->pv));
 	}
 	else
 	{
@@ -337,26 +349,32 @@ _distributor_info(s8 *info_ptr, ub info_len)
 	ub info_index = 0, index = 0;
 	HttpDistributorInfo *pInfo;
 
-	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen port:");
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen port:\n");
 	for(index=0; index<1024; index++)
 	{
 		if(_distributor_port_list[index] == 0)
 			break;
 
+		if(index == 0)
+			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " ");
 		if(index > 0)
 			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,  " ", _distributor_port_list[index]);
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "%d", _distributor_port_list[index]);
-	}
-	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\n");
 
-	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen path:");
+		if(_distributor_port_list[index + 1] == 0)
+			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\n");
+	}
+
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "listen path:\n");
 	for(index=0; index<102400; index++)
 	{
 		pInfo = kv_index_key_ptr(_distributor_ramkv, index);
 		if(pInfo == NULL)
 			break;
 
-		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " thread:%s path:%s\n", pInfo->thread_name, pInfo->path);
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+			" thread:%s path:%s receive_counter:%d\n",
+			pInfo->thread_name, pInfo->path, pInfo->receive_counter);
 	}
 
 	return info_index;

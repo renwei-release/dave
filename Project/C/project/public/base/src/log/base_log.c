@@ -16,11 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXBUF (32)
-#define MAXCHARS (LOG_BUFFER_LENGTH)
-
-static s8 _trace_buf[MAXBUF][MAXCHARS];
-static ub _trace_index = 0;
+static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 
 static inline s8 *
 __log_log__(TraceLevel level, const char *fmt, va_list list_args)
@@ -33,20 +29,23 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		return NULL;
 	}
 
-	log_lock();
-	log_buf = _trace_buf[(_trace_index ++) % MAXBUF];
-	log_unlock();
-
-	log_len = (ub)vsnprintf(log_buf, MAXCHARS, fmt, list_args);
+	if(level != TRACELEVEL_DEBUG)
+	{
+		log_buf = log_buffer_set(&log_len, level, fmt, list_args);
+	}
+	else
+	{
+		log_buf = _trace_buffer;
+		log_len = sizeof(_trace_buffer);
+		log_len = (ub)vsnprintf(log_buf, log_len, fmt, list_args);
+	}
 
 	if(level != TRACELEVEL_CATCHER)
 	{
-		dave_os_trace(level, log_len, (u8 *)log_buf);
-	}
-
-	if(level != TRACELEVEL_DEBUG)
-	{
-		log_buffer_set(level, log_buf, log_len);
+		if(log_buf != NULL)
+		{
+			dave_os_trace(level, log_len, (u8 *)log_buf);
+		}
 	}
 
 	return log_buf;
@@ -163,8 +162,6 @@ void
 base_log_init(void)
 {
 	log_trace_init();
-	dave_memset(_trace_buf, 0x00, sizeof(_trace_buf));
-	_trace_index = 0;
 	log_buffer_init();
 }
 
@@ -172,7 +169,6 @@ void
 base_log_exit(void)
 {
 	log_buffer_exit();
-	_trace_index = 0;
 	log_trace_exit();
 }
 

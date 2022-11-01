@@ -64,6 +64,7 @@ dave_bool __base_ramkv_del_key_value__(void *ramkv, s8 *key, s8 *fun, ub line);
 #define kv_free base_ramkv_free
 #define kv_add_key_ptr base_ramkv_add_key_ptr
 #define kv_inq_key_ptr base_ramkv_inq_key_ptr
+#define kv_index_key_ptr base_ramkv_inq_index_ptr
 #define kv_del_key_ptr base_ramkv_del_key_ptr
 #define kv_add_ub_ptr base_ramkv_add_ub_ptr
 #define kv_inq_ub_ptr base_ramkv_inq_ub_ptr

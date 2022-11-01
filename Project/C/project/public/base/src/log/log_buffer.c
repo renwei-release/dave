@@ -191,20 +191,23 @@ _log_buffer_thread_clean(ub tid)
 	_log_thread[tid] = NULL;
 }
 
-static inline dave_bool
-_log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
+static inline s8 *
+_log_buffer_build(ub *current_buffer_len, TraceLevel level, const char *fmt, va_list list_args)
 {
 	ub tid;
 	LogBuffer *pBuffer;
-	dave_bool push_list = dave_false;
+	s8 *current_buffer_ptr;
+	ub buffer_length;
 
 	pBuffer = _log_buffer_thread_build(&tid);
 	if(pBuffer == NULL)
 	{
-		LOGDEBUG("_log_buffer_thread_build tid:%d failed! log:%d/%s lost:%d",
-			tid, log_len, log_ptr, _log_lost_counter);
-		return dave_false;
+		*current_buffer_len = 0;
+		return NULL;
 	}
+
+	current_buffer_ptr = &pBuffer->buffer[pBuffer->buffer_length];
+	buffer_length = pBuffer->buffer_length;
 
 	if(pBuffer->buffer_length == 0)
 	{
@@ -212,39 +215,24 @@ _log_buffer_build(TraceLevel level, s8 *log_ptr, ub log_len)
 		_log_buffer_log_head(pBuffer);
 	}
 
-	LOGDEBUG("level:%d log:%d/%s pBuffer:%d/%lx/%d/%s",
-		level, log_len, log_ptr,
-		_log_buffer_index,
-		pBuffer, pBuffer->buffer_length, pBuffer->buffer);
-
-	if((pBuffer->buffer_length + log_len) <= sizeof(pBuffer->buffer))
+	pBuffer->buffer_length += (ub)vsnprintf(&pBuffer->buffer[pBuffer->buffer_length], LOG_BUFFER_LENGTH-pBuffer->buffer_length, fmt, list_args);
+	if(pBuffer->buffer_length < LOG_BUFFER_LENGTH)
 	{
-		pBuffer->buffer_length += dave_memcpy(&pBuffer->buffer[pBuffer->buffer_length], log_ptr, log_len);
-		if((pBuffer->buffer[pBuffer->buffer_length - 1] == '\n')
-			|| (pBuffer->buffer[pBuffer->buffer_length - 1] == '\r'))
-		{
-			push_list = dave_true;
-		}
-	}
-	else
-	{
-		if(sizeof(pBuffer->buffer) > pBuffer->buffer_length)
-		{
-			log_len = sizeof(pBuffer->buffer) - pBuffer->buffer_length;
-			pBuffer->buffer_length += dave_memcpy(&pBuffer->buffer[pBuffer->buffer_length], log_ptr, log_len);
-		}
-	
-		push_list = dave_true;
+		pBuffer->buffer[pBuffer->buffer_length] = '\0';
 	}
 
-	if(push_list == dave_true)
+	if((pBuffer->buffer[pBuffer->buffer_length - 1] == '\n')
+		|| (pBuffer->buffer[pBuffer->buffer_length - 1] == '\r')
+		|| ((pBuffer->buffer_length + 32) >= LOG_BUFFER_LENGTH))
 	{
 		_log_buffer_thread_clean(tid);
-	
-		return _log_buffer_list_set(pBuffer);
+
+		_log_buffer_list_set(pBuffer);
 	}
 
-	return dave_true;
+	*current_buffer_len = (pBuffer->buffer_length - buffer_length);
+
+	return current_buffer_ptr;
 }
 
 static inline void
@@ -313,10 +301,11 @@ log_buffer_exit(void)
 
 }
 
-void
-log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
+s8 *
+log_buffer_set(ub *current_buffer_len, TraceLevel level, const char *fmt, va_list list_args)
 {
 	dave_bool overflow_flag = dave_false;
+	s8 *current_buffer_ptr;
 
 	log_lock();
 	if((_log_list_w_index - _log_list_r_index) >= LOG_LIST_MAX)
@@ -327,10 +316,11 @@ log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
 	log_unlock();
 	if(overflow_flag == dave_true)
 	{
-		return;
+		return NULL;
 	}
 
-	if(_log_buffer_build(level, log_ptr, log_len) == dave_false)
+	current_buffer_ptr = _log_buffer_build(current_buffer_len, level, fmt, list_args);
+	if(current_buffer_ptr == NULL)
 	{
 		overflow_flag = dave_true;
 
@@ -340,13 +330,15 @@ log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len)
 	}
 	if(overflow_flag == dave_true)
 	{
-		return;
+		return current_buffer_ptr;
 	}
 
 	if(_log_lost_counter > 0)
 	{
 		_log_buffer_lost_msg();
 	}
+
+	return current_buffer_ptr;
 }
 
 ub

@@ -12,7 +12,7 @@ PROJECTNAME=$3
 JUPYTERPORT=$4
 PROJECTMAPPING=$5
 
-HOMEPRJDIR=${HOMEPATH}/project
+HOMEPRJDIR=${HOMEPATH}/file_system/project
 DEPLOYMODE='operation'
 if [ ! -d ${HOMEPRJDIR} ]; then
    HOMEPRJDIR=${HOMEPATH}/../../project
@@ -50,7 +50,7 @@ copy_python_project_to_container()
 backup_python_project_from_container()
 {
    if [ ${DEPLOYMODE} == 'develop' ]; then
-      DEPLOYPRJDIR=${HOMEPATH}/../../../../Deploy/deploy/${PROJECT}
+      DEPLOYPRJDIR=${HOMEPATH}/../../../../Deploy/deploy/${PROJECT}/file_system
       echo update.sh backup project from ${PROJECTNAME} to ${DEPLOYPRJDIR}
       if [ -d ${DEPLOYPRJDIR}/project ]; then
          rm -rf ${DEPLOYPRJDIR}/project
@@ -68,7 +68,7 @@ copy_python_project_file()
 
 copy_bin_project_file()
 {
-   PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/project/${PROJECT^^}-BIN
+   PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/file_system/project/${PROJECT^^}-BIN
 
    if [ -f ${PRJBINFILE} ]; then
       echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...

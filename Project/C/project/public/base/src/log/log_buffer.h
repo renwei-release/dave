@@ -10,14 +10,14 @@
 #define __LOG_BUFFER_H__
 
 // Equivalent to (LOG_BUFFER_MAX) logs per second
-#define LOG_BUFFER_MAX (500)
-#define LOG_BUFFER_LENGTH (8192)
+#define LOG_BUFFER_MAX (1000)
+#define LOG_BUFFER_LENGTH (4096)
 
 void log_buffer_init(void);
 
 void log_buffer_exit(void);
 
-void log_buffer_set(TraceLevel level, s8 *log_ptr, ub log_len);
+s8 * log_buffer_set(ub *current_buffer_len, TraceLevel level, const char *fmt, va_list list_args);
 
 ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
