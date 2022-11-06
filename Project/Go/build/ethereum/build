@@ -1,0 +1,15 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECT=${PWD##*/}
+CONTAINER="golang19"
+
+../ENV ${CONTAINER}
+
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PROJECT} && ./BUILD ${PROJECT} /project/DAVE/Project/Go/build/${PROJECT}"

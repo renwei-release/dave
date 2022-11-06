@@ -9,6 +9,7 @@ require (
 	github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a
 	github.com/benbjohnson/clock v1.0.3 // indirect
 	github.com/elazarl/goproxy v0.0.0-20220901064549-fbd10ff4f5a1 // indirect
+	github.com/ethereum/go-ethereum v1.10.26
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/hashicorp/go-multierror v1.1.0
 	github.com/hnlq715/golang-lru v0.2.1-0.20200422024707-82ba7badf9a6
@@ -19,6 +20,7 @@ require (
 	github.com/ipfs/go-datastore v0.4.5
 	github.com/ipfs/go-ds-leveldb v0.4.2
 	github.com/ipfs/go-ipfs-api v0.3.0
+	github.com/ipfs/go-ipfs-files v0.0.9
 	github.com/ipfs/go-ipns v0.0.2
 	github.com/jackc/pgx/v4 v4.9.0
 	github.com/jmoiron/sqlx v1.3.5
@@ -41,16 +43,13 @@ require (
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/prometheus/client_golang v1.7.1
 	github.com/prometheus/common v0.26.0 // indirect
-	github.com/shirou/gopsutil v2.21.11+incompatible
 	github.com/smartystreets/goconvey v1.7.2 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/whyrusleeping/timecache v0.0.0-20160911033111-cfcb2f1abfee
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.opencensus.io v0.23.0
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/tools v0.0.0-20200904185747-39188db58858 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 	moul.io/http2curl v1.0.0 // indirect
 )

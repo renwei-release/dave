@@ -1,0 +1,17 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+NETWORKID=1
+DATADIR=ethereum
+IDENTITY=${HOSTNAME}-${USER}
+
+echo syncmode snap
+./geth --datadir ${DATADIR} --networkid ${NETWORKID} --identity ${IDENTITY} --syncmode snap
+
+echo geth
+./geth --datadir ${DATADIR} --networkid ${NETWORKID} --identity ${IDENTITY}

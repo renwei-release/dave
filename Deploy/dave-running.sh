@@ -6,7 +6,11 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-action=debug # release debug test
+action=$1
+
+if [ "$action" == "" ]; then
+   action=debug # release debug test
+fi
 
 ldconfig
 

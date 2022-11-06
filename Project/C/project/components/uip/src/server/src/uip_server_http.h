@@ -14,11 +14,11 @@ void uip_server_http_init(void);
 
 void uip_server_http_exit(void);
 
-dave_bool uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun);
+dave_bool uip_server_http_start(ub port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun);
 
-void uip_server_http_stop(u16 port);
+void uip_server_http_stop(ub port);
 
-uip_server_recv_fun uip_server_http_recv_fun(u16 port);
+uip_server_recv_fun uip_server_http_recv_fun(ub port);
 
 #endif
 

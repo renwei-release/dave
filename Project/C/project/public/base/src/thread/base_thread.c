@@ -1183,10 +1183,10 @@ _thread_safe_id_msg(
 	{
 		if(thread_remote_id_table_inq(dst_id) == dave_false)
 		{
-			THREADLTRACE(60, 1, "The remote message ID(%lx/%s->%lx/%s:%d) has expired!",
+			THREADLTRACE(60, 1, "The remote message ID(%lx/%s->%lx/%s:%s/%d) has expired!",
 				src_id, _thread_get_name(src_id),
 				dst_id, _thread_get_name(dst_id),
-				msg_id);
+				msgstr(msg_id), msg_id);
 			return dave_false;
 		}
 	}
@@ -1195,23 +1195,23 @@ _thread_safe_id_msg(
 	{
 		if(base_power_state() == dave_true)
 		{
-			THREADLTRACE(60,1,"Parameter error, dst_id:%d msg_id:%s msg_len:%d (%s:%d)",
-				thread_get_local(dst_id), msgstr(msg_id), msg_len, fun, line);
+			THREADLTRACE(60,1,"Parameter error, src:%s/%s dst_id:%d msg_id:%s/%d msg_len:%d (%s:%d)",
+				src_gid, src_name, thread_get_local(dst_id), msgstr(msg_id), msg_id, msg_len, fun, line);
 		}
 		return dave_false;
 	}
 	thread_index =  thread_get_local(dst_id);
 	if(thread_index >= THREAD_MAX)
 	{
-		THREADLTRACE(60,1,"Can not find thread, dst_id:%lx msg_id:%s (%s:%d)",
-			thread_get_local(dst_id), msgstr(msg_id), fun, line);
+		THREADLTRACE(60,1,"Can not find thread, src:%s/%s dst_id:%lx msg_id:%s/%ld (%s:%d)",
+			src_gid, src_name, thread_get_local(dst_id), msgstr(msg_id), msg_id, fun, line);
 		return dave_false;
 	}
 
 	if((msg_len >= THREAD_MSG_MAX_LEN) || (msg_len == 0))
 	{
 		THREADLOG("send msg<%s> to %s, the length is invalid(%d/%d)!",
-			msgstr(msg_id), _thread_get_name(thread_get_local(dst_id)), msg_len, THREAD_MSG_MAX_LEN);
+			msgstr(msg_id), _thread_get_name(dst_id), msg_len, THREAD_MSG_MAX_LEN);
 		return dave_false;
 	}
 

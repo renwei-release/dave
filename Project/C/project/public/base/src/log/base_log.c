@@ -9,19 +9,86 @@
 #include "dave_os.h"
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_verno.h"
 #include "log_lock.h"
 #include "log_buffer.h"
 #include "log_stack.h"
 #include "log_trace.h"
+#undef vsnprintf
 #include <stdio.h>
 #include <stdlib.h>
 
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
+static ub _log_log_counter = 0;
+
+static inline ub
+_log_buffer_counter(void)
+{
+	ub counter;
+
+	log_lock();
+	counter = _log_log_counter ++;
+	log_unlock();
+
+	return counter;
+}
+
+static inline void
+_log_buffer_log_head(LogBuffer *pBuffer, TraceLevel level)
+{
+	DateStruct date = t_time_get_date(NULL);
+
+	pBuffer->level = level;
+
+	pBuffer->buffer_length = dave_snprintf(pBuffer->buffer_ptr, LOG_BUFFER_LENGTH,
+		"(%s.%s.%s)<%04d.%02d.%02d %02d:%02d:%02d>{%lu}",
+		VERSION_MAIN, VERSION_SUB, VERSION_REV,
+		date.year, date.month, date.day, date.hour, date.minute, date.second,
+		_log_buffer_counter());
+}
+
+static inline s8 *
+__log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+{
+	LogBuffer *pBuffer;
+	s8 *log_buf;
+
+	pBuffer = log_buffer_thread();
+	if(pBuffer == NULL)
+	{
+		return NULL;
+	}
+
+	log_buf = &pBuffer->buffer_ptr[pBuffer->buffer_length];
+	*log_len = pBuffer->buffer_length;
+
+	if((pBuffer->buffer_length == 0) || (pBuffer->buffer_length >= LOG_BUFFER_LENGTH))
+	{
+		_log_buffer_log_head(pBuffer, level);
+		*log_len = pBuffer->buffer_length;
+	}
+
+	pBuffer->buffer_length += (ub)vsnprintf(&pBuffer->buffer_ptr[pBuffer->buffer_length], LOG_BUFFER_LENGTH-pBuffer->buffer_length, fmt, list_args);
+	if(pBuffer->buffer_length < LOG_BUFFER_LENGTH)
+	{
+		pBuffer->buffer_ptr[pBuffer->buffer_length] = '\0';
+	}
+	*log_len = pBuffer->buffer_length - (*log_len);
+
+	if((pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\n')
+		|| (pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\r')
+		|| ((pBuffer->buffer_length + 32) >= LOG_BUFFER_LENGTH))
+	{
+		log_buffer_set(pBuffer);
+	}
+
+	return log_buf;
+}
 
 static inline s8 *
 __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 {
-	char *log_buf;
+	s8 *log_buf;
 	ub log_len;
 
 	if(fmt == NULL)
@@ -29,15 +96,16 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		return NULL;
 	}
 
-	if(level != TRACELEVEL_DEBUG)
-	{
-		log_buf = log_buffer_set(&log_len, level, fmt, list_args);
-	}
-	else
+	if(level == TRACELEVEL_DEBUG)
 	{
 		log_buf = _trace_buffer;
 		log_len = sizeof(_trace_buffer);
+
 		log_len = (ub)vsnprintf(log_buf, log_len, fmt, list_args);
+	}
+	else
+	{
+		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
 	}
 
 	if(level != TRACELEVEL_CATCHER)
@@ -161,6 +229,8 @@ base_log_history(s8 *log_ptr, ub log_len)
 void
 base_log_init(void)
 {
+	_log_log_counter = 0;
+
 	log_trace_init();
 	log_buffer_init();
 }

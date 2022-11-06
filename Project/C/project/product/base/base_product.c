@@ -181,7 +181,7 @@ _base_timer_go_test(TIMERID timer_id, ub timer_index)
 
 	BASELOG("TEST start ......");
 
-	pRsp = name_go("aaaaaaaaaaaa", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
+	pRsp = name_go("main_aib", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
 
 	BASELOG("TEST done! pRsp:%x", pRsp);
 }

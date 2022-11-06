@@ -1,0 +1,18 @@
+personal.newAccount()：创建账户；
+personal.listAccounts：查看账户，同eth.accounts
+personal.unlockAccount(eth.accounts[0])：解锁账户；
+eth.accounts：枚举系统中的账户；
+eth.getBalance(eth.accounts[0])：查看账户余额，返回值的单位是 Wei（Wei 是以太坊中最小货币面额单位，类似比特币中的聪，1 ether = 10^18 Wei）；
+miner.setEtherbase(eth.accounts[1])：将账户1设置成coinbase
+eth.blockNumber：列出区块总数；
+eth.getBlock()：获取区块；
+miner.start()：开始挖矿；
+miner.stop()：停止挖矿；
+eth.coinbase：挖矿奖励的账户
+web3.fromWei(eth.getBalance(eth.accounts[0]),‘ether’)：Wei 换算成以太币；
+amount = web3.toWei(5,‘ether’)：以太币换算成 Wei；
+eth.sendTransaction({from:eth.accounts[0],to:eth.accounts[1],value:amount})：发起交易
+txpool.status：交易池中的状态；
+eth.getTransaction()：获取交易；
+admin.addPeer()：连接到其他节点；
+admin.nodeInfo：查看节点摘要信息

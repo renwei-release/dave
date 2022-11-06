@@ -49,7 +49,7 @@ _uip_server_http_reset(UIPHttpLink *pLink)
 }
 
 static UIPHttpLink *
-_uip_server_http_find(u16 port, dave_bool find_new)
+_uip_server_http_find(ub port, dave_bool find_new)
 {
 	ub link_index = (ub)(port % UIP_HTTP_MAX_LINK);
 	ub safe_counter;
@@ -150,7 +150,7 @@ _uip_server_http_close(UIPHttpLink *pLink)
 }
 
 static UIPHttpLink *
-_uip_server_http_start_(u16 port)
+_uip_server_http_start_(ub port)
 {
 	UIPHttpLink *pLink = NULL;
 	dave_bool ret = dave_false;
@@ -180,13 +180,13 @@ _uip_server_http_start_(u16 port)
 }
 
 static UIPHttpLink *
-_uip_server_http_stop_(u16 port)
+_uip_server_http_stop_(ub port)
 {
 	return _uip_server_http_find(port, dave_false);
 }
 
 static dave_bool
-_uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
+_uip_server_http_start(ub port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
 {
 	UIPHttpLink *pLink;
 
@@ -207,7 +207,7 @@ _uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_
 }
 
 static void
-_uip_server_http_stop(u16 port)
+_uip_server_http_stop(ub port)
 {
 	UIPHttpLink *pLink;
 
@@ -264,7 +264,7 @@ uip_server_http_exit(void)
 }
 
 dave_bool
-uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
+uip_server_http_start(ub port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
 {
 	dave_bool ret;
 
@@ -274,13 +274,13 @@ uip_server_http_start(u16 port, HTTPListenType type, s8 *path, uip_server_recv_f
 }
 
 void
-uip_server_http_stop(u16 port)
+uip_server_http_stop(ub port)
 {
 	SAFECODEv1(_uip_http_link_pv, { _uip_server_http_stop(port); } );
 }
 
 uip_server_recv_fun
-uip_server_http_recv_fun(u16 port)
+uip_server_http_recv_fun(ub port)
 {
 	UIPHttpLink *pLink;
 

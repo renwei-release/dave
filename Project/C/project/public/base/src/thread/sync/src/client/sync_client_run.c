@@ -328,17 +328,17 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 		&msg_type, NULL, NULL,
 		&package_len, &package_ptr);
 
-	SYNCDEBUG("%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
+	SYNCDEBUG("%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s/%d packet_len:%d",
 		src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-		msg_type, msgstr(msg_id), package_len);
+		msg_type, msgstr(msg_id), msg_id, package_len);
 
 	if(t_rpc_unzip(&pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{
-		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
+		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s/%d packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 			dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-			msg_type, msgstr(msg_id), package_len);
+			msg_type, msgstr(msg_id), msg_id, package_len);
 
 		dave_memset(msg_body, 0x00, msg_len);
 	}
@@ -369,7 +369,8 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 
 	if(ret != RetCode_OK)
 	{
-		SYNCLTRACE(60,1,"%s, %s->%s:%s/%d", retstr(ret), src, dst, msgstr(msg_id), msg_len);
+		SYNCLTRACE(60,1,"%s, %s->%s:%s/%d(%d)",
+			retstr(ret), src, dst, msgstr(msg_id), msg_id, msg_len);
 
 		t_bson_free_object(pChainBson);
 

@@ -13,11 +13,21 @@
 #define LOG_BUFFER_MAX (1000)
 #define LOG_BUFFER_LENGTH (4096)
 
+typedef struct {
+	TraceLevel level;
+	s8 buffer_ptr[LOG_BUFFER_LENGTH];
+	ub buffer_length;
+	ub history_length;
+	ub tid;
+} LogBuffer;
+
 void log_buffer_init(void);
 
 void log_buffer_exit(void);
 
-s8 * log_buffer_set(ub *current_buffer_len, TraceLevel level, const char *fmt, va_list list_args);
+LogBuffer * log_buffer_thread(void);
+
+void log_buffer_set(LogBuffer *pBuffer);
 
 ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
