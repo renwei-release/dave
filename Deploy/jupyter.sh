@@ -9,6 +9,7 @@
 PROJECTNAME=$1
 JUPYTERPORT=$2
 JUPYTERCFGFILE=/root/.jupyter/jupyter_notebook_config.py
+File=$(basename $0)
 
 if [ $JUPYTERPORT != 8888 ]; then
    HASJUPYTER=`docker exec -t ${PROJECTNAME} /usr/bin/command -v jupyter`

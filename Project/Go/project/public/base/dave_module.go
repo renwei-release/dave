@@ -35,7 +35,7 @@ func _ModuleCpanicInit() {
 		err error
 	)
 
-	action := Cfg_get(CFG_PANIC_ACTION)
+	action := Cfg_get(CFG_PANIC_ACTION, "disable")
 	if action == "enable" {
 		lNow := time.Now().Format("2006-01-02 15:04:05")
 		lNow = strings.Replace(lNow, " ", "-", 1)
@@ -61,15 +61,11 @@ func _ModuleCpanicExit() {
 func _ModulePprofLoad() {
 	CFG_PPROF_ACTION := "PProfAction"
 
-	action := Cfg_get(CFG_PPROF_ACTION)
+	action := Cfg_get(CFG_PPROF_ACTION, "disable")
 	if action == "enable" {
 		CFG_LISTEN_PORT := "PProfHttpPort"
 
-		httpportstr := Cfg_get(CFG_LISTEN_PORT)
-		if httpportstr == "" {
-			httpportstr := "10108"
-			Cfg_set(CFG_LISTEN_PORT, httpportstr)
-		}
+		httpportstr := Cfg_get(CFG_LISTEN_PORT, "10108")
 		httpport, err := strconv.Atoi(httpportstr)
 		if err != nil {
 			httpport = 10108
@@ -84,15 +80,11 @@ func _ModulePprofLoad() {
 func _ModuleMetricsLoad() {
 	CFG_PPROF_ACTION := "MetricsAction"
 
-	action := Cfg_get(CFG_PPROF_ACTION)
+	action := Cfg_get(CFG_PPROF_ACTION, "disable")
 	if action == "enable" {
 		CFG_LISTEN_PORT := "MetricsHttpPort"
 
-		httpportstr := Cfg_get(CFG_LISTEN_PORT)
-		if httpportstr == "" {
-			httpportstr := "10109"
-			Cfg_set(CFG_LISTEN_PORT, httpportstr)
-		}
+		httpportstr := Cfg_get(CFG_LISTEN_PORT, "10109")
 		httpport, err := strconv.Atoi(httpportstr)
 		if err != nil {
 			httpport = 10109

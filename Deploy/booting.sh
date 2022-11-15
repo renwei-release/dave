@@ -7,6 +7,7 @@
 # */
 
 PROJECTNAME=$1
+File=$(basename $0)
 
 exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}"`
 
@@ -16,7 +17,7 @@ exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}"`
 if [ ! "$exit_project_contains" == "" ]; then
    has_contains_but_exit=$(echo $exit_project_contains | grep "Exited")
    if [ ! "$has_contains_but_exit" == "" ]; then
-      echo booting.sh found a stopped container ${PROJECTNAME}, start it now ...
+      echo ${File} found a stopped container ${PROJECTNAME}, start it now ...
       docker start ${PROJECTNAME}
    fi
 fi

@@ -11,6 +11,7 @@ PROJECT=$2
 PROJECTNAME=$3
 JUPYTERPORT=$4
 PROJECTMAPPING=$5
+File=$(basename $0)
 
 HOMEPRJDIR=${HOMEPATH}/file_system/project
 DEPLOYMODE='operation'
@@ -23,13 +24,13 @@ if [ ! -d ${HOMEPRJDIR} ]; then
    DEPLOYMODE='develop'
 fi
 
-echo -e "update.sh deploy mode:\033[35m${DEPLOYMODE}\033[0m"
+echo -e "${File} deploy mode:\033[35m${DEPLOYMODE}\033[0m"
 
 ############## copy_project_file function ##############
 copy_python_project_to_container()
 {
    if [ -d ${HOMEPRJDIR} ]; then
-      echo update.sh copy ${HOMEPRJDIR} to ${PROJECTNAME}
+      echo ${File} copy ${HOMEPRJDIR} to ${PROJECTNAME}
 
       chmod a+x rm-project.sh
       docker cp rm-project.sh ${PROJECTNAME}:/
@@ -51,7 +52,7 @@ backup_python_project_from_container()
 {
    if [ ${DEPLOYMODE} == 'develop' ]; then
       DEPLOYPRJDIR=${HOMEPATH}/../../../../Deploy/deploy/${PROJECT}/file_system
-      echo update.sh backup project from ${PROJECTNAME} to ${DEPLOYPRJDIR}
+      echo ${File} backup project from ${PROJECTNAME} to ${DEPLOYPRJDIR}
       if [ -d ${DEPLOYPRJDIR}/project ]; then
          rm -rf ${DEPLOYPRJDIR}/project
       fi
@@ -71,7 +72,7 @@ copy_bin_project_file()
    PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/file_system/project/${PROJECT^^}-BIN
 
    if [ -f ${PRJBINFILE} ]; then
-      echo update.sh copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
+      echo ${File} copy ${PRJBINFILE} to ${PROJECTNAME}:/project ...
       chmod a+x ${PRJBINFILE}
       docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
       docker exec -it ${PROJECTNAME} sh -c "chmod a+x /project/${PROJECT^^}-BIN"
@@ -104,22 +105,22 @@ __copy_sh_file__()
 
       if [ "$SHCMDLINE" != "" ]; then
          if [ -f ${HOMEPRJDIR}/dave_main.py ]; then
-            echo update.sh config $SHFILE to Python mode!
+            echo ${File} config $SHFILE to Python mode!
             sed -i "${SHCMDLINE}c python3 ./dave_main.py ${PROJECT}" $SHFILE
          else
-            echo update.sh config $SHFILE to C or Go mode!
+            echo ${File} config $SHFILE to C or Go mode!
             sed -i "${SHCMDLINE}c ./${PROJECT^^}-BIN" $SHFILE
          fi
 
-         echo update.sh copy $SHFILE to ${PROJECTNAME}/project
+         echo ${File} copy $SHFILE to ${PROJECTNAME}/project
          docker cp $SHFILE ${PROJECTNAME}:/project
 
          sed -i "${SHCMDLINE}c goto_debug #___FLAG_FOR_UPDATE.SH___" $SHFILE
       else
-         echo update.sh empty grep data from $SHFILE !!!
+         echo ${File} empty grep data from $SHFILE !!!
       fi
    else
-      echo update.sh where is $SHFILE ???
+      echo ${File} where is $SHFILE ???
    fi
 }
 
@@ -150,7 +151,7 @@ copy_sh_file()
 ############## modify_project_attributes function ##############
 modify_project_attributes()
 {
-   echo update.sh chown -R root:root /project
+   echo ${File} chown -R root:root /project
    docker exec -it ${PROJECTNAME} sh -c "cd / && chown -R root:root /project"
 }
 ############## modify_project_attributes function ##############

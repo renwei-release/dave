@@ -10,21 +10,22 @@ PROJECTNAME=$1
 PROJECT=$2
 RUNNINGFILE=/project/dave-running.sh
 PRJBINFILE=./deploy/${PROJECT}/project/${PROJECT^^}-BIN
+File=$(basename $0)
 
 ACTIONLINE=`docker exec -t ${PROJECTNAME} cat -n ${RUNNINGFILE} | grep 'action=release' | awk '{print $1}'`
 if [ -n "$ACTIONLINE" ]; then
-   echo -e "debug.sh modify ${PROJECTNAME} to \033[35mdebug\033[0m"
+   echo -e "${File} modify ${PROJECTNAME} to \033[35mdebug\033[0m"
    ACTIONLINEARRAY=(${ACTIONLINE})
    docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=debug" ${RUNNINGFILE}
 fi
 
 if [ -f ${PRJBINFILE} ]; then
-   echo debug.sh copy ${PRJBINFILE} to ${PROJECTNAME}
+   echo ${File} copy ${PRJBINFILE} to ${PROJECTNAME}
    chmod a+x ${PRJBINFILE}
    docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
 fi
 
-echo debug.sh restart ${PROJECTNAME}
+echo ${File} restart ${PROJECTNAME}
 docker restart ${PROJECTNAME}
 
 echo vvvvvvvvvvvvvvvvv login ${PROJECTNAME} vvvvvvvvvvvvvvvvv

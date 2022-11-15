@@ -11,6 +11,7 @@ PROJECT=$2
 IMAGE=$3
 TAG=$4
 REMOVEDIR=dave/${PROJECT,,}/config
+File=$(basename $0)
 
 if [ "$TAG" == "" ]; then
    TAG="latest"
@@ -33,8 +34,8 @@ container_image_name=`docker ps -a | grep -w "${PROJECTNAME}" | awk '{print $2}'
 if [ "$container_image_name" != "" ]; then
    current_image_name=${IMAGE}:${TAG}
    if [ $container_image_name != $current_image_name ]; then
-      echo "remove.sh *** Found that the container version($container_image_name $current_image_name) is inconsistent!"
-      echo remove.sh copy ${REMOVEDIR} directory from ${PROJECTNAME}
+      echo "${File} *** Found that the container version($container_image_name $current_image_name) is inconsistent!"
+      echo ${File} copy ${REMOVEDIR} directory from ${PROJECTNAME}
       docker cp ${PROJECTNAME}:/${REMOVEDIR} ./
       docker stop ${PROJECTNAME}
       docker rm ${PROJECTNAME}

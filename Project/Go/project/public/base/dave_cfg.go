@@ -34,7 +34,7 @@ func Cfg_set(cfg_name string, cfg_value string) bool {
 	return false
 }
 
-func Cfg_get(cfg_name string) string {
+func Cfg_get(cfg_name string, default_value string) string {
 	var go_byte [4096]byte
 
 	c_cfg_name := C.CString(cfg_name)
@@ -44,6 +44,9 @@ func Cfg_get(cfg_name string) string {
 
 	if C.dave_dll_cfg_get(c_cfg_name, c_cfg_value, C.int(len(go_byte))) >= 0 {
 		go_string = C.GoString(c_cfg_value)
+	} else {
+		Cfg_set(cfg_name, default_value)
+		go_string = default_value
 	}
 
 	C.free(unsafe.Pointer(c_cfg_name))

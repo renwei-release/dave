@@ -9,6 +9,7 @@
 PROJECT=$1
 IMAGE=$2
 TAG=$3
+File=$(basename $0)
 
 if [ "$TAG" == "" ]; then
    exit_dave_image=`docker image ls | grep ${IMAGE}`
@@ -18,12 +19,12 @@ fi
 
 if [ "$exit_dave_image" == "" ]; then
    if [ -f ./deploy/${PROJECT}/Dockerfile ]; then
-      echo public-load.sh build ${IMAGE} on ${IMAGE}:${TAG}
+      echo ${File} build ${IMAGE} on ${IMAGE}:${TAG}
       cp dave-running.sh ./deploy/${PROJECT}/dave-running.sh
       docker build --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
       rm ./deploy/${PROJECT}/dave-running.sh
    else
-      echo public-load.sh "can't find ./deploy/${PROJECT}/Dockerfile"
+      echo ${File} "can't find ./deploy/${PROJECT}/Dockerfile"
       exit 1
    fi
 fi

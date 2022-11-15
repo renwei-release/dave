@@ -14,7 +14,7 @@ else
 fi
 IMAGE="ethereum_docker_image"
 TAG="latest"
-EXTEND=""
+EXTEND="-v `pwd`/file_system/project:/project"
 
 cd ../../
 chmod a+x *.sh
