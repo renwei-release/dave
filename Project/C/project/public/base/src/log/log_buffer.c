@@ -151,10 +151,10 @@ _log_buffer_thread_build(void)
 	{
 		pBuffer = _log_buffer_new();
 
-		pBuffer->tid = tid;
-
 		if(pBuffer != NULL)
 		{
+			pBuffer->tid = tid;
+
 			_log_thread[tid_index] = pBuffer;
 		}
 	}

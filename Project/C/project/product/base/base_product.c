@@ -174,22 +174,9 @@ _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 }
 
 static void
-_base_timer_go_test(TIMERID timer_id, ub timer_index)
-{
-	RPCDebugReq *pReq = thread_reset_msg(pReq);
-	RPCDebugRsp *pRsp;
-
-	BASELOG("TEST start ......");
-
-	pRsp = name_go("main_aib", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
-
-	BASELOG("TEST done! pRsp:%x", pRsp);
-}
-
-static void
 _base_thread_init(MSGBODY *msg)
 {
-	base_timer_creat("btgtest", _base_timer_go_test, 30000);
+
 }
 
 static void

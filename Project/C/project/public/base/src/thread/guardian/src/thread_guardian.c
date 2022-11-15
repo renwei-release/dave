@@ -64,69 +64,12 @@ _thread_guardian_test(MSGBODY *msg)
 }
 
 static void
-_thread_guardian_setup_statistics(s8 *msg, s8 *rsp_msg, ub rsp_len)
-{
-	s8 msg_str[64], run_str[64], wakeup_str[64];
-	ub msg_id, run_time, wakeup_time;
-
-	msg = dave_strfind(msg, ' ', msg_str, sizeof(msg_str));
-	msg = dave_strfind(msg, ' ', run_str, sizeof(run_str));
-	msg = dave_strfind(msg, ' ', wakeup_str, sizeof(wakeup_str));
-
-	msg_id = stringdigital(msg_str);
-	run_time = stringdigital(run_str);
-	wakeup_time = stringdigital(wakeup_str);
-
-	dave_snprintf(rsp_msg, rsp_len, "setup statistics msg-id:%s run-time:%d wakup-time:%d",
-		msgstr(msg_id), run_time, wakeup_time);
-
-	thread_statistics_setup_all(msg_id, run_time, wakeup_time);
-}
-
-static void
-_thread_guardian_load_statistics(s8 *msg, s8 *rsp_msg, ub rsp_len)
-{
-	ub msg_id, run_time, wakeup_time;
-
-	thread_statistics_load_all(&msg_id, &run_time, &wakeup_time);
-
-	dave_snprintf(rsp_msg, rsp_len, "load statistics msg-id:%s run-time:%d wakup-time:%d",
-		msgstr(msg_id), run_time, wakeup_time);
-}
-
-static void
-_thread_guardian_test_memory(void)
-{
-	void *ptr;
-
-	ptr = dave_malloc(1024 * 1024 * 2);
-
-	dave_free(ptr);
-
-	dave_free(ptr);
-
-	dave_free(ptr + 2);
-}
-
-static void
 _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 {
 	DebugRsp *pRsp = thread_reset_msg(pRsp);
 	ub msg_len;
 
-	if(pReq->msg[0] == 's')
-	{
-		_thread_guardian_setup_statistics(&(pReq->msg[1]), pRsp->msg, sizeof(pRsp->msg));
-	}
-	else if(pReq->msg[0] == 'l')
-	{
-		_thread_guardian_load_statistics(&(pReq->msg[1]), pRsp->msg, sizeof(pRsp->msg));
-	}
-	else if(pReq->msg[0] == 'b')
-	{
-		_thread_guardian_test_memory();
-	}
-	else if(pReq->msg[0] == 'w')
+	if(pReq->msg[0] == 'w')
 	{
 		msg_len = thread_wait_msg_show(_thread, &pReq->msg[1], pRsp->msg, sizeof(pRsp->msg));
 		if(msg_len == 0)
@@ -143,6 +86,18 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 	else if(pReq->msg[0] == 'o')
 	{
 		thread_orchestration_info(pRsp->msg, sizeof(pRsp->msg));
+	}
+	else if(dave_strcmp(pReq->msg, "se") == dave_true)
+	{
+		thread_statistics_enable(pRsp->msg, sizeof(pRsp->msg));
+	}
+	else if(dave_strcmp(pReq->msg, "sd") == dave_true)
+	{
+		thread_statistics_disable(pRsp->msg, sizeof(pRsp->msg));
+	}
+	else if(dave_strcmp(pReq->msg, "si") == dave_true)
+	{
+		thread_statistics_info(pRsp->msg, sizeof(pRsp->msg));
 	}
 	else
 	{
@@ -367,11 +322,13 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_busy_idle_init(_thread);
 	thread_sync_init(_sync_domain);
 	thread_orchestration_init();
+	thread_statistics_init();
 }
 
 static void
 _thread_guardian_exit(MSGBODY *msg)
 {
+	thread_statistics_exit();
 	thread_orchestration_exit();
 	thread_sync_exit();
 	thread_busy_idle_exit();

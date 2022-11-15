@@ -410,10 +410,6 @@ _thread_write_msg(
 					msg_type,
 					fun, line);
 
-#ifdef ENABLE_THREAD_STATISTICS
-		thread_statistics_write_msg(pMsg);
-#endif
-
 		ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
 		if(ret == RetCode_not_my_data)
 		{
@@ -473,10 +469,6 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 	{
 		pMsg = _thread_safe_read_msg_queue(pThread);
 	}
-
-#ifdef ENABLE_THREAD_STATISTICS
-	thread_statistics_read_msg(pMsg);
-#endif
 
 	return pMsg;
 }

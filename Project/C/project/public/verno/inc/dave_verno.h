@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "BLOCKCHAIN"
+#define VERSION_PRODUCT "BASE"
 
 #ifdef __DAVE_LINUX__
  #define VERSION_MISC "linux"
@@ -30,9 +30,9 @@
 #else
  #define VERSION_SUB "12"
 #endif
-#define VERSION_REV "1"
+#define VERSION_REV "2"
 
-#define VERSION_DATE_TIME "20221111181022"
+#define VERSION_DATE_TIME "20221115100307"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -41,7 +41,7 @@
 #endif
 
 #define __BUILD_MAC_ADDRESS__ "000C29960DBF"
-#define __BUILD_HOSTNAME__ "fedora-renwei-golang19-docker"
+#define __BUILD_HOSTNAME__ "fedora-renwei-gcc9-docker"
 #define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);
