@@ -34,12 +34,14 @@
 #include "sync_param.h"
 #include "sync_type.h"
 
+static s8 _string_buf[128];
+
 // =====================================================================
 
 s8 *
 t_auto_AIPlaceType_str(AIPlaceType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -317,7 +319,7 @@ t_auto_AIPlaceType_str(AIPlaceType enum_value)
 				value_str = "'AIPlaceType_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -327,7 +329,7 @@ t_auto_AIPlaceType_str(AIPlaceType enum_value)
 s8 *
 t_auto_BaseMsgType_str(BaseMsgType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -350,7 +352,7 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 				value_str = "'BaseMsgType_Broadcast_dismiss'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -360,7 +362,7 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 s8 *
 t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -386,7 +388,7 @@ t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value)
 				value_str = "'BuildingBlocksOpt_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -396,7 +398,7 @@ t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value)
 s8 *
 t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -413,7 +415,7 @@ t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
 				value_str = "'CVSearchOpt_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -423,7 +425,7 @@ t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
 s8 *
 t_auto_ChainType_str(ChainType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -446,7 +448,7 @@ t_auto_ChainType_str(ChainType enum_value)
 				value_str = "'ChainType_max-0xff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -456,7 +458,7 @@ t_auto_ChainType_str(ChainType enum_value)
 s8 *
 t_auto_CommentAttributes_str(CommentAttributes enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -470,7 +472,7 @@ t_auto_CommentAttributes_str(CommentAttributes enum_value)
 				value_str = "'CommentAttributes_REPLY-2'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -480,7 +482,7 @@ t_auto_CommentAttributes_str(CommentAttributes enum_value)
 s8 *
 t_auto_CountryCode_str(CountryCode enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -1082,7 +1084,7 @@ t_auto_CountryCode_str(CountryCode enum_value)
 				value_str = "'CountryCode_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -1092,7 +1094,7 @@ t_auto_CountryCode_str(CountryCode enum_value)
 s8 *
 t_auto_CurrencyType_str(CurrencyType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -1196,7 +1198,7 @@ t_auto_CurrencyType_str(CurrencyType enum_value)
 				value_str = "'CurrencyType_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -1206,7 +1208,7 @@ t_auto_CurrencyType_str(CurrencyType enum_value)
 s8 *
 t_auto_DaveDataType_str(DaveDataType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -1223,7 +1225,7 @@ t_auto_DaveDataType_str(DaveDataType enum_value)
 				value_str = "'DaveDataType_double'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -1233,7 +1235,7 @@ t_auto_DaveDataType_str(DaveDataType enum_value)
 s8 *
 t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -1244,7 +1246,7 @@ t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value)
 				value_str = "'KeepAlive_disable-0x09abcdef'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -1254,7 +1256,7 @@ t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value)
 s8 *
 t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -1265,7 +1267,7 @@ t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value)
 				value_str = "'NetCardBind_disable-0x09abcdef'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -1275,7 +1277,7 @@ t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value)
 s8 *
 t_auto_ErrCode_str(ErrCode enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2087,7 +2089,7 @@ t_auto_ErrCode_str(ErrCode enum_value)
 				value_str = "'ErrCode_max-0x1fffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2097,7 +2099,7 @@ t_auto_ErrCode_str(ErrCode enum_value)
 s8 *
 t_auto_FRAMETYPE_str(FRAMETYPE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2129,7 +2131,7 @@ t_auto_FRAMETYPE_str(FRAMETYPE enum_value)
 				value_str = "'FRAMETYPE_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2139,7 +2141,7 @@ t_auto_FRAMETYPE_str(FRAMETYPE enum_value)
 s8 *
 t_auto_FRAME_TYPE_str(FRAME_TYPE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2165,7 +2167,7 @@ t_auto_FRAME_TYPE_str(FRAME_TYPE enum_value)
 				value_str = "'RXTX_STACK_FRAME_TYPE_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2175,7 +2177,7 @@ t_auto_FRAME_TYPE_str(FRAME_TYPE enum_value)
 s8 *
 t_auto_FileOptFlag_str(FileOptFlag enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2204,7 +2206,7 @@ t_auto_FileOptFlag_str(FileOptFlag enum_value)
 				value_str = "'CREAT_READ_WRITE_FLAG-0x07'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2214,7 +2216,7 @@ t_auto_FileOptFlag_str(FileOptFlag enum_value)
 s8 *
 t_auto_FixedPortFlag_str(FixedPortFlag enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2225,7 +2227,7 @@ t_auto_FixedPortFlag_str(FixedPortFlag enum_value)
 				value_str = "'NotFixedPort-0x09abcdef'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2235,7 +2237,7 @@ t_auto_FixedPortFlag_str(FixedPortFlag enum_value)
 s8 *
 t_auto_GPSBaseLocation_str(GPSBaseLocation enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2252,7 +2254,7 @@ t_auto_GPSBaseLocation_str(GPSBaseLocation enum_value)
 				value_str = "'GPSBaseLocation_South'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2262,7 +2264,7 @@ t_auto_GPSBaseLocation_str(GPSBaseLocation enum_value)
 s8 *
 t_auto_HTTPListenType_str(HTTPListenType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2279,7 +2281,7 @@ t_auto_HTTPListenType_str(HTTPListenType enum_value)
 				value_str = "'ListenMax'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2289,7 +2291,7 @@ t_auto_HTTPListenType_str(HTTPListenType enum_value)
 s8 *
 t_auto_HTTPMathcRule_str(HTTPMathcRule enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2318,7 +2320,7 @@ t_auto_HTTPMathcRule_str(HTTPMathcRule enum_value)
 				value_str = "'LocationMatch_Max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2328,7 +2330,7 @@ t_auto_HTTPMathcRule_str(HTTPMathcRule enum_value)
 s8 *
 t_auto_HttpContentType_str(HttpContentType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2348,7 +2350,7 @@ t_auto_HttpContentType_str(HttpContentType enum_value)
 				value_str = "'HttpContentType_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2358,7 +2360,7 @@ t_auto_HttpContentType_str(HttpContentType enum_value)
 s8 *
 t_auto_HttpMethod_str(HttpMethod enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2381,7 +2383,7 @@ t_auto_HttpMethod_str(HttpMethod enum_value)
 				value_str = "'HttpMethod_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2391,7 +2393,7 @@ t_auto_HttpMethod_str(HttpMethod enum_value)
 s8 *
 t_auto_IOStackType_str(IOStackType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2411,7 +2413,7 @@ t_auto_IOStackType_str(IOStackType enum_value)
 				value_str = "'IOStackType_weichat_form'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2421,7 +2423,7 @@ t_auto_IOStackType_str(IOStackType enum_value)
 s8 *
 t_auto_IPProtocol_str(IPProtocol enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2444,7 +2446,7 @@ t_auto_IPProtocol_str(IPProtocol enum_value)
 				value_str = "'IPProtocol_max-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2454,7 +2456,7 @@ t_auto_IPProtocol_str(IPProtocol enum_value)
 s8 *
 t_auto_IPVER_str(IPVER enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2468,7 +2470,7 @@ t_auto_IPVER_str(IPVER enum_value)
 				value_str = "'IPVER_MAX-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2478,7 +2480,7 @@ t_auto_IPVER_str(IPVER enum_value)
 s8 *
 t_auto_KvAttrib_str(KvAttrib enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2492,7 +2494,7 @@ t_auto_KvAttrib_str(KvAttrib enum_value)
 				value_str = "'KvAttrib_remote'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2502,7 +2504,7 @@ t_auto_KvAttrib_str(KvAttrib enum_value)
 s8 *
 t_auto_LanguageCode_str(LanguageCode enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2615,7 +2617,7 @@ t_auto_LanguageCode_str(LanguageCode enum_value)
 				value_str = "'LanguageCode_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2625,7 +2627,7 @@ t_auto_LanguageCode_str(LanguageCode enum_value)
 s8 *
 t_auto_MCardContentType_str(MCardContentType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2735,7 +2737,7 @@ t_auto_MCardContentType_str(MCardContentType enum_value)
 				value_str = "'MCardContentType_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2745,7 +2747,7 @@ t_auto_MCardContentType_str(MCardContentType enum_value)
 s8 *
 t_auto_MCardIdentityType_str(MCardIdentityType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2768,7 +2770,7 @@ t_auto_MCardIdentityType_str(MCardIdentityType enum_value)
 				value_str = "'MCardIdentityType_MAX-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2778,7 +2780,7 @@ t_auto_MCardIdentityType_str(MCardIdentityType enum_value)
 s8 *
 t_auto_MCardSource_str(MCardSource enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2807,7 +2809,7 @@ t_auto_MCardSource_str(MCardSource enum_value)
 				value_str = "'MCardSource_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2817,7 +2819,7 @@ t_auto_MCardSource_str(MCardSource enum_value)
 s8 *
 t_auto_MCardTimeType_str(MCardTimeType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2831,7 +2833,7 @@ t_auto_MCardTimeType_str(MCardTimeType enum_value)
 				value_str = "'MCardTimeType_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2841,7 +2843,7 @@ t_auto_MCardTimeType_str(MCardTimeType enum_value)
 s8 *
 t_auto_MCardType_str(MCardType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2867,7 +2869,7 @@ t_auto_MCardType_str(MCardType enum_value)
 				value_str = "'MCardType_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2877,7 +2879,7 @@ t_auto_MCardType_str(MCardType enum_value)
 s8 *
 t_auto_MCardVer_str(MCardVer enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2900,7 +2902,7 @@ t_auto_MCardVer_str(MCardVer enum_value)
 				value_str = "'MCardVer_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2910,7 +2912,7 @@ t_auto_MCardVer_str(MCardVer enum_value)
 s8 *
 t_auto_MatrixOpt_str(MatrixOpt enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2936,7 +2938,7 @@ t_auto_MatrixOpt_str(MatrixOpt enum_value)
 				value_str = "'MatrixOpt_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2946,7 +2948,7 @@ t_auto_MatrixOpt_str(MatrixOpt enum_value)
 s8 *
 t_auto_MsgMemState_str(MsgMemState enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -2957,7 +2959,7 @@ t_auto_MsgMemState_str(MsgMemState enum_value)
 				value_str = "'MsgMemState_captured'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -2967,7 +2969,7 @@ t_auto_MsgMemState_str(MsgMemState enum_value)
 s8 *
 t_auto_NLPDependencySyntax_str(NLPDependencySyntax enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3023,7 +3025,7 @@ t_auto_NLPDependencySyntax_str(NLPDependencySyntax enum_value)
 				value_str = "'NLPDependencySyntax_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3033,7 +3035,7 @@ t_auto_NLPDependencySyntax_str(NLPDependencySyntax enum_value)
 s8 *
 t_auto_NLPIRLabel_str(NLPIRLabel enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3116,7 +3118,7 @@ t_auto_NLPIRLabel_str(NLPIRLabel enum_value)
 				value_str = "'NLPIRLabel_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3126,7 +3128,7 @@ t_auto_NLPIRLabel_str(NLPIRLabel enum_value)
 s8 *
 t_auto_NLPNEREntity_str(NLPNEREntity enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3161,7 +3163,7 @@ t_auto_NLPNEREntity_str(NLPNEREntity enum_value)
 				value_str = "'NLPNEREntity_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3171,7 +3173,7 @@ t_auto_NLPNEREntity_str(NLPNEREntity enum_value)
 s8 *
 t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3296,7 +3298,7 @@ t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value)
 				value_str = "'NLPPartOfSpeech_MAX-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3306,7 +3308,7 @@ t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value)
 s8 *
 t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3365,7 +3367,7 @@ t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value)
 				value_str = "'NLPSemanticRole_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3375,7 +3377,7 @@ t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value)
 s8 *
 t_auto_NetAddrType_str(NetAddrType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3389,7 +3391,7 @@ t_auto_NetAddrType_str(NetAddrType enum_value)
 				value_str = "'NetAddrURLType-0x12345678'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3399,7 +3401,7 @@ t_auto_NetAddrType_str(NetAddrType enum_value)
 s8 *
 t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3497,7 +3499,7 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 				value_str = "'ORDER_CODE_END-0x8000'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3507,7 +3509,7 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 s8 *
 t_auto_PythonFun_str(PythonFun enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3560,7 +3562,7 @@ t_auto_PythonFun_str(PythonFun enum_value)
 				value_str = "'PythonFun_max-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3570,7 +3572,7 @@ t_auto_PythonFun_str(PythonFun enum_value)
 s8 *
 t_auto_RegINAttrib_str(RegINAttrib enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3584,7 +3586,7 @@ t_auto_RegINAttrib_str(RegINAttrib enum_value)
 				value_str = "'RegINAttrib_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3594,7 +3596,7 @@ t_auto_RegINAttrib_str(RegINAttrib enum_value)
 s8 *
 t_auto_ReqType_str(ReqType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3602,7 +3604,7 @@ t_auto_ReqType_str(ReqType enum_value)
 				value_str = "'REQ_TYPE_MAX-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3612,7 +3614,7 @@ t_auto_ReqType_str(ReqType enum_value)
 s8 *
 t_auto_RetCode_str(RetCode enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -3977,7 +3979,7 @@ t_auto_RetCode_str(RetCode enum_value)
 				value_str = "'RetCode_max-0x1fffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -3987,7 +3989,7 @@ t_auto_RetCode_str(RetCode enum_value)
 s8 *
 t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4004,7 +4006,7 @@ t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value)
 				value_str = "'SOC_CNT_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4014,7 +4016,7 @@ t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value)
 s8 *
 t_auto_SOCDOMAIN_str(SOCDOMAIN enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4043,7 +4045,7 @@ t_auto_SOCDOMAIN_str(SOCDOMAIN enum_value)
 				value_str = "'SOCDOMAIN_MAX-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4053,7 +4055,7 @@ t_auto_SOCDOMAIN_str(SOCDOMAIN enum_value)
 s8 *
 t_auto_SOCEVENT_str(SOCEVENT enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4091,7 +4093,7 @@ t_auto_SOCEVENT_str(SOCEVENT enum_value)
 				value_str = "'SOC_EVENT_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4101,7 +4103,7 @@ t_auto_SOCEVENT_str(SOCEVENT enum_value)
 s8 *
 t_auto_SOCKETINFO_str(SOCKETINFO enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4190,7 +4192,7 @@ t_auto_SOCKETINFO_str(SOCKETINFO enum_value)
 				value_str = "'SOCKETINFO_MAX-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4200,7 +4202,7 @@ t_auto_SOCKETINFO_str(SOCKETINFO enum_value)
 s8 *
 t_auto_SOCKETTYPE_str(SOCKETTYPE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4220,7 +4222,7 @@ t_auto_SOCKETTYPE_str(SOCKETTYPE enum_value)
 				value_str = "'SOCKET_TYPE_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4230,7 +4232,7 @@ t_auto_SOCKETTYPE_str(SOCKETTYPE enum_value)
 s8 *
 t_auto_SOCTYPE_str(SOCTYPE enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4253,7 +4255,7 @@ t_auto_SOCTYPE_str(SOCTYPE enum_value)
 				value_str = "'TYPE_SOCK_MAX-0x1fffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4263,7 +4265,7 @@ t_auto_SOCTYPE_str(SOCTYPE enum_value)
 s8 *
 t_auto_SYNCType_str(SYNCType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4277,7 +4279,7 @@ t_auto_SYNCType_str(SYNCType enum_value)
 				value_str = "'SYNC_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4287,7 +4289,7 @@ t_auto_SYNCType_str(SYNCType enum_value)
 s8 *
 t_auto_SyncServerType_str(SyncServerType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4304,7 +4306,7 @@ t_auto_SyncServerType_str(SyncServerType enum_value)
 				value_str = "'SyncServerType_max'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4314,7 +4316,7 @@ t_auto_SyncServerType_str(SyncServerType enum_value)
 s8 *
 t_auto_TaskAttribute_str(TaskAttribute enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4331,7 +4333,7 @@ t_auto_TaskAttribute_str(TaskAttribute enum_value)
 				value_str = "'EMPTY_TASK_ATTRIB'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4341,7 +4343,7 @@ t_auto_TaskAttribute_str(TaskAttribute enum_value)
 s8 *
 t_auto_TraceLevel_str(TraceLevel enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4370,7 +4372,7 @@ t_auto_TraceLevel_str(TraceLevel enum_value)
 				value_str = "'TRACELEVEL_MAX'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4380,7 +4382,7 @@ t_auto_TraceLevel_str(TraceLevel enum_value)
 s8 *
 t_auto_UIPType_str(UIPType enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4397,7 +4399,7 @@ t_auto_UIPType_str(UIPType enum_value)
 				value_str = "'UIPType_wechat_form'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 
@@ -4407,7 +4409,7 @@ t_auto_UIPType_str(UIPType enum_value)
 s8 *
 t_auto_RPCMSG_str(RPCMSG enum_value)
 {
-	s8 *value_str = NULL;
+	s8 *value_str = _string_buf;
 
 	switch(enum_value)
 	{
@@ -4874,7 +4876,7 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 				value_str = "'MSGID_INVALID-0xffffffffffffffff'";
 			break;
 		default:
-				value_str = "'NULL'";
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
 	}
 

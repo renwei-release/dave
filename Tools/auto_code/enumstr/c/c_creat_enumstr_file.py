@@ -28,7 +28,7 @@ def _creat_c_enumstr_body_table(body_table, file_id):
                     file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}-{body_value}\'";\n')
                 file_id.write(f'\t\t\tbreak;\n')
     file_id.write(f'\t\tdefault:\n')
-    file_id.write(f'\t\t\t\tvalue_str = "\'NULL\'";\n')
+    file_id.write(f'\t\t\t\tdave_snprintf(_string_buf, sizeof(_string_buf), "\'%d\'", enum_value);\n')
     file_id.write(f'\t\t\tbreak;\n')
     return
 
@@ -47,12 +47,13 @@ def _creat_c_enumstr_src_file(enum_table, include_list, file_name):
         file_id.write(f'#include "dave_base.h"\n')
         file_id.write(f'#include "dave_tools.h"\n')
         include_message(file_id, include_list)
+        file_id.write(f'static s8 _string_buf[128];\n\n')
         dividing_line(file_id)
         for enum_name in enum_table:
             file_id.write(f'\ns8 *\n')
             file_id.write(f't_auto_{enum_name}_str({enum_name} enum_value)\n')
             file_id.write(f'{"{"}\n')
-            file_id.write(f'\ts8 *value_str = NULL;\n\n')
+            file_id.write(f'\ts8 *value_str = _string_buf;\n\n')
             file_id.write(f'\tswitch(enum_value)\n')
             file_id.write(f'\t{"{"}\n')
             _creat_c_enumstr_body_table(enum_table[enum_name], file_id)
