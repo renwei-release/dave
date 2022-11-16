@@ -14,15 +14,9 @@
 #include "thread_quit.h"
 #include "thread_id.h"
 #include "thread_guardian.h"
+#include "thread_statistics_param.h"
+#include "thread_statistics_info.h"
 #include "thread_log.h"
-
-typedef struct {
-	ThreadId msg_src;
-	ThreadId msg_dst;
-	ub msg_id;
-
-	ub msg_counter;
-} ThreadStatistics;
 
 static TLock _statistics_pv;
 static void *_statistics_kv = NULL;
@@ -130,40 +124,7 @@ thread_statistics_disable(s8 *msg_ptr, ub msg_len)
 ub
 thread_statistics_info(s8 *msg_ptr, ub msg_len)
 {
-	ub msg_index, index;
-	ThreadStatistics *pStatistics;
-
-	msg_index = 0;
-
-	if(_statistics_kv == NULL)
-	{
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "THREAD STATISTICS DISABLE!");
-	}
-	else
-	{
-		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "THREAD STATISTICS INFO:\n");
-
-		for(index=0; index<102400; index++)
-		{
-			pStatistics = kv_index_key_ptr(_statistics_kv, index);
-			if(pStatistics == NULL)
-				break;
-
-			if(index > 0)
-			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\n");
-			}
-
-			msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
-				" %s->%s:%s msg_counter:%d",
-				thread_name(pStatistics->msg_src),
-				thread_name(pStatistics->msg_dst),
-				msgstr(pStatistics->msg_id),
-				pStatistics->msg_counter);
-		}
-	}
-
-	return msg_index;
+	return thread_statistics_info_api(_statistics_kv, msg_ptr, msg_len);
 }
 
 ub
