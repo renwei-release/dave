@@ -45,10 +45,6 @@ func _main_msg_unregister() {
 
 func Dave_product_init() {
 	_main_msg_register()
-
-// renwei debug
-eth.Eth_deploy_nft("ipfs://djdjdjdjdjdjdjdjjdjdjdjdjdjd", "my frist nft")
-//
 }
 
 func Dave_product_exit() {

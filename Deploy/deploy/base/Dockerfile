@@ -13,5 +13,4 @@ WORKDIR /
 COPY ./file_system .
 
 WORKDIR /project
-COPY dave-running.sh .
 CMD ["./dave-running.sh"]

@@ -16,5 +16,3 @@ RUN apt install -y libopenexr-dev
 RUN mkdir -p /project/DAVE
 
 WORKDIR /project
-COPY dave-running.sh .
-CMD ["./dave-running.sh"]

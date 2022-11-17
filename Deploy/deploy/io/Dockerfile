@@ -11,5 +11,4 @@ WORKDIR /
 COPY ./file_system .
 
 WORKDIR /project
-COPY dave-running.sh .
 ENTRYPOINT ["./dave-running.sh"]

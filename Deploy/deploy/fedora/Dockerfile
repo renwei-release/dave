@@ -38,5 +38,3 @@ RUN mkdir -p /project/DAVE
 ENV GOPROXY=https://goproxy.io
 
 WORKDIR /project
-COPY dave-running.sh .
-CMD ["./dave-running.sh"]
