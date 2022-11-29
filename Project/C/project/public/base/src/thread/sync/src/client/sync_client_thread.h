@@ -12,7 +12,7 @@ void sync_client_thread_init(void);
 
 void sync_client_thread_exit(void);
 
-void sync_client_thread_add(SyncServer *pServer, s8 *thread_name);
+ThreadId sync_client_thread_add(SyncServer *pServer, s8 *thread_name);
 
 dave_bool sync_client_thread_del(SyncServer *pServer, s8 *thread_name);
 

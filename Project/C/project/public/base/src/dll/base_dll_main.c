@@ -136,14 +136,7 @@ dave_dll_main_init(
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
-	ub thread_flag;
-
-	thread_flag = THREAD_THREAD_FLAG;
-	if((mode == BaseDllRunningMode_Coroutine_Inner_Loop)
-		|| (mode == BaseDllRunningMode_Coroutine_Outer_Loop))
-	{
-		thread_flag |= THREAD_COROUTINE_FLAG;
-	}
+	ub thread_flag = THREAD_THREAD_FLAG;
 
 	_dll_thread_number = (ub)thread_number;
 	_dll_init_fun = dll_init_fun;

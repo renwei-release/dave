@@ -1326,6 +1326,24 @@ _thread_check_sync_param(
 	return dave_true;
 }
 
+static ub
+_thread_reupdate_thread_flag(ub thread_flag)
+{
+#ifndef ENABLE_THREAD_COROUTINE
+	thread_flag &= (~THREAD_COROUTINE_FLAG);
+#else
+	if((thread_flag & THREAD_THREAD_FLAG)
+		&& (!(thread_flag & THREAD_REMOTE_FLAG))
+		&& (!(thread_flag & THREAD_PRIVATE_FLAG))
+		&& (!(thread_flag & THREAD_CORE_FLAG)))
+	{
+		thread_flag |= THREAD_COROUTINE_FLAG;
+	}
+#endif
+
+	return thread_flag;
+}
+
 // =====================================================================
 
 void
@@ -1413,9 +1431,7 @@ base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun t
 {
 	ThreadId thread_id = INVALID_THREAD_ID;
 
-#ifndef ENABLE_THREAD_COROUTINE
-	thread_flag &= (~THREAD_COROUTINE_FLAG);
-#endif
+	thread_flag = _thread_reupdate_thread_flag(thread_flag);
 
 	SAFECODEv2W(_system_thread_pv, {
 		thread_id = _thread_safe_creat((s8 *)name, level_number, thread_flag, thread_init, thread_main, thread_exit);

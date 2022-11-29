@@ -285,7 +285,7 @@ base_socket_init(void)
 {
 	ub thread_number = _socket_thread_number();
 
-	_socket_thread = base_thread_creat(SOCKET_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _socket_init, _socket_main, _socket_exit);
+	_socket_thread = base_thread_creat(SOCKET_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _socket_init, _socket_main, _socket_exit);
 	if(_socket_thread == INVALID_THREAD_ID)
 		base_restart("socket");
 }

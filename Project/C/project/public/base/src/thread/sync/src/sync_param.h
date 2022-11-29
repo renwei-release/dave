@@ -145,6 +145,7 @@ typedef struct {
 
 typedef struct {
 	s8 thread_name[SYNC_THREAD_NAME_LEN];
+	ThreadId thread_id;
 
 	TLock chose_server_pv;
 	ub chose_server_index;

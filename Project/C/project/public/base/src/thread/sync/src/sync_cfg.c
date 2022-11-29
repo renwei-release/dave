@@ -130,9 +130,16 @@ sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 	u16 port;
 	dave_bool real_cfg = dave_false;
 
-	if(cfg_get(CFG_SYNC_CLIENT_ADDRESS, domain, sizeof(domain)) == dave_true)
+	cfg_get_by_default(CFG_SYNC_CLIENT_ADDRESS, domain, sizeof(domain), "0.0.0.0");
+
+	real_cfg = domainip(ip, &port, domain);
+	if((real_cfg == dave_true)
+		&& (ip[0] == 0)
+		&& (ip[1] == 0)
+		&& (ip[2] == 0)
+		&& (ip[3] == 0))
 	{
-		real_cfg = domainip(ip, &port, domain);
+		real_cfg = dave_false;
 	}
 
 	if(real_cfg == dave_false)

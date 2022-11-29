@@ -226,7 +226,7 @@ dave_product_init(void)
 {
 	ub thread_number = dave_os_cpu_process_number();
 
-	_base_thread = base_thread_creat(t_gp_product_name(), thread_number, THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
+	_base_thread = base_thread_creat(t_gp_product_name(), thread_number, THREAD_THREAD_FLAG, _base_thread_init, _base_thread_main, _base_thread_exit);
 	if(_base_thread == INVALID_THREAD_ID)
 		base_restart(t_gp_product_name());
 }

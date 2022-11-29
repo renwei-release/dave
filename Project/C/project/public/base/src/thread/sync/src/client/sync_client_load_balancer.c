@@ -39,7 +39,7 @@ _sync_client_load_balancer_(LinkThread *pThread)
 		}
 
 		if((pThread->pServer[server_index] != NULL)
-			&& (pThread->pServer[server_index]->server_type == SyncServerType_client)
+			&& ((pThread->pServer[server_index]->server_type == SyncServerType_client) || (pThread->pServer[server_index]->server_type == SyncServerType_child))
 			&& (pThread->pServer[server_index]->server_socket != INVALID_SOCKET_ID)
 			&& (pThread->pServer[server_index]->server_ready == dave_true))
 		{
@@ -70,30 +70,18 @@ _sync_client_safe_load_balancer(LinkThread *pThread)
 static inline SyncServer *
 _sync_client_load_balancer(MSGBODY *pMsg)
 {
-	s8 *thread_dst;
-	ub thread_dst_index;
 	LinkThread *pThread;
 	SyncServer *pServer;
 
-	thread_dst = thread_name(pMsg->msg_dst);
-	if((thread_dst == NULL) || (dave_strcmp(thread_dst, "NULL") == dave_true))
-	{
-		SYNCLTRACE(60,1,"invalid dst >> %lx/%s->%lx:%d",
-			pMsg->msg_src, thread_name(pMsg->msg_src), pMsg->msg_dst, pMsg->msg_id);
-		return NULL;
-	}
-	thread_dst_index = sync_client_data_thread_name_to_index(thread_dst);
-
-	pThread = sync_client_data_thread_on_name(thread_dst, thread_dst_index);
+	pThread = sync_client_thread_id_to_thread(pMsg->msg_dst);
 	if(pThread == NULL)
 	{
-		SYNCLTRACE(60,5,"You send a message(%lx/%s->%lx/%s:%d) to the remote, \
-but the source(%s) of the message was not registered as a remote thread. \
+		SYNCLTRACE(60,5,"You send a message(%lx/%s->%lx/%s:%s) to the remote, \
+but the source of the message was not registered as a remote thread. \
 This message will be processed by SYNC routing",
 			pMsg->msg_src, thread_name(pMsg->msg_src),
 			pMsg->msg_dst, thread_name(pMsg->msg_dst),
-			pMsg->msg_id,
-			thread_dst);
+			msgstr(pMsg->msg_id));
 		return NULL;
 	}
 
@@ -160,10 +148,10 @@ _sync_client_chose_server(MSGBODY *pMsg)
 
 	if(pServer == NULL)
 	{
-		SYNCDEBUG("Is there no choose? %s/%lx->%s/%lx:%d",
+		SYNCDEBUG("Is there no choose? %s/%lx->%s/%lx:%s",
 			thread_name(pMsg->msg_src), pMsg->msg_src,
 			thread_name(pMsg->msg_dst), pMsg->msg_dst,
-			pMsg->msg_id);
+			msgstr(pMsg->msg_id));
 
 		pServer = sync_client_data_sync_server();
 	}

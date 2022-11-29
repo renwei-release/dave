@@ -342,7 +342,7 @@ _thread_guardian_exit(MSGBODY *msg)
 ThreadId
 thread_guardian_init(ThreadStruct *thread_struct, s8 *sync_domain)
 {
-	ub thread_flag = THREAD_TICK_WAKEUP|THREAD_PRIVATE_FLAG;
+	ub thread_flag = THREAD_TICK_WAKEUP|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG;
 
 	_thread = thread_struct;
 	if(sync_domain != NULL)

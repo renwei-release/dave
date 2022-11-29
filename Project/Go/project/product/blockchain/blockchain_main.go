@@ -11,7 +11,6 @@ import (
 	"dave/public/auto"
 	"dave/public/base"
 	"dave/public/tools"
-	"dave/product/blockchain/eth"
 	"unsafe"
 )
 

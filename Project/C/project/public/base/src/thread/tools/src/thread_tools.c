@@ -515,7 +515,7 @@ thread_local_ready_notify(s8 *thread_name)
 {
 	ThreadId thread_id;
 	ub thread_index;
-	ThreadStruct *pThread;
+	ThreadStruct *pMyThread, *pOtherThread;
 	ThreadLocalReadyMsg *pReady;
 
 	thread_id = base_thread_get_id(thread_name, (s8 *)__func__, (ub)__LINE__);
@@ -524,35 +524,30 @@ thread_local_ready_notify(s8 *thread_name)
 	if(thread_index >= THREAD_MAX)
 	{
 		THREADLOG("can't find thread:%s", thread_name);
+		return;
 	}
-	else
+	pMyThread = &_thread[thread_index];
+
+	// me to other.
+	pReady = thread_msg(pReady);
+	pReady->local_thread_id = pMyThread->thread_id;
+	dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
+	broadcast_local(MSGID_LOCAL_THREAD_READY, pReady);
+
+	// other to me.
+	if(pMyThread->attrib == LOCAL_TASK_ATTRIB)
 	{
-		// me to other.
-		pThread = &_thread[thread_index];
-		if(pThread->attrib == LOCAL_TASK_ATTRIB)
-		{
-			pReady = thread_msg(pReady);
-
-			pReady->local_thread_id = pThread->thread_id;
-			dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
-
-			broadcast_local(MSGID_LOCAL_THREAD_READY, pReady);
-		}
-
-		// other to me.
 		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 		{
-			pThread = &_thread[thread_index];
-			if((pThread->thread_id != INVALID_THREAD_ID)
-				&& (pThread->thread_id != thread_id)
-				&& (pThread->attrib == LOCAL_TASK_ATTRIB))
+			pOtherThread = &_thread[thread_index];
+			if((pOtherThread->thread_id != INVALID_THREAD_ID)
+				&& (pOtherThread->thread_id != thread_id)
+				&& (pOtherThread->attrib == LOCAL_TASK_ATTRIB))
 			{
 				pReady = thread_msg(pReady);
-
-				pReady->local_thread_id = pThread->thread_id;
-				dave_strcpy(pReady->local_thread_name, pThread->thread_name, sizeof(pReady->local_thread_name));
-
-				name_msg(thread_name, MSGID_LOCAL_THREAD_READY, pReady);	
+				pReady->local_thread_id = pOtherThread->thread_id;
+				dave_strcpy(pReady->local_thread_name, pOtherThread->thread_name, sizeof(pReady->local_thread_name));
+				name_msg(pMyThread->thread_name, MSGID_LOCAL_THREAD_READY, pReady);	
 			}
 		}
 	}

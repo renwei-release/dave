@@ -464,7 +464,7 @@ _log_client_exit(MSGBODY *msg)
 void
 log_client_init(void)
 {
-	_log_client_thread = base_thread_creat(LOG_CLIENT_THREAD_NAME, 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _log_client_init, _log_client_main, _log_client_exit);
+	_log_client_thread = base_thread_creat(LOG_CLIENT_THREAD_NAME, 1, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _log_client_init, _log_client_main, _log_client_exit);
 	if(_log_client_thread == INVALID_THREAD_ID)
 		base_restart(LOG_CLIENT_THREAD_NAME);
 }

@@ -882,7 +882,7 @@ base_timer_init(void)
 		_timer_id_reg[reg_index] = INVALID_TIMER_ID;
 	}
 
-	_timer_thread = base_thread_creat(TIMER_THREAD_NAME, 0, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG, _timer_init, _timer_main, _timer_exit);
+	_timer_thread = base_thread_creat(TIMER_THREAD_NAME, 0, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _timer_init, _timer_main, _timer_exit);
 	if(_timer_thread == INVALID_THREAD_ID)
 		base_restart(TIMER_THREAD_NAME);
 }

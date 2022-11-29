@@ -175,16 +175,17 @@ sync_client_thread_exit(void)
 
 }
 
-void
+ThreadId
 sync_client_thread_add(SyncServer *pServer, s8 *thread_name)
 {
-	ThreadId remote_thread_id;
+	ThreadId remote_thread_id = INVALID_THREAD_ID;
 
 	SYNCDEBUG("pServer:%x thread_name:%s", pServer, thread_name);
 
 	if(thread_name[0] != '\0')
 	{
-		if(thread_id(thread_name) == INVALID_THREAD_ID)
+		remote_thread_id = thread_id(thread_name);
+		if(remote_thread_id == INVALID_THREAD_ID)
 		{
 			remote_thread_id = _sync_client_thread_creat(thread_name);
 
@@ -206,6 +207,8 @@ sync_client_thread_add(SyncServer *pServer, s8 *thread_name)
 	{
 		SYNCABNOR("get empty remote thread name!");
 	}
+
+	return remote_thread_id;
 }
 
 dave_bool

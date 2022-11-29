@@ -607,14 +607,29 @@ _sync_client_data_link_kv_del(LinkThread *pThread)
 static inline LinkThread *
 _sync_client_data_link_kv_inq(ThreadId thread_id)
 {
+	LinkThread *pThread;
+
 	thread_id = thread_get_local(thread_id);
 
-	return kv_inq_ub_ptr(_thread_id_to_link_kv, (ub)thread_id);
+	pThread = kv_inq_ub_ptr(_thread_id_to_link_kv, thread_id);
+	if(pThread != NULL)
+	{
+		if(pThread->thread_id != thread_id)
+		{
+			SYNCLTRACE(60,1,"thread_id mismatch! %lx/%s != %lx/%s thread_name:%s",
+				thread_id, thread_name(thread_id),
+				pThread->thread_id, thread_name(pThread->thread_id),
+				pThread->thread_name);
+		}
+	}
+
+	return pThread;
 }
 
 static LinkThread *
 _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_index)
 {
+	ThreadId remote_thread_id;
 	LinkThread *pThread;
 
 	pThread = _sync_client_data_find_thread(thread_name, thread_index, dave_false);
@@ -636,9 +651,10 @@ _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_ind
 
 	_sync_client_data_add_server_to_thread(pThread, pServer);
 
-	_sync_client_data_link_kv_add(pThread);
+	remote_thread_id = sync_client_thread_add(pServer, pThread->thread_name);
+	pThread->thread_id = thread_get_local(remote_thread_id);
 
-	sync_client_thread_add(pServer, pThread->thread_name);
+	_sync_client_data_link_kv_add(pThread);
 
 	sync_client_thread_ready(pServer, pThread);
 
@@ -1110,7 +1126,7 @@ sync_client_thread(ub thread_index)
 }
 
 LinkThread *
-sync_client_id_to_thread(ThreadId thread_id)
+sync_client_thread_id_to_thread(ThreadId thread_id)
 {
 	return _sync_client_data_link_kv_inq(thread_id);
 }

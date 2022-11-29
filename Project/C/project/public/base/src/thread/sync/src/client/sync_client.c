@@ -825,7 +825,7 @@ sync_client_init(s8 *sync_domain)
 
 	sync_cfg_external_incoming_sync_domain(sync_domain);
 
-	_sync_client_thread = base_thread_creat(SYNC_CLIENT_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG, _sync_client_init, _sync_client_main, _sync_client_exit);
+	_sync_client_thread = base_thread_creat(SYNC_CLIENT_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _sync_client_init, _sync_client_main, _sync_client_exit);
 	if(_sync_client_thread == INVALID_THREAD_ID)
 		base_restart(SYNC_CLIENT_THREAD_NAME);
 }
