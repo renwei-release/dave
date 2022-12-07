@@ -9,6 +9,7 @@
 #if defined(__DAVE_BASE__)
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "base_tools.h"
 #include "dos_show.h"
 #include "dos_cmd.h"
 #include "dos_tools.h"
@@ -85,12 +86,34 @@ _dos_debug_req(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
+static RetCode
+_dos_main_req(s8 *cmd_ptr, ub cmd_len)
+{
+	DebugReq *pReq;
+	ThreadId main_thread;
+
+	main_thread = main_thread_id_get();
+	if(main_thread == INVALID_THREAD_ID)
+	{
+		return RetCode_can_not_find_thread;		
+	}
+
+	pReq = thread_reset_msg(pReq);
+
+	dos_get_last_parameters(cmd_ptr, cmd_len, pReq->msg, sizeof(pReq->msg));
+
+	id_event(main_thread, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+
+	return RetCode_OK;
+}
+
 // =====================================================================
 
 void
 dos_debug_reset(void)
 {
 	dos_cmd_reg("debug", _dos_debug_req, NULL);
+	dos_cmd_reg("m", _dos_main_req, NULL);
 }
 
 #endif

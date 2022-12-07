@@ -106,7 +106,7 @@ def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=
    _dll_setup_product_verno_name(_my_product_name)
 
    my_verno = dave_verno()
-   thread_number = 0
+   thread_number = 1
 
    davelib.dave_dll_init(
       c_char_p(my_verno), c_char_p(work_mode),

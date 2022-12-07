@@ -10,11 +10,18 @@
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_base.h"
+#include "dave_verno.h"
 #include "base_tools.h"
 #include "base_lock.h"
 #include "base_dll_main.h"
 
 static ThreadId _main_thread = INVALID_THREAD_ID;
+
+static ThreadId
+_product_thread_name_id(void)
+{
+	return thread_id(dave_verno_my_product());
+}
 
 // =====================================================================
 
@@ -27,7 +34,11 @@ main_thread_id_get(void)
 	}
 
 	_main_thread = dave_dll_main_thread_id();
-	
+	if(_main_thread == INVALID_THREAD_ID)
+	{
+		_main_thread = _product_thread_name_id();	
+	}
+
 	return _main_thread;
 }
 

@@ -26,8 +26,7 @@ func _fun_MSGID_DEBUG_REQ(src_gid string, src_name string, src_id uint64, msg_le
 	pReq := (*auto.DebugReq)(msg_body)
 	debug_data_req := tools.T_cgo_gobyte2gostring(pReq.Msg[:])
 
-	var debug_data_rsp string
-	debug_data_rsp = debug_data_req
+	debug_data_rsp := blockchain_debug(debug_data_req)
 
 	_fun_MSGID_DEBUG_RSP(src_id, pReq.Ptr, debug_data_rsp)
 }

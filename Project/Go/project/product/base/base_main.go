@@ -47,6 +47,8 @@ func _fun_MSGID_REMOTE_THREAD_ID_READY(src_gid string, src_name string, src_id u
 	pReady := (*auto.ThreadRemoteIDReadyMsg)(msg_body)
 	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])
 
+	base.DAVELOG("%s", remote_thread_name)
+
 	if remote_thread_name == "main_aib" {
 		_fun_RPC_DEBUG_REQ(remote_thread_name)
 	}
