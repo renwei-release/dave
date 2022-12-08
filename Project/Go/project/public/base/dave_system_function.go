@@ -54,26 +54,26 @@ var (
         auto.MSGID_CFG_UPDATE:                 fun_None,
         auto.MSGID_CFG_REMOTE_UPDATE:          fun_None,
     }
-    daveLock = sync.Mutex{}
+    rwMutex  = sync.RWMutex{}
 )
 
 func Dave_system_function_table_add(msg_id int, msg_function msg_function_define) {
-    daveLock.Lock()
-    defer daveLock.Unlock()
+    rwMutex.Lock()
+    defer rwMutex.Unlock()
 
     system_function_table[msg_id] = msg_function
 }
 
 func Dave_system_function_table_del(msg_id int) {
-    daveLock.Lock()
-    defer daveLock.Unlock()
+    rwMutex.Lock()
+    defer rwMutex.Unlock()
 
     delete(system_function_table, msg_id)
 }
 
 func Dave_system_function_table_inq(msg_id int) (msg_function_define, bool) {
-    daveLock.Lock()
-    defer daveLock.Unlock()
+    rwMutex.RLock()
+    defer rwMutex.RUnlock()
 
     fun, exists := system_function_table[msg_id]
     return fun, exists

@@ -18,8 +18,8 @@ func Eth_total_info(wallet_address string) {
 	chainid := Eth_chain_id()
 	isContract := Eth_address_type(wallet_address)
 	balance := Eth_balance(wallet_address)
-	Eth_block(1)
-	Eth_block(2)
+	Eth_block(20)
+	Eth_block(21)
 
 	address_type := "is contract account"
 	if isContract == false {
