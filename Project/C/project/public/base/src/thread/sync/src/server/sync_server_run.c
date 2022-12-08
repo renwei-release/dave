@@ -149,6 +149,10 @@ sync_server_run_internal(
 				msg_id,
 				msg_len, msg_body);
 	}
+	else
+	{
+		thread_msg_release(msg_body);
+	}
 }
 
 #endif
