@@ -11,6 +11,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "base_tools.h"
+#include "thread_id.h"
 #include "socket_tools.h"
 #include "socket_external.h"
 #include "socket_parameters.h"
@@ -1045,7 +1046,7 @@ socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, 
 		return dave_false;
 	}
 
-	if(pCore->owner != src)
+	if(thread_get_local(pCore->owner) != thread_get_local(src))
 	{
 		SOCKETABNOR("%s write someone:%s socket:%d/%d/%d/%d",
 			thread_name(src), thread_name(pCore->owner),
