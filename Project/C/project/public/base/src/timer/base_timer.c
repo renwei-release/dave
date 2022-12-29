@@ -829,8 +829,9 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 	cur_msg_id = self();
 	if(_timer[timer_id].owner != cur_msg_id)
 	{
-		TIMEABNOR("failed! (timer timer_name:%s, owner task:%s<%d>, cur task:%s<%d>) (%s:%d)",
-				_timer[timer_id].timer_name_ptr,
+		TIMEABNOR("%s die timer:%d/%s, owner:%s<%lx>, cur:%s<%lx> (%s:%d)",
+				thread_name(cur_msg_id),
+				timer_id, _timer[timer_id].timer_name_ptr,
 				thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
 				thread_name(cur_msg_id), cur_msg_id,
 				fun, line);

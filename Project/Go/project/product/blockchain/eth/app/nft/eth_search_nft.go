@@ -9,17 +9,13 @@ package eth_nft
 
 import (
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"dave/product/blockchain/eth/token/nft_token"
 	"dave/product/blockchain/eth/core"
 	"dave/public/base"
 )
 
-func _eth_search_nft_of_token_address(token_address string) (bool, string) {
-	client := eth_core.Eth_client_open()
-	if client == nil {
-		return false, ""
-	}
-
+func _eth_search_nft(client *ethclient.Client, token_address string) (bool, string) {
 	token, err := mytoken.NewMytoken(common.HexToAddress(token_address), client)
 	if err != nil {
 		base.DAVELOG("Failed to instantiate a Token contract: %v", err)
@@ -38,20 +34,26 @@ func _eth_search_nft_of_token_address(token_address string) (bool, string) {
 		base.DAVELOG("Failed to retrieve token owner: %v", err)
 	}
 	address, _ := owner.MarshalText()
+	base.DAVELOG("Token address:%v name:%v uri:%v owner:%v", token_address, name, uri, string(address))
 
-	base.DAVELOG("Token name:%v uri:%v owner:%v", name, uri, string(address))
-
-	eth_core.Eth_client_close(client)
+	tokenID, err := token.TokensOfOwner(nil, common.HexToAddress(token_address))
+	if err != nil {
+		base.DAVELOG("TokensOfOwner err:%v", err)
+	} else {
+		base.DAVELOG("Token address:%s tokenID:%v", token_address, tokenID)
+	}
 
 	return true, "OK"
 }
 
 // =====================================================================
 
-func Eth_search_nft(is_token_address bool, address string) (bool, string) {
-	if is_token_address == true {
-		return _eth_search_nft_of_token_address(address)
-	} else {
+func Eth_search_nft(address string) (bool, string) {
+	client := eth_core.Eth_client_open()
+	if client == nil {
 		return false, ""
 	}
+	defer eth_core.Eth_client_close(client)
+
+	return _eth_search_nft(client, address)
 }

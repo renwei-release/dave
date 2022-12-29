@@ -1,4 +1,4 @@
-package ipfs
+package dstore
 
 /*
  * Copyright (c) 2022 Renwei
@@ -8,20 +8,21 @@ package ipfs
  */
 
 import (
+	"dave/product/dstore/ipfs"
 	"dave/public/base"
 )
 
 // =====================================================================
 
-func ipfs_debug(debug_data string) string {
+func dstore_debug(debug_data string) string {
 	base.DAVELOG("%s", debug_data)
 
 	if debug_data[0:8] == "add_file" {
-		ipfs_add_file(debug_data[9:])
+		ipfs.IPFS_add_file(debug_data[9:])
 	} else if debug_data[0:7] == "add_str" {
-		ipfs_add_str(debug_data[8:])
+		ipfs.IPFS_add_str(debug_data[8:])
 	} else if debug_data[0:3] == "cat" {
-		ipfs_cat_data(debug_data[4:])
+		ipfs.IPFS_cat_data(debug_data[4:])
 	} else {
 		base.DAVELOG("can't find the command:%s", debug_data)
 	}

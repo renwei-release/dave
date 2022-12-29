@@ -506,7 +506,8 @@ MCardContentType_museum_recommend_page = MCardContentType_painting_recommend_pag
 MCardContentType_museum_sha1_id = MCardContentType_museum_recommend_page + 1
 MCardContentType_refresh_recommend_cache = MCardContentType_museum_sha1_id + 1
 MCardContentType_detection = MCardContentType_refresh_recommend_cache + 1
-MCardContentType_end = MCardContentType_detection + 1
+MCardContentType_generator = MCardContentType_detection + 1
+MCardContentType_end = MCardContentType_generator + 1
 MCardContentType_max = 0xffffffffffffffff
 
 MCardIdentityType_none = 0
@@ -563,6 +564,7 @@ PythonFun_painting_recommend_page = PythonFun_museum_recommend + 1
 PythonFun_museum_recommend_page = PythonFun_painting_recommend_page + 1
 PythonFun_refresh_recommend_cache = PythonFun_museum_recommend_page + 1
 PythonFun_detection = PythonFun_refresh_recommend_cache + 1
+PythonFun_generator = PythonFun_detection + 1
 PythonFun_max = 0xffffffffffffffff
 
 REQ_TYPE_MAX = 0x1fffffff

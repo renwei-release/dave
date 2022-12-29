@@ -16,6 +16,7 @@
 #include "mem_test.h"
 
 extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
+extern ub thread_memory_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 
 static ub __memory_init_flag = 0x12345678;
 
@@ -79,6 +80,7 @@ __base_mem_poweroff(s8 *file, ub line, ub len)
 
 	message_index += base_thread_info(&message[message_index], sizeof(message)-message_index);
 	message_index += base_mem_info(&message[message_index], sizeof(message)-message_index, dave_false);
+	message_index += thread_memory_info(&message[message_index], sizeof(message)-message_index, dave_false);
 
 	dave_snprintf(&message[message_index], sizeof(message)-message_index,
 		"\nLimited Memory, %s:%d malloc length:%ld",

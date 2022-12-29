@@ -71,18 +71,17 @@ func ipfs_swarm_build() {
 
 // =====================================================================
 
-func ipfs_debug(debug_data_req string) string {
-	base.DAVELOG("%s", debug_data_req)
+func ipfs_debug(debug_req string) string {
+	base.DAVELOG("%s", debug_req)
 
-	if debug_data_req == "new" {
+	if debug_req == "new" {
 		ipfs_new_build()
 	}
-	if debug_data_req[0:3] == "cat" {
-		ipfs_cat_data(debug_data_req[4:])
-	}
-	if debug_data_req == "swarm" {
+	if (len(debug_req) > 3) && (debug_req[0:3] == "cat") {
+		ipfs_cat_data(debug_req[4:])
+	} else if debug_req == "swarm" {
 		ipfs_swarm_build()
 	}
 
-	return debug_data_req
+	return debug_req
 }

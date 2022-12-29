@@ -8,4 +8,4 @@
 
 CONTAINER=${PWD##*/}
 
-docker attach ${CONTAINER}-client
+docker attach ${CONTAINER}

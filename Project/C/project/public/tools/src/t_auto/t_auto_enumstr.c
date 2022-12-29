@@ -2730,6 +2730,9 @@ t_auto_MCardContentType_str(MCardContentType enum_value)
 		case MCardContentType_detection:
 				value_str = "'MCardContentType_detection'";
 			break;
+		case MCardContentType_generator:
+				value_str = "'MCardContentType_generator'";
+			break;
 		case MCardContentType_end:
 				value_str = "'MCardContentType_end'";
 			break;
@@ -3557,6 +3560,9 @@ t_auto_PythonFun_str(PythonFun enum_value)
 			break;
 		case PythonFun_detection:
 				value_str = "'PythonFun_detection'";
+			break;
+		case PythonFun_generator:
+				value_str = "'PythonFun_generator'";
 			break;
 		case PythonFun_max:
 				value_str = "'PythonFun_max-0xffffffffffffffff'";

@@ -20,7 +20,7 @@
 
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
 #define DEFAULT_ETCD_SERVER_DIR "/sync"
-#define DEFAULT_ETCD_WATCHER_DIR ""
+#define DEFAULT_ETCD_WATCHER_DIR "/"
 #define DEFAULT_ETCD_GET_LIMIT 512
 
 static s8 _etcd_list[2048] = { "\0" };

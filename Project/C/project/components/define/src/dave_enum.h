@@ -410,6 +410,7 @@ typedef enum {
 	PythonFun_museum_recommend_page,
 	PythonFun_refresh_recommend_cache,
 	PythonFun_detection,
+	PythonFun_generator,
 	PythonFun_max = 0xffffffffffffffff
 } PythonFun;
 

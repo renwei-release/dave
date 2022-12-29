@@ -52,7 +52,7 @@ if [ ! -f ${THIRDPARTYDIR}/redis/setup/lib/libhiredis.a ]; then
    build
    cd ${homepath}
 fi
-if [ "$PROJECT" == "SYNC" ]; then
+if [ "$PROJECT" == "sync" ]; then
    if [ ! -f /dave/tools/etcd-cpp-apiv3/lib64/libetcd-cpp-api.so ]; then
       cd ${THIRDPARTYDIR}/etcd-cpp-apiv3
       ./__build__

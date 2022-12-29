@@ -34,6 +34,7 @@
 #include "dll_log.h"
 
 #define DLL_MAIN_THREAD_MAX_NUMBER 32
+#define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
 typedef struct {
 	char msg_src_gid[64];
@@ -136,12 +137,17 @@ dave_dll_main_init(
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
-	ub thread_flag = THREAD_THREAD_FLAG;
+	ub thread_flag = THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG;
 
 	_dll_thread_number = (ub)thread_number;
 	_dll_init_fun = dll_init_fun;
 	_dll_main_fun = dll_main_fun;
 	_dll_exit_fun = dll_exit_fun;
+
+	if(thread_flag & THREAD_COROUTINE_FLAG)
+	{
+		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 1024 * 1024);
+	}
 
 	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)

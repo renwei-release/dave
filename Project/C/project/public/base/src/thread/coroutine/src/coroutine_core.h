@@ -14,6 +14,14 @@ void coroutine_core_init(void);
 
 void coroutine_core_exit(void);
 
+void coroutine_core_creat(void);
+
+void coroutine_core_die(void);
+
+void coroutine_set_stack_size(ub size);
+
+ub coroutine_get_stack_size(void);
+
 void * coroutine_create(coroutine_core_fun fun_ptr, void *fun_param);
 
 void coroutine_resume(void *co);

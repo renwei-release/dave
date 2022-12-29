@@ -35,6 +35,7 @@ require (
 	github.com/libp2p/go-libp2p-record v0.1.3
 	github.com/libp2p/go-libp2p-tls v0.1.3
 	github.com/libp2p/go-tcp-transport v0.2.1
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/multiformats/go-base32 v0.0.3
 	github.com/multiformats/go-multiaddr v0.3.1
 	github.com/multiformats/go-multihash v0.0.14

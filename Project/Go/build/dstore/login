@@ -6,13 +6,6 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
-if [ "$USER" == "root" ]; then
-   PROJECTNAME=${PROJECT}
-else
-   PROJECTNAME=${PROJECT}-${USER}
-fi
+CONTAINER=${PWD##*/}
 
-cd ../../
-chmod a+x *.sh
-./debug.sh $PROJECTNAME $PROJECT
+docker exec -it ${CONTAINER}-client bash

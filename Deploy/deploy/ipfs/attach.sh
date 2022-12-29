@@ -8,8 +8,4 @@
 
 CONTAINER=${PWD##*/}
 
-if [ "$USER" == "root" ]; then
-   docker attach ${CONTAINER}
-else
-   docker attach ${CONTAINER}-${USER}
-fi
+docker attach ${CONTAINER}
