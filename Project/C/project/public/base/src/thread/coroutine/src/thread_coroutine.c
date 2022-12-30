@@ -523,19 +523,31 @@ _thread_coroutine_booting(void)
 // =====================================================================
 
 void
-thread_coroutine_init(ThreadStruct *pThread)
+thread_coroutine_init(void)
 {
 	coroutine_core_init();
+}
+
+void
+thread_coroutine_exit(void)
+{
+	coroutine_core_exit();
+}
+
+void
+thread_coroutine_creat(ThreadStruct *pThread)
+{
+	coroutine_core_creat();
 
 	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup, NULL);
 }
 
 void
-thread_coroutine_exit(ThreadStruct *pThread)
+thread_coroutine_die(ThreadStruct *pThread)
 {
 	base_thread_msg_unregister(pThread->thread_id, MSGID_COROUTINE_WAKEUP);
 
-	coroutine_core_exit();
+	coroutine_core_die();
 }
 
 dave_bool

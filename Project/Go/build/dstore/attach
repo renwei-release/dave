@@ -6,17 +6,10 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
-DEPLOYPATH=../../../../Deploy/deploy/${PROJECT}
-
-cd ${DEPLOYPATH}
+CONTAINER=${PWD##*/}
 
 if [ "$USER" == "root" ]; then
-   PROJECTNAME=${PROJECT}
+   docker attach ${CONTAINER}
 else
-   PROJECTNAME=${PROJECT}-${USER}
+   docker attach ${CONTAINER}-${USER}
 fi
-
-echo debug $PROJECTNAME
-chmod a+x *.sh
-./debug.sh $PROJECTNAME

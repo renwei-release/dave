@@ -66,6 +66,7 @@ _thread_mem_poweroff(s8 *file, ub line, ub len, ub msg_id)
 
 	message_index += base_thread_info(&message[message_index], sizeof(message)-message_index);
 	message_index += base_mem_info(&message[message_index], sizeof(message)-message_index, dave_false);
+	message_index += thread_memory_info(&message[message_index], sizeof(message)-message_index, dave_false);
 
 	message_index += dave_snprintf(&message[message_index], sizeof(message) - message_index,
 		"\nThread Limited Memory, %s:%d malloc length:%d msg_id:%d",
@@ -173,11 +174,11 @@ thread_memory_at_here(void *ptr)
 }
 
 ub
-thread_memory_info(s8 *info, ub info_len, dave_bool base_flag)
+thread_memory_info(s8 *info_ptr, ub info_len, dave_bool base_flag)
 {
 	ub info_index = 0;
 
-	info_index += thread_exter_memory_info(&info[info_index], info_len-info_index, base_flag);
+	info_index += thread_exter_memory_info(&info_ptr[info_index], info_len-info_index, base_flag);
 
 	return info_index;
 }

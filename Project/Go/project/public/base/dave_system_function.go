@@ -15,7 +15,7 @@ import (
 
 type msg_function_define func(string, string, uint64, uint64, unsafe.Pointer)
 
-func fun_None(msg_src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
+func fun_None(src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 
 }
 

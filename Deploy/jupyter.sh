@@ -12,11 +12,7 @@ JUPYTERCFGFILE=/root/.jupyter/jupyter_notebook_config.py
 File=$(basename $0)
 
 if [ $JUPYTERPORT != 8888 ]; then
-   HASJUPYTER=`docker exec -t ${PROJECTNAME} /usr/bin/command -v jupyter`
-   HASJUPYTER=$(echo $HASJUPYTER | grep "jupyter")
-   if [ "${HASJUPYTER}" != "" ]; then
-      echo jupyter.sh find jupyter, replece ${PROJECTNAME} jupyter port to ${JUPYTERPORT}
-      JUPYTERPORTLINE=`docker exec -t ${PROJECTNAME} cat -n ${JUPYTERCFGFILE} | grep 'c.NotebookApp.port = ' | awk '{print $1}'`
-      docker exec -t ${PROJECTNAME} sed -i "${JUPYTERPORTLINE}c c.NotebookApp.port = ${JUPYTERPORT}" ${JUPYTERCFGFILE}
-   fi
+   echo ${File} find jupyter, replece ${PROJECTNAME} jupyter port to ${JUPYTERPORT}
+   JUPYTERPORTLINE=`docker exec -t ${PROJECTNAME} cat -n ${JUPYTERCFGFILE} | grep 'c.NotebookApp.port = ' | awk '{print $1}'`
+   docker exec -t ${PROJECTNAME} sed -i "${JUPYTERPORTLINE}c c.NotebookApp.port = ${JUPYTERPORT}" ${JUPYTERCFGFILE}
 fi

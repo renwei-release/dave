@@ -161,8 +161,6 @@ _coroutine_core_init(void)
 	{
 		_co_thread_env[tid_index] = NULL;
 	}
-
-	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
 }
 
 static void
@@ -289,12 +287,46 @@ void
 coroutine_core_init(void)
 {
 	_coroutine_core_init();
+
+	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
 }
 
 void
 coroutine_core_exit(void)
 {
 	_coroutine_core_exit();
+}
+
+void
+coroutine_core_creat(void)
+{
+	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
+}
+
+void
+coroutine_core_die(void)
+{
+
+}
+
+void
+coroutine_set_stack_size(ub size)
+{
+	_coroutine_stack_size = size;
+
+	if(_coroutine_stack_size >= 8 * 1024 * 1024)
+	{
+		THREADABNOR("Note that you may have set a stack size(%ld) that is too large.",
+			_coroutine_stack_size);
+	}
+
+	cfg_set_ub(CFG_COROUTINE_STACK_SIZE, _coroutine_stack_size);	
+}
+
+ub
+coroutine_get_stack_size(void)
+{
+	return _coroutine_stack_size;
 }
 
 void *

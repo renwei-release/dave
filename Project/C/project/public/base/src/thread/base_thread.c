@@ -983,7 +983,7 @@ _thread_del_last_fun(MSGBODY *thread_msg)
 		THREADDEBUG("name:%s id:%d index:%d", pThread->thread_name, pThread->thread_id, thread_index);
 
 #ifdef ENABLE_THREAD_COROUTINE
-		thread_coroutine_exit(pThread);
+		thread_coroutine_die(pThread);
 #endif
 
 		thread_map_name_del(pThread->thread_name);
@@ -1010,7 +1010,7 @@ _thread_creat_frist_fun(ThreadStruct *pThread)
 	thread_map_name_add((s8 *)(pThread->thread_name), pThread);
 
 #ifdef ENABLE_THREAD_COROUTINE
-	thread_coroutine_init(pThread);
+	thread_coroutine_creat(pThread);
 #endif
 }
 
@@ -1341,6 +1341,11 @@ _thread_reupdate_thread_flag(ub thread_flag)
 	}
 #endif
 
+	if(thread_flag & THREAD_dCOROUTINE_FLAG)
+	{
+		thread_flag &= (~THREAD_COROUTINE_FLAG);
+	}
+
 	return thread_flag;
 }
 
@@ -1364,6 +1369,8 @@ base_thread_init(void *main_thread_id, s8 *sync_domain)
 	thread_memory_init();
 
 	thread_tools_init(_thread);
+
+	thread_coroutine_init();
 
 	_thread_init();
 
@@ -1395,6 +1402,8 @@ base_thread_exit(void)
 	thread_call_exit();
 
 	_thread_exit();
+
+	thread_coroutine_exit();
 
 	thread_tools_exit();
 

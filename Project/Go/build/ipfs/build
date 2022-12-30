@@ -7,10 +7,9 @@
 # */
 
 PROJECT=${PWD##*/}
-TAGS="openssl"
 CONTAINER="golang19"
 
 ../ENV ${CONTAINER}
 
 echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/build && ./BUILD ${PROJECT} ${TAGS}"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PROJECT} && ./BUILD ${PROJECT} /project/DAVE/Project/Go/build/${PROJECT}"

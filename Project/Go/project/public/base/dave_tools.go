@@ -10,6 +10,7 @@ package base
 import (
 	"dave/public/auto"
 	"dave/public/tools"
+	"encoding/json"
 	"fmt"
 )
 
@@ -38,4 +39,24 @@ func T_mbuf2gobyte(mbuf_data *auto.MBUF) ([]byte, error) {
 	}
 	go_byte := tools.T_cgo_cbin2gobyte(mbuf_data.Len, mbuf_data.Payload)
 	return go_byte, nil
+}
+
+func T_mbuf2gojson(mbuf_data *auto.MBUF, json_struct interface{}) error {
+	go_byte := tools.T_cgo_cbin2gobyte(mbuf_data.Len, mbuf_data.Payload)
+
+	err := json.Unmarshal(go_byte, json_struct)
+	if err != nil {
+		DAVELOG("err:%v", err)
+		return err
+	}
+	return nil
+}
+
+func T_gojson2mbuf(json_data interface{}) *auto.MBUF {
+	json_string, err := json.Marshal(json_data)
+	if err != nil {
+		DAVELOG("err:%v", err)
+		return nil
+	}
+	return T_gobyte2mbuf(json_string)
 }

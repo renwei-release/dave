@@ -8,42 +8,21 @@ package blockchain
  */
 
 import (
-	"dave/product/blockchain/eth/app/nft"
-	"dave/product/blockchain/eth/app/info"
+	"dave/product/blockchain/eth"
+	"dave/product/blockchain/vsys"
 )
-
-func _blockchain_deploy_nft() string {
-	ret, address := eth_nft.Eth_deploy_nft("https://github.com/renwei-release/dave", "renwei's token")
-	if ret == true {
-		return "the NFT address is "+address
-	} else {
-		return "deploy NFT failed!"
-	}
-}
-
-func _blockchain_search_nft() {
-	eth_nft.Eth_search_nft(true, "0x1E63b953a9774a9EBFC43D4A33b3dC8972FB4346")
-}
-
-func _blockchain_address_info() {
-	// "0xe8a650bda76f9b81b248662ab0974e5af7776275"
-	// "0xF989e900Ac453089A0C0E082FCE037139f355934"
-	eth_info.Eth_total_info("0xe8a650bda76f9b81b248662ab0974e5af7776275")
-}
 
 // =====================================================================
 
 func blockchain_debug(debug_req string) string {
 	debug_rsp := ""
 
-	if debug_req == "deploy" {
-		debug_rsp = _blockchain_deploy_nft()
-	} else if debug_req == "search" {
-		_blockchain_search_nft()
-	} else if debug_req == "info" {
-		_blockchain_address_info()
+	if (len(debug_req) > 3) && (debug_req[0:3] == "eth") {
+		debug_rsp = eth.Eth_debug(debug_req[4:])
+	} else if (len(debug_req) > 4) && (debug_req[0:4] == "vsys") {
+		debug_rsp = VSYS.VSYS_debug(debug_req[5:])
 	} else {
-		debug_rsp = "bad request!"
+		debug_rsp = "bad request:"+debug_req
 	}
 
 	return debug_rsp

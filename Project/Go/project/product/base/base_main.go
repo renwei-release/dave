@@ -45,9 +45,10 @@ func _fun_RPC_DEBUG_REQ(remote_thread_name string) {
 
 func _fun_MSGID_REMOTE_THREAD_ID_READY(src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer) {
 	pReady := (*auto.ThreadRemoteIDReadyMsg)(msg_body)
+	remote_thread_id := pReady.Remote_thread_id
 	remote_thread_name := tools.T_cgo_gobyte2gostring(pReady.Remote_thread_name[:])
 
-	base.DAVELOG("%s", remote_thread_name)
+	base.DAVELOG("%s/%lx", remote_thread_name, remote_thread_id)
 
 	if remote_thread_name == "main_aib" {
 		_fun_RPC_DEBUG_REQ(remote_thread_name)

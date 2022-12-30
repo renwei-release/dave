@@ -1,7 +1,4 @@
-//go:build __DAVE_PRODUCT_IPFS__
-// +build __DAVE_PRODUCT_IPFS__
-
-package product
+package VSYS
 
 /*
  * Copyright (c) 2022 Renwei
@@ -11,15 +8,11 @@ package product
  */
 
 import (
-	"dave/product/ipfs"
+	"dave/product/blockchain/vsys/core"
 )
 
 // =====================================================================
 
-func Product_init() {
-	ipfs.Dave_product_init()
-}
-
-func Product_exit() {
-	ipfs.Dave_product_exit()
+func VSYS_booting() {
+	vsys_core.VSYS_init()
 }

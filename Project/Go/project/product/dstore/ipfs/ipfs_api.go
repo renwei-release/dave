@@ -32,34 +32,45 @@ func _ipfs_cat_data(cid string) {
 	base.DAVELOG("cat the cid:%s -> %s", cid, buf)
 }
 
-func _ipfs_add_file(file_name string) {
+func _ipfs_add_file(file_name string) string {
 	base.DAVELOG("add file_name:%s", file_name)
 
 	file_data := tools.T_file_read(file_name)
 	if file_data == nil {
 		base.DAVELOG("can't read file_name:%s", file_name)
-		return
+		return ""
 	}
 
 	cid, err := _MyIPFSShell.Add(files.NewBytesFile([]byte(file_data)))
 	if err != nil {
 		base.DAVELOG("error: %s", err)
-		return
+		return ""
 	}
 	base.DAVELOG("add file_name:%s the cid:%s", file_name, cid)
 
-	_ipfs_cat_data(cid)
+	return cid
 }
 
-func _ipfs_add_str(string_data string) {
+func _ipfs_add_str(string_data string) string {
 	cid, err := _MyIPFSShell.Add(strings.NewReader(string_data))
 	if err != nil {
 		base.DAVELOG("error: %s", err)
-		return
+		return ""
 	}
 	base.DAVELOG("add the cid:%s", cid)
 
-	_ipfs_cat_data(cid)
+	return cid
+}
+
+func _ipfs_add_bin(bin_data []byte) string {
+	cid, err := _MyIPFSShell.Add(files.NewBytesFile(bin_data))
+	if err != nil {
+		base.DAVELOG("error: %s", err)
+		return ""
+	}
+	base.DAVELOG("add bin_data the cid:%s", cid)
+
+	return cid
 }
 
 func _ipfs_swarm_build() {
@@ -86,18 +97,22 @@ func _ipfs_swarm_build() {
 
 // =====================================================================
 
-func ipfs_cat_data(cid string) {
+func IPFS_cat_data(cid string) {
 	_ipfs_cat_data(cid)
 }
 
-func ipfs_add_file(file string) {
-	_ipfs_add_file(file)
+func IPFS_add_file(file_name string) string {
+	return _ipfs_add_file(file_name)
 }
 
-func ipfs_add_str(data string) {
-	_ipfs_add_str(data)
+func IPFS_add_str(string_data string) string {
+	return _ipfs_add_str(string_data)
 }
 
-func ipfs_swarm_build() {
+func IPFS_add_bin(bin_data []byte) string {
+	return _ipfs_add_bin(bin_data)
+}
+
+func IPFS_swarm_build() {
 	_ipfs_swarm_build()
 }
