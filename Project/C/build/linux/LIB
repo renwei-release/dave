@@ -15,7 +15,7 @@ ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L../../../../ThirdParty/build/magsac/setup/lib -lmagsac
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
-LIB += -L../../../../ThirdParty/build/jaeger-client-cpp/setup/lib64 -ljaegertracing -lthrift
+LIB += -L../../../../ThirdParty/build/jaeger-client-cpp/setup/lib64 -ljaegertracing
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
 LIB += -L../../../../ThirdParty/build/thrift/setup/lib -lthrift
