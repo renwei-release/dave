@@ -40,8 +40,16 @@ type DllMsgBody struct {
 	msg_body     unsafe.Pointer
 }
 
+var pre_init = Dave_go_system_pre_init()
+
 var _product_init_fun func()
 var _product_exit_fun func()
+
+func dave_reset_verno() {
+	c_my_verno := C.CString(Dave_verno())
+	C.dave_dll_reset_verno(c_my_verno)
+	C.free(unsafe.Pointer(c_my_verno))
+}
 
 //export dave_go_init
 func dave_go_init(c_data unsafe.Pointer) {
@@ -73,6 +81,16 @@ func _dave_go_self_check() C.int {
 }
 
 // =====================================================================
+
+func Dave_go_system_pre_init() bool {
+	/*
+	 * Preventing the system from being called in advance
+	 * without initialization call
+	 */
+	 dave_reset_verno()
+
+	 return true
+}
 
 func Dave_go_init(product_verno string, work_mode string, sync_domain string, init_fun func(), exit_fun func()) {
 	_product_init_fun = init_fun

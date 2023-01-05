@@ -146,7 +146,7 @@ dave_dll_main_init(
 
 	if(thread_flag & THREAD_COROUTINE_FLAG)
 	{
-		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 1024 * 1024);
+		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 256 * 1024);
 	}
 
 	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);

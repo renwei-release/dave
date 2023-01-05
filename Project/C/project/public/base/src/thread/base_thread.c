@@ -46,6 +46,7 @@ typedef struct {
 static volatile dave_bool __system_startup__ = dave_false;
 static void *_main_thread_id = NULL;
 static volatile sb _system_wakeup_counter = 0;
+static ub _system_thread_pv_init_flag = 0x00;
 static TLock _system_thread_pv;
 static volatile ub _system_schedule_counter = 0;
 
@@ -1349,6 +1350,16 @@ _thread_reupdate_thread_flag(ub thread_flag)
 	return thread_flag;
 }
 
+static inline void
+_thread_system_pv_init(void)
+{
+	if(_system_thread_pv_init_flag != 0x1234567890)
+	{
+		_system_thread_pv_init_flag = 0x1234567890;
+		t_lock_reset(&_system_thread_pv);
+	}
+}
+
 // =====================================================================
 
 void
@@ -1360,7 +1371,7 @@ base_thread_init(void *main_thread_id, s8 *sync_domain)
 
 	_system_wakeup_counter = 0;
 
-	t_lock_reset(&_system_thread_pv);
+	_thread_system_pv_init();
 
 	_system_schedule_counter = 0;
 
@@ -1443,7 +1454,9 @@ base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun t
 	thread_flag = _thread_reupdate_thread_flag(thread_flag);
 
 	SAFECODEv2W(_system_thread_pv, {
+
 		thread_id = _thread_safe_creat((s8 *)name, level_number, thread_flag, thread_init, thread_main, thread_exit);
+
 	} );
 
 	return thread_id;
@@ -1455,7 +1468,9 @@ base_thread_del(ThreadId thread_id)
 	dave_bool ret = dave_false;
 
 	SAFECODEv2W(_system_thread_pv, {
+
 		ret = _thread_safe_del(thread_id);
+
 	} );
 
 	return ret;
@@ -1476,6 +1491,8 @@ base_thread_get_id(const s8 *name, s8 *fun, ub line)
 	{
 		if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 		{
+			_thread_system_pv_init();
+		
 			SAFECODEv2R(_system_thread_pv, {
 
 				thread_id = _thread_get_id_(name, fun, line);
@@ -1507,6 +1524,8 @@ base_thread_get_name(ThreadId thread_id, s8 *fun, ub line)
 
 	if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 	{
+		_thread_system_pv_init();
+
 		SAFECODEv2R(_system_thread_pv, {
 
 			name = _thread_get_name_(thread_id, fun, line);

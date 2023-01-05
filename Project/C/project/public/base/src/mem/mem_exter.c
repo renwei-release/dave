@@ -18,7 +18,18 @@
 #define EXTER_MEM_MAX 32
 #define EXTER_MEM_NAME "EXTER"
 
+static ub _exter_mem_init_flag = 0x00;
 static BlockMem _exter_mem[EXTER_MEM_MAX];
+
+static inline void
+_exter_mem_init(void)
+{
+	if(_exter_mem_init_flag != 0x1234567890)
+	{
+		_exter_mem_init_flag = 0x1234567890;
+		block_mem_reset(_exter_mem, EXTER_MEM_MAX);
+	}
+}
 #endif
 
 // =====================================================================
@@ -27,7 +38,7 @@ void
 exter_mem_init(void)
 {
 #ifdef EXTER_ENABLE_BLOCK
-	block_mem_reset(_exter_mem, EXTER_MEM_MAX);
+	_exter_mem_init();
 #endif
 }
 
@@ -43,6 +54,7 @@ void *
 __exter_malloc__(ub len, s8 *file, ub line)
 {
 #ifdef EXTER_ENABLE_BLOCK
+	_exter_mem_init();
 	return block_malloc(_exter_mem, len, file, line);
 #else
 	return __block_mem_malloc__((size_t)len);

@@ -33,6 +33,8 @@ func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *keystore.Key {
 }
 
 func _eth_private_key() string {
+	// AI-Test-GNC-GPU-1 5c1f272f29694651717abd8456d4893422121d4bc7cc7293ea785c6ecee1f90e
+	// renwei-local 5f2253a32ccb2aa1c419e47213274276286829f9688f78a84c62f24eafc18494
 	return base.Cfg_get("ETHPrivateKey", "5f2253a32ccb2aa1c419e47213274276286829f9688f78a84c62f24eafc18494")
 }
 

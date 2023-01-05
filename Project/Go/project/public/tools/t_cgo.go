@@ -52,6 +52,7 @@ func T_cgo_gobyte2gostring(go_byte []byte) string {
 			break
 		}
 	}
+
     go_string := string(go_byte)
     stringStructOf(&go_string).len = byte_string_len
     return go_string

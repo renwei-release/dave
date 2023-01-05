@@ -11,6 +11,7 @@ IMAGE=$2
 TAG=$3
 File=$(basename $0)
 RUNNINGPATH=./deploy/${PROJECT}/file_system/project
+RUNNINGFILE=dave-running.sh
 DOCKERFILE=./deploy/${PROJECT}/Dockerfile
 
 if [ "$TAG" == "" ]; then
@@ -19,11 +20,16 @@ else
    exit_dave_image=`docker image ls | grep ${IMAGE} | grep ${TAG}`
 fi
 
+if [ -f ${RUNNINGPATH}/${RUNNINGFILE} ]; then
+   chmod a+x ${RUNNINGPATH}/${RUNNINGFILE}
+fi
+
 if [ "$exit_dave_image" == "" ]; then
    if [ -f ${DOCKERFILE} ]; then
       echo ${File} build ${IMAGE} on ${IMAGE}:${TAG}
-	  mkdir -p ${RUNNINGPATH}
-      cp dave-running.sh ${RUNNINGPATH}
+	   mkdir -p ${RUNNINGPATH}
+      chmod a+x ${RUNNINGFILE}
+      cp ${RUNNINGFILE} ${RUNNINGPATH}
       docker build --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
    else
       echo ${File} "can't find ${DOCKERFILE}"

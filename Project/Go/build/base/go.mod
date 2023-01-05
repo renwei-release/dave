@@ -35,12 +35,14 @@ require (
 	github.com/libp2p/go-libp2p-record v0.1.3
 	github.com/libp2p/go-libp2p-tls v0.3.1
 	github.com/libp2p/go-tcp-transport v0.5.1
+	github.com/mitchellh/mapstructure v1.4.1
 	github.com/multiformats/go-base32 v0.0.3
 	github.com/multiformats/go-multiaddr v0.5.0
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/stretchr/testify v1.8.0
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
+	github.com/virtualeconomy/go-v-sdk v0.0.0-20200428132006-341e68274cb4
 	github.com/whyrusleeping/timecache v0.0.0-20160911033111-cfcb2f1abfee
 	go.opencensus.io v0.23.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4

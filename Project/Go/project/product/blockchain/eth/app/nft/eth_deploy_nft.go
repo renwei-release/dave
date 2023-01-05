@@ -11,7 +11,6 @@ import (
 	"dave/product/blockchain/eth/core"
 	"dave/product/blockchain/eth/token/nft_token"
 	"dave/public/base"
-	"math/big"
 )
 
 // =====================================================================
@@ -41,13 +40,6 @@ func Eth_deploy_nft(nft_uri string, nft_name string) (bool, string) {
 		base.DAVELOG("err:%v", err)
 	} else {
 		base.DAVELOG("uri:%v", uri)
-	}
-
-	tokenid, err := token.TokenByIndex(nil, big.NewInt(1))
-	if err != nil {
-		base.DAVELOG("err:%v", err)
-	} else {
-		base.DAVELOG("tokenid:%v", tokenid)
 	}
 
 	byte_address, _ := address.MarshalText()

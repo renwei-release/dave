@@ -26,13 +26,13 @@ type AddBinRsp struct {
 func _ipfs_add_bin(base64_data string) string {
 	bin_data, err := base64.StdEncoding.DecodeString(base64_data)
 	if err != nil {
-		base.DAVELOG("err:%v", err)
+		base.DAVELOG("err:%v base64_data:%v", err, base64_data)
 		return ""
 	}
 
-	cid := ipfs.IPFS_add_bin(bin_data)
+	cid := ipfs.IPFS_add_bin(bin_data, "nft.jpg")
 
-	return "https://ipfs.io/ipfs/"+cid
+	return "/ipfs/"+cid
 }
 
 func _add_bin(param interface{}) (interface{}, int64) {

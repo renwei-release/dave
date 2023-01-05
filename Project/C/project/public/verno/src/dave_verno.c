@@ -12,6 +12,7 @@
 
 static const s8 __const_verno__[] = "++DAVEVERNO++"VERSION_PRODUCT"."VERSION_MISC"."VERSION_MAIN"."VERSION_SUB"."VERSION_REV"."VERSION_DATE_TIME"."VERSION_LEVEL"\0";
 static s8 __dave_verno__[DAVE_VERNO_STR_LEN + 1] = { "\0" };
+static s8 _product_str[128] = { '\0' };
 
 static s8 *
 _verno_product(s8 *verno, s8 *temp_ptr, ub temp_len)
@@ -35,6 +36,8 @@ dave_verno(void)
 s8 *
 dave_verno_reset(s8 *verno)
 {
+	dave_memset(_product_str, 0x00, sizeof(_product_str));
+
 	dave_strcpy(__dave_verno__, verno, sizeof(__dave_verno__));
 
 	return dave_verno();
@@ -43,7 +46,7 @@ dave_verno_reset(s8 *verno)
 s8 *
 dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 {
-	static s8 product_str[128];
+	static s8 product_str[64];
 
 	if(verno == NULL)
 	{
@@ -63,11 +66,9 @@ dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 s8 *
 dave_verno_my_product(void)
 {
-	static s8 product_str[128] = { '\0' };
+	if(_product_str[0] != '\0')
+		return _product_str;
 
-	if(product_str[0] != '\0')
-		return product_str;
-
-	return dave_verno_product(dave_verno(), product_str, sizeof(product_str));
+	return dave_verno_product(dave_verno(), _product_str, sizeof(_product_str));
 }
 

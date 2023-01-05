@@ -8,9 +8,23 @@ package tools
  */
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
+
+func _file_creat_dir(file_path string) {
+	for index:=1; index<len(file_path); index++ {
+		if file_path[index] == '/' {
+			cur_path := file_path[0:index]
+
+			_ , err :=os.Stat(cur_path)
+			if err != nil {
+				os.Mkdir(cur_path, 0666)
+			}
+		}
+    }
+}
 
 // =====================================================================
 
@@ -42,4 +56,31 @@ func T_file_read(file_name string) []byte{
 	}
 
 	return buffer
+}
+
+func T_file_write(file_data []byte, file_name string) error {
+	_file_creat_dir(file_name)
+
+	file, err := os.OpenFile(file_name, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("open file:%s err:%v", file_name, err)
+		return err
+	}
+	defer file.Close()
+
+	wlen, err := file.Write(file_data)
+	if err != nil {
+		fmt.Println("write file:%s err:%v", file_name, err)
+		return err
+	}
+	if wlen != len(file_data) {
+		fmt.Println("write file:%s len:%d/%d err:%v", file_name, wlen, len(file_data), err)
+		return errors.New("write file error!")
+	}
+
+	return nil
+}
+
+func T_dir_remove(dir_path string) {
+	os.RemoveAll(dir_path)
 }

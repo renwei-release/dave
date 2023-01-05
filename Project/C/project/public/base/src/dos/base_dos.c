@@ -9,6 +9,7 @@
 #if defined(__DAVE_BASE__)
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_verno.h"
 #include "dos_cmd.h"
 #include "dos_pop.h"
 #include "dos_show.h"
@@ -32,6 +33,25 @@ _base_dos_is_private(void)
 	{
 		return 0x00;
 	}
+}
+
+static s8 *
+_base_dos_thread_name(s8 *thread_name, ub thread_len)
+{
+	s8 product_name[128];
+
+	if(_base_dos_is_private() == dave_false)
+	{
+		dave_strcpy(product_name, dave_verno_my_product(), sizeof(product_name));
+		t_stdio_tolowers(product_name);
+		dave_snprintf(thread_name, thread_len, "%s_%s", DOS_THREAD_NAME);
+	}
+	else
+	{
+		dave_snprintf(thread_name, thread_len, "%s", DOS_THREAD_NAME);
+	}
+
+	return thread_name;
 }
 
 static void
@@ -72,12 +92,15 @@ void
 base_dos_init(void)
 {
 	ub thread_flag = THREAD_THREAD_FLAG|_base_dos_is_private();
+	s8 thread_name[128];
+
+	_base_dos_thread_name(thread_name, sizeof(thread_name));
 
 	dos_cmd_init();
 
-	_dos_thread = base_thread_creat(DOS_THREAD_NAME, 1, thread_flag, _base_dos_init, _base_dos_main, _base_dos_exit);
+	_dos_thread = base_thread_creat(thread_name, 1, thread_flag, _base_dos_init, _base_dos_main, _base_dos_exit);
 	if(_dos_thread == INVALID_THREAD_ID)
-		base_restart(DOS_THREAD_NAME);
+		base_restart(thread_name);
 }
 
 void

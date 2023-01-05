@@ -21,6 +21,12 @@ dave_dll_verno(void)
 	return (char *)dave_verno();
 }
 
+char *
+dave_dll_reset_verno(char *verno)
+{
+	return dave_verno_reset(verno);
+}
+
 void *
 dave_dll_mmalloc(int length, char *func, int line)
 {

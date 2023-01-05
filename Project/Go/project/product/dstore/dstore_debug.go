@@ -9,23 +9,18 @@ package dstore
 
 import (
 	"dave/product/dstore/ipfs"
-	"dave/public/base"
 )
 
 // =====================================================================
 
-func dstore_debug(debug_data string) string {
-	base.DAVELOG("%s", debug_data)
+func dstore_debug(debug_req string) string {
+	debug_rsp := ""
 
-	if debug_data[0:8] == "add_file" {
-		ipfs.IPFS_add_file(debug_data[9:])
-	} else if debug_data[0:7] == "add_str" {
-		ipfs.IPFS_add_str(debug_data[8:])
-	} else if debug_data[0:3] == "cat" {
-		ipfs.IPFS_cat_data(debug_data[4:])
+	if (len(debug_req) > 3) && (debug_req[0:4] == "ipfs") {
+		debug_rsp = ipfs.IPFS_debug(debug_req[5:])
 	} else {
-		base.DAVELOG("can't find the command:%s", debug_data)
+		debug_rsp = "bad request:"+debug_req
 	}
 
-	return debug_data
+	return debug_rsp
 }

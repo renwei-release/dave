@@ -10,6 +10,7 @@
 #include "dave_os.h"
 #include "tools_log.h"
 
+static ub _t_booting_init_flag = 0x00;
 static TLock _t_booting_lock;
 
 #ifdef LEVEL_PRODUCT_alpha
@@ -93,12 +94,22 @@ _t_unlock_try_check(TLock *pLock, s8 *fun, ub line)
 
 #endif
 
+static inline void
+_t_lock_booting(void)
+{
+	if(_t_booting_init_flag != 0x1234567890)
+	{
+		_t_booting_init_flag = 0x1234567890;
+		t_lock_reset(&_t_booting_lock);
+	}
+}
+
 // =====================================================================
 
 void
 t_lock_booting(void)
 {
-	t_lock_reset(&_t_booting_lock);
+	_t_lock_booting();
 }
 
 void
@@ -143,6 +154,7 @@ __t_lock_spin__(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -181,6 +193,7 @@ __t_rlock_rw__(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -199,6 +212,7 @@ __t_wlock_rw__(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -219,6 +233,7 @@ __t_trlock_rw__(TLock *pLock, s8 *fun, ub line)
 
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -249,6 +264,7 @@ __t_twlock_rw__(TLock *pLock, s8 *fun, ub line)
 
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -295,6 +311,7 @@ __t_lock_mutex__(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 
@@ -311,6 +328,7 @@ __t_trylock_mutex__(TLock *pLock, s8 *fun, ub line)
 
 	if(pLock == NULL)
 	{
+		_t_lock_booting();
 		pLock = &_t_booting_lock;
 	}
 

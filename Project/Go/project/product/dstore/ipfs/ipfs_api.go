@@ -17,24 +17,22 @@ import (
 	"strings"
 )
 
-var _MyIPFSNodeServer string = "127.0.0.1:5001"
+var _MyIPFSNodeServer string = base.Cfg_get("IPFSServerURL", "18.143.154.81:5001")
 var _MyIPFSShell * shell.Shell = shell.NewShell(_MyIPFSNodeServer)
 
 func _ipfs_cat_data(cid string) {
-	base.DAVELOG("start cat cid:%s on %s", cid, _MyIPFSNodeServer)
 	reader, err := _MyIPFSShell.Cat(cid)
 	if err != nil {
-		base.DAVELOG("error: %s", err)
+		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
 		return
 	}
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
-	base.DAVELOG("cat the cid:%s -> %s", cid, buf)
+
+	base.DAVELOG("cat the cid:%s->%s from %s", cid, buf, _MyIPFSNodeServer)
 }
 
 func _ipfs_add_file(file_name string) string {
-	base.DAVELOG("add file_name:%s", file_name)
-
 	file_data := tools.T_file_read(file_name)
 	if file_data == nil {
 		base.DAVELOG("can't read file_name:%s", file_name)
@@ -43,10 +41,11 @@ func _ipfs_add_file(file_name string) string {
 
 	cid, err := _MyIPFSShell.Add(files.NewBytesFile([]byte(file_data)))
 	if err != nil {
-		base.DAVELOG("error: %s", err)
+		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
 		return ""
 	}
-	base.DAVELOG("add file_name:%s the cid:%s", file_name, cid)
+
+	base.DAVELOG("add file:%s to:%s the cid:%s", file_name, _MyIPFSNodeServer, cid)
 
 	return cid
 }
@@ -54,21 +53,42 @@ func _ipfs_add_file(file_name string) string {
 func _ipfs_add_str(string_data string) string {
 	cid, err := _MyIPFSShell.Add(strings.NewReader(string_data))
 	if err != nil {
-		base.DAVELOG("error: %s", err)
+		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
 		return ""
 	}
-	base.DAVELOG("add the cid:%s", cid)
+
+	base.DAVELOG("add:%s to:%s the cid:%s", string_data, _MyIPFSNodeServer, cid)
 
 	return cid
 }
 
-func _ipfs_add_bin(bin_data []byte) string {
-	cid, err := _MyIPFSShell.Add(files.NewBytesFile(bin_data))
+func _ipfs_add_bin(bin_data []byte, bin_name string) string {
+	bin_path := "/project/ipfs/data/"+tools.T_rand()
+	bin_file := bin_path+"/"+bin_name
+
+	err := tools.T_file_write(bin_data, bin_file)
 	if err != nil {
-		base.DAVELOG("error: %s", err)
+		base.DAVELOG("write file:%s failed:%v", bin_file, err)
 		return ""
 	}
-	base.DAVELOG("add bin_data the cid:%s", cid)
+
+	cid := _ipfs_add_dir(bin_path)
+
+	tools.T_dir_remove(bin_path)
+
+	base.DAVELOG("add bin:%s to:%s the cid:%s", bin_file, _MyIPFSNodeServer, cid)
+
+	return cid
+}
+
+func _ipfs_add_dir(dir string) string {
+	cid, err := _MyIPFSShell.AddDir(dir)
+	if err != nil {
+		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		return ""
+	}
+
+	base.DAVELOG("add dir:%s to:%s the cid:%s", dir, _MyIPFSNodeServer, cid)
 
 	return cid
 }
@@ -92,7 +112,7 @@ func _ipfs_swarm_build() {
 
 	cidTLI := strings.Split(latestTLI, "s/")[1]
 
-	base.DAVELOG("get cid :%v", cidTLI)
+	base.DAVELOG("get cid:%v", cidTLI)
 }
 
 // =====================================================================
@@ -109,8 +129,12 @@ func IPFS_add_str(string_data string) string {
 	return _ipfs_add_str(string_data)
 }
 
-func IPFS_add_bin(bin_data []byte) string {
-	return _ipfs_add_bin(bin_data)
+func IPFS_add_bin(bin_data []byte, bin_name string) string {
+	return _ipfs_add_bin(bin_data, bin_name)
+}
+
+func IPFS_add_dir(dir string) string {
+	return _ipfs_add_dir(dir)
 }
 
 func IPFS_swarm_build() {
