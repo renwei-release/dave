@@ -8,8 +8,8 @@ package blockchain
  */
 
 import (
-	"dave/product/blockchain/eth"
-	"dave/product/blockchain/vsys"
+	"dave/product/blockchain/supplier/eth"
+	"dave/product/blockchain/supplier/vsys"
 )
 
 // =====================================================================

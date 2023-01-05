@@ -11,7 +11,7 @@ import (
 	"dave/public/auto"
 	"dave/public/base"
 
-	"dave/product/blockchain/eth/app/nft"
+	"dave/product/blockchain/supplier/eth/app/nft"
 	"github.com/mitchellh/mapstructure"
 )
 

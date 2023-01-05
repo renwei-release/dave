@@ -62,6 +62,18 @@ func _ipfs_add_str(string_data string) string {
 	return cid
 }
 
+func _ipfs_add_dir(dir string) string {
+	cid, err := _MyIPFSShell.AddDir(dir)
+	if err != nil {
+		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		return ""
+	}
+
+	base.DAVELOG("add dir:%s to:%s the cid:%s", dir, _MyIPFSNodeServer, cid)
+
+	return cid
+}
+
 func _ipfs_add_bin(bin_data []byte, bin_name string) string {
 	bin_path := "/project/ipfs/data/"+tools.T_rand()
 	bin_file := bin_path+"/"+bin_name
@@ -77,18 +89,6 @@ func _ipfs_add_bin(bin_data []byte, bin_name string) string {
 	tools.T_dir_remove(bin_path)
 
 	base.DAVELOG("add bin:%s to:%s the cid:%s", bin_file, _MyIPFSNodeServer, cid)
-
-	return cid
-}
-
-func _ipfs_add_dir(dir string) string {
-	cid, err := _MyIPFSShell.AddDir(dir)
-	if err != nil {
-		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
-		return ""
-	}
-
-	base.DAVELOG("add dir:%s to:%s the cid:%s", dir, _MyIPFSNodeServer, cid)
 
 	return cid
 }
@@ -129,12 +129,12 @@ func IPFS_add_str(string_data string) string {
 	return _ipfs_add_str(string_data)
 }
 
-func IPFS_add_bin(bin_data []byte, bin_name string) string {
-	return _ipfs_add_bin(bin_data, bin_name)
-}
-
 func IPFS_add_dir(dir string) string {
 	return _ipfs_add_dir(dir)
+}
+
+func IPFS_add_bin(bin_data []byte, bin_name string) string {
+	return _ipfs_add_bin(bin_data, bin_name)
 }
 
 func IPFS_swarm_build() {

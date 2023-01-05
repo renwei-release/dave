@@ -9,8 +9,8 @@ package VSYS
 
 import (
 	"dave/public/base"
-	"dave/product/blockchain/vsys/core"
-	"dave/product/blockchain/vsys/app/info"
+	"dave/product/blockchain/supplier/vsys/core"
+	"dave/product/blockchain/supplier/vsys/app/info"
 )
 
 func _connect_account() string {

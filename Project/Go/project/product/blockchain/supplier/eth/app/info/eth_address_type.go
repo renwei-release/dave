@@ -9,7 +9,7 @@ package eth_info
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"dave/product/blockchain/eth/core"
+	"dave/product/blockchain/supplier/eth/core"
 	"dave/public/base"
 	"context"
 )

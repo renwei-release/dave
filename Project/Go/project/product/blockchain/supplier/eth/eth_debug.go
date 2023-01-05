@@ -8,8 +8,8 @@ package eth
  */
 
 import (
-	"dave/product/blockchain/eth/app/nft"
-	"dave/product/blockchain/eth/app/info"
+	"dave/product/blockchain/supplier/eth/app/nft"
+	"dave/product/blockchain/supplier/eth/app/info"
 )
 
 func _blockchain_deploy_nft() string {

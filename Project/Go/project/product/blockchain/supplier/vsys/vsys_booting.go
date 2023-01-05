@@ -8,11 +8,14 @@ package VSYS
  */
 
 import (
-	"dave/product/blockchain/vsys/core"
+	"dave/product/blockchain/supplier/vsys/core"
 )
+
+var booting_flag = VSYS_booting()
 
 // =====================================================================
 
-func VSYS_booting() {
+func VSYS_booting() bool {
 	vsys_core.VSYS_init()
+	return true
 }

@@ -10,8 +10,8 @@ package eth_nft
 import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"dave/product/blockchain/eth/token/nft_token"
-	"dave/product/blockchain/eth/core"
+	"dave/product/blockchain/supplier/eth/token/nft_token"
+	"dave/product/blockchain/supplier/eth/core"
 	"dave/public/base"
 )
 

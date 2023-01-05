@@ -7,6 +7,8 @@
 # */
 
 PROJECT=$1
+TIDY=$2
+
 BUILDMODFILE=`pwd`/${PROJECT}/go.mod
 BUILDSUMFILE=`pwd`/${PROJECT}/go.sum
 PROJECTMODFILE=`pwd`/../project/go.mod
@@ -26,8 +28,11 @@ if [ -f ${BUILDSUMFILE} ]; then
 fi
 
 cd ../project
-echo tidy.sh go mod tidy
-go mod tidy
+
+if [ "$TIDY" != "" ]; then
+   echo tidy.sh go mod tidy
+   go mod tidy
+fi
 
 cp -rf ${PROJECTMODFILE} ${BUILDMODFILE}
 cp -rf ${PROJECTSUMFILE} ${BUILDSUMFILE}

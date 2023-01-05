@@ -11,7 +11,7 @@ import (
 	"dave/public/auto"
 	"dave/public/base"
 
-	"dave/product/blockchain/eth/core"
+	"dave/product/blockchain/supplier/eth/core"
 	"github.com/mitchellh/mapstructure"
 )
 

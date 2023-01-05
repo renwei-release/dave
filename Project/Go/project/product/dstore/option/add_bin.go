@@ -10,29 +10,29 @@ package option
 import (
 	"dave/public/base"
 	"dave/public/auto"
-	"dave/product/dstore/ipfs"
+	"dave/product/dstore/supplier/ipfs"
 	"encoding/base64"
 	"github.com/mitchellh/mapstructure"
 )
 
 type AddBinReq struct {
 	Bin_data string `json:"bin_data"`
+	Bin_name string `json:"bin_name"`
 }
 
 type AddBinRsp struct {
 	URL string `json:"url"`
+	Bin_name string `json:"bin_name"`
 }
 
-func _ipfs_add_bin(base64_data string) string {
-	bin_data, err := base64.StdEncoding.DecodeString(base64_data)
-	if err != nil {
-		base.DAVELOG("err:%v base64_data:%v", err, base64_data)
-		return ""
+func _ipfs_add_bin(bin_data []byte, bin_name string) (string, string) {
+	if len(bin_name) == 0 {
+		bin_name = "NFT.jpg"
 	}
 
-	cid := ipfs.IPFS_add_bin(bin_data, "nft.jpg")
+	cid := ipfs.IPFS_add_bin(bin_data, bin_name)
 
-	return "/ipfs/"+cid
+	return "/ipfs/"+cid, bin_name
 }
 
 func _add_bin(param interface{}) (interface{}, int64) {
@@ -42,13 +42,20 @@ func _add_bin(param interface{}) (interface{}, int64) {
 		return "", auto.RetCode_Invalid_parameter
 	}
 
-	url := _ipfs_add_bin(req.Bin_data)
+	bin_data, err := base64.StdEncoding.DecodeString(req.Bin_data)
+	if err != nil {
+		base.DAVELOG("err:%v base64_data:%v", err, req.Bin_data)
+		return "", auto.RetCode_decode_failed
+	}
+
+	url, bin_name := _ipfs_add_bin(bin_data, req.Bin_name)
 	if len(url) == 0 {
 		return "", auto.RetCode_store_data_failed
 	}
 
 	rsp := AddBinRsp { 
         URL: url,
+		Bin_name: bin_name,
     }
 
 	return rsp, auto.RetCode_OK

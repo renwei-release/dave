@@ -11,7 +11,6 @@ import (
 	"dave/public/auto"
 	"dave/public/base"
 	"dave/public/tools"
-	"dave/product/blockchain/vsys"
 	"unsafe"
 )
 
@@ -43,8 +42,6 @@ func _main_msg_unregister() {
 // =====================================================================
 
 func Dave_product_init() {
-	VSYS.VSYS_booting()
-
 	blockchain_uip_init()
 
 	_main_msg_register()

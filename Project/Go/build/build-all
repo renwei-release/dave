@@ -1,0 +1,19 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+
+build()
+{
+   echo -e "build project on : \033[36m${LEVEL}\033[0m"
+
+   for project_name in $(ls ./)
+      do
+         [ -d $project_name ] && last_project=$project_name && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && ./build && cd ../
+      done
+   if [ -d $last_project ]; then
+      cd $last_project && ./clean > /dev/null && cd ../
+   fi
+   echo -e "done!"
+}
+
+build

@@ -8,8 +8,8 @@ package eth_nft
  */
 
 import (
-	"dave/product/blockchain/eth/core"
-	"dave/product/blockchain/eth/token/nft_token"
+	"dave/product/blockchain/supplier/eth/core"
+	"dave/product/blockchain/supplier/eth/token/nft_token"
 	"dave/public/base"
 )
 

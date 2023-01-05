@@ -8,7 +8,7 @@ package dstore
  */
 
 import (
-	"dave/product/dstore/ipfs"
+	"dave/product/dstore/supplier/ipfs"
 )
 
 // =====================================================================

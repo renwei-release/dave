@@ -8,5 +8,6 @@
 
 PROJECT=$1
 TAGS=$2
+TIDY=$3
 
-./build.sh $PROJECT $TAGS
+./build.sh $PROJECT $TAGS $TIDY
