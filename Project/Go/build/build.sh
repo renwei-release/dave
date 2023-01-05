@@ -10,6 +10,7 @@ homepath=$(cd `dirname $0`; pwd)
 
 PROJECT=$1
 TAGS=$2
+TIDY=$3
 
 if [ "$PROJECT" == "" ]; then
    PROJECT=dave
@@ -18,8 +19,10 @@ projectnameforbuild=projectname${PROJECT}
 
 python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PROJECT^^}
 
-if [ -f tidy.sh ]; then
-   ./tidy.sh ${PROJECT}
+if [ "$TIDY" != "" ]; then
+   if [ -f tidy.sh ]; then
+      ./tidy.sh ${PROJECT}
+   fi
 fi
 
 if [ -f $PROJECT ]; then
