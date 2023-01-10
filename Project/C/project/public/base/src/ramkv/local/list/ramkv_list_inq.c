@@ -49,16 +49,28 @@ _ramkv_list_inq_index(KV *pKV, sb index, void *key_ptr, ub key_len, void *value_
 		{
 			KVDEBUG("pData:%s", pData->key.key_ptr);
 
-			if(key_ptr != NULL)
+			if((key_ptr != NULL) && (key_len > 0))
 			{
-				dave_strcpy(key_ptr, pData->key.key_ptr, key_len);
-
-				if((pData->key.key_len + 1) > key_len)
+				key_len -= 1;
+				if(pData->key.key_len <= key_len)
+				{
+					key_len = pData->key.key_len;
+				}
+				else
 				{
 					KVLOG("name:%s index:%d key_len:%d/%d no complete copy on <%s:%d>",
 						pKV->name, index,
 						key_len, pData->key.key_len,
 						fun, line);
+				}
+				dave_memcpy(key_ptr, pData->key.key_ptr, key_len);
+				((s8 *)key_ptr)[key_len] = '\0';
+			}
+			else
+			{
+				if(key_ptr != NULL)
+				{
+					dave_memset(key_ptr, 0x00, key_len);
 				}
 			}
 

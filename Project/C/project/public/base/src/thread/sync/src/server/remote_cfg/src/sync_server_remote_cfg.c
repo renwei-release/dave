@@ -52,12 +52,12 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 	for(index=0; index<9999999; index++)
 	{
 		dave_memset(&update, 0x00, sizeof(update));
-	
+
 		update.put_flag = dave_true;
 		if(rcfg_index(
 			index,
-			update.cfg_name, sizeof(update.cfg_name) - 1,
-			update.cfg_value, sizeof(update.cfg_value) - 1) < 0)
+			update.cfg_name, sizeof(update.cfg_name),
+			update.cfg_value, sizeof(update.cfg_value)) < 0)
 		{
 			break;
 		}
@@ -75,6 +75,8 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 static void
 _sync_server_cfg_update(dave_bool put_flag, s8 *key, s8 *value)
 {
+	SYNCDEBUG("%s %s : %s", put_flag==dave_true?"PUT":"DELETE", key, value);
+
 	if(put_flag == dave_true)
 	{
 		base_cfg_remote_internal_add(key, value);
