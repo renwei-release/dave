@@ -31,7 +31,7 @@
 #include "thread_coroutine.h"
 #include "thread_chain.h"
 #include "thread_router.h"
-#include "thread_go.h"
+#include "thread_co.h"
 #include "thread_log.h"
 
 #define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
@@ -1764,7 +1764,7 @@ base_thread_id_event(
 }
 
 void *
-base_thread_id_go(
+base_thread_id_co(
 	ThreadId src_id, ThreadId dst_id,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -1787,7 +1787,7 @@ base_thread_id_go(
 		return NULL;
 	}
 
-	return thread_go_id(
+	return thread_co_id(
 		pSrcThread,
 		dst_id,
 		req_id, req_len, req_body,
@@ -1875,7 +1875,7 @@ base_thread_name_event(
 }
 
 void *
-base_thread_name_go(
+base_thread_name_co(
 	ThreadId src_id, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -1887,14 +1887,14 @@ base_thread_name_go(
 	{
 		THREADABNOR("dst_thread is NULL! <%s:%d>", fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if(dst_thread[0] == '\0')
 	{
 		THREADABNOR("dst_thread is empty! <%s:%d>", fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if(src_id == INVALID_THREAD_ID)
@@ -1912,7 +1912,7 @@ base_thread_name_go(
 		return NULL;
 	}
 
-	return thread_go_name(
+	return thread_co_name(
 		pSrcThread,
 		dst_thread,
 		req_id, req_len, req_body,
@@ -1999,7 +1999,7 @@ base_thread_gid_event(
 }
 
 void *
-base_thread_gid_go(
+base_thread_gid_co(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -2011,14 +2011,14 @@ base_thread_gid_go(
 	{
 		THREADABNOR("gid:%x or dst_thread:%x is NULL! <%s:%d>", gid, dst_thread, fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if((gid[0] == '\0') || (dst_thread[0] == '\0'))
 	{
 		THREADABNOR("gid:%s or dst_thread:%s is empty! <%s:%d>", gid, dst_thread, fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if(src_id == INVALID_THREAD_ID)
@@ -2036,7 +2036,7 @@ base_thread_gid_go(
 		return NULL;
 	}
 
-	return thread_go_gid(
+	return thread_co_gid(
 		pSrcThread,
 		gid, dst_thread,
 		req_id, req_len, req_body,
@@ -2132,7 +2132,7 @@ base_thread_uid_event(
 }
 
 void *
-base_thread_uid_go(
+base_thread_uid_co(
 	ThreadId src_id, s8 *uid,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
@@ -2144,14 +2144,14 @@ base_thread_uid_go(
 	{
 		THREADABNOR("uid is NULL! <%s:%d>", fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if(uid[0] == '\0')
 	{
 		THREADABNOR("uid is empty! <%s:%d>", fun, line);
 		thread_clean_user_input_data(req_body, req_id);
-		return dave_false;
+		return NULL;
 	}
 
 	if(src_id == INVALID_THREAD_ID)
@@ -2170,7 +2170,7 @@ base_thread_uid_go(
 		return NULL;
 	}
 
-	return thread_go_uid(
+	return thread_co_uid(
 		pSrcThread,
 		uid,
 		req_id, req_len, req_body,
@@ -2235,6 +2235,12 @@ base_thread_sync_msg(
 dave_bool
 base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
 {
+	if(__system_startup__ == dave_false)
+	{
+		thread_clean_user_input_data(msg_body, msg_id);
+		return dave_false;
+	}
+
 	return thread_broadcast_msg(_thread, type, dst_name, msg_id, msg_len, msg_body, fun, line);
 }
 

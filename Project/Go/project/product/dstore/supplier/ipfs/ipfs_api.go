@@ -15,10 +15,30 @@ import (
 	shell "github.com/ipfs/go-ipfs-api"
 	files "github.com/ipfs/go-ipfs-files"
 	"strings"
+	"time"
 )
 
 var _MyIPFSNodeServer string = base.Cfg_get("IPFSServerURL", "18.143.154.81:5001")
+var _MyIPNSName string = base.Cfg_get("IPNSName", "self")
 var _MyIPFSShell * shell.Shell = shell.NewShell(_MyIPFSNodeServer)
+var _update_ipns_enable bool = false
+
+func _ipns_add_cid(cid string) error {
+	if _update_ipns_enable == false {
+		return nil
+	}
+
+	resp, err := _MyIPFSShell.PublishWithDetails("/ipfs/"+cid, _MyIPNSName, time.Second, time.Second, false)
+	if err != nil {
+		base.DAVELOG("error:%v server:%s name:%s cid:%s pullish failed!",
+			err, _MyIPFSNodeServer, _MyIPNSName, cid)
+		return err
+	}
+
+	base.DAVELOG("ipns name:%s ipfs cid:%s", resp.Name, resp.Value)
+
+	return nil
+}
 
 func _ipfs_cat_data(cid string) {
 	reader, err := _MyIPFSShell.Cat(cid)
@@ -122,19 +142,35 @@ func IPFS_cat_data(cid string) {
 }
 
 func IPFS_add_file(file_name string) string {
-	return _ipfs_add_file(file_name)
+	cid := _ipfs_add_file(file_name)
+
+	_ipns_add_cid(cid)
+
+	return cid
 }
 
 func IPFS_add_str(string_data string) string {
-	return _ipfs_add_str(string_data)
+	cid := _ipfs_add_str(string_data)
+
+	_ipns_add_cid(cid)
+
+	return cid
 }
 
 func IPFS_add_dir(dir string) string {
-	return _ipfs_add_dir(dir)
+	cid := _ipfs_add_dir(dir)
+
+	_ipns_add_cid(cid)
+
+	return cid
 }
 
 func IPFS_add_bin(bin_data []byte, bin_name string) string {
-	return _ipfs_add_bin(bin_data, bin_name)
+	cid := _ipfs_add_bin(bin_data, bin_name)
+
+	_ipns_add_cid(cid)
+
+	return cid
 }
 
 func IPFS_swarm_build() {

@@ -7,9 +7,11 @@
 # */
 
 PROJECT=${PWD##*/}
+TAGS=""
 CONTAINER="golang19"
+TIDY=$1
 
 ../ENV ${CONTAINER}
 
 echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/build && ./BUILD ${PROJECT}"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/build && ./BUILD ${PROJECT} ${TAGS} ${TIDY}"

@@ -103,10 +103,7 @@ _base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
 	pUpdate->cfg_length = value_len;
 	dave_memcpy(pUpdate->cfg_value, value_ptr, value_len);
 
-	if(broadcast_local(MSGID_CFG_UPDATE, pUpdate) == dave_false)
-	{
-		CFGABNOR("name:%s update failed!", name);
-	}
+	broadcast_local(MSGID_CFG_UPDATE, pUpdate);
 }
 
 // =====================================================================

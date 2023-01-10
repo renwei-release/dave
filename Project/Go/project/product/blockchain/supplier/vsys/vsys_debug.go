@@ -1,33 +1,23 @@
 package VSYS
 
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
 import (
-	"dave/public/base"
 	"dave/product/blockchain/supplier/vsys/core"
-	"dave/product/blockchain/supplier/vsys/app/info"
+	"dave/product/blockchain/supplier/vsys/app/nft"
 )
 
-func _connect_account() string {
-	acc := vsys_core.VSYS_account()
-
-	base.DAVELOG("address:%v PublicKey:%v PrivateKey:%v AccountSeed:%v",
-		acc.Address(),
-		acc.PublicKey(), acc.PrivateKey(), acc.AccountSeed())
-
-	return "ok"
-}
-
-func _token_info() string {
-	if vsys_info.VSYS_token_info("TWscu6rbRF2PEsnY1bRky4aKxxKTzn69WMFLFdLxK") == true {
-		return "success"
+func _vsys_deploy_nft() string {
+	ret, address := vsys_nft.VSYS_deploy_nft("/ipfs/QmQPXY1Y5zcsku9K57zysk2xJW7THxaV8rXcaiYdMonK1g", "renwei's token")
+	if ret == true {
+		return "the NFT tokenid is:"+address
 	} else {
-		return "failed"
+		return "deploy NFT failed!"
 	}
 }
 
@@ -36,10 +26,10 @@ func _token_info() string {
 func VSYS_debug(debug_req string) string {
 	debug_rsp := ""
 
-	if debug_req == "account" {
-		debug_rsp = _connect_account()
-	} else if debug_req == "info" {
-		debug_rsp = _token_info()
+	if debug_req == "deploy" {
+		debug_rsp = _vsys_deploy_nft()
+	} else if debug_req == "wallet" {
+		debug_rsp = vsys_core.VSYS_wallet_address()
 	} else {
 		debug_rsp = "bad request:"+debug_req
 	}

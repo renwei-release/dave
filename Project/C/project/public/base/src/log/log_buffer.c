@@ -16,6 +16,7 @@
 #define LOG_LIST_MAX (LOG_BUFFER_MAX * 2)
 #define INVALID_TID 0xffffffffffffffff
 
+static volatile dave_bool __system_startup__ = dave_false;
 static LogBuffer *_log_thread[LOG_TID_MAX];
 
 static LogBuffer _log_buffer[LOG_BUFFER_MAX] = { 0x00 };
@@ -229,28 +230,8 @@ _log_buffer_history_index(ub log_len)
 	return history_index;
 }
 
-// =====================================================================
-
-void
-log_buffer_init(void)
-{
-	_log_buffer_reset_all();
-}
-
-void
-log_buffer_exit(void)
-{
-
-}
-
-LogBuffer *
-log_buffer_thread(void)
-{
-	return _log_buffer_thread_build();
-}
-
-void
-log_buffer_set(LogBuffer *pBuffer)
+static inline void
+_log_buffer_set(LogBuffer *pBuffer)
 {
 	dave_bool overflow_flag = dave_false;
 
@@ -290,8 +271,8 @@ log_buffer_set(LogBuffer *pBuffer)
 	}
 }
 
-ub
-log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
+static inline ub
+_log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 {
 	LogBuffer *pBuffer;
 	ub log_copy_len;
@@ -339,8 +320,8 @@ log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return log_copy_len;
 }
 
-ub
-log_buffer_history(s8 *log_ptr, ub log_len)
+static inline ub
+_log_buffer_history(s8 *log_ptr, ub log_len)
 {
 	ub history_start_index = _log_buffer_history_index(log_len);
 	ub safe_counter, log_index;
@@ -361,5 +342,56 @@ log_buffer_history(s8 *log_ptr, ub log_len)
 	log_ptr[log_index] = '\0';
 
 	return log_index;
+}
+
+// =====================================================================
+
+void
+log_buffer_init(void)
+{
+	_log_buffer_reset_all();
+	__system_startup__ = dave_true;
+}
+
+void
+log_buffer_exit(void)
+{
+
+}
+
+LogBuffer *
+log_buffer_thread(void)
+{
+	if(__system_startup__ == dave_false)
+		return NULL;
+
+	return _log_buffer_thread_build();
+}
+
+void
+log_buffer_set(LogBuffer *pBuffer)
+{
+	if(__system_startup__ == dave_false)
+		return;
+
+	_log_buffer_set(pBuffer);
+}
+
+ub
+log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
+{
+	if(__system_startup__ == dave_false)
+		return 0;
+
+	return _log_buffer_get(log_ptr, log_len, level);
+}
+
+ub
+log_buffer_history(s8 *log_ptr, ub log_len)
+{
+	if(__system_startup__ == dave_false)
+		return 0;
+
+	return _log_buffer_history(log_ptr, log_len);
 }
 

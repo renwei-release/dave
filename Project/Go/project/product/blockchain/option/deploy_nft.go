@@ -29,7 +29,8 @@ type DeployNFTRsp struct {
 func _eth_deploy_nft(req DeployNFTReq) (interface{}, int64) {
 	ret, wallet_address := eth_nft.Eth_deploy_nft(req.URL, req.URL)
 	if ret == false {
-		base.DAVELOG("Wallet_address:%v Passphrase:%v URL:%v failed!", req.Wallet_address, req.Passphrase, req.URL)
+		base.DAVELOG("Wallet_address:%v Passphrase:%v URL:%v failed!",
+			req.Wallet_address, req.Passphrase, req.URL)
 		return "", auto.RetCode_Invalid_call
 	}
 

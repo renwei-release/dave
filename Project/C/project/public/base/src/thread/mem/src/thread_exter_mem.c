@@ -14,14 +14,25 @@
 #define THREAD_EXTER_MEM_MAX 4
 #define THREAD_EXTER_MEM_NAME "THREAD"
 
+static ub _thread_exter_mem_init_flag = 0x00;
 static BlockMem _thread_exter_mem[THREAD_EXTER_MEM_MAX];
+
+static inline void
+_thread_exter_mem_init(void)
+{
+	if(_thread_exter_mem_init_flag != 0x1234567890)
+	{
+		_thread_exter_mem_init_flag = 0x1234567890;
+		block_mem_reset(_thread_exter_mem, THREAD_EXTER_MEM_MAX);
+	}
+}
 
 // =====================================================================
 
 void
 thread_exter_mem_init(void)
 {
-	block_mem_reset(_thread_exter_mem, THREAD_EXTER_MEM_MAX);
+	_thread_exter_mem_init();
 }
 
 void
@@ -33,6 +44,8 @@ thread_exter_mem_exit(void)
 void *
 thread_exter_malloc(ub len, s8 *file, ub line)
 {
+	_thread_exter_mem_init();
+
 	return block_malloc(_thread_exter_mem, len, file, line);
 }
 

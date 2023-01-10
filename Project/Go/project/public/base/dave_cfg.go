@@ -37,6 +37,8 @@ func Cfg_set(cfg_name string, cfg_value string) bool {
 }
 
 func Cfg_get(cfg_name string, default_value string) string {
+	Dave_go_system_pre_init()
+
 	var go_byte [4096]byte
 
 	c_cfg_name := C.CString(cfg_name)

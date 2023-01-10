@@ -82,7 +82,7 @@ dave_dll_thread_id_go(unsigned long long dst_id, int req_id, int req_len, void *
 	DLLDEBUG("dst_id:%lx req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		dst_id, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_id_go(
+	return base_thread_id_co(
 		src_id, (ThreadId)dst_id,
 		req_id, req_len, req_body,
 		rsp_id,
@@ -118,7 +118,7 @@ dave_dll_thread_name_go(char *dst_thread, int req_id, int req_len, void *req_bod
 	DLLDEBUG("dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_name_go(
+	return base_thread_name_co(
 		src_id, (s8 *)dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
@@ -154,7 +154,7 @@ dave_dll_thread_gid_go(char *gid, char *dst_thread, int req_id, int req_len, voi
 	DLLDEBUG("gid:%s dst_thread:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		gid, dst_thread, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_gid_go(
+	return base_thread_gid_co(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
 		req_id, req_len, req_body,
 		rsp_id,
@@ -190,7 +190,7 @@ dave_dll_thread_uid_go(char *uid, int req_id, int req_len, void *req_body, int r
 	DLLDEBUG("uid:%s req_id:%d req_len:%d req_body:%lx rsp_id:%lx fun:%s line:%d",
 		uid, req_id, req_len, req_body, rsp_id, fun, line);
 
-	return base_thread_uid_go(
+	return base_thread_uid_co(
 		src_id, (s8 *)uid,
 		req_id, req_len, req_body,
 		rsp_id,
