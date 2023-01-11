@@ -9,9 +9,6 @@
 #define __SYNC_CFG_H__
 #include "base_macro.h"
 
-#define CFG_SYNC_ADDRESS "SYNCAddress"
-#define CFG_SYNC_PORT "SYNCPort"
-
 #define CFG_SYNC_CLIENT_ADDRESS "SYNCClientAddress"
 #define CFG_SYNC_SERVER_DOMAIN "SYNCServerDomain"
 #define CFG_SYNC_SERVER_PORT "SYNCServerPort"

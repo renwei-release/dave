@@ -216,6 +216,27 @@ base_cfg_remote_internal_del(s8 *name)
 }
 
 RetCode
+base_cfg_set_str(s8 *cfg_name, s8 *str_value)
+{
+	ub len_value = dave_strlen(str_value);
+
+	return cfg_set(cfg_name, (u8 *)str_value, len_value);
+}
+
+s8 *
+base_cfg_get_str(s8 *cfg_name, s8 *buf_ptr, ub buf_len, s8 *default_value)
+{
+	if(cfg_get(cfg_name, (u8 *)buf_ptr, buf_len) == dave_false)
+	{
+		base_cfg_set_str(cfg_name, default_value);
+
+		dave_strcpy(buf_ptr, default_value, buf_len);
+	}
+
+	return buf_ptr;
+}
+
+RetCode
 base_cfg_set_ub(s8 *cfg_name, ub ub_value)
 {
 	s8 value_ptr[128];

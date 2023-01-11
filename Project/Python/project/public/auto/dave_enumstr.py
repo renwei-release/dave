@@ -200,6 +200,7 @@ def t_auto_AIPlaceType_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_BuildingBlocksOpt_str(enum_value):
 	if enum_value == BuildingBlocksOpt_none:
 		value_str = "'BuildingBlocksOpt_none'"
@@ -219,6 +220,7 @@ def t_auto_BuildingBlocksOpt_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_CVSearchOpt_str(enum_value):
 	if enum_value == CVSearchOpt_0:
 		value_str = "'CVSearchOpt_0'"
@@ -232,6 +234,7 @@ def t_auto_CVSearchOpt_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_EnableKeepAliveFlag_str(enum_value):
 	if enum_value == KeepAlive_enable:
 		value_str = "'KeepAlive_enable-0x01234567'"
@@ -241,6 +244,7 @@ def t_auto_EnableKeepAliveFlag_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_EnableNetCardBindFlag_str(enum_value):
 	if enum_value == NetCardBind_enable:
 		value_str = "'NetCardBind_enable-0x01234567'"
@@ -249,6 +253,7 @@ def t_auto_EnableNetCardBindFlag_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_ErrCode_str(enum_value):
 	if enum_value == ERRCODE_OK:
@@ -793,6 +798,7 @@ def t_auto_ErrCode_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_FixedPortFlag_str(enum_value):
 	if enum_value == FixedPort:
 		value_str = "'FixedPort-0x01234567'"
@@ -801,6 +807,7 @@ def t_auto_FixedPortFlag_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_HTTPListenType_str(enum_value):
 	if enum_value == ListenHttp:
@@ -814,6 +821,7 @@ def t_auto_HTTPListenType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_HTTPMathcRule_str(enum_value):
 	if enum_value == LocationMatch_Accurate:
@@ -836,6 +844,7 @@ def t_auto_HTTPMathcRule_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_HttpContentType_str(enum_value):
 	if enum_value == HttpContentType_json:
 		value_str = "'HttpContentType_json'"
@@ -850,6 +859,7 @@ def t_auto_HttpContentType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_HttpMethod_str(enum_value):
 	if enum_value == HttpMethod_post:
@@ -868,6 +878,7 @@ def t_auto_HttpMethod_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_IPProtocol_str(enum_value):
 	if enum_value == IPProtocol_ICMP:
 		value_str = "'IPProtocol_ICMP-1'"
@@ -883,6 +894,7 @@ def t_auto_IPProtocol_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_IPVER_str(enum_value):
 	if enum_value == IPVER_IPV4:
 		value_str = "'IPVER_IPV4-4'"
@@ -893,6 +905,7 @@ def t_auto_IPVER_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_LanguageCode_str(enum_value):
 	if enum_value == LanguageCode_Abkhazian:
@@ -971,6 +984,7 @@ def t_auto_LanguageCode_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_MCardContentType_str(enum_value):
 	if enum_value == MCardContentType_begin:
 		value_str = "'MCardContentType_begin'"
@@ -1048,6 +1062,7 @@ def t_auto_MCardContentType_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_MCardIdentityType_str(enum_value):
 	if enum_value == MCardIdentityType_none:
 		value_str = "'MCardIdentityType_none'"
@@ -1064,6 +1079,7 @@ def t_auto_MCardIdentityType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_MCardSource_str(enum_value):
 	if enum_value == MCardSource_aia:
@@ -1086,6 +1102,7 @@ def t_auto_MCardSource_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_MCardTimeType_str(enum_value):
 	if enum_value == MCardTimeType_Permanent:
 		value_str = "'MCardTimeType_Permanent'"
@@ -1096,6 +1113,7 @@ def t_auto_MCardTimeType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_MCardType_str(enum_value):
 	if enum_value == MCardType_Private_Message_Board:
@@ -1116,6 +1134,7 @@ def t_auto_MCardType_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_MCardVer_str(enum_value):
 	if enum_value == MCardVer_reserve:
 		value_str = "'MCardVer_reserve'"
@@ -1133,6 +1152,7 @@ def t_auto_MCardVer_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_NetAddrType_str(enum_value):
 	if enum_value == NetAddrIPType:
 		value_str = "'NetAddrIPType-0'"
@@ -1143,6 +1163,7 @@ def t_auto_NetAddrType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_PythonFun_str(enum_value):
 	if enum_value == PythonFun_painting_aesthetics:
@@ -1183,12 +1204,14 @@ def t_auto_PythonFun_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_ReqType_str(enum_value):
 	if enum_value == REQ_TYPE_MAX:
 		value_str = "'REQ_TYPE_MAX-0x1fffffff'"
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_RetCode_str(enum_value):
 	if enum_value == RetCode_begin_value:
@@ -1435,6 +1458,7 @@ def t_auto_RetCode_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_SOCDOMAIN_str(enum_value):
 	if enum_value == DM_SOC_PF_INET:
 		value_str = "'DM_SOC_PF_INET-0'"
@@ -1455,6 +1479,7 @@ def t_auto_SOCDOMAIN_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_SOCEVENT_str(enum_value):
 	if enum_value == SOC_EVENT_START:
@@ -1482,6 +1507,7 @@ def t_auto_SOCEVENT_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_SOCKETINFO_str(enum_value):
 	if enum_value == SOCKETINFO_BIND:
@@ -1544,6 +1570,7 @@ def t_auto_SOCKETINFO_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_SOCTYPE_str(enum_value):
 	if enum_value == TYPE_SOCK_STREAM:
 		value_str = "'TYPE_SOCK_STREAM-0'"
@@ -1561,6 +1588,7 @@ def t_auto_SOCTYPE_str(enum_value):
 		value_str = f'{enum_value}'
 	return value_str
 
+
 def t_auto_UIPType_str(enum_value):
 	if enum_value == UIPType_uip:
 		value_str = "'UIPType_uip'"
@@ -1573,6 +1601,7 @@ def t_auto_UIPType_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 
 def t_auto_RPCMSG_str(enum_value):
 	if enum_value == MSGID_RESERVED:
@@ -1886,4 +1915,5 @@ def t_auto_RPCMSG_str(enum_value):
 	else:
 		value_str = f'{enum_value}'
 	return value_str
+
 

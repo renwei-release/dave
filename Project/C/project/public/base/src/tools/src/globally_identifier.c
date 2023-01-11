@@ -91,13 +91,15 @@ _globally_identifier_build(s8 *globally_identifier_ptr, ub globally_identifier_l
 static void
 _globally_identifier_save(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
-	cfg_set(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
+	cfg_set_str(GLOBALLY_IDENTIFIER_CFG_NAME, globally_identifier_ptr);
 }
 
 static dave_bool
 _globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_len)
 {
-	return cfg_get(GLOBALLY_IDENTIFIER_CFG_NAME, (u8 *)globally_identifier_ptr, globally_identifier_len);
+	cfg_get_str(GLOBALLY_IDENTIFIER_CFG_NAME, globally_identifier_ptr, globally_identifier_len, "");
+
+	return _globally_identifier_check(globally_identifier_ptr, globally_identifier_len);
 }
 
 // =====================================================================

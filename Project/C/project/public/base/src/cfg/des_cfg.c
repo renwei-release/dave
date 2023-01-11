@@ -238,7 +238,7 @@ _base_des_cfg_name_bak(s8 *name, s8 *file_name)
 }
 
 static sb
-_base_des_cfg_open(s8 *dir, s8 *name, ConfigFileType type)
+_base_des_cfg_open(s8 *dir, s8 *name, ConfigFileType type, dave_bool creat_flag)
 {
 	s8 file_name[1024], file_path[1024];
 	sb file_id;
@@ -262,14 +262,18 @@ _base_des_cfg_open(s8 *dir, s8 *name, ConfigFileType type)
 
 	if(file_name[0] != '\0')
 	{
+		if(creat_flag == dave_true)
+			flag = CREAT_READ_WRITE_FLAG;
+		else
+			flag = READ_WRITE_FLAG;
+
 		if(dir == NULL)
 		{
-			flag = CREAT_READ_WRITE_FLAG;
 			dave_snprintf(file_path, sizeof(file_path), "%s", file_name);
 		}
 		else
 		{
-			flag = DIRECT_FLAG | CREAT_READ_WRITE_FLAG;
+			flag = DIRECT_FLAG | flag;
 			dave_snprintf(file_path, sizeof(file_path), "%s/%s", dir, file_name);
 		}
 
@@ -282,7 +286,7 @@ _base_des_cfg_open(s8 *dir, s8 *name, ConfigFileType type)
 
 	if(file_id < 0)
 	{
-		CFGABNOR("open file:%s<%s> failed:%d!", file_name, name, file_id);
+		CFGDEBUG("open file:%s<%s> failed:%d!", file_name, name, file_id);
 	}
 
 	return file_id;
@@ -419,11 +423,11 @@ _base_des_cfg_read_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, ConfigF
 	RetCode ret;
 	sb file_id;
 
-	file_id = _base_des_cfg_open(dir, name, type);
+	file_id = _base_des_cfg_open(dir, name, type, dave_false);
 
 	if(file_id < 0)
 	{
-		CFGABNOR("file:%s open failed:%d!", name, file_id);
+		CFGDEBUG("file:%s open failed:%d!", name, file_id);
 		return RetCode_file_open_failed;
 	}
 
@@ -448,7 +452,7 @@ _base_des_cfg_write_with_type(s8 *dir, s8 *name, ConfigFileValue *pValue, Config
 	RetCode ret;
 	sb file_id;
 
-	file_id = _base_des_cfg_open(dir, name, type);
+	file_id = _base_des_cfg_open(dir, name, type, dave_true);
 
 	if(file_id < 0)
 	{
@@ -504,7 +508,7 @@ _base_des_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 
 	if(ret != RetCode_OK)
 	{
-		CFGABNOR("ini config file:%s was destroyed! <%s>", name, retstr(ret));
+		CFGDEBUG("ini config file:%s was destroyed! <%s>", name, retstr(ret));
 
 		ret = _base_des_cfg_read_with_type(dir, name, pValue, ConfigFileType_mdf);
 
@@ -514,7 +518,7 @@ _base_des_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 		}
 		else
 		{
-			CFGABNOR("mdf config file:%s was destroyed! <%s>", name, retstr(ret));
+			CFGDEBUG("mdf config file:%s was destroyed! <%s>", name, retstr(ret));
 
 			ret = _base_des_cfg_read_with_type(dir, name, pValue, ConfigFileType_bak);
 
@@ -526,7 +530,7 @@ _base_des_cfg_load(s8 *dir, s8 *name, ConfigFileValue *pValue)
 			}
 			else
 			{
-				CFGABNOR("all config file:%s was destroyed! <%s>", name, retstr(ret));
+				CFGDEBUG("all config file:%s was destroyed! <%s>", name, retstr(ret));
 			}
 		}
 	}

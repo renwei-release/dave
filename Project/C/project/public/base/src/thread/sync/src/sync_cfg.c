@@ -20,35 +20,21 @@
 static void
 _sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
-	if(cfg_get(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN) == dave_false)
+	s8 *ip_str = (s8 *)t_gp_localhost();
+
+	if(strip(ip_str, dave_strlen(ip_str), ip, DAVE_IP_V4_ADDR_LEN) != DAVE_IP_V4_ADDR_LEN)
 	{
-		s8 *ip_str = (s8 *)t_gp_localhost();
-
-		if(strip(ip_str, dave_strlen(ip_str), ip, DAVE_IP_V4_ADDR_LEN) != DAVE_IP_V4_ADDR_LEN)
-		{
-			ip[0] = 127;
-			ip[1] = 0;
-			ip[2] = 0;
-			ip[3] = 1;
-		}
-
-		cfg_set(CFG_SYNC_ADDRESS, ip, DAVE_IP_V4_ADDR_LEN);
+		ip[0] = 127;
+		ip[1] = 0;
+		ip[2] = 0;
+		ip[3] = 1;
 	}
 }
 
 static u16
 _sync_cfg_get_syncs_port(void)
 {
-	u16 port;
-
-	if(cfg_get(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16)) == dave_false)
-	{
-		port = SYNC_SERVICE_PORT;
-
-		cfg_set(CFG_SYNC_PORT, (u8 *)(&(port)), sizeof(u16));
-	}
-
-	return port;
+	return SYNC_SERVICE_PORT;
 }
 
 // =====================================================================
