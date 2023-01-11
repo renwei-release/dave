@@ -14,22 +14,22 @@
 #define DAVE_MCARD_CONTENT_MAX (16 * 1024 - DAVE_MACRD_HEAD_MAX)
 
 typedef enum {
-	MCardVer_reserve = 0,
-	MCardVer_text = 1,
+	MCardVer_reserve,
+	MCardVer_text,
 	MCardVer_media,
 	MCardVer_talk,
 	MCardVer_comment,
-	MCardVer_max = 0xffffffffffffffff
+	MCardVer_max = 0x1fffffffffffffff
 } MCardVer;
 
 typedef enum {
-	MCardType_Private_Message_Board = 0,
-	MCardType_Public_Message_Board = 1,
+	MCardType_Private_Message_Board,
+	MCardType_Public_Message_Board,
 	MCardType_POI,
 	MCardType_TALK,
 	MCardType_weichat_talk,
 	MCardType_h5_talk,
-	MCardType_max = 0xffffffffffffffff
+	MCardType_max = 0x1fffffffffffffff
 } MCardType;
 
 typedef enum {
@@ -40,13 +40,13 @@ typedef enum {
 	MCardSource_aib,
 	MCardSource_aib_io,
 	MCardSource_bbs,
-	MCardSource_max = 0xffffffffffffffff
+	MCardSource_max = 0x1fffffffffffffff
 } MCardSource;
 
 typedef enum {
     MCardTimeType_Permanent,
     MCardTimeType_Normal,
-    MCardTimeType_max = 0xffffffffffffffff
+    MCardTimeType_max = 0x1fffffffffffffff
 } MCardTimeType;
 
 typedef enum {
@@ -55,7 +55,7 @@ typedef enum {
 	MCardIdentityType_user,
 	MCardIdentityType_AI,
 	MCardIdentityType_max,
-	MCardIdentityType_MAX = 0xffffffffffffffff
+	MCardIdentityType_MAX = 0x1fffffffffffffff
 } MCardIdentityType;
 
 typedef enum {
@@ -94,7 +94,7 @@ typedef enum {
 	MCardContentType_detection,
 	MCardContentType_generator,
 	MCardContentType_end,
-	MCardContentType_max = 0xffffffffffffffff
+	MCardContentType_max = 0x1fffffffffffffff
 } MCardContentType;
 
 typedef struct {

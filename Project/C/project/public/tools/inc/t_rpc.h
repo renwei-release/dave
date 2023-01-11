@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -170,7 +170,7 @@ typedef enum {
 	BBSMSG_INQ_COMMENT_REQ = 15003,
 	BBSMSG_INQ_COMMENT_RSP = 15004,
 
-	MSGID_INVALID = 0xffffffffffffffff
+	MSGID_INVALID = 0x1fffffffffffffff
 } RPCMSG;
 
 MBUF * t_rpc_zip(sb ver, void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);

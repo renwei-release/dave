@@ -391,7 +391,7 @@ typedef enum {
 	AIPlaceType_veterinary_care,
 	AIPlaceType_zoo,
 
-	AIPlaceType_max = 0xffffffffffffffff
+	AIPlaceType_max = 0x1fffffffffffffff
 } AIPlaceType;
 
 typedef enum {
@@ -411,7 +411,7 @@ typedef enum {
 	PythonFun_refresh_recommend_cache,
 	PythonFun_detection,
 	PythonFun_generator,
-	PythonFun_max = 0xffffffffffffffff
+	PythonFun_max = 0x1fffffffffffffff
 } PythonFun;
 
 typedef enum {

@@ -1,6 +1,6 @@
 package auto
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -13,7 +13,7 @@ package auto
  */
 
 const (
-	AIPlaceType_accounting int = iota
+	AIPlaceType_accounting int64 = iota
 	AIPlaceType_airport
 	AIPlaceType_amusement_park
 	AIPlaceType_aquarium
@@ -103,11 +103,11 @@ const (
 	AIPlaceType_university
 	AIPlaceType_veterinary_care
 	AIPlaceType_zoo
-	AIPlaceType_max = 0xffffffffffffffff
+	AIPlaceType_max = 0x1fffffffffffffff
 )
 
 const (
-	BuildingBlocksOpt_none int = iota
+	BuildingBlocksOpt_none int64 = iota
 	BuildingBlocksOpt_inq
 	BuildingBlocksOpt_mount
 	BuildingBlocksOpt_decoupling
@@ -117,7 +117,7 @@ const (
 )
 
 const (
-	CVSearchOpt_0 int = iota
+	CVSearchOpt_0 int64 = iota
 	CVSearchOpt_1
 	CVSearchOpt_2
 	CVSearchOpt_max
@@ -411,7 +411,7 @@ const (
 )
 
 const (
-	ListenHttp int = iota
+	ListenHttp int64 = iota
 	ListenHttps
 	ListenWeb
 	ListenMax
@@ -429,7 +429,7 @@ const (
 )
 
 const (
-	HttpContentType_json int = iota
+	HttpContentType_json int64 = iota
 	HttpContentType_text
 	HttpContentType_xml
 	HttpContentType_xwww
@@ -437,7 +437,7 @@ const (
 )
 
 const (
-	HttpMethod_post int = iota
+	HttpMethod_post int64 = iota
 	HttpMethod_get
 	HttpMethod_put
 	HttpMethod_options
@@ -450,8 +450,7 @@ const (
 	IPProtocol_TCP = 6
 	IPProtocol_UDP = 17
 	IPProtocol_GRE = 47
-	IPProtocol_MAX
-	IPProtocol_max = 0x1fffffff
+	IPProtocol_MAX = 0x1fffffff
 )
 
 const (
@@ -461,7 +460,7 @@ const (
 )
 
 const (
-	LanguageCode_Abkhazian int = iota
+	LanguageCode_Abkhazian int64 = iota
 	LanguageCode_Afar
 	LanguageCode_Afrikaans
 	LanguageCode_Akan
@@ -500,7 +499,7 @@ const (
 )
 
 const (
-	MCardContentType_begin int = iota
+	MCardContentType_begin int64 = iota
 	MCardContentType_utf8
 	MCardContentType_json
 	MCardContentType_xml
@@ -535,52 +534,52 @@ const (
 	MCardContentType_detection
 	MCardContentType_generator
 	MCardContentType_end
-	MCardContentType_max = 0xffffffffffffffff
+	MCardContentType_max = 0x1fffffffffffffff
 )
 
 const (
-	MCardIdentityType_none int = iota
+	MCardIdentityType_none int64 = iota
 	MCardIdentityType_initialization
 	MCardIdentityType_user
 	MCardIdentityType_AI
 	MCardIdentityType_max
-	MCardIdentityType_MAX = 0xffffffffffffffff
+	MCardIdentityType_MAX = 0x1fffffffffffffff
 )
 
 const (
-	MCardSource_aia int = iota
+	MCardSource_aia int64 = iota
 	MCardSource_google
 	MCardSource_aws
 	MCardSource_aic
 	MCardSource_aib
 	MCardSource_aib_io
 	MCardSource_bbs
-	MCardSource_max = 0xffffffffffffffff
+	MCardSource_max = 0x1fffffffffffffff
 )
 
 const (
-	MCardTimeType_Permanent int = iota
+	MCardTimeType_Permanent int64 = iota
 	MCardTimeType_Normal
-	MCardTimeType_max = 0xffffffffffffffff
+	MCardTimeType_max = 0x1fffffffffffffff
 )
 
 const (
-	MCardType_Private_Message_Board = 0 + iota
-	MCardType_Public_Message_Board = 1
+	MCardType_Private_Message_Board int64 = iota
+	MCardType_Public_Message_Board
 	MCardType_POI
 	MCardType_TALK
 	MCardType_weichat_talk
 	MCardType_h5_talk
-	MCardType_max = 0xffffffffffffffff
+	MCardType_max = 0x1fffffffffffffff
 )
 
 const (
-	MCardVer_reserve = 0 + iota
-	MCardVer_text = 1
+	MCardVer_reserve int64 = iota
+	MCardVer_text
 	MCardVer_media
 	MCardVer_talk
 	MCardVer_comment
-	MCardVer_max = 0xffffffffffffffff
+	MCardVer_max = 0x1fffffffffffffff
 )
 
 const (
@@ -606,7 +605,7 @@ const (
 	PythonFun_refresh_recommend_cache
 	PythonFun_detection
 	PythonFun_generator
-	PythonFun_max = 0xffffffffffffffff
+	PythonFun_max = 0x1fffffffffffffff
 )
 
 const (
@@ -786,7 +785,7 @@ const (
 	SOCKETINFO_LINK_LOST
 	SOCKETINFO_SEND_TIMER_OUT
 	SOCKETINFO_PORT_EXIST
-	SOCKETINFO_WRITE_THEN_CLOSE = 0x7857aaeb
+	SOCKETINFO_WRITE_THEN_CLOSE
 	SOCKETINFO_SND_URG
 	SOCKETINFO_RAW_EVENT_RECV_LENGTH
 	SOCKETINFO_MAX = 0x1fffffff
@@ -802,7 +801,7 @@ const (
 )
 
 const (
-	UIPType_uip int = iota
+	UIPType_uip int64 = iota
 	UIPType_json
 	UIPType_h5_form
 	UIPType_wechat_form

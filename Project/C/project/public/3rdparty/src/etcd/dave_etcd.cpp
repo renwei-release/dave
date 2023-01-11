@@ -167,6 +167,8 @@ _etcd_get(s8 *key, ub limit)
 
 	for(index=0; index<size; index++)
 	{
+		PARTYDEBUG("key:%s value:%s", resp.keys()[index].c_str(), resp.values()[index].as_string().c_str());
+	
 		void *pPutJson = dave_json_malloc();
 		dave_json_add_str(pPutJson, (char *)"key", (s8 *)(resp.keys()[index].c_str()));
 		dave_json_add_str(pPutJson, (char *)"value", (s8 *)(resp.values()[index].as_string().c_str()));

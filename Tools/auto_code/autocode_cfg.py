@@ -57,3 +57,5 @@ rpc_ver3_pyenum_file_name = "../../Project/Python/project/public/auto/dave_enum.
 
 c_enumstr_src_file_name = "../../Project/C/project/public/tools/src/t_auto/t_auto_enumstr.c"
 c_enumstr_inc_file_name = "../../Project/C/project/public/tools/src/t_auto/t_auto_enumstr.h"
+go_enumstr_src_file_name = "../../Project/Go/project/public/auto/dave_enumstr.go"
+py_enumstr_src_file_name = "../../Project/Python/project/public/auto/dave_enumstr.py"

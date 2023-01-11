@@ -13,7 +13,9 @@
 from autocode_cfg import *
 from autocode_tools import *
 
+
 go_package_name = 'package auto\n'
+
 
 def _c_enum_to_go_type(enum_value_array):
     for key in enum_value_array.keys():
@@ -170,7 +172,7 @@ def _creat_enum_file(enum_table, file_name):
                 if frist_note == True:
                     frist_note = False
                     if enum_table[enum_name][enum_key] == '':
-                        file_id.write(f'\t{enum_key} int = iota\n')
+                        file_id.write(f'\t{enum_key} int64 = iota\n')
                     else:
                         file_id.write(f'\t{enum_key} = {enum_table[enum_name][enum_key]} + iota\n')
                 else:

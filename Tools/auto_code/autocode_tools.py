@@ -11,7 +11,7 @@ import sys
 
 _copyright_message_for_c_and_go = "\
 /*\n\
- * Copyright (c) 2022 Renwei\n\
+ * Copyright (c) 2023 Renwei\n\
  *\n\
  * This is a free software; you can redistribute it and/or modify\n\
  * it under the terms of the MIT license. See LICENSE for details.\n\
@@ -25,7 +25,7 @@ _copyright_message_for_c_and_go = "\
 
 _copyright_message_for_python = "\
 #/*\n\
-# * Copyright (c) 2022 Renwei\n\
+# * Copyright (c) 2023 Renwei\n\
 # *\n\
 # * This is a free software; you can redistribute it and/or modify\n\
 # * it under the terms of the MIT license. See LICENSE for details.\n\

@@ -57,7 +57,7 @@ typedef enum {
 
 	NLPPartOfSpeech_total,
 
-	NLPPartOfSpeech_MAX = 0xffffffffffffffff
+	NLPPartOfSpeech_MAX = 0x1fffffffffffffff
 } NLPPartOfSpeech;
 
 typedef enum {
@@ -94,7 +94,7 @@ typedef enum {
 
 	NLPIRLabel_MAX,
 
-	NLPIRLabel_max = 0xffffffffffffffff
+	NLPIRLabel_max = 0x1fffffffffffffff
 } NLPIRLabel;
 
 typedef enum {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -316,7 +316,7 @@ t_auto_AIPlaceType_str(AIPlaceType enum_value)
 				value_str = "'AIPlaceType_zoo'";
 			break;
 		case AIPlaceType_max:
-				value_str = "'AIPlaceType_max-0xffffffffffffffff'";
+				value_str = "'AIPlaceType_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2440,10 +2440,7 @@ t_auto_IPProtocol_str(IPProtocol enum_value)
 				value_str = "'IPProtocol_GRE-47'";
 			break;
 		case IPProtocol_MAX:
-				value_str = "'IPProtocol_MAX'";
-			break;
-		case IPProtocol_max:
-				value_str = "'IPProtocol_max-0x1fffffff'";
+				value_str = "'IPProtocol_MAX-0x1fffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2737,7 +2734,7 @@ t_auto_MCardContentType_str(MCardContentType enum_value)
 				value_str = "'MCardContentType_end'";
 			break;
 		case MCardContentType_max:
-				value_str = "'MCardContentType_max-0xffffffffffffffff'";
+				value_str = "'MCardContentType_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2770,7 +2767,7 @@ t_auto_MCardIdentityType_str(MCardIdentityType enum_value)
 				value_str = "'MCardIdentityType_max'";
 			break;
 		case MCardIdentityType_MAX:
-				value_str = "'MCardIdentityType_MAX-0xffffffffffffffff'";
+				value_str = "'MCardIdentityType_MAX-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2809,7 +2806,7 @@ t_auto_MCardSource_str(MCardSource enum_value)
 				value_str = "'MCardSource_bbs'";
 			break;
 		case MCardSource_max:
-				value_str = "'MCardSource_max-0xffffffffffffffff'";
+				value_str = "'MCardSource_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2833,7 +2830,7 @@ t_auto_MCardTimeType_str(MCardTimeType enum_value)
 				value_str = "'MCardTimeType_Normal'";
 			break;
 		case MCardTimeType_max:
-				value_str = "'MCardTimeType_max-0xffffffffffffffff'";
+				value_str = "'MCardTimeType_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2851,10 +2848,10 @@ t_auto_MCardType_str(MCardType enum_value)
 	switch(enum_value)
 	{
 		case MCardType_Private_Message_Board:
-				value_str = "'MCardType_Private_Message_Board-0'";
+				value_str = "'MCardType_Private_Message_Board'";
 			break;
 		case MCardType_Public_Message_Board:
-				value_str = "'MCardType_Public_Message_Board-1'";
+				value_str = "'MCardType_Public_Message_Board'";
 			break;
 		case MCardType_POI:
 				value_str = "'MCardType_POI'";
@@ -2869,7 +2866,7 @@ t_auto_MCardType_str(MCardType enum_value)
 				value_str = "'MCardType_h5_talk'";
 			break;
 		case MCardType_max:
-				value_str = "'MCardType_max-0xffffffffffffffff'";
+				value_str = "'MCardType_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2887,10 +2884,10 @@ t_auto_MCardVer_str(MCardVer enum_value)
 	switch(enum_value)
 	{
 		case MCardVer_reserve:
-				value_str = "'MCardVer_reserve-0'";
+				value_str = "'MCardVer_reserve'";
 			break;
 		case MCardVer_text:
-				value_str = "'MCardVer_text-1'";
+				value_str = "'MCardVer_text'";
 			break;
 		case MCardVer_media:
 				value_str = "'MCardVer_media'";
@@ -2902,7 +2899,7 @@ t_auto_MCardVer_str(MCardVer enum_value)
 				value_str = "'MCardVer_comment'";
 			break;
 		case MCardVer_max:
-				value_str = "'MCardVer_max-0xffffffffffffffff'";
+				value_str = "'MCardVer_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -2938,7 +2935,7 @@ t_auto_MatrixOpt_str(MatrixOpt enum_value)
 				value_str = "'MatrixOpt_traffic'";
 			break;
 		case MatrixOpt_max:
-				value_str = "'MatrixOpt_max-0xffffffffffffffff'";
+				value_str = "'MatrixOpt_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -3118,7 +3115,7 @@ t_auto_NLPIRLabel_str(NLPIRLabel enum_value)
 				value_str = "'NLPIRLabel_MAX'";
 			break;
 		case NLPIRLabel_max:
-				value_str = "'NLPIRLabel_max-0xffffffffffffffff'";
+				value_str = "'NLPIRLabel_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -3298,7 +3295,7 @@ t_auto_NLPPartOfSpeech_str(NLPPartOfSpeech enum_value)
 				value_str = "'NLPPartOfSpeech_total'";
 			break;
 		case NLPPartOfSpeech_MAX:
-				value_str = "'NLPPartOfSpeech_MAX-0xffffffffffffffff'";
+				value_str = "'NLPPartOfSpeech_MAX-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -3565,7 +3562,7 @@ t_auto_PythonFun_str(PythonFun enum_value)
 				value_str = "'PythonFun_generator'";
 			break;
 		case PythonFun_max:
-				value_str = "'PythonFun_max-0xffffffffffffffff'";
+				value_str = "'PythonFun_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -4186,7 +4183,7 @@ t_auto_SOCKETINFO_str(SOCKETINFO enum_value)
 				value_str = "'SOCKETINFO_PORT_EXIST'";
 			break;
 		case SOCKETINFO_WRITE_THEN_CLOSE:
-				value_str = "'SOCKETINFO_WRITE_THEN_CLOSE-0x7857aaeb'";
+				value_str = "'SOCKETINFO_WRITE_THEN_CLOSE'";
 			break;
 		case SOCKETINFO_SND_URG:
 				value_str = "'SOCKETINFO_SND_URG'";
@@ -4879,7 +4876,7 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 				value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'";
 			break;
 		case MSGID_INVALID:
-				value_str = "'MSGID_INVALID-0xffffffffffffffff'";
+				value_str = "'MSGID_INVALID-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);

@@ -22,7 +22,7 @@ typedef enum {
 	MatrixOpt_centernet,
 	MatrixOpt_unet,
 	MatrixOpt_traffic,
-	MatrixOpt_max = 0xffffffffffffffff
+	MatrixOpt_max = 0x1fffffffffffffff
 } MatrixOpt;
 
 typedef struct {

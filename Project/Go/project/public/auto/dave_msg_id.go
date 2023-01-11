@@ -1,6 +1,6 @@
 package auto
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -166,6 +166,6 @@ const (
 	BBSMSG_INQ_COMMENT_REQ = 15003
 	BBSMSG_INQ_COMMENT_RSP = 15004
 	MSGID_RESERVED = 0
-	MSGID_INVALID = 18446744073709551615
+	MSGID_INVALID = 2305843009213693951
 )
 

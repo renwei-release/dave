@@ -73,8 +73,8 @@ def _creat_rpcinc_file(msg_id_list, file_name):
                 msg_id_table[msg_id] = msg_value
                 msg_value += 1
 
-        file_id.write('\n\tMSGID_INVALID = 0xffffffffffffffff\n')
-        msg_id_table['MSGID_INVALID'] = 0xffffffffffffffff
+        file_id.write('\n\tMSGID_INVALID = 0x1fffffffffffffff\n')
+        msg_id_table['MSGID_INVALID'] = 0x1fffffffffffffff
         file_id.write('} RPCMSG;\n\n')
         file_id.write(_rpcinc_end)
     return msg_id_table

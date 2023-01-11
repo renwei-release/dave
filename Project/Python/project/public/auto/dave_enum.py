@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2023 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
@@ -104,7 +104,7 @@ AIPlaceType_travel_agency = AIPlaceType_transit_station + 1
 AIPlaceType_university = AIPlaceType_travel_agency + 1
 AIPlaceType_veterinary_care = AIPlaceType_university + 1
 AIPlaceType_zoo = AIPlaceType_veterinary_care + 1
-AIPlaceType_max = 0xffffffffffffffff
+AIPlaceType_max = 0x1fffffffffffffff
 
 BuildingBlocksOpt_none = 0
 BuildingBlocksOpt_inq = BuildingBlocksOpt_none + 1
@@ -429,8 +429,7 @@ IPProtocol_ICMP = 1
 IPProtocol_TCP = 6
 IPProtocol_UDP = 17
 IPProtocol_GRE = 47
-IPProtocol_MAX = IPProtocol_GRE + 1
-IPProtocol_max = 0x1fffffff
+IPProtocol_MAX = 0x1fffffff
 
 IPVER_IPV4 = 4
 IPVER_IPV6 = 6
@@ -508,14 +507,14 @@ MCardContentType_refresh_recommend_cache = MCardContentType_museum_sha1_id + 1
 MCardContentType_detection = MCardContentType_refresh_recommend_cache + 1
 MCardContentType_generator = MCardContentType_detection + 1
 MCardContentType_end = MCardContentType_generator + 1
-MCardContentType_max = 0xffffffffffffffff
+MCardContentType_max = 0x1fffffffffffffff
 
 MCardIdentityType_none = 0
 MCardIdentityType_initialization = MCardIdentityType_none + 1
 MCardIdentityType_user = MCardIdentityType_initialization + 1
 MCardIdentityType_AI = MCardIdentityType_user + 1
 MCardIdentityType_max = MCardIdentityType_AI + 1
-MCardIdentityType_MAX = 0xffffffffffffffff
+MCardIdentityType_MAX = 0x1fffffffffffffff
 
 MCardSource_aia = 0
 MCardSource_google = MCardSource_aia + 1
@@ -524,26 +523,26 @@ MCardSource_aic = MCardSource_aws + 1
 MCardSource_aib = MCardSource_aic + 1
 MCardSource_aib_io = MCardSource_aib + 1
 MCardSource_bbs = MCardSource_aib_io + 1
-MCardSource_max = 0xffffffffffffffff
+MCardSource_max = 0x1fffffffffffffff
 
 MCardTimeType_Permanent = 0
 MCardTimeType_Normal = MCardTimeType_Permanent + 1
-MCardTimeType_max = 0xffffffffffffffff
+MCardTimeType_max = 0x1fffffffffffffff
 
 MCardType_Private_Message_Board = 0
-MCardType_Public_Message_Board = 1
+MCardType_Public_Message_Board = MCardType_Private_Message_Board + 1
 MCardType_POI = MCardType_Public_Message_Board + 1
 MCardType_TALK = MCardType_POI + 1
 MCardType_weichat_talk = MCardType_TALK + 1
 MCardType_h5_talk = MCardType_weichat_talk + 1
-MCardType_max = 0xffffffffffffffff
+MCardType_max = 0x1fffffffffffffff
 
 MCardVer_reserve = 0
-MCardVer_text = 1
+MCardVer_text = MCardVer_reserve + 1
 MCardVer_media = MCardVer_text + 1
 MCardVer_talk = MCardVer_media + 1
 MCardVer_comment = MCardVer_talk + 1
-MCardVer_max = 0xffffffffffffffff
+MCardVer_max = 0x1fffffffffffffff
 
 NetAddrIPType = 0
 NetAddrIPBroadcastType = NetAddrIPType + 1
@@ -565,7 +564,7 @@ PythonFun_museum_recommend_page = PythonFun_painting_recommend_page + 1
 PythonFun_refresh_recommend_cache = PythonFun_museum_recommend_page + 1
 PythonFun_detection = PythonFun_refresh_recommend_cache + 1
 PythonFun_generator = PythonFun_detection + 1
-PythonFun_max = 0xffffffffffffffff
+PythonFun_max = 0x1fffffffffffffff
 
 REQ_TYPE_MAX = 0x1fffffff
 
@@ -735,7 +734,7 @@ SOCKETINFO_DEVICE_DISCONNECT = SOCKETINFO_DEVICE_CONNECT + 1
 SOCKETINFO_LINK_LOST = SOCKETINFO_DEVICE_DISCONNECT + 1
 SOCKETINFO_SEND_TIMER_OUT = SOCKETINFO_LINK_LOST + 1
 SOCKETINFO_PORT_EXIST = SOCKETINFO_SEND_TIMER_OUT + 1
-SOCKETINFO_WRITE_THEN_CLOSE = 0x7857aaeb
+SOCKETINFO_WRITE_THEN_CLOSE = SOCKETINFO_PORT_EXIST + 1
 SOCKETINFO_SND_URG = SOCKETINFO_WRITE_THEN_CLOSE + 1
 SOCKETINFO_RAW_EVENT_RECV_LENGTH = SOCKETINFO_SND_URG + 1
 SOCKETINFO_MAX = 0x1fffffff

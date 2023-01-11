@@ -7,10 +7,9 @@
 # */
 from autocode_cfg import *
 from autocode_tools import *
-from find.find_enum_table import find_enum_table
 
 
-def _creat_c_enumstr_body_table(body_table, file_id):
+def _enumstr_body_table(body_table, file_id):
     for body_name in body_table:
         #
         # The first byte is '_' is a special definition, 
@@ -19,8 +18,7 @@ def _creat_c_enumstr_body_table(body_table, file_id):
         #
         body_value = body_table[body_name]
         if body_name[0] != '_':
-            if (body_value == '') \
-                or (is_digital_string(body_value) == True):
+            if (body_value == '') or (is_digital_string(body_value) == True):
                 file_id.write(f'\t\tcase {body_name}:\n')
                 if body_value == '':
                     file_id.write(f'\t\t\t\tvalue_str = "\'{body_name}\'";\n')
@@ -33,15 +31,7 @@ def _creat_c_enumstr_body_table(body_table, file_id):
     return
 
 
-def _load_audocode_rpc_h_data():
-    file_list = [f'{rpc_ver3_rpcinc_file_name}']
-    struct_table = {"Simulate_use_RPCMSG_struct" : struct_table_set(None, [{ 'n':"Simulate_use_RPCMSG_name", 't':"RPCMSG" }])}
-
-    enum_table, _, _, _ = find_enum_table(None, file_list, struct_table)
-    return enum_table
-
-
-def _creat_c_enumstr_src_file(enum_table, include_list, file_name):
+def _enumstr_src_file(enum_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(f'#include "dave_base.h"\n')
@@ -56,14 +46,14 @@ def _creat_c_enumstr_src_file(enum_table, include_list, file_name):
             file_id.write(f'\ts8 *value_str = _string_buf;\n\n')
             file_id.write(f'\tswitch(enum_value)\n')
             file_id.write(f'\t{"{"}\n')
-            _creat_c_enumstr_body_table(enum_table[enum_name], file_id)
+            _enumstr_body_table(enum_table[enum_name], file_id)
             file_id.write(f'\t{"}"}\n')
             file_id.write(f'\n\treturn value_str;\n')
             file_id.write(f'{"}"}\n')
     return
 
 
-def _creat_c_enumstr_inc_file(enum_table, include_list, file_name):
+def _enumstr_inc_file(enum_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id)
         file_id.write(f'#ifndef __T_AUTO_ENUMSTR__\n')
@@ -81,13 +71,8 @@ def _creat_c_enumstr_inc_file(enum_table, include_list, file_name):
 # =====================================================================
 
 
-def creat_c_enumstr_file(param):
-    enum_table = param['total_enum_table']
-    include_list = param['total_enum_list']
-
-    enum_table.update(_load_audocode_rpc_h_data())
-
+def creat_c_enumstr_file(enum_table, include_list):
     print(f"{len(enum_table)}\tenumdata\twrite to {c_enumstr_src_file_name}")
-    _creat_c_enumstr_src_file(enum_table, include_list, c_enumstr_src_file_name)
-    _creat_c_enumstr_inc_file(enum_table, include_list, c_enumstr_inc_file_name)
+    _enumstr_src_file(enum_table, include_list, c_enumstr_src_file_name)
+    _enumstr_inc_file(enum_table, include_list, c_enumstr_inc_file_name)
     return
