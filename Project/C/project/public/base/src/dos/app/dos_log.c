@@ -34,31 +34,22 @@ _dos_trace_on_off(s8 *thread_name, dave_bool on)
 static RetCode
 _dos_show_log(s8 *param_ptr, ub param_len)
 {
-	u8 mac[DAVE_MAC_ADDR_LEN];
 	s8 log_len_str[64];
 	ub log_len;
 	s8 *log_ptr;
 
-	if(dave_strcmp(param_ptr, "mac") == dave_true)
+	dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
+	log_len = stringdigital(log_len_str);
+	if(log_len < 4096)
 	{
-		dave_os_load_mac(mac);
-		dos_print("%s", macstr(mac));
+		log_len = 4096;
 	}
-	else
-	{
-		dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
-		log_len = stringdigital(log_len_str);
-		if(log_len < 1500)
-		{
-			log_len = 1500;
-		}
 
-		log_ptr = dave_malloc(log_len);
-		base_log_history(log_ptr, log_len);
-		dos_write("=========================");
-		dos_write(log_ptr);
-		dave_free(log_ptr);
-	}
+	log_ptr = dave_malloc(log_len);
+	base_log_history(log_ptr, log_len);
+	dos_write("=========================");
+	dos_write(log_ptr);
+	dave_free(log_ptr);
 
 	return ERRCODE_OK;
 }
@@ -66,6 +57,7 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 static RetCode
 _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 {
+	u8 mac[DAVE_MAC_ADDR_LEN];
 	ub cmd_index;
 	s8 user_cmd[8];
 	s8 param[64];
@@ -77,11 +69,35 @@ _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 	dos_get_one_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, param, sizeof(param));
 
 	if(dave_strcmp(user_cmd, "on") == dave_true)
+	{
 		ret = _dos_trace_on_off(param, dave_true);
+	}
 	else if(dave_strcmp(user_cmd, "off") == dave_true)
+	{
 		ret = _dos_trace_on_off(param, dave_false);
+	}
+	else if(dave_strcmp(user_cmd, "enable") == dave_true)
+	{
+		ret = dave_true;
+		base_log_trace_enable();
+		dos_print("log trace enable!");
+	}
+	else if(dave_strcmp(user_cmd, "disable") == dave_true)
+	{
+		ret = dave_true;
+		base_log_trace_disable();
+		dos_print("log trace disable!");
+	}
+	else if(dave_strcmp(user_cmd, "mac") == dave_true)
+	{
+		ret = dave_true;
+		dave_os_load_mac(mac);
+		dos_print("%s", macstr(mac));
+	}
 	else
+	{
 		ret = dave_false;
+	}
 
 	if(ret == dave_false)
 	{

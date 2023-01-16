@@ -24,9 +24,9 @@ ub coroutine_get_stack_size(void);
 
 void * coroutine_create(coroutine_core_fun fun_ptr, void *fun_param);
 
-void coroutine_resume(void *co);
+dave_bool coroutine_resume(void *co);
 
-void coroutine_yield(void *co);
+dave_bool coroutine_yield(void *co);
 
 void coroutine_release(void *co);
 

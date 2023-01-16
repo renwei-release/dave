@@ -18,9 +18,9 @@ import (
 	"time"
 )
 
-var _MyIPFSNodeServer string = base.Cfg_get("IPFSServerURL", "18.143.154.81:5001")
+var _MyIPFSNode string = base.Cfg_get("IPFSNode", "13.228.250.43:5001")
 var _MyIPNSName string = base.Cfg_get("IPNSName", "self")
-var _MyIPFSShell * shell.Shell = shell.NewShell(_MyIPFSNodeServer)
+var _MyIPFSShell * shell.Shell = shell.NewShell(_MyIPFSNode)
 var _update_ipns_enable bool = false
 
 func _ipns_add_cid(cid string) error {
@@ -30,8 +30,8 @@ func _ipns_add_cid(cid string) error {
 
 	resp, err := _MyIPFSShell.PublishWithDetails("/ipfs/"+cid, _MyIPNSName, time.Second, time.Second, false)
 	if err != nil {
-		base.DAVELOG("error:%v server:%s name:%s cid:%s pullish failed!",
-			err, _MyIPFSNodeServer, _MyIPNSName, cid)
+		base.DAVELOG("error:%v note:%s name:%s cid:%s pullish failed!",
+			err, _MyIPFSNode, _MyIPNSName, cid)
 		return err
 	}
 
@@ -43,13 +43,13 @@ func _ipns_add_cid(cid string) error {
 func _ipfs_cat_data(cid string) {
 	reader, err := _MyIPFSShell.Cat(cid)
 	if err != nil {
-		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		base.DAVELOG("error:%s note:%s", err, _MyIPFSNode)
 		return
 	}
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
 
-	base.DAVELOG("cat the cid:%s->%s from %s", cid, buf, _MyIPFSNodeServer)
+	base.DAVELOG("cat the cid:%s->%s from %s", cid, buf, _MyIPFSNode)
 }
 
 func _ipfs_add_file(file_name string) string {
@@ -61,11 +61,11 @@ func _ipfs_add_file(file_name string) string {
 
 	cid, err := _MyIPFSShell.Add(files.NewBytesFile([]byte(file_data)))
 	if err != nil {
-		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		base.DAVELOG("error:%s note:%s", err, _MyIPFSNode)
 		return ""
 	}
 
-	base.DAVELOG("add file:%s to:%s the cid:%s", file_name, _MyIPFSNodeServer, cid)
+	base.DAVELOG("add file:%s to:%s the cid:%s", file_name, _MyIPFSNode, cid)
 
 	return cid
 }
@@ -73,11 +73,11 @@ func _ipfs_add_file(file_name string) string {
 func _ipfs_add_str(string_data string) string {
 	cid, err := _MyIPFSShell.Add(strings.NewReader(string_data))
 	if err != nil {
-		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		base.DAVELOG("error:%s note:%s", err, _MyIPFSNode)
 		return ""
 	}
 
-	base.DAVELOG("add:%s to:%s the cid:%s", string_data, _MyIPFSNodeServer, cid)
+	base.DAVELOG("add:%s to:%s the cid:%s", string_data, _MyIPFSNode, cid)
 
 	return cid
 }
@@ -85,11 +85,11 @@ func _ipfs_add_str(string_data string) string {
 func _ipfs_add_dir(dir string) string {
 	cid, err := _MyIPFSShell.AddDir(dir)
 	if err != nil {
-		base.DAVELOG("error:%s server:%s", err, _MyIPFSNodeServer)
+		base.DAVELOG("error:%s note:%s", err, _MyIPFSNode)
 		return ""
 	}
 
-	base.DAVELOG("add dir:%s to:%s the cid:%s", dir, _MyIPFSNodeServer, cid)
+	base.DAVELOG("add dir:%s to:%s the cid:%s", dir, _MyIPFSNode, cid)
 
 	return cid
 }
@@ -108,7 +108,7 @@ func _ipfs_add_bin(bin_data []byte, bin_name string) string {
 
 	tools.T_dir_remove(bin_path)
 
-	base.DAVELOG("add bin:%s to:%s the cid:%s", bin_file, _MyIPFSNodeServer, cid)
+	base.DAVELOG("add bin:%s to:%s the cid:%s", bin_file, _MyIPFSNode, cid)
 
 	return cid
 }

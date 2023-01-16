@@ -29,3 +29,16 @@ fi
 
 sudo systemctl restart docker
 sudo systemctl enable docker
+
+VERSION=2.15.1
+
+if [ -f /usr/local/bin/docker-compose ]; then
+   rm -rf /usr/local/bin/docker-compose
+fi
+if [ -f /usr/bin/docker-compose ]; then
+   rm -rf /usr/bin/docker-compose
+fi
+
+sudo curl -L "https://github.com/docker/compose/releases/download/v${VERSION}/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose

@@ -25,6 +25,8 @@ sb base_cfg_remote_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub va
 dave_bool base_cfg_remote_internal_add(s8 *name, s8 *value);
 dave_bool base_cfg_remote_internal_del(s8 *name);
 
+RetCode base_cfg_set_str(s8 *cfg_name, s8 *str_value);
+s8 * base_cfg_get_str(s8 *cfg_name, s8 *buf_ptr, ub buf_len, s8 *default_value);
 RetCode base_cfg_set_ub(s8 *cfg_name, ub ub_value);
 ub base_cfg_get_ub(s8 *cfg_name, ub default_value);
 RetCode base_cfg_set_bool(s8 *cfg_name, dave_bool bool_value);
@@ -41,6 +43,8 @@ dave_bool base_cfg_get_bool(s8 *cfg_name, dave_bool default_value);
 #define cfg_set base_cfg_set
 #define cfg_get base_cfg_get
 #define cfg_get_by_default base_cfg_get_by_default
+#define cfg_set_str base_cfg_set_str
+#define cfg_get_str base_cfg_get_str
 #define cfg_set_ub base_cfg_set_ub
 #define cfg_get_ub base_cfg_get_ub
 #define cfg_set_bool base_cfg_set_bool

@@ -38,7 +38,7 @@ typedef struct {
 	ThreadStruct *pThread;
 	coroutine_thread_fun coroutine_fun;
 	base_thread_fun thread_fun;
-	MSGBODY boot_the_co_msg;
+	MSGBODY msg;
 	void *co;
 
 	ThreadId src_thread;
@@ -211,7 +211,7 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 	pSite->pThread = pThread;
 	pSite->coroutine_fun = coroutine_fun;
 	pSite->thread_fun = thread_fun;
-	pSite->boot_the_co_msg = *msg;
+	pSite->msg = *msg;
 	pSite->co = NULL;
 
 	pSite->src_thread = INVALID_THREAD_ID;
@@ -235,9 +235,9 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 static inline void
 _thread_coroutine_info_free(CoroutineSite *pSite)
 {
-	if(pSite->boot_the_co_msg.msg_body != NULL)
+	if(pSite->msg.msg_body != NULL)
 	{
-		thread_clean_user_input_data(pSite->boot_the_co_msg.msg_body, pSite->boot_the_co_msg.msg_id);
+		thread_clean_user_input_data(pSite->msg.msg_body, pSite->msg.msg_id);
 	}
 
 	if(pSite->co != NULL)
@@ -283,7 +283,11 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 			pWakeup->wakeup_index, wakeup_index);
 	}
 
-	coroutine_resume(pSite->co);
+	if(coroutine_resume(pSite->co) == dave_false)
+	{
+		THREADABNOR("resume failed! %s->%s:%s",
+			thread_name(pSite->msg.msg_src), thread_name(pSite->msg.msg_dst), msgstr(pSite->msg.msg_id));
+	}
 }
 
 static inline dave_bool
@@ -348,7 +352,11 @@ _thread_coroutine_running_step_4(void *param)
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
-	coroutine_yield(pSite->co);
+	if(coroutine_yield(pSite->co) == dave_false)
+	{
+		THREADABNOR("yield failed! %s->%s:%s",
+			thread_name(pSite->msg.msg_src), thread_name(pSite->msg.msg_dst), msgstr(pSite->msg.msg_id));
+	}
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
@@ -402,7 +410,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
-	pSite->coroutine_fun(pSite->thread_fun, &(pSite->boot_the_co_msg));
+	pSite->coroutine_fun(pSite->thread_fun, &(pSite->msg));
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
@@ -418,7 +426,11 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 
 	pSite->co = coroutine_create(_thread_coroutine_running_step_2, pSite);
 
-	coroutine_resume(pSite->co);
+	if(coroutine_resume(pSite->co) == dave_false)
+	{
+		THREADABNOR("resume failed! %s->%s:%s",
+			thread_name(pSite->msg.msg_src), thread_name(pSite->msg.msg_dst), msgstr(pSite->msg.msg_id));
+	}
 }
 
 static inline void

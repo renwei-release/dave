@@ -63,7 +63,7 @@ typedef enum {
 	SOCKETINFO_LINK_LOST,
 	SOCKETINFO_SEND_TIMER_OUT,
 	SOCKETINFO_PORT_EXIST,
-	SOCKETINFO_WRITE_THEN_CLOSE = 0x7857aaeb,
+	SOCKETINFO_WRITE_THEN_CLOSE,
 	SOCKETINFO_SND_URG,
 	SOCKETINFO_RAW_EVENT_RECV_LENGTH,
 	SOCKETINFO_MAX = 0x1fffffff
@@ -106,8 +106,7 @@ typedef enum {
 	IPProtocol_UDP = 17,
 	IPProtocol_GRE = 47,
 	
-	IPProtocol_MAX,
-	IPProtocol_max = 0x1fffffff
+	IPProtocol_MAX = 0x1fffffff
 } IPProtocol;
 
 typedef enum {

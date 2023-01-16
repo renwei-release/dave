@@ -20,6 +20,7 @@
 
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 static ub _log_log_counter = 0;
+static dave_bool _log_trace_enable = dave_false;
 
 static inline ub
 _log_buffer_counter(void)
@@ -108,7 +109,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
 	}
 
-	if(level != TRACELEVEL_CATCHER)
+	if((_log_trace_enable == dave_true) && (level != TRACELEVEL_CATCHER))
 	{
 		if(log_buf != NULL)
 		{
@@ -230,6 +231,7 @@ void
 base_log_init(void)
 {
 	_log_log_counter = 0;
+	_log_trace_enable = dave_false;
 
 	log_trace_init();
 	log_buffer_init();
@@ -240,6 +242,18 @@ base_log_exit(void)
 {
 	log_buffer_exit();
 	log_trace_exit();
+}
+
+void
+base_log_trace_enable(void)
+{
+	_log_trace_enable = dave_true;
+}
+
+void
+base_log_trace_disable(void)
+{
+	_log_trace_enable = dave_false;
 }
 
 void

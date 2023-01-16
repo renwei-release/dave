@@ -126,12 +126,9 @@ dave_os_tty_exit(void)
 void
 dave_os_tty_write(u8 *data_ptr, ub data_len)
 {
-	if(_is_on_backend_printf_disable == dave_false)
+	if(fprintf(stdout, "\033[34m%s\033[0m", data_ptr) < 0)
 	{
-		if(fprintf(stdout, "\033[34m%s\033[0m", data_ptr) < 0)
-		{
-			_is_on_backend_printf_disable = dave_true;
-		}
+		_is_on_backend_printf_disable = dave_true;
 	}
 }
 

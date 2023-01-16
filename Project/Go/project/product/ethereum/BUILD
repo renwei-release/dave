@@ -11,9 +11,10 @@ VERSION=1.10.25
 PROJECT=$1
 HOMEPATH=$2
 PROJECTDIR=`pwd`/../../../../../Deploy/deploy/${PROJECT,,}/file_system/project
-PRIJECTFILE=${PROJECT^^}-BIN
 GETHBIN=`pwd`/go-ethereum-${VERSION}/build/bin/geth
+PRIJECTBIN=${PROJECT^^}-BIN
 PRYSM=`pwd`/prysm
+File=$(basename $0)
 
 if [ ! -d ./go-ethereum-${VERSION} ]; then
    if [ ! -f v${VERSION}.tar.gz ]; then
@@ -34,13 +35,14 @@ if [ ! -d ${PROJECTDIR} ]; then
    mkdir -p ${PROJECTDIR}
 fi
 
-chmod a+x ${PRIJECTFILE}
-
-echo BUILD copy ${GETHBIN} to ${PROJECTDIR}
+echo ${File} copy ${GETHBIN} to ${PROJECTDIR}
+chmod a+x ${GETHBIN}
 cp ${GETHBIN} ${PROJECTDIR}
 
-echo BUILD copy ${PRIJECTFILE} to ${PROJECTDIR}
-cp ${PRIJECTFILE} ${PROJECTDIR}
-
-echo BUILD copy ${PRYSM} to ${PROJECTDIR}
+echo ${File} copy ${PRYSM} to ${PROJECTDIR}
+chmod a+x ${PRYSM}
 cp -r ${PRYSM} ${PROJECTDIR}
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}

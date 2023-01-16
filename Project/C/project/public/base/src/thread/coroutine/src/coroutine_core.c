@@ -84,7 +84,10 @@ _coroutine_swap_function(void *param_1, void *param_2)
 		pCore->fun_ptr(pCore->fun_param);
 	}
 
-	coroutine_yield(pCore);
+	if(coroutine_yield(pCore) == dave_false)
+	{
+		THREADABNOR("yield failed!");
+	}
 
 	return NULL;
 }
@@ -202,7 +205,7 @@ _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 	return pCore;
 }
 
-static inline void
+static inline dave_bool
 _coroutine_resume(void *co)
 {
 	CoCore *pCore = (CoCore *)co;
@@ -211,28 +214,30 @@ _coroutine_resume(void *co)
 	if(pCore == NULL)
 	{
 		THREADABNOR("Arithmetic error! pCore is NULL");
-		return;
+		return dave_false;
 	}
 
 	pEnv = pCore->env;
 	if(pEnv == NULL)
 	{
 		THREADABNOR("Arithmetic error! pEnv is NULL");
-		return;
+		return dave_false;
 	}
 
 	if(pEnv->co_swap != NULL)
 	{
 		THREADABNOR("Arithmetic error! co_swap:%x", pEnv->co_swap);
-		return;
+		return dave_false;
 	}
 
 	pEnv->co_swap = &(pCore->swap);
 
 	_coroutine_swap_run(&(pEnv->base_swap), pEnv->co_swap);
+
+	return dave_true;
 }
 
-static inline void
+static inline dave_bool
 _coroutine_yield(void *co)
 {
 	CoCore *pCore = (CoCore *)co;
@@ -241,31 +246,33 @@ _coroutine_yield(void *co)
 	if(pCore == NULL)
 	{
 		THREADABNOR("Arithmetic error! pCore is NULL");
-		return;
+		return dave_false;
 	}	
 
 	pEnv = pCore->env;
 	if(pEnv == NULL)
 	{
 		THREADABNOR("Arithmetic error! pEnv is NULL");
-		return;
+		return dave_false;
 	}
 
 	if(pEnv->co_swap == NULL)
 	{
 		THREADABNOR("Arithmetic error! pEnv->co_swap is NULL");
-		return;
+		return dave_false;
 	}
 
 	if(pEnv->co_swap != &(pCore->swap))
 	{
 		THREADABNOR("Arithmetic error! swap mismatch:%x/%x", pEnv->co_swap, &(pCore->swap));
-		return;
+		return dave_false;
 	}
 
 	pEnv->co_swap = NULL;
 
 	_coroutine_swap_run(&(pCore->swap), &(pEnv->base_swap));
+
+	return dave_true;
 }
 
 static inline void
@@ -335,16 +342,16 @@ coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 	return _coroutine_create(fun_ptr, fun_param);
 }
 
-void
+dave_bool
 coroutine_resume(void *co)
 {
-	_coroutine_resume(co);
+	return _coroutine_resume(co);
 }
 
-void
+dave_bool
 coroutine_yield(void *co)
 {
-	_coroutine_yield(co);
+	return _coroutine_yield(co);
 }
 
 void

@@ -1048,8 +1048,8 @@ socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, 
 
 	if(thread_get_local(pCore->owner) != thread_get_local(src))
 	{
-		SOCKETABNOR("%s write someone:%s socket:%d/%d/%d/%d",
-			thread_name(src), thread_name(pCore->owner),
+		SOCKETABNOR("%lx/%s write someone:%lx/%s socket:%d/%d/%d/%d",
+			src, thread_name(src), pCore->owner, thread_name(pCore->owner),
 			pCore->socket_external_index, pCore->socket_internal_index,
 			pCore->os_socket, socket);
 		return dave_false;

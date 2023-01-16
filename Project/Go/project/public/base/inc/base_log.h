@@ -28,6 +28,9 @@ ub base_log_history(s8 *log_ptr, ub log_len);
 void base_log_init(void);
 void base_log_exit(void);
 
+void base_log_trace_enable(void);
+void base_log_trace_disable(void);
+
 void base_log_stack_init(void);
 void base_log_stack_exit(void);
 

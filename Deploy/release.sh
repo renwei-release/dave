@@ -18,4 +18,6 @@ if [ ! "$PROJECTMAPPING" != "" ]; then
       ACTIONLINEARRAY=(${ACTIONLINE})
       docker exec -t ${PROJECTNAME} sed -i "${ACTIONLINEARRAY[0]}c action=release" ${RUNNINGFILE}
    fi
+else
+   echo -e "There is a folder map with the host, run with the default mode!"
 fi
