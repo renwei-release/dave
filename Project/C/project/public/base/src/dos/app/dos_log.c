@@ -79,13 +79,13 @@ _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 	else if(dave_strcmp(user_cmd, "enable") == dave_true)
 	{
 		ret = dave_true;
-		base_log_trace_enable();
+		base_log_trace_enable(dave_true);
 		dos_print("log trace enable!");
 	}
 	else if(dave_strcmp(user_cmd, "disable") == dave_true)
 	{
 		ret = dave_true;
-		base_log_trace_disable();
+		base_log_trace_disable((dave_true));
 		dos_print("log trace disable!");
 	}
 	else if(dave_strcmp(user_cmd, "mac") == dave_true)

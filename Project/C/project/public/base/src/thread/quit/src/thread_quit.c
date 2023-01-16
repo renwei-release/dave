@@ -158,6 +158,8 @@ thread_quit(QUITTYPE type, s8 *reason, ThreadStruct *task, ub task_num)
 	
 	if((type == QUIT_TYPE_RESTART) && (_msg_quit.type == QUIT_TYPE_MAX))
 	{
+		base_log_trace_enable(dave_false);
+	
 		_msg_quit.type = type;
 		dave_memset(_msg_quit.reason, 0x00, QUIT_REASON_MESSAGE_LEN);
 		reason_len = dave_strlen(reason);

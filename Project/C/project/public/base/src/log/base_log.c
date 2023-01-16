@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CFG_LOG_TRACE_ENABLE "LOGTraceEnable"
+
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 static ub _log_log_counter = 0;
 static dave_bool _log_trace_enable = dave_false;
@@ -231,7 +233,7 @@ void
 base_log_init(void)
 {
 	_log_log_counter = 0;
-	_log_trace_enable = dave_false;
+	_log_trace_enable = cfg_get_bool(CFG_LOG_TRACE_ENABLE, dave_false);
 
 	log_trace_init();
 	log_buffer_init();
@@ -245,15 +247,25 @@ base_log_exit(void)
 }
 
 void
-base_log_trace_enable(void)
+base_log_trace_enable(dave_bool write_cfg)
 {
 	_log_trace_enable = dave_true;
+
+	if(write_cfg == dave_true)
+	{
+		cfg_set_bool(CFG_LOG_TRACE_ENABLE, _log_trace_enable);
+	}
 }
 
 void
-base_log_trace_disable(void)
+base_log_trace_disable(dave_bool write_cfg)
 {
 	_log_trace_enable = dave_false;
+
+	if(write_cfg == dave_true)
+	{
+		cfg_set_bool(CFG_LOG_TRACE_ENABLE, _log_trace_enable);
+	}
 }
 
 void
