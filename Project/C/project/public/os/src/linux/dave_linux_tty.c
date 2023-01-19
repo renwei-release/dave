@@ -42,11 +42,41 @@ static u32 _keypad_write = 0;
 static u32 _keypad_read = 0;
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
-static void *
-_read_key_thread(void *arg)
+
+static dave_bool
+_tty_read_thread(void)
 {
 	s8 keypad;
 
+	int ret = read(STDIN_FILENO, &keypad, 1);
+	
+	if(ret != 1)
+	{
+		if ((errno == 0) || (errno == EINTR))
+		{
+			// normal read timeout or receive break signal
+			return dave_true;
+		}
+		else
+		{
+			_is_on_backend_printf_disable = dave_true;
+			return dave_false;
+		}
+	}
+	
+	_keypad_char[(_keypad_write ++) % KEY_INPUT_MAX] = keypad;
+	
+	if((keypad == '\n') && (_notify_fun != NULL))
+	{
+		_notify_fun(_keypad_write - _keypad_read);
+	}
+
+	return dave_true;
+}
+
+static void *
+_tty_thread(void *arg)
+{
 	_keypad_write = 0;
 	_keypad_read = 0;
 
@@ -59,28 +89,8 @@ _read_key_thread(void *arg)
 
 	while(dave_os_thread_canceled(_linux_tty_thread) == dave_false)
 	{
-		int ret = read(STDIN_FILENO, &keypad, 1);
-
-		if(ret != 1)
-		{
-			if ((errno == 0) || (errno == EINTR))
-			{
-				// normal read timeout or receive break signal
-				continue;
-			}
-			else
-			{
-				_is_on_backend_printf_disable = dave_true;
-				break;
-			}
-		}
-
-		_keypad_char[(_keypad_write ++) % KEY_INPUT_MAX] = keypad;
-
-		if((keypad == '\n') && (_notify_fun != NULL))
-		{
-			_notify_fun(_keypad_write - _keypad_read);
-		}
+		if(_tty_read_thread() == dave_false)
+			break;
 	}
 
 	dave_os_thread_exit(_linux_tty_thread);
@@ -100,7 +110,7 @@ dave_os_tty_init(sync_notify_fun notify_fun)
 	_keypad_read = 0;
 	_is_on_backend_printf_disable = dave_false;
 
-	_linux_tty_thread = dave_os_create_thread("tty", _read_key_thread, NULL);
+	_linux_tty_thread = dave_os_create_thread("tty", _tty_thread, NULL);
 	if(_linux_tty_thread == NULL)
 	{
 		OSABNOR("i can not start key thread!");

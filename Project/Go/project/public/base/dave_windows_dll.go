@@ -17,10 +17,10 @@ package base
 #include <stdio.h>
 #include <stdlib.h>
 
-int dave_go_self_check_callback(int callback_input);
-void dave_go_init(void *);
-void dave_go_main(void *);
-void dave_go_exit(void *);
+void _go_init(void *);
+void _go_main(void *);
+void _go_exit(void *);
+int _go_self_check_callback(int);
 */
 import "C"
 import (
@@ -39,33 +39,41 @@ type DllMsgBody struct {
 	msg_body     unsafe.Pointer
 }
 
+var pre_init = Dave_go_system_pre_init()
+
 var _product_init_fun func()
 var _product_exit_fun func()
 
-//export dave_go_init
-func dave_go_init(c_data unsafe.Pointer) {
+func _reset_verno() {
+	c_my_verno := C.CString(Dave_verno())
+	C.dave_dll_reset_verno(c_my_verno)
+	C.free(unsafe.Pointer(c_my_verno))
+}
+
+//export _go_init
+func _go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
 }
 
-//export dave_go_main
-func dave_go_main(c_data unsafe.Pointer) {
+//export _go_main
+func _go_main(c_data unsafe.Pointer) {
 	Dave_msg_process((*DllMsgBody)(c_data))
 }
 
-//export dave_go_exit
-func dave_go_exit(c_data unsafe.Pointer) {
+//export _go_exit
+func _go_exit(c_data unsafe.Pointer) {
 	_product_exit_fun()
 }
 
-//export dave_go_self_check_callback
-func dave_go_self_check_callback(callback_input C.int) C.int {
+//export _go_self_check_callback
+func _go_self_check_callback(callback_input C.int) C.int {
 	return callback_input
 }
 
-func _dave_go_self_check() C.int {
+func _go_self_check() C.int {
 	check_str := C.CString("123456")
 
-	ret := C.dave_dll_self_check(check_str, C.int(123456), C.float(123456.123456), C.dll_checkback_fun(C.dave_go_self_check_callback))
+	ret := C.dave_dll_self_check(check_str, C.int(123456), C.float(123456.123456), C.dll_checkback_fun(C._go_self_check_callback))
 
 	C.free(unsafe.Pointer(check_str))
 	return ret
@@ -73,19 +81,32 @@ func _dave_go_self_check() C.int {
 
 // =====================================================================
 
-func Dave_go_init(work_mode string, sync_domain string, init_fun func(), exit_fun func()) {
+func Dave_go_system_pre_init() bool {
+	/*
+	 * Preventing the system from being called in advance
+	 * without initialization call
+	 */
+	 _reset_verno()
+
+	 return true
+}
+
+func Dave_go_init(product_verno string, work_mode string, sync_domain string, init_fun func(), exit_fun func()) {
 	_product_init_fun = init_fun
 	_product_exit_fun = exit_fun
 
 	c_my_verno := C.CString(Dave_verno())
+	if product_verno != "" {
+		c_my_verno = C.CString(product_verno)
+	}
 	c_work_mode := C.CString(work_mode)
 	c_sync_domain := C.CString(sync_domain)
-	thread_number := 8
+	thread_number := 0
 
 	C.dave_dll_init(
 		c_my_verno, c_work_mode,
 		C.int(thread_number),
-		C.dll_callback_fun(C.dave_go_init), C.dll_callback_fun(C.dave_go_main), C.dll_callback_fun(C.dave_go_exit),
+		C.dll_callback_fun(C._go_init), C.dll_callback_fun(C._go_main), C.dll_callback_fun(C._go_exit),
 		c_sync_domain)
 
 	C.free(unsafe.Pointer(c_my_verno))
@@ -94,7 +115,7 @@ func Dave_go_init(work_mode string, sync_domain string, init_fun func(), exit_fu
 }
 
 func Dave_go_running() {
-	ret := _dave_go_self_check()
+	ret := _go_self_check()
 	if ret == 0 {
 		C.dave_dll_running()
 	}

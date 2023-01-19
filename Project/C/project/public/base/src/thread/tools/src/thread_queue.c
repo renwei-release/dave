@@ -134,20 +134,20 @@ _thread_queue_free(ThreadQueue *pQueue_ptr, ub queue_number)
 }
 
 static inline void
-_thread_queue_sum_total(ub *list, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
+_thread_queue_sum_total(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
 {
-	ub queue_index, list_total_counter, list_received_counter, list_processed_counter;
+	ub queue_index, unprocessed_total_counter, list_received_counter, list_processed_counter;
 
-	list_total_counter = list_received_counter = list_processed_counter = 0;
+	unprocessed_total_counter = list_received_counter = list_processed_counter = 0;
 
 	for(queue_index=0; queue_index<queue_number; queue_index++)
 	{
-		list_total_counter += (pQueue_ptr[queue_index].list_number);
+		unprocessed_total_counter += (pQueue_ptr[queue_index].list_number);
 		list_received_counter += (pQueue_ptr[queue_index].queue_received_counter);
 		list_processed_counter += (pQueue_ptr[queue_index].queue_processed_counter);
 	}
 
-	*list = list_total_counter;
+	*unprocessed = unprocessed_total_counter;
 	*received = list_received_counter;
 	*processed = list_processed_counter;
 }
@@ -304,36 +304,39 @@ thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 }
 
 ThreadMsg *
-thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag)
+thread_queue_read(ThreadQueue *pQueue)
 {
 	ThreadMsg *pMsg = NULL;
 
-	if(seq_flag == dave_true)
-	{
-		SAFECODEv2TW(pQueue->queue_opt_pv, {
+	SAFECODEv2TW(pQueue->queue_opt_pv, {
 	
-			if(pQueue->on_queue_process == dave_false)
-			{
-				pMsg = _thread_queue_read(pQueue);
+		pMsg = _thread_queue_read(pQueue);
 	
-				if(pMsg != NULL)
-				{
-					pQueue->on_queue_process = dave_true;
-	
-					pMsg->pQueue = pQueue;
-				}
-			}
-	
-		});
-	}
-	else
-	{
-		SAFECODEv2TW(pQueue->queue_opt_pv, {
-	
+	});
+
+	return pMsg;
+}
+
+ThreadMsg *
+thread_queue_req_read(ThreadQueue *pQueue)
+{
+	ThreadMsg *pMsg = NULL;
+
+	SAFECODEv2TW(pQueue->queue_opt_pv, {
+
+		if(pQueue->on_queue_process == dave_false)
+		{
 			pMsg = _thread_queue_read(pQueue);
 	
-		});
-	}
+			if(pMsg != NULL)
+			{
+				pQueue->on_queue_process = dave_true;
+	
+				pMsg->pQueue = pQueue;
+			}
+		}
+
+	});
 
 	return pMsg;
 }
@@ -354,9 +357,9 @@ thread_queue_num_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 }
 
 void
-thread_queue_total(ub *list, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
+thread_queue_total(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
 {
-	_thread_queue_sum_total(list, received, processed, pQueue_ptr, queue_number);
+	_thread_queue_sum_total(unprocessed, received, processed, pQueue_ptr, queue_number);
 }
 
 ub

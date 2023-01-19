@@ -351,6 +351,12 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 		case BaseMsgType_Broadcast_dismiss:
 				value_str = "'BaseMsgType_Broadcast_dismiss'";
 			break;
+		case BaseMsgType_seq_msg:
+				value_str = "'BaseMsgType_seq_msg'";
+			break;
+		case BaseMsgType_pre_msg:
+				value_str = "'BaseMsgType_pre_msg'";
+			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;

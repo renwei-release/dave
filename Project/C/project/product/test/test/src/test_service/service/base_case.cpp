@@ -21,7 +21,7 @@ TEST(base_case, BaseCase_RPC)
 
 	pReq->s64_debug = 1234567890;
 
-	pRsp = (RPCDebugRsp *)name_go("BASE", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
+	pRsp = (RPCDebugRsp *)name_co("BASE", MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP);
 
 	EXPECT_EQ(pReq->s64_debug, pRsp->s64_debug);
 }

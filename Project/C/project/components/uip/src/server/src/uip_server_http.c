@@ -101,7 +101,7 @@ _uip_server_http_listen(UIPHttpLink *pLink)
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", pLink->path);
 	pReq->ptr = pLink;
 
-	pRsp = name_go(HTTP_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
+	pRsp = name_co(HTTP_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
 
 	if(pRsp->ret == RetCode_OK)
 	{
@@ -137,7 +137,7 @@ _uip_server_http_close(UIPHttpLink *pLink)
 	pReq->listen_port = pLink->port;
 	pReq->ptr = pLink;
 
-	pRsp = name_go(HTTP_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
+	pRsp = name_co(HTTP_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
 	if(pRsp->ret == RetCode_OK)
 	{
 		UIPLOG("port:%d close success! state:%d", pRsp->listen_port, pLink->state);

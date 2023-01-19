@@ -61,9 +61,11 @@ _thread_queue_all_reset(ThreadStruct *pThread)
 {
 	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
 	pThread->seq_queue_read_sequence = 0;
+	pThread->pre_queue_write_sequence = pThread->pre_queue_read_sequence = 0;
 
 	thread_queue_reset(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
 	thread_queue_reset(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+	thread_queue_reset(pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
 }
 
 static void
@@ -71,9 +73,11 @@ _thread_queue_all_malloc(ThreadStruct *pThread)
 {
 	pThread->msg_queue_write_sequence = pThread->msg_queue_read_sequence = 0;
 	pThread->seq_queue_read_sequence = 0;
+	pThread->pre_queue_write_sequence = pThread->pre_queue_read_sequence = 0;
 
 	thread_queue_malloc(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
 	thread_queue_malloc(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+	thread_queue_malloc(pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
 }
 
 static void
@@ -81,6 +85,7 @@ _thread_queue_all_free(ThreadStruct *pThread)
 {
 	thread_queue_free(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
 	thread_queue_free(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+	thread_queue_free(pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
 }
 
 static void
@@ -137,6 +142,7 @@ _thread_reset_all(void)
 
 		thread_queue_booting(_thread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
 		thread_queue_booting(_thread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
+		thread_queue_booting(_thread[thread_index].pre_queue, THREAD_PRE_QUEUE_NUM);
 
 		t_lock_reset(&(_thread[thread_index].sync.sync_pv));
 
@@ -286,48 +292,6 @@ _thread_wakeup(ThreadStruct *pThread)
 }
 
 static inline RetCode
-_thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
-{
-	sb queue_index;
-	ThreadQueue *pQueue;
-
-	queue_index = thread_is_seq_msg(pMsg);
-	if(queue_index < 0)
-	{
-		return RetCode_not_my_data;
-	}
-	pQueue = &(pThread->seq_queue[queue_index % THREAD_SEQ_QUEUE_NUM]);
-
-	return thread_queue_write(pQueue, pMsg);
-}
-
-static inline ThreadMsg *
-_thread_safe_read_seq_queue(ThreadStruct *pThread)
-{
-	ub queue_index, safe_counter;
-	ThreadQueue *pQueue;
-	ThreadMsg *pMsg = NULL;
-
-	queue_index = (pThread->seq_queue_read_sequence ++) % THREAD_SEQ_QUEUE_NUM;
-
-	for(safe_counter=0; (pMsg==NULL)&&(safe_counter<THREAD_SEQ_QUEUE_NUM); safe_counter++)
-	{
-		if(queue_index >= THREAD_SEQ_QUEUE_NUM)
-			queue_index = 0;
-
-		pQueue = &(pThread->seq_queue[queue_index ++]);
-
-		if((pQueue->list_number > 0)
-			&& (pQueue->on_queue_process == dave_false))
-		{
-			pMsg = thread_queue_read(pQueue, dave_true);
-		}
-	}
-
-	return pMsg;
-}
-
-static inline RetCode
 _thread_safe_write_msg_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
 	ub queue_index, safe_counter;
@@ -367,7 +331,102 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 
 		if(pQueue->list_number > 0)
 		{
-			pMsg = thread_queue_read(pQueue, dave_false);
+			pMsg = thread_queue_read(pQueue);
+		}
+	}
+
+	return pMsg;
+}
+
+static inline RetCode
+_thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
+{
+	sb queue_index;
+	ThreadQueue *pQueue;
+
+	queue_index = thread_is_seq_msg(pMsg);
+	if(queue_index < 0)
+	{
+		return RetCode_not_my_data;
+	}
+
+	pQueue = &(pThread->seq_queue[queue_index % THREAD_SEQ_QUEUE_NUM]);
+
+	return thread_queue_write(pQueue, pMsg);
+}
+
+static inline ThreadMsg *
+_thread_safe_read_seq_queue(ThreadStruct *pThread)
+{
+	ub queue_index, safe_counter;
+	ThreadQueue *pQueue;
+	ThreadMsg *pMsg = NULL;
+
+	queue_index = (pThread->seq_queue_read_sequence ++) % THREAD_SEQ_QUEUE_NUM;
+
+	for(safe_counter=0; (pMsg==NULL)&&(safe_counter<THREAD_SEQ_QUEUE_NUM); safe_counter++)
+	{
+		if(queue_index >= THREAD_SEQ_QUEUE_NUM)
+			queue_index = 0;
+
+		pQueue = &(pThread->seq_queue[queue_index ++]);
+
+		if((pQueue->list_number > 0)
+			&& (pQueue->on_queue_process == dave_false))
+		{
+			pMsg = thread_queue_req_read(pQueue);
+		}
+	}
+
+	return pMsg;
+}
+
+static inline RetCode
+_thread_safe_write_pre_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
+{
+	ub queue_index, safe_counter;
+	ThreadQueue *pQueue;
+	RetCode ret = RetCode_Send_msg_failed;
+
+	if(pMsg->msg_body.msg_type != BaseMsgType_pre_msg)
+	{
+		return RetCode_not_my_data;
+	}
+
+	queue_index = (pThread->pre_queue_write_sequence ++) % THREAD_PRE_QUEUE_NUM;
+
+	for(safe_counter=0; (ret!=RetCode_OK)&&(safe_counter<THREAD_PRE_QUEUE_NUM); safe_counter++)
+	{
+		if(queue_index >= THREAD_PRE_QUEUE_NUM)
+			queue_index = 0;
+
+		pQueue = &(pThread->pre_queue[queue_index ++]);
+
+		ret = thread_queue_write(pQueue, pMsg);
+	}
+
+	return ret;
+}
+
+static inline ThreadMsg *
+_thread_safe_read_pre_queue(ThreadStruct *pThread)
+{
+	ub queue_index, safe_counter;
+	ThreadQueue *pQueue;
+	ThreadMsg *pMsg = NULL;
+
+	queue_index = (pThread->pre_queue_read_sequence ++) % THREAD_PRE_QUEUE_NUM;
+
+	for(safe_counter=0; (pMsg==NULL)&&(safe_counter<THREAD_PRE_QUEUE_NUM); safe_counter++)
+	{
+		if(queue_index >= THREAD_PRE_QUEUE_NUM)
+			queue_index = 0;
+
+		pQueue = &(pThread->pre_queue[queue_index ++]);
+
+		if(pQueue->list_number > 0)
+		{
+			pMsg = thread_queue_read(pQueue);
 		}
 	}
 
@@ -411,7 +470,11 @@ _thread_write_msg(
 					msg_type,
 					fun, line);
 
-		ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
+		ret = _thread_safe_write_pre_queue(pDstThread, pMsg);
+		if(ret == RetCode_not_my_data)
+		{
+			ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
+		}
 		if(ret == RetCode_not_my_data)
 		{
 			ret = _thread_safe_write_msg_queue(pDstThread, pMsg);
@@ -454,9 +517,17 @@ _thread_write_msg(
 static inline ThreadMsg *
 _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 {
-	ThreadMsg *pMsg = NULL;
+	ThreadMsg *pMsg;
 
-	if(pTThread != NULL)
+	if(pThread == NULL)
+	{
+		THREADLTRACE(60,1, "pThread is NULL!");
+		return NULL;
+	}
+
+	pMsg = _thread_safe_read_pre_queue(pThread);
+
+	if((pMsg == NULL) && (pTThread != NULL))
 	{
 		pMsg = thread_thread_read(pTThread);
 	}

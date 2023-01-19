@@ -18,13 +18,15 @@ void thread_queue_free(ThreadQueue *pQueue, ub queue_number);
 
 RetCode thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg);
 
-ThreadMsg * thread_queue_read(ThreadQueue *pQueue, dave_bool seq_flag);
+ThreadMsg * thread_queue_read(ThreadQueue *pQueue);
+
+ThreadMsg * thread_queue_req_read(ThreadQueue *pQueue);
 
 void thread_queue_reset_process(ThreadQueue *pQueue);
 
 ub thread_queue_num_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id);
 
-void thread_queue_total(ub *list, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number);
+void thread_queue_total(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number);
 
 ub thread_queue_list(ThreadQueue *pQueue_ptr, ub queue_number);
 

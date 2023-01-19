@@ -26,7 +26,7 @@ _uip_server_distributor_start(s8 *path)
 
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", path);
 
-	pRsp = name_go(DISTRIBUTOR_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
+	pRsp = name_co(DISTRIBUTOR_THREAD_NAME, HTTPMSG_LISTEN_REQ, pReq, HTTPMSG_LISTEN_RSP);
 	if(pRsp->ret == RetCode_OK)
 	{
 		UIPLOG("port:%d listen on:%s success!", pRsp->listen_port, pRsp->path);
@@ -45,7 +45,7 @@ _uip_server_distributor_stop(s8 *path)
 
 	dave_snprintf(pReq->path, DAVE_PATH_LEN, "%s", path);
 
-	pRsp = name_go(DISTRIBUTOR_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
+	pRsp = name_co(DISTRIBUTOR_THREAD_NAME, HTTPMSG_CLOSE_REQ, pReq, HTTPMSG_CLOSE_RSP);
 	if(pRsp->ret == RetCode_OK)
 	{
 		UIPLOG("port:%d close success!", pRsp->listen_port);

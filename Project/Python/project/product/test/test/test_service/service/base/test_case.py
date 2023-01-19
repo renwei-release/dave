@@ -14,7 +14,7 @@ class BaseCase_RPC(unittest.TestCase):
         pReq = RPCDebugReq()
         pReq.s64_debug = 1234567890
 
-        pRsp = name_go('BASE', MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, RPCDebugRsp)
+        pRsp = name_co('BASE', MSGID_RPC_DEBUG_REQ, pReq, MSGID_RPC_DEBUG_RSP, RPCDebugRsp)
 
         self.assertTrue(pReq.s64_debug==pRsp.s64_debug, "s64_debug")
         return

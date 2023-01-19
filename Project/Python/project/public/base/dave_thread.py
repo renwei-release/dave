@@ -65,7 +65,7 @@ def sync_msg(dst, req_msg_id, req_class_instance, rsp_msg_id, rsp_class_instance
         return True
 
 
-def name_go(dst, req_id, req_class, rsp_id, rsp_class):
+def name_co(dst, req_id, req_class, rsp_id, rsp_class):
     pMsgReq = thread_msg(req_class.__class__)
     pMsgRsp = thread_msg(rsp_class)
 

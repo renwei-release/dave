@@ -6,9 +6,13 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 from ctypes import *
-from .dave_dll import dave_dll
+from .dave_dll import dave_dll, dave_python_system_pre_init
+
 
 davelib = dave_dll()
+
+
+dave_python_system_pre_init()
 
 
 def cfg_set(key, value):

@@ -1019,8 +1019,8 @@ __thread_thread_write__(
 	pTThread = _tthread_find_my_thread(thread_index, wakeup_index);
 	if(pTThread == NULL)
 	{
-		THREADABNOR("empty thread_index:%d wakeup_index:%d",
-			thread_index, wakeup_index);
+		THREADABNOR("empty thread_index:%d wakeup_index:%d <%s:%d>",
+			thread_index, wakeup_index, fun, line);
 		return;
 	}
 
@@ -1051,7 +1051,7 @@ thread_thread_read(void *param)
 	ThreadThread *pTThread = (ThreadThread *)param;
 	ThreadMsg *pMsg;
 
-	pMsg = thread_queue_read(pTThread->thread_queue, dave_false);
+	pMsg = thread_queue_read(pTThread->thread_queue);
 	if(pMsg != NULL)
 	{
 		THREADDEBUG("%lx %s->%s:%s",

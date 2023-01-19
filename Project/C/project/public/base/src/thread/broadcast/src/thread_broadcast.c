@@ -126,7 +126,10 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 					thread_name(self_id), thread_name(_thread[thread_index].thread_id),
 					msgstr(msg_id));
 
-				base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, _thread[thread_index].thread_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
+				/*
+				 * Local broadcast message unified priority message queue processing.
+				 */
+				base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, _thread[thread_index].thread_id, BaseMsgType_pre_msg, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
 			}
 		}
 	}

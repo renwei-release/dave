@@ -46,10 +46,10 @@ func Write_msg(dst interface{}, msg_id int, msg_len int, msg_ptr unsafe.Pointer)
 	return true
 }
 
-func Name_go(thread_name string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int) unsafe.Pointer {
+func Name_co(thread_name string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int) unsafe.Pointer {
 	c_thread_name := C.CString(thread_name)
 	
-	ret := C.dave_dll_thread_name_go(c_thread_name, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), nil, C.int(0))
+	ret := C.dave_dll_thread_name_co(c_thread_name, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), nil, C.int(0))
 
 	C.free(unsafe.Pointer(c_thread_name))
 
@@ -73,11 +73,11 @@ func Gid_msg(gid string, thread_name string, msg_id int, msg_len int, msg_ptr un
 	return true
 }
 
-func Gid_go(gid string, thread_name string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int) unsafe.Pointer {
+func Gid_co(gid string, thread_name string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int) unsafe.Pointer {
 	c_gid_name := C.CString(gid)
 	c_thread_name := C.CString(thread_name)
 
-	ret := C.dave_dll_thread_gid_go(c_gid_name, c_thread_name, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), nil, C.int(0))
+	ret := C.dave_dll_thread_gid_co(c_gid_name, c_thread_name, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), nil, C.int(0))
 
 	C.free(unsafe.Pointer(c_gid_name))
 	C.free(unsafe.Pointer(c_thread_name))

@@ -48,6 +48,11 @@ def _python_import_product(product_name):
    return
 
 
+def _reset_verno():
+   davelib.dave_dll_reset_verno(dave_verno())
+   return
+
+
 INITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_init(NULL_DATA):
    _python_import_product(_my_product_name)
@@ -70,23 +75,23 @@ def _python_exit(NULL_DATA):
 
 
 CHECKFUNC=CFUNCTYPE(c_int, c_int)
-def _dll_python_self_check_test_callback(value):
+def _python_self_check_test_callback(value):
     return value
 
 
 _c_python_init = INITFUNC(_python_init)
 _c_python_main = MAINFUNC(_python_main)
 _c_python_exit = INITFUNC(_python_exit)
-_c_dll_python_self_check_test_callback = CHECKFUNC(_dll_python_self_check_test_callback)
+_c_dll_python_self_check_test_callback = CHECKFUNC(_python_self_check_test_callback)
 
 
-def _dll_python_self_check():
+def _python_self_check():
    if davelib.dave_dll_self_check(c_char_p(b"123456"), c_int(123456), c_float(123456.123456), _c_dll_python_self_check_test_callback) == 0:
       return True
    return False
 
 
-def _dll_setup_product_verno_name(product_name):
+def _setup_product_verno_name(product_name):
    dave_product(product_name)
    return
 
@@ -94,8 +99,13 @@ def _dll_setup_product_verno_name(product_name):
 # =====================================================================
 
 
-def dave_dll():
-   return davelib
+def dave_python_system_pre_init():
+	#/*
+	# * Preventing the system from being called in advance
+	# * without initialization call
+	# */
+   _reset_verno()
+   return
 
 
 def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=b""):
@@ -103,7 +113,7 @@ def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=
 
    _my_product_name = str(product_name)
 
-   _dll_setup_product_verno_name(_my_product_name)
+   _setup_product_verno_name(_my_product_name)
 
    my_verno = dave_verno()
    thread_number = 1
@@ -117,7 +127,7 @@ def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=
 
 
 def dave_python_running():
-   ret = _dll_python_self_check()
+   ret = _python_self_check()
    if ret == True:
       davelib.dave_dll_running()
    return
@@ -126,3 +136,10 @@ def dave_python_running():
 def dave_python_exit():
    davelib.dave_dll_exit()
    return
+
+
+def dave_dll():
+   return davelib
+
+
+dave_python_system_pre_init()

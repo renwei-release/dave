@@ -65,51 +65,51 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 	req.void_debug = VOID_DEBUG_VALUE;
 	req.ptr = &req;
 
-	pRsp = id_go(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = id_co(pReady->remote_thread_id, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("id_go(%lx) successfully! ptr:%lx/%lx", pReady->remote_thread_id, &req, pRsp->ptr);
+		BASELOG("id_co(%lx) successfully! ptr:%lx/%lx", pReady->remote_thread_id, &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
-	pRsp = name_go(pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = name_co(pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("name_go(%s) successfully! ptr:%lx/%lx", pReady->remote_thread_name, &req, pRsp->ptr);
+		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", pReady->remote_thread_name, &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
-	pRsp = gid_go(pReady->globally_identifier, pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = gid_co(pReady->globally_identifier, pReady->remote_thread_name, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("gid_go(%s/%s) successfully! ptr:%lx/%lx", pReady->globally_identifier, pReady->remote_thread_name, &req, pRsp->ptr);
+		BASELOG("gid_co(%s/%s) successfully! ptr:%lx/%lx", pReady->globally_identifier, pReady->remote_thread_name, &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
-	pRsp = name_go("bbs", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = name_co("bbs", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("name_go(%s) successfully! ptr:%lx/%lx", "bbs", &req, pRsp->ptr);
+		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", "bbs", &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(thread_id("bbs"), pRsp);
 	}
 
-	pRsp = uid_go("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = uid_co("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("uiddebug 1 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+		BASELOG("uiddebug 1 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
-	pRsp = uid_go("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = uid_co("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("uiddebug 2 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+		BASELOG("uiddebug 2 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
 
-	pRsp = uid_go("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = uid_co("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("uidtest 1 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+		BASELOG("uidtest 1 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
-	pRsp = uid_go("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = uid_co("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("uidtest 2 uid_go(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
+		BASELOG("uidtest 2 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
 	}
 }
 
@@ -142,7 +142,7 @@ _base_msg_timer_out(ProcessMsgTimerOutMsg *pTimerOut)
 static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
-	BASEDEBUG("%lx/%s/%s/%s",
+	BASELOG("%lx/%s/%s/%s",
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
@@ -158,7 +158,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 static void
 _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 {
-	BASEDEBUG("%lx/%s/%s",
+	BASELOG("%lx/%s/%s",
 		pReady->remote_thread_id,
 		pReady->remote_thread_name, pReady->globally_identifier);
 }
