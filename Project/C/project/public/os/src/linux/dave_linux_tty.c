@@ -35,21 +35,91 @@
 
 #define KEY_INPUT_MAX (2048)
 
-static void *_linux_tty_thread = NULL;
+typedef struct {
+	TraceLevel level;
+	ub buf_len;
+	u8 *buf_ptr;
+
+	void *next;
+} TTYWriteChain;
+
+static void *_tty_read_thread_body = NULL;
+static void *_tty_write_thread_body = NULL;
 static sync_notify_fun _notify_fun = NULL;
 static s8 _keypad_char[KEY_INPUT_MAX];
 static u32 _keypad_write = 0;
 static u32 _keypad_read = 0;
+static TLock _write_pv;
+static TTYWriteChain *_write_chain_head = NULL;
+static TTYWriteChain *_write_chain_tail = NULL;
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
+static void
+_tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+{
+	sb result;
+
+	if(_is_on_backend_printf_disable == dave_false)
+	{
+		/*
+		 * For definitions of color
+		 * http://www.myjishu.com/?p=132
+		 */
+
+		if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_CATCHER))
+			result = fprintf(stdout, "\033[36m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_TRACE)
+			result = fprintf(stdout, "\033[33m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_LOG)
+			result = fprintf(stdout, "\033[38m%s\033[0m", (char *)buf_ptr);	
+		else if(level == TRACELEVEL_ABNORMAL)
+			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_ASSERT)
+			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
+		else
+			result = fprintf(stdout, "\033[28m%s\033[0m", (char *)buf_ptr);
+
+		if(result < 0)
+		{
+			_is_on_backend_printf_disable = dave_true;
+		}
+	}
+}
+
+static TTYWriteChain *
+_tty_malloc_chain(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+{
+	TTYWriteChain *pChain = dave_malloc(sizeof(TTYWriteChain));
+
+	pChain->level = level;
+	pChain->buf_len = buf_len;
+	pChain->buf_ptr = dave_malloc(pChain->buf_len + 1);
+	dave_memcpy(pChain->buf_ptr, buf_ptr, buf_len);
+	pChain->buf_ptr[buf_len] = '\0';
+	pChain->next = NULL;
+
+	return pChain;
+}
+
+static void
+_tty_free_chain(TTYWriteChain *pChain)
+{
+	if(pChain != NULL)
+	{
+		if(pChain->buf_ptr != NULL)
+			dave_free(pChain->buf_ptr);
+
+		dave_free(pChain);
+	}
+}
 
 static dave_bool
-_tty_read_thread(void)
+_tty_read_data(void)
 {
 	s8 keypad;
 
 	int ret = read(STDIN_FILENO, &keypad, 1);
-	
+
 	if(ret != 1)
 	{
 		if ((errno == 0) || (errno == EINTR))
@@ -74,8 +144,47 @@ _tty_read_thread(void)
 	return dave_true;
 }
 
+static void
+_tty_write_data(void)
+{
+	ub safe_counter;
+	TTYWriteChain *pChain;
+
+	safe_counter = 0;
+
+	while((safe_counter ++) < 102400)
+	{
+		pChain = NULL;
+	
+		SAFECODEv1(_write_pv, {
+
+			if(_write_chain_head != NULL)
+			{
+				pChain = _write_chain_head;
+
+				_write_chain_head = _write_chain_head->next;
+
+				if(_write_chain_head == NULL)
+				{
+					_write_chain_tail = NULL;
+				}
+			}
+
+		});
+
+		if(pChain == NULL)
+		{
+			break;
+		}
+
+		_tty_trace(pChain->level, pChain->buf_len, pChain->buf_ptr);
+
+		_tty_free_chain(pChain);
+	}
+}
+
 static void *
-_tty_thread(void *arg)
+_tty_read_thread(void *arg)
 {
 	_keypad_write = 0;
 	_keypad_read = 0;
@@ -87,15 +196,36 @@ _tty_thread(void *arg)
     attr.c_lflag &= ~ICANON;
     tcsetattr(STDIN_FILENO, TCSANOW, &attr);
 
-	while(dave_os_thread_canceled(_linux_tty_thread) == dave_false)
+	while(dave_os_thread_canceled(_tty_read_thread_body) == dave_false)
 	{
-		if(_tty_read_thread() == dave_false)
+		if(_tty_read_data() == dave_false)
 			break;
+
+		_tty_write_data();
 	}
 
-	dave_os_thread_exit(_linux_tty_thread);
+	dave_os_thread_exit(_tty_read_thread_body);
 
-	_linux_tty_thread = NULL;
+	_tty_read_thread_body = NULL;
+
+	return NULL;
+}
+
+static void *
+_tty_write_thread(void *arg)
+{
+	while(dave_os_thread_canceled(_tty_write_thread_body) == dave_false)
+	{
+		dave_os_thread_sleep(_tty_write_thread_body);
+	
+		_tty_write_data();
+	}
+
+	dave_os_thread_exit(_tty_write_thread_body);
+
+	_tty_write_thread_body = NULL;
+
+	_tty_write_data();
 
 	return NULL;
 }
@@ -106,20 +236,26 @@ dave_bool
 dave_os_tty_init(sync_notify_fun notify_fun)
 {
 	_notify_fun = notify_fun;
-	_keypad_write = 0;
-	_keypad_read = 0;
+	_keypad_write = _keypad_read = 0;
+	t_lock_reset(&_write_pv);
+	_write_chain_head = _write_chain_tail = NULL;
 	_is_on_backend_printf_disable = dave_false;
 
-	_linux_tty_thread = dave_os_create_thread("tty", _tty_thread, NULL);
-	if(_linux_tty_thread == NULL)
+	_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
+	if(_tty_read_thread_body == NULL)
 	{
-		OSABNOR("i can not start key thread!");
+		OSABNOR("i can not start tty read thread!");
 		return dave_false;
 	}
-	else
+
+	_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
+	if(_tty_read_thread_body == NULL)
 	{
-		return dave_true;
+		OSABNOR("i can not start tty write thread!");
+		return dave_false;
 	}
+
+	return dave_true;
 }
 
 void
@@ -127,9 +263,13 @@ dave_os_tty_exit(void)
 {
 	_notify_fun = NULL;
 
-	if(_linux_tty_thread != NULL)
+	if(_tty_read_thread_body != NULL)
 	{
-		dave_os_release_thread(_linux_tty_thread);
+		dave_os_release_thread(_tty_read_thread_body);
+	}
+	if(_tty_write_thread_body != NULL)
+	{
+		dave_os_release_thread(_tty_write_thread_body);
 	}
 }
 
@@ -160,33 +300,24 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 void
 dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
 {
-	sb result;
+	TTYWriteChain *pChain = _tty_malloc_chain(level, buf_len, buf_ptr);
 
-	if(_is_on_backend_printf_disable == dave_false)
-	{
-		/*
-		 * For definitions of color
-		 * http://www.myjishu.com/?p=132
-		 */
+	SAFECODEv1(_write_pv, {
 
-		if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_CATCHER))
-			result = fprintf(stdout, "\033[36m%s\033[0m", (char *)buf_ptr);
-		else if(level == TRACELEVEL_TRACE)
-			result = fprintf(stdout, "\033[33m%s\033[0m", (char *)buf_ptr);
-		else if(level == TRACELEVEL_LOG)
-			result = fprintf(stdout, "\033[38m%s\033[0m", (char *)buf_ptr);	
-		else if(level == TRACELEVEL_ABNORMAL)
-			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
-		else if(level == TRACELEVEL_ASSERT)
-			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
-		else
-			result = fprintf(stdout, "\033[28m%s\033[0m", (char *)buf_ptr);
-
-		if(result < 0)
+		if(_write_chain_head == NULL)
 		{
-			_is_on_backend_printf_disable = dave_true;
+			_write_chain_head = _write_chain_tail = pChain;
 		}
-	}
+		else
+		{
+			_write_chain_tail->next = pChain;
+
+			_write_chain_tail = pChain;
+		}
+
+	});
+
+	dave_os_thread_wakeup(_tty_write_thread_body);
 }
 
 #endif
