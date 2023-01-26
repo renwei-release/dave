@@ -30,6 +30,7 @@ fi
 sudo systemctl restart docker
 sudo systemctl enable docker
 
+##### setup docker-compose #####
 VERSION=2.15.1
 
 if [ -f /usr/local/bin/docker-compose ]; then

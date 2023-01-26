@@ -14,9 +14,9 @@ import (
 
 // =====================================================================
 
-func VSYS_wallet_address() string {
-	wallet, _ := vsys.NewWalletFromSeedStr(VSYS_SEED())
-	account, _ := wallet.GetAccount(VSYS_Chain(), 0)
+func Vsys_wallet_address() string {
+	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
+	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 
 	base.DAVELOG("account PriKey:%v PubKey:%v Addr:%v",
 		account.PriKey.B58Str().Str(), account.PubKey.B58Str().Str(), account.Addr.B58Str().Str())
@@ -24,8 +24,8 @@ func VSYS_wallet_address() string {
 	return account.Addr.B58Str().Str()
 }
 
-func VSYS_account() *vsys.Account {
-	wallet, _ := vsys.NewWalletFromSeedStr(VSYS_SEED())
-	account, _ := wallet.GetAccount(VSYS_Chain(), 0)
+func Vsys_account() *vsys.Account {
+	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
+	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 	return account
 }

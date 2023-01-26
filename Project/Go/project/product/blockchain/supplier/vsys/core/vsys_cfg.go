@@ -19,7 +19,7 @@ var SEED = base.Cfg_get("VSYSSEED", "")
 
 // =====================================================================
 
-func VSYS_NET() vsys.ChainID {
+func Vsys_NET() vsys.ChainID {
 	if NET == "Main" {
 		return vsys.MAIN_NET
 	} else {
@@ -27,10 +27,10 @@ func VSYS_NET() vsys.ChainID {
 	}
 }
 
-func VSYS_HOST() string {
+func Vsys_HOST() string {
 	var host string
 
-	if VSYS_NET() == vsys.MAIN_NET {
+	if Vsys_NET() == vsys.MAIN_NET {
 		host = MAINHOST
 	} else {
 		host = TESTHOST
@@ -43,6 +43,6 @@ func VSYS_HOST() string {
 	return host
 }
 
-func VSYS_SEED() string {
+func Vsys_SEED() string {
 	return SEED
 }

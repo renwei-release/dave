@@ -16,7 +16,7 @@ void dave_os_tty_write(u8 *data_ptr, ub data_len);
 
 ub dave_os_tty_read(u8 *data_ptr, ub data_len);
 
-void dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr);
+void dave_os_trace(TraceLevel level, ub data_len, u8 *data_ptr);
 
 #endif
 

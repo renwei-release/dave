@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #define CFG_LOG_TRACE_ENABLE "LOGTraceEnable"
+#define LOG_TRACE_DEFAULT_CFG dave_true
 
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 static ub _log_log_counter = 0;
@@ -56,19 +57,18 @@ __log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args
 	LogBuffer *pBuffer;
 	s8 *log_buf;
 
+	log_buf = NULL;
+	*log_len = 0;
+
 	pBuffer = log_buffer_thread();
 	if(pBuffer == NULL)
 	{
 		return NULL;
 	}
 
-	log_buf = &pBuffer->buffer_ptr[pBuffer->buffer_length];
-	*log_len = pBuffer->buffer_length;
-
 	if((pBuffer->buffer_length == 0) || (pBuffer->buffer_length >= LOG_BUFFER_LENGTH))
 	{
 		_log_buffer_log_head(pBuffer, level);
-		*log_len = pBuffer->buffer_length;
 	}
 
 	pBuffer->buffer_length += (ub)vsnprintf(&pBuffer->buffer_ptr[pBuffer->buffer_length], LOG_BUFFER_LENGTH-pBuffer->buffer_length, fmt, list_args);
@@ -76,13 +76,15 @@ __log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args
 	{
 		pBuffer->buffer_ptr[pBuffer->buffer_length] = '\0';
 	}
-	*log_len = pBuffer->buffer_length - (*log_len);
 
 	if((pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\n')
 		|| (pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\r')
 		|| ((pBuffer->buffer_length + 32) >= LOG_BUFFER_LENGTH))
 	{
 		log_buffer_set(pBuffer);
+
+		log_buf = pBuffer->buffer_ptr;
+		*log_len = pBuffer->buffer_length;
 	}
 
 	return log_buf;
@@ -99,7 +101,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		return NULL;
 	}
 
-	if(level == TRACELEVEL_DEBUG)
+	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ABNORMAL))
 	{
 		log_buf = _trace_buffer;
 		log_len = sizeof(_trace_buffer);
@@ -233,7 +235,7 @@ void
 base_log_init(void)
 {
 	_log_log_counter = 0;
-	_log_trace_enable = cfg_get_bool(CFG_LOG_TRACE_ENABLE, dave_false);
+	_log_trace_enable = cfg_get_bool(CFG_LOG_TRACE_ENABLE, LOG_TRACE_DEFAULT_CFG);
 
 	log_trace_init();
 	log_buffer_init();

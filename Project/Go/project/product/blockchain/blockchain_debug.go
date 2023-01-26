@@ -21,7 +21,7 @@ func blockchain_debug(debug_req string) string {
 	if (len(debug_req) > 3) && (debug_req[0:3] == "eth") {
 		debug_rsp = eth.Eth_debug(debug_req[4:])
 	} else if (len(debug_req) > 4) && (debug_req[0:4] == "vsys") {
-		debug_rsp = VSYS.VSYS_debug(debug_req[5:])
+		debug_rsp = vsys.Vsys_debug(debug_req[5:])
 	} else if (len(debug_req) > 4) && (debug_req[0:2] == "pg") {
 		debug_rsp = pg.PG_debug(debug_req[3:])
 	} else {

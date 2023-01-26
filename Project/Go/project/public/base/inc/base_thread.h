@@ -43,6 +43,8 @@ typedef enum {
 	BaseMsgType_Broadcast_remote,
 	BaseMsgType_Broadcast_total,
 	BaseMsgType_Broadcast_dismiss,
+	BaseMsgType_seq_msg,
+	BaseMsgType_pre_msg,
 } BaseMsgType;
 
 typedef enum {
@@ -138,6 +140,7 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define snd_from_msg(src_id, dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
 
 #define id_msg(dst_id, msg_id, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
+#define id_pre(dst_id, msg_id, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_pre_msg, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)
 #define id_nmsg(dst_id, msg_id, msg_body, msg_number) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), msg_number, (s8 *)__func__, (ub)__LINE__)
 #define id_event(dst_id, req_id, req_body, rsp_id, rsp_fun) base_thread_id_event(INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, rsp_fun, (s8 *)__func__, (ub)__LINE__)
 #define id_co(dst_id, req_id, req_body, rsp_id) base_thread_id_co(INVALID_THREAD_ID, dst_id, (ub)req_id, sizeof(*req_body), (u8 *)(req_body), (ub)rsp_id, (s8 *)__func__, (ub)__LINE__)

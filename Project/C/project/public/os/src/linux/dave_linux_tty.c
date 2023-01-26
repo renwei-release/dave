@@ -37,8 +37,8 @@
 
 typedef struct {
 	TraceLevel level;
-	ub buf_len;
-	u8 *buf_ptr;
+	ub data_len;
+	u8 *data_ptr;
 
 	void *next;
 } TTYWriteChain;
@@ -87,15 +87,15 @@ _tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
 }
 
 static TTYWriteChain *
-_tty_malloc_chain(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+_tty_malloc_chain(TraceLevel level, ub data_len, u8 *data_ptr)
 {
 	TTYWriteChain *pChain = dave_malloc(sizeof(TTYWriteChain));
 
 	pChain->level = level;
-	pChain->buf_len = buf_len;
-	pChain->buf_ptr = dave_malloc(pChain->buf_len + 1);
-	dave_memcpy(pChain->buf_ptr, buf_ptr, buf_len);
-	pChain->buf_ptr[buf_len] = '\0';
+	pChain->data_len = data_len;
+	pChain->data_ptr = dave_malloc(pChain->data_len + 1);
+	dave_memcpy(pChain->data_ptr, data_ptr, data_len);
+	pChain->data_ptr[data_len] = '\0';
 	pChain->next = NULL;
 
 	return pChain;
@@ -106,8 +106,8 @@ _tty_free_chain(TTYWriteChain *pChain)
 {
 	if(pChain != NULL)
 	{
-		if(pChain->buf_ptr != NULL)
-			dave_free(pChain->buf_ptr);
+		if(pChain->data_ptr != NULL)
+			dave_free(pChain->data_ptr);
 
 		dave_free(pChain);
 	}
@@ -177,7 +177,7 @@ _tty_write_data(void)
 			break;
 		}
 
-		_tty_trace(pChain->level, pChain->buf_len, pChain->buf_ptr);
+		_tty_trace(pChain->level, pChain->data_len, pChain->data_ptr);
 
 		_tty_free_chain(pChain);
 	}
@@ -276,10 +276,7 @@ dave_os_tty_exit(void)
 void
 dave_os_tty_write(u8 *data_ptr, ub data_len)
 {
-	if(fprintf(stdout, "\033[34m%s\033[0m", data_ptr) < 0)
-	{
-		_is_on_backend_printf_disable = dave_true;
-	}
+	dave_os_trace(TRACELEVEL_LOG, data_len, data_ptr);
 }
 
 ub
@@ -298,9 +295,9 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 }
 
 void
-dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+dave_os_trace(TraceLevel level, ub data_len, u8 *data_ptr)
 {
-	TTYWriteChain *pChain = _tty_malloc_chain(level, buf_len, buf_ptr);
+	TTYWriteChain *pChain = _tty_malloc_chain(level, data_len, data_ptr);
 
 	SAFECODEv1(_write_pv, {
 

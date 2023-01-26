@@ -11,15 +11,15 @@ import (
 	"github.com/virtualeconomy/go-vsys/vsys"
 )
 
-var vsys_api = vsys.NewNodeAPI(VSYS_HOST())
-var vsys_chain = vsys.NewChain(vsys_api, VSYS_NET())
+var vsys_api = vsys.NewNodeAPI(Vsys_HOST())
+var vsys_chain = vsys.NewChain(vsys_api, Vsys_NET())
 
 // =====================================================================
 
-func VSYS_API() *vsys.NodeAPI {
+func Vsys_API() *vsys.NodeAPI {
 	return vsys_api
 }
 
-func VSYS_Chain() *vsys.Chain {
+func Vsys_Chain() *vsys.Chain {
 	return vsys_chain
 }

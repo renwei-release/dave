@@ -75,10 +75,10 @@ if [ "$LEVEL" == "beta" ]; then
 fi
 
 if [ "$LEVEL" == "all" ]; then
-   LEVEL=alpha
+   LEVEL=beta
    build_lib
 
-   LEVEL=beta
+   LEVEL=alpha
    build_lib
 fi
 
