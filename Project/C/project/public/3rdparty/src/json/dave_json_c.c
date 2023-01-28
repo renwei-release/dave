@@ -979,7 +979,7 @@ dave_json_c_array_copy(void *pDstJson, void *pSrcJson, char *key)
 MBUF *
 dave_json_c_to_mbuf(void *pJson)
 {
-	s8 *str;
+	s8 *str_ptr;
 	ub str_len;
 	MBUF *mbuf_data;
 
@@ -988,15 +988,15 @@ dave_json_c_to_mbuf(void *pJson)
 		return NULL;
 	}
 
-	str = dave_json_to_string(pJson, &str_len);
+	str_ptr = (s8 *)json_object_to_json_string_length((struct json_object *)pJson, JSON_C_TO_STRING_PLAIN, &str_len);
 
-	if(str == NULL)
+	if(str_ptr == NULL)
 	{
 		return NULL;
 	}
 
 	mbuf_data = dave_mmalloc(str_len + 1);
-	dave_memcpy(mbuf_data->payload, str, str_len);
+	dave_memcpy(mbuf_data->payload, str_ptr, str_len);
 	mbuf_data->len = mbuf_data->tot_len = (sb)(str_len);
 	((s8 *)(mbuf_data->payload))[str_len] = '\0';
 
@@ -1027,19 +1027,19 @@ dave_json_c_write(void *pJson, s8 *file_name, dave_bool direct_flag)
 {
 	FileOptFlag flag;
 	s8 *json_str;
-	size_t json_length;
+	size_t json_len;
 
 	if(pJson == NULL)
 		return dave_false;
 
-	json_str = (s8 *)json_object_to_json_string_length((struct json_object *)pJson, JSON_C_TO_STRING_PRETTY, &json_length);
+	json_str = (s8 *)json_object_to_json_string_length((struct json_object *)pJson, JSON_C_TO_STRING_PRETTY, &json_len);
 
 	if(direct_flag == dave_true)
 		flag = CREAT_WRITE_FLAG|DIRECT_FLAG;
 	else
 		flag = CREAT_WRITE_FLAG;
 
-	return dave_os_file_write(flag, file_name, 0, json_length, (u8 *)json_str);
+	return dave_os_file_write(flag, file_name, 0, json_len, (u8 *)json_str);
 }
 
 void *

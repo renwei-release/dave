@@ -14,7 +14,6 @@ import (
 )
 
 var _chain_info_url = base.Cfg_get("VSYSChainInfoURL", "http://127.0.0.1:5555")
-var _chain_info_head = "{\"Content-Type\": \"application/json\"}"
 
 func _info_hello() string {
 	get_url := fmt.Sprintf("%s/", _chain_info_url)

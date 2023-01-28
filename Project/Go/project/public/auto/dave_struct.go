@@ -37,31 +37,26 @@ type MCardVerMedia struct {
 	Second uint64
 }
 
+type MCardVerTalk struct {
+	Version int64
+	Type int64
+	Channel [DAVE_NORMAL_NAME_LEN] byte
+	Uuid [DAVE_UUID_LEN] byte
+	App_id uint64
+	Src_user [DAVE_USER_NAME_LEN] byte
+	Dst_user [DAVE_USER_NAME_LEN] byte
+	Location MCardLocation
+	Time MCardTime
+	Main_serial uint64
+	Sub_serial uint64
+	Total_sub_serial uint64
+	Content MCardContent
+}
+
 type MCardVerComment struct {
 	Version int64
 	Head MCardCommentHead
 	Content MCardContent
-}
-
-type MCardLocation struct {
-	Latitude float64
-	Longitude float64
-	Altitude float64
-	Course float64
-	Slope float64
-}
-
-type MCardTime struct {
-	Write_time DateStruct
-	Failure_type int64
-	Failure_time DateStruct
-}
-
-type MCardContent struct {
-	Id int64
-	Content_type int64
-	Content_language int32
-	Pcontent *MBUF
 }
 
 type CVModelResult struct {
@@ -130,6 +125,20 @@ type SocNetInfoIp struct {
 	Ip_addr [16] byte
 }
 
+type MCardLocation struct {
+	Latitude float64
+	Longitude float64
+	Altitude float64
+	Course float64
+	Slope float64
+}
+
+type MCardTime struct {
+	Write_time DateStruct
+	Failure_type int64
+	Failure_time DateStruct
+}
+
 type MCardPOI struct {
 	Location MCardLocation
 	Type int64
@@ -137,6 +146,13 @@ type MCardPOI struct {
 	Phone_number [DAVE_MSISDN_LEN] byte
 	Address [DAVE_POI_ADDRESS_MAX] byte
 	Rating float64
+}
+
+type MCardContent struct {
+	Id int64
+	Content_type int64
+	Content_language int32
+	Pcontent *MBUF
 }
 
 type MCardCommentHead struct {
@@ -213,20 +229,19 @@ type MCard struct {
 	Comment MCardVerComment
 }
 
-type MCardVerTalk struct {
-	Version int64
-	Type int64
-	Channel [DAVE_NORMAL_NAME_LEN] byte
-	Uuid [DAVE_UUID_LEN] byte
-	App_id uint64
-	Src_user [DAVE_USER_NAME_LEN] byte
-	Dst_user [DAVE_USER_NAME_LEN] byte
-	Location MCardLocation
-	Time MCardTime
-	Main_serial uint64
-	Sub_serial uint64
-	Total_sub_serial uint64
-	Content MCardContent
+type DateStruct struct {
+	Year uint16
+	Month byte
+	Day byte
+	Hour byte
+	Minute byte
+	Second byte
+	Week byte
+}
+
+type CVResult struct {
+	Model_result CVModelResult
+	Image_introduction ImageIntroduction
 }
 
 type UniversalLabel struct {
@@ -234,11 +249,6 @@ type UniversalLabel struct {
 	Label_id uint64
 	Label_str [DAVE_LABEL_STR_MAX] byte
 	Label_score float32
-}
-
-type CVResult struct {
-	Model_result CVModelResult
-	Image_introduction ImageIntroduction
 }
 
 type CVKeyPoint struct {
@@ -271,16 +281,6 @@ type ChannelInfo struct {
 	Domain [DAVE_DOMAIN_LEN] byte
 	Tenant_name [DAVE_TENANT_NAME_LEN] byte
 	Tenant_id uint64
-}
-
-type DateStruct struct {
-	Year uint16
-	Month byte
-	Day byte
-	Hour byte
-	Minute byte
-	Second byte
-	Week byte
 }
 
 type ImageIntroduction struct {

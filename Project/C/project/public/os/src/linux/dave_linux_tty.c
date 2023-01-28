@@ -76,6 +76,8 @@ _tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
 			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
 		else if(level == TRACELEVEL_ASSERT)
 			result = fprintf(stdout, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_UI)
+			result = fprintf(stdout, "\033[34m%s\033[0m", (char *)buf_ptr);
 		else
 			result = fprintf(stdout, "\033[28m%s\033[0m", (char *)buf_ptr);
 
@@ -276,7 +278,7 @@ dave_os_tty_exit(void)
 void
 dave_os_tty_write(u8 *data_ptr, ub data_len)
 {
-	dave_os_trace(TRACELEVEL_LOG, data_len, data_ptr);
+	dave_os_trace(TRACELEVEL_UI, data_len, data_ptr);
 }
 
 ub

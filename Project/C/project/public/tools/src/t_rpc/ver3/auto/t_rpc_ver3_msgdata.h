@@ -22,7 +22,7 @@
 #include "uip_msg.h"
 #include "aix_msg.h"
 #include "bbs_msg.h"
-#include "dave_bdata.h"
+#include "bdata_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -106,15 +106,15 @@ dave_bool t_rpc_ver3_unzip_BBSMsgInqCommentRsp(void **unzip_data, ub *unzip_len,
 void * t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_BBSMsgInqCommentRsp(void);
 
-void * t_rpc_ver3_zip_BdataMCardRecord(BdataMCardRecord *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BdataMCardRecord(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BdataMCardRecord(BdataMCardRecord *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BdataMCardRecord(void);
+void * t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_BDataLogReq(BDataLogReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_BDataLogReq(void);
 
-void * t_rpc_ver3_zip_BdataTalkRecord(BdataTalkRecord *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BdataTalkRecord(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BdataTalkRecord(void);
+void * t_rpc_ver3_zip_BDataLogRsp(BDataLogRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_BDataLogRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_BDataLogRsp(BDataLogRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_BDataLogRsp(void);
 
 void * t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);

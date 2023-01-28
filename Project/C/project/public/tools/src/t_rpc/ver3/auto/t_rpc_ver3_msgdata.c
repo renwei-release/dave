@@ -27,7 +27,7 @@
 #include "uip_msg.h"
 #include "aix_msg.h"
 #include "bbs_msg.h"
-#include "dave_bdata.h"
+#include "bdata_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -1026,25 +1026,33 @@ t_rpc_ver3_sizeof_BBSMsgInqCommentRsp(void)
 }
 
 void *
-t_rpc_ver3_zip_BdataMCardRecord(BdataMCardRecord *zip_data, ub zip_len)
+t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
 
-	if(sizeof(BdataMCardRecord) != zip_len)
+	if(sizeof(BDataLogReq) != zip_len)
 	{
-	    TOOLSABNOR("Discover this message(BdataMCardRecord) does not match(%d/%d), please contact the message settlers!", sizeof(BdataMCardRecord), zip_len);
+	    TOOLSABNOR("Discover this message(BDataLogReq) does not match(%d/%d), please contact the message settlers!", sizeof(BDataLogReq), zip_len);
 		return NULL;
 	}
 
 	pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "MCard-mcard", t_rpc_ver3_zip_MCard(&(zip_data->mcard)));
+	t_bson_add_object(pStructBson, "s8-version", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->version), 1, DAVE_VERNO_STR_LEN));
+	t_bson_add_object(pStructBson, "s8-sub_flag", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->sub_flag), 1, DAVE_NORMAL_STR_LEN));
+	t_bson_add_object(pStructBson, "DateStruct-local_date", t_rpc_ver3_zip_DateStruct(&(zip_data->local_date)));
+	t_bson_add_object(pStructBson, "s8-host_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->host_name), 1, DAVE_NORMAL_NAME_LEN));
+	t_bson_add_object(pStructBson, "u8-host_mac", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_mac), DAVE_MAC_ADDR_LEN));
+	t_bson_add_object(pStructBson, "u8-host_ipv4", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_ipv4), DAVE_IP_V4_ADDR_LEN));
+	t_bson_add_object(pStructBson, "u8-host_ipv6", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_ipv6), DAVE_IP_V6_ADDR_LEN));
+	t_bson_add_object(pStructBson, "MBUF-log_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->log_data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_BdataMCardRecord(void **unzip_data, ub *unzip_len, void *pStructBson)
+t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson)
 {
 	dave_bool ret = dave_true;
 
@@ -1057,51 +1065,60 @@ t_rpc_ver3_unzip_BdataMCardRecord(void **unzip_data, ub *unzip_len, void *pStruc
 	}
 	else
 	{
-		BdataMCardRecord *pUnzip = thread_msg(pUnzip);
+		BDataLogReq *pUnzip = thread_msg(pUnzip);
 		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BdataMCardRecord);
+		*unzip_len = sizeof(BDataLogReq);
 
-		t_rpc_ver3_unzip_MCard(&(pUnzip->mcard), t_bson_inq_object(pStructBson, "MCard-mcard"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->version), 1, DAVE_VERNO_STR_LEN, t_bson_inq_object(pStructBson, "s8-version"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->sub_flag), 1, DAVE_NORMAL_STR_LEN, t_bson_inq_object(pStructBson, "s8-sub_flag"));
+		t_rpc_ver3_unzip_DateStruct(&(pUnzip->local_date), t_bson_inq_object(pStructBson, "DateStruct-local_date"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->host_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-host_name"));
+		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_mac), DAVE_MAC_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_mac"));
+		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_ipv4), DAVE_IP_V4_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_ipv4"));
+		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_ipv6), DAVE_IP_V6_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_ipv6"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->log_data), t_bson_inq_object(pStructBson, "MBUF-log_data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
 	return ret;
 }
 
 void *
-t_rpc_ver3_ptr_BdataMCardRecord(BdataMCardRecord *struct_data, void *new_ptr)
+t_rpc_ver3_ptr_BDataLogReq(BDataLogReq *struct_data, void *new_ptr)
 {
-	return NULL;
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
 }
 
 ub
-t_rpc_ver3_sizeof_BdataMCardRecord(void)
+t_rpc_ver3_sizeof_BDataLogReq(void)
 {
-	return sizeof(BdataMCardRecord);
+	return sizeof(BDataLogReq);
 }
 
 void *
-t_rpc_ver3_zip_BdataTalkRecord(BdataTalkRecord *zip_data, ub zip_len)
+t_rpc_ver3_zip_BDataLogRsp(BDataLogRsp *zip_data, ub zip_len)
 {
 	void *pStructBson;
 
-	if(sizeof(BdataTalkRecord) != zip_len)
+	if(sizeof(BDataLogRsp) != zip_len)
 	{
-	    TOOLSABNOR("Discover this message(BdataTalkRecord) does not match(%d/%d), please contact the message settlers!", sizeof(BdataTalkRecord), zip_len);
+	    TOOLSABNOR("Discover this message(BDataLogRsp) does not match(%d/%d), please contact the message settlers!", sizeof(BDataLogRsp), zip_len);
 		return NULL;
 	}
 
 	pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "ThreadId-req_src", t_rpc_ver3_zip_ThreadId(zip_data->req_src));
-	t_bson_add_object(pStructBson, "MCardVerTalk-req_talk", t_rpc_ver3_zip_MCardVerTalk(&(zip_data->req_talk)));
-	t_bson_add_object(pStructBson, "MCardVerTalk-rsp_talk", t_rpc_ver3_zip_MCardVerTalk(&(zip_data->rsp_talk)));
-	t_bson_add_object(pStructBson, "UniversalLabel-label", t_rpc_ver3_zip_UniversalLabel(&(zip_data->label)));
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
 }
 
 dave_bool
-t_rpc_ver3_unzip_BdataTalkRecord(void **unzip_data, ub *unzip_len, void *pStructBson)
+t_rpc_ver3_unzip_BDataLogRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
 {
 	dave_bool ret = dave_true;
 
@@ -1114,29 +1131,30 @@ t_rpc_ver3_unzip_BdataTalkRecord(void **unzip_data, ub *unzip_len, void *pStruct
 	}
 	else
 	{
-		BdataTalkRecord *pUnzip = thread_msg(pUnzip);
+		BDataLogRsp *pUnzip = thread_msg(pUnzip);
 		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BdataTalkRecord);
+		*unzip_len = sizeof(BDataLogRsp);
 
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->req_src), t_bson_inq_object(pStructBson, "ThreadId-req_src"));
-		t_rpc_ver3_unzip_MCardVerTalk(&(pUnzip->req_talk), t_bson_inq_object(pStructBson, "MCardVerTalk-req_talk"));
-		t_rpc_ver3_unzip_MCardVerTalk(&(pUnzip->rsp_talk), t_bson_inq_object(pStructBson, "MCardVerTalk-rsp_talk"));
-		t_rpc_ver3_unzip_UniversalLabel(&(pUnzip->label), t_bson_inq_object(pStructBson, "UniversalLabel-label"));
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
 	return ret;
 }
 
 void *
-t_rpc_ver3_ptr_BdataTalkRecord(BdataTalkRecord *struct_data, void *new_ptr)
+t_rpc_ver3_ptr_BDataLogRsp(BDataLogRsp *struct_data, void *new_ptr)
 {
-	return NULL;
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
 }
 
 ub
-t_rpc_ver3_sizeof_BdataTalkRecord(void)
+t_rpc_ver3_sizeof_BDataLogRsp(void)
 {
-	return sizeof(BdataTalkRecord);
+	return sizeof(BDataLogRsp);
 }
 
 void *

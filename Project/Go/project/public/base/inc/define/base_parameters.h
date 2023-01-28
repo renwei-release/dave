@@ -54,5 +54,9 @@
 
 #define DAVE_UID_LEN (64)
 
+#define DAVE_NORMAL_STR_LEN (2048)
+
+#define DAVE_SEARCH_INDEX_MAX 4096
+
 #endif
 

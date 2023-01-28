@@ -1708,6 +1708,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'SOCKET_NOTIFY-1010'"
 	elif enum_value == SOCKET_RAW_EVENT:
 		value_str = "'SOCKET_RAW_EVENT-1011'"
+	elif enum_value == BDATA_LOG_REQ:
+		value_str = "'BDATA_LOG_REQ-2001'"
+	elif enum_value == BDATA_LOG_RSP:
+		value_str = "'BDATA_LOG_RSP-2002'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:
@@ -1850,18 +1854,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MAINMSG_PYTHON_REQ-5135'"
 	elif enum_value == MAINMSG_PYTHON_RSP:
 		value_str = "'MAINMSG_PYTHON_RSP-5136'"
-	elif enum_value == BDATAMSG_TRACE_RECORD:
-		value_str = "'BDATAMSG_TRACE_RECORD-7002'"
-	elif enum_value == BDATAMSG_CHANNEL_RECORD:
-		value_str = "'BDATAMSG_CHANNEL_RECORD-7003'"
-	elif enum_value == BDATAMSG_DEVICE_RECORD:
-		value_str = "'BDATAMSG_DEVICE_RECORD-7004'"
-	elif enum_value == BDATAMSG_BS_RECORD:
-		value_str = "'BDATAMSG_BS_RECORD-7006'"
-	elif enum_value == BDATAMSG_MCARD_RECORD:
-		value_str = "'BDATAMSG_MCARD_RECORD-7017'"
-	elif enum_value == BDATAMSG_TALK_RECORD:
-		value_str = "'BDATAMSG_TALK_RECORD-7024'"
 	elif enum_value == CVMSG_IMAGE_SEARCH_REQ:
 		value_str = "'CVMSG_IMAGE_SEARCH_REQ-10001'"
 	elif enum_value == CVMSG_IMAGE_SEARCH_RSP:

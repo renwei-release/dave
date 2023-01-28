@@ -76,11 +76,11 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case BBSMSG_INQ_COMMENT_RSP:
 				pBson = t_rpc_ver3_zip_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, msg_len);
 			break;
-		case BDATAMSG_MCARD_RECORD:
-				pBson = t_rpc_ver3_zip_BdataMCardRecord((BdataMCardRecord *)msg_body, msg_len);
+		case BDATA_LOG_REQ:
+				pBson = t_rpc_ver3_zip_BDataLogReq((BDataLogReq *)msg_body, msg_len);
 			break;
-		case BDATAMSG_TALK_RECORD:
-				pBson = t_rpc_ver3_zip_BdataTalkRecord((BdataTalkRecord *)msg_body, msg_len);
+		case BDATA_LOG_RSP:
+				pBson = t_rpc_ver3_zip_BDataLogRsp((BDataLogRsp *)msg_body, msg_len);
 			break;
 		case CVMSG_FEATURES_DETECTED_REQ:
 				pBson = t_rpc_ver3_zip_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, msg_len);
@@ -452,11 +452,11 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case BBSMSG_INQ_COMMENT_RSP:
 				ret = t_rpc_ver3_unzip_BBSMsgInqCommentRsp(msg_body, msg_len, pBson);
 			break;
-		case BDATAMSG_MCARD_RECORD:
-				ret = t_rpc_ver3_unzip_BdataMCardRecord(msg_body, msg_len, pBson);
+		case BDATA_LOG_REQ:
+				ret = t_rpc_ver3_unzip_BDataLogReq(msg_body, msg_len, pBson);
 			break;
-		case BDATAMSG_TALK_RECORD:
-				ret = t_rpc_ver3_unzip_BdataTalkRecord(msg_body, msg_len, pBson);
+		case BDATA_LOG_RSP:
+				ret = t_rpc_ver3_unzip_BDataLogRsp(msg_body, msg_len, pBson);
 			break;
 		case CVMSG_FEATURES_DETECTED_REQ:
 				ret = t_rpc_ver3_unzip_CVMsgFeaturesDetectedReq(msg_body, msg_len, pBson);
@@ -828,11 +828,11 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case BBSMSG_INQ_COMMENT_RSP:
 				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, new_ptr);
 			break;
-		case BDATAMSG_MCARD_RECORD:
-				ptr = t_rpc_ver3_ptr_BdataMCardRecord((BdataMCardRecord *)msg_body, new_ptr);
+		case BDATA_LOG_REQ:
+				ptr = t_rpc_ver3_ptr_BDataLogReq((BDataLogReq *)msg_body, new_ptr);
 			break;
-		case BDATAMSG_TALK_RECORD:
-				ptr = t_rpc_ver3_ptr_BdataTalkRecord((BdataTalkRecord *)msg_body, new_ptr);
+		case BDATA_LOG_RSP:
+				ptr = t_rpc_ver3_ptr_BDataLogRsp((BDataLogRsp *)msg_body, new_ptr);
 			break;
 		case CVMSG_FEATURES_DETECTED_REQ:
 				ptr = t_rpc_ver3_ptr_CVMsgFeaturesDetectedReq((CVMsgFeaturesDetectedReq *)msg_body, new_ptr);
@@ -1204,11 +1204,11 @@ _t_rpc_sizeof(ub msg_id)
 		case BBSMSG_INQ_COMMENT_RSP:
 				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentRsp();
 			break;
-		case BDATAMSG_MCARD_RECORD:
-				msg_len = t_rpc_ver3_sizeof_BdataMCardRecord();
+		case BDATA_LOG_REQ:
+				msg_len = t_rpc_ver3_sizeof_BDataLogReq();
 			break;
-		case BDATAMSG_TALK_RECORD:
-				msg_len = t_rpc_ver3_sizeof_BdataTalkRecord();
+		case BDATA_LOG_RSP:
+				msg_len = t_rpc_ver3_sizeof_BDataLogRsp();
 			break;
 		case CVMSG_FEATURES_DETECTED_REQ:
 				msg_len = t_rpc_ver3_sizeof_CVMsgFeaturesDetectedReq();

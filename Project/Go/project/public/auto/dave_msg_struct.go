@@ -134,17 +134,23 @@ type BBSMsgInqCommentRsp struct {
 	Ptr uint64
 }
 
-/* for BDATAMSG_MCARD_RECORD message */
-type BdataMCardRecord struct {
-	Mcard MCard
+/* for BDATA_LOG_REQ message */
+type BDataLogReq struct {
+	Version [DAVE_VERNO_STR_LEN] byte
+	Sub_flag [DAVE_NORMAL_STR_LEN] byte
+	Local_date DateStruct
+	Host_name [DAVE_NORMAL_NAME_LEN] byte
+	Host_mac [DAVE_MAC_ADDR_LEN] byte
+	Host_ipv4 [DAVE_IP_V4_ADDR_LEN] byte
+	Host_ipv6 [DAVE_IP_V6_ADDR_LEN] byte
+	Log_data *MBUF
+	Ptr uint64
 }
 
-/* for BDATAMSG_TALK_RECORD message */
-type BdataTalkRecord struct {
-	Req_src uint64
-	Req_talk MCardVerTalk
-	Rsp_talk MCardVerTalk
-	Label UniversalLabel
+/* for BDATA_LOG_RSP message */
+type BDataLogRsp struct {
+	Ret int64
+	Ptr uint64
 }
 
 /* for MSGID_CFG_REMOTE_UPDATE message */

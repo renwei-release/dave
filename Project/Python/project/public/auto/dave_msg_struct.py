@@ -154,19 +154,25 @@ class BBSMsgInqCommentRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for BDATAMSG_MCARD_RECORD message *#
-class BdataMCardRecord (Structure):
+#* for BDATA_LOG_REQ message *#
+class BDataLogReq (Structure):
 	_fields_ = [
-		("mcard", MCard),
+		("version", c_char * DAVE_VERNO_STR_LEN),
+		("sub_flag", c_char * DAVE_NORMAL_STR_LEN),
+		("local_date", DateStruct),
+		("host_name", c_char * DAVE_NORMAL_NAME_LEN),
+		("host_mac", c_char * DAVE_MAC_ADDR_LEN),
+		("host_ipv4", c_char * DAVE_IP_V4_ADDR_LEN),
+		("host_ipv6", c_char * DAVE_IP_V6_ADDR_LEN),
+		("log_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
 ]
 
-#* for BDATAMSG_TALK_RECORD message *#
-class BdataTalkRecord (Structure):
+#* for BDATA_LOG_RSP message *#
+class BDataLogRsp (Structure):
 	_fields_ = [
-		("req_src", c_ulonglong),
-		("req_talk", MCardVerTalk),
-		("rsp_talk", MCardVerTalk),
-		("label", UniversalLabel),
+		("ret", c_ulonglong),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_CFG_REMOTE_UPDATE message *#

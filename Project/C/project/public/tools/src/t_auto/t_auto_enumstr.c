@@ -4377,6 +4377,9 @@ t_auto_TraceLevel_str(TraceLevel enum_value)
 		case TRACELEVEL_BOOT:
 				value_str = "'TRACELEVEL_BOOT'";
 			break;
+		case TRACELEVEL_UI:
+				value_str = "'TRACELEVEL_UI'";
+			break;
 		case TRACELEVEL_MAX:
 				value_str = "'TRACELEVEL_MAX'";
 			break;
@@ -4577,6 +4580,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case SOCKET_RAW_EVENT:
 				value_str = "'SOCKET_RAW_EVENT-1011'";
+			break;
+		case BDATA_LOG_REQ:
+				value_str = "'BDATA_LOG_REQ-2001'";
+			break;
+		case BDATA_LOG_RSP:
+				value_str = "'BDATA_LOG_RSP-2002'";
 			break;
 		case APPMSG_MCARD_REQ:
 				value_str = "'APPMSG_MCARD_REQ-2053'";
@@ -4790,24 +4799,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MAINMSG_PYTHON_RSP:
 				value_str = "'MAINMSG_PYTHON_RSP-5136'";
-			break;
-		case BDATAMSG_TRACE_RECORD:
-				value_str = "'BDATAMSG_TRACE_RECORD-7002'";
-			break;
-		case BDATAMSG_CHANNEL_RECORD:
-				value_str = "'BDATAMSG_CHANNEL_RECORD-7003'";
-			break;
-		case BDATAMSG_DEVICE_RECORD:
-				value_str = "'BDATAMSG_DEVICE_RECORD-7004'";
-			break;
-		case BDATAMSG_BS_RECORD:
-				value_str = "'BDATAMSG_BS_RECORD-7006'";
-			break;
-		case BDATAMSG_MCARD_RECORD:
-				value_str = "'BDATAMSG_MCARD_RECORD-7017'";
-			break;
-		case BDATAMSG_TALK_RECORD:
-				value_str = "'BDATAMSG_TALK_RECORD-7024'";
 			break;
 		case CVMSG_IMAGE_SEARCH_REQ:
 				value_str = "'CVMSG_IMAGE_SEARCH_REQ-10001'";

@@ -98,6 +98,33 @@ class MCardVerMedia (Structure):
 ]
 
 #* for None message *#
+class MCardContent (Structure):
+	_fields_ = [
+		("id", c_ulonglong),
+		("content_type", c_ulonglong),
+		("content_language", c_int),
+		("pContent", POINTER(MBUF)),
+]
+
+#* for None message *#
+class MCardVerTalk (Structure):
+	_fields_ = [
+		("version", c_ulonglong),
+		("type", c_ulonglong),
+		("channel", c_char * DAVE_NORMAL_NAME_LEN),
+		("uuid", c_char * DAVE_UUID_LEN),
+		("app_id", c_ulonglong),
+		("src_user", c_char * DAVE_USER_NAME_LEN),
+		("dst_user", c_char * DAVE_USER_NAME_LEN),
+		("location", MCardLocation),
+		("time", MCardTime),
+		("main_serial", c_ulonglong),
+		("sub_serial", c_ulonglong),
+		("total_sub_serial", c_ulonglong),
+		("content", MCardContent),
+]
+
+#* for None message *#
 class NoSQLHead (Structure):
 	_fields_ = [
 		("key_str", c_char * DAVE_NOSQL_KEY_STR_MAX),
@@ -161,15 +188,6 @@ class MCardCommentHead (Structure):
 		("nosql_head", NoSQLHead),
 		("comment_head", MCardCommentHeadData),
 		("reserve_data", c_char * (DAVE_MACRD_HEAD_MAX-2976)),
-]
-
-#* for None message *#
-class MCardContent (Structure):
-	_fields_ = [
-		("id", c_ulonglong),
-		("content_type", c_ulonglong),
-		("content_language", c_int),
-		("pContent", POINTER(MBUF)),
 ]
 
 #* for None message *#
@@ -260,24 +278,6 @@ class GPSLocation (Structure):
 ]
 
 #* for None message *#
-class MCardVerTalk (Structure):
-	_fields_ = [
-		("version", c_ulonglong),
-		("type", c_ulonglong),
-		("channel", c_char * DAVE_NORMAL_NAME_LEN),
-		("uuid", c_char * DAVE_UUID_LEN),
-		("app_id", c_ulonglong),
-		("src_user", c_char * DAVE_USER_NAME_LEN),
-		("dst_user", c_char * DAVE_USER_NAME_LEN),
-		("location", MCardLocation),
-		("time", MCardTime),
-		("main_serial", c_ulonglong),
-		("sub_serial", c_ulonglong),
-		("total_sub_serial", c_ulonglong),
-		("content", MCardContent),
-]
-
-#* for None message *#
 class MCard (Structure):
 	_fields_ = [
 		("version", c_ulonglong),
@@ -285,15 +285,6 @@ class MCard (Structure):
 		("media", MCardVerMedia),
 		("talk", MCardVerTalk),
 		("comment", MCardVerComment),
-]
-
-#* for None message *#
-class UniversalLabel (Structure):
-	_fields_ = [
-		("label_extra_information", c_char * DAVE_LABEL_EXTRA_INFO_MAX),
-		("label_id", c_ulonglong),
-		("label_str", c_char * DAVE_LABEL_STR_MAX),
-		("label_score", c_float),
 ]
 
 #* for None message *#
@@ -332,6 +323,15 @@ class CVResult (Structure):
 	_fields_ = [
 		("model_result", CVModelResult),
 		("image_introduction", ImageIntroduction),
+]
+
+#* for None message *#
+class UniversalLabel (Structure):
+	_fields_ = [
+		("label_extra_information", c_char * DAVE_LABEL_EXTRA_INFO_MAX),
+		("label_id", c_ulonglong),
+		("label_str", c_char * DAVE_LABEL_STR_MAX),
+		("label_score", c_float),
 ]
 
 #* for None message *#

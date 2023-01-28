@@ -10,6 +10,7 @@
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_bdata.h"
 #include "base_test.h"
 #include "base_log.h"
 
@@ -176,7 +177,7 @@ _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 static void
 _base_thread_init(MSGBODY *msg)
 {
-
+	BDATALOG("INIT", "%s booting!", dave_verno());
 }
 
 static void
