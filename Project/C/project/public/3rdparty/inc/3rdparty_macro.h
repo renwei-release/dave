@@ -20,7 +20,13 @@
 
 #define NGINX_3RDPARTY
 
+#ifdef __DAVE_PRODUCT_STORE__
 #define MONGO_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_STORE__
+#define MYSQL_3RDPARTY
+#endif
 
 #ifdef __DAVE_PRODUCT_AIB__
 #define FASTDFS_3RDPARTY

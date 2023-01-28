@@ -101,7 +101,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		return NULL;
 	}
 
-	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ABNORMAL))
+	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ASSERT))
 	{
 		log_buf = _trace_buffer;
 		log_len = sizeof(_trace_buffer);
@@ -113,12 +113,11 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
 	}
 
-	if((_log_trace_enable == dave_true) && (level != TRACELEVEL_CATCHER))
+	if((log_buf != NULL)
+		&& (_log_trace_enable == dave_true)
+		&& (level != TRACELEVEL_CATCHER))
 	{
-		if(log_buf != NULL)
-		{
-			dave_os_trace(level, log_len, (u8 *)log_buf);
-		}
+		dave_os_trace(level, log_len, (u8 *)log_buf);
 	}
 
 	return log_buf;
@@ -181,12 +180,15 @@ __base_assert__(int assert_flag, const char *fun, int line, const char *args, ..
 {
 	if(assert_flag == 0)
 	{
+		s8 args_str[1024];
 		s8 poweroff_message[2048];
 		s8 *log_buf;
 		va_list list_args;
 
+		dave_snprintf(args_str, sizeof(args_str), "%s\n", args);
+
 		va_start(list_args, args);
-		log_buf = __log_log__(TRACELEVEL_ASSERT, args, list_args);
+		log_buf = __log_log__(TRACELEVEL_ASSERT, args_str, list_args);
 		va_end(list_args);
 
 		dave_snprintf(poweroff_message, sizeof(poweroff_message), "%s:%d:%s", fun, line, log_buf);

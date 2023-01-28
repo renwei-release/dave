@@ -6,7 +6,6 @@
  */
 
 #ifdef __DAVE_PRODUCT_BDATA__
-#include "dave_define.h"
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
 #include "dave_verno.h"

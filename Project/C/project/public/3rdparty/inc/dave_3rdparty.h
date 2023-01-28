@@ -26,6 +26,9 @@ extern "C"{
 #ifdef MONGO_3RDPARTY
 #include "dave_mongoc.h"
 #endif
+#ifdef MYSQL_3RDPARTY
+#include "dave_mysql.h"
+#endif
 #ifdef FASTDFS_3RDPARTY
 #include "dave_fastdfs.h"
 #endif
