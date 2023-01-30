@@ -89,6 +89,9 @@ t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m)
 void *
 t_a2b_mbuf_to_json(MBUF *m)
 {
+	if(m == NULL)
+		return NULL;
+
 	return dave_string_to_json(dave_mptr(m), dave_mlen(m));
 }
 
