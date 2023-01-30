@@ -11,5 +11,18 @@
 
 #define STORE_THREAD_NAME "store"
 
+/* for STORE_MYSQL_REQ message */
+typedef struct {
+	MBUF *sql;
+	void *ptr;
+} StoreMysqlReq;
+
+/* for STORE_MYSQL_RSP message */
+typedef struct {
+	RetCode ret;
+	MBUF *data;
+	void *ptr;
+} StoreMysqlRsp;
+
 #endif
 

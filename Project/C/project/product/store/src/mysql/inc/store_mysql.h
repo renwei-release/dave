@@ -8,9 +8,11 @@
 #ifndef __STORE_MYSQL_H__
 #define __STORE_MYSQL_H__
 
-void store_mysql_init(void);
+void store_mysql_init(ub thread_number);
 
 void store_mysql_exit(void);
+
+void store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq);
 
 #endif
 

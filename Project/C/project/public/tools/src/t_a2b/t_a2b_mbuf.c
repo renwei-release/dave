@@ -7,6 +7,7 @@
 
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_3rdparty.h"
 
 // =====================================================================
 
@@ -83,5 +84,11 @@ t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m)
 	}
 
 	return buf_index;
+}
+
+void *
+t_a2b_mbuf_to_json(MBUF *m)
+{
+	return dave_string_to_json(dave_mptr(m), dave_mlen(m));
 }
 

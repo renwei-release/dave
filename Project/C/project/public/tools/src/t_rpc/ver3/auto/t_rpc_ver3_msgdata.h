@@ -23,6 +23,7 @@
 #include "aix_msg.h"
 #include "bbs_msg.h"
 #include "bdata_msg.h"
+#include "store_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -505,6 +506,16 @@ void * t_rpc_ver3_zip_SocketWrite(SocketWrite *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketWrite(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SocketWrite(SocketWrite *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_SocketWrite(void);
+
+void * t_rpc_ver3_zip_StoreMysqlReq(StoreMysqlReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreMysqlReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreMysqlReq(StoreMysqlReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreMysqlReq(void);
+
+void * t_rpc_ver3_zip_StoreMysqlRsp(StoreMysqlRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreMysqlRsp(void);
 
 void * t_rpc_ver3_zip_SupportConfig(SupportConfig *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SupportConfig(void **unzip_data, ub *unzip_len, void *pStructBson);

@@ -16,8 +16,8 @@
 static void
 _recipient_log_data(void *pNote, BDataLogReq *pReq)
 {
-	s8 date_str[128], mac_str[128], ipv4_str[128], ipv6_str[128];
-	ub date_len, mac_len, ipv4_len, ipv6_len;
+	s8 date_str[64], mac_str[64], ipv4_str[32], ipv6_str[64], line_str[32];
+	ub date_len, mac_len, ipv4_len, ipv6_len, line_len;
 
 	date_len = dave_snprintf(date_str, sizeof(date_str), "%04d.%02d.%02d %02d:%02d:%02d",
 		pReq->local_date.year, pReq->local_date.month, pReq->local_date.day,
@@ -36,9 +36,14 @@ _recipient_log_data(void *pNote, BDataLogReq *pReq)
 		pReq->host_ipv6[8], pReq->host_ipv6[9], pReq->host_ipv6[10], pReq->host_ipv6[11],
 		pReq->host_ipv6[12], pReq->host_ipv6[13], pReq->host_ipv6[14], pReq->host_ipv6[15]);
 
+	line_len = dave_snprintf(line_str, sizeof(line_str), "%d", pReq->line);
+
 	recorder_file_str(pNote, "version", pReq->version, dave_strlen(pReq->version));
 	recorder_file_str(pNote, "sub_flag", pReq->sub_flag, dave_strlen(pReq->sub_flag));
 	recorder_file_str(pNote, "local_date", date_str, date_len);
+
+	recorder_file_str(pNote, "fun", pReq->fun, dave_strlen(pReq->fun));
+	recorder_file_str(pNote, "line", line_str, line_len);
 
 	recorder_file_str(pNote, "host", pReq->host_name, dave_strlen(pReq->host_name));
 	recorder_file_str(pNote, "mac", mac_str, mac_len);

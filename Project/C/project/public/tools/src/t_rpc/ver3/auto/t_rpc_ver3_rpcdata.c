@@ -364,6 +364,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case SOCKET_WRITE:
 				pBson = t_rpc_ver3_zip_SocketWrite((SocketWrite *)msg_body, msg_len);
 			break;
+		case STORE_MYSQL_REQ:
+				pBson = t_rpc_ver3_zip_StoreMysqlReq((StoreMysqlReq *)msg_body, msg_len);
+			break;
+		case STORE_MYSQL_RSP:
+				pBson = t_rpc_ver3_zip_StoreMysqlRsp((StoreMysqlRsp *)msg_body, msg_len);
+			break;
 		case UIP_DATA_RECV_REQ:
 				pBson = t_rpc_ver3_zip_UIPDataRecvReq((UIPDataRecvReq *)msg_body, msg_len);
 			break;
@@ -739,6 +745,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case SOCKET_WRITE:
 				ret = t_rpc_ver3_unzip_SocketWrite(msg_body, msg_len, pBson);
+			break;
+		case STORE_MYSQL_REQ:
+				ret = t_rpc_ver3_unzip_StoreMysqlReq(msg_body, msg_len, pBson);
+			break;
+		case STORE_MYSQL_RSP:
+				ret = t_rpc_ver3_unzip_StoreMysqlRsp(msg_body, msg_len, pBson);
 			break;
 		case UIP_DATA_RECV_REQ:
 				ret = t_rpc_ver3_unzip_UIPDataRecvReq(msg_body, msg_len, pBson);
@@ -1116,6 +1128,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case SOCKET_WRITE:
 				ptr = t_rpc_ver3_ptr_SocketWrite((SocketWrite *)msg_body, new_ptr);
 			break;
+		case STORE_MYSQL_REQ:
+				ptr = t_rpc_ver3_ptr_StoreMysqlReq((StoreMysqlReq *)msg_body, new_ptr);
+			break;
+		case STORE_MYSQL_RSP:
+				ptr = t_rpc_ver3_ptr_StoreMysqlRsp((StoreMysqlRsp *)msg_body, new_ptr);
+			break;
 		case UIP_DATA_RECV_REQ:
 				ptr = t_rpc_ver3_ptr_UIPDataRecvReq((UIPDataRecvReq *)msg_body, new_ptr);
 			break;
@@ -1491,6 +1509,12 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case SOCKET_WRITE:
 				msg_len = t_rpc_ver3_sizeof_SocketWrite();
+			break;
+		case STORE_MYSQL_REQ:
+				msg_len = t_rpc_ver3_sizeof_StoreMysqlReq();
+			break;
+		case STORE_MYSQL_RSP:
+				msg_len = t_rpc_ver3_sizeof_StoreMysqlRsp();
 			break;
 		case UIP_DATA_RECV_REQ:
 				msg_len = t_rpc_ver3_sizeof_UIPDataRecvReq();

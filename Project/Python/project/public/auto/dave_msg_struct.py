@@ -160,6 +160,8 @@ class BDataLogReq (Structure):
 		("version", c_char * DAVE_VERNO_STR_LEN),
 		("sub_flag", c_char * DAVE_NORMAL_STR_LEN),
 		("local_date", DateStruct),
+		("fun", c_char * DAVE_NORMAL_STR_LEN),
+		("line", c_ulonglong),
 		("host_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("host_mac", c_char * DAVE_MAC_ADDR_LEN),
 		("host_ipv4", c_char * DAVE_IP_V4_ADDR_LEN),
@@ -903,6 +905,21 @@ class SocketWrite (Structure):
 		("data_len", c_ulonglong),
 		("data", POINTER(MBUF)),
 		("close_flag", c_int),
+]
+
+#* for STORE_MYSQL_REQ message *#
+class StoreMysqlReq (Structure):
+	_fields_ = [
+		("sql", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_MYSQL_RSP message *#
+class StoreMysqlRsp (Structure):
+	_fields_ = [
+		("ret", c_ulonglong),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_SUPPORT_CONFIG message *#

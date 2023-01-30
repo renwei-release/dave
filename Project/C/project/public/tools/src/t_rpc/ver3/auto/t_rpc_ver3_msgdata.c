@@ -28,6 +28,7 @@
 #include "aix_msg.h"
 #include "bbs_msg.h"
 #include "bdata_msg.h"
+#include "store_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -1041,6 +1042,8 @@ t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-version", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->version), 1, DAVE_VERNO_STR_LEN));
 	t_bson_add_object(pStructBson, "s8-sub_flag", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->sub_flag), 1, DAVE_NORMAL_STR_LEN));
 	t_bson_add_object(pStructBson, "DateStruct-local_date", t_rpc_ver3_zip_DateStruct(&(zip_data->local_date)));
+	t_bson_add_object(pStructBson, "s8-fun", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->fun), 1, DAVE_NORMAL_STR_LEN));
+	t_bson_add_object(pStructBson, "ub-line", t_rpc_ver3_zip_ub(zip_data->line));
 	t_bson_add_object(pStructBson, "s8-host_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->host_name), 1, DAVE_NORMAL_NAME_LEN));
 	t_bson_add_object(pStructBson, "u8-host_mac", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_mac), DAVE_MAC_ADDR_LEN));
 	t_bson_add_object(pStructBson, "u8-host_ipv4", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_ipv4), DAVE_IP_V4_ADDR_LEN));
@@ -1072,6 +1075,8 @@ t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->version), 1, DAVE_VERNO_STR_LEN, t_bson_inq_object(pStructBson, "s8-version"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->sub_flag), 1, DAVE_NORMAL_STR_LEN, t_bson_inq_object(pStructBson, "s8-sub_flag"));
 		t_rpc_ver3_unzip_DateStruct(&(pUnzip->local_date), t_bson_inq_object(pStructBson, "DateStruct-local_date"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->fun), 1, DAVE_NORMAL_STR_LEN, t_bson_inq_object(pStructBson, "s8-fun"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->line), t_bson_inq_object(pStructBson, "ub-line"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->host_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-host_name"));
 		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_mac), DAVE_MAC_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_mac"));
 		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_ipv4), DAVE_IP_V4_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_ipv4"));
@@ -6092,6 +6097,126 @@ ub
 t_rpc_ver3_sizeof_SocketWrite(void)
 {
 	return sizeof(SocketWrite);
+}
+
+void *
+t_rpc_ver3_zip_StoreMysqlReq(StoreMysqlReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreMysqlReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreMysqlReq) does not match(%d/%d), please contact the message settlers!", sizeof(StoreMysqlReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-sql", t_rpc_ver3_zip_MBUF_ptr(zip_data->sql));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreMysqlReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreMysqlReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreMysqlReq);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->sql), t_bson_inq_object(pStructBson, "MBUF-sql"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreMysqlReq(StoreMysqlReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreMysqlReq(void)
+{
+	return sizeof(StoreMysqlReq);
+}
+
+void *
+t_rpc_ver3_zip_StoreMysqlRsp(StoreMysqlRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreMysqlRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreMysqlRsp) does not match(%d/%d), please contact the message settlers!", sizeof(StoreMysqlRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreMysqlRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreMysqlRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreMysqlRsp(void)
+{
+	return sizeof(StoreMysqlRsp);
 }
 
 void *

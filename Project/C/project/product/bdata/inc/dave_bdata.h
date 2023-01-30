@@ -22,6 +22,9 @@
 	dave_os_load_host_name(pReq->host_name, sizeof(pReq->host_name));\
 	dave_os_load_mac(pReq->host_mac);\
 	dave_os_load_ip(pReq->host_ipv4, pReq->host_ipv6);\
+\
+	dave_strcpy(pReq->fun, __func__, sizeof(pReq->fun));\
+	pReq->line = __LINE__;\
 }
 
 /*

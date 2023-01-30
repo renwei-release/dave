@@ -900,6 +900,8 @@ func T_auto_RetCode_str(enum_value int64) string {
 		case RetCode_invalid_month: value_str = "'RetCode_invalid_month--115'"
 		case RetCode_invalid_year: value_str = "'RetCode_invalid_year--116'"
 		case RetCode_invalid_date: value_str = "'RetCode_invalid_date--117'"
+		case RetCode_table_exist: value_str = "'RetCode_table_exist--118'"
+		case RetCode_db_sql_failed: value_str = "'RetCode_db_sql_failed--119'"
 		case RetCode_max: value_str = "'RetCode_max-0x1fffffffffffffff'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}
@@ -1167,6 +1169,8 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case BBSMSG_ADD_COMMENT_RSP: value_str = "'BBSMSG_ADD_COMMENT_RSP-15002'"
 		case BBSMSG_INQ_COMMENT_REQ: value_str = "'BBSMSG_INQ_COMMENT_REQ-15003'"
 		case BBSMSG_INQ_COMMENT_RSP: value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'"
+		case STORE_MYSQL_REQ: value_str = "'STORE_MYSQL_REQ-15005'"
+		case STORE_MYSQL_RSP: value_str = "'STORE_MYSQL_RSP-15006'"
 		case MSGID_INVALID: value_str = "'MSGID_INVALID-0x1fffffffffffffff'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}

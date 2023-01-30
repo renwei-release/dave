@@ -18,9 +18,22 @@
 static ThreadId _main_thread = INVALID_THREAD_ID;
 
 static ThreadId
-_product_thread_name_id(void)
+_product_main_id(void)
 {
-	return thread_id(dave_verno_my_product());
+	s8 *product_name = dave_verno_my_product();
+	ThreadId main_id;
+
+	main_id = thread_id(product_name);
+	if(main_id == INVALID_THREAD_ID)
+	{
+		main_id = thread_id(lower(product_name));
+	}
+	if(main_id == INVALID_THREAD_ID)
+	{
+		main_id = thread_id(upper(product_name));
+	}
+
+	return main_id;
 }
 
 // =====================================================================
@@ -36,7 +49,7 @@ main_thread_id_get(void)
 	_main_thread = dave_dll_main_thread_id();
 	if(_main_thread == INVALID_THREAD_ID)
 	{
-		_main_thread = _product_thread_name_id();	
+		_main_thread = _product_main_id();	
 	}
 
 	return _main_thread;

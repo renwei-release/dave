@@ -13,8 +13,16 @@
 #include <dlfcn.h>
 #include "mysql.h"
 #include "mysqld_error.h"
+#include "errmsg.h"
 #include "dave_tools.h"
+#include "dave_mysql.h"
+#include "dave_json.h"
 #include "party_log.h"
+
+#define MYSQL_RECONNECT_ENABLE 1
+#define MYSQL_AUTO_COMMIT_ENABLE 1
+
+#define ER_ALREADY_CONNECTED 2058 // This handle is already connected
 
 static const char dll_file_table[][64] = {
 	{"/usr/lib64/libmysqlclient.so"},
@@ -34,6 +42,7 @@ static const char * STDCALL (* so_mysql_error)(MYSQL *mysql) = NULL;
 static int STDCALL (* so_mysql_select_db)(MYSQL *mysql, const char *db) = NULL;
 static int STDCALL (* so_mysql_next_result)(MYSQL *mysql) = NULL;
 static MYSQL_RES * STDCALL (* so_mysql_store_result)(MYSQL *mysql) = NULL;
+static MYSQL_RES * STDCALL (* so_mysql_use_result)(MYSQL *mysql) = NULL;
 static int STDCALL (* so_mysql_query)(MYSQL *mysql, const char *q) = NULL;
 static my_ulonglong STDCALL (* so_mysql_num_rows)(MYSQL_RES *res) = NULL;
 static unsigned int STDCALL (* so_mysql_num_fields)(MYSQL_RES *res) = NULL;
@@ -96,6 +105,9 @@ _mysql_dll_init(void)
 		return dave_false;
 	so_mysql_store_result = dlsym(_mysql_dll_handle, "mysql_store_result");
 	if(so_mysql_store_result == NULL)
+		return dave_false;
+	so_mysql_use_result = dlsym(_mysql_dll_handle, "mysql_use_result");
+	if(so_mysql_use_result == NULL)
 		return dave_false;
 	so_mysql_query = dlsym(_mysql_dll_handle, "mysql_query");
 	if(so_mysql_query == NULL)
@@ -169,6 +181,187 @@ _mysql_dll_exit(void)
 	}
 }
 
+static void *
+_mysql_client_init(MYSQL *pSql)
+{
+	MYSQL *mysql;
+	char value;
+
+	mysql = so_mysql_init(pSql);
+
+	if(pSql != mysql)
+	{
+		PARTYABNOR("ptr has error! %lx %lx", pSql, mysql);
+	}
+
+	if(mysql != NULL)
+	{
+		value = 6;		// seconds
+		so_mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &value);
+		value = 1;		// enable
+		so_mysql_options(mysql, MYSQL_OPT_RECONNECT, &value);
+		value =  15;	// seconds
+		so_mysql_options(mysql, MYSQL_OPT_READ_TIMEOUT, &value);
+		value =  15;	// seconds
+		so_mysql_options(mysql, MYSQL_OPT_WRITE_TIMEOUT, &value);
+	}
+
+	return pSql;
+}
+
+static void
+_mysql_client_exit(MYSQL *pSql)
+{
+	so_mysql_close(pSql);
+}
+
+static RetCode
+_mysql_connect(MYSQL *pSql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
+{
+	unsigned int errcode;
+	char value;
+
+	if(so_mysql_real_connect(pSql, (const char *)address,
+		(const char *)user, (const char *)pwd, (const char *)db_name,
+		(unsigned int)port, NULL, CLIENT_MULTI_STATEMENTS|CLIENT_MULTI_RESULTS) == NULL)
+	{
+		errcode = so_mysql_errno(pSql);
+
+		if(ER_BAD_DB_ERROR == errcode)
+		{
+			return RetCode_db_not_find;
+		}
+		else if(ER_ALREADY_CONNECTED == errcode)
+		{
+			PARTYLOG("mysql connect error:(%d)%s, address:%s port:%d user:%s pwd:%s db_name:%s",
+				errcode, so_mysql_error(pSql), address, port, user, pwd, db_name);
+		}
+		else
+		{
+			PARTYABNOR("mysql connect error:(%d)%s, address:%s port:%d user:%s pwd:%s db_name:%s",
+				errcode, so_mysql_error(pSql), address, port, user, pwd, db_name);
+
+			return RetCode_connect_error;
+		}
+	}
+
+	value = MYSQL_RECONNECT_ENABLE;
+	so_mysql_options(pSql, MYSQL_OPT_RECONNECT, &value);
+
+	// open auto commit!
+	so_mysql_autocommit(pSql, MYSQL_AUTO_COMMIT_ENABLE);
+
+	if(so_mysql_set_character_set(pSql, "utf8") != 0)
+	{
+		PARTYABNOR("mysql set character:%s<%d>", so_mysql_error(pSql), so_mysql_errno(pSql));
+	}
+
+	return RetCode_OK;
+}
+
+static RetCode
+_mysql_select_db(MYSQL *pSql, s8 *db_name)
+{
+	if(so_mysql_select_db(pSql, (const char *)db_name) != 0)
+	{
+		PARTYABNOR("mysql select db error:%s<%d>", so_mysql_error(pSql), so_mysql_errno(pSql));
+		return RetCode_db_sql_failed;		
+	}
+	else
+	{
+		return RetCode_OK;
+	}
+}
+
+static RetCode
+_mysql_query(MYSQL *pSql, s8 *sql)
+{
+	ub safe_counter;
+	unsigned int errcode;
+
+	safe_counter = 0;
+	do {
+		so_mysql_free_result(so_mysql_store_result(pSql));
+	} while(((safe_counter ++) < 102400) && (so_mysql_next_result(pSql) == 0));
+	if(safe_counter >= 102400)
+	{
+		PARTYABNOR("safe_counter:%d sql:%s find error! mysql_next_result=%d", safe_counter, sql, so_mysql_next_result(pSql));
+	}
+
+	if(so_mysql_query(pSql, (const char *)sql) != 0)
+	{
+		errcode = so_mysql_errno(pSql);
+
+		if(ER_TABLE_EXISTS_ERROR == errcode)
+			return RetCode_table_exist;
+		else if((CR_SERVER_LOST == errcode) || (CR_SERVER_GONE_ERROR == errcode))
+			return RetCode_connect_error;
+		else if(ER_DB_CREATE_EXISTS == errcode)
+			return RetCode_OK;
+		else
+			return RetCode_db_sql_failed;
+	}
+
+	return RetCode_OK;
+}
+
+static void *
+_mysql_query_to_json(ub row_num, ub fields_num, MYSQL_RES *res)
+{
+	MYSQL_ROW row;
+	unsigned long *lengths;
+	ub fields_index;
+	void *pJson = dave_json_array_malloc();
+	void *pArray;
+
+	while((row = so_mysql_fetch_row(res)))
+	{
+		lengths = so_mysql_fetch_lengths(res);
+
+		pArray = dave_json_array_malloc();
+
+		for(fields_index=0; fields_index<fields_num; fields_index++)
+		{
+			dave_json_array_add_str_len(pArray, row[fields_index], (ub)(lengths[fields_index]));
+		}
+
+		dave_json_array_add_object(pJson, pArray);
+	}
+
+	return pJson;
+}
+
+static SqlRet
+_mysql_query_ret(MYSQL *pSql, s8 *sql)
+{
+	MYSQL_RES *res;
+	ub row_num, fields_num;
+	SqlRet ret  = { RetCode_Unknown_error, NULL };
+
+	res = so_mysql_store_result(pSql);
+	if(res == NULL)
+	{
+		PARTYDEBUG("sql:%s get res failed!", sql);
+		ret.ret = RetCode_empty_data;
+		return ret;
+	}
+
+	ret.ret = RetCode_OK;
+
+	row_num = so_mysql_num_rows(res);
+	fields_num = so_mysql_num_fields(res);
+	if((row_num == 0) || (fields_num == 0))
+	{
+		ret.pJson = NULL;
+	}
+	else
+	{
+		ret.pJson = _mysql_query_to_json(row_num, fields_num, res);
+	}
+
+	return ret;
+}
+
 // =====================================================================
 
 void
@@ -184,6 +377,72 @@ void
 dave_mysql_exit(void)
 {
 	_mysql_dll_exit();
+}
+
+void *
+dave_mysql_creat_client(s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
+{
+	MYSQL *pSql = dave_malloc(sizeof(MYSQL));
+
+	_mysql_client_init(pSql);
+
+	if(_mysql_connect(pSql, address, port, user, pwd, db_name) != RetCode_OK)
+	{
+		dave_mysql_release_client(pSql); pSql = NULL;
+		return NULL;
+	}
+
+	if(_mysql_select_db(pSql, db_name) != RetCode_OK)
+	{
+		dave_mysql_release_client(pSql); pSql = NULL;
+		return NULL;
+	}
+
+	return (void *)pSql;
+}
+
+void
+dave_mysql_release_client(void *pSql)
+{
+	if(pSql != NULL)
+	{
+		_mysql_client_exit(pSql);
+
+		dave_free(pSql);
+	}
+}
+
+SqlRet
+dave_mysql_query(void *pSql, s8 *sql)
+{
+	SqlRet ret  = { RetCode_Unknown_error, NULL };
+
+	if(pSql == NULL)
+	{
+		PARTYLOG("sql:%s has empty pSql!", sql);
+		ret.ret = RetCode_invalid_option;
+		return ret;
+	}
+
+	ret.ret = _mysql_query(pSql, sql);
+	if(ret.ret != RetCode_OK)
+	{
+		PARTYLOG("sql:%s query error<%d>:%s/%s",
+			sql, so_mysql_errno(pSql), so_mysql_error(pSql),
+			retstr(ret.ret));
+		return ret;
+	}
+
+	return _mysql_query_ret(pSql, sql);
+}
+
+void
+dave_mysql_free_ret(SqlRet ret)
+{
+	if(ret.pJson != NULL)
+	{
+		dave_free(ret.pJson);
+	}
 }
 
 #endif

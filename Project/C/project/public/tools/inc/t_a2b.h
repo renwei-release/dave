@@ -17,6 +17,7 @@ MBUF * t_a2b_bin_to_mbuf(s8 *bin_ptr, ub bin_len);
 MBUF * t_a2b_str_to_mbuf(s8 *str_ptr, sb str_len);
 MBUF * t_a2b_param_to_mbuf(const char *args, ...);
 ub t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m);
+void * t_a2b_mbuf_to_json(MBUF *m);
 
 ub t_a2b_digital_to_string(s8 *str_ptr, ub str_len, ub digital);
 ub t_a2b_string_to_digital(s8 *str_ptr);

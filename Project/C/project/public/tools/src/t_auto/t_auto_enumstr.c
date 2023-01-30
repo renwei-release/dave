@@ -3984,6 +3984,12 @@ t_auto_RetCode_str(RetCode enum_value)
 		case RetCode_invalid_date:
 				value_str = "'RetCode_invalid_date--117'";
 			break;
+		case RetCode_table_exist:
+				value_str = "'RetCode_table_exist--118'";
+			break;
+		case RetCode_db_sql_failed:
+				value_str = "'RetCode_db_sql_failed--119'";
+			break;
 		case RetCode_max:
 				value_str = "'RetCode_max-0x1fffffffffffffff'";
 			break;
@@ -4871,6 +4877,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case BBSMSG_INQ_COMMENT_RSP:
 				value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'";
+			break;
+		case STORE_MYSQL_REQ:
+				value_str = "'STORE_MYSQL_REQ-15005'";
+			break;
+		case STORE_MYSQL_RSP:
+				value_str = "'STORE_MYSQL_RSP-15006'";
 			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID-0x1fffffffffffffff'";

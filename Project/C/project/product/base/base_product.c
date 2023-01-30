@@ -10,7 +10,9 @@
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_3rdparty.h"
 #include "dave_bdata.h"
+#include "dave_store.h"
 #include "base_test.h"
 #include "base_log.h"
 
@@ -153,6 +155,15 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		_base_thread_rpc_debug_req_use_go(pReady);
 
 		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
+	}
+
+	if(dave_strcmp(pReady->remote_thread_name, "store"))
+	{
+		StoreSqlRet ret;
+
+		ret = STORESQL("SELECT help_topic_id, name, help_category_id, description, example, url FROM help_topic WHERE name = 'AREA';");
+
+		BASELOG("ret:%s data:%s", retstr(ret.ret), dave_json_to_string(ret.pJson, NULL));
 	}
 }
 

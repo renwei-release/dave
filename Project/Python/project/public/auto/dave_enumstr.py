@@ -1452,6 +1452,10 @@ def t_auto_RetCode_str(enum_value):
 		value_str = "'RetCode_invalid_year--116'"
 	elif enum_value == RetCode_invalid_date:
 		value_str = "'RetCode_invalid_date--117'"
+	elif enum_value == RetCode_table_exist:
+		value_str = "'RetCode_table_exist--118'"
+	elif enum_value == RetCode_db_sql_failed:
+		value_str = "'RetCode_db_sql_failed--119'"
 	elif enum_value == RetCode_max:
 		value_str = "'RetCode_max-0x1fffffffffffffff'"
 	else:
@@ -1902,6 +1906,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'BBSMSG_INQ_COMMENT_REQ-15003'"
 	elif enum_value == BBSMSG_INQ_COMMENT_RSP:
 		value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'"
+	elif enum_value == STORE_MYSQL_REQ:
+		value_str = "'STORE_MYSQL_REQ-15005'"
+	elif enum_value == STORE_MYSQL_RSP:
+		value_str = "'STORE_MYSQL_RSP-15006'"
 	elif enum_value == MSGID_INVALID:
 		value_str = "'MSGID_INVALID-0x1fffffffffffffff'"
 	else:

@@ -17,6 +17,9 @@ typedef struct {
 	s8 sub_flag[DAVE_NORMAL_STR_LEN];
 	DateStruct local_date;
 
+	s8 fun[DAVE_NORMAL_STR_LEN];
+	ub line;
+
 	s8 host_name[DAVE_NORMAL_NAME_LEN];
 	u8 host_mac[DAVE_MAC_ADDR_LEN];
 	u8 host_ipv4[DAVE_IP_V4_ADDR_LEN];

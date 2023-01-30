@@ -139,6 +139,8 @@ type BDataLogReq struct {
 	Version [DAVE_VERNO_STR_LEN] byte
 	Sub_flag [DAVE_NORMAL_STR_LEN] byte
 	Local_date DateStruct
+	Fun [DAVE_NORMAL_STR_LEN] byte
+	Line uint64
 	Host_name [DAVE_NORMAL_NAME_LEN] byte
 	Host_mac [DAVE_MAC_ADDR_LEN] byte
 	Host_ipv4 [DAVE_IP_V4_ADDR_LEN] byte
@@ -803,6 +805,19 @@ type SocketWrite struct {
 	Data_len uint64
 	Data *MBUF
 	Close_flag int32
+}
+
+/* for STORE_MYSQL_REQ message */
+type StoreMysqlReq struct {
+	Sql *MBUF
+	Ptr uint64
+}
+
+/* for STORE_MYSQL_RSP message */
+type StoreMysqlRsp struct {
+	Ret int64
+	Data *MBUF
+	Ptr uint64
 }
 
 /* for MSGID_SUPPORT_CONFIG message */
