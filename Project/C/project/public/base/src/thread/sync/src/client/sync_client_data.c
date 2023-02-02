@@ -963,14 +963,10 @@ sync_client_data_server_inq_on_index(ub server_index)
 }
 
 LinkThread *
-sync_client_data_thread_on_name(s8 *thread_name, ub thread_index)
+sync_client_data_thread_on_name(s8 *thread_name)
 {
+	ub thread_index = sync_client_data_thread_name_to_index(thread_name);
 	LinkThread *pThread = NULL;
-
-	if(thread_index == SYNC_THREAD_INDEX_MAX)
-	{
-		thread_index = sync_client_data_thread_name_to_index(thread_name);
-	}
 
 	SAFECODEv2R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index););
 

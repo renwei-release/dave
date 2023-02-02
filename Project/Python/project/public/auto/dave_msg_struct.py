@@ -576,6 +576,22 @@ class HTTPCloseRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for HTTPMSG_LISTEN_AUTO_CLOSE_REQ message *#
+class HTTPListenAutoCloseReq (Structure):
+	_fields_ = [
+		("path", c_char * DAVE_PATH_LEN),
+		("listening_seconds_time", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for HTTPMSG_LISTEN_AUTO_CLOSE_RSP message *#
+class HTTPListenAutoCloseRsp (Structure):
+	_fields_ = [
+		("ret", c_ulonglong),
+		("path", c_char * DAVE_PATH_LEN),
+		("ptr", POINTER(c_char)),
+]
+
 #* for HTTPMSG_LISTEN_REQ message *#
 class HTTPListenReq (Structure):
 	_fields_ = [

@@ -47,11 +47,11 @@ _dos_sync_opt_str_to_opt(s8 *opt_str)
 static RetCode
 _dos_sync_blocks_help(void)
 {
-	dos_print("Please enter the command in the following format:\r\n"\
-			"blocks i\r\n"\
-			"blocks mount [blocks id]\r\n"\
-			"blocks decoupling [blocks id]\r\n"\
-			"blocks exchange [blocks id 1] [blocks id 2]\r\n"\
+	dos_print("Please enter the command in the following format:\n"\
+			"blocks i\n"\
+			"blocks mount [blocks id]\n"\
+			"blocks decoupling [blocks id]\n"\
+			"blocks exchange [blocks id 1] [blocks id 2]\n"\
 			"blocks valve [blocks id] [release quantity]");
 
 	return RetCode_OK;
@@ -65,14 +65,14 @@ _dos_sync_blocks_rsp(MSGBODY *msg)
 	ub print_buf_len, print_buf_index;
 	ub blocks_index;
 
-	print_buf_len = 2048;
+	print_buf_len = 1024 * 64;
 	print_buf_index = 0;
 	print_buf = dave_malloc(print_buf_len);
 
 	if(pRsp->ret != RetCode_OK)
 	{
 		print_buf_index += dave_snprintf(&print_buf[print_buf_index], print_buf_len-print_buf_index,
-			"blocks option error:%s\r\n", retstr(pRsp->ret));
+			"blocks option error:%s\n", retstr(pRsp->ret));
 	}
 
 	for(blocks_index=0; blocks_index<DAVE_BUILDING_BLOCKS_MAX; blocks_index++)
@@ -80,7 +80,7 @@ _dos_sync_blocks_rsp(MSGBODY *msg)
 		if(pRsp->blocks[blocks_index].blocks_id != 0)
 		{
 			print_buf_index += dave_snprintf(&print_buf[print_buf_index], print_buf_len-print_buf_index,
-				"BLOCKS:%d verno:%s ip:%s state:%s/%s/%s quantity:%d\r\n",
+				"BLOCKS:%d verno:%s ip:%s state:%s/%s/%s quantity:%d\n",
 				pRsp->blocks[blocks_index].blocks_id,
 				pRsp->blocks[blocks_index].verno,
 				ipv4str(pRsp->blocks[blocks_index].ip_addr, pRsp->blocks[blocks_index].port),

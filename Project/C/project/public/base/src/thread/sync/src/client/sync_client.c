@@ -593,25 +593,19 @@ _sync_client_cfg_update(CFGUpdate *pUpdate)
 static inline void
 _sync_client_route(MSGBODY *pMsg)
 {
-	ThreadId thread_id;
-
 	if(pMsg->msg_type == BaseMsgType_Broadcast_local)
 	{
 		return;
 	}
 
-	if(pMsg->msg_type == BaseMsgType_Unicast)
+	pMsg->msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
+	if(pMsg->msg_dst == INVALID_THREAD_ID)
 	{
-		thread_id = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
-		if(thread_id == INVALID_THREAD_ID)
-		{
-			SYNCTRACE("%lx/%s->%lx/%s:%s change failed!",
-				pMsg->msg_src, thread_name(pMsg->msg_src),
-				pMsg->msg_dst, thread_name(pMsg->msg_dst),
-				msgstr(pMsg->msg_id));
-			return;
-		}
-		pMsg->msg_dst = thread_id;
+		SYNCLOG("%lx/%s->%lx/%s:%s change failed!",
+			pMsg->msg_src, thread_name(pMsg->msg_src),
+			pMsg->msg_dst, thread_name(pMsg->msg_dst),
+			msgstr(pMsg->msg_id));
+		return;
 	}
 
 	sync_client_message_route(pMsg);

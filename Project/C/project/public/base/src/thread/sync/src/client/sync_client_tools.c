@@ -184,7 +184,7 @@ __sync_client_detected_rpc_efficiency__(ub msg_len, ub package_len, ub msg_id, s
 void
 sync_client_send_statistics(SyncServer *pServer, s8 *thread)
 {
-	LinkThread *pThread = sync_client_data_thread_on_name(thread, SYNC_THREAD_INDEX_MAX);
+	LinkThread *pThread = sync_client_data_thread_on_name(thread);
 
 	if(pServer != NULL)
 	{
@@ -204,7 +204,7 @@ sync_client_send_statistics(SyncServer *pServer, s8 *thread)
 void
 sync_client_recv_statistics(SyncServer *pServer, s8 *thread)
 {
-	LinkThread *pThread = sync_client_data_thread_on_name(thread, SYNC_THREAD_INDEX_MAX);
+	LinkThread *pThread = sync_client_data_thread_on_name(thread);
 
 	if(pServer != NULL)
 	{

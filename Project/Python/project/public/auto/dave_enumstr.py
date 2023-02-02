@@ -1748,6 +1748,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'APPMSG_FUNCTION_UNREGISTER_REQ-2134'"
 	elif enum_value == APPMSG_FUNCTION_UNREGISTER_RSP:
 		value_str = "'APPMSG_FUNCTION_UNREGISTER_RSP-2135'"
+	elif enum_value == STORE_MYSQL_REQ:
+		value_str = "'STORE_MYSQL_REQ-3001'"
+	elif enum_value == STORE_MYSQL_RSP:
+		value_str = "'STORE_MYSQL_RSP-3002'"
 	elif enum_value == DBMSG_SYS_INQ_CHANNEL_REQ:
 		value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ-4029'"
 	elif enum_value == DBMSG_SYS_INQ_CHANNEL_RSP:
@@ -1874,6 +1878,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'CVMSG_SCULPTURES_SEARCH_REQ-10007'"
 	elif enum_value == CVMSG_SCULPTURES_SEARCH_RSP:
 		value_str = "'CVMSG_SCULPTURES_SEARCH_RSP-10008'"
+	elif enum_value == HTTPMSG_POST_REQ:
+		value_str = "'HTTPMSG_POST_REQ-11000'"
+	elif enum_value == HTTPMSG_POST_RSP:
+		value_str = "'HTTPMSG_POST_RSP-11001'"
 	elif enum_value == HTTPMSG_LISTEN_REQ:
 		value_str = "'HTTPMSG_LISTEN_REQ-11002'"
 	elif enum_value == HTTPMSG_LISTEN_RSP:
@@ -1886,10 +1894,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'HTTPMSG_RECV_REQ-11006'"
 	elif enum_value == HTTPMSG_RECV_RSP:
 		value_str = "'HTTPMSG_RECV_RSP-11007'"
-	elif enum_value == HTTPMSG_POST_REQ:
-		value_str = "'HTTPMSG_POST_REQ-11000'"
-	elif enum_value == HTTPMSG_POST_RSP:
-		value_str = "'HTTPMSG_POST_RSP-11001'"
+	elif enum_value == HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+		value_str = "'HTTPMSG_LISTEN_AUTO_CLOSE_REQ-11008'"
+	elif enum_value == HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+		value_str = "'HTTPMSG_LISTEN_AUTO_CLOSE_RSP-11009'"
 	elif enum_value == AIXMSG_IMAGE_CLASSIFICATION_REQ:
 		value_str = "'AIXMSG_IMAGE_CLASSIFICATION_REQ-12001'"
 	elif enum_value == AIXMSG_IMAGE_CLASSIFICATION_RSP:
@@ -1906,10 +1914,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'BBSMSG_INQ_COMMENT_REQ-15003'"
 	elif enum_value == BBSMSG_INQ_COMMENT_RSP:
 		value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'"
-	elif enum_value == STORE_MYSQL_REQ:
-		value_str = "'STORE_MYSQL_REQ-15005'"
-	elif enum_value == STORE_MYSQL_RSP:
-		value_str = "'STORE_MYSQL_RSP-15006'"
 	elif enum_value == MSGID_INVALID:
 		value_str = "'MSGID_INVALID-0x1fffffffffffffff'"
 	else:

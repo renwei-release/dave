@@ -511,6 +511,20 @@ type HTTPCloseRsp struct {
 	Ptr uint64
 }
 
+/* for HTTPMSG_LISTEN_AUTO_CLOSE_REQ message */
+type HTTPListenAutoCloseReq struct {
+	Path [DAVE_PATH_LEN] byte
+	Listening_seconds_time uint64
+	Ptr uint64
+}
+
+/* for HTTPMSG_LISTEN_AUTO_CLOSE_RSP message */
+type HTTPListenAutoCloseRsp struct {
+	Ret int64
+	Path [DAVE_PATH_LEN] byte
+	Ptr uint64
+}
+
 /* for HTTPMSG_LISTEN_REQ message */
 type HTTPListenReq struct {
 	Listen_port uint64

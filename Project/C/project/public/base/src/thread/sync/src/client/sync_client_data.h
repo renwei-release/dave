@@ -29,7 +29,7 @@ SyncServer * sync_client_data_server_inq_on_net(u8 *ip, u16 port);
 
 SyncServer * sync_client_data_server_inq_on_index(ub server_index);
 
-LinkThread * sync_client_data_thread_on_name(s8 *thread_name, ub thread_index);
+LinkThread * sync_client_data_thread_on_name(s8 *thread_name);
 
 ub sync_client_data_thread_index_on_name(s8 *thread_name);
 

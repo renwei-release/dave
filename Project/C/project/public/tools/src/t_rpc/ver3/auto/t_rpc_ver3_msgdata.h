@@ -332,6 +332,16 @@ dave_bool t_rpc_ver3_unzip_HTTPCloseRsp(void **unzip_data, ub *unzip_len, void *
 void * t_rpc_ver3_ptr_HTTPCloseRsp(HTTPCloseRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_HTTPCloseRsp(void);
 
+void * t_rpc_ver3_zip_HTTPListenAutoCloseReq(HTTPListenAutoCloseReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPListenAutoCloseReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_HTTPListenAutoCloseReq(HTTPListenAutoCloseReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_HTTPListenAutoCloseReq(void);
+
+void * t_rpc_ver3_zip_HTTPListenAutoCloseRsp(HTTPListenAutoCloseRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_HTTPListenAutoCloseRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_HTTPListenAutoCloseRsp(HTTPListenAutoCloseRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_HTTPListenAutoCloseRsp(void);
+
 void * t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPListenReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_HTTPListenReq(HTTPListenReq *struct_data, void *new_ptr);

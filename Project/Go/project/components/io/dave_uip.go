@@ -25,7 +25,7 @@ func _register_rsp(src_gid string, src_name string, src_id uint64, msg_len uint6
 
 // =====================================================================
 
-func Uip_register_req(method string, recv_req func(msg_src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer)) {
+func Uip_register(method string, recv_req func(msg_src_gid string, src_name string, src_id uint64, msg_len uint64, msg_body unsafe.Pointer)) {
 	pReq := auto.UIPRegisterReq{}
 
 	copy(pReq.Method[:], method)

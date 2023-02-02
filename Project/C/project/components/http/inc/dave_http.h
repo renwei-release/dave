@@ -11,6 +11,7 @@
 #include "http_msg.h"
 
 void dave_http_init(void);
+
 void dave_http_exit(void);
 
 #endif

@@ -12,4 +12,5 @@ RUN apt install -y vim
 ENV GOPROXY=https://goproxy.io,direct
 
 RUN mkdir -p /project/DAVE
+
 WORKDIR /project

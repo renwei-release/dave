@@ -49,7 +49,7 @@ func _blockchain_recv_req(src_gid string, src_name string, src_id uint64, msg_le
 // =====================================================================
 
 func blockchain_uip_init() {
-	io.Uip_register_req(BLOCKCHAIN_UIP_METHOD, _blockchain_recv_req)
+	io.Uip_register(BLOCKCHAIN_UIP_METHOD, _blockchain_recv_req)
 }
 
 func blockchain_uip_exit() {

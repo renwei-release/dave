@@ -15,3 +15,13 @@ def t_copy_byte_to_array(dst, src):
         dst[index] = src_data
         index += 1
     return
+
+
+def t_copy_str_to_array(dst, src):
+    src = bytes(src, encoding='utf8')
+
+    index = 0
+    for src_data in src:
+        dst[index] = src_data
+        index += 1
+    return  

@@ -199,16 +199,21 @@ static void
 _uip_server_register_req(ThreadId src, UIPRegisterReq *pReq)
 {
 	ub method_index;
-	UIPRegisterRsp *pRsp = thread_msg(pRsp);
+	UIPRegisterRsp *pRsp = thread_reset_msg(pRsp);
+	ub method_number;
 	RetCode ret;
 
 	UIPTRACE("%s register method:%s", thread_name(src), pReq->method[0]);
+
+	method_number = 0;
 
 	pRsp->ret = RetCode_OK;
 	for(method_index=0; method_index<DAVE_UIP_METHOD_MAX_NUM; method_index++)
 	{
 		if(pReq->method[method_index][0] != '\0')
 		{
+			method_number ++;
+
 			ret = uip_server_register(src, pReq->method[method_index]);
 			if(ret != RetCode_OK)
 			{
@@ -220,6 +225,12 @@ _uip_server_register_req(ThreadId src, UIPRegisterReq *pReq)
 		dave_strcpy(pRsp->method[method_index], pReq->method[method_index], DAVE_UIP_METHOD_MAX_LEN);
 	}
 	pRsp->ptr = pReq->ptr;
+
+	if(method_number == 0)
+	{
+		UIPLOG("%s register empty method!", thread_name(src));
+		pRsp->ret = RetCode_empty_data;
+	}
 
 	id_msg(src, UIP_REGISTER_RSP, pRsp);
 }

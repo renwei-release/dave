@@ -112,7 +112,7 @@ store_mysql_init(ub thread_number)
 	port = cfg_get_ub(CFG_MYSQL_PORT, 3306);
 	cfg_get_str(CFG_MYSQL_USER, user, sizeof(user), "root");
 	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "CWLtc14@#!");
-	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DB0001");
+	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DAVEDB0007");
 
 	_store_mysql_init(thread_number, address, port, user, pwd, db);
 }

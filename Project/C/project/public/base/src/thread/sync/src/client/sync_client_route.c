@@ -18,6 +18,7 @@
 #include "sync_client_tx.h"
 #include "sync_client_param.h"
 #include "sync_client_link.h"
+#include "sync_client_data.h"
 #include "sync_client_load_balancer.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -50,7 +51,7 @@ _sync_client_load_address(
 }
 
 static inline void
-_sync_client_message_route_to_remote(SyncServer *pServer, MSGBODY *pMsg)
+_sync_client_message_to_server(SyncServer *pServer, MSGBODY *pMsg)
 {
 	s8 *src, *dst;
 	ThreadId route_src, route_dst;
@@ -75,10 +76,8 @@ _sync_client_message_route_to_remote(SyncServer *pServer, MSGBODY *pMsg)
 		pMsg->msg_len, pMsg->msg_body);
 }
 
-// =====================================================================
-
-void
-sync_client_message_route(MSGBODY *pMsg)
+static inline void
+_sync_client_message_send(MSGBODY *pMsg)
 {
 	SyncServer *pServer;
 
@@ -93,7 +92,7 @@ sync_client_message_route(MSGBODY *pMsg)
 			pMsg->msg_src, pMsg->msg_dst,
 			pMsg->msg_id, pMsg->msg_len, pMsg->msg_body);
 
-		SAFECODEv2R(pServer->rxtx_pv, _sync_client_message_route_to_remote(pServer, pMsg););
+		SAFECODEv2R(pServer->rxtx_pv, _sync_client_message_to_server(pServer, pMsg););
 
 		thread_chain_clean_msg(pMsg);
 	}
@@ -102,6 +101,70 @@ sync_client_message_route(MSGBODY *pMsg)
 		SYNCLOG("%s->%s:%d route failed!",
 			thread_name(pMsg->msg_src), thread_name(pMsg->msg_dst),
 			pMsg->msg_id);
+	}
+}
+
+static inline void
+_sync_client_message_broadcast(MSGBODY *pMsg)
+{
+	s8 *dst_thread = thread_name(pMsg->msg_dst);
+	LinkThread *pThread;
+	SyncServer *pServer;
+	ub server_index;
+
+	_sync_client_message_send(pMsg);
+
+	dst_thread = thread_name(pMsg->msg_dst);
+	if(dst_thread == NULL)
+	{
+		SYNCLOG("%lx/%s->%lx/%s:%s get name failed!",
+			pMsg->msg_src, thread_name(pMsg->msg_src),
+			pMsg->msg_dst, thread_name(pMsg->msg_dst),
+			msgstr(pMsg->msg_id));
+		return;
+	}
+
+	pThread = sync_client_data_thread_on_name(dst_thread);
+	if(pThread == NULL)
+	{
+		SYNCLOG("%lx/%s->%lx/%s:%s get pThread failed!",
+			pMsg->msg_src, thread_name(pMsg->msg_src),
+			pMsg->msg_dst, thread_name(pMsg->msg_dst),
+			msgstr(pMsg->msg_id));
+		return;
+	}
+
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		pServer = pThread->pServer[server_index];
+		if(pServer != NULL)
+		{
+			thread_set_remote(pMsg->msg_dst, pThread->thread_index, pServer->server_index);
+
+			_sync_client_message_send(pMsg);
+		}
+	}
+}
+
+// =====================================================================
+
+void
+sync_client_message_route(MSGBODY *pMsg)
+{
+	if(pMsg->msg_type == BaseMsgType_Unicast)
+	{
+		_sync_client_message_send(pMsg);
+	}
+	else if((pMsg->msg_type == BaseMsgType_Broadcast_thread)
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_remote)
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_total)
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_dismiss))
+	{
+		_sync_client_message_broadcast(pMsg);
+	}
+	else
+	{
+		SYNCLOG("unprocess msg_type:%s", t_auto_BaseMsgType_str(pMsg->msg_type));
 	}
 }
 

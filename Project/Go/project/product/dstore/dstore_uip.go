@@ -49,7 +49,7 @@ func _recv_req(src_gid string, src_name string, src_id uint64, msg_len uint64, m
 // =====================================================================
 
 func dstore_uip_init() {
-	io.Uip_register_req(DSTORE_UIP_METHOD, _recv_req)
+	io.Uip_register(DSTORE_UIP_METHOD, _recv_req)
 }
 
 func dstore_uip_exit() {

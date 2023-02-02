@@ -3890,6 +3890,128 @@ t_rpc_ver3_sizeof_HTTPCloseRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_HTTPListenAutoCloseReq(HTTPListenAutoCloseReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(HTTPListenAutoCloseReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(HTTPListenAutoCloseReq) does not match(%d/%d), please contact the message settlers!", sizeof(HTTPListenAutoCloseReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-path", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->path), 1, DAVE_PATH_LEN));
+	t_bson_add_object(pStructBson, "ub-listening_seconds_time", t_rpc_ver3_zip_ub(zip_data->listening_seconds_time));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_HTTPListenAutoCloseReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		HTTPListenAutoCloseReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(HTTPListenAutoCloseReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->path), 1, DAVE_PATH_LEN, t_bson_inq_object(pStructBson, "s8-path"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->listening_seconds_time), t_bson_inq_object(pStructBson, "ub-listening_seconds_time"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_HTTPListenAutoCloseReq(HTTPListenAutoCloseReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_HTTPListenAutoCloseReq(void)
+{
+	return sizeof(HTTPListenAutoCloseReq);
+}
+
+void *
+t_rpc_ver3_zip_HTTPListenAutoCloseRsp(HTTPListenAutoCloseRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(HTTPListenAutoCloseRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(HTTPListenAutoCloseRsp) does not match(%d/%d), please contact the message settlers!", sizeof(HTTPListenAutoCloseRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-path", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->path), 1, DAVE_PATH_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_HTTPListenAutoCloseRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		HTTPListenAutoCloseRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(HTTPListenAutoCloseRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->path), 1, DAVE_PATH_LEN, t_bson_inq_object(pStructBson, "s8-path"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_HTTPListenAutoCloseRsp(HTTPListenAutoCloseRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_HTTPListenAutoCloseRsp(void)
+{
+	return sizeof(HTTPListenAutoCloseRsp);
+}
+
+void *
 t_rpc_ver3_zip_HTTPListenReq(HTTPListenReq *zip_data, ub zip_len)
 {
 	void *pStructBson;

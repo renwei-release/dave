@@ -190,6 +190,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case HTTPMSG_CLOSE_RSP:
 				pBson = t_rpc_ver3_zip_HTTPCloseRsp((HTTPCloseRsp *)msg_body, msg_len);
 			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+				pBson = t_rpc_ver3_zip_HTTPListenAutoCloseReq((HTTPListenAutoCloseReq *)msg_body, msg_len);
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+				pBson = t_rpc_ver3_zip_HTTPListenAutoCloseRsp((HTTPListenAutoCloseRsp *)msg_body, msg_len);
+			break;
 		case HTTPMSG_LISTEN_REQ:
 				pBson = t_rpc_ver3_zip_HTTPListenReq((HTTPListenReq *)msg_body, msg_len);
 			break;
@@ -571,6 +577,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case HTTPMSG_CLOSE_RSP:
 				ret = t_rpc_ver3_unzip_HTTPCloseRsp(msg_body, msg_len, pBson);
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+				ret = t_rpc_ver3_unzip_HTTPListenAutoCloseReq(msg_body, msg_len, pBson);
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+				ret = t_rpc_ver3_unzip_HTTPListenAutoCloseRsp(msg_body, msg_len, pBson);
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				ret = t_rpc_ver3_unzip_HTTPListenReq(msg_body, msg_len, pBson);
@@ -954,6 +966,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case HTTPMSG_CLOSE_RSP:
 				ptr = t_rpc_ver3_ptr_HTTPCloseRsp((HTTPCloseRsp *)msg_body, new_ptr);
 			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+				ptr = t_rpc_ver3_ptr_HTTPListenAutoCloseReq((HTTPListenAutoCloseReq *)msg_body, new_ptr);
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+				ptr = t_rpc_ver3_ptr_HTTPListenAutoCloseRsp((HTTPListenAutoCloseRsp *)msg_body, new_ptr);
+			break;
 		case HTTPMSG_LISTEN_REQ:
 				ptr = t_rpc_ver3_ptr_HTTPListenReq((HTTPListenReq *)msg_body, new_ptr);
 			break;
@@ -1335,6 +1353,12 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case HTTPMSG_CLOSE_RSP:
 				msg_len = t_rpc_ver3_sizeof_HTTPCloseRsp();
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+				msg_len = t_rpc_ver3_sizeof_HTTPListenAutoCloseReq();
+			break;
+		case HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+				msg_len = t_rpc_ver3_sizeof_HTTPListenAutoCloseRsp();
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				msg_len = t_rpc_ver3_sizeof_HTTPListenReq();

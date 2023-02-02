@@ -4641,6 +4641,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case APPMSG_FUNCTION_UNREGISTER_RSP:
 				value_str = "'APPMSG_FUNCTION_UNREGISTER_RSP-2135'";
 			break;
+		case STORE_MYSQL_REQ:
+				value_str = "'STORE_MYSQL_REQ-3001'";
+			break;
+		case STORE_MYSQL_RSP:
+				value_str = "'STORE_MYSQL_RSP-3002'";
+			break;
 		case DBMSG_SYS_INQ_CHANNEL_REQ:
 				value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ-4029'";
 			break;
@@ -4830,6 +4836,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case CVMSG_SCULPTURES_SEARCH_RSP:
 				value_str = "'CVMSG_SCULPTURES_SEARCH_RSP-10008'";
 			break;
+		case HTTPMSG_POST_REQ:
+				value_str = "'HTTPMSG_POST_REQ-11000'";
+			break;
+		case HTTPMSG_POST_RSP:
+				value_str = "'HTTPMSG_POST_RSP-11001'";
+			break;
 		case HTTPMSG_LISTEN_REQ:
 				value_str = "'HTTPMSG_LISTEN_REQ-11002'";
 			break;
@@ -4848,11 +4860,11 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case HTTPMSG_RECV_RSP:
 				value_str = "'HTTPMSG_RECV_RSP-11007'";
 			break;
-		case HTTPMSG_POST_REQ:
-				value_str = "'HTTPMSG_POST_REQ-11000'";
+		case HTTPMSG_LISTEN_AUTO_CLOSE_REQ:
+				value_str = "'HTTPMSG_LISTEN_AUTO_CLOSE_REQ-11008'";
 			break;
-		case HTTPMSG_POST_RSP:
-				value_str = "'HTTPMSG_POST_RSP-11001'";
+		case HTTPMSG_LISTEN_AUTO_CLOSE_RSP:
+				value_str = "'HTTPMSG_LISTEN_AUTO_CLOSE_RSP-11009'";
 			break;
 		case AIXMSG_IMAGE_CLASSIFICATION_REQ:
 				value_str = "'AIXMSG_IMAGE_CLASSIFICATION_REQ-12001'";
@@ -4877,12 +4889,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case BBSMSG_INQ_COMMENT_RSP:
 				value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'";
-			break;
-		case STORE_MYSQL_REQ:
-				value_str = "'STORE_MYSQL_REQ-15005'";
-			break;
-		case STORE_MYSQL_RSP:
-				value_str = "'STORE_MYSQL_RSP-15006'";
 			break;
 		case MSGID_INVALID:
 				value_str = "'MSGID_INVALID-0x1fffffffffffffff'";
