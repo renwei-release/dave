@@ -105,17 +105,67 @@ _sync_client_message_send(MSGBODY *pMsg)
 }
 
 static inline void
-_sync_client_message_broadcast(MSGBODY *pMsg)
+_sync_client_message_to_thread(LinkThread *pThread, MSGBODY *pMsg)
 {
-	s8 *dst_thread = thread_name(pMsg->msg_dst);
-	LinkThread *pThread;
+	ub gi_index;
+	s8 *gi_ptr[SERVER_DATA_MAX];
 	SyncServer *pServer;
 	ub server_index;
 
-	_sync_client_message_send(pMsg);
+	for(gi_index=0; gi_index<SERVER_DATA_MAX; gi_index++)
+	{
+		gi_ptr[gi_index] = NULL;
+	}
 
-	dst_thread = thread_name(pMsg->msg_dst);
-	if(dst_thread == NULL)
+	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
+	{
+		pServer = pThread->pServer[server_index];
+		if((pServer != NULL) && (pServer->server_type != SyncServerType_sync_client))
+		{
+			for(gi_index=0; gi_index<SERVER_DATA_MAX; gi_index++)
+			{
+				if(gi_ptr[gi_index] == NULL)
+					break;
+				if(dave_strcmp(gi_ptr[gi_index], pServer->globally_identifier) == dave_true)
+					break;
+			}
+
+			SYNCTRACE("%s->%s:%s/%s index:%ld/%lx server:%d/%s/%s",
+				thread_name(pMsg->msg_src), thread_name(pMsg->msg_dst),
+				msgstr(pMsg->msg_id), t_auto_BaseMsgType_str(pMsg->msg_type),
+				gi_index, gi_ptr[gi_index],
+				server_index, pServer->globally_identifier, pServer->verno);
+
+			if((gi_index < SERVER_DATA_MAX) && (gi_ptr[gi_index] == NULL))
+			{
+				gi_ptr[gi_index] = dave_malloc(sizeof(pServer->globally_identifier));
+				dave_strcpy(gi_ptr[gi_index], pServer->globally_identifier, sizeof(pServer->globally_identifier));
+
+				thread_set_remote(pMsg->msg_dst, pThread->thread_index, pServer->server_index);
+		
+				_sync_client_message_send(pMsg);
+			}
+		}
+	}
+
+	for(gi_index=0; gi_index<SERVER_DATA_MAX; gi_index++)
+	{
+		if(gi_ptr[gi_index] != NULL)
+			dave_free(gi_ptr[gi_index]);
+	}
+
+	pMsg->msg_dst = thread_set_sync(pMsg->msg_dst);
+	_sync_client_message_send(pMsg);
+}
+
+static inline void
+_sync_client_message_thread(MSGBODY *pMsg)
+{
+	s8 *dst = thread_name(pMsg->msg_dst);
+	LinkThread *pThread;
+
+	dst = thread_name(pMsg->msg_dst);
+	if(dst == NULL)
 	{
 		SYNCLOG("%lx/%s->%lx/%s:%s get name failed!",
 			pMsg->msg_src, thread_name(pMsg->msg_src),
@@ -124,7 +174,7 @@ _sync_client_message_broadcast(MSGBODY *pMsg)
 		return;
 	}
 
-	pThread = sync_client_data_thread_on_name(dst_thread);
+	pThread = sync_client_data_thread_on_name(dst);
 	if(pThread == NULL)
 	{
 		SYNCLOG("%lx/%s->%lx/%s:%s get pThread failed!",
@@ -134,16 +184,7 @@ _sync_client_message_broadcast(MSGBODY *pMsg)
 		return;
 	}
 
-	for(server_index=0; server_index<SERVER_DATA_MAX; server_index++)
-	{
-		pServer = pThread->pServer[server_index];
-		if(pServer != NULL)
-		{
-			thread_set_remote(pMsg->msg_dst, pThread->thread_index, pServer->server_index);
-
-			_sync_client_message_send(pMsg);
-		}
-	}
+	_sync_client_message_to_thread(pThread, pMsg);
 }
 
 // =====================================================================
@@ -155,12 +196,15 @@ sync_client_message_route(MSGBODY *pMsg)
 	{
 		_sync_client_message_send(pMsg);
 	}
-	else if((pMsg->msg_type == BaseMsgType_Broadcast_thread)
-		|| (pMsg->msg_type == BaseMsgType_Broadcast_remote)
+	else if(pMsg->msg_type == BaseMsgType_Broadcast_thread)
+	{
+		_sync_client_message_thread(pMsg);
+	}
+	else if((pMsg->msg_type == BaseMsgType_Broadcast_remote)
 		|| (pMsg->msg_type == BaseMsgType_Broadcast_total)
 		|| (pMsg->msg_type == BaseMsgType_Broadcast_dismiss))
 	{
-		_sync_client_message_broadcast(pMsg);
+		_sync_client_message_send(pMsg);
 	}
 	else
 	{

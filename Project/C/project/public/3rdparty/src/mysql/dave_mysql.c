@@ -383,17 +383,15 @@ void *
 dave_mysql_creat_client(s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
 {
 	MYSQL *pSql = dave_malloc(sizeof(MYSQL));
+	RetCode ret;
 
 	_mysql_client_init(pSql);
 
-	if(_mysql_connect(pSql, address, port, user, pwd, db_name) != RetCode_OK)
+	ret = _mysql_connect(pSql, address, port, user, pwd, db_name);
+	if(ret != RetCode_OK)
 	{
-		dave_mysql_release_client(pSql); pSql = NULL;
-		return NULL;
-	}
-
-	if(_mysql_select_db(pSql, db_name) != RetCode_OK)
-	{
+		if(ret != RetCode_db_not_find)
+			PARTYABNOR("mysql connect error:%s<%d>", so_mysql_error(pSql), so_mysql_errno(pSql));
 		dave_mysql_release_client(pSql); pSql = NULL;
 		return NULL;
 	}
@@ -410,6 +408,12 @@ dave_mysql_release_client(void *pSql)
 
 		dave_free(pSql);
 	}
+}
+
+RetCode
+dave_mysql_select_db(void *pSql, s8 *db_name)
+{
+	return _mysql_select_db(pSql, db_name);
 }
 
 SqlRet

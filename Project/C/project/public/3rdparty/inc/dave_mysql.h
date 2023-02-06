@@ -16,6 +16,8 @@ void * dave_mysql_creat_client(s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_n
 
 void dave_mysql_release_client(void *pSql);
 
+RetCode dave_mysql_select_db(void *pSql, s8 *db_name);
+
 typedef struct {
 	RetCode ret;
 	void *pJson;

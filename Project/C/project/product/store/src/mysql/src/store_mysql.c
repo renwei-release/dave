@@ -36,27 +36,42 @@ _store_mysql_default_action(StoreMysql *pMysql, s8 *db)
 	ret = dave_mysql_query(pMysql->mysql_client, sql);
 	STDEBUG("ret:%s data:%s", retstr(ret.ret), dave_json_to_string(ret.pJson, NULL));
 	dave_mysql_free_ret(ret);
+
+	dave_mysql_select_db(pMysql->mysql_client, db);
 }
 
 static void
 _store_mysql_init(ub mysql_number, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db)
 {
 	ub mysql_index;
+	StoreMysql *pMysql;
 
 	_mysql_number = mysql_number;
 
 	_pMysql = dave_ralloc(_mysql_number * sizeof(StoreMysql));
 
 	for(mysql_index=0; mysql_index<_mysql_number; mysql_index++)
-	{	
-		_pMysql[mysql_index].mysql_client = dave_mysql_creat_client(address, port, user, pwd, db);
-		if(_pMysql[mysql_index].mysql_client == NULL)
-		{
-			STLOG("%s:%d %s/%s %s creat client failed!", address, port, user, pwd, db);
-			break;
-		}
+	{
+		pMysql = &_pMysql[mysql_index];
 
-		_store_mysql_default_action(&_pMysql[mysql_index], db);
+		pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, db);
+		if(pMysql->mysql_client == NULL)
+		{
+			pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, NULL);
+			if(pMysql->mysql_client == NULL)
+			{
+				STLOG("%s:%d %s/%s %s creat client failed!", address, port, user, pwd, db);
+				break;
+			}
+			else
+			{
+				_store_mysql_default_action(pMysql, db);
+			}
+		}
+		else
+		{
+			dave_mysql_select_db(pMysql->mysql_client, db);
+		}
 	}
 }
 

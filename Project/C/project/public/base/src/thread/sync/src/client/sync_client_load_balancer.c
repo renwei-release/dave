@@ -113,7 +113,15 @@ _sync_client_chose_server(MSGBODY *pMsg)
 {
 	SyncServer *pServer = NULL;
 
-	if(pMsg->msg_type != BaseMsgType_Unicast)
+	if(thread_is_sync(pMsg->msg_dst) == dave_true)
+	{
+		/*
+		 * 来自SYNC服务器的消息，现在仍然需要回到SYNC服务器。
+		 */
+		pServer = sync_client_data_sync_server();
+	}
+	else if((pMsg->msg_type != BaseMsgType_Unicast)
+		&& (pMsg->msg_type != BaseMsgType_Broadcast_thread))
 	{
 		/*
 		 * 广播消息，全部交给SYNC服务器转发。
@@ -130,20 +138,10 @@ _sync_client_chose_server(MSGBODY *pMsg)
 	}
 	else if(thread_is_remote(pMsg->msg_dst) == dave_true)
 	{
-		if(thread_is_sync(pMsg->msg_dst) == dave_true)
-		{
-			/*
-			 * 来自SYNC服务器的消息，现在仍然需要回到SYNC服务器。
-			 */
-			pServer = sync_client_data_sync_server();
-		}
-		else
-		{
-			/*
-			 * 来自LINK的消息。
-			 */
-			pServer = _sync_client_load_link(pMsg);
-		}
+		/*
+		 * 来自LINK的消息。
+		 */
+		pServer = _sync_client_load_link(pMsg);
 	}
 
 	if(pServer == NULL)

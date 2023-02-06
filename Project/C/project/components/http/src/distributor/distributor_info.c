@@ -66,7 +66,9 @@ _distributor_info_auto_close_timer(void *ramkv, s8 *key)
 		return;
 	}
 
-	if((pInfo->listening_seconds_life + AUTO_CLOSE_BASE_TIME) >= pInfo->listening_seconds_time)
+	pInfo->listening_seconds_life += AUTO_CLOSE_BASE_TIME;
+
+	if(pInfo->listening_seconds_life >= pInfo->listening_seconds_time)
 	{
 		HTTPLOG("auto close thread:%s path:%s time:%d/%d receive:%d",
 			pInfo->thread_name, pInfo->path,

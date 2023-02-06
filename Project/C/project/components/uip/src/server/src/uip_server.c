@@ -212,17 +212,18 @@ _uip_server_register_req(ThreadId src, UIPRegisterReq *pReq)
 	{
 		if(pReq->method[method_index][0] != '\0')
 		{
-			method_number ++;
-
 			ret = uip_server_register(src, pReq->method[method_index]);
 			if(ret != RetCode_OK)
 			{
 				UIPLOG("invalid ret:%s on method:%s", retstr(ret), pReq->method[method_index]);
 				pRsp->ret = ret;
 			}
+			else
+			{
+				method_number ++;
+				dave_strcpy(pRsp->method[method_index], pReq->method[method_index], DAVE_UIP_METHOD_MAX_LEN);
+			}
 		}
-
-		dave_strcpy(pRsp->method[method_index], pReq->method[method_index], DAVE_UIP_METHOD_MAX_LEN);
 	}
 	pRsp->ptr = pReq->ptr;
 

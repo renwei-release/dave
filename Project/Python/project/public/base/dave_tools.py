@@ -43,9 +43,22 @@ def byte_to_mbuf(byte_data):
     return mbuf_data
 
 
+def mbuf_to_str(mbuf_data):
+    return mbuf_to_byte(mbuf_data).decode()
+
+
+def str_to_mbuf(str_data):
+    return byte_to_mbuf(str_data)
+
+
 def dict_to_mbuf(dict_object):
     json_str = json.dumps(dict_object, indent=4)
     return byte_to_mbuf(json_str)
+
+
+def mbuf_to_dict(mbuf_data):
+    str_data = mbuf_to_str(mbuf_data)
+    return json.loads(str_data, strict=False)
 
 
 def obj_to_obj(dst_obj, src_obj):
