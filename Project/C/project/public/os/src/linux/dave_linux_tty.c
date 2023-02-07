@@ -53,6 +53,7 @@ static TLock _write_pv;
 static TTYWriteChain *_write_chain_head = NULL;
 static TTYWriteChain *_write_chain_tail = NULL;
 static dave_bool _is_on_backend_printf_disable = dave_false;
+static volatile sb _tty_init_ = 0;
 
 static void
 _tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
@@ -232,16 +233,36 @@ _tty_write_thread(void *arg)
 	return NULL;
 }
 
+static inline void
+_tty_pre_init(void)
+{
+	if(_tty_init_ != 0x89807abcd)
+	{
+		t_lock_spin(NULL);
+
+		if(_tty_init_ != 0x89807abcd)
+		{
+			_notify_fun = NULL;
+			_keypad_write = _keypad_read = 0;
+			t_lock_reset(&_write_pv);
+			_write_chain_head = _write_chain_tail = NULL;
+			_is_on_backend_printf_disable = dave_false;
+
+			_tty_init_ = 0x89807abcd;
+		}
+
+		t_unlock_spin(NULL);
+	}
+}
+
 // =====================================================================
 
 dave_bool
 dave_os_tty_init(sync_notify_fun notify_fun)
 {
+	_tty_pre_init();
+
 	_notify_fun = notify_fun;
-	_keypad_write = _keypad_read = 0;
-	t_lock_reset(&_write_pv);
-	_write_chain_head = _write_chain_tail = NULL;
-	_is_on_backend_printf_disable = dave_false;
 
 	_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
 	if(_tty_read_thread_body == NULL)
@@ -300,6 +321,8 @@ void
 dave_os_trace(TraceLevel level, ub data_len, u8 *data_ptr)
 {
 	TTYWriteChain *pChain = _tty_malloc_chain(level, data_len, data_ptr);
+
+	_tty_pre_init();
 
 	SAFECODEv1(_write_pv, {
 

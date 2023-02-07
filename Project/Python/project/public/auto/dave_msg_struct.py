@@ -182,7 +182,7 @@ class CFGRemoteUpdate (Structure):
 	_fields_ = [
 		("put_flag", c_char),
 		("cfg_name", c_char * 1024),
-		("cfg_value", c_char * 8196),
+		("cfg_value", c_char * 1048576),
 		("cfg_mbuf_name", POINTER(MBUF)),
 		("cfg_mbuf_value", POINTER(MBUF)),
 		("ttl", c_longlong),

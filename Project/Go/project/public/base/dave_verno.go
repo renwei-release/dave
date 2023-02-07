@@ -11,12 +11,12 @@ import (
 	"dave/public/tools"
 )
 
-var VERSION_PRODUCT = "IO"
+var VERSION_PRODUCT = "LOG"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "11"
 var VERSION_REV = "12"
-var VERSION_DATE_TIME = "20230206173046"
+var VERSION_DATE_TIME = "20230207134615"
 var VERSION_LEVEL = "Alpha"
 
 // =====================================================================

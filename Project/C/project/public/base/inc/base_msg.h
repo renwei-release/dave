@@ -271,7 +271,7 @@ typedef struct {
 typedef struct {
 	dave_bool put_flag;
 	s8 cfg_name[1024];
-	s8 cfg_value[8196];
+	s8 cfg_value[1048576];
 	MBUF *cfg_mbuf_name;
 	MBUF *cfg_mbuf_value;
 	sb ttl;

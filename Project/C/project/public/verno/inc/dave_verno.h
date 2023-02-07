@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "IO"
+#define VERSION_PRODUCT "LOG"
 
 #ifdef __DAVE_LINUX__
  #define VERSION_MISC "linux"
@@ -32,7 +32,7 @@
 #endif
 #define VERSION_REV "12"
 
-#define VERSION_DATE_TIME "20230206173020"
+#define VERSION_DATE_TIME "20230207134549"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"

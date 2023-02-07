@@ -159,7 +159,7 @@ type BDataLogRsp struct {
 type CFGRemoteUpdate struct {
 	Put_flag int8
 	Cfg_name [1024] byte
-	Cfg_value [8196] byte
+	Cfg_value [1048576] byte
 	Cfg_mbuf_name *MBUF
 	Cfg_mbuf_value *MBUF
 	Ttl int64

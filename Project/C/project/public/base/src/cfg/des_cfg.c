@@ -652,18 +652,21 @@ __base_des_cfg_get(s8 *dir, s8 *name, u8 *value_ptr, ub *value_len)
 static inline void
 _base_des_cfg_booting(void)
 {
-	t_lock_spin(NULL);
-
 	if(_config_init_ != 0x89807abcd)
 	{
-		_config_init_ = 0x89807abcd;
+		t_lock_spin(NULL);
 
-		t_lock_reset(&_config_option_pv);
+		if(_config_init_ != 0x89807abcd)
+		{
+			t_lock_reset(&_config_option_pv);
 
-		_base_des_cfg_reset_all_buffer();
+			_base_des_cfg_reset_all_buffer();
+
+			_config_init_ = 0x89807abcd;
+		}
+
+		t_unlock_spin(NULL);
 	}
-
-	t_unlock_spin(NULL);
 }
 
 static RetCode
