@@ -25,6 +25,7 @@ build_static_lib()
    cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
 
    obj_list=$(find `pwd`/../../../project/public \
+      ! -path "`pwd`/../../../project/public/verno/*" \
       ! -path "`pwd`/../../../project/public/tools/src/t_auto/*" \
       ! -path "`pwd`/../../../project/public/tools/src/t_rpc/*" \
       -name '*.o')
