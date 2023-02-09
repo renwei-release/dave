@@ -44,7 +44,7 @@ def rcfg_set(key, value, ttl=0):
 
 def rcfg_get(key, default_value=None):
     key = bytes(key, encoding="utf8")
-    value = bytes(2048)
+    value = bytes(1024 * 10)
     davelib.dave_dll_cfg_get.restype = c_int
     ret = davelib.dave_dll_cfg_remote_get(c_char_p(key), c_char_p(value), c_int(len(value)))
     if ret < 0:

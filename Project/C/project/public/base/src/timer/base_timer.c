@@ -13,7 +13,7 @@
 #include "base_tools.h"
 #include "timer_log.h"
 
-#define BASE_TIMER_MAX (2048)
+#define BASE_TIMER_MAX (4096)
 #define CREAT_SW_TIMER_MIN_VALUE (1000)						// ms
 #define CREAT_SW_TIMER_MAX_VALUE (1000*60*60*24*7UL)		// ms
 

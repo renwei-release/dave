@@ -103,10 +103,13 @@ dave_dll_cfg_remote_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len)
 	}
 }
 
-void
+int
 dave_dll_cfg_remote_del(char *cfg_name)
 {
-	rcfg_del(cfg_name);
+	if(rcfg_del(cfg_name) == dave_false)
+		return -1;
+	else
+		return 0;
 }
 
 void

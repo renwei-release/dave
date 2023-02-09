@@ -16,7 +16,7 @@ dave_bool base_remote_cfg_internal_del(s8 *name);
 
 RetCode base_remote_cfg_set(s8 *name, s8 *value, sb ttl);
 sb base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len);
-void base_remote_cfg_del(s8 *name);
+dave_bool base_remote_cfg_del(s8 *name);
 sb base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len);
 
 #endif

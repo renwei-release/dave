@@ -22,7 +22,7 @@ typedef struct {
 
 static void *_remote_cfg_kv = NULL;
 
-static void
+static dave_bool
 _base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
 {
 	CFGRemoteUpdate *pUpdate = thread_msg(pUpdate);
@@ -34,7 +34,7 @@ _base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
 	pUpdate->cfg_mbuf_value = NULL;
 	pUpdate->ttl = ttl;
 
-	name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_UPDATE, pUpdate);
+	return name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_UPDATE, pUpdate);
 }
 
 static void
@@ -114,17 +114,18 @@ base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 	return kv_inq_key_value(_remote_cfg_kv, name, value_ptr, value_len);
 }
 
-void
+dave_bool
 base_remote_cfg_del(s8 *name)
 {
 	if(name == NULL)
 	{
-		return;
+		CFGLOG("name is NULL!");
+		return dave_false;
 	}
 
 	base_timer_kill(name);
 
-	_base_remote_update(dave_false, name, NULL, -1);
+	return _base_remote_update(dave_false, name, NULL, -1);
 }
 
 sb

@@ -304,7 +304,11 @@ __t_rpc_ver3_unzip_char_d__(char *unzip_data, ub unzip_h_len, ub unzip_l_len, vo
 			}
 
 			dave_memcpy(&unzip_data[unzip_index * unzip_l_len], str_data, str_len);
-			(&unzip_data[unzip_index * unzip_l_len])[str_len] = '\0';
+			// for UTF-8 decode.
+			while(str_len < unzip_l_len)
+			{
+				(&unzip_data[unzip_index * unzip_l_len])[str_len ++] = '\0';
+			}
 		}
 		else
 		{

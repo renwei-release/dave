@@ -19,12 +19,15 @@
 	dave_strcpy(pReq->version, dave_verno(), sizeof(pReq->version));\
 	dave_strcpy(pReq->sub_flag, sub, sizeof(pReq->sub_flag));\
 	t_time_get_date(&(pReq->local_date));\
+\
+	dave_strcpy(pReq->fun, __func__, sizeof(pReq->fun));\
+	pReq->line = __LINE__;\
+\
 	dave_os_load_host_name(pReq->host_name, sizeof(pReq->host_name));\
 	dave_os_load_mac(pReq->host_mac);\
 	dave_os_load_ip(pReq->host_ipv4, pReq->host_ipv6);\
 \
-	dave_strcpy(pReq->fun, __func__, sizeof(pReq->fun));\
-	pReq->line = __LINE__;\
+	pReq->ptr = pReq;\
 }
 
 /*
@@ -37,7 +40,6 @@
 	__BDATABASE__(sub, pReq)\
 	pReq->log_data = dave_mmalloc(1024 * 32);\
 	pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
-	pReq->ptr = pReq;\
 \
 	name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
 }
@@ -55,7 +57,6 @@
 \
 		__BDATABASE__(sub, pReq)\
 		pReq->log_data = dave_json_to_mbuf(json);\
-		pReq->ptr = pReq;\
 \
 		name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
 \

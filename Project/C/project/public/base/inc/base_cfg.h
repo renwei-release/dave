@@ -20,7 +20,7 @@ dave_bool base_cfg_local_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len);
 s8 * base_cfg_local_get_by_default(s8 *dir, s8 *name, s8 *value_ptr, ub value_len, s8 *default_value);
 RetCode base_cfg_remote_set(s8 *name, s8 *value, sb ttl);
 sb base_cfg_remote_get(s8 *name, s8 *value_ptr, ub value_len);
-void base_cfg_remote_del(s8 *name);
+dave_bool base_cfg_remote_del(s8 *name);
 sb base_cfg_remote_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len);
 dave_bool base_cfg_remote_internal_add(s8 *name, s8 *value);
 dave_bool base_cfg_remote_internal_del(s8 *name);

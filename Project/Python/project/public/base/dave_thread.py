@@ -65,7 +65,7 @@ def sync_msg(dst, req_msg_id, req_class_instance, rsp_msg_id, rsp_class_instance
         return True
 
 
-def name_co(dst, req_id, pReq, rsp_id, rsp_class):
+def write_co(dst, req_id, pReq, rsp_id, rsp_class):
     __func__, __LINE__ = t_sys_myline(2)
 
     if isinstance(dst, c_char) or isinstance(dst, c_char_p) or isinstance(dst, str) or isinstance(dst, bytes):

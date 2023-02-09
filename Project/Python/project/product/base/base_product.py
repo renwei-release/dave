@@ -6,6 +6,18 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 from public import *
+from .base_debug import *
+
+
+def fun_MSGID_DEBUG_REQ(src_name, src_id, msg_len, msg_body):
+    pReq = struct_copy(DebugReq, msg_body, msg_len)
+
+    pRsp = thread_msg(DebugRsp)
+    pRsp.contents.msg = bytes(base_debug(str(pReq.msg, encoding = "utf-8")), encoding='utf8')
+    pRsp.contents.ptr = pReq.ptr
+
+    write_msg(src_id, MSGID_DEBUG_RSP, pRsp)
+    return
 
 
 def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
@@ -24,12 +36,14 @@ def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
 
 
 def dave_product_init():
+    dave_system_function_table_add(MSGID_DEBUG_REQ, fun_MSGID_DEBUG_REQ)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_REMOVE, fun_MSGID_REMOTE_THREAD_ID_REMOVE)
     return
 
 
 def dave_product_exit():
+    dave_system_function_table_del(MSGID_DEBUG_REQ)
     dave_system_function_table_del(MSGID_REMOTE_THREAD_ID_READY)
     dave_system_function_table_del(MSGID_REMOTE_THREAD_ID_REMOVE)
     return

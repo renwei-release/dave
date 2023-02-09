@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
+
 class t_print_progress_bar():
     self_percentage = 0
     self_total_process = 0

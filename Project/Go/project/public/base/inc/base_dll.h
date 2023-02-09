@@ -71,7 +71,7 @@ API int dave_dll_cfg_remote_set(char *cfg_name, char *cfg_value, int ttl);
 
 API int dave_dll_cfg_remote_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len);
 
-API void dave_dll_cfg_remote_del(char *cfg_name);
+API int dave_dll_cfg_remote_del(char *cfg_name);
 
 API void dave_dll_poweroff(void);
 

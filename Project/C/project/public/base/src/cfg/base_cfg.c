@@ -191,10 +191,10 @@ base_cfg_remote_get(s8 *name, s8 *value_ptr, ub value_len)
 	return base_remote_cfg_get(name, value_ptr, value_len);
 }
 
-void
+dave_bool
 base_cfg_remote_del(s8 *name)
 {
-	base_remote_cfg_del(name);
+	return base_remote_cfg_del(name);
 }
 
 sb

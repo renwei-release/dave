@@ -21,6 +21,8 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
+#define NTP_UPDATE_MIN_INTERVAL 3
+
 static void
 _sync_client_ntp(DateStruct *remote_date, DateStruct *local_date)
 {
@@ -36,12 +38,12 @@ _sync_client_ntp(DateStruct *remote_date, DateStruct *local_date)
 	{
 		if(remote_date->second >= local_date->second)
 		{
-			if((remote_date->second - local_date->second) >= 2)
+			if((remote_date->second - local_date->second) >= NTP_UPDATE_MIN_INTERVAL)
 				update_flag = dave_true;
 		}
 		else
 		{
-			if((local_date->second - remote_date->second) >= 2)
+			if((local_date->second - remote_date->second) >= NTP_UPDATE_MIN_INTERVAL)
 				update_flag = dave_true;
 		}
 
