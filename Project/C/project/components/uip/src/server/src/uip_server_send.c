@@ -8,6 +8,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
+#include "dave_bdata.h"
 #include "uip_server_register.h"
 #include "uip_server_http.h"
 #include "uip_server_monitor.h"
@@ -15,22 +16,40 @@
 #include "uip_tools.h"
 #include "uip_log.h"
 
-#ifdef LEVEL_PRODUCT_alpha
-// #define WRITE_STACK_MESSAGE_ENABLE
-#endif
-
-#ifdef WRITE_STACK_MESSAGE_ENABLE
-
 static void
-_uip_server_write_stack(UIPStack *pRecvStack, UIPStack *pSendStack)
+_uip_server_record(UIPStack *pRecvStack, UIPStack *pSendStack)
 {
-	UIPLOG("method:%s", pRecvStack->head.method);
+	void *recv = uip_encode(pRecvStack);
+	void *send = uip_encode(pSendStack);
+	void *json = dave_json_malloc();
 
-	uip_write_stack("recv", pRecvStack);
-	uip_write_stack("send", pSendStack);
+	dave_json_add_object(json, "recv", recv);
+	dave_json_add_object(json, "send", send);
+
+	BDATAJSON("UIP", json);
 }
 
-#endif
+static UIPStack *
+_uip_server_sendstack(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
+{
+	UIPStack *pSendStack;
+
+	pSendStack = uip_clone(pRecvStack);
+	pSendStack->head.req_flag = dave_false;
+	pSendStack->head.rsp_code = pRsp->ret;
+	t_time_get_date(&(pSendStack->head.date));
+
+	if(pRsp->data != NULL)
+	{
+		pSendStack->body.pJson = dave_string_to_json((s8 *)(pRsp->data->payload), (sb)(pRsp->data->len));
+	}
+	else
+	{
+		pSendStack->body.pJson = NULL;
+	}
+
+	return pSendStack;
+}
 
 // =====================================================================
 
@@ -45,31 +64,10 @@ uip_server_send(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
 		UIPABNOR("method:%s/%s mismatch!", pRecvStack->head.method, pRsp->method);
 	}
 
-	pSendStack = uip_clone(pRecvStack);
-
-	pSendStack->head.req_flag = dave_false;
-	pSendStack->head.rsp_code = pRsp->ret;
-	dave_strcpy(pSendStack->head.method, pRecvStack->head.method, DAVE_UIP_METHOD_MAX_LEN);
-	t_time_get_date(&(pSendStack->head.date));
-	pSendStack->head.serial = pRecvStack->head.serial;
-
-	if(pRsp->data != NULL)
-	{
-		pSendStack->body.pJson = dave_string_to_json((s8 *)(pRsp->data->payload), (sb)(pRsp->data->len));
-	}
-	else
-	{
-		pSendStack->body.pJson = NULL;
-	}
-
-	pSendStack->src = pRecvStack->src;
-	pSendStack->ptr = pRecvStack->ptr;
-
+	pSendStack = _uip_server_sendstack(pRecvStack, pRsp);
 	pJson = uip_encode(pSendStack);
 
-#ifdef WRITE_STACK_MESSAGE_ENABLE
-	_uip_server_write_stack(pRecvStack, pSendStack);
-#endif
+	_uip_server_record(pRecvStack, pSendStack);
 
 	if(pSendStack->body.pJson != NULL)
 	{

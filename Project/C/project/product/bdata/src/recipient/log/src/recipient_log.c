@@ -12,8 +12,9 @@
 #include "dave_base.h"
 #include "recorder_file.h"
 #include "bdata_msg.h"
+#include "bdata_log.h"
 
-static void
+static inline void
 _recipient_log_data(void *pNote, BDataLogReq *pReq)
 {
 	s8 date_str[64], mac_str[64], ipv4_str[32], ipv6_str[64], line_str[32];
@@ -53,15 +54,43 @@ _recipient_log_data(void *pNote, BDataLogReq *pReq)
 	recorder_file_str(pNote, "log", dave_mptr(pReq->log_data), dave_mlen(pReq->log_data));
 }
 
-static RetCode
-_recipient_log(BDataLogReq *pReq)
+static inline s8 *
+_recipient_log_file(s8 *file_ptr, ub file_len, BDataLogReq *pReq)
 {
 	s8 product[DAVE_VERNO_STR_LEN];
+
+	if(pReq->sub_flag[0] == '\0')
+	{
+		dave_verno_product(pReq->version, file_ptr, file_len);
+	}
+	else
+	{
+		dave_verno_product(pReq->version, product, sizeof(product));
+		dave_snprintf(file_ptr, file_len, "%s/%s", product, pReq->sub_flag);
+	}
+
+	return file_ptr;
+}
+
+static inline RetCode
+_recipient_log(BDataLogReq *pReq)
+{
+	s8 file_name[1024];
 	void *pNote;
 
-	pNote = recorder_file_open(dave_verno_product(pReq->version, product, sizeof(product)));
+	pNote = recorder_file_open(_recipient_log_file(file_name, sizeof(file_name), pReq));
 	if(pNote == NULL)
+	{
+		BDLOG("version:%s <%s:%d> store %s failed!",
+			pReq->version, pReq->fun, pReq->line,
+			file_name);
 		return RetCode_store_data_failed;
+	}
+
+	BDDEBUG("pNote:%lx file_name:%s sub_flag:%s version:%s <%s:%d>",
+		pNote,
+		file_name, pReq->sub_flag,
+		pReq->version, pReq->fun, pReq->line);
 
 	_recipient_log_data(pNote, pReq);
 

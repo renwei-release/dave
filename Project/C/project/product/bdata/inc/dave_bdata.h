@@ -10,6 +10,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_os.h"
 #include "bdata_msg.h"
 #undef vsnprintf
 #include <stdio.h>

@@ -14,5 +14,5 @@ def dave_msg_process(msg):
    if fun != None:
       fun(msg.contents.msg_src_name, msg.contents.msg_src, msg.contents.msg_len, msg.contents.msg_body)
    else:
-      print(f"unprocess msg, {msg.contents.msg_src_name}->{msg.contents.msg_dst_name}:{msg.contents.msg_id}")
+      print(f"unprocess msg, {msg.contents.msg_src_name}->{msg.contents.msg_dst_name}:{t_audo_RPCMSG_str(msg.contents.msg_id)}")
    return
