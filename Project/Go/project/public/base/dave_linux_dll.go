@@ -1,5 +1,4 @@
 //go:build linux
-// +build linux
 
 package base
 
@@ -39,8 +38,6 @@ type DllMsgBody struct {
 	msg_check    uint64
 	msg_body     unsafe.Pointer
 }
-
-var pre_init = Dave_go_system_pre_init()
 
 var _product_init_fun func()
 var _product_exit_fun func()

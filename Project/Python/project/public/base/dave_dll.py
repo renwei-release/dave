@@ -140,6 +140,3 @@ def dave_python_exit():
 
 def dave_dll():
    return davelib
-
-
-dave_python_system_pre_init()

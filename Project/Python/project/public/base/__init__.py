@@ -9,6 +9,7 @@ from .dave_memory import *
 from .dave_tools import *
 from .dave_cfg import *
 from .dave_poweroff import *
+from .dave_pre import *
 from .dave_msg_function import *
 from .dave_system_function import *
 from ..auto import *

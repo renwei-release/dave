@@ -343,12 +343,12 @@ dave_os_load_host_name(s8 *hostname, ub hostname_len)
 ub
 dave_os_cpu_process_number(void)
 {
-	ub cpu_number = (ub)get_nprocs_conf();
+	ub cpu_number = (ub)get_nprocs();
 
 	if(cpu_number > 128)
 	{
-		OSABNOR("invalid cpu_number:%d", cpu_number);
-		cpu_number = 128;
+		OSABNOR("invalid cpu_number:%ld", cpu_number);
+		cpu_number = 64;
 	}
 
 	return cpu_number;
