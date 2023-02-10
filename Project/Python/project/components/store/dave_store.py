@@ -15,20 +15,19 @@ STORE_THREAD_NAME=b"store"
 
 
 def STORESQL(*sql: object):
-    pReq = thread_msg(StoreMysqlReq)
-
     sql = str(sql[0])
 
+    pReq = thread_msg(StoreMysqlReq)
     pReq.contents.sql = str_to_mbuf(sql)
     pReq.contents.ptr = None
 
     pRsp = write_co(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
     if pRsp.ret != RetCode_OK:
         DAVELOG(f"ret:{pRsp.ret}/{t_auto_RetCode_str(pRsp.ret)}, sql:{sql} rsp:{mbuf_to_dict(pRsp.data)}")
-        return False, None
+        return pRsp.ret, None
 
     sql_ret = mbuf_to_dict(pRsp.data)
 
     dave_mfree(pRsp.data)
 
-    return True, sql_ret
+    return RetCode_OK, sql_ret

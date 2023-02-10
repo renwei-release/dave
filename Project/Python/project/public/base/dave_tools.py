@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import json
+import traceback
 from ctypes import *
 from string import *
 from .dave_log import *
@@ -29,13 +30,18 @@ def mbuf_to_byte(mbuf_data):
     try:
         hasattr(mbuf_data, "contents")
     except:
+        traceback.print_exc()
         return None
+
     ByteArr = c_char * mbuf_data.contents.len
     byte_arr = ByteArr(*mbuf_data.contents.payload[:mbuf_data.contents.len])
     return byte_arr.raw
 
 
 def byte_to_mbuf(byte_data):
+    if byte_data == None:
+        return None
+
     if isinstance(byte_data, str):
         byte_data = byte_data.encode("utf-8")
     mbuf_data = dave_mmalloc(len(byte_data))
@@ -44,6 +50,8 @@ def byte_to_mbuf(byte_data):
 
 
 def mbuf_to_str(mbuf_data):
+    if mbuf_data == None:
+        return None
     return mbuf_to_byte(mbuf_data).decode()
 
 
@@ -57,6 +65,13 @@ def dict_to_mbuf(dict_object):
 
 
 def mbuf_to_dict(mbuf_data):
+    if mbuf_data == None:
+        return None
+    try:
+        hasattr(mbuf_data, "contents")
+    except:
+        return None
+
     str_data = mbuf_to_str(mbuf_data)
     return json.loads(str_data, strict=False)
 

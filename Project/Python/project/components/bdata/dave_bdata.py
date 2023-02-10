@@ -54,18 +54,16 @@ def __BDATABASE__(sub, pReq):
 
 
 def BDATALOG(sub, *msg: object):
+    msg = str(msg[0])
+
     pReq = thread_msg(BDataLogReq)
-
     __BDATABASE__(sub, pReq)
-
-    log_data = str(msg[0])
-
-    pReq.contents.log_data = str_to_mbuf(log_data)
+    pReq.contents.log_data = str_to_mbuf(msg)
 
     pRsp = write_co(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq, BDATA_LOG_RSP, BDataLogRsp)
 
     if pRsp.ret != RetCode_OK:
-        DAVELOG(f"ret:{t_auto_RetCode_str(pRsp.ret)}")
+        DAVELOG(f"ret:{t_auto_RetCode_str(pRsp.ret)} msg:{msg}")
         return False
 
     return True

@@ -44,7 +44,7 @@ class DateStruct (Structure):
 class MCardTime (Structure):
 	_fields_ = [
 		("write_time", DateStruct),
-		("failure_type", c_ulonglong),
+		("failure_type", c_longlong),
 		("failure_time", DateStruct),
 ]
 
@@ -62,8 +62,8 @@ class MBUF (Structure):
 #* for None message *#
 class MCardVerText (Structure):
 	_fields_ = [
-		("version", c_ulonglong),
-		("type", c_ulonglong),
+		("version", c_longlong),
+		("type", c_longlong),
 		("user", c_char * DAVE_USER_NAME_LEN),
 		("location", MCardLocation),
 		("time", MCardTime),
@@ -74,7 +74,7 @@ class MCardVerText (Structure):
 class MCardPOI (Structure):
 	_fields_ = [
 		("location", MCardLocation),
-		("type", c_ulonglong),
+		("type", c_longlong),
 		("name", c_char * DAVE_POI_NAME_MAX),
 		("phone_number", c_char * DAVE_MSISDN_LEN),
 		("address", c_char * DAVE_POI_ADDRESS_MAX),
@@ -84,9 +84,9 @@ class MCardPOI (Structure):
 #* for None message *#
 class MCardVerMedia (Structure):
 	_fields_ = [
-		("version", c_ulonglong),
-		("type", c_ulonglong),
-		("source", c_ulonglong),
+		("version", c_longlong),
+		("type", c_longlong),
+		("source", c_longlong),
 		("poi", MCardPOI),
 		("author_name", c_char * DAVE_USER_NAME_LEN),
 		("author_url", c_char * DAVE_URL_LEN),
@@ -100,8 +100,8 @@ class MCardVerMedia (Structure):
 #* for None message *#
 class MCardContent (Structure):
 	_fields_ = [
-		("id", c_ulonglong),
-		("content_type", c_ulonglong),
+		("id", c_longlong),
+		("content_type", c_longlong),
 		("content_language", c_int),
 		("pContent", POINTER(MBUF)),
 ]
@@ -109,8 +109,8 @@ class MCardContent (Structure):
 #* for None message *#
 class MCardVerTalk (Structure):
 	_fields_ = [
-		("version", c_ulonglong),
-		("type", c_ulonglong),
+		("version", c_longlong),
+		("type", c_longlong),
 		("channel", c_char * DAVE_NORMAL_NAME_LEN),
 		("uuid", c_char * DAVE_UUID_LEN),
 		("app_id", c_ulonglong),
@@ -168,7 +168,7 @@ class UserInformation (Structure):
 #* for None message *#
 class MCardCommentHeadData (Structure):
 	_fields_ = [
-		("type", c_ulonglong),
+		("type", c_longlong),
 		("post_id", c_char * DAVE_KEY_LEN_MAX),
 		("reply_comment_id", c_char * DAVE_KEY_LEN_MAX),
 		("src_uuid", c_char * DAVE_UUID_LEN),
@@ -193,7 +193,7 @@ class MCardCommentHead (Structure):
 #* for None message *#
 class MCardVerComment (Structure):
 	_fields_ = [
-		("version", c_ulonglong),
+		("version", c_longlong),
 		("head", MCardCommentHead),
 		("content", MCardContent),
 ]
@@ -213,7 +213,7 @@ class CVRectangle (Structure):
 class CVModelResult (Structure):
 	_fields_ = [
 		("search_opt", c_int),
-		("content_type", c_ulonglong),
+		("content_type", c_longlong),
 		("language_code", c_int),
 		("image_local_path", c_char * DAVE_PATH_LEN),
 		("image_url_path", c_char * DAVE_PATH_LEN),
@@ -280,7 +280,7 @@ class GPSLocation (Structure):
 #* for None message *#
 class MCard (Structure):
 	_fields_ = [
-		("version", c_ulonglong),
+		("version", c_longlong),
 		("text", MCardVerText),
 		("media", MCardVerMedia),
 		("talk", MCardVerTalk),

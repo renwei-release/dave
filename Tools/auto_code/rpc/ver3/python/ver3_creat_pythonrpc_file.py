@@ -20,13 +20,13 @@ def _c_enum_to_python_type(enum_value_array):
         if (value != '') and (is_digital_string(value) == True):
             if '0x' in value:
                 if int(enum_value_array[key], 16) > 4294967295:
-                    return 'c_ulonglong'
+                    return 'c_longlong'
             elif '0X' in value:
                 if int(value, 16) > 4294967295:
-                    return 'c_ulonglong'
+                    return 'c_longlong'
             else:
                 if int(value) > 4294967295:
-                    return 'c_ulonglong'            
+                    return 'c_longlong'            
     return 'c_int'
 
 

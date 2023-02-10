@@ -28,7 +28,7 @@ class AIXMsgAestheticsReq (Structure):
 #* for AIXMSG_AESTHETICS_RSP message *#
 class AIXMsgAestheticsRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("score", c_float),
 		("ptr", POINTER(c_char)),
 ]
@@ -43,7 +43,7 @@ class AIXMsgImageClassificationReq (Structure):
 #* for AIXMSG_IMAGE_CLASSIFICATION_RSP message *#
 class AIXMsgImageClassificationRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("label", c_ulonglong),
 		("score", c_float),
 		("ptr", POINTER(c_char)),
@@ -60,7 +60,7 @@ class AppMsgFunctionRegReq (Structure):
 #* for APPMSG_FUNCTION_REGISTER_RSP message *#
 class AppMsgFunctionRegRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("thread_name", c_char * DAVE_THREAD_NAME_LEN),
 		("function_id", c_ulonglong),
 		("ptr", POINTER(c_char)),
@@ -77,7 +77,7 @@ class AppMsgFunctionUnRegReq (Structure):
 #* for APPMSG_FUNCTION_UNREGISTER_RSP message *#
 class AppMsgFunctionUnRegRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("thread_name", c_char * DAVE_THREAD_NAME_LEN),
 		("function_id", c_ulonglong),
 		("ptr", POINTER(c_char)),
@@ -94,7 +94,7 @@ class AppMsgMCardReq (Structure):
 #* for APPMSG_MCARD_RSP message *#
 class AppMsgMCardRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("mcard", MCard),
 		("ptr", POINTER(c_char)),
 ]
@@ -110,7 +110,7 @@ class AppMsgTalkMCardReq (Structure):
 #* for APPMSG_TALK_MCARD_RSP message *#
 class AppMsgTalkMCardRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("mcard", MCard),
 		("ptr", POINTER(c_char)),
 ]
@@ -127,7 +127,7 @@ class BBSMsgAddCommentReq (Structure):
 #* for BBSMSG_ADD_COMMENT_RSP message *#
 class BBSMsgAddCommentRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -144,7 +144,7 @@ class BBSMsgInqCommentReq (Structure):
 #* for BBSMSG_INQ_COMMENT_RSP message *#
 class BBSMsgInqCommentRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("total_page_number", c_ulonglong),
 		("page_id", c_ulonglong),
 		("page_array_number", c_ulonglong),
@@ -173,7 +173,7 @@ class BDataLogReq (Structure):
 #* for BDATA_LOG_RSP message *#
 class BDataLogRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -207,7 +207,7 @@ class CVMsgFeaturesDetectedReq (Structure):
 #* for CVMSG_FEATURES_DETECTED_RSP message *#
 class CVMsgFeaturesDetectedRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("image_path", c_char * DAVE_PATH_LEN),
 		("ptr", POINTER(c_char)),
 ]
@@ -215,7 +215,7 @@ class CVMsgFeaturesDetectedRsp (Structure):
 #* for CVMSG_IMAGE_SEARCH_REQ message *#
 class CVMsgImageSearchReq (Structure):
 	_fields_ = [
-		("content_type", c_ulonglong),
+		("content_type", c_longlong),
 		("language_code", c_int),
 		("image_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -224,7 +224,7 @@ class CVMsgImageSearchReq (Structure):
 #* for CVMSG_IMAGE_SEARCH_RSP message *#
 class CVMsgImageSearchRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("cv_result", CVResult),
 		("ptr", POINTER(c_char)),
 ]
@@ -232,7 +232,7 @@ class CVMsgImageSearchRsp (Structure):
 #* for CVMSG_PAINTING_AESTHETICS_REQ message *#
 class CVMsgPaintingAestheticsReq (Structure):
 	_fields_ = [
-		("content_type", c_ulonglong),
+		("content_type", c_longlong),
 		("language_code", c_int),
 		("image_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -241,7 +241,7 @@ class CVMsgPaintingAestheticsReq (Structure):
 #* for CVMSG_PAINTING_AESTHETICS_RSP message *#
 class CVMsgPaintingAestheticsRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("cv_result", CVResult),
 		("ptr", POINTER(c_char)),
 ]
@@ -249,7 +249,7 @@ class CVMsgPaintingAestheticsRsp (Structure):
 #* for CVMSG_SCULPTURES_SEARCH_REQ message *#
 class CVMsgSculpturesSearchReq (Structure):
 	_fields_ = [
-		("content_type", c_ulonglong),
+		("content_type", c_longlong),
 		("language_code", c_int),
 		("image_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -258,7 +258,7 @@ class CVMsgSculpturesSearchReq (Structure):
 #* for CVMSG_SCULPTURES_SEARCH_RSP message *#
 class CVMsgSculpturesSearchRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("cv_result", CVResult),
 		("ptr", POINTER(c_char)),
 ]
@@ -298,7 +298,7 @@ class DBHybridAddListReq (Structure):
 #* for DBMSG_HYBRID_ADD_LIST_RSP message *#
 class DBHybridAddListRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("table", c_char * DAVE_NORMAL_NAME_LEN),
 		("key", c_char * DAVE_KEY_LEN_MAX),
 		("ptr", POINTER(c_char)),
@@ -318,7 +318,7 @@ class DBHybridInqListReq (Structure):
 #* for DBMSG_HYBRID_INQ_LIST_RSP message *#
 class DBHybridInqListRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("direct", c_char),
 		("table", c_char * DAVE_NORMAL_NAME_LEN),
 		("key", c_char * DAVE_KEY_LEN_MAX),
@@ -343,7 +343,7 @@ class DBNosqlAddTalkReq (Structure):
 #* for DBMSG_NOSQL_ADD_TALK_RSP message *#
 class DBNosqlAddTalkRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -359,7 +359,7 @@ class DBRedisDelTableReq (Structure):
 class DBRedisDelTableRsp (Structure):
 	_fields_ = [
 		("req_type", c_int),
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("table_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("ptr", POINTER(c_char)),
 ]
@@ -378,7 +378,7 @@ class DBSysAddImageFeatureReq (Structure):
 #* for DBMSG_SYS_ADD_IMAGE_FEATURE_RSP message *#
 class DBSysAddImageFeatureRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("table_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("image_id", c_char * DAVE_SHA1_IMAGE_ID),
 		("ptr", POINTER(c_char)),
@@ -394,7 +394,7 @@ class DBSysAddWeiChatReq (Structure):
 #* for DBMSG_SYS_ADD_WEICHAT_RSP message *#
 class DBSysAddWeiChatRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -409,7 +409,7 @@ class DBSysInqChannelReq (Structure):
 #* for DBMSG_SYS_INQ_CHANNEL_RSP message *#
 class DBSysInqChannelRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("valid_flag", c_char),
 		("db_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("channel_name", c_char * DAVE_NORMAL_NAME_LEN),
@@ -436,7 +436,7 @@ class DBSysInqImageFeatureReq (Structure):
 #* for DBMSG_SYS_INQ_IMAGE_FEATURE_RSP message *#
 class DBSysInqImageFeatureRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("process_number", c_ulonglong),
 		("table_name", c_char * DAVE_NORMAL_NAME_LEN),
 		("table_id", c_ulonglong),
@@ -460,7 +460,7 @@ class DBSysInqImageReq (Structure):
 #* for DBMSG_SYS_INQ_IMAGE_RSP message *#
 class DBSysInqImageRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("image_id", c_char * DAVE_SHA1_IMAGE_ID),
 		("image", ImageIntroduction),
 		("ptr", POINTER(c_char)),
@@ -478,7 +478,7 @@ class DBSysInqMuseumPageReq (Structure):
 #* for DBMSG_SYS_INQ_MUSEUM_PAGE_RSP message *#
 class DBSysInqMuseumPageRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("museum_id", c_char * DAVE_SHA1_IMAGE_ID),
 		("table_id", c_ulonglong),
 		("page_id", c_ulonglong),
@@ -500,7 +500,7 @@ class DBSysInqMuseumReq (Structure):
 #* for DBMSG_SYS_INQ_MUSEUM_RSP message *#
 class DBSysInqMuseumRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("museum_id", c_char * DAVE_SHA1_IMAGE_ID),
 		("museum", MuseumIntroduction),
 		("ptr", POINTER(c_char)),
@@ -518,7 +518,7 @@ class DBSysInqPainterPageReq (Structure):
 #* for DBMSG_SYS_INQ_PAINTER_PAGE_RSP message *#
 class DBSysInqPainterPageRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("painter_id", c_char * DAVE_SHA1_IMAGE_ID),
 		("table_id", c_ulonglong),
 		("page_id", c_ulonglong),
@@ -539,7 +539,7 @@ class DBSysInqWeiChatReq (Structure):
 #* for DBMSG_SYS_INQ_WEICHAT_RSP message *#
 class DBSysInqWeiChatRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("table_id", c_ulonglong),
 		("info", WeiChatUserInfo),
 		("ptr", POINTER(c_char)),
@@ -570,7 +570,7 @@ class HTTPCloseReq (Structure):
 #* for HTTPMSG_CLOSE_RSP message *#
 class HTTPCloseRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("listen_port", c_ulonglong),
 		("path", c_char * DAVE_PATH_LEN),
 		("ptr", POINTER(c_char)),
@@ -587,7 +587,7 @@ class HTTPListenAutoCloseReq (Structure):
 #* for HTTPMSG_LISTEN_AUTO_CLOSE_RSP message *#
 class HTTPListenAutoCloseRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("path", c_char * DAVE_PATH_LEN),
 		("ptr", POINTER(c_char)),
 ]
@@ -605,7 +605,7 @@ class HTTPListenReq (Structure):
 #* for HTTPMSG_LISTEN_RSP message *#
 class HTTPListenRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("listen_port", c_ulonglong),
 		("path", c_char * DAVE_PATH_LEN),
 		("ptr", POINTER(c_char)),
@@ -624,7 +624,7 @@ class HTTPPostReq (Structure):
 #* for HTTPMSG_POST_RSP message *#
 class HTTPPostRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("head", HttpKeyValue * DAVE_HTTP_HEAD_MAX),
 		("content", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -647,7 +647,7 @@ class HTTPRecvReq (Structure):
 #* for HTTPMSG_RECV_RSP message *#
 class HTTPRecvRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("content_type", c_int),
 		("content", POINTER(MBUF)),
 		("local_creat_time", c_ulonglong),
@@ -671,7 +671,7 @@ class InternalLoop (Structure):
 #* for MAINMSG_PYTHON_REQ message *#
 class MainMsgPythonReq (Structure):
 	_fields_ = [
-		("fun", c_ulonglong),
+		("fun", c_longlong),
 		("opt_param", c_ulonglong),
 		("file_path", c_char * DAVE_PATH_LEN),
 		("req_data", POINTER(MBUF)),
@@ -681,7 +681,7 @@ class MainMsgPythonReq (Structure):
 #* for MAINMSG_PYTHON_RSP message *#
 class MainMsgPythonRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("time", c_ulonglong),
 		("rsp_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -705,7 +705,7 @@ class MsgBlocksReq (Structure):
 #* for MSGID_BLOCKS_RSP message *#
 class MsgBlocksRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("opt", c_int),
 		("blocks", BuildingBlocks * DAVE_BUILDING_BLOCKS_MAX),
 		("ptr", POINTER(c_char)),
@@ -763,7 +763,7 @@ class RESTARTRSPMSG (Structure):
 #* for MSGID_RPC_DEBUG_REQ message *#
 class RPCDebugReq (Structure):
 	_fields_ = [
-		("ret_debug", c_ulonglong),
+		("ret_debug", c_longlong),
 		("req_thread", c_char * 64),
 		("str_debug", c_char * 16),
 		("s8_debug", c_char),
@@ -785,7 +785,7 @@ class RPCDebugReq (Structure):
 #* for MSGID_RPC_DEBUG_RSP message *#
 class RPCDebugRsp (Structure):
 	_fields_ = [
-		("ret_debug", c_ulonglong),
+		("ret_debug", c_longlong),
 		("rsp_thread", c_char * 64),
 		("str_debug", c_char * 16),
 		("s8_debug", c_char),
@@ -933,7 +933,7 @@ class StoreMysqlReq (Structure):
 #* for STORE_MYSQL_RSP message *#
 class StoreMysqlRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
@@ -1061,7 +1061,7 @@ class UIPDataRecvReq (Structure):
 #* for UIP_DATA_RECV_RSP message *#
 class UIPDataRecvRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
 		("data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -1082,7 +1082,7 @@ class UIPDataSendReq (Structure):
 #* for UIP_DATA_SEND_RSP message *#
 class UIPDataSendRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("method", c_char * DAVE_UIP_METHOD_MAX_LEN),
 		("data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
@@ -1098,7 +1098,7 @@ class UIPRegisterReq (Structure):
 #* for UIP_REGISTER_RSP message *#
 class UIPRegisterRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
 		("ptr", POINTER(c_char)),
 ]
@@ -1113,7 +1113,7 @@ class UIPUnregisterReq (Structure):
 #* for UIP_UNREGISTER_RSP message *#
 class UIPUnregisterRsp (Structure):
 	_fields_ = [
-		("ret", c_ulonglong),
+		("ret", c_longlong),
 		("method", c_char * DAVE_UIP_METHOD_MAX_NUM*DAVE_UIP_METHOD_MAX_LEN),
 		("ptr", POINTER(c_char)),
 ]
