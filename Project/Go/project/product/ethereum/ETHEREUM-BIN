@@ -14,4 +14,6 @@ NETWORKID=1
 DATADIR=ethereum
 IDENTITY=${HOSTNAME}-${USER}
 
+chmod a+x ./geth
+
 ./geth --datadir ${DATADIR} --networkid ${NETWORKID} --identity ${IDENTITY} --syncmode snap --gcmode archive --http --http.api eth,net,engine,admin --authrpc.addr localhost --authrpc.port 8551 --authrpc.vhosts localhost --authrpc.jwtsecret /project/prysm/jwt.hex

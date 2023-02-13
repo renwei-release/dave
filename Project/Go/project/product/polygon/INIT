@@ -1,0 +1,39 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+POLYGONDIR=$2
+POLYGONBIN=$3
+NODEPORT=$4
+BALANCE=1000000000000000000000 #WEI
+File=$(basename $0)
+
+if [ ! -d ${POLYGONDIR} ]; then
+   echo ${File} secrets init
+   ${POLYGONBIN} secrets init --data-dir ${POLYGONDIR}
+fi
+
+secrets_output=`${POLYGONBIN} secrets output --data-dir ${POLYGONDIR}`
+
+address_seg=${secrets_output#*=}
+address_seg=${address_seg#* }
+address=${address_seg:0:42}
+
+key_seg=${address_seg#*=}
+key_seg=${key_seg#* }
+key=${key_seg:0:98}
+
+node_seg=${key_seg#*=}
+node_seg=${node_seg#* }
+node=${node_seg:0:53}
+
+BOOTNODE=/ip4/127.0.0.1/tcp/${NODEPORT}/p2p/${node}
+PREMINE=${address}:${BALANCE}
+
+${POLYGONBIN} genesis --consensus ibft --ibft-validators-prefix-path ${POLYGONDIR} --bootnode ${BOOTNODE} --premine=${PREMINE}
+echo ${File} genesis done!

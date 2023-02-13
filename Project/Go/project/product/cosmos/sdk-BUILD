@@ -1,0 +1,21 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+VERSION=0.45.13
+
+if [ ! -d ./cosmos-sdk-${VERSION} ]; then
+   if [ ! -f v${VERSION}.tar.gz ]; then
+      wget https://github.com/cosmos/cosmos-sdk/archive/refs/tags/v${VERSION}.tar.gz
+   fi
+
+   tar -zxvf v${VERSION}.tar.gz
+   rm -rf v${VERSION}.tar.gz
+fi
+
+cd cosmos-sdk-${VERSION}
+

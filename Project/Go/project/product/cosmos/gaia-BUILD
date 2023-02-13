@@ -1,0 +1,30 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+PRIJECTBIN=./build/gaiad
+File=$(basename $0)
+
+VERSION=8.0.0
+
+GO_SYSTEM_VERSION=$(go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
+
+echo -e "start build gaia ver:v${VERSION} go ver:${GO_SYSTEM_VERSION}"
+
+if [ ! -d ./gaia ]; then
+   git clone -bv${VERSION} --depth=1 https://github.com/cosmos/gaia.git
+fi
+
+sed -i "s/REQUIRE_GO_VERSION = 1.18/REQUIRE_GO_VERSION = ${GO_SYSTEM_VERSION}/g" ./gaia/Makefile
+sed -i "s/go 1.18/go ${GO_SYSTEM_VERSION}/g" ./gaia/go.mod
+
+cd gaia && go mod tidy && make build && make install
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}
