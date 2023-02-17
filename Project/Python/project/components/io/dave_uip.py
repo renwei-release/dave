@@ -14,7 +14,8 @@ UIP_THREAD_NAME=b'uip'
 def _uip_register_rsp(src_name, src_id, msg_len, msg_body):
     pRsp = struct_copy(UIPRegisterRsp, msg_body, msg_len)
 
-    DAVELOG(f"register ret:{t_auto_RetCode_str(pRsp.ret)} method:{str(pRsp.method[0], encoding='utf8')}")
+    if pRsp.ret != RetCode_OK:
+        DAVELOG(f"register ret:{t_auto_RetCode_str(pRsp.ret)} method:{str(pRsp.method[0], encoding='utf8')}")
     return
 
 

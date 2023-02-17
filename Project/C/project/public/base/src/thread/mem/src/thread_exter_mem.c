@@ -22,8 +22,13 @@ _thread_exter_mem_init(void)
 {
 	if(_thread_exter_mem_init_flag != 0x1234567890)
 	{
-		_thread_exter_mem_init_flag = 0x1234567890;
-		block_mem_reset(_thread_exter_mem, THREAD_EXTER_MEM_MAX);
+		t_lock;
+		if(_thread_exter_mem_init_flag != 0x1234567890)
+		{
+			block_mem_reset(_thread_exter_mem, THREAD_EXTER_MEM_MAX);
+			_thread_exter_mem_init_flag = 0x1234567890;
+		}
+		t_unlock;
 	}
 }
 
@@ -52,6 +57,8 @@ thread_exter_malloc(ub len, s8 *file, ub line)
 dave_bool
 thread_exter_free(void *ptr, s8 *file, ub line)
 {
+	_thread_exter_mem_init();
+
 	return block_free(_thread_exter_mem, ptr, file, line);
 }
 

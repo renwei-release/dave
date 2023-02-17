@@ -16,20 +16,22 @@
 #include "ramkv_remote_struct.h"
 #include "ramkv_log.h"
 
-static ub _ramkv_struct_global_init = 0x0123456789abcdef;
+static ub _ramkv_struct_global_init = 0x00;
 static TLock _ramkv_struct_global_pv;
 
-static void
+static inline void
 ___ramkv_pv_booting___(void)
 {
-	t_lock_spin(NULL);
-	if(_ramkv_struct_global_init == 0x0123456789abcdef)
+	if(_ramkv_struct_global_init != 0x89807abcd)
 	{
-		_ramkv_struct_global_init = 0;
-
-		t_lock_reset(&_ramkv_struct_global_pv);
+		t_lock;
+		if(_ramkv_struct_global_init != 0x89807abcd)
+		{
+			t_lock_reset(&_ramkv_struct_global_pv);
+			_ramkv_struct_global_init = 0x89807abcd;
+		}
+		t_unlock;
 	}
-	t_unlock_spin(NULL);
 }
 
 static KV *

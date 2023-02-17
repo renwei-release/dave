@@ -99,8 +99,8 @@ _t_lock_booting(void)
 {
 	if(_t_booting_init_flag != 0x1234567890)
 	{
-		_t_booting_init_flag = 0x1234567890;
 		t_lock_reset(&_t_booting_lock);
+		_t_booting_init_flag = 0x1234567890;
 	}
 }
 

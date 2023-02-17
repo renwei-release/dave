@@ -32,7 +32,8 @@ def _http_register_path(path):
 def _http_register_auto_rsp(src_name, src_id, msg_len, msg_body):
     pRsp = struct_copy(HTTPListenAutoCloseRsp, msg_body, msg_len)
 
-    DAVELOG(f"register ret:{t_auto_RetCode_str(pRsp.ret)} path:{pRsp.path}")
+    if pRsp.ret != RetCode_OK:
+        DAVELOG(f"register ret:{t_auto_RetCode_str(pRsp.ret)} path:{pRsp.path}")
     return
 
 

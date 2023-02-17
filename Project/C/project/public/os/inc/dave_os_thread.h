@@ -30,9 +30,9 @@ dave_bool dave_os_thread_canceled(void *thread_id);
 
 void dave_os_thread_exit(void *thread_id);
 
-sb dave_os_pv_lock(void);
+void dave_os_pv_lock(void);
 
-void dave_os_pv_unlock(sb flag);
+void dave_os_pv_unlock(void);
 
 void dave_os_mutex_init(void *ptr);
 

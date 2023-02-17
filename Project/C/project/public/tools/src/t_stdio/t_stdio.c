@@ -205,7 +205,7 @@ __t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line)
 dave_bool
 __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line)
 {
-	sb safe_counter;
+	sb safe_counter, max_counter = 10485760;
 	s8 ret;
 
 	if((cmp1 == NULL) && (cmp2 == NULL))
@@ -218,16 +218,17 @@ __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line)
 
 	ret = (*cmp1 - *cmp2);
 
-	while(((++ safe_counter) < 40960) && (!ret) && (*cmp1) && (*cmp2))
+	while(((++ safe_counter) < max_counter) && (!ret) && (*cmp1) && (*cmp2))
 	{ 
 		cmp1 ++;
 		cmp2 ++;
 		ret = (*cmp1 - *cmp2);
 	}
 
-	if(safe_counter >= 40960)
+	if(safe_counter >= max_counter)
 	{
-		TOOLSABNOR("Why do so long strings need to be compared?");
+		TOOLSABNOR("Why do so long(%ld/%ld) strings need to be compared? <%s:%d>",
+			safe_counter, max_counter, file, line);
 	}
 
 	if((ret == 0) && (*cmp1 == *cmp2))

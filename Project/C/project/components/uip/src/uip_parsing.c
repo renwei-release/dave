@@ -8,13 +8,14 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
+#include "dave_os.h"
 #include "uip_parsing.h"
 #include "uip_tools.h"
 #include "uip_log.h"
 
 #define THE_MY_MAGIC_DATA 0x9988aaeec3
 
-static void
+static inline void
 _uip_decode_version(UIPStack *pStack, void *pJson)
 {
 	if(dave_json_get_ub(pJson, UIP_JSON_VERSION, &(pStack->version)) == dave_false)
@@ -24,13 +25,13 @@ _uip_decode_version(UIPStack *pStack, void *pJson)
 	}
 }
 
-static void
+static inline void
 _uip_encode_version(void *pJson, UIPStack *pStack)
 {
 	dave_json_add_ub(pJson, UIP_JSON_VERSION, pStack->version);
 }
 
-static MBUF *
+static inline MBUF *
 _uip_decode_customer_head(void *pJson)
 {
 	void *customer_head;
@@ -44,7 +45,7 @@ _uip_decode_customer_head(void *pJson)
 	return dave_json_to_mbuf(customer_head);
 }
 
-static void *
+static inline void *
 _uip_encode_customer_head(MBUF *customer_head)
 {
 	if(customer_head == NULL)
@@ -55,10 +56,11 @@ _uip_encode_customer_head(MBUF *customer_head)
 	return dave_string_to_json(customer_head->payload, customer_head->len);
 }
 
-static void
+static inline void
 _uip_decode_head(UIPHead *pHead, void *pJsonHead)
 {
 	sb result_code;
+	ub current_milliseconds;
 
 	if(dave_json_get_sb(pJsonHead, UIP_JSON_RESULT_CODE, &result_code) == dave_true)
 	{
@@ -73,12 +75,15 @@ _uip_decode_head(UIPHead *pHead, void *pJsonHead)
 	dave_json_get_str_v2(pJsonHead, UIP_JSON_METHOD, pHead->method, sizeof(pHead->method));
 	dave_json_get_str_v2(pJsonHead, UIP_JSON_CHANNEL, pHead->channel, sizeof(pHead->channel));
 	dave_json_get_str_v2(pJsonHead, UIP_JSON_AUTH_KEY, pHead->auth_key_str, sizeof(pHead->auth_key_str));
+	if(dave_json_get_ub(pJsonHead, UIP_JSON_CURRENT_MILLISECONDS, &current_milliseconds) == dave_true)
+	{
+		pHead->current_milliseconds = current_milliseconds;
+	}
 	dave_json_get_ub(pJsonHead, UIP_JSON_SERIAL, &(pHead->serial));
 	pHead->customer_head = _uip_decode_customer_head(pJsonHead);
-	t_time_get_date(&(pHead->date));
 }
 
-static void *
+static inline void *
 _uip_encode_head(UIPHead *pHead)
 {
 	void *pJsonHead = dave_json_malloc();
@@ -94,6 +99,7 @@ _uip_encode_head(UIPHead *pHead)
 	{
 		dave_json_add_str(pJsonHead, UIP_JSON_AUTH_KEY, pHead->auth_key_str);
 	}
+	dave_json_add_ub(pJsonHead, UIP_JSON_CURRENT_MILLISECONDS, pHead->current_milliseconds);
 	dave_json_add_ub(pJsonHead, UIP_JSON_SERIAL, pHead->serial);
 	if(pHead->customer_head != NULL)
 	{
@@ -103,7 +109,7 @@ _uip_encode_head(UIPHead *pHead)
 	return pJsonHead;
 }
 
-static MBUF *
+static inline MBUF *
 _uip_decode_customer_body(void *pJson)
 {
 	void *customer_body;
@@ -117,7 +123,7 @@ _uip_decode_customer_body(void *pJson)
 	return dave_json_to_mbuf(customer_body);
 }
 
-static void *
+static inline void *
 _uip_encode_customer_body(MBUF *customer_body)
 {
 	if(customer_body == NULL)
@@ -128,14 +134,14 @@ _uip_encode_customer_body(MBUF *customer_body)
 	return dave_string_to_json(customer_body->payload, customer_body->len);
 }
 
-static void
+static inline void
 _uip_decode_body(UIPBody *pBody, void *pJsonBody)
 {
 	pBody->pJson = pJsonBody;
 	pBody->customer_body = _uip_decode_customer_body(pJsonBody);
 }
 
-static void *
+static inline void *
 _uip_encode_body(UIPBody *pBody)
 {
 	void *pJsonBody;
@@ -157,7 +163,7 @@ _uip_encode_body(UIPBody *pBody)
 	return pJsonBody;
 }
 
-static UIPStack *
+static inline UIPStack *
 _uip_decode_to_stack(void *pJson)
 {
 	UIPStack *pStack = uip_malloc();
@@ -181,20 +187,21 @@ _uip_decode_to_stack(void *pJson)
 	return pStack;
 }
 
-static void *
-_uip_encode_to_json(UIPStack *pStack)
+static inline void *
+_uip_encode_to_json(UIPStack *pStack, dave_bool encode_body)
 {
-	void *pJson, *pJsonHead, *pJsonBody;
+	void *pJson;
 
 	pJson = dave_json_malloc();
 
 	_uip_encode_version(pJson, pStack);
 
-	pJsonHead = _uip_encode_head(&(pStack->head));
-	pJsonBody = _uip_encode_body(&(pStack->body));
+	dave_json_add_object(pJson, UIP_JSON_HEAD, _uip_encode_head(&(pStack->head)));
 
-	dave_json_add_object(pJson, UIP_JSON_HEAD, pJsonHead);
-	dave_json_add_object(pJson, UIP_JSON_BODY, pJsonBody);
+	if(encode_body == dave_true)
+	{
+		dave_json_add_object(pJson, UIP_JSON_BODY, _uip_encode_body(&(pStack->body)));
+	}
 
 	return pJson;
 }
@@ -211,7 +218,9 @@ uip_malloc(void)
 	pStack->magic_data = THE_MY_MAGIC_DATA;
 
 	pStack->version = UIP_VERSION;
+	pStack->head.current_milliseconds = dave_os_time_ms();
 	pStack->head.customer_head = NULL;
+
 	pStack->body.pJson = NULL;
 	pStack->body.customer_body = NULL;
 
@@ -271,6 +280,7 @@ uip_clone(UIPStack *pStack)
 
 	*pCloneStack = *pStack;
 
+	pCloneStack->head.current_milliseconds = dave_os_time_ms();
 	if(pStack->head.customer_head != NULL)
 	{
 		pCloneStack->head.customer_head = dave_mclone(pStack->head.customer_head);
@@ -302,9 +312,9 @@ uip_decode(ThreadId src, void *ptr, void *pJson)
 }
 
 void *
-uip_encode(UIPStack *pStack)
+uip_encode(UIPStack *pStack, dave_bool encode_body)
 {
-	return _uip_encode_to_json(pStack);
+	return _uip_encode_to_json(pStack, encode_body);
 }
 
 ub
@@ -319,7 +329,7 @@ uip_encode_error(s8 *data_buf, ub data_length, RetCode ret)
 	error_stack.head.req_flag = dave_false;
 	error_stack.head.rsp_code = ret;
 
-	pJson = _uip_encode_to_json(&error_stack);
+	pJson = _uip_encode_to_json(&error_stack, dave_true);
 
 	json_ptr = dave_json_to_string(pJson, &json_length);
 

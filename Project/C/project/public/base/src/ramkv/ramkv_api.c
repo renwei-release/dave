@@ -130,12 +130,12 @@ ramkv_del(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *f
 			break;
 	}
 
-	if((ret != 0) && (pKV->ramkv_timer.out_times > 0))
+	if((pKV->ramkv_timer.out_times > 0) && ((ret > 0) || (value_ptr == NULL)))
 	{
 		ramkv_timer_del(pKV, key_ptr, key_len, fun, line);
 	}
 
-	if((ret == 0) && (key_ptr != NULL))
+	if((ret == 0) && (key_ptr != NULL) && (value_ptr != NULL))
 	{
 		KVTRACE("On %s found repeated deletion or negligent deletion of KEY(%x/%x) at position %s:%d",
 			pKV->name, key_ptr[0], key_ptr[1],

@@ -19,6 +19,8 @@
 #define TIMEDEBUG(a, ...) {}
 #endif
 
+#define TIMELOG(a, ...) { DAVEDEBUG("[TIME]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
+
 #define TIMEABNOR(a, ...) { DAVEDEBUG("[TIME Abnormal]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }
 
 #endif

@@ -34,7 +34,7 @@ void base_log_trace_disable(dave_bool write_cfg);
 void base_log_stack_init(void);
 void base_log_stack_exit(void);
 
-#define TRACEFLAG DAVEDEBUG("%s:%d\n", (s8 *)__func__, (ub)__LINE__);
+#define TRACEFLAG fprintf(stdout, "%s:%d\n", __func__, __LINE__);
 #define TRACETENABLE if(base_thread_trace_state() == dave_true)
 #define TRACEIENABLE(ID) if(base_log_id_enable(ID) == dave_true)
 #define TRACELENABLE(SECOND, NUMBER) if(base_log_line_enable((s8 *)__func__, (ub)__LINE__, SECOND, NUMBER) == dave_true)

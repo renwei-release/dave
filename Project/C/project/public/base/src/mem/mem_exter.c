@@ -11,7 +11,7 @@
 #include "base_tools.h"
 
 #ifdef LEVEL_PRODUCT_alpha
-#define EXTER_ENABLE_BLOCK
+ #define EXTER_ENABLE_BLOCK
 #endif
 
 #ifdef EXTER_ENABLE_BLOCK
@@ -26,8 +26,13 @@ _exter_mem_init(void)
 {
 	if(_exter_mem_init_flag != 0x1234567890)
 	{
-		_exter_mem_init_flag = 0x1234567890;
-		block_mem_reset(_exter_mem, EXTER_MEM_MAX);
+		t_lock;
+		if(_exter_mem_init_flag != 0x1234567890)
+		{
+			block_mem_reset(_exter_mem, EXTER_MEM_MAX);
+			_exter_mem_init_flag = 0x1234567890;
+		}
+		t_unlock;
 	}
 }
 #endif
@@ -65,6 +70,7 @@ dave_bool
 __exter_free__(void *ptr, s8 *file, ub line)
 {
 #ifdef EXTER_ENABLE_BLOCK
+	_exter_mem_init();
 	return block_free(_exter_mem, ptr, file, line);
 #else
 	__block_mem_free__(ptr);

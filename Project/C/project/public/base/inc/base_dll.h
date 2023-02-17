@@ -16,6 +16,7 @@ extern "C"{
 
 typedef void (* dll_callback_fun)(void *);
 typedef int (* dll_checkback_fun)(int);
+typedef void (* dll_kv_timerout_fun)(void *ramkv, char *key);
 
 API void dave_dll_init(
 	char *my_verno, char *work_mode,
@@ -74,6 +75,16 @@ API int dave_dll_cfg_remote_get(char *cfg_name, char *cfg_value_ptr, int cfg_val
 API int dave_dll_cfg_remote_del(char *cfg_name);
 
 API void dave_dll_poweroff(void);
+
+API void * dave_dll_kv_malloc(char *name, int out_second, dll_kv_timerout_fun outback_fun);
+
+API void dave_dll_kv_free(void *kv);
+
+API int dave_dll_kv_add(void *kv, char *key, char *value);
+
+API int dave_dll_kv_inq(void *kv, char *key, char *value_ptr, int value_len);
+
+API int dave_dll_kv_del(void *kv, char *key);
 
 #ifdef __cplusplus
 }

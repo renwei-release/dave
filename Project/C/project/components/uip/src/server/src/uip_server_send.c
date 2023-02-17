@@ -12,22 +12,10 @@
 #include "uip_server_register.h"
 #include "uip_server_http.h"
 #include "uip_server_monitor.h"
+#include "uip_server_report.h"
 #include "uip_parsing.h"
 #include "uip_tools.h"
 #include "uip_log.h"
-
-static void
-_uip_server_record(UIPStack *pRecvStack, UIPStack *pSendStack)
-{
-	void *recv = uip_encode(pRecvStack);
-	void *send = uip_encode(pSendStack);
-	void *json = dave_json_malloc();
-
-	dave_json_add_object(json, "recv", recv);
-	dave_json_add_object(json, "send", send);
-
-	BDATAJSON("UIP", json);
-}
 
 static UIPStack *
 _uip_server_sendstack(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
@@ -37,7 +25,6 @@ _uip_server_sendstack(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
 	pSendStack = uip_clone(pRecvStack);
 	pSendStack->head.req_flag = dave_false;
 	pSendStack->head.rsp_code = pRsp->ret;
-	t_time_get_date(&(pSendStack->head.date));
 
 	if(pRsp->data != NULL)
 	{
@@ -65,9 +52,9 @@ uip_server_send(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp)
 	}
 
 	pSendStack = _uip_server_sendstack(pRecvStack, pRsp);
-	pJson = uip_encode(pSendStack);
+	pJson = uip_encode(pSendStack, dave_true);
 
-	_uip_server_record(pRecvStack, pSendStack);
+	uip_server_report(pRecvStack, pSendStack);
 
 	if(pSendStack->body.pJson != NULL)
 	{

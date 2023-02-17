@@ -52,7 +52,7 @@ function goto_debug()
    loop_notify "container on $action mode!"
 }
 
-hasflagnum=$(grep -c "FLAG_FOR_UPDATE" ${0##*/})
+hasflagnum=$(grep -c "___FLAG_FOR_UPDATE.SH___" ${0##*/})
 if [ $hasflagnum == 2 ]; then
     goto_debug
 fi

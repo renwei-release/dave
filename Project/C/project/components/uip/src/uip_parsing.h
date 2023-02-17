@@ -18,7 +18,7 @@ UIPStack * uip_clone(UIPStack *pStack);
 
 UIPStack * uip_decode(ThreadId src, void *ptr, void *pJson);
 
-void * uip_encode(UIPStack *pStack);
+void * uip_encode(UIPStack *pStack, dave_bool encode_body);
 
 ub uip_encode_error(s8 *data_buf, ub data_length, RetCode ret);
 

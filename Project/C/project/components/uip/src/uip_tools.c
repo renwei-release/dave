@@ -23,7 +23,7 @@ static char *_uip_head_key[] = {
 	UIP_JSON_CHANNEL,
 	UIP_JSON_AUTH_KEY,
 	UIP_JSON_SERIAL,
-	UIP_JSON_TIME,
+	UIP_JSON_CURRENT_MILLISECONDS,
 	UIP_JSON_RESULT_CODE,
 	UIP_JSON_RESULT_DESC,
 	NULL
@@ -64,7 +64,7 @@ uip_write_stack(char *stack_name, UIPStack *pStack)
 
 	if(pStack->auto_release_json == NULL)
 	{
-		pJson = uip_encode(pStack);
+		pJson = uip_encode(pStack, dave_true);
 		dave_json_write(pJson, file_name, dave_true);
 		dave_json_free(pJson);
 	}

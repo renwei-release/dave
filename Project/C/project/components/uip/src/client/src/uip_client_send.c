@@ -48,7 +48,7 @@ _uip_client_post_req(UIPStack *pStack)
 
 	dave_strcpy(pReq->url, pStack->remote_address, DAVE_URL_LEN);
 
-	pPostJson = uip_encode(pStack);
+	pPostJson = uip_encode(pStack, dave_true);
 
 	pReq->head[0].key[0] = '\0';
 	pReq->head[0].value[0] = '\0';
@@ -107,7 +107,6 @@ _uip_client_send_req(ThreadId src, UIPDataSendReq *pReq)
 	dave_strcpy(pStack->head.method, pReq->method, sizeof(pStack->head.method));
 	dave_strcpy(pStack->head.channel, pReq->channel, sizeof(pStack->head.channel));
 	dave_strcpy(pStack->head.auth_key_str, auth_key_str, sizeof(pStack->head.auth_key_str));
-	t_time_get_date(&(pStack->head.date));
 	pStack->head.serial = __uip_client_send_serial__();
 	pStack->head.customer_head = pReq->customer_head;
 

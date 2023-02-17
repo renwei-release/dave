@@ -17,6 +17,7 @@
 #include "uip_server_send.h"
 #include "uip_server_recv.h"
 #include "uip_server_wechat.h"
+#include "uip_server_report.h"
 #include "uip_debug.h"
 #include "uip_parsing.h"
 #include "uip_tools.h"
@@ -315,6 +316,8 @@ uip_server_init(MSGBODY *pMsg)
 	uip_server_distributor_init();
 
 	uip_server_register_init();
+
+	uip_server_report_init();
 }
 
 void
@@ -352,6 +355,8 @@ uip_server_exit(MSGBODY *pMsg)
 	uip_server_distributor_exit();
 
 	uip_server_monitor_exit();
+
+	uip_server_report_exit();
 }
 
 void

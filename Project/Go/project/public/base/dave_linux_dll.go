@@ -42,12 +42,6 @@ type DllMsgBody struct {
 var _product_init_fun func()
 var _product_exit_fun func()
 
-func _reset_verno() {
-	c_my_verno := C.CString(Dave_verno())
-	C.dave_dll_reset_verno(c_my_verno)
-	C.free(unsafe.Pointer(c_my_verno))
-}
-
 //export _go_init
 func _go_init(c_data unsafe.Pointer) {
 	_product_init_fun()
@@ -78,16 +72,6 @@ func _go_self_check() C.int {
 }
 
 // =====================================================================
-
-func Dave_go_system_pre_init() bool {
-	/*
-	 * Preventing the system from being called in advance
-	 * without initialization call
-	 */
-	 _reset_verno()
-
-	 return true
-}
 
 func Dave_go_init(product_verno string, work_mode string, sync_domain string, init_fun func(), exit_fun func()) {
 	_product_init_fun = init_fun

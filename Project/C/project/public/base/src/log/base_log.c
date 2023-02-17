@@ -23,7 +23,7 @@
 
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 static ub _log_log_counter = 0;
-static dave_bool _log_trace_enable = dave_false;
+static dave_bool _log_trace_enable = LOG_TRACE_DEFAULT_CFG;
 
 static inline ub
 _log_buffer_counter(void)

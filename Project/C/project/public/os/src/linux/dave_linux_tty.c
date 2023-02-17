@@ -236,9 +236,11 @@ _tty_write_thread(void *arg)
 static inline void
 _tty_pre_init(void)
 {
+	dave_bool thread_init = dave_false;
+
 	if(_tty_init_ != 0x89807abcd)
 	{
-		t_lock_spin(NULL);
+		t_lock;
 
 		if(_tty_init_ != 0x89807abcd)
 		{
@@ -247,11 +249,26 @@ _tty_pre_init(void)
 			t_lock_reset(&_write_pv);
 			_write_chain_head = _write_chain_tail = NULL;
 			_is_on_backend_printf_disable = dave_false;
-
+			thread_init = dave_true;
 			_tty_init_ = 0x89807abcd;
 		}
 
-		t_unlock_spin(NULL);
+		t_unlock;
+
+		if(thread_init == dave_true)
+		{
+			_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
+			if(_tty_read_thread_body == NULL)
+			{
+				OSABNOR("i can not start tty read thread!");
+			}
+	
+			_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
+			if(_tty_write_thread_body == NULL)
+			{
+				OSABNOR("i can not start tty write thread!");
+			}
+		}
 	}
 }
 
@@ -263,20 +280,6 @@ dave_os_tty_init(sync_notify_fun notify_fun)
 	_tty_pre_init();
 
 	_notify_fun = notify_fun;
-
-	_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
-	if(_tty_read_thread_body == NULL)
-	{
-		OSABNOR("i can not start tty read thread!");
-		return dave_false;
-	}
-
-	_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
-	if(_tty_read_thread_body == NULL)
-	{
-		OSABNOR("i can not start tty write thread!");
-		return dave_false;
-	}
 
 	return dave_true;
 }

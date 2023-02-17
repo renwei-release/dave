@@ -46,6 +46,7 @@ typedef struct {
 	ub time_out_counter;
 } TIMER;
 
+static volatile sb _timer_init_ = 0;
 static TLock _timer_pv;
 static ub _cur_hardware_alarm_ms = 0;
 static ub _new_hardware_alarm_ms = 0;
@@ -392,7 +393,10 @@ _timer_assert(void)
 		}
 	}
 
-	dave_os_power_off("timer resource exhausted!");
+	file_data_len = dave_snprintf(file_data_ptr, sizeof(file_data_ptr), "timer resource exhausted!");
+	_timer_assert_file(file_name, file_data_ptr, file_data_len);
+
+	dave_os_power_off(file_data_ptr);
 }
 
 static void
@@ -405,6 +409,15 @@ _timer_msg(TIMERMSG *pTimerMsg)
 
 	if((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
 	{
+		if(_timer[timer_id].owner == INVALID_THREAD_ID)
+		{
+			_timer[timer_id].owner = main_thread_id_get();
+
+			TIMELOG("timer:%s/%d no owner, set to main thread:%s",
+				_timer[timer_id].timer_name_ptr, timer_id,
+				thread_name(_timer[timer_id].owner));
+		}
+
 		if(dave_strcmp(thread_name(_timer[timer_id].owner), "NULL") == dave_false)
 		{
 			pMsg = thread_msg(pMsg);
@@ -424,9 +437,9 @@ _timer_creat_timer_(s8 *name, ThreadId owner, base_timer_fun fun, void *param_pt
 	dave_bool new_time_flag = dave_false;
 	ub name_len;
 
-	if((owner == INVALID_THREAD_ID) || (fun == NULL))
+	if(fun == NULL)
 	{
-		TIMEABNOR("owner=%d creat name:%s", owner, name);
+		TIMEABNOR("owner:%s creat name:%s give invalid fun!", thread_name(owner), name);
 		return INVALID_TIMER_ID;
 	}
 
@@ -440,8 +453,7 @@ _timer_creat_timer_(s8 *name, ThreadId owner, base_timer_fun fun, void *param_pt
 
 		SAFECODEv1(pTimer->opt_pv, {
 			if((pTimer->fun == NULL)
-				&& (pTimer->param_fun == NULL)
-				&& (pTimer->owner == INVALID_THREAD_ID))
+				&& (pTimer->param_fun == NULL))
 			{
 				if(param_ptr == NULL)
 				{
@@ -519,12 +531,6 @@ static inline TIMERID
 _timer_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub param_len, ub alarm_ms)
 {
 	TIMERID timer_id;
-
-	if(owner == INVALID_THREAD_ID)
-	{
-		TIMEABNOR("%s has invalid owner thread!", name);
-		return INVALID_TIMER_ID;
-	}
 
 	/*
 	 * 时间精度在秒级别。
@@ -768,11 +774,64 @@ _timer_owner(void)
 	return owner;
 }
 
+static inline void
+_timer_pre(void)
+{
+	TIMERID timer_id, reg_index;
+
+	if(_timer_init_ != 0x89807abcd)
+	{
+		t_lock;
+		if(_timer_init_ != 0x89807abcd)
+		{
+			t_lock_reset(&_timer_pv);
+			_cur_hardware_alarm_ms = 0;
+			_new_hardware_alarm_ms = 0;
+			_cur_creat_timer_id = 0;
+			for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
+			{
+				_timer[timer_id].timer_id = timer_id;
+				_timer[timer_id].timer_name_len = 0;
+				_timer[timer_id].timer_name_ptr = NULL;
+				_timer[timer_id].param_len = 0;
+				_timer[timer_id].param_ptr = NULL;
+
+				t_lock_reset(&(_timer[timer_id].opt_pv));
+				t_lock_reset(&(_timer[timer_id].run_pv));
+
+				_timer_reset(&_timer[timer_id]);
+			}
+			for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
+			{
+				_timer_id_reg[reg_index] = INVALID_TIMER_ID;
+			}
+
+			_timer_init_ = 0x89807abcd;
+		}
+		t_unlock;
+	}
+}
+
+static inline void
+_timer_end(void)
+{
+	ub timer_id;
+
+	dave_os_stop_hardware_timer();
+
+	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
+	{
+		_timer_reset(&_timer[timer_id]);
+	}
+}
+
 // =====================================================================
 
 TIMERID
 base_timer_creat(char *name, base_timer_fun fun, ub alarm_ms)
 {
+	_timer_pre();
+
 	if(alarm_ms < CREAT_SW_TIMER_MIN_VALUE)
 	{
 		TIMEABNOR("%s creat min value(%d) timer name:%s", thread_name(get_self()), alarm_ms, name);
@@ -791,6 +850,8 @@ base_timer_creat(char *name, base_timer_fun fun, ub alarm_ms)
 TIMERID
 base_timer_param_creat(char *name, base_timer_param_fun fun, void *param_ptr, ub param_len, ub alarm_ms)
 {
+	_timer_pre();
+
 	if(alarm_ms < CREAT_SW_TIMER_MIN_VALUE)
 	{
 		TIMEABNOR("%s creat min value(%d) timer name:%s", thread_name(get_self()), alarm_ms, name);
@@ -820,6 +881,8 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 {
 	ThreadId cur_msg_id;
 
+	_timer_pre();
+
 	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
 	{
 		TIMEABNOR("failed! timer_id:%d (%s:%d)", timer_id, fun, line);
@@ -845,7 +908,11 @@ __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 RetCode
 __base_timer_kill__(char *name, s8 *fun, ub line)
 {
-	TIMERID timer_id = _timer_name_to_id(name);
+	TIMERID timer_id;
+
+	_timer_pre();
+
+	timer_id = _timer_name_to_id(name);
 
 	if(timer_id != INVALID_TIMER_ID)
 	{
@@ -858,30 +925,7 @@ __base_timer_kill__(char *name, s8 *fun, ub line)
 void
 base_timer_init(void)
 {
-	TIMERID timer_id, reg_index;
-
-	t_lock_reset(&_timer_pv);
-
-	_cur_hardware_alarm_ms = 0;
-	_new_hardware_alarm_ms = 0;
-	_cur_creat_timer_id = 0;
-	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
-	{
-		_timer[timer_id].timer_id = timer_id;
-		_timer[timer_id].timer_name_len = 0;
-		_timer[timer_id].timer_name_ptr = NULL;
-		_timer[timer_id].param_len = 0;
-		_timer[timer_id].param_ptr = NULL;
-
-		t_lock_reset(&(_timer[timer_id].opt_pv));
-		t_lock_reset(&(_timer[timer_id].run_pv));
-
-		_timer_reset(&_timer[timer_id]);
-	}
-	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
-	{
-		_timer_id_reg[reg_index] = INVALID_TIMER_ID;
-	}
+	_timer_pre();
 
 	_timer_thread = base_thread_creat(TIMER_THREAD_NAME, 0, THREAD_MSG_WAKEUP|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _timer_init, _timer_main, _timer_exit);
 	if(_timer_thread == INVALID_THREAD_ID)
@@ -891,18 +935,11 @@ base_timer_init(void)
 void
 base_timer_exit(void)
 {
-	ub timer_id;
-
-	dave_os_stop_hardware_timer();
-
 	if(_timer_thread != INVALID_THREAD_ID)
 		base_thread_del(_timer_thread);
 	_timer_thread = INVALID_THREAD_ID;
 
-	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
-	{
-		_timer_reset(&_timer[timer_id]);
-	}
+	_timer_end();
 }
 
 #endif

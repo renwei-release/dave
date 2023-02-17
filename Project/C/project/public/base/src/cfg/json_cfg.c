@@ -24,16 +24,13 @@ _base_json_cfg_booting(void)
 {
 	if(_json_config_init_ != 0x89807abcd)
 	{
-		t_lock_spin(NULL);
-
+		t_lock;
 		if(_json_config_init_ != 0x89807abcd)
 		{
 			t_lock_reset(&_json_config_option_pv);
-
 			_json_config_init_ = 0x89807abcd;
 		}
-
-		t_unlock_spin(NULL);
+		t_unlock;
 	}
 }
 

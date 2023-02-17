@@ -118,5 +118,39 @@ dave_dll_poweroff(void)
 	base_restart("dll poweroff");
 }
 
+void *
+dave_dll_kv_malloc(char *name, int out_second, dll_kv_timerout_fun outback_fun)
+{
+	return kv_malloc(name, KvAttrib_list, out_second, (ramkv_time_callback)outback_fun);
+}
+
+void
+dave_dll_kv_free(void *kv)
+{
+	kv_free(kv, NULL);
+}
+
+int
+dave_dll_kv_add(void *kv, char *key, char *value)
+{
+	if(kv_add_key_value(kv, key, value) == dave_true)
+		return 0;
+	else
+		return -1;
+}
+
+int
+dave_dll_kv_inq(void *kv, char *key, char *value_ptr, int value_len)
+{
+	return (int)kv_inq_key_value(kv, key, value_ptr, (int)value_len);
+}
+
+int
+dave_dll_kv_del(void *kv, char *key)
+{
+	kv_del_key_value(kv, key);
+	return 0;
+}
+
 #endif
 

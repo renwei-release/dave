@@ -198,7 +198,7 @@ dave_os_create_thread(char *name, dave_os_thread_fun fun, void *arg)
 	ub thread_index;
 	pthread_attr_t process_attr;
 
-	dave_os_pv_lock();
+	t_lock;
 	for(thread_index=0; thread_index<DAVE_THREAD_MAX; thread_index++)
 	{
 		if(_dave_pthread[thread_index].fun == NULL)
@@ -207,7 +207,7 @@ dave_os_create_thread(char *name, dave_os_thread_fun fun, void *arg)
 			break;
 		}
 	}
-	dave_os_pv_unlock(0);
+	t_unlock;
 
 	if(thread_index >= DAVE_THREAD_MAX)
 	{
@@ -370,16 +370,14 @@ dave_os_thread_exit(void *thread_id)
 	}
 }
 
-sb
+void
 dave_os_pv_lock(void)
 {
 	pthread_spin_lock(&_pv_lock);
-
-	return 0;
 }
 
 void
-dave_os_pv_unlock(sb flag)
+dave_os_pv_unlock(void)
 {
 	pthread_spin_unlock(&_pv_lock);
 }

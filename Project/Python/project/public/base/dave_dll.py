@@ -48,11 +48,6 @@ def _python_import_product(product_name):
    return
 
 
-def _reset_verno():
-   davelib.dave_dll_reset_verno(dave_verno())
-   return
-
-
 INITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_init(NULL_DATA):
    _python_import_product(_my_product_name)
@@ -97,15 +92,6 @@ def _setup_product_verno_name(product_name):
 
 
 # =====================================================================
-
-
-def dave_python_system_pre_init():
-	#/*
-	# * Preventing the system from being called in advance
-	# * without initialization call
-	# */
-   _reset_verno()
-   return
 
 
 def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=b""):

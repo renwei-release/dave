@@ -23,7 +23,7 @@ void base_ramkv_exit(void);
 dave_bool base_ramkv_check(void *ramkv);
 ub base_ramkv_info(void *ramkv, s8 *info_ptr, ub info_len);
 
-void * __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback callback_fun, s8 *fun, ub line);
+void * __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback outback_fun, s8 *fun, ub line);
 void __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback recycle_fun, s8 *fun, ub line);
 
 dave_bool __base_ramkv_add_key_ptr__(void *ramkv, s8 *key, void *ptr, s8 *fun, ub line);

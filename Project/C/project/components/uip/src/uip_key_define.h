@@ -19,8 +19,8 @@
 #define UIP_JSON_METHOD "METHOD"
 #define UIP_JSON_CHANNEL "CHANNEL"
 #define UIP_JSON_AUTH_KEY "AUTH_KEY"
+#define UIP_JSON_CURRENT_MILLISECONDS "CURRENT_MILLISECONDS"
 #define UIP_JSON_SERIAL "SERIAL"
-#define UIP_JSON_TIME "TIME"
 #define UIP_JSON_CUSTOMER_HEAD "CUSTOMER_HEAD"
 #define UIP_JSON_CUSTOMER_BODY "CUSTOMER_BODY"
 #define UIP_JSON_RESULT_CODE "RESULT_CODE"
@@ -33,7 +33,7 @@ typedef struct {
 	s8 method[DAVE_UIP_METHOD_MAX_LEN];
 	s8 channel[DAVE_NORMAL_NAME_LEN];
 	s8 auth_key_str[DAVE_AUTH_KEY_STR_LEN];
-	DateStruct date;
+	ub current_milliseconds;
 	ub serial;
 	MBUF *customer_head;
 } UIPHead;
