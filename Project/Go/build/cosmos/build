@@ -9,6 +9,7 @@
 PROJECT=${PWD##*/}
 CONTAINER="golang19"
 
+chmod a+x ../ENV
 ../ENV ${CONTAINER}
 
 echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
