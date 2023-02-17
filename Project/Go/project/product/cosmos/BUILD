@@ -11,6 +11,7 @@ PROJECTDIR=`pwd`/../../../../../Deploy/deploy/${PROJECT,,}/file_system/project
 PRIJECTBIN=COSMOS-BIN
 File=$(basename $0)
 
+chmod a+x gaia-BUILD
 ./gaia-BUILD ${PROJECTDIR}
 
 echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
