@@ -1,0 +1,15 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+CONTAINER=${PWD##*/}
+
+if [ "$USER" == "root" ]; then
+   docker attach ${CONTAINER}
+else
+   docker attach ${CONTAINER}-${USER}
+fi
