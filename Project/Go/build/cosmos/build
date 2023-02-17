@@ -13,4 +13,4 @@ chmod a+x ../ENV
 ../ENV ${CONTAINER}
 
 echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PROJECT} && ./BUILD ${PROJECT} /project/DAVE/Project/Go/build/${PROJECT}"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PROJECT} && chmod a+x BUILD && ./BUILD ${PROJECT} /project/DAVE/Project/Go/build/${PROJECT}"
