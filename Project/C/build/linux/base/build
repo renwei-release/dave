@@ -16,7 +16,9 @@ if [ "$FORM" == "" ]; then
    FORM="BIN"
 fi
 
+chmod a+x ../ENV
 ../ENV ${PROJECT} ${LEVEL}
 
 cd ../
+chmod a+x BUILD
 ./BUILD ${PROJECT} ${LEVEL} ${FORM}

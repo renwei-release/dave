@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "IO"
+#define VERSION_PRODUCT "BASE"
 
 #ifdef __DAVE_LINUX__
  #define VERSION_MISC "linux"
@@ -32,7 +32,7 @@
 #endif
 #define VERSION_REV "13"
 
-#define VERSION_DATE_TIME "20230216120319"
+#define VERSION_DATE_TIME "20230218101108"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -41,8 +41,8 @@
 #endif
 
 #define __BUILD_MAC_ADDRESS__ "000C29960DBF"
-#define __BUILD_HOSTNAME__ "fedora-renwei"
-#define __BUILD_USERNAME__ "root"
+#define __BUILD_HOSTNAME__ "fedora-renwei.local"
+#define __BUILD_USERNAME__ "renwei"
 
 s8 * dave_verno(void);
 s8 * dave_verno_reset(s8 *verno);
