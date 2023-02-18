@@ -1452,7 +1452,9 @@ base_thread_init(void *main_thread_id, s8 *sync_domain)
 
 	thread_tools_init(_thread);
 
+#ifdef ENABLE_THREAD_COROUTINE
 	thread_coroutine_init();
+#endif
 
 	_thread_init();
 
@@ -1485,7 +1487,9 @@ base_thread_exit(void)
 
 	_thread_exit();
 
+#ifdef ENABLE_THREAD_COROUTINE
 	thread_coroutine_exit();
+#endif
 
 	thread_tools_exit();
 

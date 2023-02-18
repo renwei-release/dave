@@ -6,9 +6,9 @@
  */
 
 #include "base_macro.h"
-#ifdef __DAVE_BASE__
-#include "dave_base.h"
 #include "thread_parameter.h"
+#if defined(__DAVE_BASE__) && defined(ENABLE_THREAD_COROUTINE)
+#include "dave_base.h"
 #include "thread_struct.h"
 #include "thread_lock.h"
 #include "thread_mem.h"
@@ -364,6 +364,61 @@ thread_co_uid(
 			rsp_id,
 			fun, line);
 	}
+}
+
+#else
+
+#include "dave_base.h"
+#include "thread_parameter.h"
+#include "thread_struct.h"
+#include "thread_log.h"
+
+void *
+thread_co_id(
+	ThreadStruct *pSrcThread,
+	ThreadId dst_id,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	THREADLOG("unsupport <%s:%d>", fun, line);
+	return NULL;
+}
+
+void *
+thread_co_name(
+	ThreadStruct *pSrcThread,
+	s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	THREADLOG("unsupport <%s:%d>", fun, line);
+	return NULL;
+}
+
+void *
+thread_co_gid(
+	ThreadStruct *pSrcThread,
+	s8 *gid, s8 *dst_thread,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	THREADLOG("unsupport <%s:%d>", fun, line);
+	return NULL;
+}
+
+void *
+thread_co_uid(
+	ThreadStruct *pSrcThread,
+	s8 *uid,
+	ub req_id, ub req_len, u8 *req_body,
+	ub rsp_id,
+	s8 *fun, ub line)
+{
+	THREADLOG("unsupport <%s:%d>", fun, line);
+	return NULL;
 }
 
 #endif

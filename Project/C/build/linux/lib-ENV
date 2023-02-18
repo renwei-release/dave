@@ -19,6 +19,7 @@ fi
 
 build()
 {
+   chmod a+x build
    ./build ${CONTAINER} 
 }
 
