@@ -18,7 +18,7 @@ import os.path
 
 def_c_verno_head_file="\
 /*\n\
- * Copyright (c) 2022 Renwei\n\
+ * Copyright (c) 2023 Renwei\n\
  *\n\
  * This is a free software; you can redistribute it and/or modify\n\
  * it under the terms of the MIT license. See LICENSE for details.\n\
@@ -76,10 +76,17 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
     with open(c_verno_inc_file, "w+") as file_id:
         file_id.write(def_c_verno_head_file)
         file_id.write(f'#define VERSION_PRODUCT "{projectname}"\n\n')
+        file_id.write(f'#ifdef __x86_64__\n')
+        file_id.write(f' #define VERSION_ARCH "-x86-64"\n')
+        file_id.write(f'#elif defined(__aarch64__)\n')
+        file_id.write(f' #define VERSION_ARCH "-arm-64"\n')
+        file_id.write(f'#else\n')
+        file_id.write(f' #define VERSION_ARCH "-None"\n')
+        file_id.write(f'#endif\n\n')
         file_id.write(f'#ifdef __DAVE_LINUX__\n')
-        file_id.write(f' #define VERSION_MISC "linux"\n')
+        file_id.write(f' #define VERSION_MISC "linux"VERSION_ARCH\n')
         file_id.write(f'#elif defined(__DAVE_CYGWIN__)\n')
-        file_id.write(f' #define VERSION_MISC "cygwin"\n')
+        file_id.write(f' #define VERSION_MISC "cygwin"VERSION_ARCH\n')
         file_id.write(f'#endif\n\n')
         file_id.write(f'#define VERSION_MAIN "{MAIN}"\n')
         file_id.write(f'#if defined(__VERNO_ALPHA_VERSION__)\n')
