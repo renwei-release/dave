@@ -1,0 +1,4 @@
+
+go build -o nsd ./cmd/nsd/main.go
+go build -o nscli ./cmd/nscli/main.go
+

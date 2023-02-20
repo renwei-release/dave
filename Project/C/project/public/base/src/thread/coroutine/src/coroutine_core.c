@@ -22,7 +22,7 @@
 #define TID_MAX DAVE_SYS_THREAD_ID_MAX
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
-typedef void* (* co_swap_callback_fun)(void *param_1, void *param_2);
+typedef void* (* co_swap_callback_fun)(void *param);
 
 /*
 // 64 bit
@@ -75,9 +75,9 @@ static CoThreadEnv *_co_thread_env[ TID_MAX ] = { 0 };
 static ub _coroutine_stack_size = 0;
 
 static void *
-_coroutine_swap_function(void *param_1, void *param_2)
+_coroutine_swap_function(void *param)
 {
-	CoCore *pCore = (CoCore *)param_1;
+	CoCore *pCore = (CoCore *)param;
 
 	if(pCore->fun_ptr != NULL)
 	{
@@ -99,7 +99,7 @@ _coroutine_swap_clean(CoSwap *pSwap)
 }
 
 static inline void
-_coroutine_swap_make(CoSwap *pSwap, co_swap_callback_fun fun, const void *param_1, const void *param_2)
+_coroutine_swap_make(CoSwap *pSwap, co_swap_callback_fun fun, const void *param)
 {
 	char *sp = pSwap->ss_sp + pSwap->ss_size;
 
@@ -111,8 +111,7 @@ _coroutine_swap_make(CoSwap *pSwap, co_swap_callback_fun fun, const void *param_
 
 	pSwap->regs[ kRETAddr] = (char *)fun;
 
-	pSwap->regs[ kRDI ] = (char*)param_1;
-	pSwap->regs[ kRSI ] = (char*)param_2;
+	pSwap->regs[ kRDI ] = (char*)param;
 }
 
 static inline CoThreadEnv *
@@ -147,7 +146,7 @@ _coroutine_thread_env(void)
 	{
 		_co_thread_env[tid_index] = _coroutine_env_malloc();
 
-		_coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL, NULL);
+		_coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL);
 
 		_co_thread_env[tid_index]->co_swap = NULL;
 	}
@@ -198,7 +197,7 @@ _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 	pCore->swap.ss_size = _coroutine_stack_size;
 	pCore->swap.ss_sp = dave_malloc(pCore->swap.ss_size);
 
-	_coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore, NULL);
+	_coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore);
 
 	pCore->env = _coroutine_thread_env();
 
