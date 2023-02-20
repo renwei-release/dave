@@ -32,6 +32,7 @@
 #include "rxtx_param.h"
 #include "socket_parameters.h"
 #include "thread_chain.h"
+#include "coroutine_x86_swap.h"
 #include "sync_param.h"
 #include "sync_type.h"
 
@@ -91,6 +92,7 @@ s8 *t_auto_SyncServerType_str(SyncServerType enum_value);
 s8 *t_auto_TaskAttribute_str(TaskAttribute enum_value);
 s8 *t_auto_TraceLevel_str(TraceLevel enum_value);
 s8 *t_auto_UIPType_str(UIPType enum_value);
+s8 *t_auto_regs_map_str(regs_map enum_value);
 s8 *t_auto_RPCMSG_str(RPCMSG enum_value);
 
 #endif

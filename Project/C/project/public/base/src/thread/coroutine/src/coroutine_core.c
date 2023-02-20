@@ -16,6 +16,7 @@
 #include "thread_tools.h"
 #include "thread_coroutine.h"
 #include "coroutine_core.h"
+#include "coroutine_arch.h"
 #include "thread_log.h"
 
 #define COROUTINE_CORE_STACK_DEFAULT_SIZE 128 * 1024
@@ -23,42 +24,6 @@
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
 typedef void* (* co_swap_callback_fun)(void *param);
-
-/*
-// 64 bit
-// low | regs[00]: r15 |
-//     | regs[01]: r14 |
-//     | regs[02]: r13 |
-//     | regs[03]: r12 |
-//     | regs[04]: r9  |
-//     | regs[05]: r8  | 
-//     | regs[06]: rbp |
-//     | regs[07]: rdi |
-//     | regs[08]: rsi |
-//     | regs[09]: ret |
-//     | regs[10]: rdx |
-//     | regs[11]: rcx | 
-//     | regs[12]: rbx |
-// hig | regs[13]: rsp |
-*/
-
-typedef enum {
-	kRDI = 7,
-	kRSI = 8,
-	kRETAddr = 9,
-	kRSP = 13,
-} regs_map;
-
-typedef struct {
-	void *regs[14];
-	size_t ss_size;
-	char *ss_sp;
-} CoSwap;
-
-typedef struct {
-	CoSwap base_swap;
-	CoSwap *co_swap;
-} CoThreadEnv;
 
 typedef struct {
 	coroutine_core_fun fun_ptr;
@@ -68,8 +33,6 @@ typedef struct {
 
 	CoThreadEnv *env;
 } CoCore;
-
-extern void coroutine_swap(CoSwap *, CoSwap *) asm("coroutine_swap");
 
 static CoThreadEnv *_co_thread_env[ TID_MAX ] = { 0 };
 static ub _coroutine_stack_size = 0;
@@ -96,22 +59,6 @@ static inline void
 _coroutine_swap_clean(CoSwap *pSwap)
 {
 	dave_memset(pSwap, 0x00, sizeof(CoSwap));
-}
-
-static inline void
-_coroutine_swap_make(CoSwap *pSwap, co_swap_callback_fun fun, const void *param)
-{
-	char *sp = pSwap->ss_sp + pSwap->ss_size;
-
-	sp = (char*) ((unsigned long)sp & -16LL);
-
-	dave_memset(pSwap->regs, 0x00, sizeof(pSwap->regs));
-
-	pSwap->regs[ kRSP ] = sp - 8;
-
-	pSwap->regs[ kRETAddr] = (char *)fun;
-
-	pSwap->regs[ kRDI ] = (char*)param;
 }
 
 static inline CoThreadEnv *
@@ -146,7 +93,7 @@ _coroutine_thread_env(void)
 	{
 		_co_thread_env[tid_index] = _coroutine_env_malloc();
 
-		_coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL);
+		coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL);
 
 		_co_thread_env[tid_index]->co_swap = NULL;
 	}
@@ -180,12 +127,6 @@ _coroutine_core_exit(void)
 	}
 }
 
-static inline void
-_coroutine_swap_run(CoSwap *pCurrentSwap, CoSwap *pPendingSwap)
-{
-	coroutine_swap(pCurrentSwap, pPendingSwap);
-}
-
 static inline void *
 _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 {
@@ -197,7 +138,7 @@ _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
 	pCore->swap.ss_size = _coroutine_stack_size;
 	pCore->swap.ss_sp = dave_malloc(pCore->swap.ss_size);
 
-	_coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore);
+	coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore);
 
 	pCore->env = _coroutine_thread_env();
 
@@ -231,7 +172,7 @@ _coroutine_resume(void *co)
 
 	pEnv->co_swap = &(pCore->swap);
 
-	_coroutine_swap_run(&(pEnv->base_swap), pEnv->co_swap);
+	coroutine_swap_run(&(pEnv->base_swap), pEnv->co_swap);
 
 	return dave_true;
 }
@@ -269,7 +210,7 @@ _coroutine_yield(void *co)
 
 	pEnv->co_swap = NULL;
 
-	_coroutine_swap_run(&(pCore->swap), &(pEnv->base_swap));
+	coroutine_swap_run(&(pCore->swap), &(pEnv->base_swap));
 
 	return dave_true;
 }

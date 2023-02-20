@@ -31,6 +31,7 @@
 #include "rxtx_param.h"
 #include "socket_parameters.h"
 #include "thread_chain.h"
+#include "coroutine_x86_swap.h"
 #include "sync_param.h"
 #include "sync_type.h"
 
@@ -4415,6 +4416,33 @@ t_auto_UIPType_str(UIPType enum_value)
 			break;
 		case UIPType_wechat_form:
 				value_str = "'UIPType_wechat_form'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_regs_map_str(regs_map enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case kRDI:
+				value_str = "'kRDI-7'";
+			break;
+		case kRSI:
+				value_str = "'kRSI-8'";
+			break;
+		case kRETAddr:
+				value_str = "'kRETAddr-9'";
+			break;
+		case kRSP:
+				value_str = "'kRSP-13'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);

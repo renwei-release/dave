@@ -5,12 +5,12 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+#if defined(__x86_64__)
+
 .globl coroutine_swap
 .type  coroutine_swap, @function
 
 coroutine_swap:
-
-#if defined(__x86_64__)
 	leaq 8(%rsp),%rax
 	leaq 112(%rdi),%rsp
 	pushq %rax
