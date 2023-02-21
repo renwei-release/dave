@@ -28,6 +28,11 @@ if [ ! -d ${THIRDPARTYDIR} ]; then
    THIRDPARTYDIR=./ThirdParty/build
 fi
 
+if [ ! -f ${THIRDPARTYDIR}/thrift/setup/lib/libthrift.a ]; then
+   cd ${THIRDPARTYDIR}/thrift
+   build
+   cd ${homepath}
+fi
 if [ ! -f ${THIRDPARTYDIR}/jaeger-client-cpp/setup/lib64/libjaegertracing.a ]; then
    cd ${THIRDPARTYDIR}/jaeger-client-cpp
    build
@@ -40,11 +45,6 @@ if [ ! -f ${THIRDPARTYDIR}/yaml-cpp/setup/lib/libyaml-cpp.a ]; then
 fi
 if [ ! -f ${THIRDPARTYDIR}/opentracing-cpp/setup/lib/libopentracing.a ]; then
    cd ${THIRDPARTYDIR}/opentracing-cpp
-   build
-   cd ${homepath}
-fi
-if [ ! -f ${THIRDPARTYDIR}/thrift/setup/lib/libthrift.a ]; then
-   cd ${THIRDPARTYDIR}/thrift
    build
    cd ${homepath}
 fi

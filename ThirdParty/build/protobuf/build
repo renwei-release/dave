@@ -1,0 +1,21 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECT=${PWD##*/}
+CONTAINER=$1
+
+../ENV ${CONTAINER}
+
+if [ ! "$CONTAINER" == "" ]; then
+   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build_protobuf__"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build_protobuf-c__"
+else
+   ./__build_protobuf__
+   ./__build_protobuf-c__
+fi

@@ -6,8 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-exit_yum=$(type yum)
-if [ "$exit_yum" == "" ]; then
+if [[ -f /usr/bin/yum ]] || [[ -f /usr/sbin/yum ]] || [[ -f /bin/yum ]] || [[ -f /sbin/yum ]]; then
    INSTALL=yum
 else
    INSTALL=apt
