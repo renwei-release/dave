@@ -10,28 +10,28 @@ RUN yum install -y findutils
 RUN yum install -y vim
 RUN yum install -y wget
 RUN yum install -y libgomp
-RUN yum install -y gcc-c++.x86_64
+RUN yum install -y gcc-c++
 RUN yum install -y cmake
 RUN yum install -y python3
-RUN yum install -y python3-devel.x86_64
-RUN yum install -y golang.x86_64
+RUN yum install -y python3-devel
+RUN yum install -y golang
 RUN yum install -y libstdc++
 RUN yum install -y libstdc++-devel
 RUN yum install -y libstdc++-static
 RUN yum install -y flex
 RUN yum install -y bison
-RUN yum install -y boost.x86_64
-RUN yum install -y boost-devel.x86_64
-RUN yum install -y openssl.x86_64
-RUN yum install -y openssl-devel.x86_64
-RUN yum install -y protobuf.x86_64
-RUN yum install -y protobuf-devel.x86_64
-RUN yum install -y grpc.x86_64
-RUN yum install -y grpc-devel.x86_64
-RUN yum install -y grpc-plugins.x86_64
-RUN yum install -y cpprest.x86_64
-RUN yum install -y cpprest-devel.x86_64
-RUN yum install -y java-openjdk.x86_64
+RUN yum install -y boost
+RUN yum install -y boost-devel
+RUN yum install -y openssl
+RUN yum install -y openssl-devel
+RUN yum install -y protobuf
+RUN yum install -y protobuf-devel
+RUN yum install -y grpc
+RUN yum install -y grpc-devel
+RUN yum install -y grpc-plugins
+RUN yum install -y cpprest
+RUN yum install -y cpprest-devel
+RUN yum install -y java-openjdk
 
 RUN mkdir -p /project/DAVE
 

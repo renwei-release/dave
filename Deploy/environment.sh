@@ -7,7 +7,7 @@
 # */
 
 exit_yum=$(type yum)
-if [ "exit_yum" == ""]; then
+if [ "$exit_yum" == "" ]; then
    INSTALL=yum
 else
    INSTALL=apt

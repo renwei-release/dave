@@ -10,4 +10,5 @@ PROJECT=$1
 TAGS=$2
 TIDY=$3
 
+chmod a+x build.sh
 ./build.sh $PROJECT $TAGS $TIDY

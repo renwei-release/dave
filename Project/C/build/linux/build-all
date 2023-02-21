@@ -10,10 +10,10 @@ build()
 
    for project_name in $(ls ./)
       do
-         [ -d $project_name ] && last_project=$project_name && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && ./clean > /dev/null && ./build $LEVEL >> ${OUTPUTFILE} && cd ../
+         [ -d $project_name ] && last_project=$project_name && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && chmod a+x clean && ./clean > /dev/null && chmod a+x build && ./build $LEVEL >> ${OUTPUTFILE} && cd ../
       done
    if [ -d $last_project ]; then
-      cd $last_project && ./clean > /dev/null && cd ../
+      cd $last_project && chmod a+x clean && ./clean > /dev/null && cd ../
    fi
    echo -e "done!"
 }

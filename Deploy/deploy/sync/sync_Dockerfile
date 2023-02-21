@@ -6,12 +6,12 @@ RUN chmod 777 /tmp
 
 RUN yum update -y
 RUN yum install -y libgomp
-RUN yum install -y boost.x86_64
-RUN yum install -y openssl.x86_64
-RUN yum install -y protobuf.x86_64
-RUN yum install -y grpc.x86_64
-RUN yum install -y grpc-plugins.x86_64
-RUN yum install -y cpprest.x86_64
+RUN yum install -y boost
+RUN yum install -y openssl
+RUN yum install -y protobuf
+RUN yum install -y grpc
+RUN yum install -y grpc-plugins
+RUN yum install -y cpprest
 
 
 WORKDIR /

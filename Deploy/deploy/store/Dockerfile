@@ -6,7 +6,7 @@ RUN chmod 777 /tmp
 
 RUN yum update -y
 RUN yum -y install libgomp
-RUN yum -y install mariadb-devel.x86_64
+RUN yum -y install mariadb-devel
 
 WORKDIR /
 COPY ./file_system .

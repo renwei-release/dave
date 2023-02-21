@@ -1,0 +1,15 @@
+
+# Initialize configuration files and genesis file
+./nsd init --chain-id namechain
+
+# Copy the `Address` output here and save it for later use 
+# [optional] add "--ledger" at the end to use a Ledger Nano S 
+./nscli keys add jack
+
+# Copy the `Address` output here and save it for later use
+./nscli keys add alice
+
+# Add both accounts, with coins to the genesis file
+./nsd add-genesis-account $(./nscli keys show jack -a) 1000nametoken,1000jackcoin
+./nsd add-genesis-account $(./nscli keys show alice -a) 1000nametoken,1000alicecoin
+

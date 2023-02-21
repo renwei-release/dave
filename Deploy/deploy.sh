@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-chmod a+x *.sh curl
+chmod a+x *.sh
 
 PROJECT=demo
 PROJECTNAME=''
