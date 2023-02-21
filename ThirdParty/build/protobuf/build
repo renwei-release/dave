@@ -9,13 +9,16 @@
 PROJECT=${PWD##*/}
 CONTAINER=$1
 
+chmod a+x ../ENV
 ../ENV ${CONTAINER}
 
 if [ ! "$CONTAINER" == "" ]; then
    echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build_protobuf__"
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && ./__build_protobuf-c__"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && chmod a+x __build_protobuf__ && ./__build_protobuf__"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/ThirdParty/build/${PROJECT} && chmod a+x __build_protobuf-c__ && ./__build_protobuf-c__"
 else
+   chmod a+x __build_protobuf__
    ./__build_protobuf__
+   chmod a+x __build_protobuf-c__
    ./__build_protobuf-c__
 fi
