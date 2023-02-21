@@ -424,7 +424,7 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 {
 	CoroutineSite *pSite = _thread_coroutine_info_malloc(pThread, coroutine_fun, thread_fun, msg);
 
-	pSite->co = coroutine_create(_thread_coroutine_running_step_2, pSite);
+	pSite->co = coroutine_create(_thread_coroutine_running_step_2, pSite, msg);
 
 	if(coroutine_resume(pSite->co) == dave_false)
 	{

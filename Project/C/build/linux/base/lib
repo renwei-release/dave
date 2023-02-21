@@ -55,9 +55,11 @@ build_dynamic_lib()
 
 build_lib()
 {
+   chmod a+x clean
    ./clean >> $LOGFILE
 
    echo -e "lib build \033[35m$LEVEL\033[0m LIB ..."
+   chmod a+x build
    ./build $LEVEL LIB >> $LOGFILE
 
    build_dynamic_lib
@@ -83,6 +85,7 @@ if [ "$LEVEL" == "all" ]; then
    build_lib
 fi
 
+chmod a+x clean
 ./clean >> $LOGFILE
 
 rm -rf $LOGFILE

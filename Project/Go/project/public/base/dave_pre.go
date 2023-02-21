@@ -12,6 +12,11 @@ package base
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
+/*
+#include <dave_base.h>
+#include <stdio.h>
+#include <stdlib.h>
+*/
 import "C"
 import (
 	"unsafe"

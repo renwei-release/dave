@@ -11,6 +11,7 @@ homepath=$(cd `dirname $0`; pwd)
 PROJECT=$1
 TAGS=$2
 TIDY=$3
+ARCH=`arch`
 
 if [ "$PROJECT" == "" ]; then
    PROJECT=dave
@@ -18,7 +19,6 @@ fi
 projectnameforbuild=projectname${PROJECT}
 
 python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PROJECT^^}
-
 
 if [ -f tidy.sh ]; then
    ./tidy.sh ${PROJECT} ${TIDY}
@@ -28,9 +28,17 @@ if [ -f $PROJECT ]; then
    rm -rf $PROJECT
 fi
 
+if [ "$ARCH" == "x86_64" ]; then
+   GOARCH=amd64
+elif [ "$ARCH" == "aarch64" ]; then
+   GOARCH=arm64
+else
+   echo Please define the GOARCH!
+fi
+
 cd ../project
 
-GOOS=linux GOARCH=amd64 go build -gcflags=all="-N -l" -tags "${TAGS} __DAVE_PRODUCT_${PROJECT^^}__" -o $projectnameforbuild dave_main.go
+GOOS=linux GOARCH=${GOARCH} go build -gcflags=all="-N -l" -tags "${TAGS} __DAVE_PRODUCT_${PROJECT^^}__" -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
    PROJECTDIR=../../../Deploy/deploy/${PROJECT,,}/file_system/project

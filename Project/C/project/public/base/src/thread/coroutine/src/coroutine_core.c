@@ -26,10 +26,17 @@
 typedef void* (* co_swap_callback_fun)(void *param);
 
 typedef struct {
+	CoSwap base_swap;
+	CoSwap *co_swap;
+} CoThreadEnv;
+
+typedef struct {
 	coroutine_core_fun fun_ptr;
 	void *fun_param;
 
 	CoSwap swap;
+	size_t ss_size;
+	char *ss_sp;
 
 	CoThreadEnv *env;
 } CoCore;
@@ -93,7 +100,7 @@ _coroutine_thread_env(void)
 	{
 		_co_thread_env[tid_index] = _coroutine_env_malloc();
 
-		coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL);
+		coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL, NULL, 0, NULL);
 
 		_co_thread_env[tid_index]->co_swap = NULL;
 	}
@@ -128,17 +135,17 @@ _coroutine_core_exit(void)
 }
 
 static inline void *
-_coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
+_coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
 {
 	CoCore *pCore = dave_malloc(sizeof(CoCore));
 
 	pCore->fun_ptr = fun_ptr;
 	pCore->fun_param = fun_param;
 
-	pCore->swap.ss_size = _coroutine_stack_size;
-	pCore->swap.ss_sp = dave_malloc(pCore->swap.ss_size);
+	pCore->ss_size = _coroutine_stack_size;
+	pCore->ss_sp = dave_malloc(pCore->ss_size);
 
-	coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore);
+	coroutine_swap_make(&(pCore->swap), _coroutine_swap_function, pCore, pCore->ss_sp, pCore->ss_size, msg);
 
 	pCore->env = _coroutine_thread_env();
 
@@ -222,7 +229,7 @@ _coroutine_release(void *co)
 
 	if(pCore != NULL)
 	{
-		dave_free(pCore->swap.ss_sp);
+		dave_free(pCore->ss_sp);
 
 		dave_free(pCore);
 	}
@@ -277,9 +284,9 @@ coroutine_get_stack_size(void)
 }
 
 void *
-coroutine_create(coroutine_core_fun fun_ptr, void *fun_param)
+coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
 {
-	return _coroutine_create(fun_ptr, fun_param);
+	return _coroutine_create(fun_ptr, fun_param, msg);
 }
 
 dave_bool

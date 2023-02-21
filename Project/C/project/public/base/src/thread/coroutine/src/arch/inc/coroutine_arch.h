@@ -8,14 +8,17 @@
 #ifndef __COROUTINE_ARCH_H__
 #define __COROUTINE_ARCH_H__
 
-#if defined(__x86_64__)
-#include "coroutine_x86_swap.h"
-#elif defined(__aarch64__)
-#include "coroutine_arm_swap.h"
-#else
-#error Please define the contents of the chip architecture !!!
-#endif
+typedef struct {
+	void *regs[14];
+
+	ThreadId msg_src;
+	ThreadId msg_dst;
+	ub msg_id;
+} CoSwap;
+
+void coroutine_swap_make(CoSwap *pSwap, void *fun, const void *param, char *ss_sp, size_t ss_size, MSGBODY *msg);
+
+void coroutine_swap_run(CoSwap *pCurrentSwap, CoSwap *pPendingSwap);
 
 #endif
-
 

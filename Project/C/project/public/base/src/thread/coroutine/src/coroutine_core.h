@@ -22,7 +22,7 @@ void coroutine_set_stack_size(ub size);
 
 ub coroutine_get_stack_size(void);
 
-void * coroutine_create(coroutine_core_fun fun_ptr, void *fun_param);
+void * coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg);
 
 dave_bool coroutine_resume(void *co);
 
