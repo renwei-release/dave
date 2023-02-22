@@ -564,7 +564,7 @@ _ramkv_timer_out_update_line(KVTimer *pKV)
 	}
 }
 
-static void
+static inline void
 _ramkv_timer_out(KV *pKV)
 {
 	KVTimerKeyList *pCloneKeyHead;

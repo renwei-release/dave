@@ -16,8 +16,8 @@ cd jaeger-client-cpp-${VERSION}
 
 mkdir build
 cd build
-export CFLAGS="$CFLAGS -march=x86-64 -fPIC"
-export CXXFLAGS="$CXXFLAGS -march=x86-64 -fPIC"
+export CFLAGS="$CFLAGS -fPIC"
+export CXXFLAGS="$CXXFLAGS -fPIC"
 cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DCMAKE_BUILD_TYPE=Release -DJAEGERTRACING_PLUGIN=ON -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DHUNTER_CONFIGURATION_TYPES=Release ..
 
 if [ -d ${INSTALL} ]; then

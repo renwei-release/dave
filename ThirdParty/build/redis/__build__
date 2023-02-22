@@ -14,7 +14,7 @@ fi
 
 cd redis-${VERSION}
 
-make CFLAGS="-march=x86-64" && make install
+make && make install
 
 cd ${homepath}
 

@@ -9,4 +9,5 @@
 PROJECT=${PWD##*/}
 
 cd ../
+chmod a+x CLEAN
 ./CLEAN ${PROJECT}

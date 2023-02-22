@@ -16,8 +16,8 @@ cd opentracing-cpp-${VERSION}
 
 mkdir build
 cd build
-export CFLAGS="$CFLAGS -march=x86-64 -fPIC"
-export CXXFLAGS="$CXXFLAGS -march=x86-64 -fPIC"
+export CFLAGS="$CFLAGS -fPIC"
+export CXXFLAGS="$CXXFLAGS -fPIC"
 cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} ..
 
 if [ ! -d ${INSTALL} ]; then

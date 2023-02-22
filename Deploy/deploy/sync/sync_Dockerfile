@@ -13,7 +13,6 @@ RUN yum install -y grpc
 RUN yum install -y grpc-plugins
 RUN yum install -y cpprest
 
-
 WORKDIR /
 COPY ./file_system .
 

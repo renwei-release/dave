@@ -9,7 +9,6 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
-#include "dave_verno.h"
 #include "test_service.h"
 #include "test_log.h"
 

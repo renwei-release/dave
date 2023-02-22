@@ -183,7 +183,10 @@ _etcd_del(s8 *key)
 {
 	etcd::Response resp = _etcd_client->rm(key);
 
-	if(0 != resp.error_code())
+	/*
+	 * 100 Key not found
+	 */
+	if((0 != resp.error_code()) && (100 != resp.error_code()))
 	{
 		PARTYLOG("del key:%s failed:%d/%s",
 			key,
