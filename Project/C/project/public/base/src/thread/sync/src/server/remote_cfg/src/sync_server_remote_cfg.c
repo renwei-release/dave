@@ -16,11 +16,14 @@
 #include "sync_server_app_tx.h"
 #include "sync_log.h"
 
+#define REMOTE_BASE_TIMER 3
+
 typedef struct {
 	SyncClient *pClient;
 	s32 socket;
 	s8 verno[DAVE_VERNO_STR_LEN];
 	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	
 	CFGRemoteUpdate update;
 } RemoteCfgReflash;
 
@@ -172,6 +175,11 @@ _sync_server_cfg_kv_timer_out(void *ramkv, s8 *key)
 {
 	RemoteCfgReflash *pReflash = kv_inq_key_ptr(ramkv, key);
 
+	/*
+	 * Whether the client detected by the three REMOTE_BASE_TIMER
+	 * interval is not online, 
+	 * if not online, delete parameter configuration information.
+	 */
 	if(pReflash->pClient->client_socket != pReflash->socket)
 	{
 		_sync_server_cfg_kv_del(pReflash->globally_identifier, pReflash->update.cfg_name);
@@ -197,7 +205,7 @@ _sync_server_cfg_kv_recycle(void *ramkv, s8 *key)
 void
 sync_server_remote_cfg_init(void)
 {
-	_remote_cfg_reflash_kv = kv_malloc("ssrcr", KvAttrib_list, 3, _sync_server_cfg_kv_timer_out);
+	_remote_cfg_reflash_kv = kv_malloc("ssrcr", KvAttrib_list, REMOTE_BASE_TIMER, _sync_server_cfg_kv_timer_out);
 
 	remote_etcd_cfg_init(_sync_server_cfg_update);
 
