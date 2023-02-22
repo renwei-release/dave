@@ -21,7 +21,7 @@
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
 #define DEFAULT_ETCD_SERVER_DIR "/sync"
 #define DEFAULT_ETCD_WATCHER_DIR "/"
-#define DEFAULT_ETCD_GET_LIMIT 512
+#define DEFAULT_ETCD_GET_LIMIT 8192
 
 static s8 _etcd_list[2048] = { "\0" };
 static s8 _etcd_dir[128] = { "\0" };
@@ -143,6 +143,12 @@ _sync_server_take_watcher_(s8 *key)
 	if(pArray != NULL)
 	{
 		array_len = dave_json_get_array_length(pArray);
+
+		if(array_len >= DEFAULT_ETCD_GET_LIMIT)
+		{
+			SYNCLOG("Note that the obtained value beyond the maximum(%ld/%ld) qualifier, you may not be able to get a complete value.",
+				array_len, DEFAULT_ETCD_GET_LIMIT);
+		}
 
 		for(array_index=0; array_index<array_len; array_index++)
 		{
