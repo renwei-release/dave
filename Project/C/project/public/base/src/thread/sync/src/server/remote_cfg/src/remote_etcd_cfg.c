@@ -40,6 +40,18 @@ _sync_server_load_list(void)
 	return cfg_get_by_default(CFG_ETCD_LIST, _etcd_list, sizeof(_etcd_list), DEFAULT_ETCD_LIST);
 }
 
+static void
+_sync_server_clean_list(void)
+{
+	cfg_set_str(CFG_ETCD_LIST, "");
+}
+
+static void
+_sync_server_set_list(s8 *list)
+{
+	cfg_set_str(CFG_ETCD_LIST, list);
+}
+
 static s8 *
 _sync_server_load_dir(void)
 {
@@ -213,6 +225,25 @@ _sync_server_etcd_enable(void)
 	}
 }
 
+static void
+_sync_server_prevent_restart_init(void)
+{
+	s8 *list;
+
+	list = _sync_server_load_list();
+
+	/*
+	 * 先清空配置，如果在dave_etcd_init中重启，
+	 * 重启后，_sync_server_etcd_enable就判断失效的配置，
+	 * 不至于引起无限重启。
+	 */
+	_sync_server_clean_list();
+
+	dave_etcd_init(list, _sync_server_load_watcher(), _sync_server_watcher);
+
+	_sync_server_set_list(list);
+}
+
 // =====================================================================
 
 void
@@ -225,7 +256,7 @@ remote_etcd_cfg_init(remote_cfg_get_callback get_callback)
 		return;
 	}
 
-	dave_etcd_init(_sync_server_load_list(), _sync_server_load_watcher(), _sync_server_watcher);
+	_sync_server_prevent_restart_init();
 
 	_sync_server_take_watcher();
 

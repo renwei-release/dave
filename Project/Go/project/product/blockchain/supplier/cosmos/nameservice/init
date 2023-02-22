@@ -1,3 +1,10 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
 
 # Initialize configuration files and genesis file
 ./nsd init --chain-id namechain
@@ -12,4 +19,3 @@
 # Add both accounts, with coins to the genesis file
 ./nsd add-genesis-account $(./nscli keys show jack -a) 1000nametoken,1000jackcoin
 ./nsd add-genesis-account $(./nscli keys show alice -a) 1000nametoken,1000alicecoin
-

@@ -11,6 +11,7 @@ homepath=$(cd `dirname $0`; pwd)/../../../../
 PROJECT=$1
 LEVEL=$2
 CONTAINER=$3
+File=$(basename $0)
 
 if [ "$PROJECT" == "base" ]; then
    echo -e "At present, ${PROJECT} project does not need any library."
@@ -23,6 +24,10 @@ build()
    ./build ${CONTAINER} 
 }
 
+DEPLOYDIR=/project/DAVE/Deploy/deploy
+if [ ! -d ${DEPLOYDIR} ]; then
+   DEPLOYDIR=./Deploy/deploy
+fi
 THIRDPARTYDIR=/project/DAVE/ThirdParty/build
 if [ ! -d ${THIRDPARTYDIR} ]; then
    THIRDPARTYDIR=./ThirdParty/build
@@ -54,12 +59,15 @@ if [ ! -f ${THIRDPARTYDIR}/redis/setup/lib/libhiredis.a ]; then
    cd ${homepath}
 fi
 if [ "$PROJECT" == "sync" ]; then
-   if [ ! -f /dave/tools/etcd-cpp-apiv3/lib64/libetcd-cpp-api.so ]; then
+   ETCDFILE=/dave/tools/etcd-cpp-apiv3/lib64/libetcd-cpp-api.so
+   if [ ! -f ${ETCDFILE} ]; then
       cd ${THIRDPARTYDIR}/etcd-cpp-apiv3
       chmod a+x __build__
       ./__build__
       cd ${homepath}
    fi
+   echo ${File} cp ${ETCDFILE} to ${DEPLOYDIR}
+   cp ${ETCDFILE} ${DEPLOYDIR}/sync/file_system/dave/tools/etcd-cpp-apiv3/lib64/
 fi
 if [ ! -f ${THIRDPARTYDIR}/protobuf/setup/lib/libprotobuf.a ]; then
    cd ${THIRDPARTYDIR}/protobuf
