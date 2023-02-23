@@ -17,15 +17,18 @@
 #define CFG_ETCD_LIST "ETCDServerList"
 #define CFG_ETCD_SERVER_DIR "ETCDServerDir"
 #define CFG_ETCD_WATCHER_DIR "ETCDWatcherDir"
+#define CFG_ETCD_GET_DIR "ETCDGetDir"
 
 #define DEFAULT_ETCD_LIST "http://127.0.0.1:2379"
 #define DEFAULT_ETCD_SERVER_DIR "/sync"
 #define DEFAULT_ETCD_WATCHER_DIR "/"
-#define DEFAULT_ETCD_GET_LIMIT 8192
+#define DEFAULT_ETCD_GET_DIR "/cnf;"
+#define DEFAULT_ETCD_GET_LIMIT 0	// if zero, get all etcd config.
 
 static s8 _etcd_list[2048] = { "\0" };
 static s8 _etcd_dir[128] = { "\0" };
 static s8 _etcd_watcher[128] = { "\0" };
+static s8 _etcd_get[4192] = { "\0" };
 static remote_cfg_get_callback _get_callback = NULL;
 
 typedef struct {
@@ -67,6 +70,12 @@ static s8 *
 _sync_server_load_watcher(void)
 {
 	return cfg_get_by_default(CFG_ETCD_WATCHER_DIR, _etcd_watcher, sizeof(_etcd_watcher), DEFAULT_ETCD_WATCHER_DIR);
+}
+
+static s8 *
+_sync_server_load_get(void)
+{
+	return cfg_get_by_default(CFG_ETCD_GET_DIR, _etcd_get, sizeof(_etcd_get), DEFAULT_ETCD_GET_DIR);
 }
 
 static s8 *
@@ -175,44 +184,86 @@ _sync_server_take_watcher_(s8 *key)
 	dave_json_free(pArray);
 }
 
-static void
-_sync_server_take_watcher(void)
+static void 
+_sync_server_traverse_etcd_prefix(s8 *key_str)
 {
-	s8 *key = _sync_server_load_watcher();
-
-	if(dave_strcmp(key, "") == dave_true)
+	ub i;
+	ub index = 0;
+	s8 *key;
+	ub len = dave_strlen(key_str);
+	
+	for(i = 0; i < len; i++)
 	{
-		s8 key_loop;
-		s8 key_str[2];
+		if(key_str[i] == ';')
+		{
+			key = dave_malloc(i - index + 1);
 
-		/*
-		 * get all config
-		 */
-		for(key_loop='0'; key_loop<='9'; key_loop++)
-		{
-			key_str[0] = key_loop;
-			key_str[1] = '\0';
-			_sync_server_take_watcher_(key_str);
+			dave_strcpy(key, &key_str[index], i - index + 1);
+			index = i + 1;
+			_sync_server_take_watcher_(key);
+
+			dave_free(key);
 		}
-		for(key_loop='a'; key_loop<='z'; key_loop++)
-		{
-			key_str[0] = key_loop;
-			key_str[1] = '\0';
-			_sync_server_take_watcher_(key_str);
-		}
-		for(key_loop='A'; key_loop<='Z'; key_loop++)
-		{
-			key_str[0] = key_loop;
-			key_str[1] = '\0';
-			_sync_server_take_watcher_(key_str);
-		}
-		key_str[0] = '/';
+	}
+
+	if((key_str[len - 1] != ';') && (index < len))
+	{
+		key = dave_malloc(len - index + 1);
+
+		dave_strcpy(key, &key_str[index], len - index + 1);
+		_sync_server_take_watcher_(key);
+
+		dave_free(key);
+	}
+}
+
+static void
+_sync_server_get_all_key(void)
+{
+	s8 key_loop;
+	s8 key_str[2];
+	
+	/*
+	 * get all config
+	 */
+	for(key_loop='0'; key_loop<='9'; key_loop++)
+	{
+		key_str[0] = key_loop;
 		key_str[1] = '\0';
 		_sync_server_take_watcher_(key_str);
 	}
+
+	for(key_loop='a'; key_loop<='z'; key_loop++)
+	{
+		key_str[0] = key_loop;
+		key_str[1] = '\0';
+		_sync_server_take_watcher_(key_str);
+	}
+
+	for(key_loop='A'; key_loop<='Z'; key_loop++)
+	{
+		key_str[0] = key_loop;
+		key_str[1] = '\0';
+		_sync_server_take_watcher_(key_str);
+	}
+
+	key_str[0] = '/';
+	key_str[1] = '\0';
+	_sync_server_take_watcher_(key_str);
+}
+
+static void
+_sync_server_take_get(void)
+{
+	s8 *key = _sync_server_load_get();
+
+	if(dave_strcmp(key, "") == dave_true)
+	{
+		_sync_server_get_all_key();
+	}
 	else
 	{
-		_sync_server_take_watcher_(key);
+		_sync_server_traverse_etcd_prefix(key);
 	}
 }
 
@@ -245,7 +296,7 @@ _sync_server_prevent_restart_init(void)
 	 */
 	_sync_server_clean_list();
 
-	dave_etcd_init(list, _sync_server_load_watcher(), _sync_server_watcher);
+	dave_etcd_init(list, _sync_server_load_get(), _sync_server_watcher);
 
 	_sync_server_set_list(list);
 }
@@ -262,11 +313,11 @@ remote_etcd_cfg_init(remote_cfg_get_callback get_callback)
 		return;
 	}
 
+	reg_msg(MSGID_INNER_LOOP, _sync_server_process_watcher);
+
 	_sync_server_prevent_restart_init();
 
-	_sync_server_take_watcher();
-
-	reg_msg(MSGID_INNER_LOOP, _sync_server_process_watcher);
+	_sync_server_take_get();
 }
 
 void
