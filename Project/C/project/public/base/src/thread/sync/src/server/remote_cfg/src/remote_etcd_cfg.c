@@ -4,6 +4,11 @@
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
  */
+/*
+ * 20230224 --- chenxiaomin cxm2048@163.com
+ * Fix the etcd get error,
+ * add the _sync_server_traverse_etcd_prefix function.
+ */
 
 #include "base_macro.h"
 #include "thread_sync.h"

@@ -6,22 +6,33 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-CHAINID=cosmos
-HOMEDIR=/project/.gaiad-${CHAINID}
-GAIADBIN=/project/gaiad
+HOMEPATH=`pwd`
+
+ACCOUNT=cosmos
+CHAINID=${ACCOUNT}
 KEYRINGBACKEND=test
+
+DATADIR=${HOMEPATH}/gaiad-data-${CHAINID}
+GAIADBIN=${HOMEPATH}/gaiad
+
+echo ACCOUNT:${ACCOUNT}
+echo CHAINID:${CHAINID}
+echo KEYRINGBACKEND:${KEYRINGBACKEND}
+echo DATADIR:${DATADIR}
+echo GAIADBIN:${GAIADBIN}
 
 chmod a+x ${GAIADBIN}
 
-if [ ! -f ${HOMEDIR} ]; then
-   ${GAIADBIN} init ${CHAINID} --chain-id ${CHAINID} --home ${HOMEDIR}
-   ${GAIADBIN} config chain-id ${CHAINID} --home ${HOMEDIR}
-   ${GAIADBIN} config keyring-backend ${KEYRINGBACKEND} --home ${HOMEDIR}
-   ${GAIADBIN} keys add val --home ${HOMEDIR}
-   ${GAIADBIN} add-genesis-account val 10000000000000000000000000stake --home ${HOMEDIR} --keyring-backend ${KEYRINGBACKEND}
-   ${GAIADBIN} gentx val 1000000000stake --home ${HOMEDIR} --chain-id ${CHAINID}
-   ${GAIADBIN} collect-gentxs --home ${HOMEDIR}
-   sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ${HOMEDIR}/config/app.toml
+if [ ! -d ${DATADIR} ]; then
+   echo ====== init ${DATADIR} ======
+   ${GAIADBIN} init ${CHAINID} --chain-id ${CHAINID} --home ${DATADIR}
+   ${GAIADBIN} config chain-id ${CHAINID} --home ${DATADIR}
+   ${GAIADBIN} config keyring-backend ${KEYRINGBACKEND} --home ${DATADIR}
+   ${GAIADBIN} keys add ${ACCOUNT} --home ${DATADIR}
+   ${GAIADBIN} add-genesis-account ${ACCOUNT} 10000000000000000000000000stake --home ${DATADIR} --keyring-backend ${KEYRINGBACKEND}
+   ${GAIADBIN} gentx ${ACCOUNT} 1000000000stake --home ${DATADIR} --chain-id ${CHAINID}
+   ${GAIADBIN} collect-gentxs --home ${DATADIR}
+   sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ${DATADIR}/config/app.toml
 fi
 
-${GAIADBIN} start --home ${HOMEDIR} --x-crisis-skip-assert-invariants
+${GAIADBIN} start --home ${DATADIR} --x-crisis-skip-assert-invariants
