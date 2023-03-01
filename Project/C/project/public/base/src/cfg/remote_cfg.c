@@ -59,8 +59,8 @@ _base_remote_reflash_creat(s8 *name, s8 *value, sb ttl)
 	pReflash = dave_malloc(sizeof(RemoteReflash));
 	
 	pReflash->update.put_flag = dave_true;
-	pReflash->update.cfg_mbuf_name = dave_mclone(pReflash->update.cfg_mbuf_name);
-	pReflash->update.cfg_mbuf_value = dave_mclone(pReflash->update.cfg_mbuf_value);
+	pReflash->update.cfg_mbuf_name = t_a2b_str_to_mbuf(name, 0);
+	pReflash->update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
 	pReflash->update.ttl = ttl;
 	
 	base_timer_param_creat(name, _base_remote_reflash, pReflash, sizeof(pReflash), (ttl/2) * 1000);
