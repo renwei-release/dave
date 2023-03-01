@@ -361,7 +361,7 @@ __thread_router_pop_msg__(ThreadRouter **ppRouter, s8 *uid, s8 *fun, ub line)
 	{
 		thread_id = _thread_router_current_thread_id(pRouter, fun, line);
 	}
-	
+
 	if(thread_id == INVALID_THREAD_ID)
 	{
 		_thread_router_free(pRouter);

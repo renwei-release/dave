@@ -135,6 +135,8 @@ sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_
 	if((ret == dave_false) && (pop_flag == dave_false))
 	{
 		sync_client_internal_buffer_push(pServer, msg_id, msg_len, msg_body);
+
+		return dave_true;
 	}
 
 	return ret;

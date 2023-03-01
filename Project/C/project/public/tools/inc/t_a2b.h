@@ -13,8 +13,10 @@
 #define dave_byte_16(d, a0, a1) {u16 t; t=((((u16)(a0))<<8)&0xff00); t+=(((u16)(a1))&0xff); (d)=t;}
 #define dave_byte_8(a0, a1, d) {u16 t; t=d; (a0)=(u8)((t)>>8); (a1)=(u8)(t);}
 
-MBUF * t_a2b_bin_to_mbuf(s8 *bin_ptr, ub bin_len);
-MBUF * t_a2b_str_to_mbuf(s8 *str_ptr, sb str_len);
+MBUF * __t_a2b_bin_to_mbuf__(s8 *bin_ptr, ub bin_len, s8 *fun, ub line);
+#define t_a2b_bin_to_mbuf(bin_ptr, bin_len) __t_a2b_bin_to_mbuf__(bin_ptr, bin_len, (s8 *)__func__, (ub)__LINE__)
+MBUF * __t_a2b_str_to_mbuf__(s8 *str_ptr, sb str_len, s8 *fun, ub line);
+#define t_a2b_str_to_mbuf(str_ptr, str_len) __t_a2b_str_to_mbuf__(str_ptr, str_len, (s8 *)__func__, (ub)__LINE__)
 MBUF * t_a2b_param_to_mbuf(const char *args, ...);
 ub t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m);
 void * t_a2b_mbuf_to_json(MBUF *m);

@@ -721,9 +721,6 @@ static void
 _sync_client_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 {
 	sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), pUpdate, dave_false);
-
-	dave_mfree(pUpdate->cfg_mbuf_name);
-	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
 static void

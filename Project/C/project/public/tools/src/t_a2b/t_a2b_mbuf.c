@@ -12,11 +12,11 @@
 // =====================================================================
 
 MBUF *
-t_a2b_bin_to_mbuf(s8 *bin_ptr, ub bin_len)
+__t_a2b_bin_to_mbuf__(s8 *bin_ptr, ub bin_len, s8 *fun, ub line)
 {
 	MBUF *mbuf_data;
 
-	mbuf_data = dave_mmalloc(bin_len + 1);
+	mbuf_data = __base_mmalloc__(bin_len + 1, fun, line);
 	dave_memcpy(mbuf_data->payload, bin_ptr, bin_len);
 	((s8 *)(mbuf_data->payload))[bin_len] = '\0';
 	mbuf_data->len = mbuf_data->tot_len = bin_len;
@@ -25,14 +25,14 @@ t_a2b_bin_to_mbuf(s8 *bin_ptr, ub bin_len)
 }
 
 MBUF *
-t_a2b_str_to_mbuf(s8 *str_ptr, sb str_len)
+__t_a2b_str_to_mbuf__(s8 *str_ptr, sb str_len, s8 *fun, ub line)
 {
 	if(str_len <= 0)
 	{
 		str_len = dave_strlen(str_ptr);
 	}
 
-	return t_a2b_bin_to_mbuf(str_ptr, str_len);
+	return __t_a2b_bin_to_mbuf__(str_ptr, str_len, fun, line);
 }
 
 MBUF *
