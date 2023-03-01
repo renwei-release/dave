@@ -16,6 +16,8 @@ sb __mbuf_mheader__(MBUF *m, sb header_size_increment, s8 *file, ub line);
 
 ub __mbuf_mfree__(MBUF *m, s8 *file, ub line);
 
+ub __mbuf_mclean__(MBUF *m, s8 *file, ub line);
+
 void __mbuf_mref__(MBUF *m, s8 *file, ub line);
 
 MBUF * __mbuf_mchain__(MBUF *cur_point, MBUF *cat_point, s8 *file, ub line);

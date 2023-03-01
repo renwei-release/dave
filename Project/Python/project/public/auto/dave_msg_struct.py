@@ -177,14 +177,21 @@ class BDataLogRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_CFG_REMOTE_SYNC_UPDATE message *#
+class CFGRemoteSyncUpdate (Structure):
+	_fields_ = [
+		("put_flag", c_char),
+		("cfg_mbuf_name", POINTER(MBUF)),
+		("cfg_mbuf_value", POINTER(MBUF)),
+		("ttl", c_longlong),
+]
+
 #* for MSGID_CFG_REMOTE_UPDATE message *#
 class CFGRemoteUpdate (Structure):
 	_fields_ = [
 		("put_flag", c_char),
 		("cfg_name", c_char * 1024),
-		("cfg_value", c_char * 1048576),
-		("cfg_mbuf_name", POINTER(MBUF)),
-		("cfg_mbuf_value", POINTER(MBUF)),
+		("cfg_value", c_char * 262144),
 		("ttl", c_longlong),
 ]
 

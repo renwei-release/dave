@@ -155,13 +155,19 @@ type BDataLogRsp struct {
 	Ptr uint64
 }
 
+/* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
+type CFGRemoteSyncUpdate struct {
+	Put_flag int8
+	Cfg_mbuf_name *MBUF
+	Cfg_mbuf_value *MBUF
+	Ttl int64
+}
+
 /* for MSGID_CFG_REMOTE_UPDATE message */
 type CFGRemoteUpdate struct {
 	Put_flag int8
 	Cfg_name [1024] byte
-	Cfg_value [1048576] byte
-	Cfg_mbuf_name *MBUF
-	Cfg_mbuf_value *MBUF
+	Cfg_value [262144] byte
 	Ttl int64
 }
 

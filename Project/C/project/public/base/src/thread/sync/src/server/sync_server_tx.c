@@ -84,7 +84,7 @@ _sync_server_tx_run_internal_msg_v2_req(
 
 	SYNCDEBUG("msg_id:%d msg_len:%d", msg_id, msg_len);
 
-	zip_body = t_rpc_zip(3, NULL, NULL, msg_id, msg_body, msg_len);
+	zip_body = t_rpc_zip(NULL, NULL, msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
 	{
 		SYNCLOG("msg_id:%d msg_len:%d zip", msg_id, msg_len);

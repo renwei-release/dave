@@ -271,9 +271,7 @@ typedef struct {
 typedef struct {
 	dave_bool put_flag;
 	s8 cfg_name[1024];
-	s8 cfg_value[1048576];
-	MBUF *cfg_mbuf_name;
-	MBUF *cfg_mbuf_value;
+	s8 cfg_value[262144];
 	sb ttl;
 } CFGRemoteUpdate;
 
@@ -281,6 +279,14 @@ typedef struct {
 typedef struct {
 	s8 config_data[8192];
 } SupportConfig;
+
+/* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
+typedef struct {
+	dave_bool put_flag;
+	MBUF *cfg_mbuf_name;
+	MBUF *cfg_mbuf_value;
+	sb ttl;
+} CFGRemoteSyncUpdate;
 
 #endif
 

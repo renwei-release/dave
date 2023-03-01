@@ -12,9 +12,9 @@ void sync_server_remote_cfg_init(void);
 
 void sync_server_remote_cfg_exit(void);
 
-dave_bool sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate);
+dave_bool sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate);
 
-dave_bool sync_server_remote_cfg_del(SyncClient *pClient, CFGRemoteUpdate *pUpdate);
+dave_bool sync_server_remote_cfg_del(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate);
 
 void sync_server_remote_cfg_tell_client(SyncClient *pClient);
 

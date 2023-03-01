@@ -23,8 +23,8 @@ typedef struct {
 	s32 socket;
 	s8 verno[DAVE_VERNO_STR_LEN];
 	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
-	
-	CFGRemoteUpdate update;
+
+	CFGRemoteSyncUpdate update;
 } RemoteCfgReflash;
 
 static void *_remote_cfg_reflash_kv = NULL;
@@ -32,25 +32,46 @@ static void *_remote_cfg_reflash_kv = NULL;
 static void
 _sync_server_the_config_tell_all_client(dave_bool put_flag, s8 *key, s8 *value)
 {
-	CFGRemoteUpdate update;
+	CFGRemoteSyncUpdate update;
+	ub client_index;
 
 	dave_memset(&update, 0x00, sizeof(update));
 
 	update.put_flag = put_flag;
-	dave_strcpy(update.cfg_name, key, sizeof(update.cfg_name));
-	dave_strcpy(update.cfg_value, value, sizeof(update.cfg_value));
-	update.cfg_mbuf_name = NULL;
-	update.cfg_mbuf_value = NULL;
+	update.cfg_mbuf_name = t_a2b_str_to_mbuf(key, 0);
+	update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
 	update.ttl = 0;
 
-	sync_server_app_tx_all_client(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), &update);
+	/*
+	 * Prevent MBUF from being released by this call:
+	 * sync_server_app_tx_all_client -> sync_server_tx_run_internal_msg_v2_req ->
+	 * t_rpc_zip
+	 */
+	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
+	{
+		dave_mref(update.cfg_mbuf_name);
+		dave_mref(update.cfg_mbuf_value);
+	}
+
+	sync_server_app_tx_all_client(MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update);
+
+	dave_mclean(update.cfg_mbuf_name);
+	dave_mclean(update.cfg_mbuf_value);
 }
 
 static void
 _sync_server_the_client_tell_all_config(SyncClient *pClient)
 {
-	CFGRemoteUpdate update;
+	CFGRemoteSyncUpdate update;
+	s8 *cfg_name_ptr;
+	ub cfg_name_len = 4096;
+	s8 *cfg_value_ptr;
+	ub cfg_value_len = 1024 * 1024;
 	ub index;
+	dave_bool ret;
+
+	cfg_name_ptr = dave_malloc(cfg_name_len);
+	cfg_value_ptr = dave_malloc(cfg_value_len);
 
 	for(index=0; index<9999999; index++)
 	{
@@ -59,20 +80,33 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 		update.put_flag = dave_true;
 		if(rcfg_index(
 			index,
-			update.cfg_name, sizeof(update.cfg_name),
-			update.cfg_value, sizeof(update.cfg_value)) < 0)
+			cfg_name_ptr, cfg_name_len,
+			cfg_value_ptr, cfg_value_len) < 0)
 		{
 			break;
 		}
-		update.cfg_mbuf_name = NULL;
-		update.cfg_mbuf_value = NULL;
+		update.cfg_mbuf_name = t_a2b_str_to_mbuf(cfg_name_ptr, 0);
+		update.cfg_mbuf_value = t_a2b_str_to_mbuf(cfg_value_ptr, 0);
 		update.ttl = 0;
 
-		if(update.cfg_name[0] != '\0')
+		if((ms8(update.cfg_mbuf_name))[0] != '\0')
 		{
-			sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), &update);
+			ret = sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update);
+		}
+		else
+		{
+			ret = dave_false;
+		}
+
+		if(ret == dave_false)
+		{
+			dave_mfree(update.cfg_mbuf_name);
+			dave_mfree(update.cfg_mbuf_value);
 		}
 	}
+
+	dave_free(cfg_name_ptr);
+	dave_free(cfg_value_ptr);
 }
 
 static void
@@ -99,6 +133,35 @@ _sync_server_cfg_kv_key(s8 *key_ptr, ub key_len, s8 *globally_identifier, s8 *cf
 	return key_ptr;
 }
 
+static RemoteCfgReflash *
+_sync_server_cfg_reflash_malloc(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
+{
+	RemoteCfgReflash *pReflash;
+
+	pReflash = dave_malloc(sizeof(RemoteCfgReflash));
+
+	pReflash->pClient = pClient;
+	pReflash->socket = pClient->client_socket;
+	dave_strcpy(pReflash->verno, pClient->verno, sizeof(pReflash->verno));
+	dave_strcpy(pReflash->globally_identifier, pClient->globally_identifier, sizeof(pReflash->globally_identifier));
+
+	pReflash->update.put_flag = pUpdate->put_flag;
+	pReflash->update.cfg_mbuf_name = dave_mclone(pUpdate->cfg_mbuf_name);
+	pReflash->update.cfg_mbuf_value = dave_mclone(pUpdate->cfg_mbuf_value);
+	pReflash->update.ttl = pUpdate->ttl;
+
+	return pReflash;
+}
+
+static void
+_sync_server_cfg_reflash_free(RemoteCfgReflash *pReflash)
+{
+	dave_mfree(pReflash->update.cfg_mbuf_name);
+	dave_mfree(pReflash->update.cfg_mbuf_value);
+
+	dave_free(pReflash);
+}
+
 static dave_bool
 _sync_server_cfg_kv_del(s8 *globally_identifier, s8 *cfg_name)
 {
@@ -115,9 +178,9 @@ _sync_server_cfg_kv_del(s8 *globally_identifier, s8 *cfg_name)
 
 		remote_etcd_cfg_del(
 			pReflash->verno, pReflash->globally_identifier,
-			pReflash->update.cfg_name);
+			ms8(pReflash->update.cfg_mbuf_name));
 
-		dave_free(pReflash);
+		_sync_server_cfg_reflash_free(pReflash);
 
 		return dave_true;
 	}
@@ -126,7 +189,7 @@ _sync_server_cfg_kv_del(s8 *globally_identifier, s8 *cfg_name)
 }
 
 static dave_bool
-_sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
+_sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
 	RemoteCfgReflash *pReflash;
 	s8 key[128];
@@ -137,7 +200,7 @@ _sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 		return dave_false;
 	}
 
-	_sync_server_cfg_kv_key(key, sizeof(key), pClient->globally_identifier, pUpdate->cfg_name);
+	_sync_server_cfg_kv_key(key, sizeof(key), pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name));
 
 	pReflash = kv_inq_key_ptr(_remote_cfg_reflash_kv, key);
 	if(pReflash != NULL)
@@ -145,26 +208,20 @@ _sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 		return dave_true;
 	}
 
-	pReflash = dave_malloc(sizeof(RemoteCfgReflash));
-
-	pReflash->pClient = pClient;
-	pReflash->socket = pClient->client_socket;
-	dave_strcpy(pReflash->verno, pClient->verno, sizeof(pReflash->verno));
-	dave_strcpy(pReflash->globally_identifier, pClient->globally_identifier, sizeof(pReflash->globally_identifier));
-	pReflash->update = *pUpdate;
+	pReflash = _sync_server_cfg_reflash_malloc(pClient, pUpdate);
 
 	kv_add_key_ptr(_remote_cfg_reflash_kv, key, pReflash);
 
 	ret = remote_etcd_cfg_set(
 		pReflash->verno, pReflash->globally_identifier,
-		pReflash->update.cfg_name, pReflash->update.cfg_value,
+		ms8(pReflash->update.cfg_mbuf_name), ms8(pReflash->update.cfg_mbuf_value),
 		pReflash->update.ttl);
 
-	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, pUpdate->cfg_name, pUpdate->ttl);
+	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name), pUpdate->ttl);
 
 	if(ret == dave_false)
 	{
-		_sync_server_cfg_kv_del(pClient->globally_identifier, pUpdate->cfg_name);
+		_sync_server_cfg_kv_del(pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name));
 	}
 
 	return ret;
@@ -182,7 +239,7 @@ _sync_server_cfg_kv_timer_out(void *ramkv, s8 *key)
 	 */
 	if(pReflash->pClient->client_socket != pReflash->socket)
 	{
-		_sync_server_cfg_kv_del(pReflash->globally_identifier, pReflash->update.cfg_name);
+		_sync_server_cfg_kv_del(pReflash->globally_identifier, ms8(pReflash->update.cfg_mbuf_name));
 	}
 }
 
@@ -195,7 +252,7 @@ _sync_server_cfg_kv_recycle(void *ramkv, s8 *key)
 	if(pReflash == NULL)
 		return RetCode_empty_data;
 
-	dave_free(pReflash);
+	_sync_server_cfg_reflash_free(pReflash);
 
 	return RetCode_OK;
 }
@@ -221,11 +278,11 @@ sync_server_remote_cfg_exit(void)
 }
 
 dave_bool
-sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
+sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
 	dave_bool ret;
 
-	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, pUpdate->cfg_name, pUpdate->ttl);
+	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name), pUpdate->ttl);
 
 	if(pUpdate->ttl > 0)
 	{
@@ -235,7 +292,7 @@ sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 	{
 		ret = remote_etcd_cfg_set(
 			pClient->verno, pClient->globally_identifier,
-			pUpdate->cfg_name, pUpdate->cfg_value,
+			ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value),
 			0);
 	}
 
@@ -243,15 +300,15 @@ sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
 }
 
 dave_bool
-sync_server_remote_cfg_del(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
+sync_server_remote_cfg_del(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
-	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, pUpdate->cfg_name, pUpdate->ttl);
+	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name), pUpdate->ttl);
 
-	if(_sync_server_cfg_kv_del(pClient->globally_identifier, pUpdate->cfg_name) == dave_false)
+	if(_sync_server_cfg_kv_del(pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name)) == dave_false)
 	{
 		return remote_etcd_cfg_del(
 			pClient->verno, pClient->globally_identifier,
-			pUpdate->cfg_name);
+			ms8(pUpdate->cfg_mbuf_name));
 	}
 
 	return dave_true;

@@ -1,0 +1,92 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2022 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+LEVEL=$1
+PROJECT=${PWD##*/}
+PROJECT=${PROJECT^^}
+BASELIBNAME=liblinuxBASE
+LOGFILE=build_lib_log.txt
+HOMEPATH=$(cd `dirname $0`; pwd)/../../../
+File=$(basename $0)
+
+############## build_lib function ##############
+build_static_lib()
+{
+   mkdir -p ${HOMEPATH}project/public/base/lib/${LEVEL}
+   mkdir -p ${HOMEPATH}../Go/project/public/base/inc
+   mkdir -p ${HOMEPATH}../Go/project/public/base/lib/
+
+   echo lib copy include to ${HOMEPATH}../Go/project/public/base/inc
+   rm -rf ${HOMEPATH}../Go/project/public/base/inc/*
+   cp -r ${HOMEPATH}project/public/base/inc/* ${HOMEPATH}../Go/project/public/base/inc
+
+   obj_list=$(find `pwd`/../../../project/public \
+      ! -path "`pwd`/../../../project/public/verno/*" \
+      ! -path "`pwd`/../../../project/public/tools/src/t_auto/*" \
+      ! -path "`pwd`/../../../project/public/tools/src/t_rpc/*" \
+      -name '*.o')
+   CLIB=${HOMEPATH}project/public/base/lib/${LEVEL}/${BASELIBNAME}.a
+   echo lib build ${CLIB}
+   rm -f ${CLIB}
+   ar cr ${CLIB} ${obj_list}
+
+   obj_list=$(find `pwd`/../../../project/public -name '*.o')
+   GOLIB=${HOMEPATH}../Go/project/public/base/lib/${BASELIBNAME}.a
+   echo lib build ${GOLIB}
+   rm -f ${GOLIB}
+   ar cr ${GOLIB} ${obj_list}
+}
+
+build_dynamic_lib()
+{
+   mkdir -p ${HOMEPATH}../Python/project/public/base/lib
+
+   obj_list=$(find `pwd`/../../../project/public -name '*.o')
+
+   SOLIB=${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
+   echo lib build ${SOLIB}
+   rm -f ${SOLIB}
+   gcc -lpthread -lrt -ldl -lm -lstdc++ -shared -o ${SOLIB} ${obj_list}
+}
+
+build_lib()
+{
+   chmod a+x clean
+   ./clean >> $LOGFILE
+
+   echo -e "lib build \033[35m$LEVEL\033[0m LIB ..."
+   chmod a+x build
+   ./build $LEVEL LIB >> $LOGFILE
+
+   build_dynamic_lib
+   build_static_lib
+}
+############## build_lib function ##############
+
+if [ "$LEVEL" == "" ] || [ "$LEVEL" == "alpha" ]; then
+   LEVEL=alpha
+   build_lib
+fi
+
+if [ "$LEVEL" == "beta" ]; then
+   LEVEL=beta
+   build_lib
+fi
+
+if [ "$LEVEL" == "all" ]; then
+   LEVEL=beta
+   build_lib
+
+   LEVEL=alpha
+   build_lib
+fi
+
+chmod a+x clean
+./clean >> $LOGFILE
+
+rm -rf $LOGFILE

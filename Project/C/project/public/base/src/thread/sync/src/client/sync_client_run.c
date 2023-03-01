@@ -210,33 +210,33 @@ _sync_client_run_cfg_update(CFGUpdate *pUpdate)
 }
 
 static void
-_sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+_sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 {
 	dave_bool broadcast_flag = dave_false;
-	ub cfg_len = 1024 * 128;
+	ub cfg_len = 1024 * 1024;
 	s8 *cfg_value = dave_malloc(cfg_len);
 
 	SYNCTRACE("put_flag:%d %s : %s",
 		pUpdate->put_flag,
-		pUpdate->cfg_name, pUpdate->cfg_value);
+		ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
 
 	if(pUpdate->put_flag == dave_true)
 	{
-		if(rcfg_get(pUpdate->cfg_name, cfg_value, cfg_len) < 0)
+		if(rcfg_get(ms8(pUpdate->cfg_mbuf_name), cfg_value, cfg_len) < 0)
 		{
-			broadcast_flag = base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+			broadcast_flag = base_cfg_remote_internal_add(ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
 		}
 		else
 		{
-			if(dave_strcmp(cfg_value, pUpdate->cfg_value) == dave_false)
+			if(dave_strcmp(cfg_value, ms8(pUpdate->cfg_mbuf_value)) == dave_false)
 			{
-				broadcast_flag = base_cfg_remote_internal_add(pUpdate->cfg_name, pUpdate->cfg_value);
+				broadcast_flag = base_cfg_remote_internal_add(ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
 			}
 		}
 	}
 	else
 	{
-		broadcast_flag = base_cfg_remote_internal_del(pUpdate->cfg_name);
+		broadcast_flag = base_cfg_remote_internal_del(ms8(pUpdate->cfg_mbuf_name));
 	}
 
 	if(broadcast_flag == dave_true)
@@ -244,16 +244,25 @@ _sync_client_run_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 		CFGRemoteUpdate *boradcast_update = thread_reset_msg(boradcast_update);
 
 		boradcast_update->put_flag = pUpdate->put_flag;
-		dave_strcpy(boradcast_update->cfg_name, pUpdate->cfg_name, sizeof(boradcast_update->cfg_name));
-		dave_strcpy(boradcast_update->cfg_value, pUpdate->cfg_value, sizeof(boradcast_update->cfg_value));
-		boradcast_update->cfg_mbuf_name = NULL;
-		boradcast_update->cfg_mbuf_value = NULL;
+		if(mlen(pUpdate->cfg_mbuf_name) >= sizeof(boradcast_update->cfg_name))
+		{
+			SYNCABNOR("too longer name:%d/%d", mlen(pUpdate->cfg_mbuf_name), sizeof(boradcast_update->cfg_name));
+		}
+		dave_strcpy(boradcast_update->cfg_name, ms8(pUpdate->cfg_mbuf_name), sizeof(boradcast_update->cfg_name));
+		if(mlen(pUpdate->cfg_mbuf_value) >= sizeof(boradcast_update->cfg_value))
+		{
+			SYNCABNOR("too longer value:%d/%d", mlen(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
+		}
+		dave_strcpy(boradcast_update->cfg_value, ms8(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
 		boradcast_update->ttl = pUpdate->ttl;
 
 		broadcast_local(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
 	}
 
 	dave_free(cfg_value);
+
+	dave_mfree(pUpdate->cfg_mbuf_name);
+	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
 static inline dave_bool
@@ -269,8 +278,8 @@ _sync_client_run_internal(
 		case MSGID_CFG_UPDATE:
 				_sync_client_run_cfg_update((CFGUpdate *)(msg_body));
 			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				_sync_client_run_cfg_remote_update((CFGRemoteUpdate *)(msg_body));
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				_sync_client_run_cfg_remote_update((CFGRemoteSyncUpdate *)(msg_body));
 			break;
 		default:
 				process_flag = dave_false;

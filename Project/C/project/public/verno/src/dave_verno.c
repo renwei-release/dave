@@ -22,6 +22,37 @@ _verno_product(s8 *verno, s8 *temp_ptr, ub temp_len)
 	return temp_ptr;
 }
 
+static dave_bool
+_verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *product_head)
+{
+	s8 product_ptr[128], misc_ptr[128], main_ptr[128], sub_ptr[128], rev_ptr[128];
+	s8 *misc_head, *main_head, *sub_head, *rev_head;
+
+	misc_head = dave_strfind(product_head, '.', product_ptr, sizeof(product_ptr));
+	if(misc_head == NULL)
+		return dave_false;
+
+	main_head = dave_strfind(misc_head, '.', misc_ptr, sizeof(misc_ptr));
+	if(main_head == NULL)
+		return dave_false;
+
+	sub_head = dave_strfind(main_head, '.', main_ptr, sizeof(main_ptr));
+	if(sub_head == NULL)
+		return dave_false;
+
+	rev_head = dave_strfind(sub_head, '.', sub_ptr, sizeof(sub_ptr));
+	if(rev_head == NULL)
+		return dave_false;
+
+	dave_strfind(rev_head, '.', rev_ptr, sizeof(rev_ptr));
+
+	*main_num = stringdigital(main_ptr);
+	*sub_num = stringdigital(sub_ptr);
+	*rev_num = stringdigital(rev_ptr);
+
+	return dave_true;
+}
+
 // =====================================================================
 
 s8 *
@@ -61,6 +92,29 @@ dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 	_verno_product(verno, buf_ptr, buf_len);
 
 	return buf_ptr;
+}
+
+dave_bool
+dave_verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *verno)
+{
+	if(verno == NULL)
+	{
+		*main_num = stringdigital(VERSION_MAIN);
+		*sub_num = stringdigital(VERSION_SUB);
+		*rev_num = stringdigital(VERSION_REV);
+	}
+	else
+	{
+		if(_verno_number(main_num, sub_num, rev_num, verno) == dave_false)
+		{
+			*main_num = 0;
+			*sub_num = 0;
+			*rev_num = 0;
+			return dave_false;
+		}
+	}
+
+	return dave_true;
 }
 
 s8 *

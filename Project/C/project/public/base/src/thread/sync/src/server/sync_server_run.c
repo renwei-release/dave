@@ -20,7 +20,7 @@
 #include "sync_log.h"
 
 static void
-_sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteUpdate *pUpdate)
+_sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
 	if(pUpdate->put_flag == dave_true)
 	{
@@ -30,6 +30,9 @@ _sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteUpdate *pUpdate
 	{
 		sync_server_remote_cfg_del(pClient, pUpdate);
 	}
+
+	dave_mfree(pUpdate->cfg_mbuf_name);
+	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
 static dave_bool
@@ -68,8 +71,8 @@ _sync_server_run_internal(
 
 	switch(msg_id)
 	{
-		case MSGID_CFG_REMOTE_UPDATE:
-				_sync_server_run_cfg_remote_update(pClient, (CFGRemoteUpdate *)(msg_body));
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				_sync_server_run_cfg_remote_update(pClient, (CFGRemoteSyncUpdate *)(msg_body));
 			break;
 		default:
 				process_flag = dave_false;

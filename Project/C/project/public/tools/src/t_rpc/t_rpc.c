@@ -36,7 +36,7 @@ _t_rpc_unzip_ver3(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *
 // =====================================================================
 
 MBUF *
-t_rpc_zip(sb ver, void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len)
+t_rpc_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len)
 {
 	return _t_rpc_zip_ver3(pChainBson, pRouterBson, msg_id, msg_body, msg_len);
 }

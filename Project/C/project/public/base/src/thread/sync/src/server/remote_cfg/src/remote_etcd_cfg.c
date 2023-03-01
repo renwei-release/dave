@@ -158,7 +158,7 @@ _sync_server_take_watcher_(s8 *key)
 	{
 		array_len = dave_json_get_array_length(pArray);
 
-		if(array_len >= DEFAULT_ETCD_GET_LIMIT)
+		if((array_len >= DEFAULT_ETCD_GET_LIMIT) && (DEFAULT_ETCD_GET_LIMIT != 0))
 		{
 			SYNCLOG("Note that the obtained value beyond the maximum(%ld/%ld) qualifier, you may not be able to get a complete value.",
 				array_len, DEFAULT_ETCD_GET_LIMIT);
@@ -295,13 +295,13 @@ _sync_server_prevent_restart_init(void)
 	list = _sync_server_load_list();
 
 	/*
-	 * ÏÈÇå¿ÕÅäÖÃ£¬Èç¹ûÔÚdave_etcd_initÖĞÖØÆô£¬
-	 * ÖØÆôºó£¬_sync_server_etcd_enable¾ÍÅĞ¶ÏÊ§Ğ§µÄÅäÖÃ£¬
-	 * ²»ÖÁÓÚÒıÆğÎŞÏŞÖØÆô¡£
+	 * å…ˆæ¸…ç©ºé…ç½®ï¼Œå¦‚æœåœ¨dave_etcd_initä¸­é‡å¯ï¼Œ
+	 * é‡å¯åï¼Œ_sync_server_etcd_enableå°±åˆ¤æ–­å¤±æ•ˆçš„é…ç½®ï¼Œ
+	 * ä¸è‡³äºå¼•èµ·æ— é™é‡å¯ã€‚
 	 */
 	_sync_server_clean_list();
 
-	dave_etcd_init(list, _sync_server_load_get(), _sync_server_watcher);
+	dave_etcd_init(list, _sync_server_load_watcher(), _sync_server_watcher);
 
 	_sync_server_set_list(list);
 }

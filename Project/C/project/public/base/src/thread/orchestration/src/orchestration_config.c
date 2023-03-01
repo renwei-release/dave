@@ -127,7 +127,7 @@ _or_cfg_remote_update(MSGBODY *msg)
 
 	if(remote_config_name != NULL)
 	{
-		void *pJson = dave_string_to_json(pUpdate->cfg_value, dave_strlen(pUpdate->cfg_value));
+		void *pJson = dave_string_to_json(pUpdate->cfg_value, pUpdate->cfg_value);
 
 		if(pJson != NULL)
 		{

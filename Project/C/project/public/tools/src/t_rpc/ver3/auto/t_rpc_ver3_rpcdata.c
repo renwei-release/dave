@@ -226,6 +226,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_BLOCKS_RSP:
 				pBson = t_rpc_ver3_zip_MsgBlocksRsp((MsgBlocksRsp *)msg_body, msg_len);
 			break;
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				pBson = t_rpc_ver3_zip_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, msg_len);
+			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				pBson = t_rpc_ver3_zip_CFGRemoteUpdate((CFGRemoteUpdate *)msg_body, msg_len);
 			break;
@@ -613,6 +616,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_BLOCKS_RSP:
 				ret = t_rpc_ver3_unzip_MsgBlocksRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				ret = t_rpc_ver3_unzip_CFGRemoteSyncUpdate(msg_body, msg_len, pBson);
 			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				ret = t_rpc_ver3_unzip_CFGRemoteUpdate(msg_body, msg_len, pBson);
@@ -1002,6 +1008,9 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_BLOCKS_RSP:
 				ptr = t_rpc_ver3_ptr_MsgBlocksRsp((MsgBlocksRsp *)msg_body, new_ptr);
 			break;
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				ptr = t_rpc_ver3_ptr_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, new_ptr);
+			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				ptr = t_rpc_ver3_ptr_CFGRemoteUpdate((CFGRemoteUpdate *)msg_body, new_ptr);
 			break;
@@ -1389,6 +1398,9 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_BLOCKS_RSP:
 				msg_len = t_rpc_ver3_sizeof_MsgBlocksRsp();
+			break;
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				msg_len = t_rpc_ver3_sizeof_CFGRemoteSyncUpdate();
 			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				msg_len = t_rpc_ver3_sizeof_CFGRemoteUpdate();

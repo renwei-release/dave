@@ -117,6 +117,33 @@ __mbuf_mfree__(MBUF *m, s8 *file, ub line)
 	return count;
 }
 
+ub
+__mbuf_mclean__(MBUF *m, s8 *file, ub line)
+{
+	MBUF *n;
+	ub count;
+
+	if(m == NULL)
+	{
+		return 0;
+	}
+
+	count = 0;
+
+	while(m != NULL)
+	{
+		n = m->next;
+
+		__base_free__(m, file, line);
+
+		count ++;
+
+		m = n;
+	}
+
+	return count;
+}
+
 void
 __mbuf_mref__(MBUF *m, s8 *file, ub line)
 {

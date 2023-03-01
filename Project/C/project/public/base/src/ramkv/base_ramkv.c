@@ -278,6 +278,11 @@ __base_ramkv_inq_key_value__(void *ramkv, s8 *key, s8 *value_ptr, ub value_len, 
 sb
 __base_ramkv_index_key_value__(void *ramkv, sb index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len, s8 *fun, ub line)
 {
+	if((key_ptr != NULL) && (key_len > 0))
+	{
+		((s8 *)key_ptr)[0] = '\0';
+	}	
+
 	return ramkv_inq((KV *)ramkv, index, (void *)key_ptr, key_len, (void *)value_ptr, value_len, fun, line);
 }
 

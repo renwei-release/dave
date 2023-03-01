@@ -718,9 +718,12 @@ _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 }
 
 static void
-_sync_client_cfg_remote_update(CFGRemoteUpdate *pUpdate)
+_sync_client_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 {
-	sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_UPDATE, sizeof(CFGRemoteUpdate), pUpdate, dave_false);
+	sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), pUpdate, dave_false);
+
+	dave_mfree(pUpdate->cfg_mbuf_name);
+	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
 static void
@@ -754,8 +757,8 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_CFG_UPDATE:
 				_sync_client_safe_cfg_update((CFGUpdate *)(msg->msg_body));
 			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				_sync_client_cfg_remote_update((CFGRemoteUpdate *)(msg->msg_body));
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				_sync_client_cfg_remote_update((CFGRemoteSyncUpdate *)(msg->msg_body));
 			break;
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);

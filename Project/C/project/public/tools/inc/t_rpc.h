@@ -56,6 +56,7 @@ typedef enum {
 	MSGID_RPC_DEBUG_RSP = 37,
 	MSGID_CFG_REMOTE_UPDATE = 38,
 	MSGID_SUPPORT_CONFIG = 39,
+	MSGID_CFG_REMOTE_SYNC_UPDATE = 40,
 	SOCKET_BIND_REQ = 1000,
 	SOCKET_BIND_RSP = 1001,
 	SOCKET_CONNECT_REQ = 1002,
@@ -173,7 +174,7 @@ typedef enum {
 	MSGID_INVALID = 0x1fffffffffffffff
 } RPCMSG;
 
-MBUF * t_rpc_zip(sb ver, void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);
+MBUF * t_rpc_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);
 dave_bool t_rpc_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);
 void * t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr);
 void *t_rpc_rebuild_to_json(ub msg_id, ub msg_len, void *msg_body);

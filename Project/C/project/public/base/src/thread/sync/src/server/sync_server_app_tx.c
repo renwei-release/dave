@@ -16,28 +16,47 @@
 #include "thread_tools.h"
 #include "sync_server_data.h"
 #include "sync_server_tx.h"
+#include "sync_log.h"
 
-static void
+static dave_bool
 _sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body)
 {
+	ub main_num, sub_num, rev_num;
+
 	if(pClient == NULL)
 	{
-		return;
+		return dave_false;
 	}
 
-	if(pClient->client_socket != INVALID_SOCKET_ID)
+	if(dave_verno_number(&main_num, &sub_num, &rev_num, pClient->verno) == dave_false)
 	{
-		sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
+		SYNCLOG("verno:%s decode failed!", pClient->verno);
+		return dave_false;
 	}
+
+	if((main_num < 4) || ((main_num == 4) && (sub_num < 13)))
+	{
+		SYNCLOG("Do't support the API, Please update the product verno:%s to send %s, must be greater than 4.13.xx!",
+			pClient->verno, msgstr(msg_id));
+		return dave_false;
+	}
+
+	if(pClient->client_socket == INVALID_SOCKET_ID)
+	{
+		return dave_false;
+	}
+
+	return sync_server_tx_run_internal_msg_v2_req(pClient, msg_id, msg_len, msg_body);
 }
 
 // =====================================================================
 
-void
+dave_bool
 sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body)
 {
 	ub client_index;
 	SyncClient *pClient;
+	dave_bool ret = dave_false;
 
 	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 	{
@@ -47,14 +66,20 @@ sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body)
 			break;
 		}
 
-		_sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
+		ret = _sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
+		if(ret == dave_false)
+		{
+			break;
+		}
 	}
+
+	return ret;
 }
 
-void
+dave_bool
 sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body)
 {
-	_sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
+	return _sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
 }
 
 #endif

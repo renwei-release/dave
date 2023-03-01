@@ -564,7 +564,7 @@ _timer_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub para
 }
 
 static inline RetCode
-_timer_die_timer(TIMERID timer_id)
+_timer_die_timer(ub *param_len, void **param_ptr, TIMERID timer_id)
 {
 	ThreadId owner = self();
 
@@ -580,6 +580,15 @@ _timer_die_timer(TIMERID timer_id)
 		_timer_opt_hardware_timer(DIE_TIMER, _timer[timer_id].timer_name_ptr);
 	else
 		_timer_opt_hardware_timer(STOP_TIMER, _timer[timer_id].timer_name_ptr);
+
+	if(param_len != NULL)
+	{
+		*param_len = _timer[timer_id].param_len;
+	}
+	if(param_ptr != NULL)
+	{
+		*param_ptr = _timer[timer_id].param_ptr;
+	}
 
 	return RetCode_OK;
 }
@@ -648,11 +657,11 @@ _timer_safe_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub
 }
 
 static RetCode
-_timer_safe_die_timer(TIMERID timer_id)
+_timer_safe_die_timer(ub *param_len, void **param_ptr, TIMERID timer_id)
 {
 	RetCode ret = RetCode_Invalid_parameter;
 
-	SAFECODEv1( _timer_pv, { ret = _timer_die_timer(timer_id); } );
+	SAFECODEv1( _timer_pv, { ret = _timer_die_timer(param_len, param_ptr, timer_id); } );
 
 	return ret;
 }
@@ -825,6 +834,33 @@ _timer_end(void)
 	}
 }
 
+static RetCode
+_timer_die(ub *param_len, void **param_ptr, TIMERID timer_id, s8 *fun, ub line)
+{
+	ThreadId cur_msg_id;
+
+	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
+	{
+		TIMEABNOR("failed! timer_id:%d (%s:%d)", timer_id, fun, line);
+		return RetCode_Invalid_parameter;
+	}
+
+	cur_msg_id = self();
+	if(_timer[timer_id].owner != cur_msg_id)
+	{
+		TIMEABNOR("%s die timer:%d/%s, owner:%s<%lx>, cur:%s<%lx> (%s:%d)",
+				thread_name(cur_msg_id),
+				timer_id, _timer[timer_id].timer_name_ptr,
+				thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
+				thread_name(cur_msg_id), cur_msg_id,
+				fun, line);
+	}
+
+	TIMEDEBUG("timer_name:%s %dms id:%d", _timer[timer_id].timer_name_ptr, _timer[timer_id].alarm_ms, timer_id);
+
+	return _timer_safe_die_timer(param_len, param_ptr, timer_id);
+}
+
 // =====================================================================
 
 TIMERID
@@ -879,36 +915,16 @@ base_timer_param_creat(char *name, base_timer_param_fun fun, void *param_ptr, ub
 RetCode
 __base_timer_die__(TIMERID timer_id, s8 *fun, ub line)
 {
-	ThreadId cur_msg_id;
-
 	_timer_pre();
 
-	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
-	{
-		TIMEABNOR("failed! timer_id:%d (%s:%d)", timer_id, fun, line);
-		return RetCode_Invalid_parameter;
-	}
-
-	cur_msg_id = self();
-	if(_timer[timer_id].owner != cur_msg_id)
-	{
-		TIMEABNOR("%s die timer:%d/%s, owner:%s<%lx>, cur:%s<%lx> (%s:%d)",
-				thread_name(cur_msg_id),
-				timer_id, _timer[timer_id].timer_name_ptr,
-				thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
-				thread_name(cur_msg_id), cur_msg_id,
-				fun, line);
-	}
-
-	TIMEDEBUG("timer_name:%s %dms id:%d", _timer[timer_id].timer_name_ptr, _timer[timer_id].alarm_ms, timer_id);
-
-	return _timer_safe_die_timer(timer_id);
+	return _timer_die(NULL, NULL, timer_id, fun, line);
 }
 
-RetCode
+void *
 __base_timer_kill__(char *name, s8 *fun, ub line)
 {
 	TIMERID timer_id;
+	void *param_ptr = NULL;
 
 	_timer_pre();
 
@@ -916,10 +932,10 @@ __base_timer_kill__(char *name, s8 *fun, ub line)
 
 	if(timer_id != INVALID_TIMER_ID)
 	{
-		return __base_timer_die__(timer_id, fun, line);
+		_timer_die(NULL, &param_ptr, timer_id, fun, line);
 	}
 
-	return ERRCODE_OK;
+	return param_ptr;
 }
 
 void

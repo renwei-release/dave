@@ -8,9 +8,9 @@
 #ifndef __SYNC_SERVER_APP_TX_H__
 #define __SYNC_SERVER_APP_TX_H__
 
-void sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body);
+dave_bool sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body);
 
-void sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body);
+dave_bool sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body);
 
 #endif
 

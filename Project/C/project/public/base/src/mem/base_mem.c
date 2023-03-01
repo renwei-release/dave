@@ -186,6 +186,12 @@ __base_mfree__(MBUF *m, s8 *file, ub line)
 	return __mbuf_mfree__(m, file, line);
 }
 
+ub
+__base_mclean__(MBUF *m, s8 *file, ub line)
+{
+	return __mbuf_mclean__(m, file, line);
+}
+
 void
 __base_mref__(MBUF *m, s8 *file, ub line)
 {

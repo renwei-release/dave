@@ -1060,6 +1060,7 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_RPC_DEBUG_RSP: value_str = "'MSGID_RPC_DEBUG_RSP-37'"
 		case MSGID_CFG_REMOTE_UPDATE: value_str = "'MSGID_CFG_REMOTE_UPDATE-38'"
 		case MSGID_SUPPORT_CONFIG: value_str = "'MSGID_SUPPORT_CONFIG-39'"
+		case MSGID_CFG_REMOTE_SYNC_UPDATE: value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'"
 		case SOCKET_BIND_REQ: value_str = "'SOCKET_BIND_REQ-1000'"
 		case SOCKET_BIND_RSP: value_str = "'SOCKET_BIND_RSP-1001'"
 		case SOCKET_CONNECT_REQ: value_str = "'SOCKET_CONNECT_REQ-1002'"

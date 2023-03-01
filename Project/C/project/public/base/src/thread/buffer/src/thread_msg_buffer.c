@@ -171,6 +171,8 @@ _thread_msg_buffer_list_malloc(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
 	else
 	{
 		THREADABNOR("gid:%s dst_thread:%s uid:%s malloc failed!", gid, dst_thread, uid);
+		dave_free(pMsgList);
+		pMsgList = NULL;
 	}
 
 	return pMsgList;
@@ -232,6 +234,13 @@ _thread_msg_buffer_push(void *ramkv, MsgBuffer *pBuffer)
 	if(pMsgList == NULL)
 	{
 		pMsgList = _thread_msg_buffer_list_malloc(ramkv, pBuffer->gid, pBuffer->dst_thread, pBuffer->uid);
+	}
+	if(pMsgList == NULL)
+	{
+		THREADLOG("%s:%s->%s push failed! <%s:%d>",
+			thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+			pBuffer->fun, pBuffer->line);
+		return dave_false;
 	}
 
 	pBuffer->life = pMsgList->life;

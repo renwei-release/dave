@@ -4551,6 +4551,9 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_SUPPORT_CONFIG:
 				value_str = "'MSGID_SUPPORT_CONFIG-39'";
 			break;
+		case MSGID_CFG_REMOTE_SYNC_UPDATE:
+				value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'";
+			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";
 			break;

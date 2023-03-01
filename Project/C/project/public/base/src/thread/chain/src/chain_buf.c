@@ -111,8 +111,8 @@ _chain_buf_malloc(
 	pBuf->chain_data = dave_mmalloc(sizeof(ThreadChain) + sizeof(ThreadRouter) + msg_len + 128);
 	pBuf->next = NULL;
 
-	s8 *data_ptr = ms8ptr(pBuf->chain_data);
-	ub data_len = pBuf->chain_data->len;
+	s8 *data_ptr = ms8(pBuf->chain_data);
+	ub data_len = mlen(pBuf->chain_data);
 	ub data_index = 0;
 
 	data_index += _chain_buf_build_chain(&data_ptr[data_index], data_len-data_index, pChain, chain_version);

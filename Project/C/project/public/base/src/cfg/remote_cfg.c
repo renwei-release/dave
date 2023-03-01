@@ -17,7 +17,7 @@
 #define MIN_REMOTE_CFG_TTL 30
 
 typedef struct {
-	CFGRemoteUpdate update;
+	CFGRemoteSyncUpdate update;
 } RemoteReflash;
 
 static void *_remote_cfg_kv = NULL;
@@ -25,16 +25,14 @@ static void *_remote_cfg_kv = NULL;
 static dave_bool
 _base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
 {
-	CFGRemoteUpdate *pUpdate = thread_msg(pUpdate);
+	CFGRemoteSyncUpdate *pUpdate = thread_msg(pUpdate);
 
 	pUpdate->put_flag = put_flag;
-	dave_strcpy(pUpdate->cfg_name, name, sizeof(pUpdate->cfg_name));
-	dave_strcpy(pUpdate->cfg_value, value, sizeof(pUpdate->cfg_value));
-	pUpdate->cfg_mbuf_name = NULL;
-	pUpdate->cfg_mbuf_value = NULL;
+	pUpdate->cfg_mbuf_name = t_a2b_str_to_mbuf(name, 0);
+	pUpdate->cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
 	pUpdate->ttl = ttl;
 
-	return name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_UPDATE, pUpdate);
+	return name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_CFG_REMOTE_SYNC_UPDATE, pUpdate);
 }
 
 static void
@@ -44,8 +42,41 @@ _base_remote_reflash(TIMERID timer_id, ub thread_index, void *param_ptr)
 
 	_base_remote_update(
 		dave_true,
-		pReflash->update.cfg_name, pReflash->update.cfg_value,
+		ms8(pReflash->update.cfg_mbuf_name), ms8(pReflash->update.cfg_mbuf_value),
 		pReflash->update.ttl);
+}
+
+static void
+_base_remote_reflash_creat(s8 *name, s8 *value, sb ttl)
+{
+	RemoteReflash *pReflash;
+
+	if(ttl < MIN_REMOTE_CFG_TTL)
+	{
+		ttl = MIN_REMOTE_CFG_TTL;
+	}
+	
+	pReflash = dave_malloc(sizeof(RemoteReflash));
+	
+	pReflash->update.put_flag = dave_true;
+	pReflash->update.cfg_mbuf_name = dave_mclone(pReflash->update.cfg_mbuf_name);
+	pReflash->update.cfg_mbuf_value = dave_mclone(pReflash->update.cfg_mbuf_value);
+	pReflash->update.ttl = ttl;
+	
+	base_timer_param_creat(name, _base_remote_reflash, pReflash, sizeof(pReflash), (ttl/2) * 1000);
+}
+
+static void
+_base_remote_reflash_del(s8 *name)
+{
+	RemoteReflash *pReflash;
+
+	pReflash = base_timer_kill(name);
+	if(pReflash != NULL)
+	{
+		dave_mfree(pReflash->update.cfg_mbuf_name);
+		dave_mfree(pReflash->update.cfg_mbuf_value);
+	}
 }
 
 // =====================================================================
@@ -77,8 +108,6 @@ base_remote_cfg_internal_del(s8 *name)
 RetCode
 base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 {
-	RemoteReflash *pReflash;
-
 	if(ttl <= 0)
 	{
 		ttl = 0;
@@ -88,19 +117,7 @@ base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 
 	if(ttl > 0)
 	{
-		if(ttl < MIN_REMOTE_CFG_TTL)
-		{
-			ttl = MIN_REMOTE_CFG_TTL;
-		}
-
-		pReflash = dave_malloc(sizeof(RemoteReflash));
-
-		pReflash->update.put_flag = dave_true;
-		dave_strcpy(pReflash->update.cfg_name, name, sizeof(pReflash->update.cfg_name));
-		dave_strcpy(pReflash->update.cfg_value, value, sizeof(pReflash->update.cfg_value));
-		pReflash->update.ttl = ttl;
-
-		base_timer_param_creat(name, _base_remote_reflash, pReflash, sizeof(pReflash), (ttl/2) * 1000);
+		_base_remote_reflash_creat(name, value, ttl);
 	}
 
 	_base_remote_update(dave_true, name, value, ttl);
@@ -123,7 +140,7 @@ base_remote_cfg_del(s8 *name)
 		return dave_false;
 	}
 
-	base_timer_kill(name);
+	_base_remote_reflash_del(name);
 
 	return _base_remote_update(dave_false, name, NULL, -1);
 }

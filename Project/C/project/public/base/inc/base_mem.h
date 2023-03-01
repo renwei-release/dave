@@ -15,6 +15,7 @@ dave_bool __base_free__(void *ptr, s8 *file, ub line);
 MBUF *__base_mmalloc__(ub length, s8 *file, ub line);
 sb __base_mheader__(MBUF *m, sb header_size_increment, s8 *file, ub line);
 ub __base_mfree__(MBUF *m, s8 *file, ub line);
+ub __base_mclean__(MBUF *m, s8 *file, ub line);
 void __base_mref__(MBUF *m, s8 *file, ub line);
 MBUF * __base_mchain__(MBUF *cur_point, MBUF *cat_point, s8 *file, ub line);
 MBUF * __base_mdechain__(MBUF *m, s8 *file, ub line);
@@ -35,6 +36,7 @@ ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 #define base_mmalloc(a) __base_mmalloc__((ub)(a), (s8 *)__func__, (ub)__LINE__)
 #define base_mheader(a, b) __base_mheader__(a, (sb)b, (s8 *)__func__, (ub)__LINE__)
 #define base_mfree(a) __base_mfree__(a, (s8 *)__func__, (ub)__LINE__)
+#define base_mclean(a) __base_mclean__(a, (s8 *)__func__, (ub)__LINE__)
 #define base_mref(a) __base_mref__(a, (s8 *)__func__, (ub)__LINE__)
 #define base_mchain(a, b) __base_mchain__(a, (b), (s8 *)__func__, (ub)__LINE__)
 #define base_mdechain(a) __base_mdechain__(a, (s8 *)__func__, (ub)__LINE__)
@@ -49,6 +51,7 @@ ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 #define dave_mmalloc base_mmalloc
 #define dave_mheader base_mheader
 #define dave_mfree base_mfree
+#define dave_mclean base_mclean
 #define dave_mref base_mref
 #define dave_mchain base_mchain
 #define dave_mdechain base_mdechain
@@ -57,7 +60,8 @@ ub base_mem_info(s8 *info_ptr, ub info_len, dave_bool base_flag);
 #define dave_mlen base_mlen
 #define dave_mlnumber base_mlnumber
 
-#define ms8ptr(mbuf_ptr) (s8 *)base_mptr(mbuf_ptr)
+#define mlen(mbuf_ptr) base_mlen(mbuf_ptr)
+#define ms8(mbuf_ptr) (s8 *)base_mptr(mbuf_ptr)
 
 #endif
 
