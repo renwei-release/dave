@@ -21,9 +21,5 @@ RetCode sync_server_broadcadt(
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	u8 *msg_body, ub msg_len);
 
-void sync_server_broadcadt_the_thread_has_msg(SyncClient *pDstClient, s8 *thread_name);
-
-ub sync_server_broadcadt_info(s8 *msg_ptr, ub msg_len);
-
 #endif
 

@@ -337,7 +337,8 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 		&msg_type, NULL, NULL,
 		&package_len, &package_ptr);
 
-	SYNCDEBUG("%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s/%d packet_len:%d",
+	SYNCDEBUG("%s %s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s/%d packet_len:%d",
+		pServer->verno,
 		src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 		msg_type, msgstr(msg_id), msg_id, package_len);

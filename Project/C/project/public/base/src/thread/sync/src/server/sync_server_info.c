@@ -279,7 +279,6 @@ sync_server_info(s8 *info, ub info_len)
 
 	info_index += _sync_server_info_data(&info[info_index], info_len-info_index);
 	info_index += sync_server_msg_buffer_info(&info[info_index], info_len-info_index);
-	info_index += sync_server_broadcadt_info(&info[info_index], info_len-info_index);
 	info_index += dave_snprintf(&info[info_index], info_len-info_index, "Globally Identifier:%s", globally_identifier());
 
 	return info_index;

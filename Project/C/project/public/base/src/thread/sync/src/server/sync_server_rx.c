@@ -427,8 +427,6 @@ _sync_server_rx_sync_thread_name_req(SyncClient *pClient, ub frame_len, u8 *fram
 		sync_server_add_thread(pClient, thread_name);
 
 		sync_server_tx_sync_thread_name_rsp(pClient, thread_name, thread_index);
-
-		sync_server_broadcadt_the_thread_has_msg(pClient, thread_name);
 	}
 	else
 	{

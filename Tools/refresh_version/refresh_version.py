@@ -108,6 +108,7 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
         file_id.write(f's8 * dave_verno_reset(s8 *verno);\n')
         file_id.write(f's8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);\n')
         file_id.write(f'dave_bool dave_verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *verno);\n')
+        file_id.write(f'sb dave_verno_cmp(s8 *verno, ub main_cmp, ub sub_cmp, ub rev_cmp);\n')
         file_id.write(f's8 * dave_verno_my_product(void);\n\n')
         file_id.write(def_c_verno_end_file)
 

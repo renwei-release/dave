@@ -78,7 +78,7 @@ def kv_inq(key, kv=_default_kv):
     ret = davelib.dave_dll_kv_inq(c_void_p(kv), c_char_p(key), c_char_p(value), c_int(len(value)))
     if ret <= 0:
         return None
-    return value
+    return value[:ret]
 
 
 def kv_del(key, kv=_default_kv):

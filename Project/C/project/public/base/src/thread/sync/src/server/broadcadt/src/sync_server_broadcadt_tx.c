@@ -98,7 +98,7 @@ _sync_server_broadcadt_the_msg_to_all_client(
 }
 
 static void
-_sync_server_broadcadt_tx_the_thread_all_client(
+_sync_server_broadcadt_tx_the_msg_to_thread_self_client(
 	SyncClient *pSrcClient,
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	ThreadId src_id, ThreadId dst_id,
@@ -132,14 +132,14 @@ _sync_server_broadcadt_tx_the_thread_all_client(
 				msg_type,
 				msg_body, msg_len);
 
-			SYNCTRACE("broadcadt ret:%s client_index:%d %s->%s %x/%s->%x/%s %s->%s msg_id:%d msg_type:%d msg_len:%d",
+			SYNCTRACE("broadcadt ret:%s client_index:%d %s->%s %lx/%s->%lx/%s %s->%s:%s/%s:%d",
 				retstr(ret),
 				client_index,
 				pSrcThread->thread_name, pDstThread->thread_name,
 				pSrcClient, pSrcClient->verno, pDstClient, pDstClient->verno,
 				src_name, dst_name,
-				msg_id,
-				msg_type,
+				msgstr(msg_id),
+				t_auto_BaseMsgType_str(msg_type),
 				msg_len);
 		}
 	}
@@ -164,7 +164,7 @@ sync_server_broadcadt_tx_the_msg_to_all_client(
 }
 
 void
-sync_server_broadcadt_tx_the_thread_all_client(
+sync_server_broadcadt_tx_the_msg_to_thread_self_client(
 	SyncClient *pSrcClient,
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	ThreadId src_id, ThreadId dst_id,
@@ -174,7 +174,7 @@ sync_server_broadcadt_tx_the_thread_all_client(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len)
 {
-	_sync_server_broadcadt_tx_the_thread_all_client(
+	_sync_server_broadcadt_tx_the_msg_to_thread_self_client(
 		pSrcClient,
 		pSrcThread, pDstThread,
 		src_id, dst_id,

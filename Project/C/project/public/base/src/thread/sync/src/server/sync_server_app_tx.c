@@ -21,22 +21,14 @@
 static dave_bool
 _sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body)
 {
-	ub main_num, sub_num, rev_num;
-
 	if(pClient == NULL)
 	{
 		return dave_false;
 	}
 
-	if(dave_verno_number(&main_num, &sub_num, &rev_num, pClient->verno) == dave_false)
+	if(dave_verno_cmp(pClient->verno, 4, 13, 2) < 0)
 	{
-		SYNCLOG("verno:%s decode failed!", pClient->verno);
-		return dave_false;
-	}
-
-	if((main_num < 4) || ((main_num == 4) && (sub_num < 13)))
-	{
-		SYNCLOG("Do't support the API, Please update the product verno:%s to send %s, must be greater than 4.13.xx!",
+		SYNCLOG("Do't support the API, Please update the product verno:%s to send %s, must be greater than 4.13.02!",
 			pClient->verno, msgstr(msg_id));
 		return dave_false;
 	}

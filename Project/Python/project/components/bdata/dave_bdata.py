@@ -61,6 +61,8 @@ def BDATALOG(sub, *msg: object):
     pReq.contents.log_data = str_to_mbuf(msg)
 
     pRsp = write_co(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq, BDATA_LOG_RSP, BDataLogRsp)
+    if pRsp == None:
+        return False
 
     if pRsp.ret != RetCode_OK:
         DAVELOG(f"ret:{t_auto_RetCode_str(pRsp.ret)} msg:{msg}")

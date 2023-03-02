@@ -77,6 +77,9 @@ def write_co(dst, req_id, pReq, rsp_id, rsp_class):
         davelib.dave_dll_thread_id_co.restype = c_void_p
         pRsp = davelib.dave_dll_thread_id_co(c_uint64(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
 
+    if pRsp == None:
+        return None
+
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
 
 

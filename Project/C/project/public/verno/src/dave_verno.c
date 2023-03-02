@@ -53,6 +53,17 @@ _verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *product_head)
 	return dave_true;
 }
 
+static sb
+_verno_cmp(ub ver1, ub ver2)
+{
+	if(ver1 > ver2)
+		return 1;
+	else if(ver1 == ver2)
+		return 0;
+	else
+		return -1;
+}
+
 // =====================================================================
 
 s8 *
@@ -115,6 +126,45 @@ dave_verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *verno)
 	}
 
 	return dave_true;
+}
+
+sb
+dave_verno_cmp(s8 *verno, ub main_cmp, ub sub_cmp, ub rev_cmp)
+{
+	ub main_ver, sub_ver, rev_ver;
+	sb ret;
+
+	if(verno == NULL)
+	{
+		main_ver = stringdigital(VERSION_MAIN);
+		sub_ver = stringdigital(VERSION_SUB);
+		rev_ver = stringdigital(VERSION_REV);
+	}
+	else
+	{
+		if(_verno_number(&main_ver, &sub_ver, &rev_ver, verno) == dave_false)
+		{
+			return -1;
+		}
+	}
+
+	ret = _verno_cmp(main_ver, main_cmp);
+	if(ret != 0)
+	{
+		return ret;
+	}
+	ret = _verno_cmp(sub_ver, sub_cmp);
+	if(ret != 0)
+	{
+		return ret;
+	}
+	ret = _verno_cmp(rev_ver, rev_cmp);
+	if(ret != 0)
+	{
+		return ret;
+	}
+
+	return 0;
 }
 
 s8 *

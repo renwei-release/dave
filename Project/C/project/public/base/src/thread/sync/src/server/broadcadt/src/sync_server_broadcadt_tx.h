@@ -15,7 +15,7 @@ RetCode sync_server_broadcadt_tx_the_msg_to_all_client(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len);
 
-void sync_server_broadcadt_tx_the_thread_all_client(
+void sync_server_broadcadt_tx_the_msg_to_thread_self_client(
 	SyncClient *pSrcClient,
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	ThreadId src_id, ThreadId dst_id,
