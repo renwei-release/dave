@@ -532,11 +532,6 @@ dave_bool t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void 
 void * t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_StoreMysqlRsp(void);
 
-void * t_rpc_ver3_zip_SupportConfig(SupportConfig *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_SupportConfig(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_SupportConfig(SupportConfig *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_SupportConfig(void);
-
 void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data, void *new_ptr);

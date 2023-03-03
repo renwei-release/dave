@@ -4548,9 +4548,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_CFG_REMOTE_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_UPDATE-38'";
 			break;
-		case MSGID_SUPPORT_CONFIG:
-				value_str = "'MSGID_SUPPORT_CONFIG-39'";
-			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'";
 			break;

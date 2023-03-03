@@ -945,12 +945,6 @@ class StoreMysqlRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for MSGID_SUPPORT_CONFIG message *#
-class SupportConfig (Structure):
-	_fields_ = [
-		("config_data", c_char * 8192),
-]
-
 #* for MSGID_SYSTEM_DECOUPLING message *#
 class SystemDecoupling (Structure):
 	_fields_ = [

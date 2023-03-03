@@ -275,11 +275,6 @@ typedef struct {
 	sb ttl;
 } CFGRemoteUpdate;
 
-/* for MSGID_SUPPORT_CONFIG message */
-typedef struct {
-	s8 config_data[8192];
-} SupportConfig;
-
 /* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
 typedef struct {
 	dave_bool put_flag;

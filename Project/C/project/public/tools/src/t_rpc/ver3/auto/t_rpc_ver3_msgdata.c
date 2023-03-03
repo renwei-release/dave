@@ -6398,60 +6398,6 @@ t_rpc_ver3_sizeof_StoreMysqlRsp(void)
 }
 
 void *
-t_rpc_ver3_zip_SupportConfig(SupportConfig *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(SupportConfig) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(SupportConfig) does not match(%d/%d), please contact the message settlers!", sizeof(SupportConfig), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-config_data", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->config_data), 1, 8192));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_SupportConfig(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		SupportConfig *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(SupportConfig);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->config_data), 1, 8192, t_bson_inq_object(pStructBson, "s8-config_data"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_SupportConfig(SupportConfig *struct_data, void *new_ptr)
-{
-	return NULL;
-}
-
-ub
-t_rpc_ver3_sizeof_SupportConfig(void)
-{
-	return sizeof(SupportConfig);
-}
-
-void *
 t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len)
 {
 	void *pStructBson;

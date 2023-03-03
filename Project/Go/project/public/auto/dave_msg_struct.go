@@ -840,11 +840,6 @@ type StoreMysqlRsp struct {
 	Ptr uint64
 }
 
-/* for MSGID_SUPPORT_CONFIG message */
-type SupportConfig struct {
-	Config_data [8192] byte
-}
-
 /* for MSGID_SYSTEM_DECOUPLING message */
 type SystemDecoupling struct {
 	Socket int32
