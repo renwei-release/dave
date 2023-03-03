@@ -17,8 +17,14 @@ if [ "$FORM" == "" ]; then
 fi
 CONTAINER="fedora"
 
-chmod a+x ../ENV
-../ENV ${PROJECT} ${LEVEL} ${CONTAINER}
+if [ "$FORM" == "BIN" ]; then
+   chmod a+x ../ENV
+   ../ENV ${PROJECT} ${LEVEL} ${CONTAINER}
 
-echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod a+x BUILD && ./BUILD ${PROJECT} ${LEVEL} ${FORM}"
+   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod a+x BUILD && ./BUILD ${PROJECT} ${LEVEL} ${FORM}"
+else
+   cd ../
+   chmod a+x BUILD
+   ./BUILD ${PROJECT} ${LEVEL} ${FORM}
+fi
