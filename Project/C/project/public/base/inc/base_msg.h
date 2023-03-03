@@ -29,7 +29,7 @@ typedef struct {
 	void *thread_fun;
 	void *last_fun;
 	void *param;
-	ThreadId thread_dst;
+	ThreadId run_thread_id;
 	dave_bool initialization_flag;
 } RUNFUNCTIONMSG;
 

@@ -1,4 +1,5 @@
 //go:build !__DAVE_PRODUCT_API__
+
 /*
  * API products do not need pre-initialization
  */

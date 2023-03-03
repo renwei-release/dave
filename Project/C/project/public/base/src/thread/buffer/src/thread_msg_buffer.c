@@ -105,7 +105,7 @@ _thread_msg_buffer_malloc(
 	pBuffer->msg_type = msg_type;
 	pBuffer->msg_id = msg_id;
 	pBuffer->msg_len = msg_len;
-	pBuffer->msg_body = base_thread_msg(msg_len, dave_false, fun, line);;
+	pBuffer->msg_body = base_thread_msg_creat(msg_len, dave_false, fun, line);;
 	dave_memcpy(pBuffer->msg_body, msg_body, msg_len);
 	pBuffer->fun = fun;
 	pBuffer->line = line;
@@ -410,7 +410,7 @@ _thread_msg_buffer_uid_pop(void *ramkv, s8 *uid)
 static void
 _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 {
-	ProcessMsgTimerOutMsg *pMsg = base_thread_msg(sizeof(ProcessMsgTimerOutMsg)+pBuffer->msg_len+64, dave_false, (s8 *)__func__, (ub)__LINE__);
+	ProcessMsgTimerOutMsg *pMsg = base_thread_msg_creat(sizeof(ProcessMsgTimerOutMsg)+pBuffer->msg_len+64, dave_false, (s8 *)__func__, (ub)__LINE__);
 
 	pMsg->msg_id = pBuffer->msg_id;
 	pMsg->msg_len = pBuffer->msg_len;
@@ -580,13 +580,16 @@ thread_msg_buffer_init(void)
 {
 	dave_bool init_flag = dave_false;
 
-	t_lock_spin(NULL);
 	if(__init_flag__ != 0x0123456789)
 	{
-		__init_flag__ = 0x0123456789;
-		init_flag = dave_true;
+		t_lock_spin(NULL);
+		if(__init_flag__ != 0x0123456789)
+		{
+			__init_flag__ = 0x0123456789;
+			init_flag = dave_true;
+		}
+		t_unlock_spin(NULL);
 	}
-	t_unlock_spin(NULL);
 
 	if(init_flag == dave_true)
 	{

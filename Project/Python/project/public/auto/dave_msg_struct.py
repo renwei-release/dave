@@ -817,7 +817,7 @@ class RUNFUNCTIONMSG (Structure):
 		("thread_fun", POINTER(c_char)),
 		("last_fun", POINTER(c_char)),
 		("param", POINTER(c_char)),
-		("thread_dst", c_ulonglong),
+		("run_thread_id", c_ulonglong),
 		("initialization_flag", c_char),
 ]
 

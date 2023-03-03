@@ -790,6 +790,7 @@ _sync_client_main(MSGBODY *msg)
 		case SOCKET_RAW_EVENT:
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
 			break;
+		case MSGID_WAKEUP:
 		case MSGID_LOCAL_THREAD_READY:
 		case MSGID_LOCAL_THREAD_REMOVE:
 			break;

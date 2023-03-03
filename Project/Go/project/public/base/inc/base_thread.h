@@ -97,7 +97,7 @@ ThreadId base_thread_get_local(ThreadId thread_id);
 ThreadId base_thread_get_id(const s8 *name, s8 *fun, ub line);
 TaskAttribute base_thread_attrib(ThreadId thread_id);
 s8 *base_thread_get_name(ThreadId thread_id, s8 *fun, ub line);
-void * base_thread_msg(ub msg_len, dave_bool reset, s8 *fun, ub line);
+void * base_thread_msg_creat(ub msg_len, dave_bool reset, s8 *fun, ub line);
 void base_thread_msg_release(void *ptr, s8 *fun, ub line);
 
 dave_bool base_thread_id_msg(void *msg_chain, void *msg_router, s8 *src_gid, s8 *src_name, ThreadId src_id, ThreadId dst_id, BaseMsgType msg_type, ub msg_id, ub msg_len, u8 *msg_body, ub msg_number, s8 *fun, ub line);
@@ -132,8 +132,8 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define get_thread_name(thread_id) base_thread_get_name(thread_id, (s8 *)__func__, (ub)__LINE__)
 #define thread_name(thread_id) base_thread_get_name(thread_id, (s8 *)__func__, (ub)__LINE__)
 
-#define thread_reset_msg(msg_body) base_thread_msg(sizeof(*msg_body), dave_true, (s8 *)__func__, (ub)__LINE__)
-#define thread_msg(msg_body) base_thread_msg(sizeof(*msg_body), dave_false, (s8 *)__func__, (ub)__LINE__)
+#define thread_reset_msg(msg_body) base_thread_msg_creat(sizeof(*msg_body), dave_true, (s8 *)__func__, (ub)__LINE__)
+#define thread_msg(msg_body) base_thread_msg_creat(sizeof(*msg_body), dave_false, (s8 *)__func__, (ub)__LINE__)
 #define thread_msg_release(msg_body) base_thread_msg_release(msg_body, (s8 *)__func__, (ub)__LINE__)
 
 #define snd_msg(dst_id, msg_id, msg_len, msg_body) base_thread_id_msg(NULL, NULL, NULL, NULL, INVALID_THREAD_ID, dst_id, BaseMsgType_Unicast, (ub)msg_id, (ub)msg_len, (u8 *)(msg_body), 0, (s8 *)__func__, (ub)__LINE__)

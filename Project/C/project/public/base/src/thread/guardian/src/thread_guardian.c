@@ -25,6 +25,7 @@
 #include "thread_remote_id_table.h"
 #include "thread_gid_table.h"
 #include "thread_wakeup_the_sleep.h"
+#include "thread_run_function.h"
 #include "thread_running.h"
 #include "thread_orchestration.h"
 #include "thread_log.h"
@@ -127,102 +128,6 @@ _thread_guardian_system_check(void)
 }
 
 static void
-_thread_guardian_thread_option(ThreadStruct *pThread, ub thread_index, dave_bool initialization_flag)
-{
-	if(pThread->thread_flag & THREAD_THREAD_FLAG)
-	{
-		if(initialization_flag == dave_true)
-		{
-			thread_thread_creat((s8 *)(pThread->thread_name), thread_index, pThread->thread_id, pThread->level_number);
-		}
-		else
-		{
-			thread_thread_die(thread_index);
-		}
-	}
-}
-
-static void
-_thread_guardian_run_function(RUNFUNCTIONMSG *run)
-{
-	ub thread_index;
-	ThreadStruct *pThread;
-	MSGBODY msg;
-
-	thread_index = thread_find_busy_index(run->thread_dst);
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADDEBUG("invalid thread_index:%d thread_fun:%lx last_fun:%lx thread_dst:%lx/%s initialization_flag:%d",
-			thread_index,
-			run->thread_fun, run->last_fun,
-			run->thread_dst, thread_name(run->thread_dst),
-			run->initialization_flag);
-		return;
-	}
-
-	pThread = &_thread[thread_index];
-
-	dave_memset(&msg, 0x00, sizeof(MSGBODY));
-
-	msg.msg_src = get_self();
-	msg.msg_dst = run->thread_dst;
-	msg.msg_id = MSGID_RUN_FUNCTION;
-	msg.msg_len = 0;
-	msg.msg_body = NULL;
-	msg.msg_chain = NULL;
-	msg.msg_router = NULL;
-
-	if(run->initialization_flag == dave_true)
-	{
-		if((pThread->has_initialization == dave_true)
-			&& (dave_strcmp(pThread->thread_name, GUARDIAN_THREAD_NAME) == dave_false))
-		{
-			THREADABNOR("%s repeat the initialization function!", pThread->thread_name);
-		}
-		else
-		{
-			_thread_guardian_thread_option(pThread, thread_index, run->initialization_flag);
-
-			thread_running(
-				(ThreadStack **)(run->param),
-				(base_thread_fun)(run->thread_fun),
-				pThread,
-				&msg, dave_true);
-
-			pThread->has_initialization = dave_true;
-
-			thread_local_ready_notify(pThread->thread_name);
-		}
-	}
-	else
-	{
-		if(pThread->has_initialization == dave_false)
-		{
-			THREADABNOR("%s repeat the exit function!", pThread->thread_name);
-		}
-		else
-		{
-			pThread->has_initialization = dave_false;
-
-			thread_running(
-				(ThreadStack **)(run->param),
-				(base_thread_fun)(run->thread_fun),
-				pThread,
-				&msg, dave_true);
-
-			_thread_guardian_thread_option(pThread, thread_index, run->initialization_flag);
-
-			thread_local_remove_notify(pThread->thread_name);
-		}
-	}
-
-	if(run->last_fun != NULL)
-	{
-		((base_thread_fun)(run->last_fun))((MSGBODY *)pThread);
-	}
-}
-
-static void
 _thread_guardian_trace_switch(TraceSwitchMsg *pSwitch)
 {
 	ub thread_index;
@@ -285,7 +190,7 @@ _thread_guardian_main(MSGBODY *msg)
 				_thread_guardian_system_check();
 			break;
 		case MSGID_RUN_FUNCTION:
-				_thread_guardian_run_function((RUNFUNCTIONMSG *)(msg->msg_body));
+				thread_guardian_run_function((RUNFUNCTIONMSG *)(msg->msg_body));
 			break;
 		case MSGID_RESTART_REQ:
 				_thread_guardian_restart((RESTARTREQMSG *)(msg->msg_body));

@@ -5476,7 +5476,7 @@ t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "void-thread_fun", t_rpc_ver3_zip_void_ptr(zip_data->thread_fun));
 	t_bson_add_object(pStructBson, "void-last_fun", t_rpc_ver3_zip_void_ptr(zip_data->last_fun));
 	t_bson_add_object(pStructBson, "void-param", t_rpc_ver3_zip_void_ptr(zip_data->param));
-	t_bson_add_object(pStructBson, "ThreadId-thread_dst", t_rpc_ver3_zip_ThreadId(zip_data->thread_dst));
+	t_bson_add_object(pStructBson, "ThreadId-run_thread_id", t_rpc_ver3_zip_ThreadId(zip_data->run_thread_id));
 	t_bson_add_object(pStructBson, "dave_bool-initialization_flag", t_rpc_ver3_zip_dave_bool(zip_data->initialization_flag));
 
 	return pStructBson;
@@ -5503,7 +5503,7 @@ t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructB
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->thread_fun), t_bson_inq_object(pStructBson, "void-thread_fun"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->last_fun), t_bson_inq_object(pStructBson, "void-last_fun"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->param), t_bson_inq_object(pStructBson, "void-param"));
-		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_dst), t_bson_inq_object(pStructBson, "ThreadId-thread_dst"));
+		t_rpc_ver3_unzip_ThreadId(&(pUnzip->run_thread_id), t_bson_inq_object(pStructBson, "ThreadId-run_thread_id"));
 		t_rpc_ver3_unzip_dave_bool(&(pUnzip->initialization_flag), t_bson_inq_object(pStructBson, "dave_bool-initialization_flag"));
 	}
 

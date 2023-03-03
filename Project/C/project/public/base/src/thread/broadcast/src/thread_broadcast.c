@@ -45,7 +45,7 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 		dst_id = thread_id(dst_name);
 
 		broadcast_len = msg_len;
-		broadcast_msg = base_thread_msg(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+		broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 		dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
 		if(dst_id != INVALID_THREAD_ID)
@@ -88,7 +88,7 @@ _thread_broadcast_remote_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub m
 		type = BaseMsgType_Broadcast_remote;
 
 		broadcast_len = msg_len;
-		broadcast_msg = base_thread_msg(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+		broadcast_msg = base_thread_msg_creat(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 		dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
 		base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, syncc_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
@@ -114,12 +114,11 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 		{
 			if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
-				&& (_thread[thread_index].has_initialization == dave_true)
 				&& (_thread[thread_index].thread_id != self_id)
 				&& (base_thread_attrib(_thread[thread_index].thread_id) == LOCAL_TASK_ATTRIB))
 			{
 				broadcast_len = msg_len;
-				broadcast_msg = base_thread_msg(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+				broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 				dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
 				THREADDEBUG("%s>%s:%s",
@@ -167,7 +166,7 @@ thread_broadcast_msg(
 
 	if(msg_body == NULL)
 	{
-		msg_body = base_thread_msg(msg_len, dave_false, fun, line);
+		msg_body = base_thread_msg_creat(msg_len, dave_false, fun, line);
 	}
 
 	_thread_broadcast_thread_msg(type, self_id, dst_name, msg_id, msg_len, msg_body, fun, line);

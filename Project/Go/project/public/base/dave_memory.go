@@ -26,5 +26,8 @@ func Dave_mmalloc(data_len int) *auto.MBUF {
 }
 
 func Dave_mfree(ptr *auto.MBUF) {
+	if ptr == nil {
+		return
+	}
 	C.dave_dll_mfree(unsafe.Pointer(ptr), nil, C.int(0))
 }

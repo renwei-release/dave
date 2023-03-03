@@ -726,7 +726,7 @@ type RUNFUNCTIONMSG struct {
 	Thread_fun unsafe.Pointer
 	Last_fun unsafe.Pointer
 	Param unsafe.Pointer
-	Thread_dst uint64
+	Run_thread_id uint64
 	Initialization_flag int8
 }
 

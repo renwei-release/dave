@@ -1,4 +1,5 @@
 package base
+
 /*
  * Copyright (c) 2022 Renwei
  *

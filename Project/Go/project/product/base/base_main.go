@@ -77,6 +77,8 @@ func _main_msg_unregister() {
 
 func Dave_product_init() {
 	_main_msg_register()
+
+	_fun_RPC_DEBUG_REQ("main_aib")
 }
 
 func Dave_product_exit() {

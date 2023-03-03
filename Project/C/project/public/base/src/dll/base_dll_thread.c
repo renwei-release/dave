@@ -35,7 +35,7 @@ dave_dll_thread_msg(int msg_len, char *fun, int line)
 {
 	void *ptr;
 
-	ptr = base_thread_msg((ub)msg_len, dave_true, (s8 *)__func__, (ub)__LINE__);
+	ptr = base_thread_msg_creat((ub)msg_len, dave_true, (s8 *)__func__, (ub)__LINE__);
 
 	DLLDEBUG("msg_len:%d ptr:%lx fun:%s line:%d",
 		msg_len, ptr, (s8 *)__func__, (ub)__LINE__);

@@ -532,6 +532,9 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 		pMsg = thread_thread_read(pTThread);
 	}
 
+	if(pThread->has_initialization == dave_false)
+		return pMsg;
+
 	if(pMsg == NULL)
 	{
 		pMsg = _thread_safe_read_seq_queue(pThread);
@@ -819,38 +822,35 @@ _thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name,
 		return _thread_num_msg(pThread, MSGID_RESERVED);
 	}
 
-	if(pThread->has_initialization == dave_true)
+	pMsg = _thread_read_msg(pThread, pTThread);
+	if(pMsg != NULL)
 	{
-		pMsg = _thread_read_msg(pThread, pTThread);
-		if(pMsg != NULL)
+		msg_body = &(pMsg->msg_body);
+
+		msg_body->thread_wakeup_index = wakeup_index;
+
+		msgcall_fun = thread_call_msg(msg_body->msg_dst, msg_body->msg_id);
+
+		if(msgcall_fun != NULL)
 		{
-			msg_body = &(pMsg->msg_body);
+			msg_body->user_ptr = msgcall_fun->user_ptr;
 
-			msg_body->thread_wakeup_index = wakeup_index;
-
-			msgcall_fun = thread_call_msg(msg_body->msg_dst, msg_body->msg_id);
-
-			if(msgcall_fun != NULL)
-			{
-				msg_body->user_ptr = msgcall_fun->user_ptr;
-
-				thread_running(
-					&_current_msg_stack,
-					msgcall_fun->msg_fun,
-					pThread,
-					msg_body, enable_stack);
-			}
-			else
-			{
-				thread_running(
-					&_current_msg_stack,
-					pThread->thread_main,
-					pThread,
-					msg_body, enable_stack);
-			}
-
-			thread_clean_msg(pMsg);
+			thread_running(
+				&_current_msg_stack,
+				msgcall_fun->msg_fun,
+				pThread,
+				msg_body, enable_stack);
 		}
+		else
+		{
+			thread_running(
+				&_current_msg_stack,
+				pThread->thread_main,
+				pThread,
+				msg_body, enable_stack);
+		}
+
+		thread_clean_msg(pMsg);
 	}
 
 	return _thread_num_msg(pThread, MSGID_RESERVED);
@@ -897,24 +897,21 @@ _thread_schedule(void)
 }
 
 static void
-_thread_guardian_running_function(base_thread_fun thread_fun, base_thread_fun last_fun, ThreadId thread_dst, dave_bool initialization_flag)
+_thread_guardian_running_function(base_thread_fun thread_fun, base_thread_fun last_fun, ThreadId run_thread_id, dave_bool initialization_flag)
 {
 	RUNFUNCTIONMSG *pRun = thread_msg(pRun);
 
-	THREADDEBUG("%s running:%s", _thread_get_name(thread_dst), initialization_flag==dave_true?"init":"exit");
+	THREADDEBUG("%ld/%s running:%s",
+		run_thread_id, _thread_get_name(run_thread_id),
+		initialization_flag==dave_true?"init":"exit");
 
 	pRun->thread_fun = (void *)thread_fun;
 	pRun->last_fun = (void *)last_fun;
 	pRun->param = (void *)(&_current_msg_stack);
-	pRun->thread_dst = thread_dst;
+	pRun->run_thread_id = run_thread_id;
 	pRun->initialization_flag = initialization_flag;
 
-	if(_guardian_thread == INVALID_THREAD_ID)
-	{
-		_guardian_thread = _thread_get_id(GUARDIAN_THREAD_NAME);
-	}
-
-	id_msg(_guardian_thread, MSGID_RUN_FUNCTION, pRun);	
+	id_pre(_thread_get_id(GUARDIAN_THREAD_NAME), MSGID_RUN_FUNCTION, pRun);	
 }
 
 static void
@@ -1114,7 +1111,7 @@ _thread_creat(
 	thread_index = thread_id = thread_find_free_index(thread_name);
 	if(thread_index >= THREAD_MAX)
 	{
-		THREADABNOR("creat thread:%s fail, thread list table is full!", thread_name);
+		THREADABNOR("creat thread:%s failed, thread list table is full!", thread_name);
 		thread_id = INVALID_THREAD_ID;
 	}
 	else
@@ -1128,21 +1125,16 @@ _thread_creat(
 
 		_thread_creat_frist_fun(pThread);
 
+		THREADDEBUG("name:%s id:%d index:%d", thread_name, thread_id, thread_index);
+
 		if(pThread->thread_init != NULL)
 		{
-			if(dave_strcmp(thread_name, GUARDIAN_THREAD_NAME) == dave_true)
-			{
-				pThread->has_initialization = dave_true;
-			}
-
 			_thread_guardian_running_function(pThread->thread_init, NULL, pThread->thread_id, dave_true);
 		}
 		else
 		{
 			pThread->has_initialization = dave_true;
 		}
-
-		THREADDEBUG("name:%s id:%d index:%d", thread_name, thread_id, thread_index);
 	}
 
 	return thread_id;
@@ -1736,7 +1728,7 @@ base_thread_msg_unregister(ThreadId thread_id, ub msg_id)
 }
 
 void *
-base_thread_msg(ub msg_len, dave_bool reset, s8 *fun, ub line)
+base_thread_msg_creat(ub msg_len, dave_bool reset, s8 *fun, ub line)
 {
 	void *ptr;
 
