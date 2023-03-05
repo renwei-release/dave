@@ -11,7 +11,7 @@ import (
 	"dave/public/auto"
 	"dave/public/tools"
 	"encoding/json"
-	"fmt"
+	"errors"
 )
 
 // =====================================================================
@@ -35,7 +35,7 @@ func T_gobyte2mbuf(byte_data []byte) *auto.MBUF {
 
 func T_mbuf2gobyte(mbuf_data *auto.MBUF) ([]byte, error) {
 	if mbuf_data == nil {
-		return nil, fmt.Errorf("mbuf_data is nil")
+		return nil, errors.New("mbuf_data is nil")
 	}
 	go_byte := tools.T_cgo_cbin2gobyte(mbuf_data.Len, mbuf_data.Payload)
 	return go_byte, nil
@@ -59,4 +59,17 @@ func T_gojson2mbuf(json_data interface{}) *auto.MBUF {
 		return nil
 	}
 	return T_gobyte2mbuf(json_string)
+}
+
+func T_mbuf2json(mbuf_data *auto.MBUF) (*tools.Json, error) {
+	if mbuf_data == nil {
+		return nil, errors.New("mbuf_data is nil")
+	}
+
+	go_byte, err := T_mbuf2gobyte(mbuf_data)
+	if err != nil {
+		return nil, err
+	}
+
+	return tools.NewJson(go_byte)
 }

@@ -7,6 +7,7 @@ require (
 	github.com/alanshaw/ipfs-ds-postgres v0.1.0
 	github.com/alanshaw/ipfs-hookds v0.3.0
 	github.com/axiomhq/hyperloglog v0.0.0-20220105174342-98591331716a
+	github.com/bitly/go-simplejson v0.5.0
 	github.com/ethereum/go-ethereum v1.10.25
 	github.com/google/uuid v1.2.0
 	github.com/hashicorp/go-multierror v1.1.1
@@ -49,6 +50,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/benbjohnson/clock v1.0.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta.0.20220111032746-97732e52810c // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.1 // indirect

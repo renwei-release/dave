@@ -34,7 +34,7 @@ func _blockchain_recv_req(src_gid string, src_name string, src_id uint64, msg_le
 	var req BlockChainReq
 	base.T_mbuf2gojson(pReq.Data, &req)
 
-	base.DAVELOG("method:%v option:%v", method, req.Option)
+	base.DAVEDEBUG("method:%v option:%v", method, req.Option)
 
 	rsp_param, ret := blockchain_option(req.Option, req.Param)
 

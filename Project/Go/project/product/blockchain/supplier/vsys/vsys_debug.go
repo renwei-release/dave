@@ -8,7 +8,10 @@ package vsys
  */
 
 import (
+	"dave/public/base"
+	"dave/public/tools"
 	"dave/product/blockchain/supplier/vsys/core"
+	"dave/product/blockchain/supplier/vsys/store"
 	"dave/product/blockchain/supplier/vsys/app/nft"
 	"dave/product/blockchain/supplier/vsys/app/info"
 )
@@ -22,6 +25,16 @@ func _vsys_deploy_nft() string {
 	}
 }
 
+func _vsys_add_voucher() string {
+	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), "bbbb", tools.T_rand())
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return "failed"
+	}
+
+	return "OK"
+}
+
 // =====================================================================
 
 func Vsys_debug(debug_req string) string {
@@ -33,6 +46,8 @@ func Vsys_debug(debug_req string) string {
 		debug_rsp = vsys_core.Vsys_wallet_address()
 	} else if debug_req == "info" {
 		debug_rsp = vsys_info.Vsys_info_total()
+	} else if debug_req == "add_voucher" {
+		debug_rsp = _vsys_add_voucher()
 	} else {
 		debug_rsp = "bad request:"+debug_req
 	}

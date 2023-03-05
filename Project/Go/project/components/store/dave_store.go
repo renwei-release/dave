@@ -10,15 +10,17 @@ package store
 import (
 	"dave/public/base"
 	"dave/public/auto"
+	"dave/public/tools"
 	"fmt"
 	"unsafe"
+	"errors"
 )
 
 const STORE_THREAD_NAME = "store"
 
 // =====================================================================
 
-func STORESQL(format string, sql ...interface{}) {
+func STORESQL(format string, sql ...interface{}) (*tools.Json, error) {
 	sql_string := fmt.Sprintf(format, sql...)
 
 	req := auto.StoreMysqlReq{}
@@ -27,12 +29,18 @@ func STORESQL(format string, sql ...interface{}) {
 
 	pRsp := (*auto.StoreMysqlRsp)(base.Name_co(STORE_THREAD_NAME, auto.STORE_MYSQL_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.STORE_MYSQL_RSP))
 	if pRsp == nil {
-		return
+		return nil, errors.New("co timer out")
 	}
 
-	if pRsp.Ret != auto.RetCode_OK && pRsp.Ret != auto.RetCode_empty_data {
+	if (pRsp.Ret != auto.RetCode_OK) && 
+		(pRsp.Ret != auto.RetCode_empty_data) &&
+		(pRsp.Ret != auto.RetCode_table_exist) {
 		base.DAVELOG("ret:%s on sql:%s", auto.T_auto_RetCode_str(pRsp.Ret), sql_string)
 	}
 
+	json_obj, _ := base.T_mbuf2json(pRsp.Data)
+
 	base.Dave_mfree(pRsp.Data)
+
+	return json_obj, nil
 }
