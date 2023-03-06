@@ -14,7 +14,7 @@ import (
 
 // =====================================================================
 
-func Vsys_wallet_address() string {
+func Vsys_new_wallet() string {
 	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
 	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 

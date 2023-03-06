@@ -12,6 +12,7 @@ import (
 	"dave/public/base"
 
 	"dave/product/blockchain/supplier/eth/core"
+	"dave/product/blockchain/supplier/vsys/core"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -21,15 +22,20 @@ type CreatWalletReq struct {
 
 type CreatWalletRsp struct {
 	Address string `json:"address"`
+	Eth_address string `json:"eth_address"`
+	Vsys_address string `json:"vsys_address"`
 	Passphrase string `json:"passphrase"`
 	Keystore string `json:"keystore"`
 }
 
 func _eth_creat_wallet(req CreatWalletReq) (interface{}, int64) {
-	address, keystore := eth_core.Eth_new_wallet(req.Passphrase)
+	eth_address, keystore := eth_core.Eth_new_wallet(req.Passphrase)
+	vsys_address := vsys_core.Vsys_new_wallet()
 
 	rsp := CreatWalletRsp { 
-        Address: address, 
+        Address: eth_address,
+		Eth_address: eth_address,
+		Vsys_address: vsys_address,
         Passphrase: req.Passphrase,
 		Keystore: keystore,
     }

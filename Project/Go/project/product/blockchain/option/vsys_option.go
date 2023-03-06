@@ -36,7 +36,21 @@ func _vsys_total_voucher_inq() (interface{}, int64) {
 }
 
 func _vsys_user_voucher_inq(user_name string) (interface{}, int64) {
-	return "", auto.RetCode_OK
+	json_string, err := vsys_store.Vsys_store_voucher_user(user_name)
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return "", auto.RetCode_empty_data
+	}
+	return json_string, auto.RetCode_OK
+}
+
+func _vsys_user_voucher_assign(user_name string) (interface{}, int64) {
+	json_string, err := vsys_store.Vsys_store_voucher_assign(user_name, 1)
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return "", auto.RetCode_empty_data
+	}
+	return json_string, auto.RetCode_OK
 }
 
 // =====================================================================
@@ -57,6 +71,8 @@ func Vsys_option(param interface{}) (interface{}, int64) {
 		return _vsys_total_voucher_inq()
 	} else if req.User_action == "user_voucher_inq" {
 		return _vsys_user_voucher_inq(req.User_name)
+	} else if req.User_action == "user_voucher_assign" {
+		return _vsys_user_voucher_assign(req.User_name)
 	} else {
 		base.DAVELOG("invalid action, user_action:%v user_name:%v",
 			req.User_action, req.User_name)

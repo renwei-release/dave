@@ -43,7 +43,7 @@ func Vsys_debug(debug_req string) string {
 	if debug_req == "deploy" {
 		debug_rsp = _vsys_deploy_nft()
 	} else if debug_req == "wallet" {
-		debug_rsp = vsys_core.Vsys_wallet_address()
+		debug_rsp = vsys_core.Vsys_new_wallet()
 	} else if debug_req == "info" {
 		debug_rsp = vsys_info.Vsys_info_total()
 	} else if debug_req == "add_voucher" {

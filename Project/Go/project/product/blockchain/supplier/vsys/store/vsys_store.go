@@ -64,7 +64,7 @@ func Vsys_store_exit() {
 
 func Vsys_store_voucher_total(page_id int64, page_number int64) (string, error) {
 	json_obj, err := store.STORESQL(
-		"SELECT owner_phone_number, voucher_type, voucher_url, voucher_expiry, voucher_status, voucher_info_id from %s.%s where voucher_status = \"unused\" limit %d, %d;",
+		"SELECT owner_phone_number, voucher_type, voucher_url, voucher_expiry, voucher_status, voucher_info_id FROM %s.%s WHERE voucher_status = \"unused\" LIMIT %d, %d;",
 		DB_NAME, VOUCHER_NAME,
 		page_id * page_number, page_number)
 	if err != nil {
@@ -75,6 +75,35 @@ func Vsys_store_voucher_total(page_id int64, page_number int64) (string, error) 
 	json_string, err := json.Marshal(json_obj)
 
 	return string(json_string), err
+}
+
+func Vsys_store_voucher_user(user_name string) (string, error) {
+	json_obj, err := store.STORESQL(
+		"SELECT owner_phone_number, voucher_type, voucher_url, voucher_expiry, voucher_status, voucher_info_id FROM %s.%s WHERE owner_phone_number = \"%s\";",
+		DB_NAME, VOUCHER_NAME,
+		user_name)
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return "", err
+	}
+
+	json_string, err := json.Marshal(json_obj)
+
+	return string(json_string), err
+}
+
+func Vsys_store_voucher_assign(user_name string, assign_number int) (string, error) {
+	_, err := store.STORESQL(
+		"UPDATE %s.%s SET owner_phone_number = \"%s\", voucher_status = \"used\", updatetime=now() WHERE voucher_status = \"unused\" LIMIT %d;",
+		DB_NAME, VOUCHER_NAME,
+		user_name,
+		assign_number)
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return "", err
+	}
+
+	return Vsys_store_voucher_user(user_name)
 }
 
 func Vsys_store_voucher_add(wallet_address string, voucher_type string, voucher_url string) error {
