@@ -14,17 +14,38 @@ import (
 
 // =====================================================================
 
-func Vsys_new_wallet() string {
+func Vsys_new_wallet() (string, string) {
+	wallet, _ := vsys.GenWallet()
+	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
+
+	base.DAVELOG("account PriKey:%v PubKey:%v Addr:%v seed:%v",
+		account.PriKey.B58Str().Str(),
+		account.PubKey.B58Str().Str(),
+		account.Addr.B58Str().Str(),
+		wallet.Seed.Str.Str())
+
+	return account.Addr.B58Str().Str(), wallet.Seed.Str.Str()
+}
+
+func Vsys_new_account() *vsys.Account {
+	wallet, _ := vsys.GenWallet()
+	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
+	return account
+}
+
+func Vsys_my_wallet() string {
 	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
 	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 
 	base.DAVELOG("account PriKey:%v PubKey:%v Addr:%v",
-		account.PriKey.B58Str().Str(), account.PubKey.B58Str().Str(), account.Addr.B58Str().Str())
+		account.PriKey.B58Str().Str(),
+		account.PubKey.B58Str().Str(),
+		account.Addr.B58Str().Str())
 
 	return account.Addr.B58Str().Str()
 }
 
-func Vsys_account() *vsys.Account {
+func Vsys_my_account() *vsys.Account {
 	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
 	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 	return account

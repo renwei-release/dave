@@ -17,7 +17,7 @@ import (
 // =====================================================================
 
 func Vsys_deploy_nft(nft_data string, nft_name string) (bool, string) {
-	account := vsys_core.Vsys_account()
+	account := vsys_core.Vsys_my_account()
 
 	nc, err := vsys.RegisterNFTCtrt(account, nft_name)
 	if err != nil {

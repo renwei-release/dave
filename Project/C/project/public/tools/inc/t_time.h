@@ -11,6 +11,7 @@
 DateStruct t_time_get_date(DateStruct *pDate);
 RetCode t_time_set_date(DateStruct *pDate);
 DateStruct t_time_second_struct(ub second_time);
+ub t_time_struct_second(DateStruct *pDate);
 
 #endif
 

@@ -28,6 +28,8 @@ API void dave_dll_running(void);
 
 API void dave_dll_exit(void);
 
+API int dave_dll_run_state(void);
+
 API int dave_dll_self_check(char *string_data, int int_data, float float_data, dll_checkback_fun checkback);
 
 API void dave_dll_log(char *func, int line, char *log_msg);

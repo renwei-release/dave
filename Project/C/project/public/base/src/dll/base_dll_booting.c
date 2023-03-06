@@ -334,5 +334,13 @@ dave_dll_exit(void)
 	base_restart("dll exit");
 }
 
+int
+dave_dll_run_state(void)
+{
+	if(base_power_state() == dave_false)
+		return -1;
+	return 0;
+}
+
 #endif
 

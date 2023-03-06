@@ -23,7 +23,7 @@ func _fun_MSGID_REMOTE_THREAD_READY(src_gid string, src_name string, src_id uint
 	base.DAVELOG("%s/%d", remote_thread_name, remote_thread_id)
 
 	if remote_thread_name == "store" {
-		supplier.Supplier_init()		
+		supplier.Supplier_init()
 	}
 }
 
@@ -35,7 +35,7 @@ func _fun_MSGID_REMOTE_THREAD_REMOVE(src_gid string, src_name string, src_id uin
 	base.DAVELOG("%s/%d", remote_thread_name, remote_thread_id)
 
 	if remote_thread_name == "store" {
-		supplier.Supplier_exit()		
+		supplier.Supplier_exit()
 	}
 }
 

@@ -12,6 +12,7 @@
 #include "tools_log.h"
 
 #define MAX_SECOND (157680000000)	// 60 * 60 * 24 * 365 * 5000
+#define MAX_YEAR (5000)
 #define YEAR_START (1900)
 
 // =====================================================================
@@ -68,5 +69,43 @@ t_time_second_struct(ub second_time)
 	date.second = pTm->tm_sec;
 
 	return date;
+}
+
+ub
+t_time_struct_second(DateStruct *pDate)
+{
+	struct tm ptm = { 0 };
+
+	if(pDate->year > MAX_YEAR)
+	{
+		TOOLSLOG("invalid year:%d", pDate->year);
+		pDate->year = MAX_YEAR;
+	}
+	else if(pDate->year < YEAR_START)
+	{
+		TOOLSLOG("invalid year:%d", pDate->year);
+		t_time_get_date(pDate);
+	}
+
+	if((pDate->month == 0) || (pDate->month > 12))
+	{
+		TOOLSLOG("invalid month:%d", pDate->month);
+		pDate->month = 2;
+	}
+
+	if((pDate->day == 0) || (pDate->day >= 32))
+	{
+		TOOLSLOG("invalid day:%d", pDate->day);
+		pDate->day = 1;
+	}
+
+	ptm.tm_year = pDate->year - YEAR_START;
+	ptm.tm_mon = pDate->month - 1;
+	ptm.tm_mday = pDate->day;
+	ptm.tm_hour = pDate->hour;
+	ptm.tm_min = pDate->minute;
+	ptm.tm_sec = pDate->second;
+
+	return (ub)mktime(&ptm);
 }
 

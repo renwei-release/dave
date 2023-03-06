@@ -107,3 +107,11 @@ func Dave_go_running() {
 func Dave_go_exit() {
 	C.dave_dll_exit()
 }
+
+func Dave_go_run_state() bool {
+	if C.dave_dll_run_state() == 0 {
+		return true
+	} else {
+		return false
+	}
+}

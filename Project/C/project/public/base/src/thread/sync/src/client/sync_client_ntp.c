@@ -27,31 +27,30 @@ static void
 _sync_client_ntp(DateStruct *remote_date, DateStruct *local_date)
 {
 	dave_bool update_flag = dave_false;
+	ub remote_date_ub, local_date_ub;
 
 	SYNCDEBUG("ntp local:%s remote:%s", datestr(local_date), datestr2(remote_date));
 
-	if((remote_date->year != local_date->year)
-		|| (remote_date->month != local_date->month)
-		|| (remote_date->day != local_date->day)
-		|| (remote_date->hour != local_date->hour)
-		|| (remote_date->minute != local_date->minute))
-	{
-		if(remote_date->second >= local_date->second)
-		{
-			if((remote_date->second - local_date->second) >= NTP_UPDATE_MIN_INTERVAL)
-				update_flag = dave_true;
-		}
-		else
-		{
-			if((local_date->second - remote_date->second) >= NTP_UPDATE_MIN_INTERVAL)
-				update_flag = dave_true;
-		}
+	remote_date_ub = t_time_struct_second(remote_date);
+	local_date_ub = t_time_struct_second(local_date);
 
-		if(update_flag == dave_true)
-		{
-			SYNCLOG("date update %s->%s", datestr(local_date), datestr2(remote_date));
-			t_time_set_date(remote_date);
-		}
+	if(remote_date_ub >= local_date_ub)
+	{
+		if((remote_date_ub - local_date_ub) >= NTP_UPDATE_MIN_INTERVAL)
+			update_flag = dave_true;
+	}
+	else
+	{
+		if((local_date_ub - remote_date_ub) >= NTP_UPDATE_MIN_INTERVAL)
+			update_flag = dave_true;
+	}
+
+	if(update_flag == dave_true)
+	{
+		SYNCLOG("date update %ld/%s->%ld/%s",
+			local_date_ub, datestr(local_date),
+			remote_date_ub, datestr2(remote_date));
+		t_time_set_date(remote_date);
 	}
 }
 

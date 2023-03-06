@@ -25,6 +25,12 @@ func _vsys_deploy_nft() string {
 	}
 }
 
+func _vsys_new_wallet() string {
+	address, seed := vsys_core.Vsys_new_wallet()
+
+	return "address:"+address+" seed:"+seed
+}
+
 func _vsys_add_voucher() string {
 	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), "bbbb", tools.T_rand())
 	if err != nil {
@@ -35,6 +41,10 @@ func _vsys_add_voucher() string {
 	return "OK"
 }
 
+func _vsys_info_total() string {
+	return vsys_info.Vsys_info_total()
+}
+
 // =====================================================================
 
 func Vsys_debug(debug_req string) string {
@@ -43,9 +53,9 @@ func Vsys_debug(debug_req string) string {
 	if debug_req == "deploy" {
 		debug_rsp = _vsys_deploy_nft()
 	} else if debug_req == "wallet" {
-		debug_rsp = vsys_core.Vsys_new_wallet()
+		debug_rsp = _vsys_new_wallet()
 	} else if debug_req == "info" {
-		debug_rsp = vsys_info.Vsys_info_total()
+		debug_rsp = _vsys_info_total()
 	} else if debug_req == "add_voucher" {
 		debug_rsp = _vsys_add_voucher()
 	} else {

@@ -650,7 +650,7 @@ _sync_server_rx_run_internal_msg_req(SyncClient *pClient, ub frame_len, u8 *fram
 	msg_len = packet_len;
 	if(msg_len > 0)
 	{
-		msg_body = base_thread_msg(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+		msg_body = base_thread_msg_creat(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
 		dave_memcpy(msg_body, packet_ptr, msg_len);
 	}
 

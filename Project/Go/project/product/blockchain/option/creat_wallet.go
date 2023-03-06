@@ -23,21 +23,23 @@ type CreatWalletReq struct {
 type CreatWalletRsp struct {
 	Address string `json:"address"`
 	Eth_address string `json:"eth_address"`
-	Vsys_address string `json:"vsys_address"`
 	Passphrase string `json:"passphrase"`
 	Keystore string `json:"keystore"`
+	Vsys_address string `json:"vsys_address"`
+	Vsys_seed string `json:"vsys_seed"`
 }
 
 func _eth_creat_wallet(req CreatWalletReq) (interface{}, int64) {
 	eth_address, keystore := eth_core.Eth_new_wallet(req.Passphrase)
-	vsys_address := vsys_core.Vsys_new_wallet()
+	vsys_address, vsys_seed := vsys_core.Vsys_new_wallet()
 
 	rsp := CreatWalletRsp { 
         Address: eth_address,
 		Eth_address: eth_address,
-		Vsys_address: vsys_address,
         Passphrase: req.Passphrase,
 		Keystore: keystore,
+		Vsys_address: vsys_address,
+		Vsys_seed: vsys_seed,
     }
 
 	return rsp, auto.RetCode_OK
