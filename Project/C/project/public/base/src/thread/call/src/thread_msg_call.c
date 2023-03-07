@@ -117,13 +117,13 @@ _thread_msg_call_recycle(void *ramkv, s8 *key)
 void
 thread_msg_call_init(void)
 {
-	_msg_call_kv = base_ramkv_malloc("tmckv", KvAttrib_list, 0, NULL);
+	_msg_call_kv = kv_malloc("tmckv", 0, NULL);
 }
 
 void
 thread_msg_call_exit(void)
 {
-	base_ramkv_free(_msg_call_kv, _thread_msg_call_recycle);
+	kv_free(_msg_call_kv, _thread_msg_call_recycle);
 	_msg_call_kv = NULL;
 }
 

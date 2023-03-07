@@ -84,7 +84,7 @@ _base_remote_reflash_del(s8 *name)
 void
 base_remote_cfg_init(void)
 {
-	_remote_cfg_kv = kv_malloc("rcfgkv", KvAttrib_list, 0, NULL);
+	_remote_cfg_kv = kv_malloc("rcfgkv", 0, NULL);
 }
 
 void

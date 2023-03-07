@@ -156,14 +156,6 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 
 		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
 	}
-
-	if(dave_strcmp(pReady->remote_thread_name, STORE_THREAD_NAME))
-	{
-		StoreSqlRet ret;
-		ret = STORESQL("SELECT help_topic_id, name, help_category_id, description, example, url FROM help_topic WHERE name = 'AREA';");
-		BASELOG("ret:%s data:%s", retstr(ret.ret), dave_json_to_string(ret.pJson, NULL));
-		dave_json_free(ret.pJson);
-	}
 }
 
 static void
@@ -188,11 +180,6 @@ static void
 _base_thread_init(MSGBODY *msg)
 {
 	BDATALOG("INIT", "%s booting!", dave_verno());
-
-	StoreSqlRet ret;
-	ret = STORESQL("SELECT help_topic_id, name, help_category_id, description, example, url FROM help_topic WHERE name = 'AREA';");	
-	BASELOG("ret:%s data:%s", retstr(ret.ret), dave_json_to_string(ret.pJson, NULL));
-	dave_json_free(ret.pJson);
 }
 
 static void

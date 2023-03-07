@@ -100,9 +100,22 @@ t_crypto_base64_decode(const s8 *in, ub inlen, u8 *out, ub *outlen)
 		*out++ = (lpCode[1] << 4) | (lpCode[2] >> 2);	
 		*out++ = (lpCode[2] << 6) | (lpCode[3]);
 
-		in += 4;  
-		inlen -= 4;	
-		vLen += 3;	
+		inlen -= 4;
+
+		if(inlen >= 4)
+		{
+			vLen += 3;
+		}
+		else
+		{
+			vLen += 1;
+			if(in[2] != '=')
+				vLen += 1;
+			if(in[3] != '=')
+				vLen += 1;
+		}
+
+		in += 4;
 	}
 
 	if((*outlen) > vLen)

@@ -149,6 +149,16 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	pRsp->ret = _store_mysql_sql(&(pRsp->data), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
 	pRsp->ptr = pReq->ptr;
 
+	if((pRsp->ret != RetCode_OK)
+		&& (pRsp->ret != RetCode_table_exist)
+		&& (pRsp->ret != RetCode_empty_data))
+	{
+		STLOG("%s execute sql:%s ret:%s",
+			thread_name(src),
+			ms8(pReq->sql),
+			retstr(pRsp->ret));
+	}
+
 	id_msg(src, STORE_MYSQL_RSP, pRsp);
 
 	dave_mfree(pReq->sql);

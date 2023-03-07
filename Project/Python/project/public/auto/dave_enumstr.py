@@ -1456,6 +1456,8 @@ def t_auto_RetCode_str(enum_value):
 		value_str = "'RetCode_table_exist--118'"
 	elif enum_value == RetCode_db_sql_failed:
 		value_str = "'RetCode_db_sql_failed--119'"
+	elif enum_value == RetCode_Unauthorized_access:
+		value_str = "'RetCode_Unauthorized_access--120'"
 	elif enum_value == RetCode_max:
 		value_str = "'RetCode_max-0x1fffffffffffffff'"
 	else:
@@ -1686,6 +1688,8 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_RPC_DEBUG_RSP-37'"
 	elif enum_value == MSGID_CFG_REMOTE_UPDATE:
 		value_str = "'MSGID_CFG_REMOTE_UPDATE-38'"
+	elif enum_value == MSGID_DOS_FORWARD:
+		value_str = "'MSGID_DOS_FORWARD-39'"
 	elif enum_value == MSGID_CFG_REMOTE_SYNC_UPDATE:
 		value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'"
 	elif enum_value == SOCKET_BIND_REQ:

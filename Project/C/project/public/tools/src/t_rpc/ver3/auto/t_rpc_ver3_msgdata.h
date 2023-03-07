@@ -327,6 +327,11 @@ dave_bool t_rpc_ver3_unzip_DebugRsp(void **unzip_data, ub *unzip_len, void *pStr
 void * t_rpc_ver3_ptr_DebugRsp(DebugRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_DebugRsp(void);
 
+void * t_rpc_ver3_zip_DosForward(DosForward *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_DosForward(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_DosForward(DosForward *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_DosForward(void);
+
 void * t_rpc_ver3_zip_HTTPCloseReq(HTTPCloseReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HTTPCloseReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_HTTPCloseReq(HTTPCloseReq *struct_data, void *new_ptr);

@@ -157,7 +157,7 @@ _or_cfg_local_update(void)
 void
 orchestration_config_init(void)
 {
-	_or_kv = kv_malloc("orkv", KvAttrib_list, 0, NULL);
+	_or_kv = kv_malloc("orkv", 0, NULL);
 	_or_cfg_local_update();
 	reg_msg(MSGID_CFG_REMOTE_UPDATE, _or_cfg_remote_update);
 }

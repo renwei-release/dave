@@ -594,7 +594,7 @@ thread_msg_buffer_init(void)
 	if(init_flag == dave_true)
 	{
 		t_lock_reset(&_thread_msg_buf_pv);
-		_thread_msg_buf_ramkv = base_ramkv_malloc("tmbk", KvAttrib_list, THREAD_MSG_BUFFER_BASE_TIMER, _thread_msg_buffer_safe_tick);
+		_thread_msg_buf_ramkv = kv_malloc("tmbk", THREAD_MSG_BUFFER_BASE_TIMER, _thread_msg_buffer_safe_tick);
 	}
 }
 
@@ -613,7 +613,7 @@ thread_msg_buffer_exit(void)
 
 	if(exit_flag == dave_true)
 	{
-		base_ramkv_free(_thread_msg_buf_ramkv, _thread_msg_buffer_safe_recycle);
+		kv_free(_thread_msg_buf_ramkv, _thread_msg_buffer_safe_recycle);
 		_thread_msg_buf_ramkv = NULL;
 	}
 }

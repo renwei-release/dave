@@ -106,8 +106,8 @@ _distributor_info_info(void *ramkv, s8 *info_ptr, ub info_len)
 void
 distributor_info_init(void)
 {
-	_listen_kv = kv_malloc("http-distributor", KvAttrib_list, 0, NULL);
-	_listen_auto_close_kv = kv_malloc("http-distributor-auto", KvAttrib_list, AUTO_CLOSE_BASE_TIME, _distributor_info_auto_close_timer);
+	_listen_kv = kv_malloc("http-distributor", 0, NULL);
+	_listen_auto_close_kv = kv_malloc("http-distributor-auto", AUTO_CLOSE_BASE_TIME, _distributor_info_auto_close_timer);
 }
 
 void

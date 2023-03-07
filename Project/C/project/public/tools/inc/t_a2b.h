@@ -20,6 +20,7 @@ MBUF * __t_a2b_str_to_mbuf__(s8 *str_ptr, sb str_len, s8 *fun, ub line);
 MBUF * t_a2b_param_to_mbuf(const char *args, ...);
 ub t_a2b_mbuf_to_buf(u8 *buf_ptr, ub buf_len, MBUF *m);
 void * t_a2b_mbuf_to_json(MBUF *m);
+MBUF * t_a2b_json_to_mbuf(void *pJson);
 
 ub t_a2b_digital_to_string(s8 *str_ptr, ub str_len, ub digital);
 ub t_a2b_string_to_digital(s8 *str_ptr);
@@ -27,6 +28,8 @@ ub t_a2b_stringhex_to_digital(s8 *str_ptr);
 ub t_a2b_bin_to_hex_string(s8 *buf_ptr, ub buf_len, u8 *bin_ptr, ub bin_len);
 double t_a2b_string_to_double(s8 *string);
 ub t_a2b_double_to_string(s8 *string_ptr, ub string_len, double double_data);
+
+ub t_a2b_string_to_escape(s8 *escape_ptr, ub escape_len, s8 *string);
 
 s8 * t_a2b_net_ipv4_to_str(u8 *ip, u16 port);
 s8 * t_a2b_net_ipv4_to_str_2(u8 *ip, u16 port);
@@ -55,6 +58,7 @@ s8 * t_a2b_date_str_6(DateStruct *pDate);
 #define stringhexdigital t_a2b_stringhex_to_digital
 #define stringdouble t_a2b_string_to_double
 #define doublestring t_a2b_double_to_string
+#define stringescape t_a2b_string_to_escape
 
 #endif
 

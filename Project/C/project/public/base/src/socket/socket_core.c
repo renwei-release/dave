@@ -414,7 +414,7 @@ socket_core_init(void)
 		_socket_core_reset(&_socket_core[socket_internal_index]);
 	}
 
-	_socket_map_ramkv = base_ramkv_malloc((s8 *)"socketmap", KvAttrib_list, 0, NULL);
+	_socket_map_ramkv = kv_malloc((s8 *)"socketmap", 0, NULL);
 }
 
 void

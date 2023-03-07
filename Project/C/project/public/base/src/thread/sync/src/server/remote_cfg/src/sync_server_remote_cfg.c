@@ -262,7 +262,7 @@ _sync_server_cfg_kv_recycle(void *ramkv, s8 *key)
 void
 sync_server_remote_cfg_init(void)
 {
-	_remote_cfg_reflash_kv = kv_malloc("ssrcr", KvAttrib_list, REMOTE_BASE_TIMER, _sync_server_cfg_kv_timer_out);
+	_remote_cfg_reflash_kv = kv_malloc("ssrcr", REMOTE_BASE_TIMER, _sync_server_cfg_kv_timer_out);
 
 	remote_etcd_cfg_init(_sync_server_cfg_update);
 

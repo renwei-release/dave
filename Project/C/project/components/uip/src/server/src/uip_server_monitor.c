@@ -162,7 +162,7 @@ uip_server_monitor_init(uip_monitor_error error_fun)
 {
 	ub kv_timer = _uip_server_monitor_kv_timer();
 
-	_uip_monitor_kv = base_ramkv_malloc((s8 *)"uipmonitor", KvAttrib_list, kv_timer, _uip_server_monitor_timer_out);
+	_uip_monitor_kv = kv_malloc("uipmonitor", kv_timer, _uip_server_monitor_timer_out);
 
 	_uip_monitor_check_time_consuming = MONITOR_CHECK_DEFAULT_CONSUMING_TIME;
 
@@ -172,7 +172,7 @@ uip_server_monitor_init(uip_monitor_error error_fun)
 void
 uip_server_monitor_exit(void)
 {
-	base_ramkv_free(_uip_monitor_kv, _uip_server_monitor_recycle);
+	kv_free(_uip_monitor_kv, _uip_server_monitor_recycle);
 
 	_uip_monitor_kv = NULL;
 }
@@ -206,7 +206,8 @@ uip_server_monitor_free(void *monitor_ptr)
 void
 uip_server_monitor_time_consuming(ub time_consuming)
 {
-	UIPLOG("Response time detection is set from %d to %d", _uip_monitor_check_time_consuming, time_consuming);
+	UIPLOG("Response time detection is set from %d to %d",
+		_uip_monitor_check_time_consuming, time_consuming);
 
 	_uip_monitor_check_time_consuming = time_consuming;
 }

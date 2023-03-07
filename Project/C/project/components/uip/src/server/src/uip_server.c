@@ -10,6 +10,7 @@
 #include "dave_os.h"
 #include "dave_3rdparty.h"
 #include "uip_channel.h"
+#include "uip_dos.h"
 #include "uip_server_register.h"
 #include "uip_server_monitor.h"
 #include "uip_server_http.h"
@@ -318,6 +319,8 @@ uip_server_init(MSGBODY *pMsg)
 	uip_server_register_init();
 
 	uip_server_report_init();
+
+	uip_dos_init();
 }
 
 void
@@ -348,6 +351,8 @@ uip_server_main(MSGBODY *pMsg)
 void
 uip_server_exit(MSGBODY *pMsg)
 {
+	uip_dos_exit();
+
 	_uip_server_http_stop();
 
 	uip_server_http_exit();

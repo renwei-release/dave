@@ -285,7 +285,8 @@ _mysql_query(MYSQL *pSql, s8 *sql)
 	} while(((safe_counter ++) < 102400) && (so_mysql_next_result(pSql) == 0));
 	if(safe_counter >= 102400)
 	{
-		PARTYABNOR("safe_counter:%d sql:%s find error! mysql_next_result=%d", safe_counter, sql, so_mysql_next_result(pSql));
+		PARTYABNOR("safe_counter:%d sql:%s find error! mysql_next_result=%d",
+			safe_counter, sql, so_mysql_next_result(pSql));
 	}
 
 	if(so_mysql_query(pSql, (const char *)sql) != 0)
@@ -391,7 +392,8 @@ dave_mysql_creat_client(s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
 	if(ret != RetCode_OK)
 	{
 		if(ret != RetCode_db_not_find)
-			PARTYABNOR("mysql connect error:%s<%d>", so_mysql_error(pSql), so_mysql_errno(pSql));
+			PARTYABNOR("mysql connect error:%s<%d>",
+				so_mysql_error(pSql), so_mysql_errno(pSql));
 		dave_mysql_release_client(pSql); pSql = NULL;
 		return NULL;
 	}
@@ -429,15 +431,22 @@ dave_mysql_query(void *pSql, s8 *sql)
 	}
 
 	ret.ret = _mysql_query(pSql, sql);
-	if(ret.ret != RetCode_OK)
+	if(ret.ret == RetCode_table_exist)
+	{
+		return ret;
+	}
+	else if(ret.ret != RetCode_OK)
 	{
 		PARTYLOG("sql:%s query error<%d>:%s/%s",
 			sql, so_mysql_errno(pSql), so_mysql_error(pSql),
 			retstr(ret.ret));
-		return ret;
+	}
+	else
+	{
+		ret = _mysql_query_ret(pSql, sql);
 	}
 
-	return _mysql_query_ret(pSql, sql);
+	return ret;
 }
 
 void

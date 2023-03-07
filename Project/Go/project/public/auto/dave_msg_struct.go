@@ -502,6 +502,13 @@ type DebugRsp struct {
 	Ptr uint64
 }
 
+/* for MSGID_DOS_FORWARD message */
+type DosForward struct {
+	Cmd *MBUF
+	Param *MBUF
+	Ptr uint64
+}
+
 /* for HTTPMSG_CLOSE_REQ message */
 type HTTPCloseReq struct {
 	Listen_port uint64

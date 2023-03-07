@@ -3990,6 +3990,9 @@ t_auto_RetCode_str(RetCode enum_value)
 		case RetCode_db_sql_failed:
 				value_str = "'RetCode_db_sql_failed--119'";
 			break;
+		case RetCode_Unauthorized_access:
+				value_str = "'RetCode_Unauthorized_access--120'";
+			break;
 		case RetCode_max:
 				value_str = "'RetCode_max-0x1fffffffffffffff'";
 			break;
@@ -4547,6 +4550,9 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_CFG_REMOTE_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_UPDATE-38'";
+			break;
+		case MSGID_DOS_FORWARD:
+				value_str = "'MSGID_DOS_FORWARD-39'";
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'";

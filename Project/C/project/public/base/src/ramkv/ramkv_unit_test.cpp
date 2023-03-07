@@ -163,7 +163,7 @@ _ramkv_test_loop(KvAttrib attrib, s8 *test_counter_str)
 
 	KVLOG("start ramkv database test(attrib:%d loop:%d) ...", attrib, test_counter);
 
-	ramkv = kv_malloc((s8 *)"testramkv", attrib, 0, NULL);
+	ramkv = kv_malloc((s8 *)"testramkv", 0, NULL);
 
 	test_time = _ramkv_test_add_and_inq(ramkv, test_counter);
 
@@ -189,7 +189,7 @@ _ramkv_test_add_del_free(KvAttrib attrib, s8 *test_counter_str)
 
 	KVLOG("start ramkv database test(attrib:%d loop:%d) ...", attrib, test_counter);
 
-	ramkv = kv_malloc((s8 *)"testramkv", attrib, 0, NULL);
+	ramkv = kv_malloc((s8 *)"testramkv", 0, NULL);
 
 	test_time = _ramkv_test_add_and_del(ramkv, test_counter);
 
@@ -270,7 +270,7 @@ _ramkv_test_timer_start(s8 *out_second_str)
 			out_second = 30;
 		}
 
-		_timer_ramkv = kv_malloc((s8 *)"testramkv", KvAttrib_list, out_second, _ramkv_test_timer_out);
+		_timer_ramkv = kv_malloc((s8 *)"testramkv", out_second, _ramkv_test_timer_out);
 		t_lock_reset(&_timer_pv);
 
 		base_timer_creat((char *)"testramkv_check_timer", _ramkv_test_check_timer, 1000);
@@ -360,7 +360,7 @@ _ramkv_test_add_short_add_long_add_short(void)
 {
 	void *kv;
 
-	kv = kv_malloc((s8 *)"shortlong", KvAttrib_list, 0, NULL);
+	kv = kv_malloc((s8 *)"shortlong", 0, NULL);
 
 	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12");
 	kv_add_key_value(kv, (s8 *)"aaa", (s8 *)"12dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");

@@ -573,7 +573,7 @@ _sync_client_data_server_inq_on_net(u8 *ip, u16 port)
 static void
 _sync_client_data_link_kv_init(void)
 {
-	_thread_id_to_link_kv = kv_malloc("titl", KvAttrib_list, 0, NULL);
+	_thread_id_to_link_kv = kv_malloc("titl", 0, NULL);
 }
 
 static void

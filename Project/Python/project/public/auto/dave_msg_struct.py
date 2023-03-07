@@ -566,6 +566,14 @@ class DebugRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_DOS_FORWARD message *#
+class DosForward (Structure):
+	_fields_ = [
+		("cmd", POINTER(MBUF)),
+		("param", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
 #* for HTTPMSG_CLOSE_REQ message *#
 class HTTPCloseReq (Structure):
 	_fields_ = [

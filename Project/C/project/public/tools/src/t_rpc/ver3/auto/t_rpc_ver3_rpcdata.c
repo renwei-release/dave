@@ -250,6 +250,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_DEBUG_RSP:
 				pBson = t_rpc_ver3_zip_DebugRsp((DebugRsp *)msg_body, msg_len);
 			break;
+		case MSGID_DOS_FORWARD:
+				pBson = t_rpc_ver3_zip_DosForward((DosForward *)msg_body, msg_len);
+			break;
 		case MSGID_ECHO:
 				pBson = t_rpc_ver3_zip_MsgIdEcho((MsgIdEcho *)msg_body, msg_len);
 			break;
@@ -637,6 +640,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_DEBUG_RSP:
 				ret = t_rpc_ver3_unzip_DebugRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_DOS_FORWARD:
+				ret = t_rpc_ver3_unzip_DosForward(msg_body, msg_len, pBson);
 			break;
 		case MSGID_ECHO:
 				ret = t_rpc_ver3_unzip_MsgIdEcho(msg_body, msg_len, pBson);
@@ -1026,6 +1032,9 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_DEBUG_RSP:
 				ptr = t_rpc_ver3_ptr_DebugRsp((DebugRsp *)msg_body, new_ptr);
 			break;
+		case MSGID_DOS_FORWARD:
+				ptr = t_rpc_ver3_ptr_DosForward((DosForward *)msg_body, new_ptr);
+			break;
 		case MSGID_ECHO:
 				ptr = t_rpc_ver3_ptr_MsgIdEcho((MsgIdEcho *)msg_body, new_ptr);
 			break;
@@ -1413,6 +1422,9 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_DEBUG_RSP:
 				msg_len = t_rpc_ver3_sizeof_DebugRsp();
+			break;
+		case MSGID_DOS_FORWARD:
+				msg_len = t_rpc_ver3_sizeof_DosForward();
 			break;
 		case MSGID_ECHO:
 				msg_len = t_rpc_ver3_sizeof_MsgIdEcho();

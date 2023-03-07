@@ -283,5 +283,12 @@ typedef struct {
 	sb ttl;
 } CFGRemoteSyncUpdate;
 
+/* for MSGID_DOS_FORWARD message */
+typedef struct {
+	MBUF *cmd;
+	MBUF *param;
+	void *ptr;
+} DosForward;
+
 #endif
 

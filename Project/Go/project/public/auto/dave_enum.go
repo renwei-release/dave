@@ -734,6 +734,7 @@ const (
 	RetCode_invalid_date = -117
 	RetCode_table_exist = -118
 	RetCode_db_sql_failed = -119
+	RetCode_Unauthorized_access = -120
 	RetCode_max = 0x1fffffffffffffff
 )
 

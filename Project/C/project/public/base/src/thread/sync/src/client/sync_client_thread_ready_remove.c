@@ -286,7 +286,7 @@ _sync_client_thread_active_timer_malloc(void)
 {
 	if(_thread_active_ramkv == NULL)
 	{
-		_thread_active_ramkv = kv_malloc("threadactive", KvAttrib_list, READY_REMOVE_MSG_NOTIFY_CYCLE_TIME, _sync_client_thread_active_timer);
+		_thread_active_ramkv = kv_malloc("threadactive", READY_REMOVE_MSG_NOTIFY_CYCLE_TIME, _sync_client_thread_active_timer);
 	}
 }
 

@@ -166,7 +166,7 @@ log_save_init(void)
 {
 	log_save_cfg_init();
 
-	_log_file_kv = kv_malloc("logsave", KvAttrib_list, LOG_FILE_CLOSE_TIME, _log_save_timer_out);
+	_log_file_kv = kv_malloc("logsave", LOG_FILE_CLOSE_TIME, _log_save_timer_out);
 
 	log_save_chain_init();
 }

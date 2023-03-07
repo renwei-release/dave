@@ -16,7 +16,8 @@
 #define DOS_CMD_LEN (128)
 
 typedef struct {
-	s8 cmd[DOS_CMD_LEN + 1];
+	s8 owner_thread[DAVE_THREAD_NAME_LEN];
+	s8 cmd[DOS_CMD_LEN];
 	dos_cmd_fun cmd_fun;
 	dos_help_fun help_fun;
 	sb life_cycle;
@@ -26,7 +27,7 @@ typedef struct {
 static DOSCmdStruct *_cmd_list_head = NULL;
 
 static DOSCmdStruct *
-_find_the_cmd(s8 *cmd, ub cmd_len)
+_dos_find_the_cmd(s8 *cmd, ub cmd_len)
 {
 	DOSCmdStruct *search;
 
@@ -44,7 +45,7 @@ _find_the_cmd(s8 *cmd, ub cmd_len)
 }
 
 static void
-_add_cmd_list(DOSCmdStruct *pNewCmd)
+_dos_add_cmd_list(DOSCmdStruct *pNewCmd)
 {
 	DOSCmdStruct *temp;
 
@@ -169,13 +170,13 @@ _dos_get_cmd_and_param(s8 *cmd, ub *cmd_len, s8 *param, ub *param_len, s8 *input
 }
 
 static void
-_show_invalid_cmd_screen(s8 *input_ptr, ub input_len)
+_dos_show_invalid_cmd_screen(s8 *input_ptr, ub input_len)
 {
 	dos_print("Sorry, you entered an invalid command:%s\nPlease enter ls to get information!", input_ptr);
 }
 
 static void
-_show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
+_dos_show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 {
 	dos_print("Sorry, you entered an unsupported command:%s", cmd_ptr);
 
@@ -183,13 +184,13 @@ _show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 }
 
 static void
-_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, RetCode ret)
+_dos_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, RetCode ret)
 {
 	dos_print("Sorry(%s), you entered an invalid command:\n%s or param:\n%s", retstr(ret), cmd_ptr, param);
 }
 
 static void
-_show_run_help_failed_screen(s8 *cmd_ptr, ub cmd_len)
+_dos_show_run_help_failed_screen(s8 *cmd_ptr, ub cmd_len)
 {
 	dos_print("Sorry,help(%s) failed!", cmd_ptr);
 }
@@ -204,36 +205,20 @@ _dos_record_cmd(s8 *cmd_ptr, s8 *param)
 }
 
 static void
-_dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len)
+_dos_execute_cmd(DOSCmdStruct *pCmd, s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len)
 {
-	DOSCmdStruct *pCmd;
 	RetCode ret;
-
-	if(_dos_get_cmd_and_param(cmd_ptr, &cmd_len, param, &param_len, input, input_len) == dave_false)
-	{
-		_show_invalid_cmd_screen(input, input_len);
-		return;
-	}
-
-	pCmd = _find_the_cmd(cmd_ptr, cmd_len);
-	if(pCmd == NULL)
-	{
-		_show_not_support_cmd_screen(cmd_ptr, cmd_len);
-		return;
-	}
-
-	_dos_record_cmd(cmd_ptr, param);
 
 	ret = RetCode_Arithmetic_error;
 	if(pCmd->cmd_fun != NULL)
 	{
-		ret = (pCmd->cmd_fun)(param, param_len);
+		ret = (pCmd->cmd_fun)(param_ptr, param_len);
 	}
 	if(ret != RetCode_OK)
 	{
 		if(pCmd->help_fun == NULL)
 		{
-			_show_run_cmd_failed_screen(cmd_ptr, cmd_len, param, param_len, ret);
+			_dos_show_run_cmd_failed_screen(cmd_ptr, cmd_len, param_ptr, param_len, ret);
 		}
 		else
 		{
@@ -242,31 +227,91 @@ _dos_cmd_analysis(s8 *input, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param, u
 	}
 }
 
+static void
+_dos_external_cmd(DOSCmdStruct *pCmd, s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len)
+{
+	DosForward *pForward = thread_msg(pForward);
+
+	pForward->cmd = t_a2b_str_to_mbuf(cmd_ptr, cmd_len);
+	pForward->param = t_a2b_str_to_mbuf(param_ptr, param_len);
+	pForward->ptr = pCmd;
+
+	name_msg(pCmd->owner_thread, MSGID_DOS_FORWARD, pForward);
+}
+
+static void
+_dos_forward_msg(MSGBODY *msg)
+{
+	DosForward *pForward = (DosForward *)(msg->msg_body);
+	DOSCmdStruct *pCmd = pForward->ptr;
+
+	_dos_execute_cmd(pCmd, ms8(pForward->cmd), mlen(pForward->cmd), ms8(pForward->param), mlen(pForward->param));
+
+	dave_mfree(pForward->cmd);
+	dave_mfree(pForward->param);
+}
+
+static void
+_dos_cmd_analysis(s8 *input_ptr, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len)
+{
+	DOSCmdStruct *pCmd;
+
+	if(_dos_get_cmd_and_param(cmd_ptr, &cmd_len, param_ptr, &param_len, input_ptr, input_len) == dave_false)
+	{
+		_dos_show_invalid_cmd_screen(input_ptr, input_len);
+		return;
+	}
+
+	pCmd = _dos_find_the_cmd(cmd_ptr, cmd_len);
+	if(pCmd == NULL)
+	{
+		_dos_show_not_support_cmd_screen(cmd_ptr, cmd_len);
+		return;
+	}
+
+	_dos_record_cmd(cmd_ptr, param_ptr);
+
+	if(dave_strcmp(pCmd->owner_thread, DOS_THREAD_NAME) == dave_true)
+	{
+		_dos_execute_cmd(pCmd, cmd_ptr, cmd_len, param_ptr, param_len);
+	}
+	else
+	{
+		_dos_external_cmd(pCmd, cmd_ptr, cmd_len, param_ptr, param_len);
+	}
+}
+
 static RetCode
-_register_cmd_list(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun, sb life_cycle)
+_dos_register_cmd_list(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun, sb life_cycle)
 {
 	ub cmd_len = dave_strlen(cmd);
 	DOSCmdStruct *pNewCmd;
 
-	if((cmd_len > DOS_CMD_LEN)
-		|| (cmd_fun == NULL))
+	if((cmd_len > DOS_CMD_LEN) || (cmd_fun == NULL))
+	{
 		return RetCode_Invalid_parameter;
-	
-	if(_find_the_cmd(cmd, cmd_len) != NULL)
+	}
+
+	if(_dos_find_the_cmd(cmd, cmd_len) != NULL)
+	{
 		return RetCode_Resource_conflicts;
+	}
 
-	pNewCmd = dave_malloc(sizeof(DOSCmdStruct));
-	if(pNewCmd == NULL)
-		return RetCode_Memory_full;
+	pNewCmd = dave_ralloc(sizeof(DOSCmdStruct));
 
-	dave_memset(pNewCmd->cmd, 0x00, DOS_CMD_LEN + 1);
-	dave_memcpy(pNewCmd->cmd, cmd, cmd_len);
+	dave_strcpy(pNewCmd->owner_thread, thread_name(self()), sizeof(pNewCmd->owner_thread));
+	dave_strcpy(pNewCmd->cmd, cmd, sizeof(pNewCmd->cmd));
 	pNewCmd->cmd_fun = cmd_fun;
 	pNewCmd->help_fun = help_fun;
 	pNewCmd->life_cycle = life_cycle;
 	pNewCmd->next = NULL;
 
-	_add_cmd_list(pNewCmd);
+	_dos_add_cmd_list(pNewCmd);
+
+	if(dave_strcmp(pNewCmd->owner_thread, DOS_THREAD_NAME) == dave_false)
+	{
+		reg_msg(MSGID_DOS_FORWARD, _dos_forward_msg);
+	}
 
 	return RetCode_OK;
 }
@@ -301,20 +346,20 @@ dos_cmd_exit(void)
 void
 dos_cmd_analysis(s8 *input_ptr, ub input_len)
 {
-	s8 *cmd;
+	s8 *cmd_ptr;
 	ub cmd_len;
-	s8 *param;
+	s8 *param_ptr;
 	ub param_len;
 
-	cmd = dave_ralloc(input_len + 1);
-	param = dave_ralloc(input_len + 1);
+	cmd_ptr = dave_ralloc(input_len + 1);
+	param_ptr = dave_ralloc(input_len + 1);
 	cmd_len = input_len;
 	param_len = input_len;
 
-	_dos_cmd_analysis(input_ptr, input_len, cmd, cmd_len, param, param_len);
+	_dos_cmd_analysis(input_ptr, input_len, cmd_ptr, cmd_len, param_ptr, param_len);
 
-	dave_free(cmd);
-	dave_free(param);	
+	dave_free(cmd_ptr);
+	dave_free(param_ptr);	
 }
 
 void
@@ -323,10 +368,10 @@ dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 	DOSCmdStruct *pCmd;
 	RetCode ret;
 
-	pCmd = _find_the_cmd(cmd_ptr, cmd_len);
+	pCmd = _dos_find_the_cmd(cmd_ptr, cmd_len);
 	if(pCmd == NULL)
 	{
-		_show_not_support_cmd_screen(cmd_ptr, cmd_len);
+		_dos_show_not_support_cmd_screen(cmd_ptr, cmd_len);
 		return;
 	}
 
@@ -335,7 +380,7 @@ dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 		ret = (pCmd->help_fun)();
 		if(ret != RetCode_OK)
 		{
-			_show_run_help_failed_screen(cmd_ptr, cmd_len);
+			_dos_show_run_help_failed_screen(cmd_ptr, cmd_len);
 		}
 	}
 }
@@ -343,13 +388,13 @@ dos_help_analysis(s8 *cmd_ptr, ub cmd_len)
 RetCode
 dos_cmd_reg(const char *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
 {
-	return _register_cmd_list((s8 *)cmd, cmd_fun, help_fun, -1);
+	return _dos_register_cmd_list((s8 *)cmd, cmd_fun, help_fun, -1);
 }
 
 RetCode
 dos_cmd_talk_reg(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun)
 {
-	return _register_cmd_list(cmd, cmd_fun, help_fun, 1);
+	return _dos_register_cmd_list(cmd, cmd_fun, help_fun, 1);
 }
 
 MBUF *
@@ -406,7 +451,7 @@ dos_cmd_list_show(void)
 			search = list;
 			msg_index = 0;
 			cmd_counter = 0;
-			msg_index += dave_sprintf(&msg[msg_index], "Support of the command list:\r\n");
+			msg_index += dave_sprintf(&msg[msg_index], "Support of the command list:\n");
 			while(search != NULL)
 			{
 				msg_index += dave_sprintf(&msg[msg_index], "%s ", search->payload);
@@ -415,7 +460,7 @@ dos_cmd_list_show(void)
 				msg_index += space_len;
 				if((++ cmd_counter) > 4)
 				{
-					msg_index += dave_sprintf(&msg[msg_index], "\r\n");
+					msg_index += dave_sprintf(&msg[msg_index], "\n");
 					cmd_counter = 0;
 				}
 				search = search->next;

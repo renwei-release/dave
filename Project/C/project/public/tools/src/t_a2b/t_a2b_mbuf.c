@@ -95,3 +95,12 @@ t_a2b_mbuf_to_json(MBUF *m)
 	return dave_string_to_json(dave_mptr(m), dave_mlen(m));
 }
 
+MBUF *
+t_a2b_json_to_mbuf(void *pJson)
+{
+	if(pJson == NULL)
+		return NULL;
+
+	return dave_json_c_to_mbuf(pJson);
+}
+

@@ -72,13 +72,13 @@ _uip_server_register_method_to_thread(s8 *method)
 void
 uip_server_register_init(void)
 {
-	pKV = base_ramkv_malloc(REGISTER_TABLE_NAME, KvAttrib_list, 0, NULL);
+	pKV = kv_malloc(REGISTER_TABLE_NAME, 0, NULL);
 }
 
 void
 uip_server_register_exit(void)
 {
-	base_ramkv_free(pKV, _uip_server_register_free);
+	kv_free(pKV, _uip_server_register_free);
 }
 
 RetCode
@@ -135,7 +135,7 @@ uip_server_register_info(s8 *info_ptr, ub info_len)
 	safe_index = 0;
 	info_index = 0;
 
-	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "UIP REGISTER INFO:\r\n");
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "UIP REGISTER INFO:\n");
 
 	while(safe_index < 1024000)
 	{
@@ -145,7 +145,7 @@ uip_server_register_info(s8 *info_ptr, ub info_len)
 			break;
 		}
 		
-		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "method:%s thread:%s\r\n", pRegister->method, pRegister->thread_name);
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " %s <- %s\n", pRegister->method, pRegister->thread_name);
 	}
 
 	return info_index;

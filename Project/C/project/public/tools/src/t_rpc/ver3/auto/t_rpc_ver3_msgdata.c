@@ -3822,6 +3822,67 @@ t_rpc_ver3_sizeof_DebugRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_DosForward(DosForward *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(DosForward) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(DosForward) does not match(%d/%d), please contact the message settlers!", sizeof(DosForward), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-cmd", t_rpc_ver3_zip_MBUF_ptr(zip_data->cmd));
+	t_bson_add_object(pStructBson, "MBUF-param", t_rpc_ver3_zip_MBUF_ptr(zip_data->param));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_DosForward(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		DosForward *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(DosForward);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->cmd), t_bson_inq_object(pStructBson, "MBUF-cmd"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->param), t_bson_inq_object(pStructBson, "MBUF-param"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_DosForward(DosForward *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_DosForward(void)
+{
+	return sizeof(DosForward);
+}
+
+void *
 t_rpc_ver3_zip_HTTPCloseReq(HTTPCloseReq *zip_data, ub zip_len)
 {
 	void *pStructBson;

@@ -67,7 +67,7 @@ _thread_statistics_enable(void)
 	SAFECODEv1(_statistics_pv, {
 		if(_statistics_kv == NULL)
 		{
-			_statistics_kv = kv_malloc("ts", KvAttrib_list, 0, NULL);
+			_statistics_kv = kv_malloc("ts", 0, NULL);
 		}
 	} );
 

@@ -160,7 +160,7 @@ _log_tracing_recycle(void *ramkv, s8 *key)
 void
 log_tracing_init(void)
 {
-	_log_tracing_kv = kv_malloc("logtracing", KvAttrib_list, LOG_TRACING_TIME, _log_tracing_timer_out);
+	_log_tracing_kv = kv_malloc("logtracing", LOG_TRACING_TIME, _log_tracing_timer_out);
 
 	t_lock_reset(&_log_tracing_pv);
 

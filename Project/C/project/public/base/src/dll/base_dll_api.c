@@ -42,11 +42,14 @@ dave_dll_mfree(void *m, char *func, int line)
 int
 dave_dll_cfg_set(char *cfg_name, char *cfg_value)
 {
-	u32 value_len = dave_strlen(cfg_value);
+	ub name_len = dave_strlen(cfg_name);
+	ub value_len = dave_strlen(cfg_value);
 
-	if((value_len == 0) || (value_len > 8192))
+	if((name_len == 0) || (value_len > 8192))
 	{
-		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, value_len);
+		DLLLOG("cfg set:%s:%s failed! invalid length:%d/%d",
+			cfg_name, cfg_value,
+			name_len, value_len);
 		return -1;
 	}
 
@@ -121,7 +124,7 @@ dave_dll_poweroff(void)
 void *
 dave_dll_kv_malloc(char *name, int out_second, dll_kv_timerout_fun outback_fun)
 {
-	return kv_malloc(name, KvAttrib_list, out_second, (ramkv_time_callback)outback_fun);
+	return kv_malloc(name, out_second, (ramkv_time_callback)outback_fun);
 }
 
 void

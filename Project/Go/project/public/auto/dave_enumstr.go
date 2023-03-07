@@ -902,6 +902,7 @@ func T_auto_RetCode_str(enum_value int64) string {
 		case RetCode_invalid_date: value_str = "'RetCode_invalid_date--117'"
 		case RetCode_table_exist: value_str = "'RetCode_table_exist--118'"
 		case RetCode_db_sql_failed: value_str = "'RetCode_db_sql_failed--119'"
+		case RetCode_Unauthorized_access: value_str = "'RetCode_Unauthorized_access--120'"
 		case RetCode_max: value_str = "'RetCode_max-0x1fffffffffffffff'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}
@@ -1059,6 +1060,7 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_RPC_DEBUG_REQ: value_str = "'MSGID_RPC_DEBUG_REQ-36'"
 		case MSGID_RPC_DEBUG_RSP: value_str = "'MSGID_RPC_DEBUG_RSP-37'"
 		case MSGID_CFG_REMOTE_UPDATE: value_str = "'MSGID_CFG_REMOTE_UPDATE-38'"
+		case MSGID_DOS_FORWARD: value_str = "'MSGID_DOS_FORWARD-39'"
 		case MSGID_CFG_REMOTE_SYNC_UPDATE: value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'"
 		case SOCKET_BIND_REQ: value_str = "'SOCKET_BIND_REQ-1000'"
 		case SOCKET_BIND_RSP: value_str = "'SOCKET_BIND_RSP-1001'"

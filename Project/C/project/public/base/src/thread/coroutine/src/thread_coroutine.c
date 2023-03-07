@@ -522,11 +522,11 @@ _thread_coroutine_booting(void)
 		thread_other_lock();
 		if(_coroutine_kv == NULL)
 		{
-			_coroutine_kv = kv_malloc("ckv", KvAttrib_list, COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
+			_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
 		}
 		if(_delayed_destruction_site_kv == NULL)
 		{
-			_delayed_destruction_site_kv = kv_malloc("ddskv", KvAttrib_list, COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
+			_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
 		}
 		thread_other_unlock();
 	}

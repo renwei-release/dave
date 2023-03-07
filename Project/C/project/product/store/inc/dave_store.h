@@ -8,6 +8,7 @@
 #ifndef __DAVE_STORE_H__
 #define __DAVE_STORE_H__
 #include "dave_base.h"
+#include "dave_3rdparty.h"
 #include "store_msg.h"
 
 typedef struct {
@@ -45,6 +46,53 @@ STORESQL(const char *sql, ...)
 	}
 
 	return ret;
+}
+
+static inline s8 *
+STORELOAD(StoreSqlRet ret, ub row, ub column)
+{
+	ub array_length, row_length;
+	void *pTheRow;
+
+	if(ret.pJson == NULL)
+		return NULL;
+
+	array_length = dave_json_get_array_length(ret.pJson);
+	if(row >= array_length)
+	{
+		return NULL;
+	}
+
+	pTheRow = dave_json_c_get_array_idx(ret.pJson, row);
+	if(pTheRow == NULL)
+	{
+		return NULL;
+	}
+
+	row_length = dave_json_get_array_length(pTheRow);
+	if(column >= row_length)
+	{
+		return NULL;
+	}
+
+	return dave_json_c_array_get_str(pTheRow, column, NULL);
+}
+
+static inline s8 *
+STORELOADstr(StoreSqlRet ret, ub column)
+{
+	return STORELOAD(ret, 0, column);
+}
+
+static inline sb
+STORELOADsb(StoreSqlRet ret, ub column)
+{
+	s8 *sb_str = STORELOAD(ret, 0, column);
+
+	if(sb_str == NULL)
+		return 0;
+
+	return stringdigital(sb_str);
 }
 
 #endif

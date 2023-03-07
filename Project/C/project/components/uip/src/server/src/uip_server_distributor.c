@@ -112,7 +112,7 @@ _uip_server_distributor_kv_recycle(void *ramkv, s8 *key)
 void
 uip_server_distributor_init(void)
 {
-	_uip_distributor_link_kv = kv_malloc("usdkv", KvAttrib_list, 0, NULL);
+	_uip_distributor_link_kv = kv_malloc("usdkv", 0, NULL);
 }
 
 void

@@ -8,6 +8,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "uip_server.h"
+#include "uip_channel.h"
 #include "uip_server_monitor.h"
 
 static ub
@@ -16,6 +17,7 @@ _uip_debug_info(s8 *info_ptr, ub info_len)
 	ub info_index = 0;
 
 	info_index += uip_server_info(&info_ptr[info_index], info_len-info_index);
+	info_index += uip_channel_info(&info_ptr[info_index], info_len-info_index);
 
 	return info_index;
 }

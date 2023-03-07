@@ -70,7 +70,7 @@ _uip_server_recv_check(UIPStack *pStack)
 		return ret;
 	}
 
-	return uip_channel_verify(pStack->head.channel, pStack->head.auth_key_str);
+	return uip_channel_verify(pStack->head.channel, pStack->head.auth_key_str, pStack->head.method);
 }
 
 // =====================================================================
