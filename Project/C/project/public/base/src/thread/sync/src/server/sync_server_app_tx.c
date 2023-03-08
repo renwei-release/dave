@@ -48,7 +48,6 @@ sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body)
 {
 	ub client_index;
 	SyncClient *pClient;
-	dave_bool ret = dave_false;
 
 	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 	{
@@ -58,14 +57,10 @@ sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body)
 			break;
 		}
 
-		ret = _sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
-		if(ret == dave_false)
-		{
-			break;
-		}
+		_sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
 	}
 
-	return ret;
+	return dave_true;
 }
 
 dave_bool

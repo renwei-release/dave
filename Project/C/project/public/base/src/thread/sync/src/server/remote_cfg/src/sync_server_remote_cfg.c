@@ -112,7 +112,7 @@ _sync_server_the_client_tell_all_config(SyncClient *pClient)
 static void
 _sync_server_cfg_update(dave_bool put_flag, s8 *key, s8 *value)
 {
-	SYNCDEBUG("%s %s : %s", put_flag==dave_true?"PUT":"DELETE", key, value);
+	SYNCTRACE("%s %s : %s", put_flag==dave_true?"PUT":"DELETE", key, value);
 
 	if(put_flag == dave_true)
 	{

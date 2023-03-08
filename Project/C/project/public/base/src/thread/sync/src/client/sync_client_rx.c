@@ -372,8 +372,8 @@ _sync_client_rx_run_internal_msg_v2_req(SyncServer *pServer, ub frame_len, u8 *f
 	}
 	else
 	{
-		SYNCABNOR("find invalid parameter, src:%s dst:%s msg_id:%d msg_len:%d",
-			src, dst, msg_id, msg_len);
+		SYNCABNOR("find invalid parameter, src:%s dst:%s msg_id:%s msg_len:%d",
+			src, dst, msgstr(msg_id), msg_len);
 	}
 }
 

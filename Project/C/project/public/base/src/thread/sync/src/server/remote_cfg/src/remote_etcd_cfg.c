@@ -111,7 +111,7 @@ _sync_server_process_watcher(MSGBODY *msg)
 	MsgInnerLoop *pLoop = (MsgInnerLoop *)(msg->msg_body);
 	ETCDWatcher *pWatcher = (ETCDWatcher *)(pLoop->ptr);
 
-	SYNCDEBUG("%s %s : %s",
+	SYNCTRACE("%s %s : %s",
 		pWatcher->put_flag==dave_true?"PUT":"DELETE",
 		base_mptr(pWatcher->key), base_mptr(pWatcher->value));
 

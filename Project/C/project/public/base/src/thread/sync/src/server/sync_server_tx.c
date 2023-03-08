@@ -82,7 +82,7 @@ _sync_server_tx_run_internal_msg_v2_req(
 	ub snd_max = SYNC_STACK_HEAD_MAX_LEN + msg_len;
 	MBUF *snd_buffer;
 
-	SYNCDEBUG("msg_id:%d msg_len:%d", msg_id, msg_len);
+	SYNCTRACE("msg_id:%s msg_len:%d", msgstr(msg_id), msg_len);
 
 	zip_body = t_rpc_zip(NULL, NULL, msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
