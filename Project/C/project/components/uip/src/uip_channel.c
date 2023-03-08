@@ -26,6 +26,7 @@
 typedef struct {
 	s8 channel_name[DAVE_NORMAL_NAME_LEN];
 	s8 auth_key[DAVE_AUTH_KEY_STR_LEN];
+	ub veriify_counter;
 	void *pAllowMethodKV;
 } UIPChannelTable;
 
@@ -123,6 +124,7 @@ _uip_channel_kv_add(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	if(pTable == NULL)
 	{
 		pTable = dave_ralloc(sizeof(UIPChannelTable));
+		pTable->veriify_counter = 0;
 		pTable->pAllowMethodKV = NULL;
 	}
 
@@ -299,6 +301,10 @@ _uip_channel_verify(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	pTable = _uip_channel_kv_inq(channel_name);
 	if(pTable != NULL)
 	{
+		t_lock;
+		pTable->veriify_counter ++;
+		t_unlock;
+
 		if(dave_strcmp(channel_name, pTable->channel_name) == dave_false)
 		{
 			UIPLOG("channel:%s/%s mismatch!",
@@ -417,7 +423,7 @@ _uip_channel_add_method(UIPChannelTable *pTable, s8 *allow_method)
 }
 
 static ub
-_uip_channel_allow_method_info(s8 *info_ptr, ub info_len, void *pAllowMethod)
+_uip_channel_allow_method_info(s8 *info_ptr, ub info_len, s8 *channel_name, void *pAllowMethod)
 {
 	ub info_index;
 	void *pArrayJson;
@@ -429,7 +435,7 @@ _uip_channel_allow_method_info(s8 *info_ptr, ub info_len, void *pAllowMethod)
 
 	info_index = 0;
 
-	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "  ALLOW METHOD INFO:\n");
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "  %s ALLOW METHOD INFO:\n", channel_name);
 
 	pArrayJson = _uip_channel_kv_method_to_json(pAllowMethod);
 	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
@@ -458,12 +464,16 @@ _uip_channel_info(s8 *info_ptr, ub info_len)
 			break;
 		}
 
-		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " %s | %s\n",
-			pTable->channel_name, pTable->auth_key);
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " %08d | %s%s | %s\n",
+			pTable->veriify_counter,
+			pTable->channel_name, dave_strlen(pTable->channel_name) > 8 ? "" : "\t\t",
+			pTable->auth_key);
 
 		if(pTable->pAllowMethodKV != NULL)
 		{
-			info_index += _uip_channel_allow_method_info(&info_ptr[info_index], info_len-info_index, pTable->pAllowMethodKV);
+			info_index += _uip_channel_allow_method_info(
+				&info_ptr[info_index], info_len-info_index,
+				pTable->channel_name, pTable->pAllowMethodKV);
 		}
 	}
 

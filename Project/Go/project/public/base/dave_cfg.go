@@ -7,7 +7,7 @@ package base
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
- /*
+/*
 #include <dave_base.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +50,9 @@ func Cfg_get(cfg_name string, default_value string) string {
 	if C.dave_dll_cfg_get(c_cfg_name, c_cfg_value, C.int(len(go_byte))) >= 0 {
 		go_string = C.GoString(c_cfg_value)
 	} else {
-		Cfg_set(cfg_name, default_value)
+		if len(default_value) > 0 { 
+			Cfg_set(cfg_name, default_value)
+		}
 		go_string = default_value
 	}
 
