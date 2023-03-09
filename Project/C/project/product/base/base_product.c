@@ -153,6 +153,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 	{
 		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
 		rcfg_set("/set/base_product_ttl_debug", "asdffffffffffffffffffffff", 0);
+		rcfg_set("/set/base_product_ttl_debug", "asdffffffffffffffffffffffmodify", 0);
 	}
 
 	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)

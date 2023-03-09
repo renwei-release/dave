@@ -205,7 +205,14 @@ _sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 	pReflash = kv_inq_key_ptr(_remote_cfg_reflash_kv, key);
 	if(pReflash != NULL)
 	{
-		return dave_true;
+		if(dave_strcmp(ms8(pReflash->update.cfg_mbuf_value), ms8(pUpdate->cfg_mbuf_value)) == dave_true)
+		{
+			return dave_true;			
+		}
+
+		_sync_server_cfg_kv_del(pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name));
+
+		pReflash = NULL;
 	}
 
 	pReflash = _sync_server_cfg_reflash_malloc(pClient, pUpdate);
