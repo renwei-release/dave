@@ -217,7 +217,10 @@ _sync_server_cfg_kv_add(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 		ms8(pReflash->update.cfg_mbuf_name), ms8(pReflash->update.cfg_mbuf_value),
 		pReflash->update.ttl);
 
-	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name), pUpdate->ttl);
+	SYNCTRACE("%s %s ttl:%d",
+		pClient->globally_identifier,
+		ms8(pUpdate->cfg_mbuf_name),
+		pUpdate->ttl);
 
 	if(ret == dave_false)
 	{
@@ -282,7 +285,10 @@ sync_server_remote_cfg_set(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
 	dave_bool ret;
 
-	SYNCTRACE("%s %s ttl:%d", pClient->globally_identifier, ms8(pUpdate->cfg_mbuf_name), pUpdate->ttl);
+	SYNCTRACE("%s %s ttl:%d",
+		pClient->globally_identifier,
+		ms8(pUpdate->cfg_mbuf_name),
+		pUpdate->ttl);
 
 	if(pUpdate->ttl > 0)
 	{

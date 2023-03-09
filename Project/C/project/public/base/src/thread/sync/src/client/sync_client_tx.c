@@ -73,7 +73,7 @@ _sync_client_tx_run_internal_msg_v2_req(
 	ub snd_max = SYNC_STACK_HEAD_MAX_LEN + msg_len;
 	MBUF *snd_buffer;
 
-	SYNCDEBUG("msg_id:%d msg_len:%d", msg_id, msg_len);
+	SYNCTRACE("msg_id:%s msg_len:%d", msgstr(msg_id), msg_len);
 
 	zip_body = t_rpc_zip(NULL, NULL, msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
@@ -122,6 +122,8 @@ sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_
 {
 	SyncServer *pServer = sync_client_data_sync_server();
 	dave_bool ret;
+
+	SYNCTRACE("server_cnt:%d msg_id:%s", pServer->server_cnt, msgstr(msg_id));
 
 	if(pServer->server_cnt == dave_true)
 	{

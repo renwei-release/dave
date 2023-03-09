@@ -22,6 +22,11 @@
 static void
 _sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
 {
+	SYNCTRACE("%s %s ttl:%d",
+		pClient->globally_identifier,
+		ms8(pUpdate->cfg_mbuf_name),
+		pUpdate->ttl);
+
 	if(pUpdate->put_flag == dave_true)
 	{
 		sync_server_remote_cfg_set(pClient, pUpdate);

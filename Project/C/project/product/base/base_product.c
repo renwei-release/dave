@@ -149,12 +149,16 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
+	if(dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
+	{
+		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
+		rcfg_set("/set/base_product_ttl_debug", "asdffffffffffffffffffffff", 0);
+	}
+
 	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
 		|| (dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true))
 	{
 		_base_thread_rpc_debug_req_use_go(pReady);
-
-		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
 	}
 }
 
