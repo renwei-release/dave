@@ -625,13 +625,6 @@ _timer_die_timer(ub *param_len, void **param_ptr, TIMERID timer_id)
 	if(_timer[timer_id].owner != owner)
 		return RetCode_Invalid_call;
 
-	_timer_die_timer_(timer_id, owner);
-
-	if(_timer_refresh_timer_id_reg() == dave_true)
-		_timer_opt_hardware_timer(DIE_TIMER, _timer[timer_id].timer_name_ptr);
-	else
-		_timer_opt_hardware_timer(STOP_TIMER, _timer[timer_id].timer_name_ptr);
-
 	if(param_len != NULL)
 	{
 		*param_len = _timer[timer_id].param_len;
@@ -640,6 +633,13 @@ _timer_die_timer(ub *param_len, void **param_ptr, TIMERID timer_id)
 	{
 		*param_ptr = _timer[timer_id].param_ptr;
 	}
+
+	_timer_die_timer_(timer_id, owner);
+
+	if(_timer_refresh_timer_id_reg() == dave_true)
+		_timer_opt_hardware_timer(DIE_TIMER, _timer[timer_id].timer_name_ptr);
+	else
+		_timer_opt_hardware_timer(STOP_TIMER, _timer[timer_id].timer_name_ptr);
 
 	return RetCode_OK;
 }
@@ -911,7 +911,10 @@ _timer_die(ub *param_len, void **param_ptr, TIMERID timer_id, s8 *fun, ub line)
 				fun, line);
 	}
 
-	TIMEDEBUG("timer_name:%s %dms id:%d", _timer[timer_id].timer_name_ptr, _timer[timer_id].alarm_ms, timer_id);
+	TIMEDEBUG("timer_name:%s %dms id:%d",
+		_timer[timer_id].timer_name_ptr,
+		_timer[timer_id].alarm_ms,
+		timer_id);
 
 	return _timer_safe_die_timer(param_len, param_ptr, timer_id);
 }

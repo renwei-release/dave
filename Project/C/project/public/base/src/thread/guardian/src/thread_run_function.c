@@ -136,7 +136,7 @@ _thread_guardian_run_end(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 
 	if(pThread->has_initialization == dave_false)
 	{
-		THREADABNOR("%s repeat the exit function!", pThread->thread_name);
+		THREADLOG("%s repeat the exit function!", pThread->thread_name);
 	}
 	else
 	{
