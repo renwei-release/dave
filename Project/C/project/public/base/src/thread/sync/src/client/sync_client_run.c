@@ -253,7 +253,10 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 		{
 			SYNCABNOR("too longer value:%d/%d", mlen(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
 		}
-		dave_strcpy(boradcast_update->cfg_value, ms8(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
+		if(pUpdate->put_flag == dave_true)
+		{
+			dave_strcpy(boradcast_update->cfg_value, ms8(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
+		}
 		boradcast_update->ttl = pUpdate->ttl;
 
 		broadcast_local(MSGID_CFG_REMOTE_UPDATE, boradcast_update);

@@ -563,6 +563,57 @@ _timer_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub para
 	return timer_id;
 }
 
+static inline TIMERID
+_timer_recreat_timer(TIMERID timer_id, void *fun, void *param_ptr, ub param_len, ub alarm_ms)
+{
+	TIMER *pTimer;
+
+	if(timer_id >= BASE_TIMER_MAX)
+	{
+		return INVALID_TIMER_ID;
+	}
+
+	pTimer = &_timer[timer_id];
+
+	SAFECODEv1(pTimer->opt_pv, {
+
+		if(pTimer->param_ptr != NULL)
+		{
+			if(pTimer->param_len > sizeof(void *))
+			{
+				dave_free(pTimer->param_ptr);
+			}
+		}
+
+		if((param_ptr != NULL) && (param_len > 0))
+		{
+			pTimer->param_fun = (base_timer_param_fun)fun;
+			if(param_len > sizeof(void *))
+			{
+				pTimer->param_len = param_len;
+				pTimer->param_ptr = dave_malloc(pTimer->param_len);
+				dave_memcpy(pTimer->param_ptr, param_ptr, pTimer->param_len);
+			}
+			else
+			{
+				pTimer->param_len = sizeof(void *);
+				pTimer->param_ptr = param_ptr;
+			}
+		}
+		else
+		{
+			pTimer->param_fun = NULL;
+			pTimer->fun = fun;
+			pTimer->param_len = 0;
+			pTimer->param_ptr = NULL;
+		}
+
+		pTimer->alarm_ms = alarm_ms;
+	} );
+
+	return timer_id;
+}
+
 static inline RetCode
 _timer_die_timer(ub *param_len, void **param_ptr, TIMERID timer_id)
 {
@@ -644,6 +695,10 @@ _timer_safe_creat_timer(s8 *name, ThreadId owner, void *fun, void *param_ptr, ub
 		if(timer_id == INVALID_TIMER_ID)
 		{
 			timer_id = _timer_creat_timer(name, owner, fun, param_ptr, param_len, alarm_ms);
+		}
+		else
+		{
+			timer_id = _timer_recreat_timer(timer_id, fun, param_ptr, param_len, alarm_ms);
 		}
 
 	} );

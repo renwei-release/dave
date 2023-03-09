@@ -62,7 +62,7 @@ _base_remote_reflash_creat(s8 *name, s8 *value, sb ttl)
 	pReflash->update.cfg_mbuf_name = t_a2b_str_to_mbuf(name, 0);
 	pReflash->update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
 	pReflash->update.ttl = ttl;
-	
+
 	base_timer_param_creat(name, _base_remote_reflash, pReflash, sizeof(pReflash), (ttl/2) * 1000);
 }
 
@@ -76,6 +76,8 @@ _base_remote_reflash_del(s8 *name)
 	{
 		dave_mfree(pReflash->update.cfg_mbuf_name);
 		dave_mfree(pReflash->update.cfg_mbuf_value);
+
+		dave_free(pReflash);
 	}
 }
 
@@ -117,6 +119,8 @@ base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 
 	if(ttl > 0)
 	{
+		_base_remote_reflash_del(name);
+
 		_base_remote_reflash_creat(name, value, ttl);
 	}
 
