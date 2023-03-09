@@ -125,7 +125,7 @@ def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
     with open(go_verno_file, "r") as file_id:
         file_content = file_id.read()
         start_split_data = get_split_data("(var VERSION_PRODUCT = \".*?\"\n)", file_content)
-        end_split_data = get_split_data("(var VERSION_DATE_TIME = \".*?\"\n)", file_content)
+        end_split_data = get_split_data("(var __BUILD_USERNAME__ = \".*?\"\n)", file_content)
         start_file_data = file_content.split(start_split_data)[0]
         end_file_data = file_content.split(end_split_data)[-1]
     with open(go_verno_file, "w") as file_id:
@@ -136,6 +136,10 @@ def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
         file_id.write("var VERSION_SUB = \""+SUB+"\"\n")
         file_id.write("var VERSION_REV = \""+REV+"\"\n")
         file_id.write("var VERSION_DATE_TIME = \""+time.strftime("%Y%m%d%H%M%S", time.localtime())+"\"\n")
+        file_id.write("var VERSION_LEVEL = \"Alpha\"\n")
+        file_id.write(f'var __BUILD_MAC_ADDRESS__ = \"{uuid.UUID(int=uuid.getnode()).hex[-12:].upper()}\"\n')
+        file_id.write(f'var __BUILD_HOSTNAME__ = \"{socket.getfqdn(socket.gethostname())}\"\n')
+        file_id.write(f'var __BUILD_USERNAME__ = \"{getpass.getuser()}\"\n')
         file_id.write(end_file_data)
     return
 

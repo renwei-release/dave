@@ -26,13 +26,6 @@ _sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg
 		return dave_false;
 	}
 
-	if(dave_verno_cmp(pClient->verno, 4, 13, 2) < 0)
-	{
-		SYNCLOG("Do't support the API, Please update the product verno:%s to send %s, must be greater than 4.13.02!",
-			pClient->verno, msgstr(msg_id));
-		return dave_false;
-	}
-
 	if(pClient->client_socket == INVALID_SOCKET_ID)
 	{
 		return dave_false;
