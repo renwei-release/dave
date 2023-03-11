@@ -565,8 +565,16 @@ _tthread_add_list_map(ub thread_index, ThreadThread *pTThread)
 	}
 	else
 	{
-		_index_map[thread_index].pCurr->next = pList;
-		_index_map[thread_index].pCurr = pList;
+		if(_index_map[thread_index].pCurr == NULL)
+		{
+			THREADABNOR("Arithmetic error:%lx/%lx", _index_map[thread_index].pList, pList);
+			_index_map[thread_index].pList = _index_map[thread_index].pCurr = pList;
+		}
+		else
+		{
+			_index_map[thread_index].pCurr->next = pList;
+			_index_map[thread_index].pCurr = pList;
+		}
 	}
 
 	t_unlock_spin(&(_index_map[thread_index].pv));

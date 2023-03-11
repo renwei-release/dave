@@ -138,20 +138,18 @@ _thread_guardian_run_end(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 	{
 		THREADLOG("%s repeat the exit function!", pThread->thread_name);
 	}
-	else
-	{
-		thread_running(
-			(ThreadStack **)(run->param),
-			(base_thread_fun)(run->thread_fun),
-			pThread,
-			&msg, dave_true);
 
-		pThread->has_initialization = dave_false;
+	thread_running(
+		(ThreadStack **)(run->param),
+		(base_thread_fun)(run->thread_fun),
+		pThread,
+		&msg, dave_true);
+
+	pThread->has_initialization = dave_false;
 	
-		_thread_guardian_thread_option(pThread, pThread->thread_index, run->initialization_flag);
+	_thread_guardian_thread_option(pThread, pThread->thread_index, run->initialization_flag);
 
-		thread_local_remove_notify(pThread->thread_name);
-	}
+	thread_local_remove_notify(pThread->thread_name);
 }
 
 static void
