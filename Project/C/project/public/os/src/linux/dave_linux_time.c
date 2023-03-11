@@ -42,8 +42,41 @@ typedef struct {
 } HWTIMER;
 
 static HWTIMER _hw_timer;
-
 static sync_notify_fun _linux_timer_notify = NULL;
+
+static inline void
+_time_set_tz(int tz)
+{	
+	char tzstr[256] = {0};		
+	int tzhour = -tz;
+
+	snprintf(tzstr, sizeof(tzstr), "GMT%+02d", tzhour);
+
+	if(setenv("TZ", tzstr, 1)!=0)
+	{
+		printf("setenv TZ:%s failed\n", tzstr);
+	}
+
+	tzset();
+}
+
+static inline int
+_time_get_tz(time_t *time_utc, struct tm *tm_local)
+{
+	struct tm tm_gmt;
+
+	// Change it to GMT tm
+	gmtime_r(time_utc, &tm_gmt);
+ 
+	int time_zone = tm_local->tm_hour - tm_gmt.tm_hour;
+	if (time_zone < -12) {
+		time_zone += 24; 
+	} else if (time_zone > 12) {
+		time_zone -= 24;
+	}
+
+	return time_zone;
+}
 
 // =====================================================================
 
@@ -159,15 +192,10 @@ dave_os_stop_hardware_timer(void)
 }
 
 RetCode
-dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uint8 minute,sw_uint8 second)
+dave_os_set_time(u16 year, u8 month, u8 day, u8 hour, u8 minute, u8 second, s8 zone)
 {
 	struct timeval tv;
-	struct timezone tz;
 	struct tm tnow;
-	
-	gettimeofday(&tv, &tz);
-
-	dave_memset(&tnow, 0x00, sizeof(tnow));
 
 	tnow.tm_year = year - 1900;
 	tnow.tm_mon = month - 1;
@@ -175,8 +203,10 @@ dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uin
 	tnow.tm_hour = hour;
 	tnow.tm_min = minute;
 	tnow.tm_sec = second;
+	_time_set_tz((int)zone);
 
 	tv.tv_sec = mktime(&tnow);
+	tv.tv_usec = 0;
 
 	if(settimeofday((const struct timeval *)&tv, NULL) == 0)
 		return RetCode_OK;
@@ -185,15 +215,13 @@ dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uin
 }
 
 RetCode
-dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second)
+dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second, s8 *zone)
 {
-	time_t now;
+	time_t time_utc = time(NULL);
+	struct tm tm_local = { 0 };
 	struct tm *tnow;
-	struct tm ptm = { 0 };
 
-	now = time(NULL);
-
-	tnow = localtime_r(&now, &ptm);
+	tnow = localtime_r(&time_utc, &tm_local);
 
 	*year = 1900+tnow->tm_year;
 	*month = tnow->tm_mon + 1;
@@ -201,6 +229,7 @@ dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second
 	*hour = tnow->tm_hour;
 	*minute = tnow->tm_min;
 	*second = tnow->tm_sec;
+	*zone = (s8)_time_get_tz(&time_utc, &tm_local);
 
 	return RetCode_OK;
 }

@@ -12,6 +12,7 @@ project_path_list = [
     "../../Project/C/project",
 ]
 
+
 forgettable_path_list = [
     "../../Project/C/project/public/os",
     "../../Project/C/project/public/3rdparty",
@@ -21,6 +22,9 @@ forgettable_path_list = [
 	"../../Project/C/project/inc/third_party",
 	"../../Project/C/project/src/verno"
 ]
+
+
+rpc_hash_file = os.getcwd()+"/__RPC_FILE_HASH__"
 
 
 rpc_ver2_auto_dir = os.path.abspath(__file__).rsplit('/', 1)[0] + '/../../Project/C/project/public/tools/src/t_rpc/ver2/auto'
@@ -42,11 +46,13 @@ rpc_ver3_rpcdata_inc_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_rpcdata.h"
 rpc_ver3_fundata_src_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_fundata.c"
 rpc_ver3_fundata_inc_file_name = rpc_ver3_auto_dir+"/t_rpc_ver3_fundata.h"
 
+
 rpc_ver3_gomsgid_file_name = "../../Project/Go/project/public/auto/dave_msg_id.go"
 rpc_ver3_godefine_file_name = "../../Project/Go/project/public/auto/dave_define.go"
 rpc_ver3_gostruct_file_name = "../../Project/Go/project/public/auto/dave_struct.go"
 rpc_ver3_gomsgstruct_file_name = "../../Project/Go/project/public/auto/dave_msg_struct.go"
 rpc_ver3_goenum_file_name = "../../Project/Go/project/public/auto/dave_enum.go"
+
 
 rpc_ver3_pymsgid_file_name = "../../Project/Python/project/public/auto/dave_msg_id.py"
 rpc_ver3_pydefine_file_name = "../../Project/Python/project/public/auto/dave_define.py"

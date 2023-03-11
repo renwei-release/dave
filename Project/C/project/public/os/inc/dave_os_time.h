@@ -24,9 +24,9 @@ dave_bool dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms);
 
 void dave_os_stop_hardware_timer(void);
 
-RetCode dave_os_set_time(sw_uint16 year,sw_uint8 month,sw_uint8 day,sw_uint8 hour,sw_uint8 minute,sw_uint8 second);
+RetCode dave_os_set_time(u16 year, u8 month, u8 day, u8 hour, u8 minute, u8 second, s8 zone);
 
-RetCode dave_os_get_time(sw_uint16 *year,sw_uint8 *month,sw_uint8 *day,sw_uint8 *hour,sw_uint8 *minute,sw_uint8 *second);
+RetCode dave_os_get_time(u16 *year, u8 *month, u8 *day, u8 *hour, u8 *minute, u8 *second, s8 *zone);
 
 void dave_os_sleep(ub millisecond);
 

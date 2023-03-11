@@ -221,7 +221,7 @@ _sync_date_packet(u8 *msg, ub msg_len, DateStruct date_data)
 	ub_to_byte(date_data.hour);
 	ub_to_byte(date_data.minute);
 	ub_to_byte(date_data.second);
-	ub_to_byte(date_data.week);
+	sb_to_byte(date_data.zone);
 
 	return msg_index;
 }
@@ -255,7 +255,7 @@ _sync_date_unpacket(u8 *msg, ub msg_len, DateStruct *date_data)
 	byte_to_ub(unpacket_date.hour);
 	byte_to_ub(unpacket_date.minute);
 	byte_to_ub(unpacket_date.second);
-	byte_to_ub(unpacket_date.week);
+	byte_to_sb(unpacket_date.zone);
 
 	if(date_data != NULL)
 		*date_data = unpacket_date;
@@ -367,7 +367,9 @@ sync_heartbeat_unpacket(u8 *frame, ub frame_len, ub *recv_data_counter, ub *send
 	frame_index += _sync_ub_unpacket(&frame[frame_index], frame_len-frame_index, recv_data_counter);
 	frame_index += _sync_ub_unpacket(&frame[frame_index], frame_len-frame_index, send_data_counter);
 	if(frame_index < frame_len)
+	{
 		frame_index += _sync_date_unpacket(&frame[frame_index], frame_len-frame_index, date);
+	}
 
 	return frame_index;
 }

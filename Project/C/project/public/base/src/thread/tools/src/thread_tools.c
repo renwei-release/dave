@@ -30,7 +30,7 @@ _thread_msg_wait_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 
 	msg_index = 0;
 
-	msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "MESSAGE WAITING FOR INFORMATION:\n");
+	msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "WAIT FOR MESSAGE TO FINISH:\n");
 
 	wait_msg_index = 0;
 

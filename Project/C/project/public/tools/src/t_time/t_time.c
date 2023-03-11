@@ -22,12 +22,15 @@ t_time_get_date(DateStruct *pDate)
 {
 	DateStruct local_date;
 
-	dave_os_get_time(&(local_date.year), &(local_date.month), &(local_date.day), &(local_date.hour), &(local_date.minute), &(local_date.second));
-
-	local_date.week = 0;
+	dave_os_get_time(
+		&(local_date.year), &(local_date.month), &(local_date.day),
+		&(local_date.hour), &(local_date.minute), &(local_date.second),
+		&(local_date.zone));
 
 	if(pDate != NULL)
+	{
 		*pDate = local_date;
+	}
 
 	return local_date;
 }
@@ -36,11 +39,14 @@ RetCode
 t_time_set_date(DateStruct *pDate)
 {
 	if(pDate == NULL)
+	{
 		return RetCode_invalid_date;
+	}
 
-	pDate->week = 0;
-
-	return dave_os_set_time(pDate->year, pDate->month, pDate->day, pDate->hour, pDate->minute, pDate->second);
+	return dave_os_set_time(
+		pDate->year, pDate->month, pDate->day,
+		pDate->hour, pDate->minute, pDate->second,
+		pDate->zone);
 }
 
 DateStruct

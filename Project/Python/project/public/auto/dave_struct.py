@@ -37,7 +37,7 @@ class DateStruct (Structure):
 		("hour", c_char),
 		("minute", c_char),
 		("second", c_char),
-		("week", c_char),
+		("zone", c_char),
 ]
 
 #* for None message *#

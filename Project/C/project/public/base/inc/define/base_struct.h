@@ -36,7 +36,7 @@ typedef struct {
 	u8 hour;
 	u8 minute;
 	u8 second;
-	u8 week;
+	s8 zone;
 } DateStruct;
 
 typedef struct {

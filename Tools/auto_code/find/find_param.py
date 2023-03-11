@@ -19,6 +19,9 @@ def find_param():
     param = {}
 
     file_list = find_file_list()
+    if file_list == None:
+        return None
+
     param['file_list'] = file_list
 
     param.update(find_all_struct_table(file_list))

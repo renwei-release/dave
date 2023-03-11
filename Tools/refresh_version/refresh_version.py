@@ -35,6 +35,12 @@ def_c_verno_head_file="\
 #include \"verno_macro.h\"\n\
 #include \"dave_base.h\"\n\n"
 
+
+mac_address = uuid.UUID(int=uuid.getnode()).hex[-12:].upper()
+host_name = socket.gethostname()
+user_name = getpass.getuser()
+
+
 def_c_verno_end_file="#endif\n\n"
 
 
@@ -101,9 +107,9 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
         file_id.write(f'#elif defined(__VERNO_BETA_VERSION__)\n')
         file_id.write(f' #define VERSION_LEVEL "Beta"\n')
         file_id.write(f'#endif\n\n')
-        file_id.write(f'#define __BUILD_MAC_ADDRESS__ \"{uuid.UUID(int=uuid.getnode()).hex[-12:].upper()}\"\n')
-        file_id.write(f'#define __BUILD_HOSTNAME__ \"{socket.getfqdn(socket.gethostname())}\"\n')
-        file_id.write(f'#define __BUILD_USERNAME__ \"{getpass.getuser()}\"\n\n')
+        file_id.write(f'#define __BUILD_MAC_ADDRESS__ \"{mac_address}\"\n')
+        file_id.write(f'#define __BUILD_HOSTNAME__ \"{host_name}\"\n')
+        file_id.write(f'#define __BUILD_USERNAME__ \"{user_name}\"\n\n')
         file_id.write(f's8 * dave_verno(void);\n')
         file_id.write(f's8 * dave_verno_reset(s8 *verno);\n')
         file_id.write(f's8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);\n')
@@ -137,9 +143,9 @@ def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
         file_id.write("var VERSION_REV = \""+REV+"\"\n")
         file_id.write("var VERSION_DATE_TIME = \""+time.strftime("%Y%m%d%H%M%S", time.localtime())+"\"\n")
         file_id.write("var VERSION_LEVEL = \"Alpha\"\n")
-        file_id.write(f'var __BUILD_MAC_ADDRESS__ = \"{uuid.UUID(int=uuid.getnode()).hex[-12:].upper()}\"\n')
-        file_id.write(f'var __BUILD_HOSTNAME__ = \"{socket.getfqdn(socket.gethostname())}\"\n')
-        file_id.write(f'var __BUILD_USERNAME__ = \"{getpass.getuser()}\"\n')
+        file_id.write(f'var __BUILD_MAC_ADDRESS__ = \"{mac_address}\"\n')
+        file_id.write(f'var __BUILD_HOSTNAME__ = \"{host_name}\"\n')
+        file_id.write(f'var __BUILD_USERNAME__ = \"{user_name}\"\n')
         file_id.write(end_file_data)
     return
 

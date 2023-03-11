@@ -15,6 +15,9 @@ from enumstr.enumstr_main import enumstr_main
 
 def autocode_main():
     param = find_param()
+    if param == None:
+        print("The header file has not changed and there is no need to rebuild the automation code!")
+        return
 
     rpc_main(param)
     enumstr_main(param)

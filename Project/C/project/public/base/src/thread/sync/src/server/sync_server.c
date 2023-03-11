@@ -408,6 +408,11 @@ _sync_server_exit(MSGBODY *msg)
 void
 sync_server_init(void)
 {
+	/*
+	 * There are too many competition issues to consider,
+	 * and SYNC doesn't care about performance,
+	 * so single threading.
+	 */
 	ub thread_number = 1;
 
 	_sync_server_thread = base_thread_creat(SYNC_SERVER_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _sync_server_init, _sync_server_main, _sync_server_exit);
