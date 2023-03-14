@@ -22,7 +22,7 @@ def STORESQL(*sql: object):
     pReq.contents.ptr = None
 
     pRsp = write_co(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
-    if pRsp.ret != RetCode_OK:
+    if (pRsp.ret != RetCode_OK) and (pRsp.ret != RetCode_empty_data) and (pRsp.ret != RetCode_table_exist):
         DAVELOG(f"ret:{pRsp.ret}/{t_auto_RetCode_str(pRsp.ret)}, sql:{sql} rsp:{mbuf_to_dict(pRsp.data)}")
         return pRsp.ret, None
 

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"unsafe"
 	"errors"
+	"strconv"
 )
 
 const STORE_THREAD_NAME = "store"
@@ -43,4 +44,27 @@ func STORESQL(format string, sql ...interface{}) (*tools.Json, error) {
 	base.Dave_mfree(pRsp.Data)
 
 	return json_obj, nil
+}
+
+func STORELOAD(json_obj *tools.Json, row int, column int) *tools.Json {
+	return json_obj.GetIndex(row).GetIndex(column)
+}
+
+func STORELOADStr(json_obj *tools.Json, column int) string {
+	str_str, err := STORELOAD(json_obj, 0, column).String()
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return ""
+	}
+	return str_str
+}
+
+func STORELOADSb(json_obj *tools.Json, column int) int {
+	int_str, err := STORELOAD(json_obj, 0, column).String()
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return 0
+	}
+	int_value, _ := strconv.ParseInt(int_str, 10, 64)
+	return int(int_value)
 }

@@ -12,6 +12,7 @@ import (
 	"dave/public/base"
 
 	"dave/product/blockchain/supplier/eth/app/nft"
+	"dave/product/blockchain/supplier/vsys/app/nft"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -27,16 +28,17 @@ type DeployNFTRsp struct {
 }
 
 func _eth_deploy_nft(req DeployNFTReq) (interface{}, int64) {
-	ret, wallet_address := eth_nft.Eth_deploy_nft(req.URL, req.URL)
-	if ret == false {
+	eth_ret, eth_contract_address := eth_nft.Eth_deploy_nft(req.URL, req.URL)
+	vsys_ret, vsys_tokenid := vsys_nft.Vsys_deploy_nft(req.URL, req.URL)
+	if (eth_ret == false) || (vsys_ret == false) {
 		base.DAVELOG("Wallet_address:%v Passphrase:%v URL:%v failed!",
 			req.Wallet_address, req.Passphrase, req.URL)
 		return "", auto.RetCode_Invalid_call
 	}
 
 	rsp := DeployNFTRsp { 
-        Contract_address: wallet_address, 
-        TokenID: "0",
+        Contract_address: eth_contract_address, 
+        TokenID: vsys_tokenid,
     }
 
 	return rsp, auto.RetCode_OK

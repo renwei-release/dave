@@ -7,7 +7,7 @@
 
 #include "dave_base.h"
 #include "dave_tools.h"
-#include "dave_database.h"
+#include "dave_store.h"
 #include "dave_os.h"
 #include "uip_server.h"
 #include "uip_client.h"
@@ -21,7 +21,7 @@ static ub _uip_thread_number;
 static void 
 _uip_thread_remote_ready(ThreadRemoteReadyMsg *pMsg)
 {
-	if(dave_strcmp(pMsg->remote_thread_name, DATABASE_THREAD_NAME) == dave_true)
+	if(dave_strcmp(pMsg->remote_thread_name, STORE_THREAD_NAME) == dave_true)
 	{
 		uip_channel_reset();
 	}

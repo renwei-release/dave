@@ -20,6 +20,7 @@ static s8 * _local_update_list[] = {
 	CFG_LOG_SERVER_DOMAIN,
 	CFG_BASE_CHAIN_ENABLE,
 	CFG_BASE_CHAIN_TYPE,
+	CFG_IO_DOMAIN,
 	NULL
 };
 

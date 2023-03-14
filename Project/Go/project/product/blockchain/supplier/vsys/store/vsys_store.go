@@ -52,6 +52,15 @@ func _store_exit() {
 
 }
 
+func _store_voucher_total_number() int {
+	json_obj, err := store.STORESQL("SELECT COUNT(id) from %s.%s WHERE voucher_status = \"unused\";", DB_NAME, VOUCHER_NAME)
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return 0
+	}
+	return store.STORELOADSb(json_obj, 0)
+}
+
 // =====================================================================
 
 func Vsys_store_init() {
@@ -62,19 +71,21 @@ func Vsys_store_exit() {
 	_store_exit()
 }
 
-func Vsys_store_voucher_total(page_id int64, page_number int64) (string, error) {
+func Vsys_store_voucher_total(page_id int64, page_number int64) (int, string, error) {
+	total_number := _store_voucher_total_number()
+
 	json_obj, err := store.STORESQL(
 		"SELECT owner_phone_number, voucher_type, voucher_url, voucher_expiry, voucher_status, voucher_info_id FROM %s.%s WHERE voucher_status = \"unused\" LIMIT %d, %d;",
 		DB_NAME, VOUCHER_NAME,
 		page_id * page_number, page_number)
 	if err != nil {
 		base.DAVELOG("err:%v", err)
-		return "", err
+		return total_number, "", err
 	}
 
 	json_string, err := json.Marshal(json_obj)
 
-	return string(json_string), err
+	return total_number, string(json_string), err
 }
 
 func Vsys_store_voucher_user(user_name string) (string, error) {
