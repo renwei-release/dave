@@ -406,6 +406,11 @@ _timer_msg(TIMERMSG *pTimerMsg)
 	TIMERID timer_id;
 
 	timer_id = pTimerMsg->timer_id;
+	if(timer_id >= BASE_TIMER_MAX)
+	{
+		TIMELOG("invalid timer_id:%d", timer_id);
+		return;
+	}
 
 	if((_timer[timer_id].fun != NULL) || (_timer[timer_id].param_fun != NULL))
 	{

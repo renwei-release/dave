@@ -14,6 +14,7 @@
 #define FREE_MEM_MAX 32
 
 typedef struct {
+	void *ptr;
 	void *user_ptr;
 	ub len;
 

@@ -13,9 +13,7 @@ import public
 
 
 def main():
-   product_name = sys.argv[1]
-
-   public.dave_python_init(product_name, b"Outer Loop", b"")
+   public.dave_python_init()
    public.dave_python_running()
    public.dave_python_exit()
    return

@@ -65,6 +65,8 @@ thread_exter_free(void *ptr, s8 *file, ub line)
 dave_bool
 thread_exter_memory(void *ptr, s8 *file, ub line)
 {
+	_thread_exter_mem_init();
+
 	return block_memory(_thread_exter_mem, ptr, file, line);
 }
 

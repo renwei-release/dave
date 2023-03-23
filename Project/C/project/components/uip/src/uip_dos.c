@@ -76,6 +76,27 @@ _uip_dos_channel_inq(s8 *cmd_ptr, ub cmd_len)
 }
 
 static RetCode
+_uip_dos_channel_del(s8 *cmd_ptr, ub cmd_len)
+{
+	s8 channel_name[256];
+
+	dos_get_one_parameters(cmd_ptr, cmd_len, channel_name, sizeof(channel_name));
+	if(channel_name[0] == '\0')
+		return RetCode_Invalid_parameter;
+
+	if(uip_channel_del(channel_name) == dave_false)
+	{
+		dos_print("invalid channel:%s", channel_name);
+	}
+	else
+	{
+		dos_print("delete channel:%s", channel_name);
+	}
+
+	return RetCode_OK;
+}
+
+static RetCode
 _uip_dos_channel_add_method(s8 *cmd_ptr, ub cmd_len)
 {
 	s8 channel_name[256];
@@ -100,6 +121,7 @@ uip_dos_init(void)
 {
 	dos_cmd_reg("cadd", _uip_dos_channel_add, NULL);
 	dos_cmd_reg("cinq", _uip_dos_channel_inq, NULL);
+	dos_cmd_reg("cdel", _uip_dos_channel_del, NULL);
 	dos_cmd_reg("caddm", _uip_dos_channel_add_method, NULL);
 }
 

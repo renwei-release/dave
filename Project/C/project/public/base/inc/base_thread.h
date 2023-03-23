@@ -17,6 +17,8 @@
 
 #define INVALID_THREAD_ID (0xffffffffffffffff)
 
+#define MSG_BODY_MAGIC_DATA 0xaa12bcee98000000
+
 typedef u64 ThreadId;
 
 #define THREAD_MSG_WAKEUP (0x00000001)
@@ -77,6 +79,8 @@ typedef struct {
 
 	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 src_name[DAVE_THREAD_NAME_LEN];
+
+	ub magic_data;
 } MSGBODY;
 
 typedef void (*base_thread_fun)(MSGBODY *msg);
@@ -90,7 +94,8 @@ dave_bool base_thread_del(ThreadId thread_id);
 ThreadId base_thread_get_self(s8 *fun, ub line);
 ub base_thread_name_array(s8 thread_name[][64], ub thread_number);
 dave_bool __base_thread_trace_state__(s8 *fun, ub line);
-RetCode base_thread_msg_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr);
+RetCode __base_thread_msg_register__(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr, s8 *fun, ub line);
+#define base_thread_msg_register(thread_id, msg_id, msg_fun, user_ptr) __base_thread_msg_register__(thread_id, msg_id, msg_fun, user_ptr, (s8 *)__func__, (ub)__LINE__)
 void base_thread_msg_unregister(ThreadId thread_id, ub msg_id);
 
 ThreadId base_thread_get_local(ThreadId thread_id);

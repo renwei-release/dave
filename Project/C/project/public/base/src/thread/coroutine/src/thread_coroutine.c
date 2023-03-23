@@ -56,6 +56,7 @@ typedef struct {
 	void *user_msg_ptr;
 } CoroutineSite;
 
+static ub _coroutine_init_flag = 0x00;
 static void *_coroutine_kv = NULL;
 static void *_delayed_destruction_site_kv = NULL;
 
@@ -269,7 +270,11 @@ _thread_coroutine_running_step_8(void *ramkv, s8 *key)
 static inline void
 _thread_coroutine_running_step_7(CoroutineSite *pSite)
 {
-	kv_add_ub_ptr(_delayed_destruction_site_kv, (ub)pSite, pSite);
+	s8 key[33];
+
+	dave_snprintf(key, sizeof(key), "%lx", pSite);
+
+	kv_add_key_ptr(_delayed_destruction_site_kv, key, pSite);
 }
 
 static inline void
@@ -515,21 +520,28 @@ _thread_coroutine_can_be_go(ThreadStruct *pThread, MSGBODY *msg)
 }
 
 static inline void
-_thread_coroutine_booting(void)
+_thread_coroutine_init(void)
 {
-	if(_coroutine_kv == NULL)
+	if(_coroutine_init_flag != 0x1234567890)
 	{
 		thread_other_lock();
-		if(_coroutine_kv == NULL)
+		if(_coroutine_init_flag != 0x1234567890)
 		{
-			_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
-		}
-		if(_delayed_destruction_site_kv == NULL)
-		{
-			_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
+			if(_coroutine_kv == NULL)
+				_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
+			if(_delayed_destruction_site_kv == NULL)
+				_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
+
+			_coroutine_init_flag = 0x1234567890;
 		}
 		thread_other_unlock();
 	}
+}
+
+static inline void
+_thread_coroutine_exit(void)
+{
+
 }
 
 // =====================================================================
@@ -544,6 +556,8 @@ void
 thread_coroutine_exit(void)
 {
 	coroutine_core_exit();
+
+	_thread_coroutine_exit();
 }
 
 void
@@ -572,7 +586,7 @@ thread_coroutine_running_step_go(
 	if(_thread_coroutine_can_be_go(pThread, msg) == dave_false)
 		return dave_false;
 
-	_thread_coroutine_booting();
+	_thread_coroutine_init();
 
 	_thread_coroutine_running_step_1(pThread, coroutine_fun, thread_fun, msg);
 

@@ -93,7 +93,7 @@ _sync_server_make_dir(s8 *dir_ptr, ub dir_len, s8 *verno, s8 *globally_identifie
 		dave_snprintf(dir_ptr, dir_len,
 			"%s/%s/%s/%s",
 			_sync_server_load_dir(),
-			dave_verno_product(verno, product_str, sizeof(product_str)),
+			dave_product(verno, product_str, sizeof(product_str)),
 			globally_identifier,
 			cfg_name);
 	}

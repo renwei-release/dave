@@ -61,11 +61,11 @@ _recipient_log_file(s8 *file_ptr, ub file_len, BDataLogReq *pReq)
 
 	if(pReq->sub_flag[0] == '\0')
 	{
-		dave_verno_product(pReq->version, file_ptr, file_len);
+		dave_product(pReq->version, file_ptr, file_len);
 	}
 	else
 	{
-		dave_verno_product(pReq->version, product, sizeof(product));
+		dave_product(pReq->version, product, sizeof(product));
 		dave_snprintf(file_ptr, file_len, "%s/%s", product, pReq->sub_flag);
 	}
 

@@ -74,12 +74,19 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 		return;
 	}
 
+	if(msg->magic_data != MSG_BODY_MAGIC_DATA)
+	{
+		THREADLOG("%s->%s:%s has invalid magic_data:%lx",
+			thread_id_to_name(msg->msg_src), thread_id_to_name(msg->msg_dst), msgstr(msg->msg_id),
+			msg->magic_data);
+	}
+
 #ifdef ENABLE_THREAD_STATISTICS
 	ub run_time = thread_statistics_start_msg(msg);
 #endif
 
 #ifdef ENABLE_THREAD_COROUTINE
-	if(thread_enable_coroutine(pThread) == dave_true)
+	if(thread_enable_coroutine(pThread, MSGID_RESERVED) == dave_true)
 	{
 		if(thread_coroutine_running_step_go(pThread, _thread_running_function, thread_fun, msg) == dave_false)
 		{

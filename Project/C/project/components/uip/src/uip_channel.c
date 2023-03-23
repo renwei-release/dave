@@ -20,6 +20,7 @@
 	"channel_name varchar(512),"\
 	"auth_key varchar(512),"\
 	"allow_method TEXT,"\
+	"valid varchar(512),"\
 	"updatetime timestamp default current_timestamp,"\
 	"constraint uniq_channel unique(channel_name));"
 
@@ -192,7 +193,7 @@ _uip_channel_load_from_db(void)
 	safe_counter = channel_number = 0;
 	while((safe_counter ++) < 102400)
 	{
-		ret = STORESQL("SELECT id, channel_name, auth_key, allow_method FROM %s.%s WHERE id >= %d LIMIT 1;",
+		ret = STORESQL("SELECT id, channel_name, auth_key, allow_method FROM %s.%s WHERE id >= %d and valid = \"Y\" LIMIT 1;",
 			DB_NAME, CHANNEL_NAME,
 			table_id);
 		if(ret.ret != RetCode_OK)
@@ -278,6 +279,23 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	}
 
 	return _uip_channel_kv_add(channel_name, auth_key, NULL);
+}
+
+static dave_bool
+_uip_channel_delete_to_db(s8 *channel_name)
+{
+	StoreSqlRet ret;
+
+	ret = STORESQL("UPDATE %s.%s SET valid = \"N\", updatetime=now() WHERE channel_name = \"%s\";",
+		DB_NAME, CHANNEL_NAME,
+		channel_name);
+
+	dave_json_free(ret.pJson);
+
+	if(ret.ret == RetCode_OK)
+		return dave_true;
+	else
+		return dave_false;
 }
 
 static RetCode
@@ -383,6 +401,14 @@ _uip_channel_add(s8 *channel_name)
 }
 
 static dave_bool
+_uip_channel_del(s8 *channel_name)
+{
+	_uip_channel_kv_del(NULL, channel_name);
+
+	return _uip_channel_delete_to_db(channel_name);
+}
+
+static dave_bool
 _uip_channel_add_method(UIPChannelTable *pTable, s8 *allow_method)
 {
 	s8 method_json_str[1024];
@@ -464,9 +490,9 @@ _uip_channel_info(s8 *info_ptr, ub info_len)
 			break;
 		}
 
-		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " %08d | %s%s | %s\n",
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, " %08d | %s -> %s\n",
 			pTable->veriify_counter,
-			pTable->channel_name, dave_strlen(pTable->channel_name) > 8 ? "" : "\t\t",
+			pTable->channel_name,
 			pTable->auth_key);
 
 		if(pTable->pAllowMethodKV != NULL)
@@ -528,6 +554,18 @@ uip_channel_add(s8 *channel_name)
 	}
 
 	return _uip_channel_add(channel_name);
+}
+
+dave_bool
+uip_channel_del(s8 *channel_name)
+{
+	if((channel_name == NULL) || (channel_name[0] == '\0'))
+	{
+		UIPLOG("empty channel_name");
+		return dave_false;
+	}
+
+	return _uip_channel_del(channel_name);
 }
 
 dave_bool

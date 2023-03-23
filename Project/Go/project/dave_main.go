@@ -18,7 +18,7 @@ const WORKMODE = "Coroutine Inner Loop"
 func _main_sleep() {
 	for {
 		if base.Dave_go_run_state() == true {
-			time.Sleep(5 *time.Second)
+			time.Sleep(time.Second)
 		} else {
 			break
 		}

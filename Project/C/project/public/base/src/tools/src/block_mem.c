@@ -34,7 +34,8 @@
 #define BLOCK_LEN malloc_usable_size
 #endif
 
-#define USERINDEX_LEN (16)
+#define OFFSET_LEN (16)
+#define USERINDEX_LEN (32)
 #define OVERFLOW_LEN (4)
 #define MEMADD_LEN (USERINDEX_LEN + OVERFLOW_LEN)
 #define OVERFLOW_CHAR (0xA5)
@@ -396,14 +397,14 @@ _block_mem_free_set(ub core_index, BlockMem *pBlock)
 }
 
 static inline void *
-_block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *file, ub line)
+_block_mem_malloc(ub *core_index, void *ptr, void *user_ptr, BlockMem *pBlock, ub len, s8 *file, ub line)
 {
 	ub safe_counter;
 	BlockMemCore *pCore;
 
 	if(pBlock->core_number >= CORE_MEM_MAX)
 	{
-		__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
+		__block_mem_free__(ptr);
 		return NULL;
 	}
 
@@ -418,6 +419,7 @@ _block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *
 
 		if(pCore->user_ptr == NULL)
 		{
+			pCore->ptr = ptr;
 			pCore->user_ptr = user_ptr;
 			pCore->len = len;
 
@@ -434,14 +436,15 @@ _block_mem_malloc(ub *core_index, void *user_ptr, BlockMem *pBlock, ub len, s8 *
 		pBlock->core_search_index = _block_mem_free_get(++ pBlock->core_search_index, pBlock);
 	}
 
-	__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
+	__block_mem_free__(ptr);
 	return NULL;
 }
 
-static inline dave_bool
-_block_mem_free(ub core_index, void *user_ptr, BlockMem *pBlock, s8 *file, ub line)
+static inline void *
+_block_mem_free(ub core_index, BlockMem *pBlock, s8 *file, ub line)
 {
 	BlockMemCore *pCore = &(pBlock->core[core_index]);
+	void *ptr = pCore->ptr;
 
 	pCore->user_ptr = NULL;
 	pCore->len = 0;
@@ -460,7 +463,7 @@ _block_mem_free(ub core_index, void *user_ptr, BlockMem *pBlock, s8 *file, ub li
 		pBlock->core_number --;
 	}
 
-	return dave_true;
+	return ptr;
 }
 
 static inline dave_bool
@@ -482,8 +485,8 @@ _block_mem_memory(ub core_index, void *user_ptr, BlockMem *pBlock)
 static inline void *
 _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 {
-	void *ptr, *user_ptr;
-	ub malloc_len = len + MEMADD_LEN;
+	void *ptr, *offset_ptr, *user_ptr;
+	ub malloc_len = OFFSET_LEN + len + MEMADD_LEN;
 
 	ptr = __block_mem_malloc__(malloc_len);
 	if(ptr == NULL)
@@ -491,10 +494,12 @@ _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 		return NULL;
 	}
 
-	((ub *)ptr)[0] = pBlock->block_index;
+	offset_ptr = (void *)(((ub)ptr + OFFSET_LEN) & 0xfffffffffffffff0);
+
+	((ub *)offset_ptr)[0] = pBlock->block_index;
 
 	pthread_spin_lock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
-	{ user_ptr = _block_mem_malloc(&(((ub *)ptr)[1]), &(((u8 *)ptr)[USERINDEX_LEN]), pBlock, len, file, line); }
+	{ user_ptr = _block_mem_malloc(&(((ub *)offset_ptr)[1]), ptr, &(((u8 *)offset_ptr)[USERINDEX_LEN]), pBlock, len, file, line); }
 	pthread_spin_unlock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
 
 	_block_mem_add_overflow(user_ptr, len);
@@ -505,9 +510,9 @@ _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 static inline dave_bool
 _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 {
-	dave_bool ret;
 	ub core_index;
 	BlockMemCore *pCore;
+	void *ptr = NULL;
 
 	core_index = _block_mem_user_ptr_to_core_index(user_ptr);
 	if(core_index >= CORE_MEM_MAX)
@@ -539,20 +544,19 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 
 	pthread_spin_lock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
-	{ ret = _block_mem_free(core_index, user_ptr, pBlock, file, line); }
+	{ ptr = _block_mem_free(core_index, pBlock, file, line); }
 	pthread_spin_unlock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
 
-	if(ret == dave_true)
-	{
-		__block_mem_free__((void *)((u8 *)user_ptr - USERINDEX_LEN));
-	}
-	else
+	if(ptr == NULL)
 	{
 		BLOCKMEMABNOR("the ptr:%lx free failed! <%s:%d>",
 			user_ptr, file, line);
+		return dave_false;
 	}
 
-	return ret;
+	__block_mem_free__(ptr);
+
+	return dave_true;
 }
 
 static inline ub
@@ -596,6 +600,8 @@ void
 block_mem_reset(BlockMem *pBlock, ub block_number)
 {
 	ub block_index;
+
+	dave_memset(pBlock, 0x00, block_number * sizeof(BlockMem));
 
 	for(block_index=0; block_index<block_number; block_index++)
 	{

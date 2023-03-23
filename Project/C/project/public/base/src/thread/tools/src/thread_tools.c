@@ -104,6 +104,86 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 	return msg_index;
 }
 
+static inline void
+_thread_build_msg_body(
+	MSGBODY *pBody,
+	ThreadStruct *pThread,
+	void *msg_chain, void *msg_router,
+	s8 *src_gid, s8 *src_name,
+	ThreadId src_id, ThreadId dst_id,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	BaseMsgType msg_type,
+	s8 *fun, ub line)
+{
+	dave_bool data_is_here = thread_memory_at_here((void *)msg_body);
+
+	pBody->msg_src = src_id;
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		pBody->msg_dst = dst_id;
+	}
+	else
+	{
+		if(pThread == NULL)
+			pBody->msg_dst = INVALID_THREAD_ID;
+		else
+			pBody->msg_dst = pThread->thread_id;
+	}
+	pBody->msg_id = msg_id;
+	pBody->msg_type = msg_type;
+	pBody->src_attrib = thread_id_to_attrib(src_id);
+	if(dst_id != INVALID_THREAD_ID)
+	{
+		pBody->dst_attrib = REMOTE_TASK_ATTRIB;
+	}
+	else
+	{
+		if(pThread == NULL)
+			pBody->dst_attrib = LOCAL_TASK_ATTRIB;
+		else
+			pBody->dst_attrib = pThread->attrib;
+	}
+
+	pBody->msg_len = msg_len;
+	if(data_is_here == dave_false)
+	{
+		THREADDEBUG("Please use pMsg function to build the msg:%s buffer! <%s:%d>",
+			msgstr(msg_id), fun, line);
+
+		pBody->msg_body = thread_malloc(msg_len, msg_id, fun, line);
+		dave_memcpy(pBody->msg_body, msg_body, msg_len);
+	}
+	else
+	{
+		pBody->msg_body = (void *)msg_body;
+	}
+
+	pBody->mem_state = MsgMemState_uncaptured;
+
+	pBody->msg_build_time = 0;
+	pBody->msg_build_serial = 0;
+
+	pBody->user_ptr = NULL;
+
+	pBody->msg_chain = thread_chain_build_msg(
+			msg_chain,
+			src_id, dst_id, msg_id,
+			fun, line);
+
+	pBody->msg_router = thread_router_build_msg(msg_router, msg_id);
+
+	if(src_gid != NULL)
+		dave_strcpy(pBody->src_gid, src_gid, sizeof(pBody->src_gid));
+	else
+		pBody->src_gid[0] = '\0';
+	if(src_name != NULL)
+		dave_strcpy(pBody->src_name, src_name, sizeof(pBody->src_name));
+	else
+		pBody->src_name[0] = '\0';
+
+	pBody->magic_data = MSG_BODY_MAGIC_DATA;
+}
+
 // =====================================================================
 
 void
@@ -280,13 +360,15 @@ __thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line)
 }
 
 dave_bool
-thread_enable_coroutine(ThreadStruct *pThread)
+__thread_enable_coroutine__(ThreadStruct *pThread, ub msg_id, s8 *fun, ub line)
 {
-	if((pThread->thread_flag & THREAD_THREAD_FLAG)
-		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
-		return dave_true;
-	else
+	if(!((pThread->thread_flag & THREAD_THREAD_FLAG)
+		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG)))
+	{
 		return dave_false;
+	}
+
+	return dave_true;
 }
 
 ThreadMsg *
@@ -299,76 +381,24 @@ thread_build_msg(
 	BaseMsgType msg_type,
 	s8 *fun, ub line)
 {
-	dave_bool data_is_here = thread_memory_at_here((void *)msg_body);
-	ThreadMsg *thread_msg;
+	ThreadMsg *pMsg;
 
-	thread_msg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, fun, line);
-	if(data_is_here == dave_false)
-	{
-		THREADDEBUG("Please use thread_msg function to build the msg:%s buffer! <%s:%d>",
-			msgstr(msg_id), fun, line);
-		thread_msg->msg_body.msg_body = thread_malloc(msg_len, msg_id, fun, line);
-		dave_memcpy(thread_msg->msg_body.msg_body, msg_body, msg_len);
-	}
-	else
-	{
-		thread_msg->msg_body.msg_body = (void *)msg_body;
-	}
+	pMsg = (ThreadMsg *)thread_malloc(sizeof(ThreadMsg), msg_id, fun, line);
 
-	thread_msg->msg_body.msg_src = src_id;
-	if(dst_id != INVALID_THREAD_ID)
-	{
-		thread_msg->msg_body.msg_dst = dst_id;
-	}
-	else
-	{
-		if(pThread == NULL)
-			thread_msg->msg_body.msg_dst = INVALID_THREAD_ID;
-		else
-			thread_msg->msg_body.msg_dst = pThread->thread_id;
-	}
-	thread_msg->msg_body.msg_id = msg_id;
-	thread_msg->msg_body.msg_type = msg_type;
-	thread_msg->msg_body.src_attrib = thread_id_to_attrib(src_id);
-	if(dst_id != INVALID_THREAD_ID)
-	{
-		thread_msg->msg_body.dst_attrib = REMOTE_TASK_ATTRIB;
-	}
-	else
-	{
-		if(pThread == NULL)
-			thread_msg->msg_body.dst_attrib = LOCAL_TASK_ATTRIB;
-		else
-			thread_msg->msg_body.dst_attrib = pThread->attrib;
-	}
-	thread_msg->msg_body.msg_len = msg_len;
-	thread_msg->msg_body.mem_state = MsgMemState_uncaptured;
+	_thread_build_msg_body(
+		&(pMsg->msg_body),
+		pThread,
+		msg_chain, msg_router,
+		src_gid, src_name,
+		src_id, dst_id,
+		msg_id, msg_len, msg_body,
+		msg_type,
+		fun, line);
 
-	thread_msg->msg_body.msg_build_time = 0;
-	thread_msg->msg_body.msg_build_serial = 0;
+	pMsg->pQueue = NULL;
+	pMsg->next = NULL;
 
-	thread_msg->msg_body.user_ptr = NULL;
-
-	thread_msg->pQueue = NULL;
-	thread_msg->next = NULL;
-
-	thread_msg->msg_body.msg_chain = thread_chain_build_msg(
-			msg_chain,
-			src_id, dst_id, msg_id,
-			fun, line);
-
-	thread_msg->msg_body.msg_router = thread_router_build_msg(msg_router, msg_id);
-
-	if(src_gid != NULL)
-		dave_strcpy(thread_msg->msg_body.src_gid, src_gid, sizeof(thread_msg->msg_body.src_gid));
-	else
-		thread_msg->msg_body.src_gid[0] = '\0';
-	if(src_name != NULL)
-		dave_strcpy(thread_msg->msg_body.src_name, src_name, sizeof(thread_msg->msg_body.src_name));
-	else
-		thread_msg->msg_body.src_name[0] = '\0';
-
-	return thread_msg;
+	return pMsg;
 }
 
 void
@@ -384,10 +414,19 @@ thread_clean_msg(ThreadMsg *pMsg)
 			thread_queue_reset_process(pQueue);
 		}
 
+		if(pMsg->msg_body.magic_data != MSG_BODY_MAGIC_DATA)
+		{
+			THREADLOG("%s->%s:%s has invalid magic_data:%lx",
+				thread_id_to_name(pMsg->msg_body.msg_src), thread_id_to_name(pMsg->msg_body.msg_dst), msgstr(pMsg->msg_body.msg_id),
+				pMsg->msg_body.magic_data);			
+		}
+
 		if(pMsg->msg_body.msg_body != NULL)
 		{
 			if(pMsg->msg_body.mem_state == MsgMemState_uncaptured)
 			{
+				pMsg->msg_body.magic_data = 0;
+
 				thread_free(pMsg->msg_body.msg_body, pMsg->msg_body.msg_id, (s8 *)__func__, (ub)__LINE__);
 			}
 			else if(pMsg->msg_body.mem_state == MsgMemState_captured)

@@ -49,7 +49,6 @@ typedef struct {
 } DllMsgBody;
 
 static ThreadId _main_thread = INVALID_THREAD_ID;
-static ub _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
@@ -61,21 +60,30 @@ _dll_main_name(void)
 }
 
 static ub
-_dll_main_number(void)
+_dll_main_number(ub thread_number)
 {
-	if(_dll_thread_number == 0)
+	if(thread_number == 0)
 	{
-		_dll_thread_number = dave_os_cpu_process_number();
+		thread_number = dave_os_cpu_process_number();
 	}
 	else
 	{
-		if(_dll_thread_number > DLL_MAIN_THREAD_MAX_NUMBER)
+		if(thread_number > DLL_MAIN_THREAD_MAX_NUMBER)
 		{
-			_dll_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
+			thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
 		}
 	}
 
-	return _dll_thread_number;
+	return thread_number;
+}
+
+static ub
+_dll_main_flag(BaseDllRunningMode mode)
+{
+	if((mode == BaseDllRunningMode_Inner_Loop) || (mode == BaseDllRunningMode_Outer_Loop))
+		return THREAD_THREAD_FLAG | THREAD_dCOROUTINE_FLAG;
+	else
+		return THREAD_THREAD_FLAG | THREAD_COROUTINE_FLAG;
 }
 
 static void
@@ -137,19 +145,18 @@ dave_dll_main_init(
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
 {
-	ub thread_flag = THREAD_THREAD_FLAG|THREAD_COROUTINE_FLAG;
+	ub thread_flag = _dll_main_flag(mode);
 
-	_dll_thread_number = (ub)thread_number;
 	_dll_init_fun = dll_init_fun;
 	_dll_main_fun = dll_main_fun;
 	_dll_exit_fun = dll_exit_fun;
 
 	if(thread_flag & THREAD_COROUTINE_FLAG)
 	{
-		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 256 * 1024);
+		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 512 * 1024);
 	}
 
-	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
+	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(thread_number), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)
 		base_restart(_dll_main_name());
 }

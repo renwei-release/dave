@@ -37,7 +37,8 @@ void thread_reset_sync(ThreadSync *pSync);
 void __thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line);
 #define thread_clean_user_input_data(msg_body, msg_id) __thread_clean_user_input_data__(msg_body, msg_id, (s8 *)__func__, (ub)__LINE__)
 
-dave_bool thread_enable_coroutine(ThreadStruct *pThread);
+dave_bool __thread_enable_coroutine__(ThreadStruct *pThread, ub msg_id, s8 *fun, ub line);
+#define thread_enable_coroutine(pThread, msg_id) __thread_enable_coroutine__(pThread, msg_id, (s8 *)__func__, (ub)__LINE__)
 
 ThreadMsg * thread_build_msg(
 	ThreadStruct *pThread,

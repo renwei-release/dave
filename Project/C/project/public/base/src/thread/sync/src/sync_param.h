@@ -61,6 +61,7 @@ typedef struct {
 
 	s8 verno[DAVE_VERNO_STR_LEN];
 	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 host_name[DAVE_NORMAL_NAME_LEN];
 	sb rpc_version;
 	ub work_start_second;
 	SocNetInfo NetInfo;
@@ -108,6 +109,7 @@ typedef struct {
 
 	s8 verno[DAVE_VERNO_STR_LEN];
 	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 host_name[DAVE_NORMAL_NAME_LEN];
 	sb rpc_version;
 	ub work_start_second;
 

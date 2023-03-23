@@ -40,13 +40,13 @@ _sync_server_info_show_client(SyncClient *pClient, s8 *info, ub info_len)
 		work_on_second = current_second - pClient->work_start_second;
 	
 	info_index += dave_snprintf(&info[info_index], info_len-info_index,
-		" B:%02d %d%d%d%d%d T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%d C:%s L:%s %d/%d\n",
+		" B:%02d %d%d%d%d%d T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%s C:%s L:%s %d/%d\n",
 		sync_server_blocks_index_to_blocks_id(pClient->client_index),
 		pClient->receive_thread_done, pClient->sync_thread_flag, pClient->ready_flag, pClient->blocks_flag, pClient->client_flag,
 		sync_work_start_second_str(work_on_second, second_str, sizeof(second_str)),
 		pClient->send_data_counter, pClient->send_msg_counter,
 		pClient->recv_data_counter, pClient->recv_msg_counter,
-		pClient->globally_identifier, pClient->verno, pClient->rpc_version,
+		pClient->globally_identifier, pClient->verno, pClient->host_name,
 		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 		ipv4str2(pClient->link_ip, pClient->link_port),
 		pClient->left_timer, pClient->sync_timer);
@@ -72,7 +72,7 @@ _sync_server_info_find_new_statistics(ClientInfoStatistics *pStatistics_ptr, ub 
 		pClient = sync_server_client(client_index);
 		if(pClient->verno[0] != '\0')
 		{
-			dave_verno_product(pClient->verno, product_str, sizeof(product_str));
+			dave_product(pClient->verno, product_str, sizeof(product_str));
 			if((product_str[0] != '\0')
 				&& (dave_strcmp(product_str, "DAVE") == dave_false))
 			{
@@ -117,7 +117,7 @@ _sync_server_info_find_new_number(ClientInfoStatistics *pStatistics)
 		pClient = sync_server_client(client_index);
 		if(pClient->verno[0] != '\0')
 		{
-			dave_verno_product(pClient->verno, product_str, sizeof(product_str));
+			dave_product(pClient->verno, product_str, sizeof(product_str));
 			if(dave_strcmp(product_str, pStatistics->product_str) == dave_true)
 			{
 				pStatistics->product_number ++;
@@ -161,7 +161,7 @@ _sync_server_info_ready_show(ClientInfoStatistics *pStatistics, s8 *info, ub inf
 		if((pClient->client_socket != INVALID_SOCKET_ID)
 			&& (pClient->verno[0] != '\0'))
 		{
-			dave_verno_product(pClient->verno, product_str, sizeof(product_str));
+			dave_product(pClient->verno, product_str, sizeof(product_str));
 			if(dave_strcmp(product_str, pStatistics->product_str) == dave_true)
 			{
 				info_index += _sync_server_info_show_client(pClient, &info[info_index], info_len-info_index);

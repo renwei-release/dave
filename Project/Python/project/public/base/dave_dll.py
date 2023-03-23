@@ -30,18 +30,16 @@ path=os.path.dirname(os.path.abspath(__file__))
 davelib=cdll.LoadLibrary(path+"/lib/liblinuxBASE.so")
 
 
-_my_product_name = None
 _product_init_fun = None
 _product_exit_fun = None
 
 
-def _python_import_product(product_name):
-   global _my_product_name
+def _python_import_product():
    global _product_init_fun
    global _product_exit_fun
 
    if _product_init_fun == None:
-      product = dave_import_product(_my_product_name)
+      product = dave_import_product(dave_product())
       if product != None:
          _product_init_fun = product.dave_product_init
          _product_exit_fun = product.dave_product_exit
@@ -50,7 +48,7 @@ def _python_import_product(product_name):
 
 INITFUNC=CFUNCTYPE(None, POINTER(c_void_p))
 def _python_init(NULL_DATA):
-   _python_import_product(_my_product_name)
+   _python_import_product()
    if _product_init_fun != None:
       _product_init_fun()
    return
@@ -86,23 +84,14 @@ def _python_self_check():
    return False
 
 
-def _setup_product_verno_name(product_name):
-   dave_product(product_name)
-   return
-
-
 # =====================================================================
 
 
-def dave_python_init(product_name=b"BASE", work_mode=b"Outer Loop", sync_domain=b""):
-   global _my_product_name
-
-   _my_product_name = str(product_name)
-
-   _setup_product_verno_name(_my_product_name)
-
+def dave_python_init():
    my_verno = dave_verno()
+   work_mode = b"Coroutine Outer Loop"
    thread_number = 1
+   sync_domain = b""
 
    davelib.dave_dll_init(
       c_char_p(my_verno), c_char_p(work_mode),

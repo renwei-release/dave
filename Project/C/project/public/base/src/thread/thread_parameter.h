@@ -31,5 +31,14 @@
 #define ENABLE_THREAD_COROUTINE
 #endif
 
+/*
+ * 这个宏开关目前主要是为了能在函数：base_thread_creat
+ * 初始化线程的过程中，能在base_thread_creat的初始化函数
+ * 里面可直接使用协程能力。
+ * 但，目前经过调试，内部状态还没处理好，
+ * 通过valgrind/memcheck.sh base测试发现有太多未初始化空间被使用了。
+ */
+// #define ENABLE_MSG_INIT
+
 #endif
 

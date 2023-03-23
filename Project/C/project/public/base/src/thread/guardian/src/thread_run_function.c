@@ -37,13 +37,15 @@ _thread_guardian_thread_option(ThreadStruct *pThread, ub thread_index, dave_bool
 	}
 }
 
+#ifdef ENABLE_MSG_INIT
+
 static void
-_thread_guardian_run_user_function(MSGBODY *msg)
+_thread_guardian_run_msg_function(MSGBODY *msg)
 {
 	RUNFUNCTIONMSG *pRun = (RUNFUNCTIONMSG *)(msg->msg_body);
 	base_thread_fun user_initialization_function = (base_thread_fun)(pRun->thread_fun);
 	ThreadStruct *pThread = thread_find_busy_thread(pRun->run_thread_id);
-	WAKEUPMSG wakeup;
+	WAKEUPMSG *pWakeup = thread_msg(pWakeup);
 
 	THREADDEBUG("%s user_initialization_function:%lx",
 		thread_name(self()), user_initialization_function);
@@ -56,19 +58,19 @@ _thread_guardian_run_user_function(MSGBODY *msg)
 		NULL, NULL, NULL, NULL,
 		pThread->thread_id, pThread->thread_id,
 		BaseMsgType_Unicast,
-		MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)&wakeup,
+		MSGID_WAKEUP, sizeof(WAKEUPMSG), (u8 *)pWakeup,
 		1,
 		(s8 *)__func__, (ub)__LINE__);	
 }
 
 static void
-_thread_guardian_run_user_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
+_thread_guardian_run_msg_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 {
 	RUNFUNCTIONMSG my_run;
 
-	base_thread_msg_register(pThread->thread_id, MSGID_RUN_FUNCTION, _thread_guardian_run_user_function, NULL);
-	
-	my_run	= *run;
+	base_thread_msg_register(pThread->thread_id, MSGID_RUN_FUNCTION, _thread_guardian_run_msg_function, NULL);
+
+	my_run = *run;
 	
 	base_thread_id_msg(
 		NULL, NULL, NULL, NULL,
@@ -79,16 +81,19 @@ _thread_guardian_run_user_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *
 		(s8 *)__func__, (ub)__LINE__);
 }
 
+#endif
+
 static void
-_thread_guardian_run_guardian_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
+_thread_guardian_run_fun_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 {
 	MSGBODY msg;
 	
 	dave_memset(&msg, 0x00, sizeof(MSGBODY));
-	
+
 	msg.msg_src = get_self();
 	msg.msg_dst = run->run_thread_id;
 	msg.msg_id = MSGID_RUN_FUNCTION;
+	msg.magic_data = MSG_BODY_MAGIC_DATA;
 
 	thread_running(
 		(ThreadStack **)(run->param),
@@ -102,7 +107,8 @@ _thread_guardian_run_guardian_initialization(ThreadStruct *pThread, RUNFUNCTIONM
 static void
 _thread_guardian_run_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 {
-	if(pThread->has_initialization == dave_true)
+	if((pThread->has_initialization == dave_true)
+		&& (dave_strcmp(pThread->thread_name, GUARDIAN_THREAD_NAME) == dave_false))
 	{
 		THREADABNOR("%s repeat the initialization function!", pThread->thread_name);
 	}
@@ -112,11 +118,15 @@ _thread_guardian_run_initialization(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 
 		if(dave_strcmp(pThread->thread_name, GUARDIAN_THREAD_NAME) == dave_true)
 		{
-			_thread_guardian_run_guardian_initialization(pThread, run);
+			_thread_guardian_run_fun_initialization(pThread, run);
 		}
 		else
 		{
-			_thread_guardian_run_user_initialization(pThread, run);
+			#ifdef ENABLE_MSG_INIT
+			_thread_guardian_run_msg_initialization(pThread, run);
+			#else
+			_thread_guardian_run_fun_initialization(pThread, run);
+			#endif
 		}
 
 		thread_local_ready_notify(pThread->thread_name);
@@ -133,6 +143,7 @@ _thread_guardian_run_end(ThreadStruct *pThread, RUNFUNCTIONMSG *run)
 	msg.msg_src = get_self();
 	msg.msg_dst = run->run_thread_id;
 	msg.msg_id = MSGID_RUN_FUNCTION;
+	msg.magic_data = MSG_BODY_MAGIC_DATA;
 
 	if(pThread->has_initialization == dave_false)
 	{

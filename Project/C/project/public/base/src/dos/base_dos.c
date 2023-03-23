@@ -55,6 +55,15 @@ _base_dos_thread_name(s8 *thread_name, ub thread_len)
 }
 
 static void
+_base_dos_restart(RESTARTREQMSG *pRestart)
+{
+	if(pRestart->times == 1)
+	{
+		dos_cmd_exit();
+	}
+}
+
+static void
 _base_dos_init(MSGBODY *task_msg)
 {
 	dos_tty_init();
@@ -65,15 +74,18 @@ _base_dos_init(MSGBODY *task_msg)
 }
 
 static void
-_base_dos_main(MSGBODY *task_msg)
+_base_dos_main(MSGBODY *msg)
 {
-	switch((ub)task_msg->msg_id)
+	switch((ub)msg->msg_id)
 	{
+		case MSGID_RESTART_REQ:
+				_base_dos_restart((RESTARTREQMSG *)(msg->msg_body));
+			break;
 		default:
             DOSDEBUG("unprocess %s/%lx->%s/%lx:%d",
-                thread_name(task_msg->msg_src), task_msg->msg_src,
-                thread_name(task_msg->msg_dst), task_msg->msg_dst,
-                task_msg->msg_id);
+                thread_name(msg->msg_src), msg->msg_src,
+                thread_name(msg->msg_dst), msg->msg_dst,
+                msg->msg_id);
 			break;
 	}
 }
@@ -106,11 +118,11 @@ base_dos_init(void)
 void
 base_dos_exit(void)
 {
+	dos_cmd_exit();
+
 	if(_dos_thread != INVALID_THREAD_ID)
 		base_thread_del(_dos_thread);
 	_dos_thread = INVALID_THREAD_ID;
-
-	dos_cmd_exit();
 }
 
 #endif

@@ -42,7 +42,7 @@ build_project()
    cd ${homepath}
 
    if [ -f ${BINFILE} ]; then
-      echo copy ${BINFILE}
+      echo copy ${BINFILE} to ${WORKDIR}/${BINNAME}
       echo
       cp ${BINFILE} ${WORKDIR}/${BINNAME}
    fi

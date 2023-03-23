@@ -71,8 +71,8 @@ _sync_server_are_they_brothers(SyncClient *pClientA, SyncClient *pClientB)
 		return dave_true;
 	}
 
-	dave_verno_product(pClientA->verno, client_a_verno, sizeof(client_a_verno));
-	dave_verno_product(pClientB->verno, client_b_verno, sizeof(client_b_verno));
+	dave_product(pClientA->verno, client_a_verno, sizeof(client_a_verno));
+	dave_product(pClientB->verno, client_b_verno, sizeof(client_b_verno));
 
 	return dave_strcmp(client_a_verno, client_b_verno);
 }

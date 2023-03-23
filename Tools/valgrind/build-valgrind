@@ -8,7 +8,7 @@
 
 homepath=$(cd `dirname $0`; pwd)
 
-VERSION=3.18.1
+VERSION=3.20.0
 
 if [ ! -f valgrind-${VERSION}.tar.bz2 ]; then
    wget --no-check-certificate https://sourceware.org/pub/valgrind/valgrind-${VERSION}.tar.bz2

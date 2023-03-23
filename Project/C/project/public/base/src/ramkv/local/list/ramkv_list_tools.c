@@ -96,7 +96,7 @@ ramkv_is_my_key(KVData *pData, u8 *key_ptr, ub key_len)
 
 	if(pData->key.key_len == key_len)
 	{
-		return dave_memcmp(pData->key.key_ptr, key_ptr, key_len);
+		return dave_memcmp(pData->key.key_ptr, key_ptr, pData->key.key_len);
 	}
 
 	return dave_false;

@@ -82,6 +82,7 @@ ub
 __exter_len__(void *ptr, s8 *file, ub line)
 {
 #ifdef EXTER_ENABLE_BLOCK
+	_exter_mem_init();
 	return block_len(_exter_mem, ptr, file, line);
 #else
 	return __block_mem_len__(ptr);
@@ -92,6 +93,7 @@ dave_bool
 __exter_memory__(void *ptr, s8 *file, ub line)
 {
 #ifdef EXTER_ENABLE_BLOCK
+	_exter_mem_init();
 	return block_memory(_exter_mem, ptr, file, line);
 #else
 	return dave_true;

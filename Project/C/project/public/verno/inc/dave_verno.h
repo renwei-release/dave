@@ -38,9 +38,9 @@
 #else
  #define VERSION_SUB "14"
 #endif
-#define VERSION_REV "4"
+#define VERSION_REV "5"
 
-#define VERSION_DATE_TIME "20230314151216"
+#define VERSION_DATE_TIME "20230323143607"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -54,7 +54,7 @@
 
 s8 * dave_verno(void);
 s8 * dave_verno_reset(s8 *verno);
-s8 * dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len);
+s8 * dave_product(s8 *verno, s8 *buf_ptr, ub buf_len);
 dave_bool dave_verno_number(ub *main_num, ub *sub_num, ub *rev_num, s8 *verno);
 sb dave_verno_cmp(s8 *verno, ub main_cmp, ub sub_cmp, ub rev_cmp);
 s8 * dave_verno_my_product(void);

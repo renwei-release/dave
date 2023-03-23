@@ -33,72 +33,6 @@ __toupper(unsigned char c)
 // =====================================================================
 
 ub
-t_stdio_memcpy(u8 *dst, u8 *src, ub len)
-{
-	if((dst == NULL) || (src == NULL) || (len == 0))
-	{
-		return 0;
-	}
-
-	memcpy((void *)dst, (void *)src, (unsigned)len);
-
-	return len;
-}
-
-ub
-t_stdio_memmove(u8 *dst, u8 *src, ub len)
-{
-	if((dst == NULL) || (src == NULL) || (len == 0))
-	{
-		return 0;
-	}
-
-	memmove((void *)dst, (void *)src, (size_t)len);
-
-	return len;
-}
-
-dave_bool
-t_stdio_memcmp(u8 *cmp1, u8 *cmp2, ub cmp_len)
-{
-    if((cmp1 == NULL) || (cmp2 == NULL) || (cmp_len == 0))
-    {
-        return dave_false;
-    }
- 
-    if(memcmp(cmp1, cmp2, cmp_len) == 0)
-    {
-        return dave_true;
-    }
-    else
-    {
-		return dave_false;
-    }
-}
-
-void
-t_stdio_memset(u8 *mem, u8 data, ub len)
-{
-	if((mem == NULL) || (len == 0))
-	{
-		return;
-	}
-
-	memset(mem, data, len);
-}
-
-ub
-t_stdio_strlen(s8 *str)
-{
-    if(str == NULL)
-    {
-        return 0;
-    }
-
-    return (ub)strlen((char *)str);
-}
-
-ub
 t_stdio_sprintf(s8 *buf, const char *fmt, ...)
 {
 	va_list args;
@@ -125,29 +59,6 @@ t_stdio_sscanf(const s8 *buf, const char *fmt, ...)
 }
 
 ub
-t_stdio_snprintf(s8 *buf_ptr, ub buf_len, const char *fmt, ...)
-{
-	va_list args;
-	ub printf_len;
-
-	if((buf_len == 0) || (buf_len > 0xffffffff))
-	{
-		return 0;
-	}
-
-	va_start(args, fmt);
-	printf_len = (ub)vsnprintf((char *)buf_ptr, buf_len, fmt, args);
-	va_end(args);
-
-	if (printf_len >= buf_len)
-	{
-		return buf_len - 1;
-	}
-
-	return printf_len;
-}
-
-ub
 t_stdio_snscanf(const s8 *buf_ptr, ub buf_len, const char *fmt, ...)
 {
 	va_list args;
@@ -163,82 +74,6 @@ t_stdio_snscanf(const s8 *buf_ptr, ub buf_len, const char *fmt, ...)
 	va_end(args);
 
 	return printf_len;
-}
-
-ub
-__t_stdio_strcpy__(s8 *dst, const s8 *src, ub max_length, s8 *file, ub line)
-{
-	s8 *original_dst;
-	ub copy_index;
-
-	if((dst == NULL) || (max_length <= 0))
-	{
-		TOOLSLOG("copy dest is NULL! <%s:%d>", file, line);
-		return 0;
-	}
-
-	if(src == NULL)
-	{
-		dst[0] = '\0';
-		TOOLSLOG("copy src is NULL! <%s:%d>", file, line);
-		return 0;
-	}
-
-	// To insert '\0'
-	max_length -= 1;
-	original_dst = dst;
-
-	for(copy_index=0; copy_index<max_length; copy_index++)
-	{
-		if((*dst++ = *src++) == '\0')
-			break;
-	}
-
-	if(copy_index >= max_length)
-	{
-		original_dst[copy_index] = '\0';
-	}
-
-	return copy_index;
-}
-
-dave_bool
-__t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line)
-{
-	sb safe_counter, max_counter = 10485760;
-	s8 ret;
-
-	if((cmp1 == NULL) && (cmp2 == NULL))
-		return dave_true;
-
-	if((cmp1 == NULL) || (cmp2 == NULL))
-		return dave_false;
-
-	safe_counter = 0;
-
-	ret = (*cmp1 - *cmp2);
-
-	while(((++ safe_counter) < max_counter) && (!ret) && (*cmp1) && (*cmp2))
-	{ 
-		cmp1 ++;
-		cmp2 ++;
-		ret = (*cmp1 - *cmp2);
-	}
-
-	if(safe_counter >= max_counter)
-	{
-		TOOLSABNOR("Why do so long(%ld/%ld) strings need to be compared? <%s:%d>",
-			safe_counter, max_counter, file, line);
-	}
-
-	if((ret == 0) && (*cmp1 == *cmp2))
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
 }
 
 s8 *

@@ -102,6 +102,10 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->verno, sizeof(pServer->verno));
 	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->globally_identifier, sizeof(pServer->globally_identifier));
 	frame_index += sync_ip_unpacket(&frame[frame_index], frame_len-frame_index, detect_my_ip);
+	if(frame_index < frame_len)
+	{
+		sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
+	}
 
 	pServer->work_start_second = dave_os_time_s();
 

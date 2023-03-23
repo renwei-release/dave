@@ -46,7 +46,7 @@ coroutine_swap_make(CoSwap *pSwap, void *fun, const void *param, char *ss_sp, si
 {
 	char *sp;
 
-	dave_memset(pSwap->regs, 0x00, sizeof(pSwap->regs));
+	dave_memset(pSwap, 0x00, sizeof(CoSwap));
 
 	if(ss_sp != NULL)
 	{

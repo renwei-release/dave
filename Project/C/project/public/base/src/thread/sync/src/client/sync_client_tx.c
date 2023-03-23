@@ -147,16 +147,21 @@ sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_
 void
 sync_client_tx_my_verno(SyncServer *pServer)
 {
+	s8 host_name[DAVE_NORMAL_NAME_LEN];
 	MBUF *snd_buffer;
 	u8 *snd_ptr;
 	ub snd_max = 2048;
 	ub snd_index = 0;
+
+	dave_os_load_host_name(host_name, sizeof(host_name));
 
 	snd_buffer = dave_mmalloc(snd_max);
 	snd_ptr = dave_mptr(snd_buffer);
 
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, dave_verno());
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, globally_identifier());
+	snd_index += sync_ip_packet(&snd_ptr[snd_index], snd_max-snd_index, pServer->cfg_server_ip);
+	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, host_name);
 
 	snd_buffer->len = snd_buffer->tot_len = snd_index;
 

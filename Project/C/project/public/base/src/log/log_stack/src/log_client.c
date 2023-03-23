@@ -400,7 +400,7 @@ _log_client_init(MSGBODY *msg)
 {
 	_log_snd_log_timer_id = INVALID_TIMER_ID;
 
-	dave_verno_product(dave_verno(), _log_product_name, sizeof(_log_product_name));
+	dave_product(dave_verno(), _log_product_name, sizeof(_log_product_name));
 	_log_product_name_len = dave_strlen(_log_product_name);
 	_log_chain_name_len = dave_snprintf(_log_chain_name, sizeof(_log_chain_name), "CHAIN");
 	_log_client_get_device_info(_log_device_info, sizeof(_log_device_info));

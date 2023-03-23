@@ -18,7 +18,7 @@ extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
 static dave_bool _thread_mem_init_flag_ = dave_false;
 
-static void *
+static inline void *
 __thread_malloc__(ub len, ub msg_id, s8 *file, ub line)
 {
 	void *ptr;
@@ -28,7 +28,7 @@ __thread_malloc__(ub len, ub msg_id, s8 *file, ub line)
 	return ptr;
 }
 
-static dave_bool
+static inline dave_bool
 __thread_free__(void *ptr, ub msg_id, s8 *file, ub line)
 {
 	dave_bool ret;

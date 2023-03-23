@@ -133,6 +133,20 @@ _thread_no_ready_co_msg(
 	return rsp_body;	
 }
 
+static inline dave_bool
+_thread_co_has_init(ThreadStruct *pSrcThread, ub req_id, ub rsp_id, s8 *fun, ub line)
+{
+	if(pSrcThread->has_initialization == dave_false)
+	{
+		THREADLOG("This interface(%s->%s) is not allowed before initialization is not completed. <%s:%d>",
+			msgstr(req_id), msgstr(rsp_id), 
+			fun, line);
+		return dave_false;
+	}
+
+	return dave_true;
+}
+
 // =====================================================================
 
 void *
@@ -151,7 +165,12 @@ thread_co_id(
 		return NULL;
 	}
 
-	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	if(_thread_co_has_init(pSrcThread, req_id, rsp_id, fun, line) == dave_false)
+	{
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread, req_id) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! dst_id:%lx req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			pSrcThread->thread_name, dst_id,
@@ -198,7 +217,12 @@ thread_co_name(
 		return NULL;
 	}
 
-	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	if(_thread_co_has_init(pSrcThread, req_id, rsp_id, fun, line) == dave_false)
+	{
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread, req_id) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			pSrcThread->thread_name, dst_thread,
@@ -249,7 +273,12 @@ thread_co_gid(
 		return NULL;
 	}
 
-	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	if(_thread_co_has_init(pSrcThread, req_id, rsp_id, fun, line) == dave_false)
+	{
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread, req_id) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! gid:%s dst_thread:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			pSrcThread->thread_name, gid, dst_thread,
@@ -301,7 +330,12 @@ thread_co_uid(
 		return NULL;
 	}
 
-	if(thread_enable_coroutine(pSrcThread) == dave_false)
+	if(_thread_co_has_init(pSrcThread, req_id, rsp_id, fun, line) == dave_false)
+	{
+		return NULL;
+	}
+
+	if(thread_enable_coroutine(pSrcThread, req_id) == dave_false)
 	{
 		THREADABNOR("%s disable coroutine! uid:%s req_id:%s req_len:%d rsp_id:%s <%s:%d>",
 			pSrcThread->thread_name, uid,

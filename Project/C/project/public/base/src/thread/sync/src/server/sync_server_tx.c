@@ -302,10 +302,13 @@ sync_server_tx_test_run_thread_msg_req(
 void
 sync_server_tx_my_verno(SyncClient *pClient)
 {
+	s8 host_name[DAVE_NORMAL_NAME_LEN];
 	MBUF *snd_buffer;
 	u8 *snd_ptr;
 	ub snd_max = 2048;
 	ub snd_index = 0;
+
+	dave_os_load_host_name(host_name, sizeof(host_name));
 
 	snd_buffer = dave_mmalloc(snd_max);
 	snd_ptr = dave_mptr(snd_buffer);
@@ -313,6 +316,7 @@ sync_server_tx_my_verno(SyncClient *pClient)
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, dave_verno());
 	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, globally_identifier());
 	snd_index += sync_ip_packet(&snd_ptr[snd_index], snd_max-snd_index, pClient->NetInfo.addr.ip.ip_addr);
+	snd_index += sync_str_packet(&snd_ptr[snd_index], snd_max-snd_index, host_name);
 
 	snd_buffer->len = snd_buffer->tot_len = snd_index;
 

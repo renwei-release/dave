@@ -18,8 +18,9 @@ import (
 
 type DeployNFTReq struct {
 	Wallet_address string `json:"wallet_address"`
-	Passphrase string `json:"passphrase"`
-	URL string `json:"url"`
+	User_name string `json:"user_name"`
+	Image_url string `json:"image_url"`
+	Ipfs_url string `json:"ipfs_url"`
 }
 
 type DeployNFTRsp struct {
@@ -28,11 +29,11 @@ type DeployNFTRsp struct {
 }
 
 func _eth_deploy_nft(req DeployNFTReq) (interface{}, int64) {
-	eth_ret, eth_contract_address := eth_nft.Eth_deploy_nft(req.URL, req.URL)
-	vsys_ret, vsys_tokenid := vsys_nft.Vsys_deploy_nft(req.URL, req.URL)
+	eth_ret, eth_contract_address := eth_nft.Eth_deploy_nft(req.Ipfs_url, req.Ipfs_url)
+	vsys_ret, vsys_tokenid := vsys_nft.Vsys_deploy_nft(req.Image_url, req.Image_url)
 	if (eth_ret == false) || (vsys_ret == false) {
-		base.DAVELOG("Wallet_address:%v Passphrase:%v URL:%v failed!",
-			req.Wallet_address, req.Passphrase, req.URL)
+		base.DAVELOG("Wallet_address:%v User_name:%v URL:%v/%v failed!",
+			req.Wallet_address, req.User_name, req.Image_url, req,req.Ipfs_url)
 		return "", auto.RetCode_Invalid_call
 	}
 

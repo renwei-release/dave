@@ -19,6 +19,7 @@
 #include "coroutine_arch.h"
 #include "thread_log.h"
 
+#define COCORE_MAGIC_DATA 0xabc123eeff
 #define COROUTINE_CORE_STACK_DEFAULT_SIZE 128 * 1024
 #define TID_MAX DAVE_SYS_THREAD_ID_MAX
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
@@ -31,6 +32,8 @@ typedef struct {
 } CoThreadEnv;
 
 typedef struct {
+	ub magic_data;
+
 	coroutine_core_fun fun_ptr;
 	void *fun_param;
 
@@ -48,6 +51,18 @@ static void *
 _coroutine_swap_function(void *param)
 {
 	CoCore *pCore = (CoCore *)param;
+
+	if(pCore == NULL)
+	{
+		THREADABNOR("pCore is NULL");
+		return NULL;
+	}
+
+	if(pCore->magic_data != COCORE_MAGIC_DATA)
+	{
+		THREADABNOR("pCore has invalid magic data:%lx", pCore->magic_data);
+		return NULL;
+	}
 
 	if(pCore->fun_ptr != NULL)
 	{
@@ -138,6 +153,8 @@ static inline void *
 _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
 {
 	CoCore *pCore = dave_malloc(sizeof(CoCore));
+
+	pCore->magic_data = COCORE_MAGIC_DATA;
 
 	pCore->fun_ptr = fun_ptr;
 	pCore->fun_param = fun_param;
@@ -230,6 +247,16 @@ _coroutine_release(void *co)
 	if(pCore != NULL)
 	{
 		dave_free(pCore->ss_sp);
+
+		pCore->magic_data = 0x00;
+
+		pCore->ss_size = 0;
+		pCore->ss_sp = NULL;
+
+		pCore->fun_ptr = NULL;
+		pCore->fun_param = NULL;
+
+		pCore->env = NULL;
 
 		dave_free(pCore);
 	}

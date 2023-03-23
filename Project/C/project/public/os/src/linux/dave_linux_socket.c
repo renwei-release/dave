@@ -285,7 +285,7 @@ _os_linux_bind_netcard(s32 socket, s8 *netcard_name)
 		&& (netcard_name[0] != '\0')
 		&& (t_is_all_show_char((u8 *)netcard_name, dave_strlen(netcard_name)) == dave_true))
 	{
-		strncpy(nif.ifr_name, (char *)netcard_name, dave_strlen(netcard_name) + 1);
+		dave_strcpy(nif.ifr_name, netcard_name, sizeof(nif.ifr_name));
 
 		if(setsockopt(socket, SOL_SOCKET, SO_BINDTODEVICE, (char *)&nif, sizeof(nif)) < 0)
 		{

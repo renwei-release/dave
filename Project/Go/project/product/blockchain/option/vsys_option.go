@@ -23,19 +23,17 @@ type VsysOptionReq struct {
 
 type VsysOptionTotalVoucherInqRsp struct {
 	Voucher_total_number int `json:"voucher_total_number"`
-	Voucher_total_info string `json:"voucher_total_info"`
 }
 
 func _vsys_total_voucher_inq() (interface{}, int64) {
-	total_number, json_string, err := vsys_store.Vsys_store_voucher_total(0, 512)
+	total_number, _, err := vsys_store.Vsys_store_voucher_total(0, 512)
 	if err != nil {
 		base.DAVELOG("err:%v", err)
 		return "", auto.RetCode_empty_data
 	}
 
 	rsp := VsysOptionTotalVoucherInqRsp { 
-        Voucher_total_number: total_number, 
-        Voucher_total_info: json_string,
+        Voucher_total_number: total_number,
     }
 
 	return rsp, auto.RetCode_OK

@@ -370,6 +370,7 @@ static void
 _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
 {
 	dave_bool frist_get_version;
+	u8 detect_my_ip[16];
 	ub frame_index = 0;
 
 	if(pClient->verno[0] == '\0')
@@ -379,6 +380,11 @@ _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
 
 	frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pClient->verno, sizeof(pClient->verno));
 	frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pClient->globally_identifier, sizeof(pClient->globally_identifier));
+	if(frame_index < frame_len)
+	{
+		frame_index += sync_ip_unpacket(&frame_ptr[frame_index], frame_len-frame_index, detect_my_ip);
+		frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pClient->host_name, sizeof(pClient->host_name));
+	}
 
 	pClient->work_start_second = dave_os_time_s();
 

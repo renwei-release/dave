@@ -69,7 +69,7 @@ thread_call_sync_pre(
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 #ifdef ENABLE_THREAD_COROUTINE
-	if(thread_enable_coroutine(pSrcThread) == dave_true)
+	if(thread_enable_coroutine(pSrcThread, req_msg_id) == dave_true)
 		return thread_coroutine_running_step_setup(pSrcThread, src_id, req_msg_id, req_msg_body, rsp_msg_id, rsp_msg_body, rsp_msg_len);
 	else
 #endif
@@ -82,7 +82,7 @@ thread_call_sync_wait(
 	void *pSync)
 {
 #ifdef ENABLE_THREAD_COROUTINE
-	if(thread_enable_coroutine(pSrcThread) == dave_true)
+	if(thread_enable_coroutine(pSrcThread, MSGID_RESERVED) == dave_true)
 		return thread_coroutine_running_step_yield(pSync);
 	else
 #endif
@@ -100,7 +100,7 @@ thread_call_sync_catch(
 	dave_bool catch_flag;
 
 #ifdef ENABLE_THREAD_COROUTINE
-	if(thread_enable_coroutine(pDstThread) == dave_true)
+	if(thread_enable_coroutine(pDstThread, msg_id) == dave_true)
 	{
 		catch_flag = *hold_body = thread_coroutine_running_step_resume(
 			msg_chain, msg_router,

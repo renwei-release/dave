@@ -244,7 +244,6 @@ _dave_dll_init(
 	_dll_main_fun = main_fun;
 	_dll_exit_fun = exit_fun;
 	_dave_dll_copy_sync_domain(sync_domain);
-
 	_base_dll_running_mode = _dave_dll_mode_decode(work_mode);
 
 	_signal_thread = (pthread_t)NULL;

@@ -70,7 +70,9 @@ s8 *
 dave_verno(void)
 {
 	if(__dave_verno__[0] == '\0')
+	{
 		dave_strcpy(__dave_verno__, &__const_verno__[13], sizeof(__dave_verno__));
+	}
 
 	return __dave_verno__;
 }
@@ -86,7 +88,7 @@ dave_verno_reset(s8 *verno)
 }
 
 s8 *
-dave_verno_product(s8 *verno, s8 *buf_ptr, ub buf_len)
+dave_product(s8 *verno, s8 *buf_ptr, ub buf_len)
 {
 	static s8 product_str[64];
 
@@ -173,6 +175,6 @@ dave_verno_my_product(void)
 	if(_product_str[0] != '\0')
 		return _product_str;
 
-	return dave_verno_product(dave_verno(), _product_str, sizeof(_product_str));
+	return dave_product(dave_verno(), _product_str, sizeof(_product_str));
 }
 

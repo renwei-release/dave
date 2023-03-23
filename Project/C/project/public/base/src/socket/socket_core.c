@@ -480,7 +480,7 @@ socket_core_external_find(s32 socket_external_index, s32 os_socket)
 ub
 socket_core_info(s8 *info_ptr, ub info_len, ub page_id, s8 *page_thread)
 {
-#define PAGE_ID_MAX 32
+	#define PAGE_ID_MAX 32
 	ub info_index = 0;
 	ub total_number, map_number, index_number, current_page_id, page_number, socket_internal_index;
 	SocketCore *pCore;

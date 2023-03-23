@@ -13,6 +13,8 @@ import traceback
 
 
 def dave_import_product(product_name):
+    product_name = product_name.decode().lower()
+
     try:
         return importlib.import_module(f'product.{product_name}.{product_name}_product')
     except:

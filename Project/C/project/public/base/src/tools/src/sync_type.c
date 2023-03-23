@@ -17,7 +17,7 @@ _sync_type(void)
 {
 	s8 product_type[128];
 
-	dave_verno_product(dave_verno(), product_type, sizeof(product_type));
+	dave_product(dave_verno(), product_type, sizeof(product_type));
 
 	if(dave_strcmp(product_type, "SYNC") == dave_true)
 	{

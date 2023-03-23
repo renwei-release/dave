@@ -337,17 +337,14 @@ _mysql_query_ret(MYSQL *pSql, s8 *sql)
 {
 	MYSQL_RES *res;
 	ub row_num, fields_num;
-	SqlRet ret  = { RetCode_Unknown_error, NULL };
+	SqlRet ret  = { RetCode_OK, NULL };
 
 	res = so_mysql_store_result(pSql);
 	if(res == NULL)
 	{
 		PARTYDEBUG("sql:%s get res failed!", sql);
-		ret.ret = RetCode_empty_data;
 		return ret;
 	}
-
-	ret.ret = RetCode_OK;
 
 	row_num = so_mysql_num_rows(res);
 	fields_num = so_mysql_num_fields(res);
@@ -433,6 +430,7 @@ dave_mysql_query(void *pSql, s8 *sql)
 	ret.ret = _mysql_query(pSql, sql);
 	if(ret.ret == RetCode_table_exist)
 	{
+		ret.ret = RetCode_OK;
 		return ret;
 	}
 	else if(ret.ret != RetCode_OK)

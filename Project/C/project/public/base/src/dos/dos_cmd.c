@@ -172,13 +172,15 @@ _dos_get_cmd_and_param(s8 *cmd, ub *cmd_len, s8 *param, ub *param_len, s8 *input
 static void
 _dos_show_invalid_cmd_screen(s8 *input_ptr, ub input_len)
 {
-	dos_print("Sorry, you entered an invalid command:%s\nPlease enter ls to get information!", input_ptr);
+	dos_print("Sorry, you entered an invalid command:%s\nPlease enter ls to get information!",
+		input_ptr);
 }
 
 static void
 _dos_show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 {
-	dos_print("Sorry, you entered an unsupported command:%s", cmd_ptr);
+	dos_print("Sorry, you entered an unsupported command:%s",
+		cmd_ptr);
 
 	dos_cmd_list_show();
 }
@@ -186,7 +188,8 @@ _dos_show_not_support_cmd_screen(s8 *cmd_ptr, ub cmd_len)
 static void
 _dos_show_run_cmd_failed_screen(s8 *cmd_ptr, ub cmd_len, s8 *param, ub param_len, RetCode ret)
 {
-	dos_print("Sorry(%s), you entered an invalid command:\n%s or param:\n%s", retstr(ret), cmd_ptr, param);
+	dos_print("Sorry(%s),\nYou entered an invalid command:%s or invalid param:%s",
+		retstr(ret), cmd_ptr, param);
 }
 
 static void

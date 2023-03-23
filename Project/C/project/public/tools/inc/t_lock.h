@@ -14,19 +14,16 @@
 typedef struct {
 #ifdef LEVEL_PRODUCT_alpha
 	ub magic_data_1;
-#endif
-
-	s8 spin_lock[sizeof(pthread_spinlock_t)];
-	s8 rw_lock[sizeof(pthread_rwlock_t)];
-	pthread_mutex_t m_mutex_t;
-
-#ifdef LEVEL_PRODUCT_alpha
 	pthread_t thread_id;
 	ub sleep;
 	s8 *file;
 	ub line;
 	ub magic_data_2;
 #endif
+
+	s8 spin_lock[sizeof(pthread_spinlock_t)];
+	s8 rw_lock[sizeof(pthread_rwlock_t)];
+	pthread_mutex_t m_mutex_t;
 } TLock;
 
 void t_lock_booting(void);

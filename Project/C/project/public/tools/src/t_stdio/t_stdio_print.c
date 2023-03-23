@@ -19,7 +19,7 @@ t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len)
 	ub buf_index, hex_index, tab_counter, add_len;
 
 	buf_len = 64 + dave_strlen(msg) + hex_len*8 + 256;
-	buf = dave_malloc(buf_len);
+	buf = malloc(buf_len);
 	buf_index = 0;
 	hex_index = 0;
 	tab_counter = 0;
@@ -46,9 +46,9 @@ t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len)
 	}
 	buf_index += dave_snprintf(&buf[buf_index], buf_len-buf_index, "]\n");
 
-	TOOLSLOG("%s", buf);
+	fprintf(stdout, "%s\n", buf);
 
-	dave_free(buf);
+	free(buf);
 }
 
 void
@@ -59,7 +59,7 @@ t_stdio_print_char(const char *msg, u8 *char_data, ub char_len)
 	ub buf_index, hex_index, tab_counter, add_len;
 
 	buf_len = 64 + dave_strlen(msg) + char_len*8 + 256;
-	buf = dave_malloc(buf_len);
+	buf = malloc(buf_len);
 	buf_index = 0;
 	hex_index = 0;
 	tab_counter = 0;
@@ -93,8 +93,8 @@ t_stdio_print_char(const char *msg, u8 *char_data, ub char_len)
 	}
 	buf_index += dave_snprintf(&buf[buf_index], buf_len-buf_index, ">\n");
 
-	TOOLSLOG("%s", buf);
+	fprintf(stdout, "%s\n", buf);
 
-	dave_free(buf);
+	free(buf);
 }
 

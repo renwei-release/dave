@@ -73,7 +73,7 @@ copy_bin_project_file()
    PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/file_system/project/${PROJECT^^}-BIN
 
    if [ -f ${PRJBINFILE} ]; then
-      chmod a+x ${PRJBINFILE}
+      sudo chmod a+x ${PRJBINFILE}
       docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
       docker exec -it ${PROJECTNAME} sh -c "chmod a+x /project/${PROJECT^^}-BIN"
    fi

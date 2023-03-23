@@ -39,7 +39,7 @@ _sync_client_info_show_server(SyncServer *pServer, s8 *info, ub info_len)
 		work_on_second = current_second - pServer->work_start_second;
 	
 	info_index += dave_snprintf(&info[info_index], info_len-info_index,
-		" %x %s s:%04x %d%d%d%d l:%02d/%02d i:%02x T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%d %s\n",
+		" %x %s s:%04x %d%d%d%d l:%02d/%02d i:%02x T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%s %s\n",
 		pServer,
 		sync_client_type_to_str(pServer->server_type), pServer->server_socket,
 		pServer->server_connecting, pServer->server_cnt, pServer->server_booting, pServer->server_ready,
@@ -48,7 +48,7 @@ _sync_client_info_show_server(SyncServer *pServer, s8 *info, ub info_len)
 		sync_work_start_second_str(work_on_second, second_str, sizeof(second_str)),
 		pServer->send_data_counter, pServer->server_send_message_counter,
 		pServer->recv_data_counter, pServer->server_recv_message_counter,
-		pServer->globally_identifier, pServer->verno, pServer->rpc_version,
+		pServer->globally_identifier, pServer->verno, pServer->host_name,
 		pServer->server_type == SyncServerType_child ? ipv4str(pServer->child_ip, pServer->child_port) : ipv4str(pServer->cfg_server_ip, pServer->cfg_server_port));
 
 	return info_index;
@@ -72,7 +72,7 @@ _sync_client_info_find_new_statistics(ServerInfoStatistics *pStatistics_ptr, ub 
 		pServer = sync_client_server(server_index);
 		if((pServer->server_ready == dave_true) && (pServer->verno[0] != '\0'))
 		{
-			dave_verno_product(pServer->verno, product_str, sizeof(product_str));
+			dave_product(pServer->verno, product_str, sizeof(product_str));
 			if((product_str[0] != '\0')
 				&& (dave_strcmp(product_str, "DAVE") == dave_false))
 			{
@@ -117,7 +117,7 @@ _sync_client_info_find_new_number(ServerInfoStatistics *pStatistics)
 		pServer = sync_client_server(server_index);
 		if(pServer->verno[0] != '\0')
 		{
-			dave_verno_product(pServer->verno, product_str, sizeof(product_str));
+			dave_product(pServer->verno, product_str, sizeof(product_str));
 			if(dave_strcmp(product_str, pStatistics->product_str) == dave_true)
 			{
 				pStatistics->product_number ++;
@@ -155,7 +155,7 @@ _sync_client_info_ready_type_show(ServerInfoStatistics *pStatistics, SyncServerT
 			&& (pServer->verno[0] != '\0')
 			&& (pServer->server_type == server_type))
 		{
-			dave_verno_product(pServer->verno, product_str, sizeof(product_str));
+			dave_product(pServer->verno, product_str, sizeof(product_str));
 			if(dave_strcmp(product_str, pStatistics->product_str) == dave_true)
 			{
 				info_index += _sync_client_info_show_server(pServer, &info[info_index], info_len-info_index);

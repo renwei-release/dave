@@ -32,7 +32,7 @@ _sync_client_load_address(
 	*src = thread_name(thread_get_local(pMsg->msg_src));
 	*dst = thread_name(thread_get_local(pMsg->msg_dst));
 
-	if(dave_strcmp(src, (s8 *)"NULL") == dave_true)
+	if(dave_strcmp(*src, "NULL") == dave_true)
 	{
 		SYNCABNOR("the %s->%s:%d's src:%lx is empty!",
 			thread_name(pMsg->msg_src), thread_name(pMsg->msg_dst),
@@ -41,7 +41,7 @@ _sync_client_load_address(
 		return dave_false;
 	}
 
-	if(dave_strcmp(dst, (s8 *)"NULL") == dave_true)
+	if(dave_strcmp(*dst, "NULL") == dave_true)
 	{
 		SYNCABNOR("the msg_id:%d's dst:%d is empty!", pMsg->msg_id, pMsg->msg_dst);
 		return dave_false;
@@ -53,7 +53,7 @@ _sync_client_load_address(
 static inline void
 _sync_client_message_to_server(SyncServer *pServer, MSGBODY *pMsg)
 {
-	s8 *src, *dst;
+	s8 *src = NULL, *dst = NULL;
 	ThreadId route_src, route_dst;
 
 	if(_sync_client_load_address(

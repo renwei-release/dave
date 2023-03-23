@@ -22,6 +22,8 @@ s8 * uip_channel_inq(s8 *channel_name);
 
 s8 * uip_channel_add(s8 *channel_name);
 
+dave_bool uip_channel_del(s8 *channel_name);
+
 dave_bool uip_channel_add_method(s8 *channel_name, s8 *allow_method);
 
 ub uip_channel_info(s8 *info_ptr, ub info_len);

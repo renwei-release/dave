@@ -216,17 +216,17 @@ _thread_get_name_(ThreadId thread_id, s8 *fun, ub line)
 	thread_id = thread_get_local(thread_sync_thread_id(thread_id));
 	if(thread_id == INVALID_THREAD_ID)
 	{
-		return (s8 *)can_not_find;
+		return can_not_find;
 	}
 
 	thread_index = thread_id;
 	if(thread_index >= THREAD_MAX)
 	{
 		THREADDEBUG("thread_id:%d", thread_id);
-		return (s8 *)can_not_find;
+		return can_not_find;
 	}
 
-	return (s8 *)(_thread[thread_index].thread_name);
+	return _thread[thread_index].thread_name;
 }
 
 static inline void
@@ -474,10 +474,10 @@ _thread_write_msg(
 		if(ret == RetCode_not_my_data)
 		{
 			ret = _thread_safe_write_seq_queue(pDstThread, pMsg);
-		}
-		if(ret == RetCode_not_my_data)
-		{
-			ret = _thread_safe_write_msg_queue(pDstThread, pMsg);
+			if(ret == RetCode_not_my_data)
+			{
+				ret = _thread_safe_write_msg_queue(pDstThread, pMsg);
+			}
 		}
 
 		if(ret != RetCode_OK)
@@ -517,13 +517,18 @@ _thread_write_msg(
 static inline ThreadMsg *
 _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 {
-	ThreadMsg *pMsg;
+	ThreadMsg *pMsg = NULL;
 
 	if(pThread == NULL)
 	{
 		THREADLTRACE(60,1, "pThread is NULL!");
 		return NULL;
 	}
+
+#ifndef ENABLE_MSG_INIT
+	if(pThread->has_initialization == dave_false)
+		return pMsg;
+#endif
 
 	pMsg = _thread_safe_read_pre_queue(pThread);
 
@@ -532,17 +537,18 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 		pMsg = thread_thread_read(pTThread);
 	}
 
+#ifdef ENABLE_MSG_INIT
 	if(pThread->has_initialization == dave_false)
 		return pMsg;
+#endif
 
 	if(pMsg == NULL)
 	{
 		pMsg = _thread_safe_read_seq_queue(pThread);
-	}
-
-	if(pMsg == NULL)
-	{
-		pMsg = _thread_safe_read_msg_queue(pThread);
+		if(pMsg == NULL)
+		{
+			pMsg = _thread_safe_read_msg_queue(pThread);
+		}
 	}
 
 	return pMsg;
@@ -897,13 +903,21 @@ _thread_schedule(void)
 }
 
 static void
-_thread_guardian_running_function(base_thread_fun thread_fun, base_thread_fun last_fun, ThreadId run_thread_id, dave_bool initialization_flag)
+_thread_guardian_running_function(ThreadStruct *pThread, base_thread_fun thread_fun, base_thread_fun last_fun, ThreadId run_thread_id, dave_bool initialization_flag)
 {
 	RUNFUNCTIONMSG *pRun = thread_msg(pRun);
 
 	THREADDEBUG("%ld/%s running:%s",
 		run_thread_id, _thread_get_name(run_thread_id),
 		initialization_flag==dave_true?"init":"exit");
+
+#ifndef ENABLE_MSG_INIT
+	if((initialization_flag == dave_true)
+		&& (dave_strcmp(pThread->thread_name, GUARDIAN_THREAD_NAME) == dave_true))
+	{
+		pThread->has_initialization = dave_true;
+	}
+#endif
 
 	pRun->thread_fun = (void *)thread_fun;
 	pRun->last_fun = (void *)last_fun;
@@ -1129,7 +1143,7 @@ _thread_creat(
 
 		if(pThread->thread_init != NULL)
 		{
-			_thread_guardian_running_function(pThread->thread_init, NULL, pThread->thread_id, dave_true);
+			_thread_guardian_running_function(pThread, pThread->thread_init, NULL, pThread->thread_id, dave_true);
 		}
 		else
 		{
@@ -1162,7 +1176,7 @@ _thread_del(ThreadId thread_id)
 
 	if(pThread->thread_exit != NULL)
 	{
-		_thread_guardian_running_function(pThread->thread_exit, _thread_del_last_fun, pThread->thread_id, dave_false);
+		_thread_guardian_running_function(pThread, pThread->thread_exit, _thread_del_last_fun, pThread->thread_id, dave_false);
 	}
 	else
 	{
@@ -1699,7 +1713,7 @@ __base_thread_trace_state__(s8 *fun, ub line)
 }
 
 RetCode
-base_thread_msg_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr)
+__base_thread_msg_register__(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr, s8 *fun, ub line)
 {
 	if(thread_id == INVALID_THREAD_ID)
 	{
@@ -1712,6 +1726,10 @@ base_thread_msg_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun,
 	}
 	else
 	{
+		THREADLOG("thread:%lx/%s register msg:%s failed! <%s:%d>",
+			thread_id, thread_name(thread_id), msgstr(msg_id),
+			fun, line);
+
 		return RetCode_invalid_option;
 	}
 }

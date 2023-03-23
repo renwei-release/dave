@@ -61,7 +61,7 @@ _thread_msg_call_add(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, voi
 	pFun = _thread_msg_call_inq(thread_id, msg_id);
 	if(pFun == NULL)
 	{
-		pFun = dave_malloc(sizeof(MsgCallFun));
+		pFun = dave_ralloc(sizeof(MsgCallFun));
 	}
 	else
 	{
@@ -134,7 +134,7 @@ thread_msg_call_register(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun,
 
 	if((thread_id == INVALID_THREAD_ID) || (msg_fun == NULL))
 	{
-		THREADABNOR("invalid param:%d,%x", thread_id, msg_fun);
+		THREADABNOR("invalid param:%d,%x msg_id:%s", thread_id, msg_fun, msgstr(msg_id));
 		return dave_false;
 	}
 

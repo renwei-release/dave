@@ -154,7 +154,7 @@ _dos_sync_info_rsp(MSGBODY *ptr)
 static RetCode
 _dos_sync_info_req(s8 *cmd_ptr, ub cmd_len)
 {
-	dave_bool is_sync_server = dave_strcmp(dave_verno_product(NULL, NULL, 0), "SYNC");
+	dave_bool is_sync_server = dave_strcmp(dave_verno_my_product(), "SYNC");
 	s8 *sync_server = SYNC_SERVER_THREAD_NAME;
 	DebugReq *pReq;
 
@@ -177,7 +177,7 @@ _dos_sync_info_req(s8 *cmd_ptr, ub cmd_len)
 void
 dos_sync_reset(void)
 {
-	dave_bool is_sync_server = dave_strcmp(dave_verno_product(NULL, NULL, 0), "SYNC");
+	dave_bool is_sync_server = dave_strcmp(dave_verno_my_product(), "SYNC");
 
 	if(is_sync_server == dave_true)
 	{

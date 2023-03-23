@@ -41,7 +41,18 @@ def _kv_free(kv):
     return
 
 
-_default_kv = _kv_malloc("pydefault", 360)
+_default_kv = None
+
+
+def _kv_init(kv):
+    global _default_kv
+
+    if kv != None:
+        return kv
+
+    if _default_kv == None:
+        _default_kv = _kv_malloc("pydefault", 360)
+    return _default_kv
 
 
 # =====================================================================
@@ -56,7 +67,9 @@ def kv_free(kv):
     return
 
 
-def kv_add(key, value, kv=_default_kv):
+def kv_add(key, value, kv=None):
+    kv = _kv_init(kv)
+
     if isinstance(key, str) == True:
         key = bytes(key, encoding='utf8')
     if isinstance(value, str) == True:
@@ -68,7 +81,9 @@ def kv_add(key, value, kv=_default_kv):
     return False
 
 
-def kv_inq(key, kv=_default_kv):
+def kv_inq(key, kv=None):
+    kv = _kv_init(kv)
+
     if isinstance(key, str) == True:
         key = bytes(key, encoding='utf8')
 
@@ -81,7 +96,9 @@ def kv_inq(key, kv=_default_kv):
     return value[:ret]
 
 
-def kv_del(key, kv=_default_kv):
+def kv_del(key, kv=None):
+    kv = _kv_init(kv)
+
     if isinstance(key, str) == True:
         key = bytes(key, encoding='utf8')
 
@@ -90,17 +107,17 @@ def kv_del(key, kv=_default_kv):
     return
 
 
-def kv_add_dict(key, dict, kv=_default_kv):
+def kv_add_dict(key, dict, kv=None):
     value = json.dumps(dict, ensure_ascii=False)
     return kv_add(key, value, kv)
 
 
-def kv_inq_dict(key, kv=_default_kv):
+def kv_inq_dict(key, kv=None):
     value = kv_inq(key, kv)
     if value == None:
         return None
     return json.loads(value)
 
 
-def kv_del_dict(key, kv=_default_kv):
+def kv_del_dict(key, kv=None):
     return kv_del(key, kv)

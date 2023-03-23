@@ -21,14 +21,14 @@ else
 fi
 
 if [ -f ${RUNNINGPATH}/${RUNNINGFILE} ]; then
-   chmod a+x ${RUNNINGPATH}/${RUNNINGFILE}
+   sudo chmod a+x ${RUNNINGPATH}/${RUNNINGFILE}
 fi
 
 if [ "$exit_dave_image" == "" ]; then
    if [ -f ${DOCKERFILE} ]; then
       echo ${File} build ${IMAGE} on ${IMAGE}:${TAG}
 	   mkdir -p ${RUNNINGPATH}
-      chmod a+x ${RUNNINGFILE}
+      sudo chmod a+x ${RUNNINGFILE}
       cp ${RUNNINGFILE} ${RUNNINGPATH}
       docker build --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
    else
