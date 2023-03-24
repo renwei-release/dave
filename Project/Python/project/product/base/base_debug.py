@@ -20,7 +20,7 @@ def _store_debug():
 
     STORESQL(f"CREATE DATABASE {database} charset=utf8;")
 
-    STORESQL(f"CREATE TABLE {database}.test (id int primary key auto_increment, device_id int not null, name char(128), password char(64), email char(128), updatetime timestamp default current_timestamp, constraint uniq_client unique(name));")
+    STORESQL(f"CREATE TABLE {database}.test (id int primary key auto_increment, device_id int not null, name char(128), password char(64), email char(128), updatetime timestamp default current_timestamp, constraint unique(name));")
     return ""
 
 

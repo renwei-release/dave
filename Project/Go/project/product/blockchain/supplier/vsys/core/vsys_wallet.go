@@ -9,12 +9,13 @@ package vsys_core
 
 import (
 	"dave/public/base"
+	"dave/product/blockchain/supplier/vsys/store"
 	"github.com/virtualeconomy/go-vsys/vsys"
 )
 
 // =====================================================================
 
-func Vsys_new_wallet() (string, string) {
+func Vsys_new_wallet(user_name string) (string, string) {
 	wallet, _ := vsys.GenWallet()
 	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 
@@ -24,7 +25,14 @@ func Vsys_new_wallet() (string, string) {
 		account.Addr.B58Str().Str(),
 		wallet.Seed.Str.Str())
 
-	return account.Addr.B58Str().Str(), wallet.Seed.Str.Str()
+	address := account.Addr.B58Str().Str()
+	seed := wallet.Seed.Str.Str()
+
+	if len(user_name) > 0 {
+		vsys_store.Vsys_store_user_add(user_name, address, seed, "")
+	}
+
+	return address, seed 
 }
 
 func Vsys_new_account() *vsys.Account {

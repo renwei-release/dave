@@ -10,6 +10,7 @@ package option
 import (
 	"dave/public/auto"
 	"dave/public/base"
+	"dave/components/bdata"
 
 	"dave/product/blockchain/supplier/eth/core"
 	"dave/product/blockchain/supplier/vsys/core"
@@ -40,7 +41,7 @@ func _creat_wallet(param interface{}) (interface{}, int64) {
 	eth_passphrase := "123456"
 
 	eth_address, eth_keystore := eth_core.Eth_new_wallet(eth_passphrase)
-	vsys_address, vsys_seed := vsys_core.Vsys_new_wallet()
+	vsys_address, vsys_seed := vsys_core.Vsys_new_wallet(req.User_name)
 
 	rsp := CreatWalletRsp {
 		User_name: req.User_name,
@@ -50,6 +51,8 @@ func _creat_wallet(param interface{}) (interface{}, int64) {
 		Vsys_address: vsys_address,
 		Vsys_seed: vsys_seed,
     }
+
+	bdata.BDATALOG("wallet", "%v", rsp)
 
 	return rsp, auto.RetCode_OK
 }

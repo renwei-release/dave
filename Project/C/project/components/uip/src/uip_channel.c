@@ -22,7 +22,7 @@
 	"allow_method TEXT,"\
 	"valid varchar(512),"\
 	"updatetime timestamp default current_timestamp,"\
-	"constraint uniq_channel unique(channel_name));"
+	"constraint unique(channel_name));"
 
 typedef struct {
 	s8 channel_name[DAVE_NORMAL_NAME_LEN];

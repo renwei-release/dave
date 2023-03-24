@@ -55,6 +55,19 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 #define t_lock t_lock_spin(NULL)
 #define t_unlock t_unlock_spin(NULL)
 
+#define ENABLE_SAFE_PRE_FLAG 0xaaff45290fdc
+
+#define SAFEPre(flag, safe_zone){\
+	if(flag != ENABLE_SAFE_PRE_FLAG) {\
+		t_lock;\
+		if(flag != ENABLE_SAFE_PRE_FLAG) {\
+			{ safe_zone; }\
+			flag = ENABLE_SAFE_PRE_FLAG;\
+		}\
+		t_unlock;\
+	}\
+}
+
 #define SAFECODEv2R(pv, safe_zone){\
 	t_rlock_rw(&pv);\
 	{ safe_zone; }\
@@ -93,13 +106,6 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 		t_unlock_mutex(&pv);\
 	}\
 }
-
-#define SAFECODEopenv1(pv, safe_zone){\
-	t_lock_mutex(&pv);\
-	{ safe_zone; }\
-}
-
-#define SAFECODEclosev1(pv, safe_zone) { { safe_zone; }  t_unlock_mutex(&pv); }
 
 #endif
 

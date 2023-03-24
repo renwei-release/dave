@@ -46,7 +46,6 @@ typedef struct {
 	ub time_out_counter;
 } TIMER;
 
-static volatile sb _timer_init_ = 0;
 static TLock _timer_pv;
 static ub _cur_hardware_alarm_ms = 0;
 static ub _new_hardware_alarm_ms = 0;
@@ -844,41 +843,39 @@ _timer_owner(void)
 }
 
 static inline void
-_timer_pre(void)
+_timer_pre_(void)
 {
 	TIMERID timer_id, reg_index;
 
-	if(_timer_init_ != 0x89807abcd)
+	t_lock_reset(&_timer_pv);
+	_cur_hardware_alarm_ms = 0;
+	_new_hardware_alarm_ms = 0;
+	_cur_creat_timer_id = 0;
+	for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
 	{
-		t_lock;
-		if(_timer_init_ != 0x89807abcd)
-		{
-			t_lock_reset(&_timer_pv);
-			_cur_hardware_alarm_ms = 0;
-			_new_hardware_alarm_ms = 0;
-			_cur_creat_timer_id = 0;
-			for(timer_id=0; timer_id<BASE_TIMER_MAX; timer_id++)
-			{
-				_timer[timer_id].timer_id = timer_id;
-				_timer[timer_id].timer_name_len = 0;
-				_timer[timer_id].timer_name_ptr = NULL;
-				_timer[timer_id].param_len = 0;
-				_timer[timer_id].param_ptr = NULL;
-
-				t_lock_reset(&(_timer[timer_id].opt_pv));
-				t_lock_reset(&(_timer[timer_id].run_pv));
-
-				_timer_reset(&_timer[timer_id]);
-			}
-			for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
-			{
-				_timer_id_reg[reg_index] = INVALID_TIMER_ID;
-			}
-
-			_timer_init_ = 0x89807abcd;
-		}
-		t_unlock;
+		_timer[timer_id].timer_id = timer_id;
+		_timer[timer_id].timer_name_len = 0;
+		_timer[timer_id].timer_name_ptr = NULL;
+		_timer[timer_id].param_len = 0;
+		_timer[timer_id].param_ptr = NULL;
+	
+		t_lock_reset(&(_timer[timer_id].opt_pv));
+		t_lock_reset(&(_timer[timer_id].run_pv));
+	
+		_timer_reset(&_timer[timer_id]);
 	}
+	for(reg_index=0; reg_index<BASE_TIMER_MAX; reg_index++)
+	{
+		_timer_id_reg[reg_index] = INVALID_TIMER_ID;
+	}
+}
+
+static inline void
+_timer_pre(void)
+{
+	static volatile sb _timer_init_ = 0;
+
+	SAFEPre(_timer_init_, { _timer_pre_(); });
 }
 
 static inline void

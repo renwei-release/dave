@@ -524,7 +524,7 @@ _thread_coroutine_init(void)
 {
 	if(_coroutine_init_flag != 0x1234567890)
 	{
-		thread_other_lock();
+		t_lock;
 		if(_coroutine_init_flag != 0x1234567890)
 		{
 			if(_coroutine_kv == NULL)
@@ -534,7 +534,7 @@ _thread_coroutine_init(void)
 
 			_coroutine_init_flag = 0x1234567890;
 		}
-		thread_other_unlock();
+		t_unlock;
 	}
 }
 

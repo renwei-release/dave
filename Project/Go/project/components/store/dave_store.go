@@ -36,7 +36,12 @@ func STORESQL(format string, sql ...interface{}) (*tools.Json, error) {
 	if (pRsp.Ret != auto.RetCode_OK) && 
 		(pRsp.Ret != auto.RetCode_empty_data) &&
 		(pRsp.Ret != auto.RetCode_table_exist) {
+
 		base.DAVELOG("ret:%s on sql:%s", auto.T_auto_RetCode_str(pRsp.Ret), sql_string)
+
+		base.Dave_mfree(pRsp.Data)
+
+		return nil, errors.New("sql failed")
 	}
 
 	json_obj, _ := base.T_mbuf2json(pRsp.Data)
@@ -51,6 +56,10 @@ func STORELOAD(json_obj *tools.Json, row int, column int) *tools.Json {
 }
 
 func STORELOADStr(json_obj *tools.Json, column int) string {
+	if json_obj == nil {
+		return ""
+	}
+
 	str_str, err := STORELOAD(json_obj, 0, column).String()
 	if err != nil {
 		base.DAVELOG("err:%v", err)
@@ -60,6 +69,10 @@ func STORELOADStr(json_obj *tools.Json, column int) string {
 }
 
 func STORELOADSb(json_obj *tools.Json, column int) int {
+	if json_obj == nil {
+		return 0
+	}
+
 	int_str, err := STORELOAD(json_obj, 0, column).String()
 	if err != nil {
 		base.DAVELOG("err:%v", err)

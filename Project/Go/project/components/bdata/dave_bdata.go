@@ -10,7 +10,6 @@ package bdata
 import (
 	"dave/public/base"
 	"dave/public/auto"
-	"dave/public/tools"
 	"fmt"
 	"unsafe"
 )
@@ -24,8 +23,11 @@ func BDATALOG(sub string, format string, log ...interface{}) {
  
 	log_string := fmt.Sprintf(format, log...)
  
-	req.log_data = base.T_gostring2mbuf(log_string)
-	req.ptr = nil
+	copy(req.Version[:], base.Dave_verno())
+	copy(req.Sub_flag[:], sub)
+
+	req.Log_data = base.T_gostring2mbuf(log_string)
+	req.Ptr = 0
  
-	base.Name_msg(BDATA_THREAD_NAME, auto.BDATA_LOG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req))
+	base.Write_msg(BDATA_THREAD_NAME, auto.BDATA_LOG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req))
 }

@@ -73,3 +73,12 @@ func T_mbuf2json(mbuf_data *auto.MBUF) (*tools.Json, error) {
 
 	return tools.NewJson(go_byte)
 }
+
+func T_gojson2string(json_data interface{}) string {
+	json_string, err := json.Marshal(json_data)
+	if err != nil {
+		DAVELOG("err:%v", err)
+		return ""
+	}
+	return string(json_string)
+}

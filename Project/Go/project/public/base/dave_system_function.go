@@ -53,6 +53,7 @@ var (
         auto.MSGID_LOCAL_THREAD_REMOVE:        fun_None,
         auto.MSGID_CFG_UPDATE:                 fun_None,
         auto.MSGID_CFG_REMOTE_UPDATE:          fun_None,
+        auto.BDATA_LOG_RSP:                    fun_None,
     }
     rwMutex  = sync.RWMutex{}
 )

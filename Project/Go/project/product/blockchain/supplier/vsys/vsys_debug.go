@@ -17,7 +17,7 @@ import (
 )
 
 func _vsys_deploy_nft() string {
-	ret, address := vsys_nft.Vsys_deploy_nft("/ipfs/QmQPXY1Y5zcsku9K57zysk2xJW7THxaV8rXcaiYdMonK1g", "renwei's token")
+	ret, address := vsys_nft.Vsys_deploy_nft("renwei", "/ipfs/QmQPXY1Y5zcsku9K57zysk2xJW7THxaV8rXcaiYdMonK1g", "renwei's token")
 	if ret == true {
 		return "the NFT tokenid is:"+address
 	} else {
@@ -26,13 +26,13 @@ func _vsys_deploy_nft() string {
 }
 
 func _vsys_new_wallet() string {
-	address, seed := vsys_core.Vsys_new_wallet()
+	address, seed := vsys_core.Vsys_new_wallet("renwei")
 
 	return "address:"+address+" seed:"+seed
 }
 
 func _vsys_add_voucher() string {
-	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), "bbbb", tools.T_rand())
+	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), tools.T_rand(), tools.T_rand())
 	if err != nil {
 		base.DAVELOG("err:%v", err)
 		return "failed"
