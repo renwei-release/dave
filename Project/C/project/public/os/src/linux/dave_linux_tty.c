@@ -53,7 +53,6 @@ static TLock _write_pv;
 static TTYWriteChain *_write_chain_head = NULL;
 static TTYWriteChain *_write_chain_tail = NULL;
 static dave_bool _is_on_backend_printf_disable = dave_false;
-static volatile sb _tty_init_ = 0;
 
 static void
 _tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
@@ -236,38 +235,31 @@ _tty_write_thread(void *arg)
 static inline void
 _tty_pre_init(void)
 {
+	static volatile sb __safe_pre_flag__ = 0;
 	dave_bool thread_init = dave_false;
 
-	if(_tty_init_ != 0x89807abcd)
+	SAFEPre(__safe_pre_flag__, {
+		_notify_fun = NULL;
+		_keypad_write = _keypad_read = 0;
+		t_lock_reset(&_write_pv);
+		_write_chain_head = _write_chain_tail = NULL;
+		_is_on_backend_printf_disable = dave_false;
+		thread_init = dave_true;
+	} );
+
+
+	if(thread_init == dave_true)
 	{
-		t_lock;
-
-		if(_tty_init_ != 0x89807abcd)
+		_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
+		if(_tty_read_thread_body == NULL)
 		{
-			_notify_fun = NULL;
-			_keypad_write = _keypad_read = 0;
-			t_lock_reset(&_write_pv);
-			_write_chain_head = _write_chain_tail = NULL;
-			_is_on_backend_printf_disable = dave_false;
-			thread_init = dave_true;
-			_tty_init_ = 0x89807abcd;
+			OSABNOR("i can not start tty read thread!");
 		}
-
-		t_unlock;
-
-		if(thread_init == dave_true)
-		{
-			_tty_read_thread_body = dave_os_create_thread("tty-read", _tty_read_thread, NULL);
-			if(_tty_read_thread_body == NULL)
-			{
-				OSABNOR("i can not start tty read thread!");
-			}
 	
-			_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
-			if(_tty_write_thread_body == NULL)
-			{
-				OSABNOR("i can not start tty write thread!");
-			}
+		_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
+		if(_tty_write_thread_body == NULL)
+		{
+			OSABNOR("i can not start tty write thread!");
 		}
 	}
 }

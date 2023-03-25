@@ -236,6 +236,7 @@ type DateStruct struct {
 	Hour byte
 	Minute byte
 	Second byte
+	Week byte
 	Zone byte
 }
 

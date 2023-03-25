@@ -32,7 +32,7 @@ func _vsys_new_wallet() string {
 }
 
 func _vsys_add_voucher() string {
-	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), tools.T_rand(), tools.T_rand())
+	err := vsys_store.Vsys_store_voucher_add(tools.T_rand(), tools.T_rand(), tools.T_rand(), tools.T_rand())
 	if err != nil {
 		base.DAVELOG("err:%v", err)
 		return "failed"

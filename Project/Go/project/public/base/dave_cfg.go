@@ -14,6 +14,8 @@ package base
 */
 import "C"
 import (
+	"fmt"
+	"strconv"
 	"unsafe"
 )
 
@@ -60,6 +62,26 @@ func Cfg_get(cfg_name string, default_value string) string {
 	C.free(unsafe.Pointer(c_cfg_value))
 
 	return go_string
+}
+
+func Cfg_set_ub(cfg_name string, cfg_value int64) bool {
+	str_value := strconv.FormatInt(cfg_value, 10)
+
+	return Cfg_set(cfg_name, str_value)
+}
+
+func Cfg_get_ub(cfg_name string, default_value int64) int64 {
+	default_str_value := strconv.FormatInt(default_value, 10)
+
+	str_value := Cfg_get(cfg_name, default_str_value)
+
+	int64_value, err := strconv.ParseInt(str_value, 10, 64)
+	if err != nil {
+		fmt.Printf("default_str_value:%v default_value:%v str_value:%v err:%v\n",
+			default_str_value, default_value, str_value, err)
+		return 0
+	}
+	return int64_value
 }
 
 func Rcfg_set(cfg_name string, cfg_value string, ttl int) bool {

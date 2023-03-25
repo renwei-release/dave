@@ -87,31 +87,64 @@ type VoucherStruct struct {
 	Vsys_tokenID string `json:"vsys_tokenid"`
 	Image_url string `json:"image_url"`
 	Ipfs_url string `json:"ipfs_url"`
+	Voucher_nft_id string `json:"voucher_nft_id"`
 	Voucher_type string `json:"voucher_type"`
 	Voucher_url string `json:"voucher_url"`
 	Voucher_expiry string `json:"voucher_expiry"`
 	Voucher_status string `json:"voucher_status"`
 }
 
-func _store_voucher_struct_to_string(user_name string, tokenid string, image_url string, ipfs_url string, voucher_obj *tools.Json) interface{} {
+func _store_voucher_struct_to_string(user_name string, voucher_obj *tools.Json) (interface{}, bool) {
 
-	voucher_type := store.STORELOADStr(voucher_obj, 1)
-	voucher_url := store.STORELOADStr(voucher_obj, 2)
-	voucher_expiry := store.STORELOADStr(voucher_obj, 3)
-	voucher_status := store.STORELOADStr(voucher_obj, 4)
+	has_voucher := true
+	if store.STORELOADStr(voucher_obj, 0) == "" {
+		has_voucher = false
+	}
+	voucher_nft_id := store.STORELOADStr(voucher_obj, 1)
+	voucher_type := store.STORELOADStr(voucher_obj, 2)
+	voucher_url := store.STORELOADStr(voucher_obj, 3)
+	voucher_expiry := store.STORELOADStr(voucher_obj, 4)
+	voucher_status := store.STORELOADStr(voucher_obj, 5)
+
+	var tokenid = ""
+	var image_url = ""
+	var ipfs_url = ""
+
+	_, _, tokenid = Vsys_store_user_inq(user_name)
+	if tokenid != "" {
+		_, image_url, ipfs_url = Vsys_store_nft_inq(tokenid)
+		base.DAVELOG("user:%v token:%v image_url:%v ipfs_url:%v",
+			user_name, tokenid, image_url, ipfs_url)
+	}
 
 	voucher := VoucherStruct { 
 		User_name: user_name,
 		Vsys_tokenID: tokenid,
 		Image_url: image_url,
 		Ipfs_url: ipfs_url,
+		Voucher_nft_id: voucher_nft_id,
 		Voucher_type: voucher_type,
 		Voucher_url: voucher_url,
         Voucher_expiry: voucher_expiry, 
         Voucher_status: voucher_status,
     }
 
-	return voucher
+	return voucher, has_voucher
+}
+
+func _store_voucher_assign(user_name string, assign_number int) error {
+	_, err := store.STORESQL(
+		"UPDATE %s.%s SET user_name = \"%s\", voucher_status = \"used\", updatetime=now() WHERE voucher_status = \"unused\" LIMIT %d;",
+		DB_NAME, VOUCHER_NAME,
+		user_name,
+		assign_number)
+
+	if err != nil {
+		base.DAVELOG("err:%v", err)
+		return err
+	}
+
+	return nil
 }
 
 // =====================================================================
@@ -215,7 +248,7 @@ func Vsys_store_voucher_total(page_id int64, page_number int64) (int, string, er
 	total_number := _store_voucher_total_number()
 
 	json_obj, err := store.STORESQL(
-		"SELECT user_name, voucher_type, voucher_url, voucher_expiry, voucher_status FROM %s.%s WHERE voucher_status = \"unused\" LIMIT %d, %d;",
+		"SELECT user_name, voucher_nft_id, voucher_type, voucher_url, voucher_expiry, voucher_status FROM %s.%s WHERE voucher_status = \"unused\" LIMIT %d, %d;",
 		DB_NAME, VOUCHER_NAME,
 		page_id * page_number, page_number)
 	if err != nil {
@@ -228,50 +261,44 @@ func Vsys_store_voucher_total(page_id int64, page_number int64) (int, string, er
 	return total_number, string(json_string), err
 }
 
-func Vsys_store_voucher_user(user_name string) (interface{}, error) {
+func Vsys_store_voucher_user(user_name string) (interface{}, bool) {
 	json_obj, err := store.STORESQL(
-		"SELECT user_name, voucher_type, voucher_url, voucher_expiry, voucher_status FROM %s.%s WHERE user_name = \"%s\";",
+		"SELECT user_name, voucher_nft_id, voucher_type, voucher_url, voucher_expiry, voucher_status FROM %s.%s WHERE user_name = \"%s\";",
 		DB_NAME, VOUCHER_NAME,
 		user_name)
 	if err != nil {
 		base.DAVELOG("err:%v", err)
-		return "", err
+		return "", false
 	}
 
-	var tokenid = ""
-	var image_url = ""
-	var ipfs_url = ""
-
-	_, _, tokenid = Vsys_store_user_inq(user_name)
-	if tokenid != "" {
-		_, image_url, ipfs_url = Vsys_store_nft_inq(tokenid)
-		base.DAVELOG("user:%v token:%v image_url:%v ipfs_url:%v", user_name, tokenid, image_url, ipfs_url)
-	}
-
-	return _store_voucher_struct_to_string(user_name, tokenid, image_url, ipfs_url, json_obj), nil
+	return _store_voucher_struct_to_string(user_name, json_obj)
 }
 
 func Vsys_store_voucher_assign(user_name string, assign_number int) (interface{}, error) {
-	_, err := store.STORESQL(
-		"UPDATE %s.%s SET user_name = \"%s\", voucher_status = \"used\", updatetime=now() WHERE voucher_status = \"unused\" LIMIT %d;",
-		DB_NAME, VOUCHER_NAME,
-		user_name,
-		assign_number)
+	voucher_obj, has_voucher := Vsys_store_voucher_user(user_name)
+	if has_voucher == true {
+		base.DAVELOG("the user:%s has voucher_obj:%v", user_name, voucher_obj)
+		return voucher_obj, nil
+	}
+
+	err := _store_voucher_assign(user_name, assign_number)
 	if err != nil {
-		base.DAVELOG("err:%v", err)
 		return "", err
 	}
 
-	return Vsys_store_voucher_user(user_name)
+	voucher, _ := Vsys_store_voucher_user(user_name)
+
+	return voucher, nil
 }
 
-func Vsys_store_voucher_add(voucher_type string, voucher_url string, voucher_expiry string) error {
+func Vsys_store_voucher_add(voucher_nft_id string, voucher_type string, voucher_url string, voucher_expiry string) error {
 	_, err := store.STORESQL(
 		"INSERT INTO %s.%s" +
-		" (voucher_type, voucher_url, voucher_expiry, voucher_status)" +
-		" VALUES (\"%s\", \"%s\", \"%s\", \"unused\");",
+		" (voucher_nft_id, voucher_type, voucher_url, voucher_expiry, voucher_status)" +
+		" VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"unused\");",
 		DB_NAME, VOUCHER_NAME,
-		voucher_type, voucher_url, voucher_expiry)
+		voucher_nft_id, voucher_type, voucher_url, voucher_expiry)
+
 	if err != nil {
 		base.DAVELOG("err:%v", err)
 		return err

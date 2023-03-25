@@ -40,9 +40,8 @@ func _vsys_total_voucher_inq() (interface{}, int64) {
 }
 
 func _vsys_user_voucher_inq(user_name string) (interface{}, int64) {
-	json_obj, err := vsys_store.Vsys_store_voucher_user(user_name)
-	if err != nil {
-		base.DAVELOG("err:%v", err)
+	json_obj, _ := vsys_store.Vsys_store_voucher_user(user_name)
+	if json_obj == nil {
 		return "", auto.RetCode_empty_data
 	}
 	return json_obj, auto.RetCode_OK

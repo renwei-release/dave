@@ -29,7 +29,8 @@ v = define_VERSION()
 def _reset_product():
    global v
    if v.VERSION_PRODUCT == default_PRODUCT:
-      v.VERSION_PRODUCT = f'{sys.argv[1]}'
+      if len(sys.argv) >= 2:
+         v.VERSION_PRODUCT = f'{sys.argv[1]}'
 
    v.VERSION_PRODUCT = v.VERSION_PRODUCT.upper()
 

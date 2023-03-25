@@ -21,7 +21,7 @@ type AddBinReq struct {
 }
 
 type AddBinRsp struct {
-	URL string `json:"url"`
+	IPFS_URL string `json:"ipfs_url"`
 	Bin_name string `json:"bin_name"`
 }
 
@@ -32,7 +32,7 @@ func _ipfs_add_bin(bin_data []byte, bin_name string) (string, string) {
 
 	cid := ipfs.IPFS_add_bin(bin_data, bin_name)
 
-	return "/ipfs/"+cid, bin_name
+	return "https://ipfs.io/ipfs/"+cid, bin_name
 }
 
 func _add_bin(param interface{}) (interface{}, int64) {
@@ -48,15 +48,17 @@ func _add_bin(param interface{}) (interface{}, int64) {
 		return "", auto.RetCode_decode_failed
 	}
 
-	url, bin_name := _ipfs_add_bin(bin_data, req.Bin_name)
-	if len(url) == 0 {
+	ipfs_url, bin_name := _ipfs_add_bin(bin_data, req.Bin_name)
+	if len(ipfs_url) == 0 {
 		return "", auto.RetCode_store_data_failed
 	}
 
 	rsp := AddBinRsp { 
-        URL: url,
+        IPFS_URL: ipfs_url,
 		Bin_name: bin_name,
     }
+
+	base.DAVELOG("ipfs_url:%v", ipfs_url)
 
 	return rsp, auto.RetCode_OK
 }

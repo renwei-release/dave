@@ -55,6 +55,10 @@ func Vsys_my_wallet() string {
 
 func Vsys_my_account() *vsys.Account {
 	wallet, _ := vsys.NewWalletFromSeedStr(Vsys_SEED())
+	if wallet == nil {
+		base.DAVELOG("maybe invalid seed:%v", Vsys_SEED())
+		return nil
+	}
 	account, _ := wallet.GetAccount(Vsys_Chain(), 0)
 	return account
 }
