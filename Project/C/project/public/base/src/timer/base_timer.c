@@ -873,9 +873,9 @@ _timer_pre_(void)
 static inline void
 _timer_pre(void)
 {
-	static volatile sb _timer_init_ = 0;
+	static volatile sb __safe_pre_flag__ = 0;
 
-	SAFEPre(_timer_init_, { _timer_pre_(); });
+	SAFEPre(__safe_pre_flag__, { _timer_pre_(); });
 }
 
 static inline void

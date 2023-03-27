@@ -113,7 +113,13 @@ _thread_guardian_restart(RESTARTREQMSG *pReq)
 {
 	if(pReq->times == 4)
 	{
-		_thread_guardian_exit(NULL);
+		thread_statistics_exit();
+		thread_orchestration_exit();
+		thread_sync_exit();
+		thread_busy_idle_exit();
+		thread_gid_table_exit();
+		thread_remote_id_table_exit();
+		thread_msg_buffer_exit();
 	}
 }
 
@@ -233,13 +239,7 @@ _thread_guardian_init(MSGBODY *msg)
 static void
 _thread_guardian_exit(MSGBODY *msg)
 {
-	thread_statistics_exit();
-	thread_orchestration_exit();
-	thread_sync_exit();
-	thread_busy_idle_exit();
-	thread_gid_table_exit();
-	thread_remote_id_table_exit();
-	thread_msg_buffer_exit();
+
 }
 
 // =====================================================================

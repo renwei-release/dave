@@ -166,8 +166,11 @@ void
 orchestration_config_exit(void)
 {
 	unreg_msg(MSGID_CFG_REMOTE_UPDATE);
-	kv_free(_or_kv, _or_cfg_del);
-	_or_kv = NULL;
+	if(_or_kv != NULL)
+	{
+		kv_free(_or_kv, _or_cfg_del);
+		_or_kv = NULL;
+	}
 }
 
 ORUIDConfig *

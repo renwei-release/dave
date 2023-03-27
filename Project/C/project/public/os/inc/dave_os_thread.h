@@ -28,8 +28,6 @@ dave_bool dave_os_thread_wakeup(void *thread_id);
 
 dave_bool dave_os_thread_canceled(void *thread_id);
 
-void dave_os_thread_exit(void *thread_id);
-
 void dave_os_pv_lock(void);
 
 void dave_os_pv_unlock(void);

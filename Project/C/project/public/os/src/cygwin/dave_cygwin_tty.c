@@ -74,10 +74,6 @@ _read_key_thread(void *arg)
 		}
 	}
 
-	dave_os_thread_exit(_linux_tty_thread);
-
-	_linux_tty_thread = NULL;
-
 	return NULL;
 }
 

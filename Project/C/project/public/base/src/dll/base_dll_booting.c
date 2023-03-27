@@ -274,11 +274,7 @@ _dave_dll_init(
 static void
 _dave_dll_exit(void)
 {
-	dave_os_thread_exit(_dave_main_thread_id);
-
 	dave_os_release_thread(_dave_main_thread_id);
-
-	dave_os_thread_exit(_dave_inner_loop_id);
 
 	dave_os_release_thread(_dave_inner_loop_id);
 

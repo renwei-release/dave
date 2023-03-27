@@ -69,12 +69,6 @@ _linux_main_thread(void *arg)
 
 	base_exit();
 
-	dave_os_release_thread(_dave_main_thread_id);
-
-	dave_os_thread_exit(_dave_main_thread_id);
-
-	printf("========== KILL ME:%d ==========\n", getpid());
-
 	kill(getpid(), QUIT_SIG);
 
 	return NULL;
@@ -128,6 +122,10 @@ _linux_main_function(void)
 	else
 	{
 		_linux_handle_signal();
+
+		dave_os_release_thread(_dave_main_thread_id);
+
+		dave_os_sleep(500);
 	}
 
 	dave_os_exit_thread();

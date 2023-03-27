@@ -1334,11 +1334,14 @@ _thread_exit(void)
 
 		if(pThread->thread_exit != NULL)
 		{
+			dave_memset(&msg, 0x00, sizeof(msg));
+
 			msg.msg_src = pThread->thread_id;
 			msg.msg_dst = pThread->thread_id;
 			msg.msg_id = MSGID_POWER_OFF;
 			msg.msg_len = 0;
 			msg.msg_body = NULL;
+			msg.magic_data = MSG_BODY_MAGIC_DATA;
 
 			thread_running(
 				&_current_msg_stack,

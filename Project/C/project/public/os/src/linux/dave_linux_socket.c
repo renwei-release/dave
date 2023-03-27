@@ -554,10 +554,6 @@ _os_linux_epoll_event_thread(void *arg)
 		}
 	}
 
-	dave_os_thread_exit(_linux_socket_epoll_thread);
-
-	_linux_socket_epoll_thread = NULL;
-
 	return NULL;
 }
 
@@ -597,8 +593,6 @@ dave_os_socket_exit(void)
 	{
 		dave_os_release_thread(_linux_socket_epoll_thread);
 	}
-
-	pthread_mutex_destroy(&m_epoll_mutex);
 
 	return dave_true;
 }

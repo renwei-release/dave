@@ -16,22 +16,14 @@
 
 #define JSON_CFG_FILE_LENGTH_MAX (16 * 1024 * 1024)
 
-static volatile sb _json_config_init_ = 0;
 static TLock _json_config_option_pv;
 
 static inline void
 _base_json_cfg_booting(void)
 {
-	if(_json_config_init_ != 0x89807abcd)
-	{
-		t_lock;
-		if(_json_config_init_ != 0x89807abcd)
-		{
-			t_lock_reset(&_json_config_option_pv);
-			_json_config_init_ = 0x89807abcd;
-		}
-		t_unlock;
-	}
+	static volatile sb __safe_pre_flag__ = 0;
+
+	SAFEPre(__safe_pre_flag__, { t_lock_reset(&_json_config_option_pv); });
 }
 
 static inline FileOptFlag

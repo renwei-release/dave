@@ -34,6 +34,7 @@
 #include "os_log.h"
 
 #define KEY_INPUT_MAX (2048)
+#define KEY_WAIT_TIME (4)
 
 typedef struct {
 	TraceLevel level;
@@ -193,7 +194,7 @@ _tty_read_thread(void *arg)
 
 	struct termios attr;
     tcgetattr(STDIN_FILENO, &attr);
-    attr.c_cc[VTIME] = 40;
+    attr.c_cc[VTIME] = 10 * KEY_WAIT_TIME;
     attr.c_cc[VMIN] = 0;
     attr.c_lflag &= ~ICANON;
     tcsetattr(STDIN_FILENO, TCSANOW, &attr);
@@ -205,10 +206,6 @@ _tty_read_thread(void *arg)
 
 		_tty_write_data();
 	}
-
-	dave_os_thread_exit(_tty_read_thread_body);
-
-	_tty_read_thread_body = NULL;
 
 	return NULL;
 }
@@ -222,10 +219,6 @@ _tty_write_thread(void *arg)
 	
 		_tty_write_data();
 	}
-
-	dave_os_thread_exit(_tty_write_thread_body);
-
-	_tty_write_thread_body = NULL;
 
 	_tty_write_data();
 
@@ -289,6 +282,8 @@ dave_os_tty_exit(void)
 	{
 		dave_os_release_thread(_tty_write_thread_body);
 	}
+
+	dave_os_sleep((KEY_WAIT_TIME + 1) * 1000);
 }
 
 void

@@ -90,6 +90,12 @@ __base_ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out
 void
 __base_ramkv_free__(dave_bool external_call, void *ramkv, ramkv_recycle_callback recycle_fun, s8 *fun, ub line)
 {
+	if(ramkv == NULL)
+	{
+		KVLOG("free null on <%s:%d>", fun, line);
+		return;
+	}
+
 	if(recycle_fun == NULL)
 	{
 		recycle_fun = _base_ramkv_system_recycle;

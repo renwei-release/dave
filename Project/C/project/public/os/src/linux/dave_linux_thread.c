@@ -46,10 +46,8 @@
 typedef enum {
 	THREADSTATE_INIT,
 	THREADSTATE_RUNNING,
-	THREADSTATE_STOPPED,
-	THREADSTATE_CANCELED,
-	THREADSTATE_RELEASED,
 	THREADSTATE_SLEEP,
+	THREADSTATE_RELEASED,
 	THREADSTATE_MAX,
 } THREADSTATE;
 
@@ -117,52 +115,19 @@ _thread_function(void *arg)
 		pthread_mutex_unlock(&(id->m_mutex_t));
 		return NULL;
 	}
-	else
-	{
-		id->state = THREADSTATE_RUNNING;
-		pthread_mutex_unlock(&(id->m_mutex_t));
-	}
+	id->state = THREADSTATE_RUNNING;
+	pthread_mutex_unlock(&(id->m_mutex_t));
 
-	if ((id != NULL) && (id->fun))
+	if((id != NULL) && (id->fun))
 	{
 		pthread_setname_np(id->thr_id, (const char *)(id->thread_name));
 
 		id->fun(id->arg);
+
+		pthread_kill(id->thr_id, BREAK_SIG);
 	}
 
 	return NULL;
-}
-
-static void
-_thread_cancel(void *thread_id)
-{
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
-
-	if(id != NULL)
-	{
-		pthread_mutex_lock(&(id->m_mutex_t));
-		if(id->state == THREADSTATE_STOPPED)
-		{
-			pthread_mutex_unlock(&(id->m_mutex_t));
-			return;
-		}
-		else
-		{
-			id->state = THREADSTATE_CANCELED;
-			pthread_mutex_unlock(&(id->m_mutex_t));
-		}
-
-		pthread_kill(id->thr_id, BREAK_SIG);
-
-		dave_os_thread_wakeup(thread_id);
-
-		pthread_mutex_lock(&(id->m_mutex_t));
-		while(id->state != THREADSTATE_STOPPED)
-		{
-			pthread_cond_wait(&(id->m_cond_t), &(id->m_mutex_t));
-		}
-		pthread_mutex_unlock(&(id->m_mutex_t));
-	}
 }
 
 // =====================================================================
@@ -242,21 +207,11 @@ dave_os_release_thread(void *thread_id)
 {
 	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
 
-	if(id != NULL)
+	if((id != NULL) && (id->thr_id != (pthread_t)NULL))
 	{
-		dave_os_thread_exit(thread_id);
-	
-		_thread_cancel(thread_id);
-
-		/*
-		系统退出的时候没有必要把锁退出，
-		以免发生还有其他未尽事宜需要锁。	
-		pthread_mutex_destroy(&(id->m_mutex_t));
-		pthread_cond_destroy(&(id->m_cond_t));
-		*/
-		id->fun = NULL;
 		id->state = THREADSTATE_RELEASED;
-		id->thr_id = (pthread_t)NULL;
+
+		dave_os_thread_wakeup(thread_id);
 	}
 }
 
@@ -308,9 +263,8 @@ dave_os_thread_sleep(void *thread_id)
 	{
 		if(dave_os_thread_canceled(thread_id) == dave_false)
 		{
-			// child thread sleep.
 			pthread_mutex_lock(&(id->m_mutex_t));
-			while (id->signal_recd == dave_false)
+			while(id->signal_recd == dave_false)
 			{
 				// child thread sleep.
 				pthread_cond_wait(&(id->m_cond_t), &(id->m_mutex_t));
@@ -345,28 +299,13 @@ dave_os_thread_canceled(void *thread_id)
 {
 	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
 
-	if((id != NULL)
-		&& ((id->state == THREADSTATE_STOPPED) || (id->state == THREADSTATE_CANCELED) || (id->state == THREADSTATE_RELEASED)))
+	if((id != NULL) && (id->state == THREADSTATE_RELEASED))
 	{
 		return dave_true;
 	}
 	else
 	{
 		return dave_false;
-	}
-}
-
-void
-dave_os_thread_exit(void *thread_id)
-{
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
-
-	if (id != NULL)
-	{
-		pthread_mutex_lock(&(id->m_mutex_t));
-		id->state = THREADSTATE_STOPPED;
-		pthread_mutex_unlock(&(id->m_mutex_t));
-		pthread_cond_broadcast(&(id->m_cond_t));
 	}
 }
 

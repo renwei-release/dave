@@ -451,10 +451,6 @@ _os_cygwin_socket_event_thread(void *arg)
 		}
 	}
 
-	dave_os_thread_exit(_cygwin_socket_event_thread);
-
-	_cygwin_socket_event_thread = NULL;
-
 	return NULL;
 }
 

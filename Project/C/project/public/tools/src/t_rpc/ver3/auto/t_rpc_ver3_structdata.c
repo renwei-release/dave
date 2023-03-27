@@ -1770,6 +1770,7 @@ t_rpc_ver3_zip_DateStruct(DateStruct *zip_data)
 	t_bson_add_object(pStructBson, "u8-hour", t_rpc_ver3_zip_u8(zip_data->hour));
 	t_bson_add_object(pStructBson, "u8-minute", t_rpc_ver3_zip_u8(zip_data->minute));
 	t_bson_add_object(pStructBson, "u8-second", t_rpc_ver3_zip_u8(zip_data->second));
+	t_bson_add_object(pStructBson, "u8-week", t_rpc_ver3_zip_u8(zip_data->week));
 	t_bson_add_object(pStructBson, "s8-zone", t_rpc_ver3_zip_s8(zip_data->zone));
 
 	return pStructBson;
@@ -1794,6 +1795,7 @@ t_rpc_ver3_unzip_DateStruct(DateStruct *unzip_data, void *pStructBson)
 		t_rpc_ver3_unzip_u8(&(unzip_data->hour), t_bson_inq_object(pStructBson, "u8-hour"));
 		t_rpc_ver3_unzip_u8(&(unzip_data->minute), t_bson_inq_object(pStructBson, "u8-minute"));
 		t_rpc_ver3_unzip_u8(&(unzip_data->second), t_bson_inq_object(pStructBson, "u8-second"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->week), t_bson_inq_object(pStructBson, "u8-week"));
 		t_rpc_ver3_unzip_s8(&(unzip_data->zone), t_bson_inq_object(pStructBson, "s8-zone"));
 		ret = dave_true;
 	}

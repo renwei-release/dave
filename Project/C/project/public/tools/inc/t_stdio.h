@@ -8,7 +8,10 @@
 #ifndef __T_STDIO_H__
 #define __T_STDIO_H__
 #include <string.h>
-#include "tools_log.h"
+
+#ifndef TOOLSLOG
+#define TOOLSLOG(a, ...) { DAVELOG("[TOOLS]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
+#endif
 
 static inline ub
 t_stdio_memcpy(u8 *dst, u8 *src, ub len)
@@ -166,7 +169,7 @@ __t_stdio_strcmp__(s8 *cmp1, s8 *cmp2, s8 *file, ub line)
 
 	if(safe_counter >= max_counter)
 	{
-		TOOLSABNOR("Why do so long(%ld/%ld) strings need to be compared? <%s:%d>",
+		TOOLSLOG("Why do so long(%ld/%ld) strings need to be compared? <%s:%d>",
 			safe_counter, max_counter, file, line);
 	}
 

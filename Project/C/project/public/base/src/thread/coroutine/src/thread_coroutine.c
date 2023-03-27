@@ -56,7 +56,6 @@ typedef struct {
 	void *user_msg_ptr;
 } CoroutineSite;
 
-static ub _coroutine_init_flag = 0x00;
 static void *_coroutine_kv = NULL;
 static void *_delayed_destruction_site_kv = NULL;
 
@@ -522,20 +521,14 @@ _thread_coroutine_can_be_go(ThreadStruct *pThread, MSGBODY *msg)
 static inline void
 _thread_coroutine_init(void)
 {
-	if(_coroutine_init_flag != 0x1234567890)
-	{
-		t_lock;
-		if(_coroutine_init_flag != 0x1234567890)
-		{
-			if(_coroutine_kv == NULL)
-				_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
-			if(_delayed_destruction_site_kv == NULL)
-				_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
+	static volatile sb __safe_pre_flag__ = 0;
 
-			_coroutine_init_flag = 0x1234567890;
-		}
-		t_unlock;
-	}
+	SAFEPre(__safe_pre_flag__, {
+		if(_coroutine_kv == NULL)
+			_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
+		if(_delayed_destruction_site_kv == NULL)
+			_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
+	} );
 }
 
 static inline void
