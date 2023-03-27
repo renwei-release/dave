@@ -175,7 +175,7 @@ func Vsys_store_user_inq(user_name string) (string, string, string) {
 }
 
 func Vsys_store_user_add(user_name string, address string, seed string, tokenid string) {
-	exist_address, _, _ :=Vsys_store_user_inq(user_name)
+	exist_address, exist_seed, exist_tokenid := Vsys_store_user_inq(user_name)
 
 	if exist_address == "" {
 		_, err := store.STORESQL(
@@ -189,7 +189,7 @@ func Vsys_store_user_add(user_name string, address string, seed string, tokenid 
 		_, err := store.STORESQL(
 			"UPDATE %s.%s SET address = \"%s\", seed = \"%s\", tokenid = \"%s\", updatetime=now() WHERE user_name = \"%s\";",
 			DB_NAME, USER_NAME,
-			address, seed, tokenid,
+			exist_address, exist_seed, exist_tokenid,
 			user_name)
 		if err != nil {
 			base.DAVELOG("err:%v", err)
