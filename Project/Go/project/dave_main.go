@@ -9,30 +9,16 @@ package main
 import (
 	"dave/public/base"
 	"dave/product"
-	"time"
 	"strings"
 )
 
-const WORKMODE = "Coroutine Inner Loop"
-
-func _main_sleep() {
-	for {
-		if base.Dave_go_run_state() == true {
-			time.Sleep(time.Second)
-		} else {
-			break
-		}
-	}
-	time.Sleep(time.Second)
-}
+const WORKMODE = "Inner Loop"
 
 // =====================================================================
 
 func main() {
 	base.Dave_go_init("", WORKMODE, "", product.Product_init, product.Product_exit)
-	if find := strings.Contains(WORKMODE, "Inner"); find {
-		_main_sleep()
-	} else {
+	if find := strings.Contains(WORKMODE, "Outer"); find {
 		base.Dave_go_running()
 	}
 	base.Dave_go_exit()

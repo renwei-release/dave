@@ -16,11 +16,13 @@
 #include "thread_tools.h"
 #include "thread_coroutine.h"
 #include "coroutine_core.h"
+#include "coroutine_mem.h"
 #include "coroutine_arch.h"
 #include "thread_log.h"
 
 #define COCORE_MAGIC_DATA 0xabc123eeff
 #define COROUTINE_CORE_STACK_DEFAULT_SIZE 128 * 1024
+#define CALL_STACK_MAX 256
 #define TID_MAX DAVE_SYS_THREAD_ID_MAX
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
@@ -28,7 +30,9 @@ typedef void* (* co_swap_callback_fun)(void *param);
 
 typedef struct {
 	CoSwap base_swap;
-	CoSwap *co_swap;
+
+	sb call_stack_index;
+	CoSwap *call_stack_ptr[CALL_STACK_MAX];
 } CoThreadEnv;
 
 typedef struct {
@@ -37,9 +41,10 @@ typedef struct {
 	coroutine_core_fun fun_ptr;
 	void *fun_param;
 
-	CoSwap swap;
 	size_t ss_size;
 	char *ss_sp;
+
+	CoSwap swap;
 
 	CoThreadEnv *env;
 } CoCore;
@@ -47,21 +52,19 @@ typedef struct {
 static CoThreadEnv *_co_thread_env[ TID_MAX ] = { 0 };
 static ub _coroutine_stack_size = 0;
 
-static void *
-_coroutine_swap_function(void *param)
+static int
+_coroutine_swap_function(CoCore *pCore, void *param)
 {
-	CoCore *pCore = (CoCore *)param;
-
 	if(pCore == NULL)
 	{
 		THREADABNOR("pCore is NULL");
-		return NULL;
+		return 0;
 	}
 
 	if(pCore->magic_data != COCORE_MAGIC_DATA)
 	{
 		THREADABNOR("pCore has invalid magic data:%lx", pCore->magic_data);
-		return NULL;
+		return 0;
 	}
 
 	if(pCore->fun_ptr != NULL)
@@ -74,27 +77,37 @@ _coroutine_swap_function(void *param)
 		THREADABNOR("yield failed!");
 	}
 
-	return NULL;
-}
-
-static inline void
-_coroutine_swap_clean(CoSwap *pSwap)
-{
-	dave_memset(pSwap, 0x00, sizeof(CoSwap));
+	return 0;
 }
 
 static inline CoThreadEnv *
 _coroutine_env_malloc(void)
 {
-	return dave_ralloc(sizeof(CoThreadEnv));
+	CoThreadEnv *pEnv = coroutine_malloc(sizeof(CoThreadEnv));
+	ub stack_index;
+
+	dave_memset(pEnv, 0x00, sizeof(CoThreadEnv));
+
+	coroutine_swap_make(&(pEnv->base_swap), NULL, NULL, NULL, 0, NULL);
+
+	pEnv->call_stack_index = 0;
+
+	for(stack_index=0; stack_index<CALL_STACK_MAX; stack_index++)
+	{
+		pEnv->call_stack_ptr[stack_index] = NULL;
+	}
+
+	pEnv->call_stack_ptr[pEnv->call_stack_index ++] = &(pEnv->base_swap);
+
+	return pEnv;
 }
 
 static inline void
 _coroutine_env_free(CoThreadEnv *pEnv)
 {
 	if(pEnv != NULL)
-	{
-		dave_free(pEnv);
+	{	
+		coroutine_free(pEnv);
 	}
 }
 
@@ -114,10 +127,6 @@ _coroutine_thread_env(void)
 	if(_co_thread_env[tid_index] == NULL)
 	{
 		_co_thread_env[tid_index] = _coroutine_env_malloc();
-
-		coroutine_swap_make(&(_co_thread_env[tid_index]->base_swap), NULL, NULL, NULL, 0, NULL);
-
-		_co_thread_env[tid_index]->co_swap = NULL;
 	}
 
 	return _co_thread_env[tid_index];
@@ -152,7 +161,7 @@ _coroutine_core_exit(void)
 static inline void *
 _coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
 {
-	CoCore *pCore = dave_malloc(sizeof(CoCore));
+	CoCore *pCore = (CoCore *)coroutine_malloc(sizeof(CoCore));
 
 	pCore->magic_data = COCORE_MAGIC_DATA;
 
@@ -174,6 +183,7 @@ _coroutine_resume(void *co)
 {
 	CoCore *pCore = (CoCore *)co;
 	CoThreadEnv *pEnv;
+	CoSwap *pCurrentSwap, *pPendingSwap;
 
 	if(pCore == NULL)
 	{
@@ -188,15 +198,16 @@ _coroutine_resume(void *co)
 		return dave_false;
 	}
 
-	if(pEnv->co_swap != NULL)
+	if((pEnv->call_stack_index < 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
 	{
-		THREADABNOR("Arithmetic error! co_swap:%x", pEnv->co_swap);
+		THREADABNOR("invalid call_stack_index:%ld", pEnv->call_stack_index);
 		return dave_false;
 	}
 
-	pEnv->co_swap = &(pCore->swap);
+	pCurrentSwap = pEnv->call_stack_ptr[pEnv->call_stack_index - 1];
+	pPendingSwap = pEnv->call_stack_ptr[pEnv->call_stack_index ++] = &(pCore->swap);
 
-	coroutine_swap_run(&(pEnv->base_swap), pEnv->co_swap);
+	coroutine_swap_run(pCurrentSwap, pPendingSwap);
 
 	return dave_true;
 }
@@ -206,6 +217,7 @@ _coroutine_yield(void *co)
 {
 	CoCore *pCore = (CoCore *)co;
 	CoThreadEnv *pEnv;
+	CoSwap *pCurrentSwap, *pPendingSwap;
 
 	if(pCore == NULL)
 	{
@@ -220,21 +232,17 @@ _coroutine_yield(void *co)
 		return dave_false;
 	}
 
-	if(pEnv->co_swap == NULL)
+	if((pEnv->call_stack_index < 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
 	{
-		THREADABNOR("Arithmetic error! pEnv->co_swap is NULL");
+		THREADABNOR("invalid call_stack_index:%ld", pEnv->call_stack_index);
 		return dave_false;
 	}
 
-	if(pEnv->co_swap != &(pCore->swap))
-	{
-		THREADABNOR("Arithmetic error! swap mismatch:%x/%x", pEnv->co_swap, &(pCore->swap));
-		return dave_false;
-	}
+	pCurrentSwap = pEnv->call_stack_ptr[pEnv->call_stack_index - 1];
+	pPendingSwap = pEnv->call_stack_ptr[pEnv->call_stack_index - 2];
+	pEnv->call_stack_index --;
 
-	pEnv->co_swap = NULL;
-
-	coroutine_swap_run(&(pCore->swap), &(pEnv->base_swap));
+	coroutine_swap_run(pCurrentSwap, pPendingSwap);
 
 	return dave_true;
 }
@@ -258,8 +266,14 @@ _coroutine_release(void *co)
 
 		pCore->env = NULL;
 
-		dave_free(pCore);
+		coroutine_free(pCore);
 	}
+}
+
+static inline void
+_coroutine_load_stack_size(void)
+{
+	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
 }
 
 // =====================================================================
@@ -267,21 +281,23 @@ _coroutine_release(void *co)
 void
 coroutine_core_init(void)
 {
-	_coroutine_core_init();
+	coroutine_mem_init();
 
-	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
+	_coroutine_core_init();
 }
 
 void
 coroutine_core_exit(void)
 {
 	_coroutine_core_exit();
+
+	coroutine_mem_exit();
 }
 
 void
 coroutine_core_creat(void)
 {
-	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
+	_coroutine_load_stack_size();
 }
 
 void

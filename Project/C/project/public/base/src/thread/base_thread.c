@@ -833,6 +833,13 @@ _thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name,
 	{
 		msg_body = &(pMsg->msg_body);
 
+		if(msg_body->magic_data != MSG_BODY_MAGIC_DATA)
+		{
+			THREADLOG("%s->%s:%s has invalid magic_data:%lx",
+				thread_id_to_name(msg_body->msg_src), thread_id_to_name(msg_body->msg_dst), msgstr(msg_body->msg_id),
+				msg_body->magic_data);			
+		}
+
 		msg_body->thread_wakeup_index = wakeup_index;
 
 		msgcall_fun = thread_call_msg(msg_body->msg_dst, msg_body->msg_id);

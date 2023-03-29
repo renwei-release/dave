@@ -10,6 +10,11 @@
 
 typedef struct {
 	void *regs[14];
+	size_t ss_size;
+	char *ss_sp;
+
+	void *fun;
+	const void *param;
 
 	ThreadId msg_src;
 	ThreadId msg_dst;

@@ -41,6 +41,8 @@ typedef struct {
 	MSGBODY msg;
 	void *co;
 
+	sb site_life;
+
 	ThreadId src_thread;
 	ub msg_id;
 	ub msg_site;
@@ -522,13 +524,17 @@ static inline void
 _thread_coroutine_init(void)
 {
 	static volatile sb __safe_pre_flag__ = 0;
+	dave_bool kv_init = dave_false;
 
-	SAFEPre(__safe_pre_flag__, {
+	SAFEPre(__safe_pre_flag__, { coroutine_core_init(); kv_init = dave_true; } );
+
+	if(kv_init == dave_true)
+	{
 		if(_coroutine_kv == NULL)
 			_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
 		if(_delayed_destruction_site_kv == NULL)
 			_delayed_destruction_site_kv = kv_malloc("ddskv", COROUTINE_DELAY_RELEASE_TIMER, _thread_coroutine_running_step_8);
-	} );
+	}
 }
 
 static inline void
@@ -542,7 +548,7 @@ _thread_coroutine_exit(void)
 void
 thread_coroutine_init(void)
 {
-	coroutine_core_init();
+
 }
 
 void

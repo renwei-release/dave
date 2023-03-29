@@ -207,7 +207,9 @@ dave_os_release_thread(void *thread_id)
 {
 	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
 
-	if((id != NULL) && (id->thr_id != (pthread_t)NULL))
+	if((id != NULL)
+		&& (id->thr_id != (pthread_t)NULL)
+		&& (id->state != THREADSTATE_RELEASED))
 	{
 		id->state = THREADSTATE_RELEASED;
 

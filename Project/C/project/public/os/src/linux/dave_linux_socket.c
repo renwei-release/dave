@@ -52,6 +52,7 @@ typedef struct conn_info {
 
 #define EPOLL_CONN_WAIT_MAX (1024)
 #define EPOLL_CONN_WAIT_TIMES (3)
+#define EPOLL_WAIT_TIME 3000
 static struct conn_info m_connWait[EPOLL_CONN_WAIT_MAX];
 
 static int
@@ -499,7 +500,7 @@ _os_linux_epoll_check_wait(void)
 static void *
 _os_linux_epoll_event_thread(void *arg)
 {
-	int iMillisecond = 3000;
+	int iMillisecond = EPOLL_WAIT_TIME;
 	int event_index, m_nfds;
 
 	while(dave_os_thread_canceled(_linux_socket_epoll_thread) == dave_false)

@@ -55,6 +55,11 @@ coroutine_swap_make(CoSwap *pSwap, void *fun, const void *param, char *ss_sp, si
 
 	pSwap->regs[kRETAddr_ARM64] = fun;
 	pSwap->regs[kARG1] = (void *)param;
+	pSwap->ss_size = ss_size;
+	pSwap->ss_sp = ss_sp;
+
+	pSwap->fun = fun;
+	pSwap->param = param;
 
 	if(msg != NULL)
 	{

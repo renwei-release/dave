@@ -51,13 +51,22 @@ coroutine_swap_make(CoSwap *pSwap, void *fun, const void *param, char *ss_sp, si
 	if(ss_sp != NULL)
 	{
 		sp = ss_sp + ss_size;
-		sp = (char*) ((unsigned long)sp & -16LL);
-		pSwap->regs[ kRSP ] = sp - 8;
+		sp = (char *) (((unsigned long)sp & -16LL) - sizeof(void *));
+
+		void **ret_addr = (void **)(sp);
+		*ret_addr = (void *)fun;
+
+		pSwap->regs[ kRSP ] = sp;
 	}
 
 	pSwap->regs[ kRETAddr] = fun;
 	pSwap->regs[ kRDI ] = (void *)param;
-	pSwap->regs[ kRSI ] = NULL;
+	pSwap->regs[ kRSI ] = (void *)param;
+	pSwap->ss_size = ss_size;
+	pSwap->ss_sp = ss_sp;
+
+	pSwap->fun = fun;
+	pSwap->param = param;
 
 	if(msg != NULL)
 	{
@@ -65,6 +74,7 @@ coroutine_swap_make(CoSwap *pSwap, void *fun, const void *param, char *ss_sp, si
 		pSwap->msg_dst = msg->msg_dst;
 		pSwap->msg_id = msg->msg_id;
 	}
+
 }
 
 void
