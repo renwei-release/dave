@@ -22,7 +22,7 @@
 
 #define COCORE_MAGIC_DATA 0xabc123eeff
 #define COROUTINE_CORE_STACK_DEFAULT_SIZE 128 * 1024
-#define CALL_STACK_MAX 256
+#define CALL_STACK_MAX 128
 #define TID_MAX DAVE_SYS_THREAD_ID_MAX
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
@@ -198,7 +198,7 @@ _coroutine_resume(void *co)
 		return dave_false;
 	}
 
-	if((pEnv->call_stack_index < 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
+	if((pEnv->call_stack_index <= 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
 	{
 		THREADABNOR("invalid call_stack_index:%ld", pEnv->call_stack_index);
 		return dave_false;
@@ -232,7 +232,7 @@ _coroutine_yield(void *co)
 		return dave_false;
 	}
 
-	if((pEnv->call_stack_index < 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
+	if((pEnv->call_stack_index <= 0) || (pEnv->call_stack_index >= CALL_STACK_MAX))
 	{
 		THREADABNOR("invalid call_stack_index:%ld", pEnv->call_stack_index);
 		return dave_false;
