@@ -39,6 +39,14 @@ const NFT_DISC = "(id int primary key auto_increment," +
 	"updatetime timestamp default current_timestamp," +
 	"constraint unique(tokenid));"
 
+const NFT_LIKE_NAME = "nft_like"
+const NFT_LIKE_DISC = "(id int primary key auto_increment," +
+	"tokenid varchar(512)," +
+	"like_counter int," +
+	"user_name_array TEXT," +
+	"updatetime timestamp default current_timestamp," +
+	"constraint unique(tokenid));"
+
 const VOUCHER_NAME = "voucher"
 const VOUCHER_DISC = "(id int primary key auto_increment," +
 	"user_name varchar(512)," +
@@ -65,6 +73,7 @@ func _store_init() {
 	store.STORESQL("CREATE DATABASE %s", DB_NAME)
 	store.STORESQL("CREATE TABLE %s.%s %s", DB_NAME, USER_NAME, USER_DISC)
 	store.STORESQL("CREATE TABLE %s.%s %s", DB_NAME, NFT_NAME, NFT_DISC)
+	store.STORESQL("CREATE TABLE %s.%s %s", DB_NAME, NFT_LIKE_NAME, NFT_LIKE_DISC)
 	store.STORESQL("CREATE TABLE %s.%s %s", DB_NAME, VOUCHER_NAME, VOUCHER_DISC)
 	store.STORESQL("CREATE TABLE %s.%s %s", DB_NAME, VOUCHER_INFO_NAME, VOUCHER_INFO_DISC)
 }
@@ -87,11 +96,20 @@ type VoucherStruct struct {
 	Vsys_tokenID string `json:"vsys_tokenid"`
 	Image_url string `json:"image_url"`
 	Ipfs_url string `json:"ipfs_url"`
+	Like_counter int `json:"like_counter"`
 	Voucher_nft_id string `json:"voucher_nft_id"`
 	Voucher_type string `json:"voucher_type"`
 	Voucher_url string `json:"voucher_url"`
 	Voucher_expiry string `json:"voucher_expiry"`
 	Voucher_status string `json:"voucher_status"`
+}
+
+type NFTStruct struct {
+	User_name string `json:"user_name"`
+	Vsys_tokenID string `json:"vsys_tokenid"`
+	Image_url string `json:"image_url"`
+	Ipfs_url string `json:"ipfs_url"`
+	Like_counter int `json:"like_counter"`
 }
 
 func _store_voucher_struct_to_string(user_name string, voucher_obj *tools.Json) (interface{}, bool) {
@@ -109,10 +127,16 @@ func _store_voucher_struct_to_string(user_name string, voucher_obj *tools.Json) 
 	var tokenid = ""
 	var image_url = ""
 	var ipfs_url = ""
+	var like_counter = 0
 
 	_, _, tokenid = Vsys_store_user_inq(user_name)
 	if tokenid != "" {
-		_, image_url, ipfs_url = Vsys_store_nft_inq(tokenid)
+		nft := Vsys_store_nft_inq(tokenid).(NFTStruct)
+
+		image_url = nft.Image_url
+		ipfs_url = nft.Ipfs_url
+		like_counter = nft.Like_counter
+
 		base.DAVELOG("user:%v token:%v image_url:%v ipfs_url:%v",
 			user_name, tokenid, image_url, ipfs_url)
 	}
@@ -122,6 +146,7 @@ func _store_voucher_struct_to_string(user_name string, voucher_obj *tools.Json) 
 		Vsys_tokenID: tokenid,
 		Image_url: image_url,
 		Ipfs_url: ipfs_url,
+		Like_counter: like_counter,
 		Voucher_nft_id: voucher_nft_id,
 		Voucher_type: voucher_type,
 		Voucher_url: voucher_url,
@@ -197,29 +222,95 @@ func Vsys_store_user_add(user_name string, address string, seed string, tokenid 
 	}
 }
 
-func Vsys_store_nft_inq(tokenid string) (string, string, string) {
+func Vsys_store_nft_like_inq(tokenid string) int {
+	json_obj, err := store.STORESQL(
+		"SELECT like_counter FROM %s.%s WHERE tokenid = \"%s\";",
+		DB_NAME, NFT_LIKE_NAME, tokenid)
+
+	if err != nil {
+		return 0
+	}
+
+	return store.STORELOADSb(json_obj, 0)
+}
+
+func Vsys_store_nft_like_add(user_name string, tokenid string) interface{} {
+	like_counter := Vsys_store_nft_like_inq(tokenid)
+	if like_counter == 0 {
+		store.STORESQL(
+			"INSERT INTO %s.%s (tokenid, like_counter) VALUES (\"%s\", %d);",
+			DB_NAME, NFT_LIKE_NAME,
+			tokenid, 1)
+	} else {
+		store.STORESQL(
+			"UPDATE %s.%s SET like_counter = like_counter + 1, updatetime=now() WHERE tokenid = \"%s\";",
+			DB_NAME, NFT_LIKE_NAME,
+			tokenid)
+	}
+
+	return Vsys_store_nft_inq(tokenid)
+}
+
+func Vsys_store_nft_like_top(top_number int) interface{} {
+	json_obj, err := store.STORESQL(
+		"SELECT tokenid FROM %s.%s ORDER BY like_counter LIMIT %d;",
+		DB_NAME, NFT_LIKE_NAME, top_number)
+	if err != nil {
+
+	}
+
+	var ret [] interface{}
+
+	for top_index:=0; top_index<top_number; top_index ++ {
+		tokenid := store.STORELOADStr(json_obj, top_index)
+		if tokenid == "" {
+			break
+		}
+
+		nft := Vsys_store_nft_inq(tokenid)
+
+		ret = append(ret, nft)
+	}
+
+	return ret
+}
+
+func Vsys_store_nft_inq(tokenid string) interface{} {
 	json_obj, err := store.STORESQL(
 		"SELECT user_name, image_url, ipfs_url FROM %s.%s WHERE tokenid = \"%s\";",
 		DB_NAME, NFT_NAME, tokenid)
 
+	var user_name = ""
+	var image_url = ""
+	var ipfs_url = ""
+	var like_counter = 0
+
 	if err != nil {
 		base.DAVELOG("err:%s", err)
-		return "", "", ""
+	} else {
+		user_name = store.STORELOADStr(json_obj, 0)
+		image_url = store.STORELOADStr(json_obj, 1)
+		ipfs_url = store.STORELOADStr(json_obj, 2)
+		like_counter = Vsys_store_nft_like_inq(tokenid)
 	}
 
-	user_name := store.STORELOADStr(json_obj, 0)
-	image_url := store.STORELOADStr(json_obj, 1)
-	ipfs_url := store.STORELOADStr(json_obj, 2)
+	nft := NFTStruct { 
+		User_name: user_name,
+		Vsys_tokenID: tokenid,
+		Image_url: image_url,
+		Ipfs_url: ipfs_url,
+		Like_counter: like_counter,
+    }
 
-	return user_name, image_url, ipfs_url
+	return nft
 }
 
 func Vsys_store_nft_add(tokenid string, user_name string, image_url string, ipfs_url string) {
-	exist_user, exist_image, exist_ipfs := Vsys_store_nft_inq(tokenid)
-	if exist_user != "" {
+	nft := Vsys_store_nft_inq(tokenid).(NFTStruct)
+	if nft.User_name != "" {
 		base.DAVELOG("tokenid:%v has been store by user:%v. exist:%v/%v/%v store:%v/%v/%v",
-			tokenid, exist_user,
-			exist_user, exist_image, exist_ipfs,
+			tokenid, nft.User_name,
+			nft.User_name, nft.Image_url, nft.Ipfs_url,
 			user_name, image_url, ipfs_url)
 		return
 	}

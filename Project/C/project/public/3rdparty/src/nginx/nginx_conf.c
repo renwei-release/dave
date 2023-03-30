@@ -171,8 +171,8 @@ _nginx_conf_write_allow_cross_domain_cfg(s8 *conf, ub conf_len)
 	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   add_header Access-Control-Allow-Credentials true;\n");
 	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Allow-Origin '*';\n");
 	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Max-Age 600;\n");
-	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Allow-Headers 'x-requested-with,content-type,Cache-Control,Pragma,Date,x-timestamp';\n");
-	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Allow-Methods 'POST,GET,PUT';\n");
+	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Allow-Headers 'Origin,X-Requested-With,Content-Type,Accept,Authorization,Cache-Control,Pragma,Date,x-timestamp';\n");
+	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Allow-Methods 'POST, GET, OPTIONS, PUT, DELETE, UPDATE';\n");
 	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header Access-Control-Expose-Headers 'WWW-Authenticate,Server-Authorization';\n");
 	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "	   add_header P3P 'policyref=\"/w3c/p3p.xml\", CP=\"NOI DSP PSAa OUR BUS IND ONL UNI COM NAV INT LOC\"';\n");
 

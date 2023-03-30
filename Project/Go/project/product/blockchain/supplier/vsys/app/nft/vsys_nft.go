@@ -77,3 +77,9 @@ func Vsys_deploy_nft(user_name string, image_url string, ipfs_url string) (bool,
 		return true, tokenid
 	}
 }
+
+func Vsys_inquire_nft(tokenid string) (string, string, string, int) {
+	nft := vsys_store.Vsys_store_nft_inq(tokenid).(vsys_store.NFTStruct)
+
+	return nft.User_name, nft.Image_url, nft.Ipfs_url, nft.Like_counter
+}

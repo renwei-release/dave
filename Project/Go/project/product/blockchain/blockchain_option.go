@@ -20,6 +20,8 @@ func blockchain_option(opt string, param interface{}) (interface{}, int64) {
 		return option.Creat_wallet(param)
 	} else if opt == "deploy_nft" {
 		return option.Deploy_nft(param)
+	} else if opt == "inquire_nft" {
+		return option.Inquire_nft(param)
 	} else if opt == "vsys_option" {
 		return option.Vsys_option(param)
 	}

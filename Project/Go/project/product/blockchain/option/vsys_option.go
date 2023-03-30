@@ -18,6 +18,7 @@ import (
 
 type VsysOptionReq struct {
 	User_name string `json:"user_name"`
+	Vsys_tokenID string `json:"vsys_tokenid"`
 	User_action string `json:"user_action"`
 }
 
@@ -56,6 +57,18 @@ func _vsys_user_voucher_assign(user_name string) (interface{}, int64) {
 	return json_obj, auto.RetCode_OK
 }
 
+func _vsys_nft_like_add(user_name string, tokenid string) (interface{}, int64) {
+	nft := vsys_store.Vsys_store_nft_like_add(user_name, tokenid)
+
+	return nft, auto.RetCode_OK
+}
+
+func _vsys_nft_like_top() (interface{}, int64) {
+	top := vsys_store.Vsys_store_nft_like_top(10)
+
+	return top, auto.RetCode_OK
+}
+
 // =====================================================================
 
 func Vsys_option(param interface{}) (interface{}, int64) {
@@ -76,6 +89,10 @@ func Vsys_option(param interface{}) (interface{}, int64) {
 		return _vsys_user_voucher_inq(req.User_name)
 	} else if req.User_action == "user_voucher_assign" {
 		return _vsys_user_voucher_assign(req.User_name)
+	} else if req.User_action == "nft_like_add" {
+		return _vsys_nft_like_add(req.User_name, req.Vsys_tokenID)
+	} else if req.User_action == "nft_like_top" {
+		return _vsys_nft_like_top()
 	} else {
 		base.DAVELOG("invalid action, user_action:%v user_name:%v",
 			req.User_action, req.User_name)

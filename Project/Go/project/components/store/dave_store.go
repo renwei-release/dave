@@ -88,7 +88,7 @@ func STORELOADStr(json_obj *tools.Json, column int) string {
 
 	str_str, err := STORELOAD(json_obj, 0, column).String()
 	if err != nil {
-		base.DAVELOG("err:%v", err)
+		base.DAVEDEBUG("err:%v column:%v json:%v", err, column, json_obj)
 		return ""
 	}
 	return str_str
@@ -101,7 +101,7 @@ func STORELOADSb(json_obj *tools.Json, column int) int {
 
 	int_str, err := STORELOAD(json_obj, 0, column).String()
 	if err != nil {
-		base.DAVELOG("err:%v", err)
+		base.DAVEDEBUG("err:%v column:%v json:%v", err, column, json_obj)
 		return 0
 	}
 	int_value, _ := strconv.ParseInt(int_str, 10, 64)
