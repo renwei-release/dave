@@ -84,13 +84,27 @@ def _python_self_check():
    return False
 
 
+def _python_product_cfg():
+   product_name = dave_product().decode().lower()
+
+   cfg = None
+   try:
+      cfg = importlib.import_module(f'product.{product_name}.{product_name}_cfg')
+   except:
+      cfg = None
+
+   if cfg != None:
+      return cfg.dave_product_cfg()
+   else:
+      return 1, b"Outer Loop"
+
+
 # =====================================================================
 
 
 def dave_python_init():
    my_verno = dave_verno()
-   work_mode = b"Coroutine Outer Loop"
-   thread_number = 1
+   thread_number, work_mode = _python_product_cfg()
    sync_domain = b""
 
    davelib.dave_dll_init(

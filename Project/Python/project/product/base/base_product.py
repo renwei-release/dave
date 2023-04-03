@@ -35,10 +35,6 @@ def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
 # =====================================================================
 
 
-def dave_product_cfg():
-    return 1, b"Coroutine Outer Loop"
-
-
 def dave_product_init():
     dave_system_function_table_add(MSGID_DEBUG_REQ, fun_MSGID_DEBUG_REQ)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)

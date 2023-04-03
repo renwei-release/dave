@@ -51,7 +51,7 @@ def _kv_init(kv):
         return kv
 
     if _default_kv == None:
-        _default_kv = _kv_malloc("pydefault", 360)
+        _default_kv = _kv_malloc("pydefault", 3600)
     return _default_kv
 
 

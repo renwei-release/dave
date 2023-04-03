@@ -21,34 +21,34 @@ var CFG_NFT_INDEX string = "VSYSNFTIndex"
 func _vsys_deploy_nft(user_name string, image_url string, ipfs_url string) (bool, string) {
 	account := vsys_core.Vsys_my_account()
 	if account == nil {
-		base.DAVELOG("deploy %s/%s error!", image_url, ipfs_url)
+		base.DAVELOG("user:%v deploy %s/%s account error!", user_name, image_url, ipfs_url)
 		return false, ""
 	}
 
 	nc, err := vsys.RegisterNFTCtrt(account, image_url)
 	if err != nil {
-		base.DAVELOG("deploy %s/%s register err:%v", image_url, ipfs_url, err)
+		base.DAVELOG("user:%v deploy %s/%s register err:%v", user_name, image_url, ipfs_url, err)
 		return false, ""
 	}
 	time.Sleep(6 * time.Second)
 
 	issue_resp, err := nc.Issue(account, image_url, ipfs_url)
 	if err != nil {
-		base.DAVELOG("deploy %s/%s issue:%v err:%v", image_url, ipfs_url, issue_resp, err)
+		base.DAVELOG("user:%v deploy %s/%s issue:%v err:%v", user_name, image_url, ipfs_url, issue_resp, err)
 		return false, ""
 	}
 	time.Sleep(6 * time.Second)
 
 	send_tx, err := nc.Send(account, string(account.Addr.B58Str()), 1, "")
 	if err != nil {
-		base.DAVELOG("send %s/%s issue err:%v", image_url, ipfs_url, err)
+		base.DAVELOG("user:%s send %s/%s issue err:%v", user_name, image_url, ipfs_url, err)
 		return false, ""		
 	}
 
 	nft_index := base.Cfg_get_ub(CFG_NFT_INDEX, 0)
 	tokenid, err := nc.CtrtId.GetTokId(uint32(nft_index))
 	if err != nil {
-		base.DAVELOG("get tokenid %s/%s issue err:%v", image_url, ipfs_url, err)
+		base.DAVELOG("user:%v get tokenid %s/%s issue err:%v", user_name, image_url, ipfs_url, err)
 		return false, ""
 	}
 	base.Cfg_set_ub(CFG_NFT_INDEX, nft_index + 1)

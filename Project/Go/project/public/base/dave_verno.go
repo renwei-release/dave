@@ -11,15 +11,15 @@ import (
 	"dave/public/tools"
 )
 
-var VERSION_PRODUCT = "BLOCKCHAIN"
+var VERSION_PRODUCT = "AIB"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "13"
-var VERSION_REV = "6"
-var VERSION_DATE_TIME = "20230330164149"
+var VERSION_REV = "7"
+var VERSION_DATE_TIME = "20230403142243"
 var VERSION_LEVEL = "Alpha"
 var __BUILD_MAC_ADDRESS__ = "000C29960DBF"
-var __BUILD_HOSTNAME__ = "fedora-renwei-golang19-docker"
+var __BUILD_HOSTNAME__ = "fedora-renwei-fedora-docker"
 var __BUILD_USERNAME__ = "root"
 
 // =====================================================================
