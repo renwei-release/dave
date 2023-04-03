@@ -200,7 +200,7 @@ func Vsys_store_user_inq(user_name string) (string, string, string) {
 }
 
 func Vsys_store_user_add(user_name string, address string, seed string, tokenid string) {
-	exist_address, exist_seed, exist_tokenid := Vsys_store_user_inq(user_name)
+	exist_address, exist_seed, _ := Vsys_store_user_inq(user_name)
 
 	if exist_address == "" {
 		_, err := store.STORESQL(
@@ -214,7 +214,7 @@ func Vsys_store_user_add(user_name string, address string, seed string, tokenid 
 		_, err := store.STORESQL(
 			"UPDATE %s.%s SET address = \"%s\", seed = \"%s\", tokenid = \"%s\", updatetime=now() WHERE user_name = \"%s\";",
 			DB_NAME, USER_NAME,
-			exist_address, exist_seed, exist_tokenid,
+			exist_address, exist_seed, tokenid,
 			user_name)
 		if err != nil {
 			base.DAVELOG("err:%v", err)
@@ -253,16 +253,19 @@ func Vsys_store_nft_like_add(user_name string, tokenid string) interface{} {
 
 func Vsys_store_nft_like_top(top_number int) interface{} {
 	json_obj, err := store.STORESQL(
-		"SELECT tokenid FROM %s.%s ORDER BY like_counter LIMIT %d;",
+		"SELECT tokenid, like_counter FROM %s.%s ORDER BY like_counter DESC LIMIT %d;",
 		DB_NAME, NFT_LIKE_NAME, top_number)
 	if err != nil {
-
+		base.DAVELOG("err:%v", err)
+		return nil
 	}
+
+	base.DAVELOG("json:%v top_number:%d", json_obj, top_number)
 
 	var ret [] interface{}
 
 	for top_index:=0; top_index<top_number; top_index ++ {
-		tokenid := store.STORELOADStr(json_obj, top_index)
+		tokenid := store.STORELOADRStr(json_obj, top_index, 0)
 		if tokenid == "" {
 			break
 		}

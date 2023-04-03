@@ -81,6 +81,19 @@ func STORELOAD(json_obj *tools.Json, row int, column int) *tools.Json {
 	return json_obj.GetIndex(row).GetIndex(column)
 }
 
+func STORELOADRStr(json_obj *tools.Json, row int, column int) string {
+	if json_obj == nil {
+		return ""
+	}
+
+	str_str, err := STORELOAD(json_obj, row, column).String()
+	if err != nil {
+		base.DAVEDEBUG("err:%v column:%v json:%v", err, column, json_obj)
+		return ""
+	}
+	return str_str
+}
+
 func STORELOADStr(json_obj *tools.Json, column int) string {
 	if json_obj == nil {
 		return ""
