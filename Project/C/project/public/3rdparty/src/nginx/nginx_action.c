@@ -45,7 +45,6 @@
 
 static TLock _nginx_action_pv;
 static dave_bool _nginx_working = dave_false;
-static TIMERID _nginx_action_timer = INVALID_TIMER_ID;
 static s8 _nginx_bin_name[128] = { 0x00 };
 static s8 _nginx_conf_name[128] = { 0x00 };
 
@@ -109,7 +108,16 @@ _nginx_action_safe_start(void)
 {
 	RetCode ret = RetCode_Resource_conflicts;
 
-	SAFECODEv1(_nginx_action_pv, ret = _nginx_action_start(); );
+	SAFECODEv1(_nginx_action_pv,
+		if(_nginx_working == dave_true)
+		{
+			ret = _nginx_action_start();
+		}
+		else
+		{
+			ret = RetCode_OK;
+		}
+	);
 
 	return ret;
 }
@@ -145,21 +153,26 @@ _nginx_action_safe_conf_del(ub work_process, ub nginx_port)
 }
 
 static void
-_nginx_action_timer_out(TIMERID timer_id, ub thread_index)
+_nginx_action_delay(TIMERID timer_id, ub thread_index)
 {
-	if(timer_id == _nginx_action_timer)
-	{
-		if(_nginx_working == dave_true)
-		{
-			_nginx_action_safe_start();
-		}
-
-		_nginx_action_timer = INVALID_TIMER_ID;
-	}
+	_nginx_action_safe_start();
 
 	base_timer_die(timer_id);
 }
 
+static void
+_nginx_action_timer_out(TIMERID timer_id, ub thread_index)
+{
+	_nginx_action_safe_start();
+
+	base_timer_die(timer_id);
+
+	/*
+	 * 实际应用中发现，有可能nginx的配置未正确加载，原因未知。
+	 * 通过此定时器延迟再做一次加载。
+	 */
+	base_timer_creat("nginxdelay", _nginx_action_delay, 6000);
+}
 
 static void
 _nginx_action_load_config(void)
@@ -185,7 +198,6 @@ nginx_action_init(void)
 	t_lock_reset(&_nginx_action_pv);
 
 	_nginx_working = dave_false;
-	_nginx_action_timer = INVALID_TIMER_ID;
 	_nginx_action_load_config();
 }
 
@@ -219,14 +231,7 @@ nginx_action_start(void)
 {
 	SAFECODEv1( _nginx_action_pv, _nginx_working = dave_true; );
 
-	if(_nginx_action_timer != INVALID_TIMER_ID)
-	{
-		base_timer_die(_nginx_action_timer);
-
-		_nginx_action_timer = INVALID_TIMER_ID;
-	}
-
-	_nginx_action_timer = base_timer_creat("nginxaction", _nginx_action_timer_out, 6000);
+	base_timer_creat("nginxaction", _nginx_action_timer_out, 6000);
 
 	return RetCode_OK;
 }

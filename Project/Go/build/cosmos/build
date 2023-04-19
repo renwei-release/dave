@@ -7,7 +7,7 @@
 # */
 
 PROJECT=${PWD##*/}
-CONTAINER="golang19"
+CONTAINER="fedora37"
 
 chmod a+x ../ENV
 ../ENV ${CONTAINER}

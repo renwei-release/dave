@@ -12,13 +12,13 @@ import (
 	"strings"
 )
 
-const WORKMODE = "Inner Loop"
-
 // =====================================================================
 
 func main() {
-	base.Dave_go_init("", WORKMODE, "", product.Product_init, product.Product_exit)
-	if find := strings.Contains(WORKMODE, "Outer"); find {
+	_, workmode := product.Product_cfg()
+
+	base.Dave_go_init("", workmode, "", product.Product_init, product.Product_exit)
+	if find := strings.Contains(workmode, "Outer"); find {
 		base.Dave_go_running()
 	}
 	base.Dave_go_exit()

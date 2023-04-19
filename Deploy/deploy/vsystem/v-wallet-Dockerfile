@@ -1,0 +1,19 @@
+FROM ubuntu:18.04
+
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt update -y
+RUN apt install -y git curl
+RUN apt install -y scala
+RUN cd /usr/local && git clone -bv1.8.2 --depth=1 https://github.com/sbt/sbt.git
+RUN ln -s /usr/local/sbt/sbt /usr/local/bin/sbt
+
+WORKDIR /project
+RUN cd /project
+RUN curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs
+RUN sh -c '/bin/echo -e "\n\Y\n" | ./cs setup'
+
+RUN git clone https://github.com/virtualeconomy/v-wallet-generator.git
+WORKDIR /project/v-wallet-generator
+CMD ["sbt"]

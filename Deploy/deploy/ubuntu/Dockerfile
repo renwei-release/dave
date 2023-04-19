@@ -13,6 +13,7 @@ RUN apt install -y libpng-dev
 RUN apt install -y libtiff-dev
 RUN apt install -y libopenexr-dev
 
-RUN mkdir -p /project/DAVE
+WORKDIR /
+COPY ./file_system .
 
 WORKDIR /project

@@ -38,6 +38,11 @@ func _creat_wallet(param interface{}) (interface{}, int64) {
 		return "", auto.RetCode_Invalid_parameter
 	}
 
+	if req.User_name == "" {
+		base.DAVELOG("user is empty!")
+		return "", auto.RetCode_empty_data
+	}
+
 	eth_passphrase := "123456"
 
 	eth_address, eth_keystore := eth_core.Eth_new_wallet(eth_passphrase)

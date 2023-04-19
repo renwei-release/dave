@@ -23,3 +23,7 @@ func Product_init() {
 func Product_exit() {
 	dstore.Dave_product_exit()
 }
+
+func Product_cfg() (int, string) {
+	return 0, "Inner Loop"
+}

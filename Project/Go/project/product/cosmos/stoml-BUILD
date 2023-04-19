@@ -1,0 +1,23 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+PRIJECTBIN=stoml
+File=$(basename $0)
+
+VERSION=0.7.1
+
+if [ ! -d ./stoml ]; then
+   git clone -bv${VERSION} --depth=1 https://github.com/freshautomations/stoml.git
+fi
+
+cd stoml && go mod tidy && go build -o ${PRIJECTBIN} main.go
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}

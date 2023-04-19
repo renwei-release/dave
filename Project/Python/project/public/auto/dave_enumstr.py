@@ -12,6 +12,7 @@
 # */
 
 from .dave_enum import *
+from .dave_msg_id import *
 
 def t_auto_AIPlaceType_str(enum_value):
 	if enum_value == AIPlaceType_accounting:

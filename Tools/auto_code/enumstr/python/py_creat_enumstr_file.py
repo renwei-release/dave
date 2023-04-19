@@ -37,7 +37,8 @@ def _enumstr_body_table(body_table, file_id):
 def _enumstr_src_file(enum_table, include_list, file_name):
     with open(file_name, "w+", encoding="utf-8") as file_id:
         copyright_message(file_id, 'python')
-        file_id.write(f'from .dave_enum import *\n\n')
+        file_id.write(f'from .dave_enum import *\n')
+        file_id.write(f'from .dave_msg_id import *\n\n')
         for enum_name in enum_table:
             file_id.write(f'def t_auto_{enum_name}_str(enum_value):\n')
             _enumstr_body_table(enum_table[enum_name], file_id)

@@ -7,7 +7,8 @@
 # */
 
 PROJECT=${PWD##*/}
-PROJECTDIR=`pwd`/../../../../../Deploy/deploy/${PROJECT,,}/file_system/project
+FILESYSTEM=`pwd`/../../../../../Deploy/deploy/${PROJECT,,}/file_system
+PROJECTDIR=${FILESYSTEM}/project
 PRIJECTBIN=COSMOS-BIN
 File=$(basename $0)
 ARCH=`arch`
@@ -22,8 +23,20 @@ fi
 
 go env -w GOARCH=${GOARCH}
 
+#
+# Reference:
+# https://hermes.informal.systems/tutorials/pre-requisites/gaiad-manager.html
+#
 chmod a+x gaia-BUILD
 ./gaia-BUILD ${PROJECTDIR}
+chmod a+x sconfig-BUILD
+./sconfig-BUILD ${PROJECTDIR}
+chmod a+x stoml-BUILD
+./stoml-BUILD ${PROJECTDIR}
+chmod a+x gm-BUILD
+./gm-BUILD ${PROJECTDIR}
+chmod a+x hermes-BUILD
+./hermes-BUILD ${PROJECTDIR}
 
 echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
 chmod a+x ${PRIJECTBIN}

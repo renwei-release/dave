@@ -49,6 +49,11 @@ func _vsys_user_voucher_inq(user_name string) (interface{}, int64) {
 }
 
 func _vsys_user_voucher_assign(user_name string) (interface{}, int64) {
+	if user_name == "" {
+		base.DAVELOG("user is empty!")
+		return "", auto.RetCode_empty_data
+	}
+
 	json_obj, err := vsys_store.Vsys_store_voucher_assign(user_name, 1)
 	if err != nil {
 		base.DAVELOG("err:%v", err)
@@ -58,6 +63,11 @@ func _vsys_user_voucher_assign(user_name string) (interface{}, int64) {
 }
 
 func _vsys_nft_like_add(user_name string, tokenid string) (interface{}, int64) {
+	if tokenid == "" {
+		base.DAVELOG("tokenid is empty!")
+		return "", auto.RetCode_empty_data
+	}
+
 	nft := vsys_store.Vsys_store_nft_like_add(user_name, tokenid)
 
 	return nft, auto.RetCode_OK

@@ -43,6 +43,15 @@ type InquireNFTRsp struct {
 }
 
 func _deploy_nft_api(req DeployNFTReq) (interface{}, int64) {
+	if req.User_name == "" || req.Image_url == "" || req.Ipfs_url == "" {
+		base.DAVELOG("invalid parameter! user:%v image_url:%v ipfs_url:%v",
+			req.User_name, req.Image_url, req.Ipfs_url)
+		return "", auto.RetCode_Invalid_parameter
+	}
+
+	base.DAVELOG("user:%v image_url:%v ipfs_url:%v",
+		req.User_name, req.Image_url, req.Ipfs_url)
+
 	_, eth_contract_address := eth_nft.Eth_deploy_nft(req.Ipfs_url, req.Ipfs_url)
 	vsys_ret, vsys_tokenid := vsys_nft.Vsys_deploy_nft(req.User_name, req.Image_url, req.Ipfs_url)
 	if vsys_ret == false {

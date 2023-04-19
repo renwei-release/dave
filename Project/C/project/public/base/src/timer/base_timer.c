@@ -613,6 +613,7 @@ _timer_recreat_timer(TIMERID timer_id, void *fun, void *param_ptr, ub param_len,
 		}
 
 		pTimer->alarm_ms = alarm_ms;
+		pTimer->life_ms = 0;
 	} );
 
 	return timer_id;

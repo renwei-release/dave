@@ -1,0 +1,23 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+PRIJECTBIN=./target/release/hermes
+File=$(basename $0)
+
+VERSION=1.4.0
+
+if [ ! -d ./hermes ]; then
+   git clone -bv${VERSION} --depth=1 https://github.com/informalsystems/hermes.git
+fi
+
+cd hermes && cargo build --release --bin hermes
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}
