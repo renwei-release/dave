@@ -40,6 +40,8 @@ s8 * dave_os_file_home_dir(void);
 
 void dave_os_file_creat_dir(s8 *dir);
 
+dave_bool dave_os_file_remove_dir(s8 *dir);
+
 MBUF * dave_os_file_read_mbuf(s8 *file_path);
 
 #endif

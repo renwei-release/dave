@@ -7,7 +7,7 @@
 
 #include "base_macro.h"
 #include "log_stack.h"
-#ifdef LOG_STACK_SERVER
+#if defined(LOG_STACK_SERVER) || defined(LOG_STACK_CLIENT)
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_os.h"

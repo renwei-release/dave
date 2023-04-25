@@ -15,6 +15,7 @@
 #include "base_rxtx.h"
 #include "thread_chain.h"
 #include "log_buffer.h"
+#include "log_save.h"
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
@@ -110,6 +111,7 @@ _log_client_record_log(void)
 	ub num_log;
 	MBUF *data;
 	ub index, level_index, len_index;
+	s8 *log_ptr;
 	ub log_len;
 	s8 *frame;
 	TraceLevel level;
@@ -128,7 +130,8 @@ _log_client_record_log(void)
 		dave_byte_8(frame[index++], frame[index++], level);
 		len_index = index; log_len = 0;
 		dave_byte_8(frame[index++], frame[index++], log_len);
-		log_len = base_log_load(&frame[index], LOG_ONCE_SEND_BYTE_MAX-index, &level);
+		log_ptr = &frame[index];
+		log_len = base_log_load(log_ptr, LOG_ONCE_SEND_BYTE_MAX-index, &level);
 		if((log_len == 0) || (level >= TRACELEVEL_MAX))
 		{
 			dave_mfree(data);
@@ -139,6 +142,8 @@ _log_client_record_log(void)
 		dave_byte_8(frame[len_index], frame[len_index + 1], log_len);
 
 		data->len = data->tot_len = index + log_len;
+
+		log_save_txt_file(_log_product_name, _log_device_info, level, log_ptr, log_len);
 
 		if(rxtx_writes(_log_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_false)
 			break;
@@ -416,6 +421,8 @@ _log_client_init(MSGBODY *msg)
 	_log_client_snd_booting_message_flag = dave_false;
 
 	_log_client_connect_req();
+
+	log_save_init(30);
 }
 
 static void
@@ -457,6 +464,8 @@ _log_client_exit(MSGBODY *msg)
 		clean_rxtx(_log_client_socket);
 		_log_client_socket = INVALID_SOCKET_ID;
 	}
+
+	log_save_exit();
 }
 
 // =====================================================================

@@ -7,7 +7,7 @@
 
 #include "base_macro.h"
 #include "log_stack.h"
-#ifdef LOG_STACK_SERVER
+#if defined(LOG_STACK_SERVER) || defined(LOG_STACK_CLIENT)
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_3rdparty.h"
@@ -17,6 +17,7 @@
 #include "log_save_txt.h"
 #include "log_save_cfg.h"
 #include "log_save_chain.h"
+#include "log_save_auto_clean.h"
 #include "log_log.h"
 
 #define LOG_FILE_CLOSE_TIME 86400 * 2
@@ -159,51 +160,12 @@ _log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub conte
 	SAFECODEv1(pLog->pv, log_save_txt(pLog->file_id, level, content_ptr, content_len); );
 }
 
-// =====================================================================
+#ifdef LOG_STACK_SERVER
 
-void
-log_save_init(void)
-{
-	log_save_cfg_init();
-
-	_log_file_kv = kv_malloc("logsave", LOG_FILE_CLOSE_TIME, _log_save_timer_out);
-
-	log_save_chain_init();
-}
-
-void
-log_save_exit(void)
-{
-	log_save_chain_exit();
-
-	kv_free(_log_file_kv, _log_save_recycle);
-
-	log_save_cfg_exit();
-}
-
-void
-log_save_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
-{
-	if(log_save_json_enable() == dave_true)
-	{
-		_log_save_to_json_file(file_name, level, content_ptr, content_len);
-	}
-}
-
-void
-log_save_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
-{
-	if(log_save_json_enable() == dave_true)
-	{
-		_log_save_to_txt_file(file_name, level, content_ptr, content_len);
-	}
-}
-
-void
-log_save_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len)
+static inline void
+_log_save_to_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len)
 {
 	LogFile *pLog = _log_save_file_id(file_name);
-
 	if(pLog == NULL)
 	{
 		LOGABNOR("save content:%d/%s to %s failed!",
@@ -213,6 +175,101 @@ log_save_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *conte
 
 	SAFECODEv1(pLog->pv, log_save_chain(pLog->file_id, device_info, service_verno, content_ptr, content_len); );
 }
+
+static inline ub
+_log_save_build_chain_file_name(s8 *file_name_ptr, ub file_name_len, s8 *chain_name)
+{
+	DateStruct date = t_time_get_date(NULL);
+
+	dave_snprintf(file_name_ptr, sizeof(file_name_ptr), "%s/%04d%02d%02d/%02d/%02d",
+		chain_name,
+		date.year, date.month, date.day,
+		date.hour, date.minute);
+}
+
+#endif
+
+static inline ub
+_log_save_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info, s8 *extension)
+{
+	DateStruct date = t_time_get_date(NULL);
+
+	return dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s.%s",
+		project_name,
+		date.year, date.month, date.day,
+		device_info,
+		extension);
+}
+
+// =====================================================================
+
+void
+log_save_init(ub log_reserved_days)
+{
+	log_save_cfg_init();
+
+	_log_file_kv = kv_malloc("logsave", LOG_FILE_CLOSE_TIME, _log_save_timer_out);
+
+#ifdef LOG_STACK_SERVER
+	log_save_chain_init();
+#endif
+
+	log_save_auto_clean_init(log_reserved_days);
+}
+
+void
+log_save_exit(void)
+{
+#ifdef LOG_STACK_SERVER
+	log_save_chain_exit();
+#endif
+
+	kv_free(_log_file_kv, _log_save_recycle);
+
+	log_save_cfg_exit();
+
+	log_save_auto_clean_exit();
+}
+
+void
+log_save_json_file(s8 *project_name, s8 *device_info, TraceLevel level, s8 *content_ptr, ub content_len)
+{
+	if(log_save_json_enable() == dave_true)
+	{
+		s8 file_ptr[256];
+
+		_log_save_build_log_file_name(file_ptr, sizeof(file_ptr), project_name, device_info, "json");
+	
+		_log_save_to_json_file(file_ptr, level, content_ptr, content_len);
+	}
+}
+
+void
+log_save_txt_file(s8 *project_name, s8 *device_info, TraceLevel level, s8 *content_ptr, ub content_len)
+{
+	if(log_save_txt_enable() == dave_true)
+	{
+		s8 file_ptr[256];
+
+		_log_save_build_log_file_name(file_ptr, sizeof(file_ptr), project_name, device_info, "txt");
+
+		_log_save_to_txt_file(file_ptr, level, content_ptr, content_len);
+	}
+}
+
+#ifdef LOG_STACK_SERVER
+
+void
+log_save_chain_file(s8 *chain_name, s8 *device_info, s8 *service_verno, s8 *content_ptr, ub content_len)
+{
+	s8 file_ptr[256];
+
+	_log_save_build_chain_file_name(file_ptr, sizeof(file_ptr), chain_name);
+
+	_log_save_to_chain_file(file_ptr, device_info, service_verno, content_ptr, content_len);
+}
+
+#endif
 
 #endif
 

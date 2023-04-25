@@ -160,6 +160,15 @@ _linux_dir_file_number(DIR *pDir, s8 *file_path)
 	return file_number;
 }
 
+static void
+_linux_dir_Getfilepath(const char *path, const char *filename,  char *filepath)
+{
+    strcpy(filepath, path);
+    if(filepath[strlen(path) - 1] != '/')
+        strcat(filepath, "/");
+    strcat(filepath, filename);
+}
+
 // =====================================================================
 
 sb
@@ -515,6 +524,39 @@ void
 dave_os_file_creat_dir(s8 *dir)
 {
 	_linux_file_creat_dir(dir);
+}
+
+dave_bool
+dave_os_file_remove_dir(s8 *dir)
+{
+	DIR *dir_obj;
+	struct dirent *dirinfo;
+	struct stat statbuf;
+	char filepath[256] = {0};
+
+	lstat(dir, &statbuf);
+
+	if(S_ISREG(statbuf.st_mode))
+	{
+		remove(dir);
+	}
+	else if(S_ISDIR(statbuf.st_mode))
+	{
+		if((dir_obj = opendir(dir)) == NULL)
+			return dave_false;
+		while((dirinfo = readdir(dir_obj)) != NULL)
+		{
+			_linux_dir_Getfilepath(dir, dirinfo->d_name, filepath);
+ 			if (strcmp(dirinfo->d_name, ".") == 0 || strcmp(dirinfo->d_name, "..") == 0)
+				continue;
+			dave_os_file_remove_dir(filepath);
+			rmdir(filepath);
+		}
+		closedir(dir_obj);
+
+		remove(dir);
+	}
+	return dave_true;
 }
 
 MBUF *

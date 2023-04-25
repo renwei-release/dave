@@ -7,7 +7,7 @@
 
 #include "base_macro.h"
 #include "log_stack.h"
-#ifdef LOG_STACK_SERVER
+#if defined(LOG_STACK_SERVER) || defined(LOG_STACK_CLIENT)
 #include <dlfcn.h>
 #include "dave_base.h"
 #include "dave_tools.h"
@@ -34,7 +34,11 @@ _log_save_type_reset(void)
 	s8 *cfg_ptr;
 	s8 type_str[128];
 
+#ifdef LOG_STACK_SERVER
 	cfg_get_by_default(CFG_LOG_SAVE_TYPE, cfg_data, sizeof(cfg_data), "json|txt");
+#else
+	cfg_get_by_default(CFG_LOG_SAVE_TYPE, cfg_data, sizeof(cfg_data), "txt");
+#endif
 
 	cfg_len = dave_strlen(cfg_data);
 	safe_counter = 0;

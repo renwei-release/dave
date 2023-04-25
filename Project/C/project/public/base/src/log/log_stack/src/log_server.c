@@ -50,34 +50,12 @@ _log_server_debug(ThreadId src, DebugReq *pReq)
 }
 
 static inline void
-_log_server_trace(s8 *log_file, s8 *log_ptr, ub log_len)
+_log_server_trace(s8 *project_name, s8 *device_info, s8 *log_ptr, ub log_len)
 {
 	if(_log_server_trace_enable == dave_false)
 		return;
 
-	LOGLOG("log_file:%s log_len:%d log_ptr:%s", log_file, log_len, log_ptr);
-}
-
-static inline ub
-_log_server_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info)
-{
-	DateStruct date = t_time_get_date(NULL);
-
-	return dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s",
-		project_name,
-		date.year, date.month, date.day,
-		device_info);
-}
-
-static inline void
-_log_server_build_chain_file_name(s8 *file_name_ptr, ub file_name_len, s8 *chain_name)
-{
-	DateStruct date = t_time_get_date(NULL);
-
-	dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%02d/%02d",
-		chain_name,
-		date.year, date.month, date.day,
-		date.hour, date.minute);
+	LOGLOG("log_file:%s/%s log_len:%d log_ptr:%s", project_name, device_info, log_len, log_ptr);
 }
 
 static inline void
@@ -86,18 +64,10 @@ _log_server_log_save(
 	TraceLevel level,
 	s8 *log_ptr, ub log_len)
 {
-	s8 log_file_name[256];
-	ub log_file_len;
+	_log_server_trace(project_name, device_info, log_ptr, log_len);
 
-	log_file_len = _log_server_build_log_file_name(log_file_name, sizeof(log_file_name), project_name, device_info);
-
-	_log_server_trace(log_file_name, log_ptr, log_len);
-
-	dave_snprintf(&log_file_name[log_file_len], sizeof(log_file_name)-log_file_len, ".json");
-	log_save_json_file(log_file_name, level, log_ptr, log_len);
-
-	dave_snprintf(&log_file_name[log_file_len], sizeof(log_file_name)-log_file_len, ".txt");
-	log_save_txt_file(log_file_name, level, log_ptr, log_len);
+	log_save_json_file(project_name, device_info, level, log_ptr, log_len);
+	log_save_txt_file(project_name, device_info, level, log_ptr, log_len);
 }
 
 static inline void
@@ -188,7 +158,6 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 	s8 service_verno[256];
 	u16 service_verno_len;
 	u16 chain_len;
-	s8 log_file_name[256];
 
 	frame_index = 0;
 
@@ -212,11 +181,9 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 	}
 	dave_byte_8_32(chain_len, frame[frame_index++], frame[frame_index++], frame[frame_index++], frame[frame_index++]);
 
-	_log_server_build_chain_file_name(log_file_name, sizeof(log_file_name), chain_name);
+	_log_server_trace(chain_name, device_info, (s8 *)(&frame[frame_index]), chain_len);
 
-	_log_server_trace(log_file_name, (s8 *)(&frame[frame_index]), chain_len);
-
-	log_save_chain_file(log_file_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
+	log_save_chain_file(chain_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
 }
 
 static void
@@ -320,7 +287,7 @@ _log_server_init(MSGBODY *msg)
 
 	_log_server_bind_req();
 
-	log_save_init();
+	log_save_init(0);
 }
 
 static void
