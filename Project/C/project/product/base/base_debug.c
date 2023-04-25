@@ -53,6 +53,20 @@ _concurrency_echo(s8 *dst, MsgIdEcho *pNewEcho)
 	}
 }
 
+static void
+_memory_debug(void)
+{
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
+
+	BASELOG("memory overflow debug");
+
+	t_stdio_print_hex("1", &(((u8 *)(pRsp))[sizeof(pRsp->msg)]), 10);
+	dave_memset(&(((u8 *)(pRsp))[sizeof(pRsp->msg)]), 0x00, 10);
+	t_stdio_print_hex("2", &(((u8 *)(pRsp))[sizeof(pRsp->msg)]), 10);
+
+	thread_msg_release(pRsp);
+}
+
 // =====================================================================
 
 void
@@ -109,9 +123,18 @@ base_echo(ThreadId src, MsgIdEcho *pEcho)
 void
 base_debug(ThreadId src, DebugReq *pReq)
 {
-	DebugRsp *pRsp = thread_msg(pRsp);
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
 
-	dave_strcpy(pRsp->msg, pReq->msg, sizeof(pRsp->msg));
+	switch(pReq->msg[0])
+	{
+		case 'm':
+				_memory_debug();
+			break;
+		default:
+			break;
+	}
+	if(pRsp->msg[0] == '\0')
+		dave_strcpy(pRsp->msg, pReq->msg, sizeof(pRsp->msg));
 	pRsp->ptr = pReq->ptr;
 
 	id_msg(src, MSGID_DEBUG_RSP, pRsp);

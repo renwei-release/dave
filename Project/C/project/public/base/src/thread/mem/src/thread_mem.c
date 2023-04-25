@@ -9,33 +9,40 @@
 #ifdef __DAVE_BASE__
 #include "dave_tools.h"
 #include "dave_base.h"
+#include "base_tools.h"
 #include "thread_tools.h"
 #include "thread_mem.h"
-#include "thread_exter_mem.h"
 #include "thread_log.h"
 
 extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
-static dave_bool _thread_mem_init_flag_ = dave_false;
+#define THREAD_MEM_MAX 4
+#define THREAD_MEM_NAME "THREAD"
+
+static BlockMem _thread_mem[THREAD_MEM_MAX];
+
+static inline void
+__thread_mem_init__(void)
+{
+	static volatile sb __safe_pre_flag__ = 0;
+
+	SAFEPre(__safe_pre_flag__, { block_mem_reset(_thread_mem, THREAD_MEM_MAX); });
+}
 
 static inline void *
 __thread_malloc__(ub len, ub msg_id, s8 *file, ub line)
 {
-	void *ptr;
+	__thread_mem_init__();
 
-	ptr = thread_exter_malloc(len, file, line);
-
-	return ptr;
+	return block_malloc(_thread_mem, len, file, line);
 }
 
 static inline dave_bool
 __thread_free__(void *ptr, ub msg_id, s8 *file, ub line)
 {
-	dave_bool ret;
+	__thread_mem_init__();
 
-	ret = thread_exter_free(ptr, file, line);
-
-	return ret;
+	return block_free(_thread_mem, ptr, file, line);
 }
 
 static inline dave_bool
@@ -46,14 +53,9 @@ __thread_memory_at_here__(void *ptr)
 		return dave_false;
 	}
 
-	if(thread_exter_memory(ptr, (s8 *)__func__, (ub)__LINE__) == dave_true)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
+	__thread_mem_init__();
+
+	return block_memory(_thread_mem, ptr, (s8 *)__func__, (ub)__LINE__);
 }
 
 static void
@@ -84,13 +86,13 @@ _thread_mem_poweroff(s8 *file, ub line, ub len, ub msg_id)
 static void
 _thread_memory_init(void)
 {
-	thread_exter_mem_init();
+	__thread_mem_init__();
 }
 
 static void
 _thread_memory_exit(void)
 {
-	thread_exter_mem_exit();
+	block_info_write(THREAD_MEM_NAME, _thread_mem);
 }
 
 // =====================================================================
@@ -98,39 +100,13 @@ _thread_memory_exit(void)
 void
 thread_memory_init(void)
 {
-	dave_bool init_flag = dave_false;
-
-	thread_lock();
-	if(_thread_mem_init_flag_ == dave_false)
-	{
-		_thread_mem_init_flag_ = dave_true;
-		init_flag = dave_true;	
-	}
-	thread_unlock();
-
-	if(init_flag == dave_true)
-	{
-		_thread_memory_init();
-	}
+	_thread_memory_init();
 }
 
 void
 thread_memory_exit(void)
 {
-	dave_bool exit_flag = dave_false;
-
-	thread_lock();
-	if(_thread_mem_init_flag_ == dave_true)
-	{
-		_thread_mem_init_flag_ = dave_false;
-		exit_flag = dave_true;	
-	}
-	thread_unlock();
-
-	if(exit_flag == dave_true)
-	{
-		_thread_memory_exit();
-	}
+	_thread_memory_exit();
 }
 
 void *
@@ -178,7 +154,7 @@ thread_memory_info(s8 *info_ptr, ub info_len, dave_bool base_flag)
 {
 	ub info_index = 0;
 
-	info_index += thread_exter_memory_info(&info_ptr[info_index], info_len-info_index, base_flag);
+	info_index += block_info(THREAD_MEM_NAME, _thread_mem, info_ptr, info_len, base_flag, dave_false, 0);
 
 	return info_index;
 }

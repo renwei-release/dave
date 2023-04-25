@@ -18,12 +18,15 @@ SHHOMEPATH=$(cd `dirname $0`; pwd)
 exit_contains=`docker ps -a | grep -w "${PROJECT}"`
 if [ "$exit_contains" == "" ]; then
    SWARM_PORT=4002
-	API_PORT=5001
-	GATEWAY_PORT=8088
+   API_PORT=5001
+   GATEWAY_PORT=8088
+   FROM=ipfs/go-ipfs:master-2022-10-19-8c72ea9
    # Swarm listening on ${SWARM_PORT}/tcp/udp
    # API server listening on ${API_PORT}
-	# WebUI: http://0.0.0.0:${API_PORT}/webui
-   docker run -d --name ${PROJECT} --ulimit nofile=4096 -p ${SWARM_PORT}:4001/tcp -p ${SWARM_PORT}:4001/udp -p ${API_PORT}:5001 -p ${GATEWAY_PORT}:8080 --restart always ipfs/go-ipfs:master-2022-10-19-8c72ea9
-else
-   docker restart ${PROJECT}
+	# WebUI: http://127.0.0.1:${API_PORT}/webui
+   docker run -d --name ${PROJECT} --ulimit nofile=4096 -p ${SWARM_PORT}:4001/tcp -p ${SWARM_PORT}:4001/udp -p 127.0.0.1:${API_PORT}:5001 -p 127.0.0.1:${GATEWAY_PORT}:8080 --restart always ${FROM}
+   sleep 10s
+   docker exec -it ${PROJECT} sed -i 's/    "API": "\/ip4\/0.0.0.0\/tcp\/5001",/    "API": "\/ip4\/127.0.0.1\/tcp\/5001",/g' /data/ipfs/config
+   docker exec -t ${PROJECT} sed -i 's/    "Gateway": "\/ip4\/0.0.0.0\/tcp\/8080",/    "Gateway": "\/ip4\/127.0.0.1\/tcp\/8080",/g' /data/ipfs/config
 fi
+docker restart ${PROJECT}

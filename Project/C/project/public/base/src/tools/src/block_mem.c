@@ -37,8 +37,8 @@
 #define OFFSET_LEN (16)
 #define USERINDEX_LEN (32)
 #define OVERFLOW_LEN (4)
-#define MEMADD_LEN (USERINDEX_LEN + OVERFLOW_LEN)
 #define OVERFLOW_CHAR (0xA5)
+#define MEMADD_LEN (USERINDEX_LEN + OVERFLOW_LEN)
 
 #define TOP_INFO_MAX 32
 
@@ -323,6 +323,9 @@ _block_mem_add_overflow(void *ptr, ub len)
 	if(ptr == NULL) return;
 
 	(((u8 *)ptr)[len + 0]) = OVERFLOW_CHAR;
+	(((u8 *)ptr)[len + 1]) = OVERFLOW_CHAR;
+	(((u8 *)ptr)[len + 2]) = OVERFLOW_CHAR;
+	(((u8 *)ptr)[len + 3]) = OVERFLOW_CHAR;
 }
 
 static inline dave_bool
@@ -332,10 +335,20 @@ _block_mem_check_overflow(void *ptr, ub len)
 	{
 		return dave_false;
 	}
-	else
+	if(((u8 *)ptr)[len + 1] != OVERFLOW_CHAR)
 	{
-		return dave_true;
+		return dave_false;
 	}
+	if(((u8 *)ptr)[len + 2] != OVERFLOW_CHAR)
+	{
+		return dave_false;
+	}
+	if(((u8 *)ptr)[len + 3] != OVERFLOW_CHAR)
+	{
+		return dave_false;
+	}
+
+	return dave_true;
 }
 
 static inline ub

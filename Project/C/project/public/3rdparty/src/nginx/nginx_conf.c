@@ -180,6 +180,20 @@ _nginx_conf_write_allow_cross_domain_cfg(s8 *conf, ub conf_len)
 }
 
 static ub
+_nginx_conf_disable_some_info_cfg(s8 *conf, ub conf_len)
+{
+	ub conf_index;
+
+	conf_index = 0;
+
+	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "      server_tokens off;\n");
+	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "      proxy_hide_header X-Powered-By;\n");
+	conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "      proxy_hide_header Server;\n");
+
+	return conf_index;
+}
+
+static ub
 _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port, s8 *nginx_path, s8 *pem_path, s8 *key_path)
 {
 	ub conf_index;
@@ -204,6 +218,7 @@ _nginx_conf_write_https_server(s8 *conf, ub conf_len, ub https_port, ub cgi_port
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   listen	%d ssl;\n", https_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   server_name	https_%d;\n", https_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   error_page   500 502 503 504 /50x.html;\n");
+		conf_index += _nginx_conf_disable_some_info_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_session_cache shared:SSL:10m;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, " 	   ssl_session_timeout 10m;\n");
@@ -240,6 +255,7 @@ _nginx_conf_write_http_server(s8 *conf, ub conf_len, ub http_port, ub cgi_port, 
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        listen       %d;\n", http_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        server_name  http_%d;\n", http_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        error_page   500 502 503 504 /50x.html;\n");
+		conf_index += _nginx_conf_disable_some_info_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location %s {\n", nginx_path);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_pass   127.0.0.1:%d;\n", cgi_port);
@@ -271,6 +287,8 @@ _nginx_conf_write_web_server(s8 *conf, ub conf_len, ub web_port, ub cgi_port, s8
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "          index  index.html index.htm;\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        }\n\n");
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        error_page   500 502 503 504 /50x.html;\n");
+		conf_index += _nginx_conf_disable_some_info_cfg(&conf[conf_index], conf_len-conf_index);
+		conf_index += _nginx_conf_write_allow_cross_domain_cfg(&conf[conf_index], conf_len-conf_index);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "        location %s {\n", nginx_path);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_pass   127.0.0.1:%d;\n", cgi_port);
 		conf_index += dave_snprintf(&conf[conf_index], conf_len-conf_index, "            fastcgi_index   index.cgi;\n");
