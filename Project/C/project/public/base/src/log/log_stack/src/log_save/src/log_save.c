@@ -176,7 +176,7 @@ _log_save_to_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *c
 	SAFECODEv1(pLog->pv, log_save_chain(pLog->file_id, device_info, service_verno, content_ptr, content_len); );
 }
 
-static inline ub
+static inline void
 _log_save_build_chain_file_name(s8 *file_name_ptr, ub file_name_len, s8 *chain_name)
 {
 	DateStruct date = t_time_get_date(NULL);
@@ -189,12 +189,12 @@ _log_save_build_chain_file_name(s8 *file_name_ptr, ub file_name_len, s8 *chain_n
 
 #endif
 
-static inline ub
+static inline void
 _log_save_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_name, s8 *device_info, s8 *extension)
 {
 	DateStruct date = t_time_get_date(NULL);
 
-	return dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s.%s",
+	dave_snprintf(file_name_ptr, file_name_len, "%s/%04d%02d%02d/%s.%s",
 		project_name,
 		date.year, date.month, date.day,
 		device_info,
