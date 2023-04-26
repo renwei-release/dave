@@ -14,12 +14,12 @@
 #include "log_buffer.h"
 #include "log_stack.h"
 #include "log_trace.h"
+#include "log_fifo.h"
+#include "log_param.h"
+#include "log_log.h"
 #undef vsnprintf
 #include <stdio.h>
 #include <stdlib.h>
-
-#define CFG_LOG_TRACE_ENABLE "LOGTraceEnable"
-#define LOG_TRACE_DEFAULT_CFG dave_true
 
 static s8 _trace_buffer[LOG_BUFFER_LENGTH];
 static ub _log_log_counter = 0;
@@ -113,12 +113,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
 	}
 
-	if((log_buf != NULL)
-		&& (_log_trace_enable == dave_true)
-		&& (level != TRACELEVEL_CATCHER))
-	{
-		dave_os_trace(level, log_len, (u8 *)log_buf);
-	}
+	log_fifo(_log_trace_enable, level, log_len, (u8 *)log_buf);
 
 	return log_buf;
 }
@@ -259,11 +254,15 @@ base_log_trace_enable(dave_bool write_cfg)
 	{
 		cfg_set_bool(CFG_LOG_TRACE_ENABLE, _log_trace_enable);
 	}
+
+	LOGLOG("log trace enable!");
 }
 
 void
 base_log_trace_disable(dave_bool write_cfg)
 {
+	LOGLOG("log trace disable!");
+
 	_log_trace_enable = dave_false;
 
 	if(write_cfg == dave_true)

@@ -6,19 +6,17 @@
  */
 
 #include "base_macro.h"
+#include "dave_tools.h"
 #include "dave_os.h"
 
-static ub _lock_ptr_init_flag = 0x00;
-static s8 _lock_ptr[256];
+static TLock _log_pv;
 
 static inline void
 _log_lock_init(void)
 {
-	if(_lock_ptr_init_flag != 0x1234567890)
-	{
-		_lock_ptr_init_flag = 0x1234567890;
-		dave_os_spin_lock_init((void *)_lock_ptr);
-	}
+	static volatile sb __safe_pre_flag__ = 0;
+
+	SAFEPre(__safe_pre_flag__, t_lock_reset(&_log_pv); );
 }
 
 // =====================================================================
@@ -43,12 +41,13 @@ void
 log_lock(void)
 {
 	_log_lock_init();
-	dave_os_spin_lock((void *)_lock_ptr);
+
+	t_lock_spin(&_log_pv);
 }
 
 void
 log_unlock(sb flag)
 {
-	dave_os_spin_unlock((void *)_lock_ptr);
+	t_unlock_spin(&_log_pv);
 }
 

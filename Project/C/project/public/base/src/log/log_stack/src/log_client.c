@@ -15,7 +15,8 @@
 #include "base_rxtx.h"
 #include "thread_chain.h"
 #include "log_buffer.h"
-#include "log_save.h"
+#include "log_fifo.h"
+#include "log_info.h"
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_IP_V4 "LOGSerIPV4"
@@ -29,13 +30,9 @@ static void _log_client_reconnect(TIMERID timer_id, ub thread_index);
 
 static ThreadId _log_client_thread = INVALID_THREAD_ID;
 static TIMERID _log_snd_log_timer_id = INVALID_TIMER_ID;
-static s8 _log_product_name[2048];
 static u16 _log_product_name_len;
-static s8 _log_chain_name[128];
 static u16 _log_chain_name_len;
-static s8 _log_device_info[2048];
 static u16 _log_device_info_len;
-static s8 _log_version[128];
 static u16 _log_version_len;
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 static ThreadId _bdata_thread = INVALID_THREAD_ID;
@@ -55,22 +52,6 @@ _log_client_disconnect(s32 socket)
 
 		id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
 	}
-}
-
-static void
-_log_client_get_device_info(s8 *info_ptr, ub info_len)
-{
-	s8 host_name[128];
-	u8 mac[DAVE_MAC_ADDR_LEN];
-
-	dave_os_load_host_name(host_name, sizeof(host_name));
-
-	dave_os_load_mac(mac);
-
-	dave_snprintf(info_ptr, info_len, "%s-%02X%02X%02X%02X%02X%02X",
-		host_name,
-		mac[0], mac[1], mac[2],
-		mac[3], mac[4], mac[5]);
 }
 
 static void
@@ -123,9 +104,9 @@ _log_client_record_log(void)
 
 		index = 0;
 		dave_byte_8(frame[index++], frame[index++], _log_product_name_len);
-		index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
+		index += dave_memcpy(&frame[index], log_info_product(), _log_product_name_len);
 		dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
-		index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+		index += dave_memcpy(&frame[index], log_info_device(), _log_device_info_len);
 		level_index = index; level = TRACELEVEL_LOG;
 		dave_byte_8(frame[index++], frame[index++], level);
 		len_index = index; log_len = 0;
@@ -142,8 +123,6 @@ _log_client_record_log(void)
 		dave_byte_8(frame[len_index], frame[len_index + 1], log_len);
 
 		data->len = data->tot_len = index + log_len;
-
-		log_save_txt_file(_log_product_name, _log_device_info, level, log_ptr, log_len);
 
 		if(rxtx_writes(_log_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_false)
 			break;
@@ -171,11 +150,11 @@ _log_client_chain_log(void)
 
 		index = 0;
 		dave_byte_8(frame[index++], frame[index++], _log_chain_name_len);
-		index += dave_memcpy(&frame[index], _log_chain_name, _log_chain_name_len);
+		index += dave_memcpy(&frame[index], log_info_chain(), _log_chain_name_len);
 		dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
-		index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+		index += dave_memcpy(&frame[index], log_info_device(), _log_device_info_len);
 		dave_byte_8(frame[index++], frame[index++], _log_version_len);
-		index += dave_memcpy(&frame[index], _log_version, _log_version_len);
+		index += dave_memcpy(&frame[index], dave_verno(), _log_version_len);
 		dave_byte_32_8(frame[index++], frame[index++], frame[index++], frame[index++], chain_data->len);
 
 		data->tot_len = data->len = index;
@@ -213,9 +192,9 @@ _log_client_booting_message(void)
 	frame = dave_mptr(data);
 
 	dave_byte_8(frame[index++], frame[index++], _log_product_name_len);
-	index += dave_memcpy(&frame[index], _log_product_name, _log_product_name_len);
+	index += dave_memcpy(&frame[index], log_info_product(), _log_product_name_len);
 	dave_byte_8(frame[index++], frame[index++], _log_device_info_len);
-	index += dave_memcpy(&frame[index], _log_device_info, _log_device_info_len);
+	index += dave_memcpy(&frame[index], log_info_device(), _log_device_info_len);
 	dave_byte_8(frame[index++], frame[index++], TRACELEVEL_BOOT);
 	len_index = index; booting_message_length = 0;
 	dave_byte_8(frame[index++], frame[index++], booting_message_length);
@@ -405,13 +384,10 @@ _log_client_init(MSGBODY *msg)
 {
 	_log_snd_log_timer_id = INVALID_TIMER_ID;
 
-	dave_product(dave_verno(), _log_product_name, sizeof(_log_product_name));
-	_log_product_name_len = dave_strlen(_log_product_name);
-	_log_chain_name_len = dave_snprintf(_log_chain_name, sizeof(_log_chain_name), "CHAIN");
-	_log_client_get_device_info(_log_device_info, sizeof(_log_device_info));
-	_log_device_info_len = dave_strlen(_log_device_info);
-	dave_strcpy(_log_version, dave_verno(), sizeof(_log_version));
-	_log_version_len = dave_strlen(_log_version);
+	_log_product_name_len = dave_strlen(log_info_product());
+	_log_chain_name_len = dave_strlen(log_info_chain());
+	_log_device_info_len = dave_strlen(log_info_device());
+	_log_version_len = dave_strlen(dave_verno());
 
 	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 	_bdata_thread = INVALID_THREAD_ID;
@@ -422,7 +398,7 @@ _log_client_init(MSGBODY *msg)
 
 	_log_client_connect_req();
 
-	log_save_init(30);
+	log_fifo_init();
 }
 
 static void
@@ -454,8 +430,7 @@ _log_client_main(MSGBODY *msg)
 static void
 _log_client_exit(MSGBODY *msg)
 {
-	if(msg == NULL)
-		return;
+	log_fifo_exit();
 
 	_log_client_stop_snd_timer();
 
@@ -464,8 +439,6 @@ _log_client_exit(MSGBODY *msg)
 		clean_rxtx(_log_client_socket);
 		_log_client_socket = INVALID_SOCKET_ID;
 	}
-
-	log_save_exit();
 }
 
 // =====================================================================

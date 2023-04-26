@@ -36,23 +36,11 @@
 #define KEY_INPUT_MAX (2048)
 #define KEY_WAIT_TIME (4)
 
-typedef struct {
-	TraceLevel level;
-	ub data_len;
-	u8 *data_ptr;
-
-	void *next;
-} TTYWriteChain;
-
 static void *_tty_read_thread_body = NULL;
-static void *_tty_write_thread_body = NULL;
 static sync_notify_fun _notify_fun = NULL;
 static s8 _keypad_char[KEY_INPUT_MAX];
 static u32 _keypad_write = 0;
 static u32 _keypad_read = 0;
-static TLock _write_pv;
-static TTYWriteChain *_write_chain_head = NULL;
-static TTYWriteChain *_write_chain_tail = NULL;
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
 static void
@@ -89,33 +77,6 @@ _tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
 	}
 }
 
-static TTYWriteChain *
-_tty_malloc_chain(TraceLevel level, ub data_len, u8 *data_ptr)
-{
-	TTYWriteChain *pChain = dave_malloc(sizeof(TTYWriteChain));
-
-	pChain->level = level;
-	pChain->data_len = data_len;
-	pChain->data_ptr = dave_malloc(pChain->data_len + 1);
-	dave_memcpy(pChain->data_ptr, data_ptr, data_len);
-	pChain->data_ptr[data_len] = '\0';
-	pChain->next = NULL;
-
-	return pChain;
-}
-
-static void
-_tty_free_chain(TTYWriteChain *pChain)
-{
-	if(pChain != NULL)
-	{
-		if(pChain->data_ptr != NULL)
-			dave_free(pChain->data_ptr);
-
-		dave_free(pChain);
-	}
-}
-
 static dave_bool
 _tty_read_data(void)
 {
@@ -147,45 +108,6 @@ _tty_read_data(void)
 	return dave_true;
 }
 
-static void
-_tty_write_data(void)
-{
-	ub safe_counter;
-	TTYWriteChain *pChain;
-
-	safe_counter = 0;
-
-	while((safe_counter ++) < 102400)
-	{
-		pChain = NULL;
-	
-		SAFECODEv1(_write_pv, {
-
-			if(_write_chain_head != NULL)
-			{
-				pChain = _write_chain_head;
-
-				_write_chain_head = _write_chain_head->next;
-
-				if(_write_chain_head == NULL)
-				{
-					_write_chain_tail = NULL;
-				}
-			}
-
-		});
-
-		if(pChain == NULL)
-		{
-			break;
-		}
-
-		_tty_trace(pChain->level, pChain->data_len, pChain->data_ptr);
-
-		_tty_free_chain(pChain);
-	}
-}
-
 static void *
 _tty_read_thread(void *arg)
 {
@@ -203,24 +125,7 @@ _tty_read_thread(void *arg)
 	{
 		if(_tty_read_data() == dave_false)
 			break;
-
-		_tty_write_data();
 	}
-
-	return NULL;
-}
-
-static void *
-_tty_write_thread(void *arg)
-{
-	while(dave_os_thread_canceled(_tty_write_thread_body) == dave_false)
-	{
-		dave_os_thread_sleep(_tty_write_thread_body);
-	
-		_tty_write_data();
-	}
-
-	_tty_write_data();
 
 	return NULL;
 }
@@ -234,8 +139,6 @@ _tty_pre_init(void)
 	SAFEPre(__safe_pre_flag__, {
 		_notify_fun = NULL;
 		_keypad_write = _keypad_read = 0;
-		t_lock_reset(&_write_pv);
-		_write_chain_head = _write_chain_tail = NULL;
 		_is_on_backend_printf_disable = dave_false;
 		thread_init = dave_true;
 	} );
@@ -247,12 +150,6 @@ _tty_pre_init(void)
 		if(_tty_read_thread_body == NULL)
 		{
 			OSABNOR("i can not start tty read thread!");
-		}
-	
-		_tty_write_thread_body = dave_os_create_thread("tty-write", _tty_write_thread, NULL);
-		if(_tty_write_thread_body == NULL)
-		{
-			OSABNOR("i can not start tty write thread!");
 		}
 	}
 }
@@ -277,10 +174,6 @@ dave_os_tty_exit(void)
 	if(_tty_read_thread_body != NULL)
 	{
 		dave_os_release_thread(_tty_read_thread_body);
-	}
-	if(_tty_write_thread_body != NULL)
-	{
-		dave_os_release_thread(_tty_write_thread_body);
 	}
 
 	dave_os_sleep((KEY_WAIT_TIME + 1) * 1000);
@@ -310,26 +203,7 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 void
 dave_os_trace(TraceLevel level, ub data_len, u8 *data_ptr)
 {
-	TTYWriteChain *pChain = _tty_malloc_chain(level, data_len, data_ptr);
-
-	_tty_pre_init();
-
-	SAFECODEv1(_write_pv, {
-
-		if(_write_chain_head == NULL)
-		{
-			_write_chain_head = _write_chain_tail = pChain;
-		}
-		else
-		{
-			_write_chain_tail->next = pChain;
-
-			_write_chain_tail = pChain;
-		}
-
-	});
-
-	dave_os_thread_wakeup(_tty_write_thread_body);
+	_tty_trace(level, data_len, data_ptr);
 }
 
 #endif
