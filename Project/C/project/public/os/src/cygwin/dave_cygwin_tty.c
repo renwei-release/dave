@@ -138,7 +138,7 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 }
 
 void
-dave_os_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+dave_os_trace(TraceLevel level, u16 buf_len, s8 *buf_ptr)
 {
 	sb result;
 

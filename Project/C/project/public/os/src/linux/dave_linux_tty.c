@@ -44,7 +44,7 @@ static u32 _keypad_read = 0;
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
 static void
-_tty_trace(TraceLevel level, u16 buf_len, u8 *buf_ptr)
+_tty_trace(TraceLevel level, u16 buf_len, s8 *buf_ptr)
 {
 	sb result;
 
@@ -182,7 +182,7 @@ dave_os_tty_exit(void)
 void
 dave_os_tty_write(u8 *data_ptr, ub data_len)
 {
-	dave_os_trace(TRACELEVEL_UI, data_len, data_ptr);
+	dave_os_trace(TRACELEVEL_UI, data_len, (s8 *)data_ptr);
 }
 
 ub
@@ -201,7 +201,7 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 }
 
 void
-dave_os_trace(TraceLevel level, ub data_len, u8 *data_ptr)
+dave_os_trace(TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	_tty_trace(level, data_len, data_ptr);
 }

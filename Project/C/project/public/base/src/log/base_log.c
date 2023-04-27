@@ -113,7 +113,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
 	}
 
-	log_fifo(_log_trace_enable, level, log_len, (u8 *)log_buf);
+	log_fifo(_log_trace_enable, level, log_len, log_buf);
 
 	return log_buf;
 }

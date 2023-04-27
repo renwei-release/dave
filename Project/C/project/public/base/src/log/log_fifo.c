@@ -10,32 +10,52 @@
 #include "dave_os.h"
 #include "log_save.h"
 #include "log_info.h"
+#include "log_buffer.h"
 #include "log_log.h"
 
 typedef struct {
 	TraceLevel level;
 	ub data_len;
-	u8 *data_ptr;
+	dave_bool data_from_mem;
+	s8 *data_ptr;
 
 	void *next;
 } LogFiFoChain;
 
 static TLock _log_fifo_pv;
+static sb _log_fifo_counter = 0;
 static LogFiFoChain *_log_fifo_chain_head = NULL;
 static LogFiFoChain *_log_fifo_chain_tail = NULL;
 static void *_log_fifo_thread_body = NULL;
 static dave_bool _log_trace_enable = dave_false;
 
 static inline LogFiFoChain *
-_log_fifo_malloc_chain(TraceLevel level, ub data_len, u8 *data_ptr)
+_log_fifo_malloc_chain(TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	LogFiFoChain *pChain = dave_malloc(sizeof(LogFiFoChain));
 
 	pChain->level = level;
 	pChain->data_len = data_len;
-	pChain->data_ptr = dave_malloc(pChain->data_len + 1);
-	dave_memcpy(pChain->data_ptr, data_ptr, data_len);
-	pChain->data_ptr[data_len] = '\0';
+	/*
+	 * data_ptr comes from log_buffer,
+	 * log_buffer is a looped array,
+	 * If too much data is cached in the FIFO,
+	 * worry about reaching the next loopback.
+	 * So, if the FIFO caches too much data,
+	 * it allocates its own memory to hold the data.
+	 */
+	if(_log_fifo_counter >= (LOG_BUFFER_MAX - 32))
+	{
+		pChain->data_from_mem = dave_true;
+		pChain->data_ptr = dave_malloc(pChain->data_len + 1);
+		dave_memcpy(pChain->data_ptr, data_ptr, data_len);
+		pChain->data_ptr[data_len] = '\0';
+	}
+	else
+	{
+		pChain->data_from_mem = dave_false;
+		pChain->data_ptr = data_ptr;
+	}
 	pChain->next = NULL;
 
 	return pChain;
@@ -46,8 +66,11 @@ _log_fifo_free_chain(LogFiFoChain *pChain)
 {
 	if(pChain != NULL)
 	{
-		if(pChain->data_ptr != NULL)
-			dave_free(pChain->data_ptr);
+		if(pChain->data_from_mem == dave_true)
+		{
+			if(pChain->data_ptr != NULL)
+				dave_free(pChain->data_ptr);
+		}
 
 		dave_free(pChain);
 	}
@@ -69,6 +92,15 @@ _log_fifo_output_data(void)
 
 			if(_log_fifo_chain_head != NULL)
 			{
+				if(_log_fifo_counter > 0)
+				{
+					_log_fifo_counter --;
+				}
+				else
+				{
+					LOGLOG("invalid fifo counter:%d", _log_fifo_counter);
+				}
+
 				pChain = _log_fifo_chain_head;
 
 				_log_fifo_chain_head = _log_fifo_chain_head->next;
@@ -86,7 +118,7 @@ _log_fifo_output_data(void)
 			break;
 		}
 
-		log_save_txt_file(log_info_product(), log_info_device(), pChain->level, (s8 *)(pChain->data_ptr), pChain->data_len);
+		log_save_txt_file(log_info_product(), log_info_device(), pChain->level, pChain->data_ptr, pChain->data_len);
 
 		if((_log_trace_enable == dave_true)
 			&& (pChain->level != TRACELEVEL_CATCHER))
@@ -99,11 +131,13 @@ _log_fifo_output_data(void)
 }
 
 static inline void
-_log_fifo_input_data(TraceLevel level, ub data_len, u8 *data_ptr)
+_log_fifo_input_data(TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	LogFiFoChain *pChain = _log_fifo_malloc_chain(level, data_len, data_ptr);
 
 	SAFECODEv1(_log_fifo_pv, {
+
+		_log_fifo_counter ++;
 
 		if(_log_fifo_chain_head == NULL)
 		{
@@ -141,6 +175,7 @@ _log_fifo_pre_init(void)
 
 	SAFEPre(__safe_pre_flag__, {
 		t_lock_reset(&_log_fifo_pv);
+		_log_fifo_counter = 0;
 		_log_fifo_chain_head = _log_fifo_chain_tail = NULL;
 	} );
 }
@@ -173,7 +208,7 @@ log_fifo_exit(void)
 }
 
 void
-log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, u8 *data_ptr)
+log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	_log_trace_enable = trace_enable;
 
