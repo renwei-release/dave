@@ -167,6 +167,12 @@ base_cfg_local_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	return ret;
 }
 
+void
+base_cfg_local_del(s8 *dir, s8 *name)
+{
+	base_json_cfg_dir_del(dir, name);
+}
+
 s8 *
 base_cfg_local_get_by_default(s8 *dir, s8 *name, s8 *value_ptr, ub value_len, s8 *default_value)
 {

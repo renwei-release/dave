@@ -137,6 +137,24 @@ _base_json_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	return ret;
 }
 
+static void
+_base_json_cfg_dir_del(s8 *dir, s8 *name)
+{
+	s8 file_name[1024];
+	FileOptFlag flag;
+	void *pJson;
+
+	flag = _base_json_cfg_file_path(dir, file_name, sizeof(file_name));
+
+	pJson = _base_json_cfg_read(flag, file_name);
+
+	dave_json_del_object(pJson, name);
+
+	_base_json_cfg_write(flag, file_name, pJson);
+
+	dave_json_free(pJson);
+}
+
 // =====================================================================
 
 RetCode
@@ -161,6 +179,14 @@ base_json_cfg_dir_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	SAFECODEv1(_json_config_option_pv, ret = _base_json_cfg_dir_get(dir, name, value_ptr, value_len); );
 
 	return ret;
+}
+
+void
+base_json_cfg_dir_del(s8 *dir, s8 *name)
+{
+	_base_json_cfg_booting();
+
+	SAFECODEv1(_json_config_option_pv, _base_json_cfg_dir_del(dir, name); );
 }
 
 #endif

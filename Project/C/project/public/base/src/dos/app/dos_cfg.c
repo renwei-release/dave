@@ -141,6 +141,25 @@ _dos_cfg_set(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
+static RetCode
+_dos_cfg_del(s8 *cmd_ptr, ub cmd_len)
+{
+	s8 cfg_name[1024];
+
+	dos_load_string(cmd_ptr, cmd_len, cfg_name, sizeof(cfg_name));
+
+	if(cfg_name[0] == '\0')
+	{
+		return RetCode_Invalid_parameter;
+	}
+
+	cfg_del(cfg_name);
+	
+	dos_print("del %s success!", cfg_name);
+
+	return RetCode_OK;
+}
+
 static void
 _dos_cfg_remote_get_one(s8 *cfg_name)
 {
@@ -249,6 +268,7 @@ dos_cfg_reset(void)
 {
 	dos_cmd_reg("get", _dos_cfg_get, _dos_cfg_get_help);
 	dos_cmd_reg("set", _dos_cfg_set, NULL);
+	dos_cmd_reg("del", _dos_cfg_del, NULL);
 	dos_cmd_reg("rget", _dos_cfg_remote_get, NULL);
 	dos_cmd_reg("rset", _dos_cfg_remote_set, NULL);
 }

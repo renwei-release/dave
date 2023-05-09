@@ -30,7 +30,7 @@ dave_dll_reset_verno(char *verno)
 void *
 dave_dll_mmalloc(int length, char *func, int line)
 {
-	return __base_mmalloc__((ub)length, (s8 *)__func__, (ub)__LINE__);
+	return __base_mmalloc__((ub)length, (s8 *)func, (ub)line);
 }
 
 int

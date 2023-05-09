@@ -12,15 +12,16 @@
 
 #define CORE_MEM_MAX 204800
 #define FREE_MEM_MAX 32
+#define MEM_FILE_LEN 64
 
 typedef struct {
 	void *ptr;
 	void *user_ptr;
 	ub len;
 
-	s8 *m_file;
+	s8 m_file[MEM_FILE_LEN];
 	ub m_line;
-	s8 *f_file;
+	s8 f_file[MEM_FILE_LEN];
 	ub f_line;
 } BlockMemCore;
 

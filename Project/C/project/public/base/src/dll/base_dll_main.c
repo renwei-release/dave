@@ -48,6 +48,8 @@ typedef struct {
 	void *msg_body;
 } DllMsgBody;
 
+static void _dll_main_exit(MSGBODY *msg);
+
 static ThreadId _main_thread = INVALID_THREAD_ID;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
@@ -87,16 +89,16 @@ _dll_main_flag(BaseDllRunningMode mode)
 }
 
 static void
-_dll_main_init(MSGBODY *msg)
+_dll_main_restart(RESTARTREQMSG *pRestart)
 {
-	if(_dll_init_fun != NULL)
+	if(pRestart->times == 1)
 	{
-		_dll_init_fun(NULL);
+		_dll_main_exit(NULL);
 	}
 }
 
 static void
-_dll_main_main(MSGBODY *msg)
+_dll_main_run_msg(MSGBODY *msg)
 {
 	DllMsgBody *pBody = dave_malloc(sizeof(DllMsgBody));
 
@@ -129,11 +131,35 @@ _dll_main_main(MSGBODY *msg)
 }
 
 static void
+_dll_main_init(MSGBODY *msg)
+{
+	if(_dll_init_fun != NULL)
+	{
+		_dll_init_fun(NULL);
+	}
+}
+
+static void
+_dll_main_main(MSGBODY *msg)
+{
+	switch((ub)msg->msg_id)
+	{
+		case MSGID_RESTART_REQ:
+				_dll_main_restart((RESTARTREQMSG *)(msg->msg_body));
+			break;
+		default:
+				_dll_main_run_msg(msg);
+			break;
+	}
+}
+
+static void
 _dll_main_exit(MSGBODY *msg)
 {
 	if(_dll_exit_fun != NULL)
 	{
 		_dll_exit_fun(NULL);
+		_dll_exit_fun = NULL;
 	}
 }
 
