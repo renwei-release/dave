@@ -28,15 +28,27 @@ dave_dll_reset_verno(char *verno)
 }
 
 void *
-dave_dll_mmalloc(int length, char *func, int line)
+dave_dll_mmalloc(int length, char *fun, int line)
 {
-	return __base_mmalloc__((ub)length, (s8 *)func, (ub)line);
+	if(fun == NULL)
+	{
+		fun = (char *)__func__;
+		line = __LINE__;
+	}
+
+	return __base_mmalloc__((ub)length, (s8 *)fun, (ub)line);
 }
 
 int
-dave_dll_mfree(void *m, char *func, int line)
+dave_dll_mfree(void *m, char *fun, int line)
 {
-	return (int)__base_mfree__((MBUF *)m, (s8 *)func, (ub)line);
+	if(fun == NULL)
+	{
+		fun = (char *)__func__;
+		line = __LINE__;
+	}
+
+	return (int)__base_mfree__((MBUF *)m, (s8 *)fun, (ub)line);
 }
 
 int
