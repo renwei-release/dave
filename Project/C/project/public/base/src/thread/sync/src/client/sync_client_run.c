@@ -424,7 +424,11 @@ sync_client_run_internal(
 	if(_sync_client_run_internal(
 			src, dst,
 			msg_id,
-			msg_len, msg_body) == dave_false)
+			msg_len, msg_body) == dave_true)
+	{
+		thread_msg_release(msg_body);
+	}
+	else
 	{
 		_sync_client_snd_internal(
 			src, dst,

@@ -30,7 +30,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "debug.h"
+#include "json-c/debug.h"
 #include "json-c/linkhash.h"
 #include "json-c/arraylist.h"
 #include "json-c/json_util.h"

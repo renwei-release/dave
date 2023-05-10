@@ -36,7 +36,7 @@ dave_dll_mmalloc(int length, char *func, int line)
 int
 dave_dll_mfree(void *m, char *func, int line)
 {
-	return (int)__base_mfree__((MBUF *)m, (s8 *)__func__, (ub)__LINE__);
+	return (int)__base_mfree__((MBUF *)m, (s8 *)func, (ub)line);
 }
 
 int
