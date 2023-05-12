@@ -47,6 +47,7 @@ typedef enum {
 	BaseMsgType_Broadcast_dismiss,
 	BaseMsgType_seq_msg,
 	BaseMsgType_pre_msg,
+	BaseMsgType_Broadcast_local_no_me,
 } BaseMsgType;
 
 typedef enum {
@@ -166,6 +167,7 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 
 #define broadcast_thread(thread_name, msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_thread, thread_name, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_local(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_local, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
+#define broadcast_local_no_me(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_local_no_me, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_remote(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_remote, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_total(msg_id, msg_body) base_thread_broadcast_msg(BaseMsgType_Broadcast_total, NULL, (ub)msg_id, sizeof(*msg_body), (u8 *)(msg_body), (s8 *)__func__, (ub)__LINE__)
 #define broadcast_dismiss(thread_name, msg_id) base_thread_broadcast_msg(BaseMsgType_Broadcast_dismiss, thread_name, (ub)msg_id, 0, NULL, (s8 *)__func__, (ub)__LINE__)

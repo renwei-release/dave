@@ -259,7 +259,7 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 		}
 		boradcast_update->ttl = pUpdate->ttl;
 
-		broadcast_local(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
+		broadcast_local_no_me(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
 	}
 
 	dave_free(cfg_value);

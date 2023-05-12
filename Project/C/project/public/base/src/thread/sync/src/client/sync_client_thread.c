@@ -77,7 +77,8 @@ _sync_client_remote_forwarded_msg(ub msg_id)
 static inline dave_bool
 _sync_client_can_be_route(MSGBODY *pMsg)
 {
-	if(pMsg->msg_type == BaseMsgType_Broadcast_local)
+	if((pMsg->msg_type == BaseMsgType_Broadcast_local)
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_local_no_me))
 	{
 		return dave_false;
 	}

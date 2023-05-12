@@ -974,7 +974,7 @@ _thread_tell_everyone_that_i_already_exist(ThreadId thread_id, s8 *thread_name)
 	pReady->remote_thread_id = thread_get_local(thread_id);
 	dave_strcpy(pReady->remote_thread_name, thread_name, sizeof(pReady->remote_thread_name));
 
-	broadcast_local(MSGID_REMOTE_THREAD_READY, pReady);
+	broadcast_local_no_me(MSGID_REMOTE_THREAD_READY, pReady);
 #endif
 }
 
@@ -987,7 +987,7 @@ _thread_tell_everyone_that_i_already_exit(ThreadId thread_id, s8 *thread_name)
 	pRemove->remote_thread_id = thread_get_local(thread_id);
 	dave_strcpy(pRemove->remote_thread_name, thread_name, sizeof(pRemove->remote_thread_name));
 
-	broadcast_local(MSGID_REMOTE_THREAD_REMOVE, pRemove);
+	broadcast_local_no_me(MSGID_REMOTE_THREAD_REMOVE, pRemove);
 #endif
 }
 

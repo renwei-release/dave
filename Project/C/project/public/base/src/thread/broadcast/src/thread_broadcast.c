@@ -104,16 +104,19 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 	ub broadcast_len;
 	u8 *broadcast_msg;
 
-	if((type != BaseMsgType_Broadcast_local) && (type != BaseMsgType_Broadcast_total))
+	if((type != BaseMsgType_Broadcast_local)
+		&& (type != BaseMsgType_Broadcast_local_no_me)
+		&& (type != BaseMsgType_Broadcast_total))
 	{
 		return dave_false;
 	}
 
-	if((type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total))
+	if((type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total) || (type == BaseMsgType_Broadcast_local_no_me))
 	{
 		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 		{
 			if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
+				&& ((_thread[thread_index].thread_id != self_id) || (type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total))
 				&& (base_thread_attrib(_thread[thread_index].thread_id) == LOCAL_TASK_ATTRIB))
 			{
 				broadcast_len = msg_len;

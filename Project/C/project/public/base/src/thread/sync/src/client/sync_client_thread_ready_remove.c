@@ -53,7 +53,7 @@ _sync_client_thread_ready_msg(s8 *thread_name, ThreadId thread_id, s8 *globally_
 	dave_strcpy(pReady->remote_thread_name, thread_name, sizeof(pReady->remote_thread_name));
 	dave_strcpy(pReady->globally_identifier, globally_identifier, sizeof(pReady->globally_identifier));
 
-	broadcast_local(MSGID_REMOTE_THREAD_ID_READY, pReady);
+	broadcast_local_no_me(MSGID_REMOTE_THREAD_ID_READY, pReady);
 }
 
 static void
@@ -67,7 +67,7 @@ _sync_client_thread_remove_msg(s8 *thread_name, ThreadId thread_id, s8 *globally
 	dave_strcpy(pRemove->remote_thread_name, thread_name, sizeof(pRemove->remote_thread_name));
 	dave_strcpy(pRemove->globally_identifier, globally_identifier, sizeof(pRemove->globally_identifier));
 
-	broadcast_local(MSGID_REMOTE_THREAD_ID_REMOVE, pRemove);
+	broadcast_local_no_me(MSGID_REMOTE_THREAD_ID_REMOVE, pRemove);
 }
 
 static void

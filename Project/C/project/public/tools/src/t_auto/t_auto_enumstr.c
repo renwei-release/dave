@@ -357,6 +357,9 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 		case BaseMsgType_pre_msg:
 				value_str = "'BaseMsgType_pre_msg'";
 			break;
+		case BaseMsgType_Broadcast_local_no_me:
+				value_str = "'BaseMsgType_Broadcast_local_no_me'";
+			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;

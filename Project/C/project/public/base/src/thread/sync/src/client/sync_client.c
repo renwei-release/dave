@@ -61,7 +61,7 @@ _sync_client_system_mount(ThreadId src, SystemMount *pMount)
 
 		SYNCTRACE("socker:%d verno:%s", pmount->socket, pmount->verno);
 
-		broadcast_local(MSGID_SYSTEM_MOUNT, pmount);
+		broadcast_local_no_me(MSGID_SYSTEM_MOUNT, pmount);
 	}
 
 	sync_client_link_start();
@@ -82,7 +82,7 @@ _sync_client_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
 
 		SYNCTRACE("socker:%d verno:%s", pdecoupling->socket, pdecoupling->verno);
 
-		broadcast_local(MSGID_SYSTEM_DECOUPLING, pdecoupling);
+		broadcast_local_no_me(MSGID_SYSTEM_DECOUPLING, pdecoupling);
 	}
 }
 
@@ -594,7 +594,7 @@ static inline void
 _sync_client_route(MSGBODY *pMsg)
 {
 	if((pMsg->msg_type == BaseMsgType_Broadcast_local)
-		|| (pMsg->msg_type == BaseMsgType_pre_msg))
+		|| (pMsg->msg_type == BaseMsgType_Broadcast_local_no_me))
 	{
 		return;
 	}
