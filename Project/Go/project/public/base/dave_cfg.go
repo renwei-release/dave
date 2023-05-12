@@ -11,13 +11,51 @@ package base
 #include <dave_base.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+void _go_cfg_reg_fun(void *name_ptr, int name_len, void *value_ptr, int value_len);
 */
 import "C"
 import (
 	"fmt"
 	"strconv"
 	"unsafe"
+	"sync"
+	"dave/public/tools"
 )
+
+type cfg_update_fun func(cfg_name string, cfg_value string)
+
+var (
+    cfg_update_fun_table = map[string]cfg_update_fun{}
+    rwCfgMutex  = sync.RWMutex{}
+)
+
+func _cfg_update_fun_add(cfg_name string, update_fun cfg_update_fun) {
+    rwCfgMutex.Lock()
+    defer rwCfgMutex.Unlock()
+
+    cfg_update_fun_table[cfg_name] = update_fun
+}
+
+func _cfg_update_fun_inq(cfg_name string) (cfg_update_fun, bool) {
+    rwCfgMutex.RLock()
+    defer rwCfgMutex.RUnlock()
+
+    fun, exists := cfg_update_fun_table[cfg_name]
+    return fun, exists
+}
+
+//export _go_cfg_reg_fun
+func _go_cfg_reg_fun(cfg_name_ptr unsafe.Pointer, cfg_name_len C.int, cfg_value_ptr unsafe.Pointer, cfg_value_len C.int) {
+	cfg_name := tools.T_cgo_cbin2gostring(int64(cfg_name_len), cfg_name_ptr)
+	cfg_value := tools.T_cgo_cbin2gostring(int64(cfg_value_len), cfg_value_ptr)
+
+	DAVEDEBUG("%s:%s", cfg_name, cfg_value)
+
+	if fun, exists := _cfg_update_fun_inq(cfg_name); exists {
+		fun(cfg_name, cfg_value)
+	}
+}
 
 // =====================================================================
 
@@ -62,6 +100,39 @@ func Cfg_get(cfg_name string, default_value string) string {
 	C.free(unsafe.Pointer(c_cfg_value))
 
 	return go_string
+}
+
+func Cfg_del(cfg_name string) bool {
+	Dave_go_system_pre_init()
+
+	c_cfg_name := C.CString(cfg_name)
+
+	ret := C.dave_dll_cfg_del(c_cfg_name)
+
+	C.free(unsafe.Pointer(c_cfg_name))
+
+	if ret == 0 {
+		return true
+	}
+
+	return false
+}
+
+func Cfg_reg(cfg_name string, reg_fun func(name string, value string)) bool {
+	Dave_go_system_pre_init()
+
+	c_cfg_name := C.CString(cfg_name)
+
+	ret := C.dave_dll_cfg_reg(c_cfg_name, C.dll_cfg_reg_fun(C._go_cfg_reg_fun))
+
+	C.free(unsafe.Pointer(c_cfg_name))
+
+	if ret == 0 {
+		_cfg_update_fun_add(cfg_name, reg_fun)
+		return true
+	}
+
+	return false
 }
 
 func Cfg_set_ub(cfg_name string, cfg_value int64) bool {

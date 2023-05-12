@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "DNAS"
+#define VERSION_PRODUCT "BASE"
 
 #ifdef __x86_64__
  #define VERSION_ARCH "-x86-64"
@@ -40,7 +40,7 @@
 #endif
 #define VERSION_REV "10"
 
-#define VERSION_DATE_TIME "20230510174108"
+#define VERSION_DATE_TIME "20230512141754"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -49,7 +49,7 @@
 #endif
 
 #define __BUILD_MAC_ADDRESS__ "000C29960DBF"
-#define __BUILD_HOSTNAME__ "fedora-renwei-golang19-docker"
+#define __BUILD_HOSTNAME__ "fedora-renwei-gcc9-docker"
 #define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);

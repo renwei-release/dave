@@ -42,6 +42,8 @@ func _p2p_cfg_info() string {
 func P2P_init(protocol_id string, tcp_port string, udp_port string) error {
 	var err error
 
+	P2P_cfg_init()
+
 	host, err := P2P_host_creat(tcp_port, udp_port)
 
 	if err != nil {
@@ -63,6 +65,7 @@ func P2P_exit() {
 	P2P_sys_exit()
 	P2P_io_exit()
 	P2P_host_close()
+	P2P_cfg_exit()
 }
 
 func P2P_write(peer_id string, data []byte) error {

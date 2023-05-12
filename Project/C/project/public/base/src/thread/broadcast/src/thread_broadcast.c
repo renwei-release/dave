@@ -114,7 +114,6 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 		{
 			if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
-				&& (_thread[thread_index].thread_id != self_id)
 				&& (base_thread_attrib(_thread[thread_index].thread_id) == LOCAL_TASK_ATTRIB))
 			{
 				broadcast_len = msg_len;

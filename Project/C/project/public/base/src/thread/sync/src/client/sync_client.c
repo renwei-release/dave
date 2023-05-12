@@ -593,7 +593,8 @@ _sync_client_cfg_update(CFGUpdate *pUpdate)
 static inline void
 _sync_client_route(MSGBODY *pMsg)
 {
-	if(pMsg->msg_type == BaseMsgType_Broadcast_local)
+	if((pMsg->msg_type == BaseMsgType_Broadcast_local)
+		|| (pMsg->msg_type == BaseMsgType_pre_msg))
 	{
 		return;
 	}
@@ -793,6 +794,11 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_WAKEUP:
 		case MSGID_LOCAL_THREAD_READY:
 		case MSGID_LOCAL_THREAD_REMOVE:
+		case MSGID_CFG_REMOTE_UPDATE:
+		case MSGID_REMOTE_THREAD_ID_READY:
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+		case MSGID_REMOTE_THREAD_READY:
+		case MSGID_REMOTE_THREAD_REMOVE:
 			break;
 		default:
 				_sync_client_route(msg);

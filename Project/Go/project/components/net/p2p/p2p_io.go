@@ -31,7 +31,8 @@ type p2p_io struct {
 }
 
 var _p2p_io_user_read_func P2PReadFunc = nil
-var _p2p_io_array = make(map[string]p2p_io) 
+var _p2p_io_array = make(map[string]p2p_io)
+var _p2p_io_protocol_id protocol.ID = ""
 
 func (peer_type PeerType) String() string {
 	switch peer_type {
@@ -133,7 +134,6 @@ func _io_connect_to_auto(peer_info string, protocol_id protocol.ID) {
 	if _io_inq(peer_id) == nil {
 		rw, err := P2P_connect_peer(P2P_host(), peer_info, protocol_id)
 		if err != nil {
-			base.DAVELOG("peer_info:%v err:%v", peer_info, err)
 			rw, err = P2P_connect_relay(P2P_host(), peer_info, protocol_id)
 			if err != nil {
 				base.DAVELOG("peer_info:%v err:%v", peer_info, err)
@@ -175,7 +175,9 @@ func _io_connect_loop(protocol_id protocol.ID) {
 // =====================================================================
 
 func P2P_io_init(protocol_id protocol.ID) {
-	go _io_connect_loop(protocol_id)
+	_p2p_io_protocol_id = protocol_id
+
+	go _io_connect_loop(_p2p_io_protocol_id)
 }
 
 func P2P_io_exit() {
@@ -184,6 +186,10 @@ func P2P_io_exit() {
 
 func P2P_io_connection(peer_info string, rw * bufio.ReadWriter) {
 	_io_add(PeerType_passive, peer_info, rw)
+}
+
+func P2P_io_action() {
+	_io_connect_action(_p2p_io_protocol_id)
 }
 
 func P2P_io_write(peer_id string, data []byte, user_flag bool) error {

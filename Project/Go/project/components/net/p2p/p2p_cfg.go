@@ -45,6 +45,8 @@ func _cfg_peer_info_deleted(peer_list []string, peer_info string) []string {
 			continue
 		}
 
+		base.DAVELOG("%v / %v", peer_cfg, peer_info)
+	
 		if peer_cfg != peer_info {
 			updateArray = append(updateArray, peer_cfg)
 		}
@@ -132,7 +134,21 @@ func _cfg_del_peer_cfg(json_string string, peer_info string) ([]byte, error) {
 	return jsonBytes, nil
 }
 
+func _cfg_seed_peer_update(cfg_name string, cfg_value string) {
+	base.DAVELOG("cfg_name:%v, cfg_value:%v", cfg_name, cfg_value)
+
+	P2P_io_action()
+}
+
 // =====================================================================
+
+func P2P_cfg_init() {
+	base.Cfg_reg(CFG_P2P_SEED_PEER, _cfg_seed_peer_update)
+}
+
+func P2P_cfg_exit() {
+
+}
 
 func P2P_load_package_size_cfg() int64 {
 	return base.Cfg_get_ub("P2PPackageSize", 4096)

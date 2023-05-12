@@ -12,6 +12,7 @@
 #include "des_cfg.h"
 #include "json_cfg.h"
 #include "remote_cfg.h"
+#include "reg_cfg.h"
 #include "cfg_log.h"
 
 static dave_bool
@@ -102,6 +103,10 @@ _base_cfg_update(s8 *name, u8 *value_ptr, ub value_len)
 	}
 	pUpdate->cfg_length = value_len;
 	dave_memcpy(pUpdate->cfg_value, value_ptr, value_len);
+	if(value_len < sizeof(pUpdate->cfg_value))
+	{
+		pUpdate->cfg_value[value_len] = '\0';
+	}
 
 	broadcast_local(MSGID_CFG_UPDATE, pUpdate);
 }
@@ -112,11 +117,13 @@ void
 base_cfg_init(void)
 {
 	base_remote_cfg_init();
+	reg_cfg_init();
 }
 
 void
 base_cfg_exit(void)
 {
+	reg_cfg_exit();
 	base_remote_cfg_exit();
 }
 
@@ -171,6 +178,12 @@ void
 base_cfg_local_del(s8 *dir, s8 *name)
 {
 	base_json_cfg_dir_del(dir, name);
+}
+
+dave_bool
+base_cfg_local_reg(s8 *name, cfg_reg_fun reg_fun)
+{
+	return reg_cfg_reg(name, reg_fun);
 }
 
 s8 *

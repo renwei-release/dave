@@ -56,7 +56,7 @@ func _sys_recv_peer_list(peer_id string, data []byte) {
 	}
 
 	for _, peer_info := range peer_list {
-		base.DAVELOG("system recv peer_info:%v", peer_info)
+		base.DAVEDEBUG("system recv peer_info:%v", peer_info)
 		P2P_set_auto_peer_cfg(peer_info)
 	}
 }

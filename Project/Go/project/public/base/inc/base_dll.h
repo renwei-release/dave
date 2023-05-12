@@ -14,9 +14,10 @@ extern "C"{
 
 #define API __attribute__((visibility("default")))
 
-typedef void (* dll_callback_fun)(void *);
+typedef void (* dll_callback_fun)(void *msg);
 typedef int (* dll_checkback_fun)(int);
-typedef void (* dll_kv_timerout_fun)(void *ramkv, char *key);
+typedef void (* dll_kv_timerout_fun)(void *kv, void *key);
+typedef void (* dll_cfg_reg_fun)(void *name_ptr, int name_len, void *value_ptr, int value_len);
 
 API void dave_dll_init(
 	char *my_verno, char *work_mode,
@@ -69,6 +70,10 @@ API int dave_dll_thread_broadcast_msg(char *thread_name, int msg_id, int msg_len
 API int dave_dll_cfg_set(char *cfg_name, char *cfg_value);
 
 API int dave_dll_cfg_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len);
+
+API int dave_dll_cfg_del(char *cfg_name);
+
+API int dave_dll_cfg_reg(char *cfg_name, dll_cfg_reg_fun reg_fun);
 
 API int dave_dll_cfg_remote_set(char *cfg_name, char *cfg_value, int ttl);
 

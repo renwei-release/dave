@@ -56,7 +56,9 @@
 
 #define DAVE_NORMAL_STR_LEN (2048)
 
+#ifndef DAVE_SEARCH_INDEX_MAX
 #define DAVE_SEARCH_INDEX_MAX 4096
+#endif
 
 #endif
 

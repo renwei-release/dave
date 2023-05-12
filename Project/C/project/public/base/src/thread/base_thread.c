@@ -1773,7 +1773,10 @@ base_thread_msg_creat(ub msg_len, dave_bool reset, s8 *fun, ub line)
 void
 base_thread_msg_release(void *ptr, s8 *fun, ub line)
 {
-	thread_free(ptr, MSGID_RESERVED, fun, line);
+	if(thread_memory_at_here(ptr) == dave_true)
+	{
+		thread_free(ptr, MSGID_RESERVED, fun, line);
+	}
 }
 
 dave_bool

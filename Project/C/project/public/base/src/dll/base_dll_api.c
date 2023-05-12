@@ -87,6 +87,27 @@ dave_dll_cfg_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len)
 }
 
 int
+dave_dll_cfg_del(char *cfg_name)
+{
+	cfg_del((s8 *)cfg_name);
+
+	return 0;
+}
+
+int
+dave_dll_cfg_reg(char *cfg_name, dll_cfg_reg_fun reg_fun)
+{
+	if(cfg_reg((s8 *)cfg_name, (cfg_reg_fun)reg_fun) == dave_false)
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int
 dave_dll_cfg_remote_set(char *cfg_name, char *cfg_value, int ttl)
 {
 	u32 value_len = dave_strlen(cfg_value);

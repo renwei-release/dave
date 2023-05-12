@@ -316,6 +316,7 @@ _sync_client_snd_internal(
 	if(snd_from_msg(src_thread, dst_thread, msg_id, msg_len, msg_body) == dave_false)
 	{
 		SYNCABNOR("%s->%s:%s msg_len:%d failed!", src, dst, msgstr(msg_id), msg_len);
+		thread_msg_release(msg_body);
 	}
 }
 
