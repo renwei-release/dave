@@ -331,7 +331,7 @@ _sync_client_plugin(SocketPlugIn *pPlugIn)
 		return NULL;
 	}
 
-	SYNCTRACE("socket:%d/%d pServer:%x/%x/%x type:%s %s/%s",
+	SYNCLOG("socket:%d/%d pServer:%x/%x/%x type:%s %s/%s",
 		pPlugIn->father_socket, pPlugIn->child_socket,
 		pServer, pServer->server_index, pServer->shadow_index,
 		sync_client_type_to_str(pServer->server_type),
@@ -360,7 +360,7 @@ _sync_client_plugout(SocketPlugOut *pPlugOut)
 
 	if(pServer != NULL)
 	{
-		SYNCTRACE("socket:%d pServer:%x/%x/%x type:%s %s/%s time:%d/%d",
+		SYNCLOG("socket:%d pServer:%x/%x/%x type:%s %s/%s time:%d/%d",
 			pPlugOut->socket,
 			pServer, pServer->server_index, pServer->shadow_index,
 			sync_client_type_to_str(pServer->server_type),

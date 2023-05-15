@@ -649,7 +649,7 @@ _socket_external_creat_service(ThreadId src, SocNetInfo *pNetInfo, void *user_pt
 
 	if((ret != RetCode_OK) || (pCore == NULL))
 	{
-		SOCKETTRACE("%s/%s",
+		SOCKETLOG("%s/%s",
 			ipv4str(pNetInfo->addr.ip.ip_addr, pNetInfo->port),
 			dave_os_errno(NULL));
 

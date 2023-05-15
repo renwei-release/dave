@@ -11,6 +11,7 @@
 #include "dave_tools.h"
 #include "cfg_log.h"
 
+#define EMPTY_RESERVED_WORD "__THE_CFG_NAME_EMPTY__"
 #define REG_CFG_MAX 32
 
 typedef struct {
@@ -90,27 +91,16 @@ _reg_cfg_recycle(void *ramkv, s8 *name)
 }
 
 static void
-_reg_cfg_update(MSGBODY *msg)
+_reg_cfg_notify_user(ThreadId self_id, s8 *cfg_name_ptr, ub cfg_name_len, s8 *cfg_value_ptr, ub cfg_value_len)
 {
-	CFGUpdate *pUpdate = (CFGUpdate *)(msg->msg_body);
-	RegCfgData *pData = kv_inq_key_ptr(_reg_cfg_kv, pUpdate->cfg_name);
+	RegCfgData *pData;
 	ub reg_index;
-	ThreadId self_id;
-	s8 *cfg_name_ptr = pUpdate->cfg_name;
-	s8 *cfg_value_ptr = (s8 *)(pUpdate->cfg_value);
-	ub cfg_name_len, cfg_value_len;
 
+	pData = kv_inq_key_ptr(_reg_cfg_kv, cfg_name_ptr);
 	if(pData == NULL)
 	{
-		CFGDEBUG("%s not process %s:%s",
-			thread_name(msg->msg_dst),
-			pUpdate->cfg_name, pUpdate->cfg_value);
 		return;
 	}
-
-	self_id = self();
-	cfg_name_len = dave_strlen(cfg_name_ptr);
-	cfg_value_len = dave_strlen(cfg_value_ptr);
 
 	for(reg_index=0; reg_index<REG_CFG_MAX; reg_index++)
 	{
@@ -126,6 +116,23 @@ _reg_cfg_update(MSGBODY *msg)
 			pData->reg_fun[reg_index](cfg_name_ptr, cfg_name_len, cfg_value_ptr, cfg_value_len);
 		}
 	}
+}
+
+static void
+_reg_cfg_update(MSGBODY *msg)
+{
+	CFGUpdate *pUpdate = (CFGUpdate *)(msg->msg_body);
+	ThreadId self_id= self();
+	s8 *cfg_name_ptr, *cfg_value_ptr;
+	ub cfg_name_len, cfg_value_len;
+
+	cfg_name_ptr = pUpdate->cfg_name;
+	cfg_value_ptr = (s8 *)(pUpdate->cfg_value);
+	cfg_name_len = dave_strlen(cfg_name_ptr);
+	cfg_value_len = dave_strlen(cfg_value_ptr);
+
+	_reg_cfg_notify_user(self_id, cfg_name_ptr, cfg_name_len, cfg_value_ptr, cfg_value_len);
+	_reg_cfg_notify_user(self_id, EMPTY_RESERVED_WORD, dave_strlen(EMPTY_RESERVED_WORD), cfg_value_ptr, cfg_value_len);
 }
 
 static inline void
@@ -163,6 +170,11 @@ reg_cfg_reg(s8 *name, cfg_reg_fun reg_fun)
 	dave_bool ret = dave_false;
 
 	_reg_cfg_pre();
+
+	if((name == NULL) || (name[0] == '\0'))
+	{
+		name = EMPTY_RESERVED_WORD;
+	}
 
 	SAFECODEv1(_reg_cfg_pv, ret = _reg_cfg_reg(name, reg_fun));
 

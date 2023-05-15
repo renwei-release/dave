@@ -96,10 +96,11 @@ _sync_client_rx_disconnect(s32 socket)
 static inline void
 _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 {
+	s8 verno[DAVE_VERNO_STR_LEN];
 	ub frame_index = 0;
 	u8 detect_my_ip[16];
 
-	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->verno, sizeof(pServer->verno));
+	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, verno, sizeof(verno));
 	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->globally_identifier, sizeof(pServer->globally_identifier));
 	frame_index += sync_ip_unpacket(&frame[frame_index], frame_len-frame_index, detect_my_ip);
 	if(frame_index < frame_len)
@@ -107,13 +108,19 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 		sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
 	}
 
-	pServer->work_start_second = dave_os_time_s();
+	if(dave_strcmp(pServer->verno, verno) == dave_false)
+	{
+		if(pServer->verno[0] == '\0')
+			pServer->work_start_second = dave_os_time_s();
 
-	SYNCTRACE("server:%x %s/%s (%d%d%d%d)",
-		pServer,
-		pServer->globally_identifier, pServer->verno,
-		pServer->server_connecting, pServer->server_cnt,
-		pServer->server_booting, pServer->server_ready);
+		SYNCLOG("server:%x socket:%d %s/%s/%s (%d%d%d%d)",
+			pServer, pServer->server_socket,
+			pServer->globally_identifier, pServer->verno, pServer->host_name,
+			pServer->server_connecting, pServer->server_cnt,
+			pServer->server_booting, pServer->server_ready);
+	}
+
+	dave_strcpy(pServer->verno, verno, sizeof(pServer->verno));
 
 	_sync_client_thread_name_sync_booting(pServer, detect_my_ip);
 }

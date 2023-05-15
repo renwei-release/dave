@@ -33,8 +33,9 @@ def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
 
 
 def fun_cfg_update(name_ptr, name_len, value_ptr, value_len):
-    DAVELOG(f'{name_len}/{name_ptr}:{value_len}{value_ptr}')
+    DAVELOG(f'{name_len}/{name_ptr}:{value_len}/{value_ptr}')
     return
+cfg_reg("BaseCfgTest", fun_cfg_update)
 
 
 # =====================================================================
@@ -44,7 +45,6 @@ def dave_product_init():
     dave_system_function_table_add(MSGID_DEBUG_REQ, fun_MSGID_DEBUG_REQ)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_REMOVE, fun_MSGID_REMOTE_THREAD_ID_REMOVE)
-    cfg_reg("BaseCfgTest", fun_cfg_update)
     return
 
 

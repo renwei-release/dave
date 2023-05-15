@@ -37,12 +37,14 @@ def cfg_del(key):
     davelib.dave_dll_cfg_del(c_char_p(byte_key))
     return
 
+
 CFGREGFUNC=CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int)
 def cfg_reg(key, reg_fun):
     byte_key = bytes(key, encoding="utf8")
     davelib.dave_dll_cfg_reg.restype = c_int
     davelib.dave_dll_cfg_reg(c_char_p(byte_key), CFGREGFUNC(reg_fun))
     return
+
 
 def rcfg_set(key, value, ttl=0):
     key = bytes(key, encoding="utf8")
