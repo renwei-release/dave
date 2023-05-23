@@ -1,0 +1,26 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+PRIJECTBIN=./build/rly
+MYPATH=`pwd`/relayer
+File=$(basename $0)
+
+VERSION=2.3.1
+
+if [ ! -d ./relayer ]; then
+   git clone -bv${VERSION} --depth=1 https://github.com/cosmos/relayer.git
+fi
+
+git config --global --add safe.directory ${MYPATH}
+
+cd relayer && go mod tidy && make build
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}

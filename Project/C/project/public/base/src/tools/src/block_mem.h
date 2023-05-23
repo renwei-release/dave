@@ -10,37 +10,17 @@
 #include "dave_3rdparty.h"
 #include "dave_os.h"
 
-/*
- * If you compile through the connection library, 
- * you can't guarantee an effective function pointer, 
- * such as the GO call library.
- */
-#ifdef FORM_PRODUCT_BIN
-#define MEM_RECORD_FILE_PTR
-#endif
-
-#define CORE_MEM_MAX 204800
+#define CORE_MEM_MAX 20480
 #define FREE_MEM_MAX 32
-#ifndef MEM_RECORD_FILE_PTR
-#define MEM_FILE_LEN 64
-#endif
 
 typedef struct {
 	void *ptr;
 	void *user_ptr;
 	ub len;
 
-#ifdef MEM_RECORD_FILE_PTR
 	s8 *m_file;
-#else
-	s8 m_file[MEM_FILE_LEN];
-#endif
 	ub m_line;
-#ifdef MEM_RECORD_FILE_PTR
 	s8 *f_file;
-#else
-	s8 f_file[MEM_FILE_LEN];
-#endif
 	ub f_line;
 } BlockMemCore;
 

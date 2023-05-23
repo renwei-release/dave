@@ -1,0 +1,23 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PROJECTDIR=$1
+PRIJECTBIN=./dist/ignite
+File=$(basename $0)
+
+VERSION=0.26.1
+
+if [ ! -d ./cli ]; then
+   git clone -bv${VERSION} --depth=1 https://github.com/ignite/cli.git
+fi
+
+cd cli && go mod tidy && make build
+
+echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+chmod a+x ${PRIJECTBIN}
+cp ${PRIJECTBIN} ${PROJECTDIR}

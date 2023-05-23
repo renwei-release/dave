@@ -8,6 +8,7 @@
 
 PROJECTDIR=$1
 PRIJECTBIN=./build/gaiad
+MYPATH=`pwd`/gaia
 File=$(basename $0)
 
 VERSION=8.0.0
@@ -19,6 +20,8 @@ echo -e "start build gaia ver:v${VERSION} go ver:${GO_SYSTEM_VERSION}"
 if [ ! -d ./gaia ]; then
    git clone -bv${VERSION} --depth=1 https://github.com/cosmos/gaia.git
 fi
+
+git config --global --add safe.directory ${MYPATH}
 
 sed -i "/REQUIRE_GO_VERSION = */c\REQUIRE_GO_VERSION = ${GO_SYSTEM_VERSION}" ./gaia/Makefile
 sed -i "/go 1.*/c\go ${GO_SYSTEM_VERSION}" ./gaia/go.mod

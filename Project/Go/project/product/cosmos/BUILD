@@ -10,8 +10,11 @@ PROJECT=${PWD##*/}
 FILESYSTEM=`pwd`/../../../../../Deploy/deploy/${PROJECT,,}/file_system
 PROJECTDIR=${FILESYSTEM}/project
 PRIJECTBIN=COSMOS-BIN
+CHAINNAME="planet"
+MODELNAME="blog"
 File=$(basename $0)
 ARCH=`arch`
+IGNITEENABLE="False"
 
 if [ "$ARCH" == "x86_64" ]; then
    GOARCH=amd64
@@ -23,21 +26,17 @@ fi
 
 go env -w GOARCH=${GOARCH}
 
-#
-# Reference:
-# https://hermes.informal.systems/tutorials/pre-requisites/gaiad-manager.html
-#
+if [ ${IGNITEENABLE} == "True" ]; then
+   chmod a+x ignite-BUILD
+   ./ignite-BUILD ${PROJECTDIR}
+   chmod a+x model-BUILD
+   ./model-BUILD ${CHAINNAME} ${MODELNAME} ${PROJECTDIR}
+fi
 chmod a+x gaia-BUILD
 ./gaia-BUILD ${PROJECTDIR}
-chmod a+x sconfig-BUILD
-./sconfig-BUILD ${PROJECTDIR}
-chmod a+x stoml-BUILD
-./stoml-BUILD ${PROJECTDIR}
-chmod a+x gm-BUILD
-./gm-BUILD ${PROJECTDIR}
-chmod a+x hermes-BUILD
-./hermes-BUILD ${PROJECTDIR}
+chmod a+x relayer-BUILD
+./relayer-BUILD ${PROJECTDIR}
 
-echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
-chmod a+x ${PRIJECTBIN}
-cp ${PRIJECTBIN} ${PROJECTDIR}
+#echo ${File} copy ${PRIJECTBIN} to ${PROJECTDIR}
+#chmod a+x ${PRIJECTBIN}
+#cp ${PRIJECTBIN} ${PROJECTDIR}

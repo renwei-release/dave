@@ -93,23 +93,14 @@ _block_mem_detail_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pB
 	return info_index;
 }
 
-#ifdef MEM_RECORD_FILE_PTR
 static inline ub
 _block_mem_top_on_here(s8 *top_file[TOP_INFO_MAX], ub *top_line, s8 *file, ub line)
-#else
-static inline ub
-_block_mem_top_on_here(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, s8 *file, ub line)
-#endif
 {
 	ub top_index;
 
 	for(top_index=0; top_index<TOP_INFO_MAX; top_index++)
 	{
-#ifdef MEM_RECORD_FILE_PTR
 		if((top_file[top_index] == file) && (top_line[top_index] == line))
-#else
-		if((strcmp(top_file[top_index], file) == 0) && (top_line[top_index] == line))
-#endif
 		{
 			return top_index;
 		}
@@ -118,13 +109,8 @@ _block_mem_top_on_here(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, s8
 	return TOP_INFO_MAX;
 }
 
-#ifdef MEM_RECORD_FILE_PTR
 static inline void
 _block_mem_insert_new(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length, s8 *file, ub line, ub number, ub length)
-#else
-static inline void
-_block_mem_insert_new(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub *top_number, ub *total_length, s8 *file, ub line, ub number, ub length)
-#endif
 {
 	ub top_index, min_index, min_number;
 
@@ -144,23 +130,14 @@ _block_mem_insert_new(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub 
 		top_index ++;
 	}
 
-#ifdef MEM_RECORD_FILE_PTR
 	top_file[min_index] = file;
-#else
-	strcpy(top_file[min_index], file);
-#endif
 	top_line[min_index] = line;
 	top_number[min_index] = number;
 	total_length[min_index] = length;
 }
 
-#ifdef MEM_RECORD_FILE_PTR
 static inline dave_bool
 _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
-#else
-static inline dave_bool
-_block_mem_top_block_info(BlockMem *pBlock, s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub *top_number, ub *total_length)
-#endif
 {
 	ub core_index;
 	BlockMemCore *pCore;
@@ -192,13 +169,8 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 top_file[TOP_INFO_MAX][MEM_FILE_L
 	return has_top;
 }
 
-#ifdef MEM_RECORD_FILE_PTR
 static inline dave_bool
 _block_mem_top_load(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
-#else
-static inline dave_bool
-_block_mem_top_load(BlockMem *pBlock, s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub *top_number, ub *total_length)
-#endif
 {
 	ub block_index;
 	dave_bool has_top = dave_false;
@@ -214,20 +186,11 @@ _block_mem_top_load(BlockMem *pBlock, s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], u
 	return has_top;
 }
 
-#ifdef MEM_RECORD_FILE_PTR
 static inline void
 _block_mem_top_sort(s8 *top_file[TOP_INFO_MAX], ub *top_line, ub *top_number, ub *total_length)
-#else
-static inline void
-_block_mem_top_sort(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub *top_number, ub *total_length)
-#endif
 {
 	ub top_1_index, top_2_index;
-	#ifdef MEM_RECORD_FILE_PTR
 	s8 *file;
-	#else
-	s8 file[MEM_FILE_LEN];
-	#endif
 	ub line, number, length;
 
 	for(top_1_index=0; top_1_index<TOP_INFO_MAX; top_1_index++)
@@ -242,29 +205,17 @@ _block_mem_top_sort(s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN], ub *top_line, ub *t
 
 			if(top_number[top_2_index] > top_number[top_1_index])
 			{
-				#ifdef MEM_RECORD_FILE_PTR
 				file = top_file[top_1_index];
-				#else
-				strcpy(file, top_file[top_1_index]);
-				#endif
 				line = top_line[top_1_index];
 				number = top_number[top_1_index];
 				length = total_length[top_1_index];
 
-				#ifdef MEM_RECORD_FILE_PTR
 				top_file[top_1_index] = top_file[top_2_index];
-				#else
-				strcpy(top_file[top_1_index], top_file[top_2_index]);
-				#endif
 				top_line[top_1_index] = top_line[top_2_index];
 				top_number[top_1_index] = top_number[top_2_index];
 				total_length[top_1_index] = total_length[top_2_index];
 
-				#ifdef MEM_RECORD_FILE_PTR
 				top_file[top_2_index] = file;
-				#else
-				strcpy(top_file[top_2_index], file);
-				#endif
 				top_line[top_2_index] = line;
 				top_number[top_2_index] = number;
 				total_length[top_2_index] = length;
@@ -277,21 +228,17 @@ static inline ub
 _block_mem_top_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub warning_number_exceeded)
 {
 	ub info_index, top_index;
-	#ifdef MEM_RECORD_FILE_PTR
 	s8 *top_file[TOP_INFO_MAX];
-	#else
-	s8 top_file[TOP_INFO_MAX][MEM_FILE_LEN];
-	#endif
 	ub top_line[TOP_INFO_MAX];
 	ub top_number[TOP_INFO_MAX];
 	ub total_length[TOP_INFO_MAX];
 	dave_bool has_top = dave_false;
 	dave_bool has_number = dave_false;
 
-	memset(top_file, 0x00, sizeof(top_file));
-	memset(top_line, 0x00, sizeof(top_line));
-	memset(top_number, 0x00, sizeof(top_number));
-	memset(total_length, 0x00, sizeof(total_length));
+	dave_memset(top_file, 0x00, sizeof(top_file));
+	dave_memset(top_line, 0x00, sizeof(top_line));
+	dave_memset(top_number, 0x00, sizeof(top_number));
+	dave_memset(total_length, 0x00, sizeof(total_length));
 
 	has_top = _block_mem_top_load(pBlock, top_file, top_line, top_number, total_length);
 
@@ -341,17 +288,10 @@ _block_mem_core_reset(BlockMemCore *pCore)
 	pCore->user_ptr = NULL;
 	pCore->len = 0;
 
-#ifdef MEM_RECORD_FILE_PTR
 	pCore->m_file = NULL;
 	pCore->m_line = 0;
 	pCore->f_file = NULL;
 	pCore->f_line = 0;
-#else
-	pCore->m_file[0] = '\0';
-	pCore->m_line = 0;
-	pCore->f_file[0] = '\0';
-	pCore->f_line = 0;
-#endif
 }
 
 static inline void
@@ -495,11 +435,7 @@ _block_mem_malloc(ub *core_index, void *ptr, void *user_ptr, BlockMem *pBlock, u
 			pCore->user_ptr = user_ptr;
 			pCore->len = len;
 
-			#ifdef MEM_RECORD_FILE_PTR
 			pCore->m_file = file;
-			#else
-			strcpy(pCore->m_file, file);
-			#endif
 			pCore->m_line = line;
 
 			pBlock->core_number ++;
@@ -525,11 +461,7 @@ _block_mem_free(ub core_index, BlockMem *pBlock, s8 *file, ub line)
 	pCore->user_ptr = NULL;
 	pCore->len = 0;
 
-	#ifdef MEM_RECORD_FILE_PTR
 	pCore->f_file = file;
-	#else
-	strcpy(pCore->f_file, file);
-	#endif
 	pCore->f_line = line;
 
 	if(pBlock->core_number <= 0)
@@ -681,7 +613,7 @@ block_mem_reset(BlockMem *pBlock, ub block_number)
 {
 	ub block_index;
 
-	memset(pBlock, 0x00, block_number * sizeof(BlockMem));
+	dave_memset(pBlock, 0x00, block_number * sizeof(BlockMem));
 
 	for(block_index=0; block_index<block_number; block_index++)
 	{

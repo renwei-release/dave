@@ -1,0 +1,46 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2023 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+CHAINNAME=$1
+MODELNAME=$2
+PROJECTDIR=$3
+IGNITEBIN=`pwd`/cli/dist/ignite
+CHAINSRC=`pwd`/${CHAINNAME}
+File=$(basename $0)
+
+if [ ! -f ${IGNITEBIN} ]; then
+   ./ignite-BUILD
+fi
+
+# https://zhuanlan.zhihu.com/p/548576703
+
+if [ ! -d ${CHAINNAME} ]; then
+   echo chain ${CHAINNAME} create
+
+   ${IGNITEBIN} scaffold chain ${CHAINNAME} --no-module
+fi
+
+cd ${CHAINNAME}
+
+if [ ! -d ./x/${MODELNAME} ]; then
+   echo model ./x/${MODELNAME} create
+
+   ${IGNITEBIN} scaffold module ${MODELNAME} --ibc
+
+   ${IGNITEBIN} scaffold list post title content creator --no-message --module ${MODELNAME}
+   ${IGNITEBIN} scaffold list sentPost postID title chain creator --no-message --module ${MODELNAME}
+   ${IGNITEBIN} scaffold list timedoutPost title chain creator --no-message --module ${MODELNAME}
+
+   ${IGNITEBIN} scaffold packet ibcPost title content --ack postID --module ${MODELNAME}
+fi
+
+echo ${CHAINNAME}d build
+go build -o ${CHAINNAME}d ./cmd/${CHAINNAME}d/main.go
+
+echo ${File} copy ${CHAINSRC} to ${PROJECTDIR}
+cp -r ${CHAINSRC} ${PROJECTDIR}
