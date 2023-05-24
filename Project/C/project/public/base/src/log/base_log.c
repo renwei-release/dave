@@ -91,6 +91,34 @@ __log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args
 }
 
 static inline s8 *
+__log_trace__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+{
+	ub trace_len = dave_strlen(_trace_buffer);
+
+	if((_trace_buffer[trace_len - 1] == '\r')
+		|| (_trace_buffer[trace_len - 1] == '\n')
+		|| (trace_len > (sizeof(_trace_buffer) - 128)))
+	{
+		trace_len = 0;
+	}
+
+	trace_len += (ub)vsnprintf(&_trace_buffer[trace_len], sizeof(_trace_buffer)-trace_len, fmt, list_args);
+
+	if((_trace_buffer[trace_len - 1] == '\r')
+		|| (_trace_buffer[trace_len - 1] == '\n')
+		|| (trace_len > (sizeof(_trace_buffer) - 128)))
+	{
+		*log_len = trace_len;
+		return _trace_buffer;
+	}
+	else
+	{
+		*log_len = 0;
+		return NULL;
+	}
+}
+
+static inline s8 *
 __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 {
 	s8 *log_buf;
@@ -103,10 +131,7 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 
 	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ASSERT))
 	{
-		log_buf = _trace_buffer;
-		log_len = sizeof(_trace_buffer);
-
-		log_len = (ub)vsnprintf(log_buf, log_len, fmt, list_args);
+		log_buf = __log_trace__(&log_len, level, fmt, list_args);
 	}
 	else
 	{
@@ -231,6 +256,7 @@ base_log_history(s8 *log_ptr, ub log_len)
 void
 base_log_init(void)
 {
+	dave_memset(_trace_buffer, 0x00, sizeof(_trace_buffer));
 	_log_log_counter = 0;
 	_log_trace_enable = cfg_get_bool(CFG_LOG_TRACE_ENABLE, LOG_TRACE_DEFAULT_CFG);
 

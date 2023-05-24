@@ -12,6 +12,7 @@
 #define CFG_LOG_TRACE_ENABLE "LOGTraceEnable"
 #define LOG_TRACE_DEFAULT_CFG dave_true
 #define CFG_LOG_SAVE_TYPE "LogSaveType"
+#define CFG_LOG_SAVE_DAYS "LogSaveDays"
 
 #endif
 

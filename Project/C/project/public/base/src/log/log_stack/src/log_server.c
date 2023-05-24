@@ -287,7 +287,7 @@ _log_server_init(MSGBODY *msg)
 
 	_log_server_bind_req();
 
-	log_save_init(0);
+	log_save_init();
 }
 
 static void

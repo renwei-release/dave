@@ -150,8 +150,6 @@ log_save_auto_clean_init(ub log_reserved_days)
 		_log_reserved_days = log_reserved_days;
 
 		base_timer_creat(LOG_AUTO_CLEAN_TIMER, _log_save_auto_clean_timer, 3600 * 1000);
-
-		_log_save_auto_clean_product();
 	}
 }
 

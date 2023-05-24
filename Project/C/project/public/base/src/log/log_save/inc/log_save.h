@@ -8,7 +8,7 @@
 #ifndef __LOG_SAVE_H__
 #define __LOG_SAVE_H__
 
-void log_save_init(ub log_reserved_days);
+void log_save_init(void);
 
 void log_save_exit(void);
 

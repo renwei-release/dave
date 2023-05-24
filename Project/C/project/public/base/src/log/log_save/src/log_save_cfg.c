@@ -24,6 +24,7 @@ typedef enum {
 } LogSaveType;
 
 static LogSaveType _log_save_type = LogSaveType_json|LogSaveType_txt;
+static ub _log_save_days = 0;
 
 static void
 _log_save_type_reset(void)
@@ -36,14 +37,14 @@ _log_save_type_reset(void)
 #ifdef LOG_STACK_SERVER
 	cfg_get_by_default(CFG_LOG_SAVE_TYPE, cfg_data, sizeof(cfg_data), "json|txt");
 #else
-	cfg_get_by_default(CFG_LOG_SAVE_TYPE, cfg_data, sizeof(cfg_data), "txt");
+	cfg_get_by_default(CFG_LOG_SAVE_TYPE, cfg_data, sizeof(cfg_data), "");
 #endif
 
 	cfg_len = dave_strlen(cfg_data);
 	safe_counter = 0;
 	cfg_ptr = cfg_data;
 
-	_log_save_type = LogSaveType_txt;
+	_log_save_type = LogSaveType_none;
 
 	while(((safe_counter ++) <= cfg_len) && (cfg_ptr != NULL))
 	{
@@ -74,6 +75,18 @@ _log_save_enable_reset(void)
 }
 
 static void
+_log_save_days_reset(void)
+{
+#ifdef LOG_STACK_SERVER
+	ub default_save_days = 365;
+#else
+	ub default_save_days = 0;
+#endif
+
+	_log_save_days = cfg_get_ub(CFG_LOG_SAVE_DAYS, default_save_days);
+}
+
+static void
 _log_save_cfg_update(MSGBODY *msg)
 {
 	CFGUpdate *pUpdate = (CFGUpdate *)(msg->msg_body);
@@ -88,6 +101,10 @@ _log_save_cfg_update(MSGBODY *msg)
 	{
 		_log_save_enable_reset();
 	}
+	else if(dave_strcmp(pUpdate->cfg_name, CFG_LOG_SAVE_DAYS) == dave_true)
+	{
+		_log_save_days_reset();
+	}
 }
 
 // =====================================================================
@@ -96,8 +113,8 @@ void
 log_save_cfg_init(void)
 {
 	chain_config_reset(NULL);
-
 	_log_save_type_reset();
+	_log_save_days_reset();
 
 	reg_msg(MSGID_CFG_UPDATE, _log_save_cfg_update);
 }
@@ -117,7 +134,7 @@ log_save_type_enable(ChainType type)
 dave_bool
 log_save_json_enable(void)
 {
-	if(_log_save_type & LogSaveType_json)
+	if((_log_save_days > 0) && (_log_save_type & LogSaveType_json))
 		return dave_true;
 	else
 		return dave_false;
@@ -126,10 +143,16 @@ log_save_json_enable(void)
 dave_bool
 log_save_txt_enable(void)
 {
-	if(_log_save_type & LogSaveType_txt)
+	if((_log_save_days > 0) && (_log_save_type & LogSaveType_txt))
 		return dave_true;
 	else
 		return dave_false;
+}
+
+ub
+log_save_days(void)
+{
+	return _log_save_days;
 }
 
 #endif

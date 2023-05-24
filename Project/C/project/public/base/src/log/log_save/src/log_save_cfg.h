@@ -18,5 +18,7 @@ dave_bool log_save_json_enable(void);
 
 dave_bool log_save_txt_enable(void);
 
+ub log_save_days(void);
+
 #endif
 

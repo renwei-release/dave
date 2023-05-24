@@ -15,7 +15,6 @@
 
 typedef struct {
 	void *ptr;
-	void *user_ptr;
 	ub len;
 
 	s8 *m_file;

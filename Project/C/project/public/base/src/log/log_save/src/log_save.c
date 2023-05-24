@@ -204,7 +204,7 @@ _log_save_build_log_file_name(s8 *file_name_ptr, ub file_name_len, s8 *project_n
 // =====================================================================
 
 void
-log_save_init(ub log_reserved_days)
+log_save_init(void)
 {
 	log_save_cfg_init();
 
@@ -214,7 +214,7 @@ log_save_init(ub log_reserved_days)
 	log_save_chain_init();
 #endif
 
-	log_save_auto_clean_init(log_reserved_days);
+	log_save_auto_clean_init(log_save_days());
 }
 
 void

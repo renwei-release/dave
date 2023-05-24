@@ -122,7 +122,7 @@ _log_fifo_output_data(void)
 
 		if((_log_trace_enable == dave_true)
 			&& (pChain->level != TRACELEVEL_CATCHER))
-		{
+		{		
 			dave_os_trace(pChain->level, pChain->data_len, pChain->data_ptr);
 		}
 
@@ -187,7 +187,7 @@ log_fifo_init(void)
 {
 	_log_fifo_pre_init();
 
-	log_save_init(30);
+	log_save_init();
 	
 	_log_fifo_thread_body = dave_os_create_thread("log-fifo", _log_fifo_thread, NULL);
 	if(_log_fifo_thread_body == NULL)

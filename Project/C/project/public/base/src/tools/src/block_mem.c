@@ -39,6 +39,9 @@
 #define OVERFLOW_LEN (4)
 #define OVERFLOW_CHAR (0xA5)
 #define MEMADD_LEN (USERINDEX_LEN + OVERFLOW_LEN)
+#define OFFSETPTR(ptr) (void *)(((ub)ptr + OFFSET_LEN) & 0xfffffffffffffff0)
+#define USERPTR(offset_ptr) &(((u8 *)offset_ptr)[USERINDEX_LEN])
+#define PTRTOUSER(ptr) USERPTR(OFFSETPTR(ptr))
 
 #define TOP_INFO_MAX 32
 
@@ -148,7 +151,7 @@ _block_mem_top_block_info(BlockMem *pBlock, s8 *top_file[TOP_INFO_MAX], ub *top_
 	{
 		pCore = &(pBlock->core[core_index]);
 
-		if(pCore->user_ptr != NULL)
+		if(pCore->ptr != NULL)
 		{
 			top_index = _block_mem_top_on_here(top_file, top_line, pCore->m_file, pCore->m_line);
 
@@ -285,7 +288,7 @@ _block_mem_user_ptr_to_core_index(void *user_ptr)
 static inline void
 _block_mem_core_reset(BlockMemCore *pCore)
 {
-	pCore->user_ptr = NULL;
+	pCore->ptr = NULL;
 	pCore->len = 0;
 
 	pCore->m_file = NULL;
@@ -429,10 +432,9 @@ _block_mem_malloc(ub *core_index, void *ptr, void *user_ptr, BlockMem *pBlock, u
 
 		pCore = &(pBlock->core[pBlock->core_search_index]);
 
-		if(pCore->user_ptr == NULL)
+		if(pCore->ptr == NULL)
 		{
 			pCore->ptr = ptr;
-			pCore->user_ptr = user_ptr;
 			pCore->len = len;
 
 			pCore->m_file = file;
@@ -458,7 +460,7 @@ _block_mem_free(ub core_index, BlockMem *pBlock, s8 *file, ub line)
 	BlockMemCore *pCore = &(pBlock->core[core_index]);
 	void *ptr = pCore->ptr;
 
-	pCore->user_ptr = NULL;
+	pCore->ptr = NULL;
 	pCore->len = 0;
 
 	pCore->f_file = file;
@@ -486,7 +488,7 @@ _block_mem_memory(ub core_index, void *user_ptr, BlockMem *pBlock)
 		return dave_false;
 	}
 
-	if(pBlock->core[core_index].user_ptr != user_ptr)
+	if(PTRTOUSER(pBlock->core[core_index].ptr) != user_ptr)
 	{
 		return dave_false;
 	}
@@ -506,12 +508,12 @@ _block_mem_safe_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 		return NULL;
 	}
 
-	offset_ptr = (void *)(((ub)ptr + OFFSET_LEN) & 0xfffffffffffffff0);
+	offset_ptr = OFFSETPTR(ptr);
 
 	((ub *)offset_ptr)[0] = pBlock->block_index;
 
 	pthread_spin_lock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
-	{ user_ptr = _block_mem_malloc(&(((ub *)offset_ptr)[1]), ptr, &(((u8 *)offset_ptr)[USERINDEX_LEN]), pBlock, len, file, line); }
+	{ user_ptr = _block_mem_malloc(&(((ub *)offset_ptr)[1]), ptr, USERPTR(offset_ptr), pBlock, len, file, line); }
 	pthread_spin_unlock((pthread_spinlock_t *)(pBlock->opt_pv.spin_lock));
 
 	_block_mem_add_overflow(user_ptr, len);
@@ -535,10 +537,10 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 
 	pCore = &(pBlock->core[core_index]);
-	if(pCore->user_ptr != user_ptr)
+	if(PTRTOUSER(pCore->ptr) != user_ptr)
 	{
 		BLOCKMEMABNOR("the ptr:%lx/%lx free failed! len:%d (c-%s:%d/m-%s:%d/f-%s:%d)",
-			user_ptr, pCore->user_ptr,
+			user_ptr, PTRTOUSER(pCore->ptr),
 			pCore->len,
 			file, line,
 			pCore->m_file, pCore->m_line,
@@ -549,7 +551,7 @@ _block_mem_safe_free(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	{
 		BLOCKMEMABNOR("%d Overflow<%x>:(c-%s:%d/m-%s:%d/f-%s:%d)",
 			pCore->len,
-			((u8 *)(pCore->user_ptr))[pCore->len],
+			((u8 *)(PTRTOUSER(pCore->ptr)))[pCore->len],
 			file, line,
 			pCore->m_file, pCore->m_line,
 			pCore->f_file, pCore->f_line);
@@ -586,10 +588,10 @@ _block_mem_safe_len(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 	}
 
 	pCore = &(pBlock->core[core_index]);
-	if(pCore->user_ptr != user_ptr)
+	if(PTRTOUSER(pCore->ptr) != user_ptr)
 	{
 		BLOCKMEMABNOR("the ptr:%lx/%lx free failed! len:%d (c-%s:%d/m-%s:%d/f-%s:%d)",
-			user_ptr, pCore->user_ptr,
+			user_ptr, PTRTOUSER(pCore->ptr),
 			pCore->len,
 			file, line,
 			pCore->m_file, pCore->m_line,
