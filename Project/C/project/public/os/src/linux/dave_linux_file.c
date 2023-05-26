@@ -40,9 +40,7 @@ _linux_file_home_dir(void)
 {
 	static s8 file_dir[64];
 
-	dave_snprintf(file_dir, sizeof(file_dir), "/dave/%s/", dave_verno_my_product());
-
-	t_stdio_tolowers(file_dir);
+	t_gp_base_path(file_dir, sizeof(file_dir));
 
 #if defined(__DAVE_IOS__)
     extern const char * getHomePath(void);
@@ -77,7 +75,7 @@ _linux_file_load_full_name(s8 *full_name, ub full_len, FileOptFlag flag, s8 *fil
 	}
 	else
 	{
-		dave_snprintf(full_name, full_len, "%s%s", _linux_file_home_dir(), file_name);
+		dave_snprintf(full_name, full_len, "%s/%s", dave_os_file_home_dir(), file_name);
 	}
 }
 

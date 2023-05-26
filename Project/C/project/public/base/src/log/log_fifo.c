@@ -168,16 +168,21 @@ _log_fifo_thread(void *arg)
 	return NULL;
 }
 
-static inline void
+static inline dave_bool
 _log_fifo_pre_init(void)
 {
 	static volatile sb __safe_pre_flag__ = 0;
+	dave_bool frist_init_flag = dave_false;
 
 	SAFEPre(__safe_pre_flag__, {
 		t_lock_reset(&_log_fifo_pv);
 		_log_fifo_counter = 0;
 		_log_fifo_chain_head = _log_fifo_chain_tail = NULL;
+
+		frist_init_flag = dave_true;
 	} );
+
+	return frist_init_flag;
 }
 
 // =====================================================================
@@ -185,7 +190,8 @@ _log_fifo_pre_init(void)
 void
 log_fifo_init(void)
 {
-	_log_fifo_pre_init();
+	if(_log_fifo_pre_init() == dave_false)
+		return;
 
 	log_save_init();
 	

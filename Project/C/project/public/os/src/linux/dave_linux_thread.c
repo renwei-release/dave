@@ -66,7 +66,6 @@ typedef struct {
 int pthread_setname_np(pthread_t thread, const char *name);
 
 static DAVEPTHREAD _dave_pthread[DAVE_THREAD_MAX];
-static pthread_spinlock_t _pv_lock;
 
 static void
 _thread_empty_handler(int signum)
@@ -144,8 +143,6 @@ dave_os_init_thread(void)
 		_dave_pthread[thread_index].thr_id = (pthread_t)NULL;
 	}
 
-	pthread_spin_init(&_pv_lock, 0);
-
 	signal(SIGPIPE, SIG_IGN);
 
 	_thread_block_all_signal();
@@ -154,7 +151,7 @@ dave_os_init_thread(void)
 void
 dave_os_exit_thread(void)
 {
-	pthread_spin_destroy(&_pv_lock);
+
 }
 
 void *
@@ -302,162 +299,6 @@ dave_os_thread_canceled(void *thread_id)
 	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
 
 	if((id != NULL) && (id->state == THREADSTATE_RELEASED))
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-void
-dave_os_pv_lock(void)
-{
-	pthread_spin_lock(&_pv_lock);
-}
-
-void
-dave_os_pv_unlock(void)
-{
-	pthread_spin_unlock(&_pv_lock);
-}
-
-void
-dave_os_mutex_init(void *ptr)
-{
-	pthread_mutex_init((pthread_mutex_t *)ptr, NULL);
-}
-
-void
-dave_os_mutex_destroy(void *ptr)
-{
-	pthread_mutex_destroy((pthread_mutex_t *)ptr);
-}
-
-void
-dave_os_mutex_lock(void *ptr)
-{
-	pthread_mutex_lock((pthread_mutex_t *)ptr);
-}
-
-void
-dave_os_mutex_unlock(void *ptr)
-{
-	pthread_mutex_unlock((pthread_mutex_t *)ptr);
-}
-
-dave_bool
-dave_os_mutex_trylock(void *ptr)
-{
-	if(pthread_mutex_trylock((pthread_mutex_t *)ptr) == 0)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-void
-dave_os_spin_lock_init(void *ptr)
-{
-	pthread_spin_init((pthread_spinlock_t *)ptr, 0);
-}
-
-void
-dave_os_spin_lock_destroy(void *ptr)
-{
-	pthread_spin_destroy((pthread_spinlock_t *)ptr);
-}
-
-void
-dave_os_spin_lock(void *ptr)
-{
-	pthread_spin_lock((pthread_spinlock_t *)ptr);
-}
-
-void
-dave_os_spin_unlock(void *ptr)
-{
-	pthread_spin_unlock((pthread_spinlock_t *)ptr);
-}
-
-void
-dave_os_spin_trylock(void *ptr)
-{
-	pthread_spin_trylock((pthread_spinlock_t *)ptr);
-}
-
-void
-dave_os_rw_lock_init(void *ptr)
-{
-	pthread_rwlock_init((pthread_rwlock_t *)ptr, NULL);
-}
-
-void
-dave_os_rw_lock_destroy(void *ptr)
-{
-	pthread_rwlock_destroy((pthread_rwlock_t *)ptr);
-}
-
-dave_bool
-dave_os_rw_rlock(void *ptr)
-{
-	if(pthread_rwlock_rdlock((pthread_rwlock_t *)ptr) == 0)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-dave_bool
-dave_os_rw_wlock(void *ptr)
-{
-	if(pthread_rwlock_wrlock((pthread_rwlock_t *)ptr) == 0)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-dave_bool
-dave_os_rw_tryrlock(void *ptr)
-{
-	if(pthread_rwlock_tryrdlock((pthread_rwlock_t *)ptr) == 0)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-dave_bool
-dave_os_rw_trywlock(void *ptr)
-{
-	if(pthread_rwlock_trywrlock((pthread_rwlock_t *)ptr) == 0)
-	{
-		return dave_true;
-	}
-	else
-	{
-		return dave_false;
-	}
-}
-
-dave_bool
-dave_os_rw_unlock(void *ptr)
-{
-	if(pthread_rwlock_unlock((pthread_rwlock_t *)ptr) == 0)
 	{
 		return dave_true;
 	}

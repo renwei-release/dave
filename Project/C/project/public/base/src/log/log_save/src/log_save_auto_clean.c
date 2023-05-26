@@ -21,11 +21,14 @@ static ub _log_reserved_days = 0;
 static void
 _log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *allowed_list)
 {
+	ub candidate_len = dave_strlen(candidate_dir);
 	dave_bool remove_flag = dave_true;
 	s8 dir_full[256];
 
 	// the dir_path is a log dir:20XXXXXX
-	if(t_is_all_digit((u8 *)candidate_dir, dave_strlen(candidate_dir)) == dave_false)
+	if(candidate_len != 8)
+		return;
+	if(t_is_all_digit((u8 *)candidate_dir, candidate_len) == dave_false)
 		return;
 	if((candidate_dir[0] != '2') || (candidate_dir[1] != '0'))
 		return;
@@ -89,16 +92,10 @@ _log_save_auto_clean_allowed_list(void)
 	return allowed_list;
 }
 
-static MBUF *
-_log_save_auto_clean_subdir_list(s8 *dir)
-{
-	return dave_os_dir_subdir_list(dir);
-}
-
 static void
 _log_save_auto_clean_dir(s8 *dir)
 {
-	MBUF *subdir_list = _log_save_auto_clean_subdir_list(dir);
+	MBUF *subdir_list = dave_os_dir_subdir_list(dir);
 	MBUF *allowed_list = _log_save_auto_clean_allowed_list();
 	MBUF *temp_list;
 
@@ -119,19 +116,29 @@ _log_save_auto_clean_dir(s8 *dir)
 static void
 _log_save_auto_clean_product(void)
 {
-	s8 lowerment_product[128], capital_product[128];
-	s8 dir[256];
+	// the dir like this /dave/log/BASE/20230525
+	//      or like this /dave/base/BASE/20230525
+	s8 *home_dir = dave_os_file_home_dir();
+	s8 full_dir[1024];
+	MBUF *subdir_list, *temp_list;
 
-	dave_strcpy(lowerment_product, dave_verno_my_product(), sizeof(lowerment_product));
-	lower(lowerment_product);
-	dave_strcpy(capital_product, dave_verno_my_product(), sizeof(capital_product));
-	upper(capital_product);
+	subdir_list = dave_os_dir_subdir_list(home_dir);
 
-	dave_snprintf(dir, sizeof(dir), "/dave/%s/%s", lowerment_product, capital_product);
+	LOGDEBUG("clean dir:%s", home_dir);
 
-	LOGDEBUG("clean dir:%s", dir);
+	temp_list = subdir_list;
+	while(temp_list != NULL)
+	{
+		dave_snprintf(full_dir, sizeof(full_dir), "%s/%s", home_dir, ms8(temp_list));
 
-	_log_save_auto_clean_dir(dir);
+		LOGDEBUG("subdir:%s", full_dir);
+
+		_log_save_auto_clean_dir(full_dir);
+
+		temp_list = temp_list->next;
+	}
+
+	dave_mfree(subdir_list);
 }
 
 static void
@@ -150,6 +157,8 @@ log_save_auto_clean_init(ub log_reserved_days)
 		_log_reserved_days = log_reserved_days;
 
 		base_timer_creat(LOG_AUTO_CLEAN_TIMER, _log_save_auto_clean_timer, 3600 * 1000);
+
+		_log_save_auto_clean_product();
 	}
 }
 

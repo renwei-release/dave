@@ -59,3 +59,13 @@ t_gp_product_name(void)
 	return product_name;
 }
 
+s8 *
+t_gp_base_path(s8 *path_ptr, ub path_len)
+{
+	dave_snprintf(path_ptr, path_len, "/dave/%s", dave_verno_my_product());
+
+	lower(path_ptr);
+
+	return path_ptr;
+}
+

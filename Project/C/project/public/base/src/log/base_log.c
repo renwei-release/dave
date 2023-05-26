@@ -21,7 +21,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static s8 _trace_buffer[LOG_BUFFER_LENGTH];
+#define TRACE_BUFFER_MAX 16
+#define TRACE_BUFFER_LEN 1024
+
+static s8 _trace_buffer[TRACE_BUFFER_MAX][TRACE_BUFFER_LEN];
+static ub _trace_index = 0;
 static ub _log_log_counter = 0;
 static dave_bool _log_trace_enable = LOG_TRACE_DEFAULT_CFG;
 
@@ -49,6 +53,48 @@ _log_buffer_log_head(LogBuffer *pBuffer, TraceLevel level)
 		VERSION_MAIN, VERSION_SUB, VERSION_REV,
 		date.year, date.month, date.day, date.hour, date.minute, date.second,
 		_log_buffer_counter());
+}
+
+static inline s8 *
+___log_trace___(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+{
+	s8 *trace_buffer = _trace_buffer[_trace_index % TRACE_BUFFER_MAX];
+	ub trace_len = dave_strlen(trace_buffer);
+
+	if((trace_buffer[trace_len - 1] == '\r')
+		|| (trace_buffer[trace_len - 1] == '\n')
+		|| (trace_len > (TRACE_BUFFER_LEN - 128)))
+	{
+		trace_len = 0;
+	}
+
+	trace_len += (ub)vsnprintf(&trace_buffer[trace_len], TRACE_BUFFER_LEN-trace_len, fmt, list_args);
+
+	if((trace_buffer[trace_len - 1] == '\r')
+		|| (trace_buffer[trace_len - 1] == '\n')
+		|| (trace_len > (TRACE_BUFFER_LEN - 128)))
+	{
+		_trace_index ++;
+		*log_len = trace_len;
+		return trace_buffer;
+	}
+	else
+	{
+		*log_len = 0;
+		return NULL;
+	}
+}
+
+static inline s8 *
+__log_trace__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+{
+	s8 *log_buf;
+
+	log_lock();
+	log_buf = ___log_trace___(log_len, level, fmt, list_args);
+	log_unlock();
+
+	return log_buf;
 }
 
 static inline s8 *
@@ -88,34 +134,6 @@ __log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args
 	}
 
 	return log_buf;
-}
-
-static inline s8 *
-__log_trace__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
-{
-	ub trace_len = dave_strlen(_trace_buffer);
-
-	if((_trace_buffer[trace_len - 1] == '\r')
-		|| (_trace_buffer[trace_len - 1] == '\n')
-		|| (trace_len > (sizeof(_trace_buffer) - 128)))
-	{
-		trace_len = 0;
-	}
-
-	trace_len += (ub)vsnprintf(&_trace_buffer[trace_len], sizeof(_trace_buffer)-trace_len, fmt, list_args);
-
-	if((_trace_buffer[trace_len - 1] == '\r')
-		|| (_trace_buffer[trace_len - 1] == '\n')
-		|| (trace_len > (sizeof(_trace_buffer) - 128)))
-	{
-		*log_len = trace_len;
-		return _trace_buffer;
-	}
-	else
-	{
-		*log_len = 0;
-		return NULL;
-	}
 }
 
 static inline s8 *
@@ -274,6 +292,8 @@ base_log_exit(void)
 void
 base_log_trace_enable(dave_bool write_cfg)
 {
+	dave_bool current_flag = _log_trace_enable;
+
 	_log_trace_enable = dave_true;
 
 	if(write_cfg == dave_true)
@@ -281,13 +301,19 @@ base_log_trace_enable(dave_bool write_cfg)
 		cfg_set_bool(CFG_LOG_TRACE_ENABLE, _log_trace_enable);
 	}
 
-	LOGLOG("log trace enable!");
+	if(current_flag == dave_false)
+	{
+		LOGLOG("log trace enable!");
+	}
 }
 
 void
 base_log_trace_disable(dave_bool write_cfg)
 {
-	LOGLOG("log trace disable!");
+	if(_log_trace_enable == dave_true)
+	{
+		LOGLOG("log trace disable!");
+	}
 
 	_log_trace_enable = dave_false;
 

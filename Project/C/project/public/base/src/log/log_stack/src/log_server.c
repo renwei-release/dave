@@ -15,6 +15,7 @@
 #include "dave_verno.h"
 #include "base_rxtx.h"
 #include "log_save.h"
+#include "log_fifo.h"
 #include "log_log.h"
 
 #define CFG_LOG_SERVER_PORT "LogServerPort"
@@ -287,7 +288,7 @@ _log_server_init(MSGBODY *msg)
 
 	_log_server_bind_req();
 
-	log_save_init();
+	log_fifo_init();
 }
 
 static void
@@ -319,7 +320,7 @@ _log_server_main(MSGBODY *msg)
 static void
 _log_server_exit(MSGBODY *msg)
 {
-	log_save_exit();
+	log_fifo_exit();
 
 	if(_log_server_socket != INVALID_SOCKET_ID)
 	{

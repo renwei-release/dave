@@ -336,7 +336,7 @@ __t_lock_mutex__(TLock *pLock, s8 *fun, ub line)
 #ifdef LEVEL_PRODUCT_alpha
 	if(_t_lock_check(pLock, fun, line) == dave_true)
 #endif
-	dave_os_mutex_lock(&(pLock->m_mutex_t));
+		dave_os_mutex_lock(&(pLock->m_mutex_t));
 }
 
 dave_bool
@@ -380,6 +380,6 @@ __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line)
 #ifdef LEVEL_PRODUCT_alpha
 	if(_t_unlock_check(pLock, fun, line) == dave_true)
 #endif
-	dave_os_mutex_unlock(&(pLock->m_mutex_t));
+		dave_os_mutex_unlock(&(pLock->m_mutex_t));
 }
 

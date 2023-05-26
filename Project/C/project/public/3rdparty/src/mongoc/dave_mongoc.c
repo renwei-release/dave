@@ -419,7 +419,7 @@ _mongoc_server_start(ub port, s8 *db_name, s8 *user, s8 *password, float CacheSi
 		_mongoc_server_stop();
 	}
 
-	dave_snprintf(file_name, sizeof(file_name), "%sconfig/%s", dave_os_file_home_dir(), MONGODB_CFG_NAME);
+	dave_snprintf(file_name, sizeof(file_name), "%s/config/%s", dave_os_file_home_dir(), MONGODB_CFG_NAME);
 
 	dave_os_file_creat_dir(file_name);
 
