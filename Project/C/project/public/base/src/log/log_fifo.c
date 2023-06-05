@@ -99,6 +99,7 @@ _log_fifo_output_data(void)
 				else
 				{
 					LOGLOG("invalid fifo counter:%d", _log_fifo_counter);
+					_log_fifo_counter = 0;
 				}
 
 				pChain = _log_fifo_chain_head;
@@ -168,21 +169,16 @@ _log_fifo_thread(void *arg)
 	return NULL;
 }
 
-static inline dave_bool
+static inline void
 _log_fifo_pre_init(void)
 {
 	static volatile sb __safe_pre_flag__ = 0;
-	dave_bool frist_init_flag = dave_false;
 
 	SAFEPre(__safe_pre_flag__, {
 		t_lock_reset(&_log_fifo_pv);
 		_log_fifo_counter = 0;
 		_log_fifo_chain_head = _log_fifo_chain_tail = NULL;
-
-		frist_init_flag = dave_true;
 	} );
-
-	return frist_init_flag;
 }
 
 // =====================================================================
@@ -190,11 +186,10 @@ _log_fifo_pre_init(void)
 void
 log_fifo_init(void)
 {
-	if(_log_fifo_pre_init() == dave_false)
-		return;
+	_log_fifo_pre_init();
 
 	log_save_init();
-	
+
 	_log_fifo_thread_body = dave_os_create_thread("log-fifo", _log_fifo_thread, NULL);
 	if(_log_fifo_thread_body == NULL)
 	{

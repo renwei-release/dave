@@ -384,6 +384,4 @@ TEST(ramkv_case, ramkv_case_8) { _ramkv_test_timer_info(); }
 TEST(ramkv_case, ramkv_case_9) { _ramkv_test_add_del_free(KvAttrib_list, (s8 *)"1000"); }
 TEST(ramkv_case, ramkv_case_10) { _ramkv_test_add_short_add_long_add_short(); }
 
-
 #endif
-
