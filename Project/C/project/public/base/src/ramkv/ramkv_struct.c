@@ -23,11 +23,11 @@ ___ramkv_pv_booting___(void)
 {
 	static volatile sb __safe_pre_flag__ = 0;
 
-	SAFEPre(__safe_pre_flag__, { t_lock_reset(&_ramkv_struct_global_pv); });
+	SAFEPre(__safe_pre_flag__, {  t_lock_reset(&_ramkv_struct_global_pv); });
 }
 
 static KV *
-___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback outback_fun, s8 *fun, ub line)
+___ramkv_malloc___(s8 *name, KvAttrib attrib, s8 *fun, ub line)
 {
 	KV *pKV;
 
@@ -57,8 +57,6 @@ ___ramkv_malloc___(s8 *name, KvAttrib attrib, ub out_second, ramkv_time_callback
 			break;
 	}
 
-	ramkv_timer_init(pKV, out_second, outback_fun);
-
 	return pKV;
 }
 
@@ -77,8 +75,6 @@ ___ramkv_free___(KV *pKV, s8 *fun, ub line)
 			pKV->thread_name, thread_name(self()),
 			fun, line);
 	}
-
-	ramkv_timer_exit(pKV);
 
 	ramkv_free_local(pKV);
 
@@ -112,11 +108,16 @@ __ramkv_malloc__(dave_bool external_call, s8 *name, KvAttrib attrib, ub out_seco
 
 	if(external_call == dave_true)
 	{
-		SAFECODEv2W(_ramkv_struct_global_pv, pKV = ___ramkv_malloc___(name, attrib, out_second, outback_fun, fun, line););
+		SAFECODEv1(_ramkv_struct_global_pv, { pKV = ___ramkv_malloc___(name, attrib, fun, line); } );
 	}
 	else
 	{
-		pKV = ___ramkv_malloc___(name, attrib, out_second, outback_fun, fun, line);
+		pKV = ___ramkv_malloc___(name, attrib, fun, line);
+	}
+
+	if(pKV != NULL)
+	{
+		ramkv_timer_init(pKV, out_second, outback_fun);
 	}
 
 	return pKV;
@@ -127,9 +128,14 @@ __ramkv_free__(dave_bool external_call, KV *pKV, s8 *fun, ub line)
 {
 	___ramkv_pv_booting___();
 
+	if(pKV != NULL)
+	{
+		ramkv_timer_exit(pKV);
+	}
+
 	if(external_call == dave_true)
 	{
-		SAFECODEv2W(_ramkv_struct_global_pv, ___ramkv_free___(pKV, fun, line););
+		SAFECODEv1(_ramkv_struct_global_pv, ___ramkv_free___(pKV, fun, line););
 	}
 	else
 	{
@@ -150,7 +156,7 @@ ramkv_timer(TIMERID timer_id, ub thread_index, void *param)
 	 * 那么这个时候param携带的pKV指针就无效了，它会被其他模块使用。
 	 * 这个时候如果使用param是一个危险行为。
 	 */
-	SAFECODEv2W(_ramkv_struct_global_pv, {
+	SAFECODEv1(_ramkv_struct_global_pv, {
 
 		kv_check_flag = ramkv_check(pKV);
 		if(kv_check_flag == dave_true)

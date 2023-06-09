@@ -806,7 +806,7 @@ _thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name,
 
 	if(thread_index >= THREAD_MAX)
 	{
-		THREADABNOR("invalid thread_index:%d", thread_index);
+		THREADABNOR("invalid thread_id:%lx thread_index:%d", thread_id, thread_index);
 		return 0;
 	}
 

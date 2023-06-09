@@ -37,7 +37,7 @@ dave_bool __t_wlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_trlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_twlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_unlock_rw__(TLock *pLock, s8 *fun, ub line);
-void __t_lock_mutex__(TLock *pLock, s8 *fun, ub line);
+dave_bool __t_lock_mutex__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_trylock_mutex__(TLock *pLock, s8 *fun, ub line);
 void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 
@@ -57,7 +57,7 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 
 #define ENABLE_SAFE_PRE_FLAG 0xaaff45290fdc
 
-#define SAFEPre(flag, safe_zone){\
+#define SAFEPre(flag, safe_zone) {\
 	if(flag != ENABLE_SAFE_PRE_FLAG) {\
 		t_lock;\
 		if(flag != ENABLE_SAFE_PRE_FLAG) {\
@@ -68,40 +68,43 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 	}\
 }
 
-#define SAFECODEv2R(pv, safe_zone){\
-	t_rlock_rw(&pv);\
-	{ safe_zone; }\
-	t_unlock_rw(&pv);\
-}
-
-#define SAFECODEv2W(pv, safe_zone){\
-	t_wlock_rw(&pv);\
-	{ safe_zone; }\
-	t_unlock_rw(&pv);\
-}
-
-#define SAFECODEv2TR(pv, safe_zone){\
-	if(t_trlock_rw(&pv) == dave_true){\
+#define SAFECODEv2R(pv, safe_zone) {\
+	if(t_rlock_rw(&pv) == dave_true) {\
 		{ safe_zone; }\
 		t_unlock_rw(&pv);\
 	}\
 }
 
-#define SAFECODEv2TW(pv, safe_zone){\
-	if(t_twlock_rw(&pv)==dave_true){\
+#define SAFECODEv2W(pv, safe_zone) {\
+	if(t_wlock_rw(&pv) == dave_true) {\
+		{ safe_zone; }\
+		t_unlock_rw(&pv);\
+	}\
+}
+
+#define SAFECODEv2TR(pv, safe_zone) {\
+	if(t_trlock_rw(&pv) == dave_true) {\
+		{ safe_zone; }\
+		t_unlock_rw(&pv);\
+	}\
+}
+
+#define SAFECODEv2TW(pv, safe_zone) {\
+	if(t_twlock_rw(&pv) == dave_true) {\
 		{ safe_zone; }\
 		t_unlock_rw(&pv);\
 	}\
 }
 	
-#define SAFECODEv1(pv, safe_zone){\
-	t_lock_mutex(&pv);\
-	{ safe_zone; }\
-	t_unlock_mutex(&pv);\
+#define SAFECODEv1(pv, safe_zone) {\
+	if(t_lock_mutex(&pv) == dave_true) {\
+		{ safe_zone; }\
+		t_unlock_mutex(&pv);\
+	}\
 }
 
-#define SAFECODEidlev1(pv, safe_zone){\
-	if(t_trylock_mutex(&pv) == dave_true){\
+#define SAFECODEidlev1(pv, safe_zone) {\
+	if(t_trylock_mutex(&pv) == dave_true) {\
 		{ safe_zone; }\
 		t_unlock_mutex(&pv);\
 	}\

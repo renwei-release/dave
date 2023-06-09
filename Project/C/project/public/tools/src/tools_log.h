@@ -25,6 +25,8 @@
 
 #define TOOLSABNOR(a, ...) { DAVEABNORMAL("[TOOLS Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); }
 
+#define TOOLSERROR(a, ...) { DAVEABNORMAL("[TOOLS Error]<%s:%d>", __func__, __LINE__); printf("[TOOLS Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); printf((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); printf("\n"); }
+
 #define TOOLSLOG(a, ...) { DAVELOG("[TOOLS]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
 
 #endif

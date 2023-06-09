@@ -212,14 +212,12 @@ _timer_opt_hardware_timer(TimerOPType op_type, s8 *name)
 		}
 		else
 		{
-			TIMEDEBUG("time change:%d->%d", _cur_hardware_alarm_ms, _new_hardware_alarm_ms);
-
 			divisor_alarm = _timer_get_divisor_alarm_ms(_cur_hardware_alarm_ms, _new_hardware_alarm_ms, name);
 			if(divisor_alarm != 0)
 			{
 				if(_cur_hardware_alarm_ms != divisor_alarm)
 				{
-					TIMEDEBUG("stop hardware timer");
+					TIMEDEBUG("time change:%d->%d", _cur_hardware_alarm_ms, divisor_alarm);
 					dave_os_stop_hardware_timer();
 					_cur_hardware_alarm_ms = divisor_alarm;
 					TIMEDEBUG("start hardware timer:%d", _cur_hardware_alarm_ms);

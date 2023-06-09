@@ -56,7 +56,8 @@ _t_lock_check(TLock *pLock, s8 *fun, ub line)
 
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
+		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx]!",
+			fun, line, (ub)pLock);
 		return dave_false;
 	}
 
@@ -71,7 +72,8 @@ _t_lock_check(TLock *pLock, s8 *fun, ub line)
 	}
 	else if(pLock->thread_id == pthread_self())
 	{
-		TOOLSABNOR("%s:%d->%s:%d a nested lock occurred or lock was not released correctly!", pLock->file, pLock->line, fun, line);
+		TOOLSERROR("%s:%ld->%s:%ld a nested lock occurred or lock was not released correctly!",
+			pLock->file, pLock->line, fun, line);
 		ret = dave_false;
 	}
 	t_unlock_spin(pLock);
@@ -84,7 +86,7 @@ _t_unlock_check(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock! [%s:%d magic:%lx/%lx]",
+		TOOLSERROR("Found an invalid lock! [%s:%ld magic:%lx/%lx]",
 			fun, line, pLock->magic_data_1, pLock->magic_data_2);
 		return dave_false;
 	}
@@ -106,7 +108,8 @@ _t_lock_try_check(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
+		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx]!",
+			fun, line, (ub)pLock);
 		return dave_false;
 	}
 
@@ -118,7 +121,7 @@ _t_unlock_try_check(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock! [%s:%d magic:%lx/%lx]",
+		TOOLSERROR("Found an invalid lock! [%s:%ld magic:%lx/%lx]",
 			fun, line, pLock->magic_data_1, pLock->magic_data_2);
 		return dave_false;
 	}
@@ -163,7 +166,7 @@ t_lock_destroy(TLock *pLock)
 #ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock!");
+		TOOLSERROR("Found an invalid lock!");
 		return;
 	}
 #endif
@@ -184,7 +187,8 @@ __t_lock_spin__(TLock *pLock, s8 *fun, ub line)
 #ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
+		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx]!",
+			fun, line, (ub)pLock);
 		return;
 	}
 #endif
@@ -203,7 +207,8 @@ __t_unlock_spin__(TLock *pLock, s8 *fun, ub line)
 #ifdef LEVEL_PRODUCT_alpha
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSABNOR("Found an invalid lock[%s:%d, pLock:%x]!", fun, line, pLock);
+		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx]!",
+			fun, line, (ub)pLock);
 		return;
 	}
 #endif
@@ -220,13 +225,10 @@ __t_rlock_rw__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_check(pLock, fun, line) == dave_true)
-#endif
-		return dave_os_rw_rlock(pLock->rw_lock);
-#ifdef LEVEL_PRODUCT_alpha
-	else
+	if(_t_lock_check(pLock, fun, line) == dave_false)
 		return dave_false;
 #endif
+	return dave_os_rw_rlock(pLock->rw_lock);
 }
 
 dave_bool
@@ -238,13 +240,10 @@ __t_wlock_rw__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_check(pLock, fun, line) == dave_true)
-#endif
-		return dave_os_rw_wlock(pLock->rw_lock);
-#ifdef LEVEL_PRODUCT_alpha
-	else
+	if(_t_lock_check(pLock, fun, line) == dave_false)
 		return dave_false;
 #endif
+	return dave_os_rw_wlock(pLock->rw_lock);
 }
 
 dave_bool
@@ -316,16 +315,13 @@ __t_unlock_rw__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_unlock_check(pLock, fun, line) == dave_true)
-#endif
-		return dave_os_rw_unlock(pLock->rw_lock);
-#ifdef LEVEL_PRODUCT_alpha
-	else
+	if(_t_unlock_check(pLock, fun, line) == dave_false)
 		return dave_false;
 #endif
+	return dave_os_rw_unlock(pLock->rw_lock);
 }
 
-void
+dave_bool
 __t_lock_mutex__(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock == NULL)
@@ -334,9 +330,11 @@ __t_lock_mutex__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_check(pLock, fun, line) == dave_true)
+	if(_t_lock_check(pLock, fun, line) == dave_false)
+		return dave_false;
 #endif
-		dave_os_mutex_lock(&(pLock->m_mutex_t));
+	dave_os_mutex_lock(&(pLock->m_mutex_t));
+	return dave_true;
 }
 
 dave_bool
