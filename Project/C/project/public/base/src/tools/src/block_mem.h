@@ -10,7 +10,7 @@
 #include "dave_3rdparty.h"
 #include "dave_os.h"
 
-#define CORE_MEM_MAX 20480
+#define CORE_MEM_MAX 40960
 #define FREE_MEM_MAX 32
 
 typedef struct {

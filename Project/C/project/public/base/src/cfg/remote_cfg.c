@@ -12,6 +12,8 @@
 #include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "cfg_param.h"
+#include "remote_cfg_kv.h"
+#include "remote_cfg_file.h"
 #include "cfg_log.h"
 
 #define MIN_REMOTE_CFG_TTL 30
@@ -19,8 +21,6 @@
 typedef struct {
 	CFGRemoteSyncUpdate update;
 } RemoteReflash;
-
-static void *_remote_cfg_kv = NULL;
 
 static dave_bool
 _base_remote_update(dave_bool put_flag, s8 *name, s8 *value, sb ttl)
@@ -86,36 +86,42 @@ _base_remote_reflash_del(s8 *name)
 void
 base_remote_cfg_init(void)
 {
-	_remote_cfg_kv = kv_malloc("rcfgkv", 0, NULL);
+	remote_cfg_file_init();
+	remote_cfg_kv_init();
 }
 
 void
 base_remote_cfg_exit(void)
 {
-	kv_free(_remote_cfg_kv, NULL);
+	remote_cfg_file_exit();
+	remote_cfg_kv_exit();
 }
 
 dave_bool
 base_remote_cfg_internal_add(s8 *name, s8 *value)
 {
-	return kv_add_key_value(_remote_cfg_kv, name, value);
+	CFGDEBUG("%s : %s", name, value);
+	return remote_cfg_file_set(name, value);
 }
 
 dave_bool
 base_remote_cfg_internal_del(s8 *name)
 {
-	return kv_del_key_value(_remote_cfg_kv, name);
+	CFGDEBUG("%s", name);
+	remote_cfg_file_del(name);
+	remote_cfg_kv_del(name);
+	return dave_true;
 }
 
 RetCode
 base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 {
+	CFGDEBUG("%s : %s ttl:%d", name, value, ttl);
+
 	if(ttl <= 0)
 	{
 		ttl = 0;
 	}
-
-	CFGDEBUG("%s : %s ttl:%d", name, value, ttl);
 
 	if(ttl > 0)
 	{
@@ -132,7 +138,23 @@ base_remote_cfg_set(s8 *name, s8 *value, sb ttl)
 sb
 base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 {
-	return kv_inq_key_value(_remote_cfg_kv, name, value_ptr, value_len);
+	sb get_len;
+
+	get_len = remote_cfg_kv_get(name, value_ptr, value_len);
+	if(get_len < 0)
+	{
+		CFGDEBUG("%s:%d/%s", name, get_len, value_ptr);
+
+		get_len = remote_cfg_file_get(name, value_ptr, value_len);
+		if(get_len >= 0)
+		{
+			CFGDEBUG("%s:%d/%s", name, get_len, value_ptr);
+
+			remote_cfg_kv_set(name, value_ptr);
+		}
+	}
+
+	return get_len;
 }
 
 dave_bool
@@ -152,7 +174,7 @@ base_remote_cfg_del(s8 *name)
 sb
 base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len)
 {
-	return kv_index_key_value(_remote_cfg_kv, index, key_ptr, key_len, value_ptr, value_len);
+	return remote_cfg_file_index(index, key_ptr, key_len, value_ptr, value_len);
 }
 
 #endif

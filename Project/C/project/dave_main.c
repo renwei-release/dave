@@ -40,7 +40,9 @@ _linux_parse_the_command_line(int argc, char **argv)
 	dave_bool boot_main_flag = dave_true;
 
 	if(argc < 2)
+	{
 		return boot_main_flag;
+	}
 
 	if(dave_strcmp(argv[1], "-v")
 		|| dave_strcmp(argv[1], "-ver")
@@ -75,14 +77,21 @@ _linux_main_thread(void *arg)
 }
 
 static void
+_linux_handle_alarm(int signo)
+{
+	printf("_linux_handle_alarm:%d\n", signo);
+}
+
+static void
 _linux_handle_signal(void)
 {
 	sigset_t set;
 	int sig;
 	int ret;
 
-	sigemptyset(&set);
+	signal(SIGALRM, _linux_handle_alarm);
 
+	sigemptyset(&set);
 	sigaddset(&set, TIMER_SIG);
 	sigaddset(&set, QUIT_SIG);
 	sigaddset(&set, KILL_SIG);

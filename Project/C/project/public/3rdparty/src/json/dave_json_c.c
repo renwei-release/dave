@@ -1046,7 +1046,7 @@ void *
 dave_json_c_read(s8 *file_name, dave_bool direct_flag)
 {
 	FileOptFlag flag;
-	ub data_len = 1024 * 16;
+	ub data_len;
 	u8 *data_ptr;
 	void *pJson = NULL;
 
@@ -1054,6 +1054,10 @@ dave_json_c_read(s8 *file_name, dave_bool direct_flag)
 		flag = READ_FLAG|DIRECT_FLAG;
 	else
 		flag = READ_FLAG;
+
+	data_len = dave_os_file_len(flag, file_name, -1);
+	if(data_len <= 0)
+		return NULL;
 
 	data_ptr = dave_malloc(data_len + 1);
 

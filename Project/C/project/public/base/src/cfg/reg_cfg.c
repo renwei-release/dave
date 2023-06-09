@@ -139,11 +139,17 @@ static inline void
 _reg_cfg_pre(void)
 {
 	static volatile sb __safe_pre_flag__ = 0;
+	dave_bool pre_flag = dave_false;
 
 	SAFEPre(__safe_pre_flag__, {
-		_reg_cfg_kv = kv_malloc("regcfg", 0, NULL);
 		t_lock_reset(&_reg_cfg_pv);
+		pre_flag = dave_true;
 	});
+
+	if(pre_flag == dave_true)
+	{
+		SAFECODEv1(_reg_cfg_pv, if(_reg_cfg_kv == NULL) _reg_cfg_kv = kv_malloc("regcfg", 0, NULL););
+	}
 }
 
 // =====================================================================
