@@ -143,6 +143,8 @@ ramkv_timer(TIMERID timer_id, ub thread_index, void *param)
 	KV *pKV = param;
 	dave_bool kv_check_flag = dave_true;
 
+	___ramkv_pv_booting___();
+
 	/*
 	 * 时间事件会在线程空间排队，如果排队的过程中KV已经被释放了，
 	 * 那么这个时候param携带的pKV指针就无效了，它会被其他模块使用。
