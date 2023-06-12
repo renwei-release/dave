@@ -105,6 +105,8 @@ base_power_off(s8 *reason)
 	{
 		reason = "Bye!";
 	}
+
+	dave_os_power_off(reason);
 }
 
 dave_bool

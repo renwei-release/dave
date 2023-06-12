@@ -44,7 +44,6 @@ typedef struct {
 	sb life;
 } MsgList;
 
-static ub __init_flag__ = 0x00;
 static TLock _thread_msg_buf_pv;
 static void *_thread_msg_buf_ramkv = NULL;
 
@@ -544,11 +543,7 @@ _thread_msg_buffer_safe_uid_pop(s8 *uid)
 static RetCode
 _thread_msg_buffer_safe_recycle(void *ramkv, s8 *buffer_key)
 {
-	RetCode ret;
-
-	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_list_free(ramkv, NULL, NULL, NULL, buffer_key); );
-
-	return ret;
+	return _thread_msg_buffer_list_free(ramkv, NULL, NULL, NULL, buffer_key);
 }
 
 static dave_bool
@@ -573,49 +568,39 @@ _thread_msg_buffer_public_push(
 	return dave_true;
 }
 
+static inline void
+_thread_msg_buffer_pre(void)
+{
+	static volatile sb __safe_pre_flag__ = 0;
+
+	SAFEPre(__safe_pre_flag__, { t_lock_reset(&_thread_msg_buf_pv); });
+
+	SAFECODEv1(_thread_msg_buf_pv, {
+		if(_thread_msg_buf_ramkv == NULL)
+		{
+			_thread_msg_buf_ramkv = kv_malloc("tmbk", THREAD_MSG_BUFFER_BASE_TIMER, _thread_msg_buffer_safe_tick);
+		}
+	});
+}
+
 // =====================================================================
 
 void
 thread_msg_buffer_init(void)
 {
-	dave_bool init_flag = dave_false;
-
-	if(__init_flag__ != 0x0123456789)
-	{
-		t_lock_spin(NULL);
-		if(__init_flag__ != 0x0123456789)
-		{
-			__init_flag__ = 0x0123456789;
-			init_flag = dave_true;
-		}
-		t_unlock_spin(NULL);
-	}
-
-	if(init_flag == dave_true)
-	{
-		t_lock_reset(&_thread_msg_buf_pv);
-		_thread_msg_buf_ramkv = kv_malloc("tmbk", THREAD_MSG_BUFFER_BASE_TIMER, _thread_msg_buffer_safe_tick);
-	}
+	_thread_msg_buffer_pre();
 }
 
 void
 thread_msg_buffer_exit(void)
 {
-	dave_bool exit_flag = dave_false;
-
-	t_lock_spin(NULL);
-	if(__init_flag__ == 0x0123456789)
-	{
-		__init_flag__ = 0x00;
-		exit_flag = dave_true;
-	}
-	t_unlock_spin(NULL);
-
-	if(exit_flag == dave_true)
-	{
-		kv_free(_thread_msg_buf_ramkv, _thread_msg_buffer_safe_recycle);
-		_thread_msg_buf_ramkv = NULL;
-	}
+	SAFECODEv1(_thread_msg_buf_pv, {
+		if(_thread_msg_buf_ramkv != NULL)
+		{
+			kv_free(_thread_msg_buf_ramkv, _thread_msg_buffer_safe_recycle);
+			_thread_msg_buf_ramkv = NULL;
+		}
+	});
 }
 
 dave_bool
@@ -625,7 +610,7 @@ thread_msg_buffer_thread_push(
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	thread_msg_buffer_init();
+	_thread_msg_buffer_pre();
 
 	return _thread_msg_buffer_public_push(
 		src_id, NULL, dst_thread, NULL,
@@ -637,6 +622,8 @@ thread_msg_buffer_thread_push(
 void
 thread_msg_buffer_thread_pop(s8 *dst_thread)
 {
+	_thread_msg_buffer_pre();
+
 	_thread_msg_buffer_safe_thread_pop(dst_thread);
 }
 
@@ -647,7 +634,7 @@ thread_msg_buffer_gid_push(
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	thread_msg_buffer_init();
+	_thread_msg_buffer_pre();
 
 	return _thread_msg_buffer_public_push(
 		src_id, gid, dst_thread, NULL,
@@ -659,6 +646,8 @@ thread_msg_buffer_gid_push(
 void
 thread_msg_buffer_gid_pop(s8 *gid, s8 *dst_thread)
 {
+	_thread_msg_buffer_pre();
+
 	_thread_msg_buffer_safe_gid_pop(gid, dst_thread);
 }
 
@@ -669,7 +658,7 @@ thread_msg_buffer_uid_push(
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
-	thread_msg_buffer_init();
+	_thread_msg_buffer_pre();
 
 	return _thread_msg_buffer_public_push(
 		src_id, NULL, NULL, uid,
@@ -681,6 +670,8 @@ thread_msg_buffer_uid_push(
 void
 thread_msg_buffer_uid_pop(s8 *uid)
 {
+	_thread_msg_buffer_pre();
+
 	_thread_msg_buffer_safe_uid_pop(uid);
 }
 

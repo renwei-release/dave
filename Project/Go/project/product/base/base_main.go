@@ -16,6 +16,7 @@ import (
 
 func _fun_MSGID_DEBUG_RSP(src_id uint64, ptr uint64, debug_data_rsp string) {
 	pRsp := auto.DebugRsp{}
+
 	copy(pRsp.Msg[:], debug_data_rsp)
 	pRsp.Ptr = ptr
 

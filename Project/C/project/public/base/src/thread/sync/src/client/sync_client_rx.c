@@ -108,14 +108,13 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 		sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
 	}
 
-	if(dave_strcmp(pServer->verno, verno) == dave_false)
+	if(pServer->work_start_second == 0)
 	{
-		if(pServer->verno[0] == '\0')
-			pServer->work_start_second = dave_os_time_s();
+		pServer->work_start_second = dave_os_time_s();
 
 		SYNCLOG("server:%x socket:%d %s/%s/%s (%d%d%d%d)",
 			pServer, pServer->server_socket,
-			pServer->globally_identifier, pServer->verno, pServer->host_name,
+			pServer->globally_identifier, verno, pServer->host_name,
 			pServer->server_connecting, pServer->server_cnt,
 			pServer->server_booting, pServer->server_ready);
 	}

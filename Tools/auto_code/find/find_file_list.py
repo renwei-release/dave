@@ -8,8 +8,8 @@
 import re
 import os
 import traceback
-import hashlib
 from autocode_cfg import *
+from autocode_hash import *
 
 
 def _is_disable_file_or_dir(file_or_dir):
@@ -91,35 +91,6 @@ def _remove_invalid_file(file_list):
     return new_file_list
 
 
-def _load_file_hash(file_list):
-    modify_time = ""
-    for file_name in file_list:
-        modify_time += str(os.path.getmtime(file_name))
-    return hashlib.sha256(modify_time.encode()).hexdigest()
-
-
-def _get_hash_file():
-    try:
-        with open(rpc_hash_file, "r", encoding="utf-8") as file_id:
-            return file_id.read()
-    except:
-        return ""
-
-
-def _set_hash_file(hash):
-    with open(rpc_hash_file, "w+", encoding="utf-8") as file_id:
-        file_id.write(f"{hash}")
-
-
-def _check_file_hash(file_list):
-    file_hash = _load_file_hash(file_list)
-    hash_file = _get_hash_file()
-    if file_hash != hash_file:
-        _set_hash_file(file_hash)
-        return True
-    return False
-
-
 # =====================================================================
 
 
@@ -127,7 +98,7 @@ def find_file_list():
 
     file_list = []
     _find_file_list(project_path_list, file_list, ".*\.h")
-    if _check_file_hash(file_list) == False:
+    if check_file_hash(file_list) == False:
         return None
 
     return _remove_invalid_file(file_list)

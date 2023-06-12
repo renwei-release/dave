@@ -266,7 +266,7 @@ uip_server_http_exit(void)
 dave_bool
 uip_server_http_start(ub port, HTTPListenType type, s8 *path, uip_server_recv_fun recv_fun)
 {
-	dave_bool ret;
+	dave_bool ret = dave_false;
 
 	SAFECODEv1(_uip_http_link_pv, { ret = _uip_server_http_start(port, type, path, recv_fun); } );
 

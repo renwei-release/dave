@@ -73,3 +73,5 @@ end_build:
 
 clean_build:
 	rm $(OBJS) $(NAME_PRODUCT).* -f
+	chmod a+x ../../../../Tools/auto_code/AUTOCLEAN
+	../../../../Tools/auto_code/AUTOCLEAN

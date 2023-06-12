@@ -20,7 +20,6 @@
 #include "sync_log.h"
 
 #define CFG_ETCD_LIST "ETCDServerList"
-#define CFG_ETCD_SERVER_DIR "ETCDServerDir"
 #define CFG_ETCD_WATCHER_DIR "ETCDWatcherDir"
 #define CFG_ETCD_GET_DIR "ETCDGetDir"
 
@@ -31,7 +30,6 @@
 #define DEFAULT_ETCD_GET_LIMIT 0	// if zero, get all etcd config.
 
 static s8 _etcd_list[2048] = { "\0" };
-static s8 _etcd_dir[128] = { "\0" };
 static s8 _etcd_watcher[128] = { "\0" };
 static s8 _etcd_get[4192] = { "\0" };
 static remote_cfg_get_callback _get_callback = NULL;
@@ -61,17 +59,6 @@ _sync_server_set_list(s8 *list)
 }
 
 static s8 *
-_sync_server_load_dir(void)
-{
-	if(_etcd_dir[0] == '\0')
-	{
-		cfg_get_by_default(CFG_ETCD_SERVER_DIR, _etcd_dir, sizeof(_etcd_dir), DEFAULT_ETCD_SERVER_DIR);
-	}
-
-	return _etcd_dir;
-}
-
-static s8 *
 _sync_server_load_watcher(void)
 {
 	return cfg_get_by_default(CFG_ETCD_WATCHER_DIR, _etcd_watcher, sizeof(_etcd_watcher), DEFAULT_ETCD_WATCHER_DIR);
@@ -81,28 +68,6 @@ static s8 *
 _sync_server_load_get(void)
 {
 	return cfg_get_by_default(CFG_ETCD_GET_DIR, _etcd_get, sizeof(_etcd_get), DEFAULT_ETCD_GET_DIR);
-}
-
-static s8 *
-_sync_server_make_dir(s8 *dir_ptr, ub dir_len, s8 *verno, s8 *globally_identifier, s8 *cfg_name)
-{
-	s8 product_str[128];
-
-	if(dave_strfindfrist(cfg_name, '/') == NULL)
-	{
-		dave_snprintf(dir_ptr, dir_len,
-			"%s/%s/%s/%s",
-			_sync_server_load_dir(),
-			dave_product(verno, product_str, sizeof(product_str)),
-			globally_identifier,
-			cfg_name);
-	}
-	else
-	{
-		dave_snprintf(dir_ptr, dir_len, "%s", cfg_name);
-	}
-
-	return dir_ptr;
 }
 
 static void
@@ -344,7 +309,6 @@ remote_etcd_cfg_set(
 	s8 *cfg_name, s8 *cfg_value,
 	sb ttl)
 {
-	s8 dir_key[512];
 	dave_bool ret;
 
 	if(_sync_server_etcd_enable() == dave_false)
@@ -352,18 +316,14 @@ remote_etcd_cfg_set(
 		return dave_false;
 	}
 
-	_sync_server_make_dir(
-		dir_key, sizeof(dir_key),
-		verno, globally_identifier, cfg_name);
-
-	ret = dave_etcd_set(dir_key, cfg_value, ttl);
+	ret = dave_etcd_set(cfg_name, cfg_value, ttl);
 	if(ret == dave_false)
 	{
-		SYNCLOG("set %s:%s failed! ttl:%d", dir_key, cfg_value, ttl);
+		SYNCLOG("set %s:%s failed! ttl:%d", cfg_name, cfg_value, ttl);
 	}
 	else
 	{
-		SYNCTRACE("set %s:%s success! ttl:%d", dir_key, cfg_value, ttl);
+		SYNCTRACE("set %s:%s success! ttl:%d", cfg_name, cfg_value, ttl);
 	}
 
 	return ret;
@@ -374,7 +334,6 @@ remote_etcd_cfg_del(
 	s8 *verno, s8 *globally_identifier,
 	s8 *cfg_name)
 {
-	s8 dir_key[512];
 	dave_bool ret;
 
 	if(_sync_server_etcd_enable() == dave_false)
@@ -382,18 +341,14 @@ remote_etcd_cfg_del(
 		return dave_false;
 	}
 
-	_sync_server_make_dir(
-		dir_key, sizeof(dir_key),
-		verno, globally_identifier, cfg_name);
-
-	ret = dave_etcd_del(dir_key);
+	ret = dave_etcd_del(cfg_name);
 	if(ret == dave_false)
 	{
-		SYNCLOG("del %s failed!", dir_key);
+		SYNCLOG("del %s failed!", cfg_name);
 	}
 	else
 	{
-		SYNCTRACE("del %s success!", dir_key);
+		SYNCTRACE("del %s success!", cfg_name);
 	}
 
 	return ret;

@@ -14,6 +14,7 @@ package base
 */
 import "C"
 import (
+	"dave/public/tools"
 	"fmt"
 	"reflect"
 	"unsafe"
@@ -29,12 +30,19 @@ func Thread_msg(msg_len int) unsafe.Pointer {
 func Write_msg(dst interface{}, msg_id int, msg_len int, msg_ptr unsafe.Pointer) bool {
 	ret := C.int(-1)
 
+    thread_ptr := Thread_msg(msg_len)
+    if thread_ptr == nil {
+        return false
+    }
+
+    tools.T_cgo_memcpy(thread_ptr, msg_ptr, int64(msg_len))
+
 	switch dst.(type) {
 	case uint64:
-		ret = C.dave_dll_thread_id_msg(C.ulonglong(dst.(uint64)), C.int(msg_id), C.int(msg_len), msg_ptr, nil, C.int(0))
+		ret = C.dave_dll_thread_id_msg(C.ulonglong(dst.(uint64)), C.int(msg_id), C.int(msg_len), thread_ptr, nil, C.int(0))
 	case string:
 		c_thread_name := C.CString(dst.(string))
-		ret = C.dave_dll_thread_name_msg(c_thread_name, C.int(msg_id), C.int(msg_len), msg_ptr, nil, C.int(0))
+		ret = C.dave_dll_thread_name_msg(c_thread_name, C.int(msg_id), C.int(msg_len), thread_ptr, nil, C.int(0))
 		C.free(unsafe.Pointer(c_thread_name))
 	default:
 		fmt.Printf("Write_msg invalid type:%s\n", reflect.TypeOf(dst).Name())
