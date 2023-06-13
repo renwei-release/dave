@@ -38,6 +38,7 @@ func _fun_RPC_DEBUG_REQ(remote_thread_name string) {
 	req.S16_debug = 12345
 	req.Mbuf_debug = nil
 
+
 	pRsp := (*auto.RPCDebugRsp)(base.Name_co(remote_thread_name, auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP))
 	if pRsp != nil {
 		base.DAVELOG("name_co successfully! %d", pRsp.S16_debug)
@@ -76,8 +77,6 @@ func _main_msg_unregister() {
 
 func Dave_product_init() {
 	_main_msg_register()
-
-	_fun_RPC_DEBUG_REQ("main_aib")
 }
 
 func Dave_product_exit() {

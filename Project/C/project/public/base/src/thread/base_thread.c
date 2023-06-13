@@ -206,6 +206,27 @@ _thread_attrib(ThreadId thread_id)
 	return _thread[thread_index].attrib;
 }
 
+static inline dave_bool
+_thread_has_initialization(ThreadId thread_id)
+{
+	ub thread_index;
+
+	thread_id = thread_get_local(thread_id);
+	if(thread_id == INVALID_THREAD_ID)
+	{
+		return dave_false;
+	}
+
+	thread_index = thread_id;
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADDEBUG("");
+		return dave_false;
+	}
+
+	return _thread[thread_index].has_initialization;
+}
+
 #define _thread_get_name(thread_id) _thread_get_name_(thread_id, (s8 *)__func__, (ub)__LINE__)
 static inline s8 *
 _thread_get_name_(ThreadId thread_id, s8 *fun, ub line)
@@ -1603,6 +1624,12 @@ TaskAttribute
 base_thread_attrib(ThreadId thread_id)
 {
 	return _thread_attrib(thread_id);
+}
+
+dave_bool
+base_thread_has_initialization(ThreadId thread_id)
+{
+	return _thread_has_initialization(thread_id);
 }
 
 s8 *

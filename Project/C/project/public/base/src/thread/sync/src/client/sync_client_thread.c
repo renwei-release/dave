@@ -133,12 +133,18 @@ _sync_client_thread_creat(s8 *name)
 {
 	ub thread_number = _sync_client_thread_number();
 	ThreadId remote_id;
+	ub counter;
 
-	remote_id = base_thread_creat((char *)name, thread_number, THREAD_REMOTE_FLAG|THREAD_THREAD_FLAG, _sync_client_remote_init, _sync_client_remote_main, _sync_client_remote_exit);
+	remote_id = base_thread_creat(name, thread_number, THREAD_REMOTE_FLAG|THREAD_THREAD_FLAG, _sync_client_remote_init, _sync_client_remote_main, _sync_client_remote_exit);
 
 	if(remote_id >= SYNC_THREAD_MAX)
 	{
 		SYNCABNOR("remote_id<%d/%d> is out of range!", remote_id, SYNC_THREAD_MAX);
+	}
+	else
+	{
+		counter = 0;
+		while(((counter ++) < 10240) && (thread_has_initialization(remote_id) == dave_false)) { dave_os_sleep(1); }
 	}
 
 	return remote_id;
