@@ -8,7 +8,7 @@
 #ifndef __LOG_SAVE_JSON_H__
 #define __LOG_SAVE_LOG_H__
 
-void log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len);
+dave_bool log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len);
 
 #endif
 

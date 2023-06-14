@@ -134,6 +134,7 @@ static inline void
 _log_save_to_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
 {
 	LogFile *pLog = _log_save_file_id(file_name);
+	dave_bool ret = dave_false;
 
 	if(pLog == NULL)
 	{
@@ -142,13 +143,20 @@ _log_save_to_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub cont
 		return;
 	}
 
-	SAFECODEv1(pLog->pv, log_save_json(pLog->file_id, level, content_ptr, content_len); );
+	SAFECODEv1(pLog->pv, ret = log_save_json(pLog->file_id, level, content_ptr, content_len); );
+
+	if(ret == dave_false)
+	{
+		LOGLOG("save file:%s failed! close it.", file_name);
+		_log_save_log_file_free(file_name);
+	}
 }
 
 static inline void
 _log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub content_len)
 {
 	LogFile *pLog = _log_save_file_id(file_name);
+	dave_bool ret = dave_false;
 
 	if(pLog == NULL)
 	{
@@ -157,7 +165,13 @@ _log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub conte
 		return;
 	}
 
-	SAFECODEv1(pLog->pv, log_save_txt(pLog->file_id, level, content_ptr, content_len); );
+	SAFECODEv1(pLog->pv, ret = log_save_txt(pLog->file_id, level, content_ptr, content_len); );
+
+	if(ret == dave_false)
+	{
+		LOGLOG("save file:%s failed! close it.", file_name);
+		_log_save_log_file_free(file_name);
+	}
 }
 
 #ifdef LOG_STACK_SERVER

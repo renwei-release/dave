@@ -154,14 +154,15 @@ _log_save_json_insert_log_body(void *pJson, s8 *content_ptr, ub content_len)
 
 // =====================================================================
 
-void
+dave_bool
 log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 {
 	void *pJson;
-	sb file_len;
+	sb file_len, save_len;
 	ub process_len;
 	s8 *json_str;
 	ub json_len;
+	dave_bool ret;
 
 	pJson = dave_json_malloc();
 
@@ -181,10 +182,31 @@ log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 
 	json_str = dave_json_to_string(pJson, &json_len);
 
-	file_len += dave_os_file_save(file_id, (ub)file_len, json_len, (u8 *)json_str);
-	dave_os_file_save(file_id, (ub)file_len, 1, (u8 *)"\n");
+	save_len = dave_os_file_save(file_id, (ub)file_len, json_len, (u8 *)json_str);
+	if(save_len < (sb)json_len)
+	{
+		LOGLOG("save file failed:%d/%d", save_len, json_len);
+		ret = dave_false;
+	}
+	else
+	{
+		file_len += save_len;
+
+		save_len = dave_os_file_save(file_id, (ub)file_len, 1, (u8 *)"\n");
+		if(save_len < 1)
+		{
+			LOGLOG("save file failed:%d/%d", save_len, 1);
+			ret = dave_false;
+		}
+		else
+		{
+			ret = dave_true;
+		}
+	}
 
 	dave_json_free(pJson);
+
+	return ret;
 }
 
 #endif
