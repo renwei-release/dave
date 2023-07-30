@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -11,6 +11,7 @@
 #include "dave_os.h"
 #include "dave_verno.h"
 #include "dave_tools.h"
+#include "dll_tools.h"
 #include "dll_log.h"
 
 // =====================================================================
@@ -59,7 +60,7 @@ dave_dll_cfg_set(char *cfg_name, char *cfg_value)
 
 	if((name_len == 0) || (value_len > 8192))
 	{
-		DLLLOG("cfg set:%s:%s failed! invalid length:%d/%d",
+		DLLLOG("cfg set:%s:%s failed! invalid length:%ld/%ld",
 			cfg_name, cfg_value,
 			name_len, value_len);
 		return -1;
@@ -186,6 +187,72 @@ dave_dll_kv_del(void *kv, char *key)
 {
 	kv_del_key_value(kv, key);
 	return 0;
+}
+
+int
+dave_dll_dos_cmd_reg(const char *cmd, dll_dos_cmd_fun cmd_fun)
+{
+	RetCode ret;
+
+	ret = dos_cmd_reg(cmd, (dos_cmd_fun)cmd_fun, NULL);
+	if(ret == RetCode_OK)
+		return 0;
+
+	return -1;
+}
+
+void
+dave_dll_dos_print(char *msg)
+{
+	ub msg_len = 4096;
+	s8 *msg_buffer = dave_malloc(msg_len);
+
+	if(msg != NULL)
+	{
+		msg_len = dave_strcpy(msg_buffer, msg, msg_len);
+	}
+	else
+	{
+		msg_buffer[0] = '\0';
+		msg_len = 0;
+	}
+
+	dll_remove_some_data(msg_buffer, msg_len);
+
+	dos_print("%s", msg_buffer);
+
+	dave_free(msg_buffer);
+}
+
+char *
+dave_dll_dos_get_user_input(char *give_user_msg, int wait_second)
+{
+	ub msg_len = 2048;
+	s8 *msg_buffer = dave_malloc(msg_len);
+	char *user_input;
+
+	if(give_user_msg != NULL)
+	{
+		msg_len = dave_strcpy(msg_buffer, give_user_msg, msg_len);
+	}
+	else
+	{
+		msg_buffer[0] = '\0';
+		msg_len = 0;
+	}
+
+	if(wait_second <= 0)
+	{
+		wait_second = 15;
+	}
+
+	dll_remove_some_data(msg_buffer, msg_len);
+
+	user_input = dos_get_user_input(msg_buffer, (ub)wait_second);
+
+	dave_free(msg_buffer);
+
+	return user_input;
 }
 
 #endif

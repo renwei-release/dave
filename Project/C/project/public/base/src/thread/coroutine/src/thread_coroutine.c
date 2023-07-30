@@ -509,12 +509,38 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 }
 
 static inline dave_bool
+_thread_coroutine_memory_can_be_go(void)
+{
+	ub percentage, counter;
+
+	percentage = counter = 0;
+
+	do {
+		percentage = dave_os_memory_use_percentage();
+		if(percentage < 90)
+		{
+			return dave_true;
+		}
+
+		THREADLOG("memory use percentage:%d is too full, thread must be wait ...", percentage);
+		dave_os_sleep(1000);
+
+	} while((counter ++) < 1024000);
+
+	THREADLOG("memory is to full:%d", dave_os_memory_use_percentage());
+	return dave_false;
+}
+
+static inline dave_bool
 _thread_coroutine_can_be_go(ThreadStruct *pThread, MSGBODY *msg)
 {
 	if(_thread_coroutine_thread_can_be_go(pThread) == dave_false)
 		return dave_false;
 
 	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
+		return dave_false;
+
+	if(_thread_coroutine_memory_can_be_go() == dave_false)
 		return dave_false;
 
 	return dave_true;

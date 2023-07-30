@@ -447,10 +447,9 @@ dos_cmd_list_show(void)
 			search = search->next;
 		}
 
-		msg = dave_malloc(msg_len);
+		msg = dave_ralloc(msg_len);
 		if(msg != NULL)
 		{
-			dave_memset(msg, 0x00, msg_len);
 			search = list;
 			msg_index = 0;
 			cmd_counter = 0;

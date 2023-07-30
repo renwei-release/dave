@@ -8,9 +8,11 @@
 from public import *
 import socket
 import time
+import uuid
 
 
-BDATA_THREAD_NAME=b"bdata"
+BDATA_THREAD_NAME = b"bdata"
+HOSTNAME = socket.gethostname().encode()
 
 
 def _myline(depth):
@@ -44,7 +46,7 @@ def __BDATABASE__(sub, pReq):
     pReq.contents.fun = __func__
     pReq.contents.line = __LINE__
 
-    pReq.contents.host_name = socket.gethostname().encode()
+    pReq.contents.host_name = HOSTNAME
 
     pReq.contents.ptr = None
     return

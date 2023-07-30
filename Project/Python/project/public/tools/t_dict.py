@@ -6,6 +6,8 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import json
+import random
+from .t_file import *
 
 
 # =====================================================================
@@ -21,7 +23,23 @@ def t_dict_save(file_path, dict):
 
 def t_dict_load(file_path):
     dict = {}
-    with open(file_path, 'r', encoding='utf-8') as f:
-        data = f.read()
-        dict = json.loads(data)
+
+    if t_path_or_file_exists(file_path) == False:
+        return dict
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = f.read()
+            dict = json.loads(data)
+    except Exception as e:
+        dict = {}
     return dict
+
+
+def t_dict_random(dicts):
+    dict_key_ls = list(dicts.keys())
+    random.shuffle(dict_key_ls)
+    new_dict = {}
+    for key in dict_key_ls:
+        new_dict[key] = dicts.get(key)
+    return new_dict

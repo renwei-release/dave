@@ -354,5 +354,26 @@ dave_os_cpu_process_number(void)
 	return cpu_number;
 }
 
+ub
+dave_os_memory_use_percentage(void)
+{
+	struct sysinfo s_info;
+
+	if(sysinfo(&s_info) == 0)
+	{
+		unsigned long useram = s_info.totalram - s_info.freeram;
+		if(useram > s_info.totalram)
+		{
+			OSABNOR("system memory overflow：%ld/%ld!", useram, s_info.totalram);
+			return 100;
+		}
+
+		return (useram * 100) / s_info.totalram;
+	}
+
+	OSABNOR("can't get sysinfo!");
+	return 0;
+}
+
 #endif
 

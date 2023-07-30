@@ -18,6 +18,7 @@ typedef void (* dll_callback_fun)(void *msg);
 typedef int (* dll_checkback_fun)(int);
 typedef void (* dll_kv_timerout_fun)(void *kv, void *key);
 typedef void (* dll_cfg_reg_fun)(void *name_ptr, int name_len, void *value_ptr, int value_len);
+typedef int (* dll_dos_cmd_fun)(char *param_ptr, int param_len);
 
 API void dave_dll_init(
 	char *my_verno, char *work_mode,
@@ -92,6 +93,12 @@ API int dave_dll_kv_add(void *kv, char *key, char *value);
 API int dave_dll_kv_inq(void *kv, char *key, char *value_ptr, int value_len);
 
 API int dave_dll_kv_del(void *kv, char *key);
+
+API int dave_dll_dos_cmd_reg(const char *cmd, dll_dos_cmd_fun cmd_fun);
+
+API void dave_dll_dos_print(char *msg);
+
+API char * dave_dll_dos_get_user_input(char *give_user_msg, int wait_second);
 
 #ifdef __cplusplus
 }

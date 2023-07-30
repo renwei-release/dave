@@ -33,20 +33,20 @@ _tty_hardware_sync_notify(ub notify_id)
 }
 
 static void
-_tty_read_process(s8 *input, ub input_len)
+_tty_read_process(s8 *input_ptr, ub input_len)
 {
-	input[input_len] = '\0';
+	input_ptr[input_len] = '\0';
 
-	if(t_is_all_show_char_or_rn((u8 *)input, (sb)input_len) == dave_true)
+	if(t_is_all_show_char_or_rn((u8 *)input_ptr, (sb)input_len) == dave_true)
 	{
-		if(dos_pop_analysis(input, input_len) == dave_false)
+		if(dos_pop_analysis(input_ptr, input_len) == dave_false)
 		{
-			dos_cmd_analysis(input, input_len);
+			dos_cmd_analysis(input_ptr, input_len);
 		}
 	}
 	else
 	{
-		dos_print((s8 *)"Character format is not supported!");
+		dos_print("Character format is not supported!");
 	}
 }
 
@@ -139,6 +139,32 @@ void
 dos_tty_write(u8 *msg_ptr, ub msg_len)
 {
 	dave_os_tty_write(msg_ptr, msg_len);
+}
+
+ub
+dos_tty_read(s8 *msg_ptr, ub msg_len, ub wait_second)
+{
+	dave_memset(msg_ptr, 0x00, msg_len);
+
+	msg_len = dave_os_tty_get((u8 *)msg_ptr, msg_len, wait_second);
+	if(msg_len == 0)
+	{
+		dave_memset(msg_ptr, 0x00, msg_len);
+		return 0;
+	}
+
+	if(msg_ptr[msg_len - 1] != '\n')
+	{
+		msg_ptr[0] = '\0';
+		return 0;
+	}
+	else
+	{
+		msg_ptr[msg_len - 1] = '\0';
+		msg_len -= 1;
+	}
+
+	return msg_len;
 }
 
 #endif

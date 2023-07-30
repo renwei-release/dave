@@ -7,9 +7,13 @@
 # */
 from ctypes import *
 from .dave_dll import dave_dll
+import string
 
 
 davelib = dave_dll()
+
+
+# =====================================================================
 
 
 def cfg_set(key, value):
@@ -38,11 +42,43 @@ def cfg_del(key):
     return
 
 
+def cfg_get_float(key, default_value=None):
+    default_value_string = str(default_value)
+    value = cfg_get(key, default_value_string)
+    if value == default_value_string:
+        return default_value
+    try:
+        if value.find(".") < 0:
+            data_value = int(value)
+        else:
+            data_value = float(value)
+    except Exception as e:
+        print(f"cfg_get_float error:{e} key:{key} value:{value}")
+        data_value = default_value
+    return data_value
+
+
+def cfg_get_ub(key, default_value=None):
+    return cfg_get_float(key, default_value)
+
+
+def cfg_get_bool(key, default_value=False):
+    if default_value == True:
+        default_value_string = "true"
+    else:
+        default_value_string = "false"
+    value = cfg_get(key, default_value_string)
+    if value == "true":
+        return True
+    else:
+        return False
+
+
 CFGREGFUNC=CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int)
 def cfg_reg(key, reg_fun):
     byte_key = bytes(key, encoding="utf8")
     davelib.dave_dll_cfg_reg.restype = c_int
-    davelib.dave_dll_cfg_reg(c_char_p(byte_key), CFGREGFUNC(reg_fun))
+    davelib.dave_dll_cfg_reg(c_char_p(byte_key), reg_fun)
     return
 
 

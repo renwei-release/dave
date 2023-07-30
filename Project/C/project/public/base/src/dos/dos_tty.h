@@ -15,5 +15,7 @@ void dos_tty_exit(void);
 
 void dos_tty_write(u8 *msg_ptr, ub msg_len);
 
+ub dos_tty_read(s8 *msg_ptr, ub msg_len, ub wait_second);
+
 #endif
 

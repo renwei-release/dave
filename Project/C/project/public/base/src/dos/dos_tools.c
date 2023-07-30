@@ -11,6 +11,7 @@
 #include "dave_tools.h"
 #include "dos_tools.h"
 #include "dos_show.h"
+#include "dos_tty.h"
 #include "dos_log.h"
 
 typedef enum {
@@ -18,6 +19,8 @@ typedef enum {
 	DosUserOpt_GET,
 	DosUserOpt_ERROR
 } DosUserOpt;
+
+static s8 _tty_user_input_buffer[2048];
 
 static RetCode
 __dos_resolution_u16(s8 *cmd, ub cmd_len, u16 *u16_value)
@@ -288,6 +291,22 @@ dos_get_one_parameters(s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len)
 	}
 
 	return cmd_index;
+}
+
+s8 *
+dos_get_user_input(s8 *give_user_msg, ub wait_second)
+{
+	if((give_user_msg != NULL) && (dave_strlen(give_user_msg) > 0))
+	{
+		dos_print(give_user_msg);
+	}
+
+	if(dos_tty_read(_tty_user_input_buffer, sizeof(_tty_user_input_buffer), wait_second) == 0)
+	{
+		dos_print("Read user input timerout!");
+	}
+
+	return _tty_user_input_buffer;
 }
 
 ub

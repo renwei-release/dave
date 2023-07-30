@@ -16,5 +16,7 @@ RetCode dave_os_load_host_name(s8 *hostname, ub hostname_len);
 
 ub dave_os_cpu_process_number(void);
 
+ub dave_os_memory_use_percentage(void);
+
 #endif
 

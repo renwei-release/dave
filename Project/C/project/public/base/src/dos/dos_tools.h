@@ -15,6 +15,7 @@ extern "C"{
 
 ub dos_get_last_parameters(s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len);
 ub dos_get_one_parameters(s8 *cmd_ptr, ub cmd_len, s8 *param_ptr, ub param_len);
+s8 * dos_get_user_input(s8 *give_user_msg, ub wait_second);
 
 ub dos_load_bool(s8 *cmd_ptr, ub cmd_len, dave_bool *bool_value);
 ub dos_load_ub(s8 *cmd_ptr, ub cmd_len, ub *ub_data);

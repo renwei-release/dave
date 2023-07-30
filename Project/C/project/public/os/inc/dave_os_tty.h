@@ -16,6 +16,8 @@ void dave_os_tty_write(u8 *data_ptr, ub data_len);
 
 ub dave_os_tty_read(u8 *data_ptr, ub data_len);
 
+ub dave_os_tty_get(u8 *data_ptr, ub data_len, ub wait_second);
+
 void dave_os_trace(TraceLevel level, ub data_len, s8 *data_ptr);
 
 #endif

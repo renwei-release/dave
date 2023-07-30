@@ -10,7 +10,7 @@
 #define __LOG_PARAM_H__
 
 #define CFG_LOG_TRACE_ENABLE "LOGTraceEnable"
-#define LOG_TRACE_DEFAULT_CFG dave_true
+#define LOG_TRACE_DEFAULT_CFG dave_false
 #define CFG_LOG_SAVE_TYPE "LogSaveType"
 #define CFG_LOG_SAVE_DAYS "LogSaveDays"
 

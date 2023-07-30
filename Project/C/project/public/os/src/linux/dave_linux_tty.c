@@ -39,8 +39,9 @@
 static void *_tty_read_thread_body = NULL;
 static sync_notify_fun _notify_fun = NULL;
 static s8 _keypad_char[KEY_INPUT_MAX];
-static u32 _keypad_write = 0;
-static u32 _keypad_read = 0;
+static ub _keypad_write = 0;
+static ub _keypad_read = 0;
+static TLock _keypad_pv; 
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
 static void
@@ -97,9 +98,11 @@ _tty_read_data(void)
 			return dave_false;
 		}
 	}
-	
-	_keypad_char[(_keypad_write ++) % KEY_INPUT_MAX] = keypad;
-	
+
+	SAFECODEv1(_keypad_pv, {
+		_keypad_char[(_keypad_write ++) % KEY_INPUT_MAX] = keypad;
+	});
+
 	if((keypad == '\n') && (_notify_fun != NULL))
 	{
 		_notify_fun(_keypad_write - _keypad_read);
@@ -111,8 +114,10 @@ _tty_read_data(void)
 static void *
 _tty_read_thread(void *arg)
 {
-	_keypad_write = 0;
-	_keypad_read = 0;
+	SAFECODEv1(_keypad_pv, {
+		_keypad_write = 0;
+		_keypad_read = 0;
+	});
 
 	struct termios attr;
     tcgetattr(STDIN_FILENO, &attr);
@@ -139,6 +144,7 @@ _tty_pre_init(void)
 	SAFEPre(__safe_pre_flag__, {
 		_notify_fun = NULL;
 		_keypad_write = _keypad_read = 0;
+		t_lock_reset(&_keypad_pv);
 		_is_on_backend_printf_disable = dave_false;
 		thread_init = dave_true;
 	} );
@@ -191,13 +197,42 @@ dave_os_tty_read(u8 *data_ptr, ub data_len)
 	ub keypad_index;
 	
 	keypad_index = 0;
-	
-	while((keypad_index < data_len) && (_keypad_write > _keypad_read))
-	{
-		data_ptr[keypad_index ++] = (u8)((_keypad_char[(_keypad_read ++) % KEY_INPUT_MAX]));
-	}
+
+	SAFECODEv1(_keypad_pv, {
+		while((keypad_index < data_len) && (_keypad_write > _keypad_read))
+		{
+			data_ptr[keypad_index ++] = (u8)((_keypad_char[(_keypad_read ++) % KEY_INPUT_MAX]));
+		}
+	});
 
 	return keypad_index;
+}
+
+ub
+dave_os_tty_get(u8 *data_ptr, ub data_len, ub wait_second)
+{
+	ub sleep_base_millisecond = 100;
+	ub wait_index, wait_times = (wait_second * 1000) / sleep_base_millisecond;
+	sync_notify_fun fun;
+	ub data_index;
+
+	fun = _notify_fun;
+	_notify_fun = NULL;
+
+	data_index = wait_index = 0;
+
+	while((data_len > data_index) && (wait_index < wait_times))
+	{
+		data_index += dave_os_tty_read(&data_ptr[data_index], data_len-data_index);
+		if((data_index > 0) && (data_ptr[data_index - 1] == '\n'))
+			break;
+
+		dave_os_sleep(sleep_base_millisecond); wait_index ++;
+	}
+
+	_notify_fun = fun;
+
+	return data_index;
 }
 
 void
