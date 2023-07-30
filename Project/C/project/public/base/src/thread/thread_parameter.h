@@ -40,5 +40,7 @@
  */
 // #define ENABLE_MSG_INIT
 
+#define SYSTEM_MEMORY_MAX_USE_PERCENTAGE 90
+
 #endif
 

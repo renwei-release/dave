@@ -10,6 +10,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_os.h"
 #include "thread_struct.h"
 #include "thread_quit.h"
 #include "thread_tools.h"
@@ -321,6 +322,8 @@ thread_show_all_info(ThreadStruct *pThread, DateStruct *pWorkDate, s8 *msg_ptr, 
 		msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
 			"SYSTEM BOOT TIME:%s\n", t_a2b_date_str(pWorkDate));
 	}
+	msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index,
+		"SYSTEM MEMORY USE PERCENTAGE:%d\%\n", dave_os_memory_use_percentage());
 
 	if(msg_index == 0)
 	{

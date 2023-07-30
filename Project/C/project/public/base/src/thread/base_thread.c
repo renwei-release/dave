@@ -565,10 +565,23 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 
 	if(pMsg == NULL)
 	{
-		pMsg = _thread_safe_read_seq_queue(pThread);
-		if(pMsg == NULL)
+		/*
+		 * if the memory is not enough, we will not read the message.
+		 * This is worried that the application layer may consume a lot of memory
+		 * when handling these news, and the operating system may kill this process.
+		 */ 
+		if(dave_os_memory_use_percentage() < SYSTEM_MEMORY_MAX_USE_PERCENTAGE)
 		{
-			pMsg = _thread_safe_read_msg_queue(pThread);
+			pMsg = _thread_safe_read_seq_queue(pThread);
+			if(pMsg == NULL)
+			{
+				pMsg = _thread_safe_read_msg_queue(pThread);
+			}
+		}
+		else
+		{
+			THREADLTRACE(3, 1, "Service %s is waiting for more available system memory:%d",
+				pThread->thread_name, dave_os_memory_use_percentage());
 		}
 	}
 
