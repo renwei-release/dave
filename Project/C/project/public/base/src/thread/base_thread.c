@@ -570,7 +570,12 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 		 * This is worried that the application layer may consume a lot of memory
 		 * when handling these news, and the operating system may kill this process.
 		 */ 
-		if(dave_os_memory_use_percentage() < SYSTEM_MEMORY_MAX_USE_PERCENTAGE)
+		if(((pThread->thread_flag & THREAD_THREAD_FLAG) == 0x00)
+			|| (pThread->thread_flag & THREAD_PRIVATE_FLAG)
+			|| ((pThread->thread_flag & THREAD_COROUTINE_FLAG) == 0x00)
+			|| (pThread->thread_flag & THREAD_CORE_FLAG)
+			|| (pThread->attrib == REMOTE_TASK_ATTRIB)
+			|| (dave_os_memory_use_percentage() < SYSTEM_MEMORY_MAX_USE_PERCENTAGE))
 		{
 			pMsg = _thread_safe_read_seq_queue(pThread);
 			if(pMsg == NULL)
