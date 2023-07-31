@@ -34,6 +34,8 @@
 #include "thread_co.h"
 #include "thread_log.h"
 
+extern ub thread_cfg_system_memory_max_use_percentage(void);
+
 #define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
 #define SYSTEM_READY_COUNTER 64
 
@@ -575,7 +577,7 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 			|| ((pThread->thread_flag & THREAD_COROUTINE_FLAG) == 0x00)
 			|| (pThread->thread_flag & THREAD_CORE_FLAG)
 			|| (pThread->attrib == REMOTE_TASK_ATTRIB)
-			|| (dave_os_memory_use_percentage() < SYSTEM_MEMORY_MAX_USE_PERCENTAGE))
+			|| (dave_os_memory_use_percentage() < thread_cfg_system_memory_max_use_percentage()))
 		{
 			pMsg = _thread_safe_read_seq_queue(pThread);
 			if(pMsg == NULL)
@@ -585,8 +587,9 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 		}
 		else
 		{
-			THREADLTRACE(3, 1, "Service %s is waiting for more available system memory:%d",
-				pThread->thread_name, dave_os_memory_use_percentage());
+			THREADLTRACE(3, 1, "Service %s is waiting for more available system memory:%d cfg:%d",
+				pThread->thread_name, dave_os_memory_use_percentage(),
+				thread_cfg_system_memory_max_use_percentage());
 		}
 	}
 

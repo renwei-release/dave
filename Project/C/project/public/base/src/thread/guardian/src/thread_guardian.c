@@ -28,6 +28,7 @@
 #include "thread_run_function.h"
 #include "thread_running.h"
 #include "thread_orchestration.h"
+#include "thread_cfg.h"
 #include "thread_log.h"
 
 static void _thread_guardian_exit(MSGBODY *msg);
@@ -120,6 +121,7 @@ _thread_guardian_restart(RESTARTREQMSG *pReq)
 		thread_gid_table_exit();
 		thread_remote_id_table_exit();
 		thread_msg_buffer_exit();
+		thread_cfg_exit();
 	}
 }
 
@@ -234,6 +236,7 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_sync_init(_sync_domain);
 	thread_orchestration_init();
 	thread_statistics_init();
+	thread_cfg_init();
 }
 
 static void

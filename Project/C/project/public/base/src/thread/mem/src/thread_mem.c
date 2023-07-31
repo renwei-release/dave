@@ -16,7 +16,7 @@
 
 extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
-#define THREAD_MEM_MAX 32
+#define THREAD_MEM_MAX 16
 #define THREAD_MEM_NAME "THREAD"
 
 static BlockMem _thread_mem[THREAD_MEM_MAX];
