@@ -64,27 +64,34 @@ typedef struct {
 	ub message_idle_total;
 	ub message_wakeup_counter;
 
-	// thread message struct.
-	ub msg_queue_write_sequence;
-	ub msg_queue_read_sequence;
 	/*
 	 * General message queues, thread preemptions and high concurrent,
 	 * external interface messages are generally queue.
 	 */
+	ub msg_queue_write_sequence;
+	ub msg_queue_read_sequence;
 	ThreadQueue msg_queue[THREAD_MSG_QUEUE_NUM];
-	ub seq_queue_read_sequence;
+
 	/*
 	 * Sequentially execute the message queue, enter the message of this queue,
 	 * distinguish between business logic, no concurrent, is executed in order.
 	 */
+	ub seq_queue_read_sequence;
 	ThreadQueue seq_queue[THREAD_SEQ_QUEUE_NUM];
-	ub pre_queue_write_sequence;
-	ub pre_queue_read_sequence;
+
 	/*
 	 * Priority to execute a message queue, the message that enters this
 	 * queue will be executed fastest, and this message queue can be concurrent.
 	 */
+	ub pre_queue_write_sequence;
+	ub pre_queue_read_sequence;
 	ThreadQueue pre_queue[THREAD_PRE_QUEUE_NUM];
+
+	/*
+	 * Used to record the field execution of coroutines.
+	 */
+	ub coroutines_site_creat_counter;
+	ub coroutines_site_release_counter;
 
 	// sync action
 	ThreadSync sync;

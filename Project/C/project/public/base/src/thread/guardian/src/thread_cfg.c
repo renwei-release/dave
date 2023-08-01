@@ -13,8 +13,11 @@
 
 #define CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE "SysMemMaxUsePercentage"
 #define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 85
+#define CFG_MULTIPLE_COROUTINE_ON_THREAD "MultipleCoroutineOnThread"
+#define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 2
 
 static ub _sys_mem_max_use_percentage = 0;
+static ub _multiple_coroutine_on_thread = 0;
 
 static void
 _thread_cfg_update_sys_mem_max_use_percentage(void)
@@ -43,11 +46,32 @@ _thread_cfg_update_sys_mem_max_use_percentage(void)
 }
 
 static void
+_thread_cfg_update_multiple_coroutine_on_thread(void)
+{
+	ub multiple = cfg_get_ub(CFG_MULTIPLE_COROUTINE_ON_THREAD, default_CFG_MULTIPLE_COROUTINE_ON_THREAD);
+
+	if(multiple != _multiple_coroutine_on_thread)
+	{
+		if(_multiple_coroutine_on_thread != 0)
+		{
+			THREADLOG("%s change:%d->%d",
+				CFG_MULTIPLE_COROUTINE_ON_THREAD,
+				_multiple_coroutine_on_thread, multiple);
+		}
+		_multiple_coroutine_on_thread = multiple;
+	}
+}
+
+static void
 _thread_cfg_update(s8 *name_ptr, ub name_len, s8 *value_ptr, ub value_len)
 {
 	if(dave_strcmp(name_ptr, CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE) == dave_true)
 	{
 		_thread_cfg_update_sys_mem_max_use_percentage();
+	}
+	else if(dave_strcmp(name_ptr, CFG_MULTIPLE_COROUTINE_ON_THREAD) == dave_true)
+	{
+		_thread_cfg_update_multiple_coroutine_on_thread();
 	}
 }
 
@@ -57,6 +81,7 @@ void
 thread_cfg_init(void)
 {
 	_thread_cfg_update_sys_mem_max_use_percentage();
+	_thread_cfg_update_multiple_coroutine_on_thread();
 
 	cfg_reg(CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE, _thread_cfg_update);
 }
@@ -71,6 +96,12 @@ ub
 thread_cfg_system_memory_max_use_percentage(void)
 {
 	return _sys_mem_max_use_percentage;
+}
+
+ub
+thread_cfg_multiple_coroutine_on_thread(void)
+{
+	return _multiple_coroutine_on_thread;
 }
 
 #endif

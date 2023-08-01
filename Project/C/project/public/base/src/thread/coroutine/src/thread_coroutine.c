@@ -562,6 +562,8 @@ thread_coroutine_exit(void)
 void
 thread_coroutine_creat(ThreadStruct *pThread)
 {
+	pThread->coroutines_site_creat_counter = pThread->coroutines_site_release_counter = 0;
+
 	coroutine_core_creat();
 
 	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup, NULL);
@@ -587,7 +589,15 @@ thread_coroutine_running_step_co(
 
 	_thread_coroutine_init();
 
+	thread_other_lock();
+	pThread->coroutines_site_creat_counter ++;
+	thread_other_unlock();
+
 	_thread_coroutine_running_step_1(pThread, coroutine_fun, thread_fun, msg);
+
+	thread_other_lock();
+	pThread->coroutines_site_release_counter ++;
+	thread_other_unlock();
 
 	return dave_true;
 }

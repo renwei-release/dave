@@ -14,5 +14,7 @@ void thread_cfg_exit(void);
 
 ub thread_cfg_system_memory_max_use_percentage(void);
 
+ub thread_cfg_multiple_coroutine_on_thread(void);
+
 #endif
 
