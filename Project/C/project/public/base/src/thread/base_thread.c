@@ -571,6 +571,7 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 		 * if the memory is not enough, we will not read the message.
 		 * This is worried that the application layer may consume a lot of memory
 		 * when handling these news, and the operating system may kill this process.
+		 * This is the behavior of throttling based on memory usage.
 		 */ 
 		if(((pThread->thread_flag & THREAD_THREAD_FLAG) == 0x00)
 			|| (pThread->thread_flag & THREAD_PRIVATE_FLAG)

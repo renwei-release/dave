@@ -20,7 +20,7 @@ void thread_coroutine_creat(ThreadStruct *pThread);
 
 void thread_coroutine_die(ThreadStruct *pThread);
 
-dave_bool thread_coroutine_running_step_go(
+dave_bool thread_coroutine_running_step_co(
 	ThreadStruct *pThread,
 	coroutine_thread_fun coroutine_fun,
 	base_thread_fun thread_fun,

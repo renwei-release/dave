@@ -477,7 +477,7 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 }
 
 static inline dave_bool
-_thread_coroutine_thread_can_be_go(ThreadStruct *pThread)
+_thread_coroutine_thread_can_be_co(ThreadStruct *pThread)
 {
 	if((pThread->thread_flag & THREAD_THREAD_FLAG) == 0x00)
 		return dave_false;
@@ -489,7 +489,7 @@ _thread_coroutine_thread_can_be_go(ThreadStruct *pThread)
 }
 
 static inline dave_bool
-_thread_coroutine_msg_can_be_go(MSGBODY *msg)
+_thread_coroutine_msg_can_be_co(MSGBODY *msg)
 {
 	switch(msg->msg_id)
 	{
@@ -509,12 +509,12 @@ _thread_coroutine_msg_can_be_go(MSGBODY *msg)
 }
 
 static inline dave_bool
-_thread_coroutine_can_be_go(ThreadStruct *pThread, MSGBODY *msg)
+_thread_coroutine_can_be_co(ThreadStruct *pThread, MSGBODY *msg)
 {
-	if(_thread_coroutine_thread_can_be_go(pThread) == dave_false)
+	if(_thread_coroutine_thread_can_be_co(pThread) == dave_false)
 		return dave_false;
 
-	if(_thread_coroutine_msg_can_be_go(msg) == dave_false)
+	if(_thread_coroutine_msg_can_be_co(msg) == dave_false)
 		return dave_false;
 
 	return dave_true;
@@ -576,13 +576,13 @@ thread_coroutine_die(ThreadStruct *pThread)
 }
 
 dave_bool
-thread_coroutine_running_step_go(
+thread_coroutine_running_step_co(
 	ThreadStruct *pThread,
 	coroutine_thread_fun coroutine_fun,
 	base_thread_fun thread_fun,
 	MSGBODY *msg)
 {
-	if(_thread_coroutine_can_be_go(pThread, msg) == dave_false)
+	if(_thread_coroutine_can_be_co(pThread, msg) == dave_false)
 		return dave_false;
 
 	_thread_coroutine_init();

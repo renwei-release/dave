@@ -88,7 +88,7 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 #ifdef ENABLE_THREAD_COROUTINE
 	if(thread_enable_coroutine(pThread, MSGID_RESERVED) == dave_true)
 	{
-		if(thread_coroutine_running_step_go(pThread, _thread_running_function, thread_fun, msg) == dave_false)
+		if(thread_coroutine_running_step_co(pThread, _thread_running_function, thread_fun, msg) == dave_false)
 		{
 			_thread_running_function(thread_fun, msg);
 		}
