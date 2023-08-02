@@ -12,7 +12,7 @@
 #include "thread_log.h"
 
 #define CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE "SysMemMaxUsePercentage"
-#define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 85
+#define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 95
 #define CFG_MULTIPLE_COROUTINE_ON_THREAD "MultipleCoroutineOnThread"
 #define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 2
 

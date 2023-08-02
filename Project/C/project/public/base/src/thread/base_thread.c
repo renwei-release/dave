@@ -488,12 +488,12 @@ _thread_flow_control_(ThreadStruct *pThread)
 		}
 	}
 
-	if(dave_os_memory_use_percentage() < thread_cfg_system_memory_max_use_percentage())
+	if(dave_os_memory_use_percentage() > thread_cfg_system_memory_max_use_percentage())
 	{
-		return dave_true;
+		return dave_false;
 	}
 
-	return dave_false;
+	return dave_true;
 }
 
 static inline dave_bool
@@ -504,7 +504,7 @@ _thread_flow_control(ThreadStruct *pThread)
 	if(ret == dave_false)
 	{
 		THREADLTRACE(3, 1,
-			"Service %s at flow control! memory(sys:%ld cfg:%ld) coroutines(creat:%ld release:%ld multiple:%ld)",
+			"Service %s at flow control! memory(sys:%ld cfg:%ld) coroutines(creat:%ld release:%ld max number of coroutine:%ld)",
 			pThread->thread_name,
 			dave_os_memory_use_percentage(), thread_cfg_system_memory_max_use_percentage(),
 			pThread->coroutines_site_creat_counter, pThread->coroutines_site_release_counter,

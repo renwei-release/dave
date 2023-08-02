@@ -416,7 +416,15 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
+	thread_other_lock();
+	pSite->pThread->coroutines_site_creat_counter ++;
+	thread_other_unlock();
+
 	pSite->coroutine_fun(pSite->thread_fun, &(pSite->msg));
+
+	thread_other_lock();
+	pSite->pThread->coroutines_site_release_counter ++;
+	thread_other_unlock();
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
@@ -589,15 +597,7 @@ thread_coroutine_running_step_co(
 
 	_thread_coroutine_init();
 
-	thread_other_lock();
-	pThread->coroutines_site_creat_counter ++;
-	thread_other_unlock();
-
 	_thread_coroutine_running_step_1(pThread, coroutine_fun, thread_fun, msg);
-
-	thread_other_lock();
-	pThread->coroutines_site_release_counter ++;
-	thread_other_unlock();
 
 	return dave_true;
 }
