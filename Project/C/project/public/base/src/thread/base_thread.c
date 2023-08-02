@@ -37,7 +37,6 @@
 extern ub thread_cfg_system_memory_max_use_percentage(void);
 extern ub thread_cfg_multiple_coroutine_on_thread(void);
 
-#define THREAD_MSG_MAX_LEN (24 * 1024 * 1024)
 #define SYSTEM_READY_COUNTER 64
 
 typedef struct {
@@ -481,7 +480,7 @@ _thread_flow_control_(ThreadStruct *pThread)
 	if((pThread->thread_flag & THREAD_THREAD_FLAG)
 		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
 	{
-		if((pThread->coroutines_site_creat_counter - pThread->coroutines_site_release_counter) > 
+		if((pThread->coroutines_site_creat_counter - pThread->coroutines_site_release_counter) >= 
 			(pThread->level_number * thread_cfg_multiple_coroutine_on_thread()))
 		{
 			return dave_false;
@@ -1366,13 +1365,6 @@ _thread_safe_id_msg(
 	{
 		THREADLTRACE(60,1,"Can not find thread, src:%s/%s dst_id:%lx msg_id:%s/%ld (%s:%d)",
 			src_gid, src_name, thread_get_local(dst_id), msgstr(msg_id), msg_id, fun, line);
-		return dave_false;
-	}
-
-	if((msg_len >= THREAD_MSG_MAX_LEN) || (msg_len == 0))
-	{
-		THREADLOG("send msg<%s> to %s, the length is invalid(%d/%d)!",
-			msgstr(msg_id), _thread_get_name(dst_id), msg_len, THREAD_MSG_MAX_LEN);
 		return dave_false;
 	}
 

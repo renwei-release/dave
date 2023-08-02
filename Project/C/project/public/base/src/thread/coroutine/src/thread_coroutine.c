@@ -19,7 +19,7 @@
 #include "thread_log.h"
 
 #define COROUTINE_WAIT_TIMER 180
-#define COROUTINE_DELAY_RELEASE_TIMER 3
+#define COROUTINE_DELAY_RELEASE_TIMER 2
 
 typedef enum {
 	wakeupevent_get_msg,
@@ -231,6 +231,10 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 
 	msg->mem_state = MsgMemState_captured;
 
+	thread_other_lock();
+	pSite->pThread->coroutines_site_creat_counter ++;
+	thread_other_unlock();
+
 	return pSite;
 }
 
@@ -251,6 +255,10 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 	{
 		_thread_coroutine_pop_msg_list(pSite);
 	}
+
+	thread_other_lock();
+	pSite->pThread->coroutines_site_release_counter ++;
+	thread_other_unlock();
 
 	dave_free(pSite);
 }
@@ -416,15 +424,7 @@ _thread_coroutine_running_step_2(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
-	thread_other_lock();
-	pSite->pThread->coroutines_site_creat_counter ++;
-	thread_other_unlock();
-
 	pSite->coroutine_fun(pSite->thread_fun, &(pSite->msg));
-
-	thread_other_lock();
-	pSite->pThread->coroutines_site_release_counter ++;
-	thread_other_unlock();
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 

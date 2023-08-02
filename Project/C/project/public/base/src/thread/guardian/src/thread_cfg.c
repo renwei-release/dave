@@ -50,6 +50,15 @@ _thread_cfg_update_multiple_coroutine_on_thread(void)
 {
 	ub multiple = cfg_get_ub(CFG_MULTIPLE_COROUTINE_ON_THREAD, default_CFG_MULTIPLE_COROUTINE_ON_THREAD);
 
+	if((multiple >= 100) || (multiple == 0))
+	{
+		THREADLOG("find invalid %s:%d, reset by default:%d",
+			CFG_MULTIPLE_COROUTINE_ON_THREAD,
+			multiple, default_CFG_MULTIPLE_COROUTINE_ON_THREAD);
+		multiple = default_CFG_MULTIPLE_COROUTINE_ON_THREAD;
+		cfg_set_ub(CFG_MULTIPLE_COROUTINE_ON_THREAD, default_CFG_MULTIPLE_COROUTINE_ON_THREAD);
+	}
+
 	if(multiple != _multiple_coroutine_on_thread)
 	{
 		if(_multiple_coroutine_on_thread != 0)
@@ -84,6 +93,7 @@ thread_cfg_init(void)
 	_thread_cfg_update_multiple_coroutine_on_thread();
 
 	cfg_reg(CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE, _thread_cfg_update);
+	cfg_reg(CFG_MULTIPLE_COROUTINE_ON_THREAD, _thread_cfg_update);
 }
 
 void
