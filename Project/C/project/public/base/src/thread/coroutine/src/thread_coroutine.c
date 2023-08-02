@@ -19,7 +19,7 @@
 #include "thread_log.h"
 
 #define COROUTINE_WAIT_TIMER 180
-#define COROUTINE_DELAY_RELEASE_TIMER 2
+#define COROUTINE_DELAY_RELEASE_TIMER 1
 
 typedef enum {
 	wakeupevent_get_msg,
