@@ -24,9 +24,7 @@ typedef struct {
 	ub current_router_index;
 	ThreadSubRouter sub_router[DAVE_ROUTER_SUB_MAX];
 
-#ifdef LEVEL_PRODUCT_alpha
-	s8 router_info[1024];
-#endif
+	s8 *router_info;
 } ThreadRouter;
 
 void thread_router_reset(ThreadRouter *pRouter);

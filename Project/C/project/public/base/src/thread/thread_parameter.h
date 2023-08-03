@@ -12,8 +12,8 @@
 // the max is 1024, please see LOCAL_MAX_VALUE define.
 #define THREAD_MAX (256)
 #define THREAD_THREAD_MAX (1024)
-#define THREAD_MSG_QUEUE_NUM (128)
-#define THREAD_SEQ_QUEUE_NUM (512)
+#define THREAD_MSG_QUEUE_NUM (64)
+#define THREAD_SEQ_QUEUE_NUM (32)
 #define THREAD_THREAD_QUEUE_NUM (1)
 #define THREAD_PRE_QUEUE_NUM (1)
 

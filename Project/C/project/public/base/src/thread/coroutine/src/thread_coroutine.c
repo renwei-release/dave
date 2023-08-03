@@ -239,28 +239,40 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 }
 
 static inline void
-_thread_coroutine_info_free(CoroutineSite *pSite)
+_thread_coroutine_info_free(CoroutineSite *pSite, ub two_stage_release)
 {
-	if(pSite->msg.msg_body != NULL)
+	/*
+	 * 使用两段式释放是为了保证_coroutine_swap_function函数内的coroutine_yield
+	 * 处理还有现场空间存在。
+	 */
+	if(two_stage_release == 1)
 	{
-		thread_clean_user_input_data(pSite->msg.msg_body, pSite->msg.msg_id);
-	}
+		if(pSite->msg.msg_body != NULL)
+		{
+			thread_clean_user_input_data(pSite->msg.msg_body, pSite->msg.msg_id);
+			pSite->msg.msg_body = NULL;
+		}
 
-	if(pSite->co != NULL)
+		while(pSite->rsp_msg_head != NULL)
+		{
+			_thread_coroutine_pop_msg_list(pSite);
+		}
+		pSite->rsp_msg_head = NULL;
+	}
+	else
 	{
-		coroutine_release(pSite->co);
+		if(pSite->co != NULL)
+		{
+			coroutine_release(pSite->co);
+			pSite->co = NULL;
+		}
+
+		thread_other_lock();
+		pSite->pThread->coroutines_site_release_counter ++;
+		thread_other_unlock();
+
+		dave_free(pSite);
 	}
-
-	while(pSite->rsp_msg_head != NULL)
-	{
-		_thread_coroutine_pop_msg_list(pSite);
-	}
-
-	thread_other_lock();
-	pSite->pThread->coroutines_site_release_counter ++;
-	thread_other_unlock();
-
-	dave_free(pSite);
 }
 
 static inline void
@@ -272,7 +284,7 @@ _thread_coroutine_running_step_8(void *ramkv, s8 *key)
 
 	if(pSite != NULL)
 	{
-		_thread_coroutine_info_free(pSite);
+		_thread_coroutine_info_free(pSite, 2);
 	}
 }
 
@@ -427,6 +439,8 @@ _thread_coroutine_running_step_2(void *param)
 	pSite->coroutine_fun(pSite->thread_fun, &(pSite->msg));
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
+
+	_thread_coroutine_info_free(pSite, 1);
 
 	_thread_coroutine_running_step_7(pSite);
 

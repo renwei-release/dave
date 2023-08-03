@@ -28,8 +28,15 @@ static inline s8 *
 _thread_router_show(s8 *msg, ThreadRouter *pRouter)
 {
 #ifdef LEVEL_PRODUCT_alpha
-	ub info_index, info_len = sizeof(pRouter->router_info);
+	ub info_index, info_len = 8192;
 	ub router_index;
+
+	if(pRouter->router_info != NULL)
+	{
+		dave_free(pRouter->router_info);
+		pRouter->router_info = NULL;
+	}
+	pRouter->router_info = dave_malloc(info_len);
 
 	info_index = 0;
 
@@ -68,6 +75,8 @@ _thread_router_reset(ThreadRouter *pRouter)
 		pRouter->uid[0] = '\0';
 		pRouter->router_number = 0;
 		pRouter->current_router_index = 0;
+
+		pRouter->router_info = NULL;
 	}
 }
 
@@ -86,6 +95,12 @@ _thread_router_free(ThreadRouter *pRouter)
 {
 	if(pRouter != NULL)
 	{
+		if(pRouter->router_info != NULL)
+		{
+			dave_free(pRouter->router_info);
+			pRouter->router_info = NULL;
+		}
+	
 		dave_free(pRouter);
 	}
 }

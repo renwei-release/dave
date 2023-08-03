@@ -38,7 +38,7 @@ typedef struct {
 typedef struct {
 	ub magic_data;
 
-	coroutine_core_fun fun_ptr;
+	coroutine_core_fun fun_core;
 	void *fun_param;
 
 	size_t ss_size;
@@ -67,15 +67,17 @@ _coroutine_swap_function(CoCore *pCore, void *param)
 		return 0;
 	}
 
-	if(pCore->fun_ptr != NULL)
+	if(pCore->fun_core != NULL)
 	{
-		pCore->fun_ptr(pCore->fun_param);
+		pCore->fun_core(pCore->fun_param);
 	}
 
 	if(coroutine_yield(pCore) == dave_false)
 	{
 		THREADABNOR("yield failed!");
 	}
+
+	THREADLOG("It is impossible for the code to run here, and if it runs here, something must have gone wrong.");
 
 	return 0;
 }
@@ -159,13 +161,13 @@ _coroutine_core_exit(void)
 }
 
 static inline void *
-_coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
+_coroutine_create(coroutine_core_fun fun_core, void *fun_param, MSGBODY *msg)
 {
 	CoCore *pCore = (CoCore *)coroutine_malloc(sizeof(CoCore));
 
 	pCore->magic_data = COCORE_MAGIC_DATA;
 
-	pCore->fun_ptr = fun_ptr;
+	pCore->fun_core = fun_core;
 	pCore->fun_param = fun_param;
 
 	pCore->ss_size = _coroutine_stack_size;
@@ -261,7 +263,7 @@ _coroutine_release(void *co)
 		pCore->ss_size = 0;
 		pCore->ss_sp = NULL;
 
-		pCore->fun_ptr = NULL;
+		pCore->fun_core = NULL;
 		pCore->fun_param = NULL;
 
 		pCore->env = NULL;
@@ -327,9 +329,9 @@ coroutine_get_stack_size(void)
 }
 
 void *
-coroutine_create(coroutine_core_fun fun_ptr, void *fun_param, MSGBODY *msg)
+coroutine_create(coroutine_core_fun fun_core, void *fun_param, MSGBODY *msg)
 {
-	return _coroutine_create(fun_ptr, fun_param, msg);
+	return _coroutine_create(fun_core, fun_param, msg);
 }
 
 dave_bool

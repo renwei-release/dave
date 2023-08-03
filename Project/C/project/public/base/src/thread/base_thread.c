@@ -482,9 +482,7 @@ _thread_flow_control_(ThreadStruct *pThread)
 	if((pThread->thread_flag & THREAD_THREAD_FLAG)
 		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
 	{
-		thread_other_lock();
 		site_counter = pThread->coroutines_site_creat_counter - pThread->coroutines_site_release_counter;
-		thread_other_unlock();
 	
 		if(site_counter >= (pThread->level_number * thread_cfg_multiple_coroutine_on_thread()))
 		{

@@ -18,7 +18,7 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
-#define SYNC_CLIENT_MSG_BUFFER_MAX (81920)
+#define SYNC_CLIENT_MSG_BUFFER_MAX (20480)
 #define SYNC_CLIENT_MSG_BUFFER_BASE_TIMER (1000)
 #define SYNC_CLIENT_MSG_BUFFER_LEFT (128)
 
