@@ -25,6 +25,7 @@ RUN yum install -y rust cargo
 RUN yum install -y golang
 RUN ln -s /usr/local/go/bin/go /usr/local/bin/go
 RUN yum install -y scala sbt
+RUN yum install -y bzip2
 
 RUN mkdir -p /project/DAVE
 
