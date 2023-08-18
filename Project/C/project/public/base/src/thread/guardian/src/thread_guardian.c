@@ -22,6 +22,7 @@
 #include "thread_busy_idle.h"
 #include "thread_wait_msg_show.h"
 #include "thread_sync.h"
+#include "thread_queue.h"
 #include "thread_remote_id_table.h"
 #include "thread_gid_table.h"
 #include "thread_wakeup_the_sleep.h"
@@ -117,6 +118,7 @@ _thread_guardian_restart(RESTARTREQMSG *pReq)
 		thread_statistics_exit();
 		thread_orchestration_exit();
 		thread_sync_exit();
+		thread_queue_exit();
 		thread_busy_idle_exit();
 		thread_gid_table_exit();
 		thread_remote_id_table_exit();
@@ -237,6 +239,7 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_orchestration_init();
 	thread_statistics_init();
 	thread_cfg_init();
+	thread_queue_init();
 }
 
 static void

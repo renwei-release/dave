@@ -10,6 +10,8 @@
 
 #define SYNC_CLIENT_THREAD_NAME "syncc"
 #define SYNC_SERVER_THREAD_NAME "syncs"
+#define QUEUE_CLIENT_THREAD_NAME "queuec"
+#define QUEUE_SERVER_THREAD_NAME "queues"
 #define LOG_CLIENT_THREAD_NAME "logc"
 #define LOG_SERVER_THREAD_NAME "logs"
 #define TIMER_THREAD_NAME "timer"
@@ -48,6 +50,7 @@ typedef enum {
 	BaseMsgType_seq_msg,
 	BaseMsgType_pre_msg,
 	BaseMsgType_Broadcast_local_no_me,
+	BaseMsgType_Unicast_queue,
 } BaseMsgType;
 
 typedef enum {
@@ -79,7 +82,9 @@ typedef struct {
 	void *msg_router;
 
 	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 src_name[DAVE_THREAD_NAME_LEN];
+	s8 dst_name[DAVE_THREAD_NAME_LEN];
 
 	ub magic_data;
 } MSGBODY;

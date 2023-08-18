@@ -360,6 +360,9 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 		case BaseMsgType_Broadcast_local_no_me:
 				value_str = "'BaseMsgType_Broadcast_local_no_me'";
 			break;
+		case BaseMsgType_Unicast_queue:
+				value_str = "'BaseMsgType_Unicast_queue'";
+			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
 			break;
@@ -4559,6 +4562,24 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'";
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+				value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_REQ-41'";
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+				value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_RSP-42'";
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+				value_str = "'MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ-43'";
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+				value_str = "'MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP-44'";
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_REQ:
+				value_str = "'MSGID_QUEUE_UPDATE_STATE_REQ-45'";
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				value_str = "'MSGID_QUEUE_UPDATE_STATE_RSP-46'";
 			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";

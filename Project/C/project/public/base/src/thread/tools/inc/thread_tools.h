@@ -14,7 +14,7 @@
 #include "thread_statistics.h"
 #include "thread_map.h"
 #include "thread_id.h"
-#include "thread_queue.h"
+#include "thread_queue_opt.h"
 
 void thread_tools_init(ThreadStruct *thread_struct);
 

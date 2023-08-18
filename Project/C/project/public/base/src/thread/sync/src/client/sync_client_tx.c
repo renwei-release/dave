@@ -25,7 +25,9 @@
 #include "sync_lock.h"
 #include "sync_log.h"
 
-static dave_bool
+static ThreadId _queue_server_thread = INVALID_THREAD_ID;
+
+static inline dave_bool
 _sync_client_tx(SyncServer *pServer, ORDER_CODE order_id, MBUF *data)
 {
 	dave_bool ret;
@@ -62,6 +64,46 @@ _sync_client_tx(SyncServer *pServer, ORDER_CODE order_id, MBUF *data)
 	}
 
 	return ret;
+}
+
+static inline dave_bool
+_sync_client_qtx(
+	SyncServer *pServer,
+	ThreadId route_src, ThreadId route_dst,
+	s8 *src, s8 *dst,
+	ub msg_id,
+	MBUF *data)
+{
+	if(_queue_server_thread == INVALID_THREAD_ID)
+	{
+		_queue_server_thread = thread_id(QUEUE_SERVER_THREAD_NAME);
+	}
+	if(_queue_server_thread == INVALID_THREAD_ID)
+	{
+		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
+		return dave_false;
+	}
+
+	QueueUploadMsgReq *pReq = thread_msg(pReq);
+
+	dave_strcpy(pReq->src_name, src, sizeof(pReq->src_name));
+	dave_strcpy(pReq->dst_name, dst, sizeof(pReq->dst_name));
+	dave_strcpy(pReq->src_gid, globally_identifier(), sizeof(pReq->src_name));
+	if(thread_get_net(route_dst) == SYNC_NET_INDEX_MAX)
+		dave_strcpy(pReq->dst_gid, pServer->globally_identifier, sizeof(pReq->src_name));
+	else
+		pReq->dst_gid[0] = '\0';
+	pReq->msg_id = msg_id;
+	pReq->msg = data;
+	pReq->ptr = NULL;
+
+	if(id_msg(_queue_server_thread, MSGID_QUEUE_UPLOAD_MESSAGE_REQ, pReq) == dave_false)
+	{
+		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
+		return dave_false;
+	}
+
+	return dave_true;
 }
 
 static dave_bool
@@ -264,6 +306,12 @@ sync_client_tx_run_thread_msg_req(
 		msg_id, msg_head->tot_len, zip_body->len);
 
 	sync_client_send_statistics(pServer, dst);
+
+	if(msg_type == BaseMsgType_Unicast_queue)
+	{
+		if(_sync_client_qtx(pServer, route_src, route_dst, src, dst, msg_id, msg_head) == dave_true)
+			return dave_true;
+	}
 
 	return _sync_client_tx(pServer, ORDER_CODE_RUN_THREAD_MSG_REQ, msg_head);
 }

@@ -15,7 +15,6 @@ static ub _chain_start_time = 0;
 static ub _chain_id_serial = 0;
 static ub _chain_id_counter = 0;
 static ub _chain_call_id = 0;
-static s8 *_globally_identifier = NULL;
 
 // =====================================================================
 
@@ -25,7 +24,6 @@ chain_id_reset(void)
 	_chain_start_time = dave_os_time_s() & 0xffffffff;
 	_chain_id_serial = 0;
 	_chain_call_id = t_rand();
-	_globally_identifier = globally_identifier();
 }
 
 s8 *
@@ -42,7 +40,7 @@ chain_id(s8 *chain_id_ptr, ub chain_id_len)
 	}
 	base_unlock();
 
-	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", _globally_identifier, _chain_start_time, serial);
+	dave_snprintf(chain_id_ptr, chain_id_len, "%s-%lx-%lx", globally_identifier(), _chain_start_time, serial);
 
 	return chain_id_ptr;
 }

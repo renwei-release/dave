@@ -154,6 +154,11 @@ _sync_client_message_to_thread(LinkThread *pThread, MSGBODY *pMsg)
 			dave_free(gi_ptr[gi_index]);
 	}
 
+	/*
+	 * Synchronize a message to the SYNC server. 
+	 * If there is no direct connection between services, 
+	 * the message can be synchronized through the SYNC service.
+	 */
 	pMsg->msg_dst = thread_set_sync(pMsg->msg_dst);
 	_sync_client_message_send(pMsg);
 }

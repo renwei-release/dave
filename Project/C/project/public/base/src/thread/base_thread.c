@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -399,7 +399,7 @@ _thread_safe_read_seq_queue(ThreadStruct *pThread)
 		if((pQueue->list_number > 0)
 			&& (pQueue->on_queue_process == dave_false))
 		{
-			pMsg = thread_queue_req_read(pQueue);
+			pMsg = thread_queue_on_process_up(pQueue);
 		}
 	}
 
@@ -882,7 +882,7 @@ _thread_schedule_predecessor_task(void)
 }
 
 static inline ub
-_thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
+_thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
 {
 	ub thread_index = thread_get_local(thread_id);
 	ThreadStruct *pThread;
@@ -955,8 +955,14 @@ _thread_schedule_one_thread(void *pTThread, ThreadId thread_id, s8 *thread_name,
 	return _thread_num_msg(pThread, MSGID_RESERVED);
 }
 
-static dave_bool
-_thread_schedule(void)
+static inline ub
+_thread_multithreading_schedule(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
+{
+	return _thread_one_message_execution(pTThread, thread_id, thread_name, wakeup_index, enable_stack);
+}
+
+static inline dave_bool
+_thread_main_schedule(void)
 {
 	ub priority_index;
 	ub thread_index;
@@ -983,7 +989,7 @@ _thread_schedule(void)
 			{
 				if(! (pThread->thread_flag & THREAD_THREAD_FLAG))
 				{
-					if(_thread_schedule_one_thread(NULL, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
+					if(_thread_one_message_execution(NULL, pThread->thread_id, pThread->thread_name, 0, dave_true) > 0)
 					{
 						all_message_empty = dave_false;
 					}
@@ -1557,7 +1563,7 @@ base_thread_init(void *main_thread_id, s8 *sync_domain)
 
 	thread_quit_init();
 
-	thread_thread_init(_thread_schedule_one_thread);
+	thread_thread_init(_thread_multithreading_schedule);
 
 	thread_chain_init();
 
@@ -1607,7 +1613,7 @@ base_thread_schedule(void)
 
 	while(((++ safe_counter) < while_max) && (all_message_empty == dave_false))
 	{
-		all_message_empty = _thread_schedule();
+		all_message_empty = _thread_main_schedule();
 	}
 
 	if(base_power_state() == dave_true)

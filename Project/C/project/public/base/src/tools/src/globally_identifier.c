@@ -15,7 +15,7 @@
 
 #define GLOBALLY_IDENTIFIER_CFG_NAME (s8 *)"GLOBALLYIDENTIFIER"
 
-static s8 _globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0'};
+static s8 __globally_identifier__[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0'};
 
 static dave_bool
 _globally_identifier_check(s8 *globally_identifier_ptr, ub globally_identifier_len)
@@ -102,28 +102,33 @@ _globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_le
 	return _globally_identifier_check(globally_identifier_ptr, globally_identifier_len);
 }
 
+static s8 *
+_globally_identifier(void)
+{
+	s8 *id_ptr = __globally_identifier__;
+	ub id_len = sizeof(__globally_identifier__);
+
+	base_lock();
+	if((_globally_identifier_load(id_ptr, id_len) == dave_false)
+		|| (_globally_identifier_check(id_ptr, id_len) == dave_false))
+	{
+		_globally_identifier_build(id_ptr, id_len);
+		_globally_identifier_save(id_ptr, id_len);
+	}
+	base_unlock();
+
+	return id_ptr;
+}
+
 // =====================================================================
 
 s8 *
 globally_identifier(void)
 {
-	s8 *id_ptr = _globally_identifier;
-	ub id_len = sizeof(_globally_identifier);
-
-	base_lock();
-	if(_globally_identifier_check(id_ptr, id_len) == dave_false)
-	{
-		if((_globally_identifier_load(id_ptr, id_len) == dave_false)
-			|| (_globally_identifier_check(id_ptr, id_len) == dave_false))
-		{
-			_globally_identifier_build(id_ptr, id_len);
-
-			_globally_identifier_save(id_ptr, id_len);
-		}
-	}
-	base_unlock();
-
-	return id_ptr;
+	if(__globally_identifier__[0] != '\0')
+		return __globally_identifier__;
+	else
+		return _globally_identifier();
 }
 
 #endif

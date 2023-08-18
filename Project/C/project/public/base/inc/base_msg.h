@@ -275,6 +275,13 @@ typedef struct {
 	sb ttl;
 } CFGRemoteUpdate;
 
+/* for MSGID_DOS_FORWARD message */
+typedef struct {
+	MBUF *cmd;
+	MBUF *param;
+	void *ptr;
+} DosForward;
+
 /* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
 typedef struct {
 	dave_bool put_flag;
@@ -283,12 +290,55 @@ typedef struct {
 	sb ttl;
 } CFGRemoteSyncUpdate;
 
-/* for MSGID_DOS_FORWARD message */
+/* for MSGID_QUEUE_UPLOAD_MESSAGE_REQ message */
 typedef struct {
-	MBUF *cmd;
-	MBUF *param;
+	s8 src_name[DAVE_THREAD_NAME_LEN];
+	s8 dst_name[DAVE_THREAD_NAME_LEN];
+	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	ub msg_id;
+	MBUF *msg;
 	void *ptr;
-} DosForward;
+} QueueUploadMsgReq;
+
+/* for MSGID_QUEUE_UPLOAD_MESSAGE_RSP message */
+typedef struct {
+	RetCode ret;
+	void *ptr;
+} QueueUploadMsgRsp;
+
+/* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message */
+typedef struct {
+	s8 name[DAVE_THREAD_NAME_LEN];
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	void *ptr;
+} QueueDownloadMsgReq;
+
+/* for MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP message */
+typedef struct {
+	RetCode ret;
+	s8 src_name[DAVE_THREAD_NAME_LEN];
+	s8 dst_name[DAVE_THREAD_NAME_LEN];
+	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	MBUF *msg;
+	void *ptr;
+} QueueDownloadMsgRsp;
+
+/* for MSGID_QUEUE_UPDATE_STATE_REQ message */
+typedef struct {
+	s8 src_name[DAVE_THREAD_NAME_LEN];
+	s8 dst_name[DAVE_THREAD_NAME_LEN];
+	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	void *ptr;
+} QueueUpdateStateReq;
+
+/* for MSGID_QUEUE_UPDATE_STATE_RSP message */
+typedef struct {
+	RetCode ret;
+	void *ptr;
+} QueueUpdateStateRsp;
 
 #endif
 

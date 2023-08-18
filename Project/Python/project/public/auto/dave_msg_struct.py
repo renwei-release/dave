@@ -762,6 +762,62 @@ class ProcessMsgTimerOutMsg (Structure):
 		("msg_body", POINTER(c_char)),
 ]
 
+#* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message *#
+class QueueDownloadMsgReq (Structure):
+	_fields_ = [
+		("name", c_char * DAVE_THREAD_NAME_LEN),
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP message *#
+class QueueDownloadMsgRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("src_name", c_char * DAVE_THREAD_NAME_LEN),
+		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
+		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("msg", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_UPDATE_STATE_REQ message *#
+class QueueUpdateStateReq (Structure):
+	_fields_ = [
+		("src_name", c_char * DAVE_THREAD_NAME_LEN),
+		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
+		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_UPDATE_STATE_RSP message *#
+class QueueUpdateStateRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_UPLOAD_MESSAGE_REQ message *#
+class QueueUploadMsgReq (Structure):
+	_fields_ = [
+		("src_name", c_char * DAVE_THREAD_NAME_LEN),
+		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
+		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("msg_id", c_ulonglong),
+		("msg", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_UPLOAD_MESSAGE_RSP message *#
+class QueueUploadMsgRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_RESTART_REQ message *#
 class RESTARTREQMSG (Structure):
 	_fields_ = [

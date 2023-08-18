@@ -30,5 +30,7 @@ dave_bool coroutine_yield(void *co);
 
 void coroutine_release(void *co);
 
+dave_bool coroutine_be_in_use(void *co);
+
 #endif
 

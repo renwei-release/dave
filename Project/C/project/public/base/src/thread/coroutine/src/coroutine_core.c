@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
 	ub magic_data;
+	dave_bool be_in_use;
 
 	coroutine_core_fun fun_core;
 	void *fun_param;
@@ -71,6 +72,8 @@ _coroutine_swap_function(CoCore *pCore, void *param)
 	{
 		pCore->fun_core(pCore->fun_param);
 	}
+
+	pCore->be_in_use = dave_false;
 
 	if(coroutine_yield(pCore) == dave_false)
 	{
@@ -166,6 +169,7 @@ _coroutine_create(coroutine_core_fun fun_core, void *fun_param, MSGBODY *msg)
 	CoCore *pCore = (CoCore *)coroutine_malloc(sizeof(CoCore));
 
 	pCore->magic_data = COCORE_MAGIC_DATA;
+	pCore->be_in_use = dave_true;
 
 	pCore->fun_core = fun_core;
 	pCore->fun_param = fun_param;
@@ -350,6 +354,14 @@ void
 coroutine_release(void *co)
 {
 	_coroutine_release(co);
+}
+
+dave_bool
+coroutine_be_in_use(void *co)
+{
+	CoCore *pCore = (CoCore *)co;
+
+	return pCore->be_in_use;
 }
 
 #endif

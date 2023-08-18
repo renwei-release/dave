@@ -209,10 +209,12 @@ _thread_build_msg_body(
 		dave_strcpy(pBody->src_gid, src_gid, sizeof(pBody->src_gid));
 	else
 		pBody->src_gid[0] = '\0';
+	pBody->dst_gid[0] = '\0';
 	if(src_name != NULL)
 		dave_strcpy(pBody->src_name, src_name, sizeof(pBody->src_name));
 	else
 		pBody->src_name[0] = '\0';
+	pBody->dst_name[0] = '\0';
 
 	pBody->magic_data = MSG_BODY_MAGIC_DATA;
 }
@@ -446,7 +448,7 @@ thread_clean_msg(ThreadMsg *pMsg)
 		pQueue = (ThreadQueue *)(pMsg->pQueue);
 		if(pQueue != NULL)
 		{
-			thread_queue_reset_process(pQueue);
+			thread_queue_on_process_down(pQueue);
 		}
 
 		if(pMsg->msg_body.magic_data != MSG_BODY_MAGIC_DATA)

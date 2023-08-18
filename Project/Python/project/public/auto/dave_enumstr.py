@@ -1693,6 +1693,18 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_DOS_FORWARD-39'"
 	elif enum_value == MSGID_CFG_REMOTE_SYNC_UPDATE:
 		value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'"
+	elif enum_value == MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+		value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_REQ-41'"
+	elif enum_value == MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+		value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_RSP-42'"
+	elif enum_value == MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+		value_str = "'MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ-43'"
+	elif enum_value == MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+		value_str = "'MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP-44'"
+	elif enum_value == MSGID_QUEUE_UPDATE_STATE_REQ:
+		value_str = "'MSGID_QUEUE_UPDATE_STATE_REQ-45'"
+	elif enum_value == MSGID_QUEUE_UPDATE_STATE_RSP:
+		value_str = "'MSGID_QUEUE_UPDATE_STATE_RSP-46'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:

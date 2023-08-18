@@ -283,6 +283,24 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
 			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+				pBson = t_rpc_ver3_zip_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+				pBson = t_rpc_ver3_zip_QueueDownloadMsgRsp((QueueDownloadMsgRsp *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_REQ:
+				pBson = t_rpc_ver3_zip_QueueUpdateStateReq((QueueUpdateStateReq *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				pBson = t_rpc_ver3_zip_QueueUpdateStateRsp((QueueUpdateStateRsp *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+				pBson = t_rpc_ver3_zip_QueueUploadMsgReq((QueueUploadMsgReq *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+				pBson = t_rpc_ver3_zip_QueueUploadMsgRsp((QueueUploadMsgRsp *)msg_body, msg_len);
+			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				pBson = t_rpc_ver3_zip_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body, msg_len);
 			break;
@@ -673,6 +691,24 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+				ret = t_rpc_ver3_unzip_QueueDownloadMsgReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+				ret = t_rpc_ver3_unzip_QueueDownloadMsgRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_REQ:
+				ret = t_rpc_ver3_unzip_QueueUpdateStateReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				ret = t_rpc_ver3_unzip_QueueUpdateStateRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+				ret = t_rpc_ver3_unzip_QueueUploadMsgReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+				ret = t_rpc_ver3_unzip_QueueUploadMsgRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				ret = t_rpc_ver3_unzip_ThreadRemoteIDReadyMsg(msg_body, msg_len, pBson);
@@ -1065,6 +1101,24 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ptr = t_rpc_ver3_ptr_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, new_ptr);
 			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+				ptr = t_rpc_ver3_ptr_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+				ptr = t_rpc_ver3_ptr_QueueDownloadMsgRsp((QueueDownloadMsgRsp *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_REQ:
+				ptr = t_rpc_ver3_ptr_QueueUpdateStateReq((QueueUpdateStateReq *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				ptr = t_rpc_ver3_ptr_QueueUpdateStateRsp((QueueUpdateStateRsp *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+				ptr = t_rpc_ver3_ptr_QueueUploadMsgReq((QueueUploadMsgReq *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+				ptr = t_rpc_ver3_ptr_QueueUploadMsgRsp((QueueUploadMsgRsp *)msg_body, new_ptr);
+			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				ptr = t_rpc_ver3_ptr_ThreadRemoteIDReadyMsg((ThreadRemoteIDReadyMsg *)msg_body, new_ptr);
 			break;
@@ -1455,6 +1509,24 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				msg_len = t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg();
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_QueueDownloadMsgReq();
+			break;
+		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_QueueDownloadMsgRsp();
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_REQ:
+				msg_len = t_rpc_ver3_sizeof_QueueUpdateStateReq();
+			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				msg_len = t_rpc_ver3_sizeof_QueueUpdateStateRsp();
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_QueueUploadMsgReq();
+			break;
+		case MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_QueueUploadMsgRsp();
 			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				msg_len = t_rpc_ver3_sizeof_ThreadRemoteIDReadyMsg();
