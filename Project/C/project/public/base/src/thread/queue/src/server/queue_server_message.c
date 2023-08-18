@@ -173,7 +173,7 @@ _queue_server_message_upload(ThreadMsg *pMsg)
 	return dave_false;
 }
 
-static ThreadQueue *
+static ThreadMsg *
 _queue_server_message_download(QueueDownloadMsgReq *pReq)
 {
 	s8 key[256];
@@ -187,7 +187,7 @@ _queue_server_message_download(QueueDownloadMsgReq *pReq)
 	if(pMessage == NULL)
 		return NULL;
 
-	return pMessage->pQueue;
+	return _queue_server_message_read_msg(pMessage->pQueue);
 }
 
 static void
@@ -221,7 +221,7 @@ _queue_server_message_recycle(void *ramkv, s8 *key)
 void
 queue_server_message_init(void)
 {
-	_message_kv = kv_malloc("queue-server-message", 60, _queue_server_message_timerout);
+	_message_kv = kv_malloc("queue-server-message", 5, _queue_server_message_timerout);
 	t_lock_reset(&_message_pv);
 }
 
@@ -249,13 +249,14 @@ queue_server_message_upload(ThreadId src, QueueUploadMsgReq *pReq)
 void
 queue_server_message_download(ThreadId src, QueueDownloadMsgReq *pReq)
 {
-	ThreadQueue *pQueue = _queue_server_message_download(pReq);
-	ThreadMsg *pMsg = NULL;
+	ThreadMsg *pMsg;
 	QueueDownloadMsgRsp *pRsp = thread_msg(pRsp);
 
-	if(pQueue != NULL)
+	pMsg = _queue_server_message_download(pReq);
+	if((pMsg == NULL) || (pReq->gid[0] != '\0'))
 	{
-		pMsg = _queue_server_message_read_msg(pQueue);
+		pReq->gid[0] = '\0';
+		pMsg = _queue_server_message_download(pReq);
 	}
 
 	if(pMsg == NULL)

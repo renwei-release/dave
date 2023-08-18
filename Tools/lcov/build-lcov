@@ -1,0 +1,22 @@
+#!/bin/bash
+
+VERSION=2.0
+
+echo ****************************
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+   wget https://github.com/linux-test-project/lcov/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./lcov-${VERSION} ]; then
+   tar -zxvf v${VERSION}.tar.gz
+fi
+
+cd lcov-${VERSION}
+make install
+
+sudo yum install -y perl-Time-HiRes perl-Capture-Tiny perl-Module-Load-Conditional perl-DateTime perl-CPAN
+sudo perl -MCPAN -e 'install JSON::XS'
+sudo perl -MCPAN -e 'install Cpanel::JSON::XS'
+
+cd ../
+rm -rf lcov-${VERSION}
