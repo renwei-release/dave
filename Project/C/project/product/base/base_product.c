@@ -242,11 +242,51 @@ _base_timer_out(TIMERID timer_id, ub thread_index)
 }
 
 static void
+_base_timer_out_3(TIMERID timer_id, ub thread_index)
+{
+	RPCDebugReq req;
+	RPCDebugRsp *pRsp;
+	s8 *debug_thread = "main_aib";
+
+	dave_memset(&req, 0x00, sizeof(RPCDebugReq));
+
+	req.ret_debug = RET_DEBUG_VALUE;
+	dave_strcpy(req.req_thread, thread_name(_base_thread), sizeof(req.req_thread));
+	dave_strcpy(req.str_debug, debug_thread, sizeof(req.str_debug));
+	req.s8_debug = S8_DEBUG_VALUE;
+	req.u8_debug = U8_DEBUG_VALUE;
+	req.s16_debug = S16_DEBUG_VALUE;
+	req.u16_debug = U16_DEBUG_VALUE;
+	req.s32_debug = S32_DEBUG_VALUE;
+	req.u32_debug = U32_DEBUG_VALUE;
+	req.s64_debug = S64_DEBUG_VALUE;
+	req.u64_debug = U64_DEBUG_VALUE;
+	req.float_debug = FLOAT_DEBUG_VALUE;
+	req.double_debug = DOUBLE_DEBUG_VALUE;
+	req.void_debug = VOID_DEBUG_VALUE;
+	req.ptr = &req;
+
+	debug_thread = "main_aib";
+	BASELOG("RPC_DEBUG %s", debug_thread);
+	pRsp = name_co(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	if(pRsp != NULL)
+	{
+		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", debug_thread, &req, pRsp->ptr);
+	}
+	else
+	{
+		BASELOG("%s timer out!", debug_thread);
+	}
+}
+
+static void
 _base_thread_init(MSGBODY *msg)
 {
 	BDATALOG("INIT", "%s booting!", dave_verno());
 
 	base_timer_creat("basetimer", _base_timer_out, 185 * 1000);
+
+	base_timer_creat("basetimer3", _base_timer_out_3, 3 * 1000);
 }
 
 static void
