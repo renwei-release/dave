@@ -693,12 +693,34 @@ type QueueDownloadMsgRsp struct {
 	Ptr uint64
 }
 
+/* for MSGID_QUEUE_RUN_MESSAGE_REQ message */
+type QueueRunMsgReq struct {
+	Src_name [DAVE_THREAD_NAME_LEN] byte
+	Dst_name [DAVE_THREAD_NAME_LEN] byte
+	Src_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Dst_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Msg *MBUF
+	Ptr uint64
+}
+
+/* for MSGID_QUEUE_RUN_MESSAGE_RSP message */
+type QueueRunMsgRsp struct {
+	Ret int64
+	Name [DAVE_THREAD_NAME_LEN] byte
+	Msg_number uint64
+	Thread_number uint64
+	Ptr uint64
+}
+
 /* for MSGID_QUEUE_UPDATE_STATE_REQ message */
 type QueueUpdateStateReq struct {
 	Src_name [DAVE_THREAD_NAME_LEN] byte
 	Dst_name [DAVE_THREAD_NAME_LEN] byte
 	Src_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 	Dst_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Msg_id uint64
+	Queue_number uint64
+	Queue_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 	Ptr uint64
 }
 

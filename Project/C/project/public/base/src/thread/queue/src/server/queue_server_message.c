@@ -9,8 +9,11 @@
 #include "thread_queue.h"
 #if defined(QUEUE_STACK_SERVER)
 #include "dave_base.h"
+#include "dave_tools.h"
+#include "base_tools.h"
 #include "thread_struct.h"
 #include "thread_tools.h"
+#include "queue_server_map.h"
 #include "queue_log.h"
 
 typedef struct {
@@ -22,8 +25,9 @@ typedef struct {
 
 static void *_message_kv = NULL;
 static TLock _message_pv;
+static ub _out_fo_order_download;
 
-static s8 *
+static inline s8 *
 _queue_server_message_key(s8 *key_ptr, ub key_len, s8 *dst_name, s8 *dst_gid)
 {
 	dave_snprintf(key_ptr, key_len, "%s:%s", dst_name, dst_gid);
@@ -57,9 +61,14 @@ _queue_server_message_free(QueueMessage *pMessage)
 }
 
 static QueueMessage *
-_queue_server_message_inq(s8 *key, s8 *name, s8 *gid)
+_queue_server_message_inq(s8 *name, s8 *gid)
 {
+	s8 key[256];
 	QueueMessage *pMessage = NULL;
+
+	_queue_server_message_key(
+		key, sizeof(key),
+		name, gid);
 
 	pMessage = kv_inq_key_ptr(_message_kv, key);
 	if(pMessage == NULL)
@@ -115,27 +124,60 @@ _queue_server_message_clean_msg(ThreadMsg *pMsg)
 	dave_free(pMsg);
 }
 
-static void
-_queue_server_message_update_state(ThreadQueue *pQueue)
+static ub
+_queue_server_message_number_msg(QueueMessage *pMessage)
 {
+	return pMessage->pQueue->list_number;
+}
+
+static void
+_queue_server_message_update_client_state(s8 *gid, ThreadMsg *pMsg, QueueMessage *pMessage)
+{
+	QueueUpdateStateReq *pReq = thread_msg(pReq);
+
+	dave_strcpy(pReq->src_name, pMsg->msg_body.src_name, sizeof(pReq->src_name));
+	dave_strcpy(pReq->dst_name, pMsg->msg_body.dst_name, sizeof(pReq->dst_name));
+	dave_strcpy(pReq->src_gid, pMsg->msg_body.src_gid, sizeof(pReq->src_gid));
+	dave_strcpy(pReq->dst_gid, pMsg->msg_body.dst_gid, sizeof(pReq->dst_gid));
+	pReq->msg_id = pMsg->msg_body.msg_id;
+	pReq->queue_number = _queue_server_message_number_msg(pMessage);
+	dave_strcpy(pReq->queue_gid, globally_identifier(), sizeof(pReq->queue_gid));
+	pReq->ptr = NULL;
+
+	gid_msg(gid, QUEUE_CLIENT_THREAD_NAME, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);	
+}
+
+static void
+_queue_server_message_update_map_state(QueueServerMap *pMap, ThreadMsg *pMsg, QueueMessage *pMessage)
+{
+	ub index;
+
+	for(index=0; index<QUEUE_SERVER_MAP_MAX; index++)
+	{
+		if(pMap->client_gid[index][0] == '\0')
+			break;
+
+		_queue_server_message_update_client_state(pMap->client_gid[index], pMsg, pMessage);
+	}
+}
+
+static void
+_queue_server_message_update_state(QueueMessage *pMessage)
+{
+	ThreadQueue *pQueue = pMessage->pQueue;
 	ThreadMsg *pMsg;
 
 	if(pQueue != NULL)
 	{
 		pMsg = thread_queue_clone(pQueue);
 		if(pMsg != NULL)
-		{
-			QueueUpdateStateReq *pReq = thread_msg(pReq);
+		{		
+			QueueServerMap *pMap = queue_server_map_inq(pMsg->msg_body.dst_name);
 
-			dave_strcpy(pReq->src_name, pMsg->msg_body.src_name, sizeof(pReq->src_name));
-			dave_strcpy(pReq->dst_name, pMsg->msg_body.dst_name, sizeof(pReq->dst_name));
-			dave_strcpy(pReq->src_gid, pMsg->msg_body.src_gid, sizeof(pReq->src_gid));
-			dave_strcpy(pReq->dst_gid, pMsg->msg_body.dst_gid, sizeof(pReq->dst_gid));
-
-			if(pReq->dst_gid[0] == '\0')
-				name_msg(pReq->dst_name, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);
+			if(pMsg->msg_body.dst_gid[0] != '\0')
+				_queue_server_message_update_client_state(pMsg->msg_body.dst_gid, pMsg, pMessage);
 			else
-				gid_msg(pReq->dst_gid, pReq->dst_name, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);
+				_queue_server_message_update_map_state(pMap, pMsg, pMessage);
 
 			dave_free(pMsg);
 		}
@@ -145,49 +187,61 @@ _queue_server_message_update_state(ThreadQueue *pQueue)
 static dave_bool
 _queue_server_message_upload(ThreadMsg *pMsg)
 {
-	s8 key[256];
 	QueueMessage *pMessage;
-	RetCode ret;
+	ub list_number;
 
-	_queue_server_message_key(
-		key, sizeof(key),
-		pMsg->msg_body.dst_name, pMsg->msg_body.dst_gid);
+	pMessage = _queue_server_message_inq(pMsg->msg_body.dst_name, pMsg->msg_body.dst_gid);
 
-	pMessage = _queue_server_message_inq(key, pMsg->msg_body.dst_name, pMsg->msg_body.dst_gid);
-	
-	ret = thread_queue_write(pMessage->pQueue, pMsg);
-	if(ret == RetCode_OK)
+	list_number = thread_queue_write(pMessage->pQueue, pMsg);
+	if(list_number > 0)
 	{
-		if((pMessage->pQueue->list_number > 0) && (pMessage->pQueue->list_number < 3))
+		if((list_number == 1) || ((list_number % 256) == 0))
 		{
-			_queue_server_message_update_state(pMessage->pQueue);
+			_queue_server_message_update_state(pMessage);
 		}
-		return dave_true;
 	}
 
-	QUEUEABNOR("can't write %s:%s->%s:%s %s ret:%s",
-		pMsg->msg_body.src_name, pMsg->msg_body.src_gid,
-		pMsg->msg_body.dst_name, pMsg->msg_body.dst_gid,
-		msgstr(pMsg->msg_body.msg_id),
-		retstr(ret));	
-	return dave_false;
+	return dave_true;
+}
+
+static inline ThreadMsg *
+_queue_server_message_download_(s8 *name, s8 *gid)
+{
+	QueueMessage *pMessage;
+
+	pMessage = _queue_server_message_inq(name, gid);
+	if(pMessage == NULL)
+		return NULL;
+
+	return _queue_server_message_read_msg(pMessage->pQueue);
 }
 
 static ThreadMsg *
 _queue_server_message_download(QueueDownloadMsgReq *pReq)
 {
-	s8 key[256];
-	QueueMessage *pMessage;
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0' };
+	ThreadMsg *pMsg;
 
-	_queue_server_message_key(
-		key, sizeof(key),
-		pReq->name, pReq->gid);
+	if((_out_fo_order_download ++) % 2 == 0)
+	{
+		pMsg = _queue_server_message_download_(pReq->name, gid);
+		if(pMsg != NULL)
+			return pMsg;
+		pMsg = _queue_server_message_download_(pReq->name, pReq->gid);
+		if(pMsg != NULL)
+			return pMsg;		
+	}
+	else
+	{
+		pMsg = _queue_server_message_download_(pReq->name, pReq->gid);
+		if(pMsg != NULL)
+			return pMsg;
+		pMsg = _queue_server_message_download_(pReq->name, gid);
+		if(pMsg != NULL)
+			return pMsg;
+	}
 
-	pMessage = _queue_server_message_inq(key, pReq->name, pReq->gid);
-	if(pMessage == NULL)
-		return NULL;
-
-	return _queue_server_message_read_msg(pMessage->pQueue);
+	return NULL;
 }
 
 static void
@@ -198,7 +252,7 @@ _queue_server_message_timerout(void *ramkv, s8 *key)
 	if(pMessage == NULL)
 		return;
 
-	_queue_server_message_update_state(pMessage->pQueue);
+	_queue_server_message_update_state(pMessage);
 }
 
 static RetCode
@@ -223,6 +277,7 @@ queue_server_message_init(void)
 {
 	_message_kv = kv_malloc("queue-server-message", 5, _queue_server_message_timerout);
 	t_lock_reset(&_message_pv);
+	_out_fo_order_download = t_rand();
 }
 
 void
@@ -253,11 +308,6 @@ queue_server_message_download(ThreadId src, QueueDownloadMsgReq *pReq)
 	QueueDownloadMsgRsp *pRsp = thread_msg(pRsp);
 
 	pMsg = _queue_server_message_download(pReq);
-	if((pMsg == NULL) || (pReq->gid[0] != '\0'))
-	{
-		pReq->gid[0] = '\0';
-		pMsg = _queue_server_message_download(pReq);
-	}
 
 	if(pMsg == NULL)
 	{

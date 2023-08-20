@@ -289,6 +289,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
 				pBson = t_rpc_ver3_zip_QueueDownloadMsgRsp((QueueDownloadMsgRsp *)msg_body, msg_len);
 			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				pBson = t_rpc_ver3_zip_QueueRunMsgReq((QueueRunMsgReq *)msg_body, msg_len);
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_RSP:
+				pBson = t_rpc_ver3_zip_QueueRunMsgRsp((QueueRunMsgRsp *)msg_body, msg_len);
+			break;
 		case MSGID_QUEUE_UPDATE_STATE_REQ:
 				pBson = t_rpc_ver3_zip_QueueUpdateStateReq((QueueUpdateStateReq *)msg_body, msg_len);
 			break;
@@ -697,6 +703,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
 				ret = t_rpc_ver3_unzip_QueueDownloadMsgRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				ret = t_rpc_ver3_unzip_QueueRunMsgReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_RSP:
+				ret = t_rpc_ver3_unzip_QueueRunMsgRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_QUEUE_UPDATE_STATE_REQ:
 				ret = t_rpc_ver3_unzip_QueueUpdateStateReq(msg_body, msg_len, pBson);
@@ -1107,6 +1119,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
 				ptr = t_rpc_ver3_ptr_QueueDownloadMsgRsp((QueueDownloadMsgRsp *)msg_body, new_ptr);
 			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				ptr = t_rpc_ver3_ptr_QueueRunMsgReq((QueueRunMsgReq *)msg_body, new_ptr);
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_RSP:
+				ptr = t_rpc_ver3_ptr_QueueRunMsgRsp((QueueRunMsgRsp *)msg_body, new_ptr);
+			break;
 		case MSGID_QUEUE_UPDATE_STATE_REQ:
 				ptr = t_rpc_ver3_ptr_QueueUpdateStateReq((QueueUpdateStateReq *)msg_body, new_ptr);
 			break;
@@ -1515,6 +1533,12 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP:
 				msg_len = t_rpc_ver3_sizeof_QueueDownloadMsgRsp();
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				msg_len = t_rpc_ver3_sizeof_QueueRunMsgReq();
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_RSP:
+				msg_len = t_rpc_ver3_sizeof_QueueRunMsgRsp();
 			break;
 		case MSGID_QUEUE_UPDATE_STATE_REQ:
 				msg_len = t_rpc_ver3_sizeof_QueueUpdateStateReq();

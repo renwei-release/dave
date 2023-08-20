@@ -16,6 +16,31 @@
 #include "thread_coroutine.h"
 #include "thread_log.h"
 
+static ThreadId _queue_client_thread = INVALID_THREAD_ID;
+
+static inline void
+_thread_running_queue_end(ThreadStruct *pThread, MSGBODY *msg)
+{
+	if((pThread->thread_flag & THREAD_THREAD_FLAG)
+		&& (msg->msg_type == BaseMsgType_Unicast_queue))
+	{
+		QueueRunMsgRsp *pRsp = thread_msg(pRsp);
+
+		pRsp->ret = RetCode_OK;
+		dave_strcpy(pRsp->name, pThread->thread_name, sizeof(pRsp->name));
+		pRsp->msg_number = thread_num_msg(pThread, MSGID_RESERVED);
+		pRsp->thread_number = pThread->thread_flag;
+		pRsp->ptr = NULL;
+
+		if(_queue_client_thread == INVALID_THREAD_ID)
+		{
+			_queue_client_thread = thread_id(QUEUE_CLIENT_THREAD_NAME);
+		}
+
+		id_msg(_queue_client_thread, MSGID_QUEUE_RUN_MESSAGE_RSP, pRsp);
+	}
+}
+
 static inline ThreadStack *
 _thread_running_push_stack(ThreadStack **ppCurrentMsgStack, ThreadStruct *pThread)
 {
@@ -102,6 +127,8 @@ _thread_running(ThreadStruct *pThread, base_thread_fun thread_fun, MSGBODY *msg)
 #ifdef ENABLE_THREAD_STATISTICS
 	thread_statistics_end_msg(run_time, pThread, msg);
 #endif
+
+	_thread_running_queue_end(pThread, msg);
 }
 
 // =====================================================================

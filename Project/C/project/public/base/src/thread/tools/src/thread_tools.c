@@ -665,5 +665,21 @@ thread_local_remove_notify(s8 *thread_name)
 	}
 }
 
+ub
+thread_num_msg(ThreadStruct *pThread, ub msg_id)
+{
+	ub number;
+
+	if(pThread == NULL)
+	{
+		return 0;
+	}
+
+	number = thread_queue_num_msg(pThread->msg_queue, THREAD_MSG_QUEUE_NUM, msg_id);
+	number += thread_queue_num_msg(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM, msg_id);
+
+	return number;
+}
+
 #endif
 

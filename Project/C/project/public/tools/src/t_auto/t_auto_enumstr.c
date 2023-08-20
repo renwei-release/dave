@@ -4581,6 +4581,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_QUEUE_UPDATE_STATE_RSP:
 				value_str = "'MSGID_QUEUE_UPDATE_STATE_RSP-46'";
 			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				value_str = "'MSGID_QUEUE_RUN_MESSAGE_REQ-47'";
+			break;
+		case MSGID_QUEUE_RUN_MESSAGE_RSP:
+				value_str = "'MSGID_QUEUE_RUN_MESSAGE_RSP-48'";
+			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";
 			break;

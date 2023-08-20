@@ -136,12 +136,15 @@ static inline ub
 _thread_queue_list_total(ThreadQueue *pQueue_ptr, ub queue_number)
 {
 	ub queue_index, list_total_counter;
+	ThreadQueue *pQueue;
 
 	list_total_counter = 0;
 
 	for(queue_index=0; queue_index<queue_number; queue_index++)
 	{
-		list_total_counter += (pQueue_ptr[queue_index].list_number);
+		pQueue = &(pQueue_ptr[queue_index]);
+
+		list_total_counter += (pQueue->list_number);
 	}
 
 	return list_total_counter;
@@ -196,7 +199,7 @@ _thread_queue_num_msg_id(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 	return number;
 }
 
-static inline void
+static inline ub
 _thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 {
 	pQueue->list_number ++;
@@ -213,6 +216,8 @@ _thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 	}
 
 	pMsg->msg_body.msg_build_serial = pQueue->queue_received_counter ++;
+
+	return pQueue->list_number;
 }
 
 static inline ThreadMsg *
@@ -296,12 +301,14 @@ thread_queue_free(ThreadQueue *pQueue, ub queue_number)
 	_thread_queue_free(pQueue, queue_number);
 }
 
-RetCode
+ub
 thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 {
-	SAFECODEv2W(pQueue->queue_opt_pv, _thread_queue_write(pQueue, pMsg); );
+	ub list_number = 0;
 
-	return RetCode_OK;
+	SAFECODEv2W(pQueue->queue_opt_pv, list_number = _thread_queue_write(pQueue, pMsg); );
+
+	return list_number;
 }
 
 ThreadMsg *

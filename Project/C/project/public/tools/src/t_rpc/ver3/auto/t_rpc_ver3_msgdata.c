@@ -5364,6 +5364,138 @@ t_rpc_ver3_sizeof_QueueDownloadMsgRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_QueueRunMsgReq(QueueRunMsgReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(QueueRunMsgReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(QueueRunMsgReq) does not match(%d/%d), please contact the message settlers!", sizeof(QueueRunMsgReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-src_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_name), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-dst_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_name), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-src_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-dst_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "MBUF-msg", t_rpc_ver3_zip_MBUF_ptr(zip_data->msg));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_QueueRunMsgReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		QueueRunMsgReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(QueueRunMsgReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-src_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-dst_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-src_gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-dst_gid"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->msg), t_bson_inq_object(pStructBson, "MBUF-msg"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_QueueRunMsgReq(QueueRunMsgReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_QueueRunMsgReq(void)
+{
+	return sizeof(QueueRunMsgReq);
+}
+
+void *
+t_rpc_ver3_zip_QueueRunMsgRsp(QueueRunMsgRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(QueueRunMsgRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(QueueRunMsgRsp) does not match(%d/%d), please contact the message settlers!", sizeof(QueueRunMsgRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->name), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "ub-msg_number", t_rpc_ver3_zip_ub(zip_data->msg_number));
+	t_bson_add_object(pStructBson, "ub-thread_number", t_rpc_ver3_zip_ub(zip_data->thread_number));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_QueueRunMsgRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		QueueRunMsgRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(QueueRunMsgRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-name"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->msg_number), t_bson_inq_object(pStructBson, "ub-msg_number"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->thread_number), t_bson_inq_object(pStructBson, "ub-thread_number"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_QueueRunMsgRsp(QueueRunMsgRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_QueueRunMsgRsp(void)
+{
+	return sizeof(QueueRunMsgRsp);
+}
+
+void *
 t_rpc_ver3_zip_QueueUpdateStateReq(QueueUpdateStateReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -5380,6 +5512,9 @@ t_rpc_ver3_zip_QueueUpdateStateReq(QueueUpdateStateReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-dst_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_name), 1, DAVE_THREAD_NAME_LEN));
 	t_bson_add_object(pStructBson, "s8-src_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 	t_bson_add_object(pStructBson, "s8-dst_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "ub-msg_id", t_rpc_ver3_zip_ub(zip_data->msg_id));
+	t_bson_add_object(pStructBson, "ub-queue_number", t_rpc_ver3_zip_ub(zip_data->queue_number));
+	t_bson_add_object(pStructBson, "s8-queue_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->queue_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -5407,6 +5542,9 @@ t_rpc_ver3_unzip_QueueUpdateStateReq(void **unzip_data, ub *unzip_len, void *pSt
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-dst_name"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-src_gid"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-dst_gid"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->msg_id), t_bson_inq_object(pStructBson, "ub-msg_id"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->queue_number), t_bson_inq_object(pStructBson, "ub-queue_number"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->queue_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-queue_gid"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

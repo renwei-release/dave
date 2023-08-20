@@ -1,6 +1,13 @@
 #!/bin/sh
 
 #
+# Check if lcov is installed
+#
+if [ $(type lcov) == "" ]; then
+   ./build-lcov
+fi
+
+#
 # Setup public parameters
 #
 homepath=$(cd `dirname $0`; pwd)

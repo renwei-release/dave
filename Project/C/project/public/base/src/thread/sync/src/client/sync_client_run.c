@@ -321,7 +321,7 @@ _sync_client_snd_internal(
 }
 
 static inline void
-_sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	ThreadId route_src, route_dst;
 	s8 src[SYNC_THREAD_NAME_LEN];
@@ -336,7 +336,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame)
 	RetCode ret = RetCode_OK;
 
 	sync_msg_unpacket(
-		frame, frame_len,
+		frame_ptr, frame_len,
 		&route_src, &route_dst, src, dst, &msg_id,
 		&msg_type, NULL, NULL,
 		&package_len, &package_ptr);
@@ -409,9 +409,9 @@ sync_client_run_exit(void)
 }
 
 void
-sync_client_run_thread(SyncServer *pServer, ub frame_len, u8 *frame)
+sync_client_run_thread(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
-	_sync_client_run_thread_frame(pServer, frame_len, frame);
+	_sync_client_run_thread_frame(pServer, frame_len, frame_ptr);
 }
 
 void

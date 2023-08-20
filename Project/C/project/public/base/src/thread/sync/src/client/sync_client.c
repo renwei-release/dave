@@ -29,6 +29,7 @@
 #include "sync_client_internal_buffer.h"
 #include "sync_client_info.h"
 #include "sync_client_route.h"
+#include "sync_client_queue.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -776,6 +777,9 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_INTERNAL_LOOP:
 				SYNCLOG("This message should not appear here, it is already handled in module base_rxtx!");
 			break;
+		case MSGID_QUEUE_RUN_MESSAGE_REQ:
+				sync_client_queue_run((QueueRunMsgReq *)(msg->msg_body));
+			break;
 		case SOCKET_CONNECT_RSP:
 				_sync_client_safe_connect_rsp((SocketConnectRsp *)(msg->msg_body));
 			break;
@@ -849,6 +853,15 @@ sync_client_thread_id(ThreadId thread_id)
 		return thread_id;
 	else
 		return new_id;
+}
+
+dave_bool
+sync_client_gid_ready(s8 *gid)
+{
+	if(sync_client_gid_to_server(gid) == NULL)
+		return dave_false;
+	else
+		return dave_true;
 }
 
 #endif

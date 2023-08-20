@@ -40,6 +40,7 @@ static SyncClientSocketFastIndex _socket_fast_index[SYNC_FAST_INDEX_MAX];
 static LinkThread _link_thread[SYNC_THREAD_MAX];
 static s8 _local_thread_name[SYNC_THREAD_MAX][SYNC_THREAD_NAME_LEN];
 static void *_thread_id_to_link_kv = NULL;
+static void *_gid_to_server_kv = NULL;
 
 static LinkThread * _sync_client_data_thread_del(SyncServer *pServer, s8 *thread_name, ub thread_index);
 
@@ -626,6 +627,40 @@ _sync_client_data_link_kv_inq(ThreadId thread_id)
 	return pThread;
 }
 
+static void
+_sync_client_data_gid_kv_init(void)
+{
+	_gid_to_server_kv = kv_malloc("gidserver", 0, NULL);
+}
+
+static void
+_sync_client_data_gid_kv_exit(void)
+{
+	kv_free(_gid_to_server_kv, NULL); _gid_to_server_kv = NULL;
+}
+
+static inline void
+_sync_client_data_gid_kv_add(s8 *gid, SyncServer *pServer)
+{
+	/*
+	 * Each GID will have two service links, 
+	 * only one of which will be considered for now.
+	 */
+	kv_add_key_ptr(_gid_to_server_kv, gid, pServer);
+}
+
+static inline void
+_sync_client_data_gid_kv_del(s8 *gid)
+{
+	kv_del_key_ptr(_gid_to_server_kv, gid);
+}
+
+static inline SyncServer *
+_sync_client_data_gid_kv_inq(s8 *gid)
+{
+	return kv_inq_key_ptr(_gid_to_server_kv, gid);
+}
+
 static LinkThread *
 _sync_client_data_thread_add(SyncServer *pServer, s8 *thread_name, ub thread_index)
 {
@@ -739,38 +774,6 @@ _sync_client_data_thread_check(void)
 	}
 }
 
-static LinkThread *
-_sync_client_data_thread_on_name(s8 *thread_name, ub thread_index)
-{
-	LinkThread *pThread;
-
-	pThread = _sync_client_data_find_thread(thread_name, thread_index, dave_false);
-	if(pThread == NULL)
-	{
-		SYNCTRACE("You send a message to the remote, \
-but the source(%s) of the message was not registered as a remote thread.", thread_name);
-		return NULL;
-	}
-
-	return pThread;
-}
-
-static ub
-_sync_client_data_thread_index_on_name(s8 *thread_name, ub thread_index)
-{
-	LinkThread *pThread;
-
-	SYNCDEBUG("thread:%s", thread_name);
-
-	pThread = _sync_client_data_thread_on_name(thread_name, thread_index);
-	if(pThread == NULL)
-	{
-		return SYNC_THREAD_INDEX_MAX;
-	}
-
-	return pThread->thread_index;
-}
-
 static void
 _sync_client_data_reset_server(SyncServer *pServer, dave_bool clean_flag)
 {
@@ -861,6 +864,8 @@ sync_client_data_init(void)
 
 	_sync_client_data_link_kv_init();
 
+	_sync_client_data_gid_kv_init();
+
 	sync_client_data_thread_local_reset();
 
 	_sync_client_data_reset_all_server();
@@ -878,6 +883,8 @@ void
 sync_client_data_exit(void)
 {
 	_sync_client_data_link_kv_exit();
+
+	_sync_client_data_gid_kv_exit();
 
 	sync_client_thread_ready_remove_exit();
 }
@@ -962,25 +969,15 @@ sync_client_data_server_inq_on_index(ub server_index)
 	return &_server_data[server_index];
 }
 
-LinkThread *
-sync_client_data_thread_on_name(s8 *thread_name)
-{
-	ub thread_index = sync_client_data_thread_name_to_index(thread_name);
-	LinkThread *pThread = NULL;
-
-	SAFECODEv2R(_sync_client_data_pv, pThread = _sync_client_data_thread_on_name(thread_name, thread_index););
-
-	return pThread;
-}
-
 ub
 sync_client_data_thread_index_on_name(s8 *thread_name)
 {
-	ub thread_index = sync_client_data_thread_name_to_index(thread_name);
+	LinkThread *pThread = sync_client_data_thread_on_name(thread_name);
 
-	SAFECODEv2R(_sync_client_data_pv, thread_index = _sync_client_data_thread_index_on_name(thread_name, thread_index););
+	if(pThread == NULL)
+		return SYNC_THREAD_INDEX_MAX;
 
-	return thread_index;
+	return pThread->thread_index;
 }
 
 ub
@@ -1036,6 +1033,8 @@ sync_client_data_server_add_client(s8 *verno, s8 *globally_identifier, u8 *ip, u
 
 	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_client(verno, globally_identifier, ip, port); } );
 
+	_sync_client_data_gid_kv_add(globally_identifier, pServer);
+
 	return pServer;
 }
 
@@ -1043,6 +1042,8 @@ SyncServer *
 sync_client_data_server_del_client(s8 *verno, s8 *globally_identifier, u8 *ip, u16 port)
 {
 	SyncServer *pServer = NULL;
+
+	_sync_client_data_gid_kv_del(globally_identifier);
 
 	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_client(ip, port); } );
 
@@ -1125,6 +1126,18 @@ LinkThread *
 sync_client_thread_id_to_thread(ThreadId thread_id)
 {
 	return _sync_client_data_link_kv_inq(thread_id);
+}
+
+LinkThread *
+sync_client_data_thread_on_name(s8 *thread_name)
+{
+	return sync_client_thread_id_to_thread(thread_id(thread_name));
+}
+
+SyncServer *
+sync_client_gid_to_server(s8 *gid)
+{
+	return _sync_client_data_gid_kv_inq(gid);
 }
 
 #endif

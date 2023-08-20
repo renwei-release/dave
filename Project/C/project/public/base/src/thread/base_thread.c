@@ -319,23 +319,16 @@ _thread_wakeup(ThreadStruct *pThread)
 static inline RetCode
 _thread_safe_write_msg_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
-	ub queue_index, safe_counter;
+	ub queue_index;
 	ThreadQueue *pQueue;
-	RetCode ret = RetCode_Send_msg_failed;
 
 	queue_index = (pThread->msg_queue_write_sequence ++) % THREAD_MSG_QUEUE_NUM;
 
-	for(safe_counter=0; (ret!=RetCode_OK)&&(safe_counter<THREAD_MSG_QUEUE_NUM); safe_counter++)
-	{
-		if(queue_index >= THREAD_MSG_QUEUE_NUM)
-			queue_index = 0;
+	pQueue = &(pThread->msg_queue[queue_index ++]);
 
-		pQueue = &(pThread->msg_queue[queue_index ++]);
+	thread_queue_write(pQueue, pMsg);
 
-		ret = thread_queue_write(pQueue, pMsg);
-	}
-
-	return ret;
+	return RetCode_OK;
 }
 
 static inline ThreadMsg *
@@ -377,7 +370,9 @@ _thread_safe_write_seq_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 
 	pQueue = &(pThread->seq_queue[queue_index % THREAD_SEQ_QUEUE_NUM]);
 
-	return thread_queue_write(pQueue, pMsg);
+	thread_queue_write(pQueue, pMsg);
+
+	return RetCode_OK;
 }
 
 static inline ThreadMsg *
@@ -409,9 +404,8 @@ _thread_safe_read_seq_queue(ThreadStruct *pThread)
 static inline RetCode
 _thread_safe_write_pre_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 {
-	ub queue_index, safe_counter;
+	ub queue_index;
 	ThreadQueue *pQueue;
-	RetCode ret = RetCode_Send_msg_failed;
 
 	if(pMsg->msg_body.msg_type != BaseMsgType_pre_msg)
 	{
@@ -420,17 +414,11 @@ _thread_safe_write_pre_queue(ThreadStruct *pThread, ThreadMsg *pMsg)
 
 	queue_index = (pThread->pre_queue_write_sequence ++) % THREAD_PRE_QUEUE_NUM;
 
-	for(safe_counter=0; (ret!=RetCode_OK)&&(safe_counter<THREAD_PRE_QUEUE_NUM); safe_counter++)
-	{
-		if(queue_index >= THREAD_PRE_QUEUE_NUM)
-			queue_index = 0;
+	pQueue = &(pThread->pre_queue[queue_index]);
 
-		pQueue = &(pThread->pre_queue[queue_index ++]);
+	thread_queue_write(pQueue, pMsg);
 
-		ret = thread_queue_write(pQueue, pMsg);
-	}
-
-	return ret;
+	return RetCode_OK;
 }
 
 static inline ThreadMsg *
@@ -640,22 +628,6 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 	return pMsg;
 }
 
-static inline ub
-_thread_num_msg(ThreadStruct *pThread, ub msg_id)
-{
-	ub number;
-
-	if(pThread == NULL)
-	{
-		return 0;
-	}
-
-	number = thread_queue_num_msg(pThread->msg_queue, THREAD_MSG_QUEUE_NUM, msg_id);
-	number += thread_queue_num_msg(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM, msg_id);
-
-	return number;
-}
-
 static inline void
 _thread_clean_priority(void)
 {
@@ -840,7 +812,7 @@ _thread_build_tick_message(void)
 
 				if(pThread->thread_flag & THREAD_TICK_WAKEUP)
 				{
-					if(_thread_num_msg(pThread, MSGID_RESERVED) == 0)
+					if(thread_num_msg(pThread, MSGID_RESERVED) == 0)
 					{
 						pWakeup = thread_msg(pWakeup);
 
@@ -903,7 +875,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		THREADLOG("id:%d index:%d name:%s/%s wakeup:%d has already withdrawn!",
 			thread_id, thread_index, pThread->thread_name, thread_name, wakeup_index);
 
-		return _thread_num_msg(pThread, MSGID_RESERVED);
+		return thread_num_msg(pThread, MSGID_RESERVED);
 	}
 
 	if(thread_id != pThread->thread_id)
@@ -911,7 +883,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		THREADABNOR("thread_id mismatch! %d,%d/%s,%d",
 			thread_id, pThread->thread_id, pThread->thread_name, thread_index);
 
-		return _thread_num_msg(pThread, MSGID_RESERVED);
+		return thread_num_msg(pThread, MSGID_RESERVED);
 	}
 
 	pMsg = _thread_read_msg(pThread, pTThread);
@@ -952,7 +924,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		thread_clean_msg(pMsg);
 	}
 
-	return _thread_num_msg(pThread, MSGID_RESERVED);
+	return thread_num_msg(pThread, MSGID_RESERVED);
 }
 
 static inline ub
@@ -1898,7 +1870,7 @@ base_thread_id_msg(
 
 		if((msg_number > 0)
 			&& (dst_id != INVALID_THREAD_ID)
-			&& (_thread_num_msg(thread_find_busy_thread(dst_id), msg_id) > msg_number))
+			&& (thread_num_msg(thread_find_busy_thread(dst_id), msg_id) > msg_number))
 		{
 			ret  = dave_true; free_input = dave_true;		
 		}
@@ -1987,6 +1959,7 @@ base_thread_id_co(
 dave_bool
 base_thread_name_msg(
 	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
@@ -2015,11 +1988,11 @@ base_thread_name_msg(
 
 	if(dst_id != INVALID_THREAD_ID)
 	{
-		ret = base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+		ret = base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, 0, fun, line);
 	}
 	else
 	{
-		ret = thread_msg_buffer_thread_push(src_id, dst_thread, BaseMsgType_Unicast, msg_id, msg_len, msg_body, fun, line);
+		ret = thread_msg_buffer_thread_push(src_id, dst_thread, msg_type, msg_id, msg_len, msg_body, fun, line);
 	}
 
 	return ret;
@@ -2055,7 +2028,7 @@ base_thread_name_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_name_msg(src_id, dst_thread, req_id, req_len, req_body, fun, line);
+		return base_thread_name_msg(src_id, dst_thread, BaseMsgType_Unicast, req_id, req_len, req_body, fun, line);
 	}
 
 	thread_clean_user_input_data(req_body, req_id);

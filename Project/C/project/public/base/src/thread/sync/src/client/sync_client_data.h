@@ -29,8 +29,6 @@ SyncServer * sync_client_data_server_inq_on_net(u8 *ip, u16 port);
 
 SyncServer * sync_client_data_server_inq_on_index(ub server_index);
 
-LinkThread * sync_client_data_thread_on_name(s8 *thread_name);
-
 ub sync_client_data_thread_index_on_name(s8 *thread_name);
 
 ub sync_client_data_thread_local_reset(void);
@@ -62,6 +60,10 @@ SyncServer * sync_client_server(ub server_index);
 LinkThread * sync_client_thread(ub thread_index);
 
 LinkThread * sync_client_thread_id_to_thread(ThreadId thread_id);
+
+LinkThread * sync_client_data_thread_on_name(s8 *thread_name);
+
+SyncServer * sync_client_gid_to_server(s8 *gid);
 
 #endif
 

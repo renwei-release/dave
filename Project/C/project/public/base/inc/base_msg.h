@@ -331,6 +331,9 @@ typedef struct {
 	s8 dst_name[DAVE_THREAD_NAME_LEN];
 	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	ub msg_id;
+	ub queue_number;
+	s8 queue_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	void *ptr;
 } QueueUpdateStateReq;
 
@@ -339,6 +342,25 @@ typedef struct {
 	RetCode ret;
 	void *ptr;
 } QueueUpdateStateRsp;
+
+/* for MSGID_QUEUE_RUN_MESSAGE_REQ message */
+typedef struct {
+	s8 src_name[DAVE_THREAD_NAME_LEN];
+	s8 dst_name[DAVE_THREAD_NAME_LEN];
+	s8 src_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 dst_gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	MBUF *msg;
+	void *ptr;
+} QueueRunMsgReq;
+
+/* for MSGID_QUEUE_RUN_MESSAGE_RSP message */
+typedef struct {
+	RetCode ret;
+	s8 name[DAVE_THREAD_NAME_LEN];
+	ub msg_number;
+	ub thread_number;
+	void *ptr;
+} QueueRunMsgRsp;
 
 #endif
 

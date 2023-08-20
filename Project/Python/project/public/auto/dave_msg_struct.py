@@ -782,6 +782,27 @@ class QueueDownloadMsgRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_QUEUE_RUN_MESSAGE_REQ message *#
+class QueueRunMsgReq (Structure):
+	_fields_ = [
+		("src_name", c_char * DAVE_THREAD_NAME_LEN),
+		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
+		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("msg", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_QUEUE_RUN_MESSAGE_RSP message *#
+class QueueRunMsgRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("name", c_char * DAVE_THREAD_NAME_LEN),
+		("msg_number", c_ulonglong),
+		("thread_number", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_QUEUE_UPDATE_STATE_REQ message *#
 class QueueUpdateStateReq (Structure):
 	_fields_ = [
@@ -789,6 +810,9 @@ class QueueUpdateStateReq (Structure):
 		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
 		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("msg_id", c_ulonglong),
+		("queue_number", c_ulonglong),
+		("queue_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 		("ptr", POINTER(c_char)),
 ]
 

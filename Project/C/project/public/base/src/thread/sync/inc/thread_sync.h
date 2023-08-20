@@ -20,6 +20,7 @@ void thread_sync_init(s8 *sync_domain);
 void thread_sync_exit(void);
 
 ThreadId thread_sync_thread_id(ThreadId thread_id);
+dave_bool thread_sync_gid_ready(s8 *gid);
 
 #endif
 

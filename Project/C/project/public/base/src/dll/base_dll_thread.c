@@ -129,6 +129,7 @@ dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_bo
 
 	if(base_thread_name_msg(
 		src_id, (s8 *)dst_thread,
+		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{

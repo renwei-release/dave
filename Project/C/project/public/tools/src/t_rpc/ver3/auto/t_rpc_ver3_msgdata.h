@@ -452,6 +452,16 @@ dave_bool t_rpc_ver3_unzip_QueueDownloadMsgRsp(void **unzip_data, ub *unzip_len,
 void * t_rpc_ver3_ptr_QueueDownloadMsgRsp(QueueDownloadMsgRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_QueueDownloadMsgRsp(void);
 
+void * t_rpc_ver3_zip_QueueRunMsgReq(QueueRunMsgReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_QueueRunMsgReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_QueueRunMsgReq(QueueRunMsgReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_QueueRunMsgReq(void);
+
+void * t_rpc_ver3_zip_QueueRunMsgRsp(QueueRunMsgRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_QueueRunMsgRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_QueueRunMsgRsp(QueueRunMsgRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_QueueRunMsgRsp(void);
+
 void * t_rpc_ver3_zip_QueueUpdateStateReq(QueueUpdateStateReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_QueueUpdateStateReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_QueueUpdateStateReq(QueueUpdateStateReq *struct_data, void *new_ptr);

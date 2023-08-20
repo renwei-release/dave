@@ -9,37 +9,31 @@
 #include "thread_queue.h"
 #if defined(QUEUE_STACK_SERVER)
 #include "dave_tools.h"
-#include "dave_verno.h"
 #include "dave_base.h"
 #include "dave_os.h"
 #include "queue_server_message.h"
-#include "base_rxtx.h"
+#include "queue_server_map.h"
+#include "queue_server_debug.h"
 
 static ThreadId _queue_server_thread;
 
 static void
-_queue_server_debug(ThreadId src, DebugReq *pReq)
+_queue_server_remote_ready(ThreadRemoteIDReadyMsg *pReady)
 {
-	DebugRsp *pRsp = thread_msg(pRsp);
+	queue_server_map_add(pReady->remote_thread_name, pReady->globally_identifier);
+}
 
-	switch(pReq->msg[0])
-	{
-		case 'i':
-				queue_server_message_info(pRsp->msg, sizeof(pRsp->msg));
-			break;
-		default:
-				dave_strcpy(pRsp->msg, pReq->msg, sizeof(pRsp->msg));
-			break;
-	}
-	pRsp->ptr = pReq->ptr;
-
-	id_msg(src, MSGID_DEBUG_RSP, pRsp);
+static void
+_queue_server_remote_remove(ThreadRemoteIDRemoveMsg *pRemove)
+{
+	queue_server_map_del(pRemove->remote_thread_name, pRemove->globally_identifier);
 }
 
 static void
 _queue_server_init(MSGBODY *msg)
 {
 	queue_server_message_init();
+	queue_server_map_init();
 }
 
 static void
@@ -48,7 +42,13 @@ _queue_server_main(MSGBODY *msg)
 	switch((ub)(msg->msg_id))
 	{
 		case MSGID_DEBUG_REQ:
-				_queue_server_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+				queue_server_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
+		case MSGID_REMOTE_THREAD_ID_READY:
+				_queue_server_remote_ready((ThreadRemoteIDReadyMsg *)(msg->msg_body));
+			break;
+		case MSGID_REMOTE_THREAD_ID_REMOVE:
+				_queue_server_remote_remove((ThreadRemoteIDRemoveMsg *)(msg->msg_body));
 			break;
 		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
 				queue_server_message_upload(msg->msg_src, (QueueUploadMsgReq *)(msg->msg_body));
@@ -65,6 +65,7 @@ static void
 _queue_server_exit(MSGBODY *msg)
 {
 	queue_server_message_exit();
+	queue_server_map_exit();
 }
 
 // =====================================================================

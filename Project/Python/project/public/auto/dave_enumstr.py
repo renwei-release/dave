@@ -1705,6 +1705,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_QUEUE_UPDATE_STATE_REQ-45'"
 	elif enum_value == MSGID_QUEUE_UPDATE_STATE_RSP:
 		value_str = "'MSGID_QUEUE_UPDATE_STATE_RSP-46'"
+	elif enum_value == MSGID_QUEUE_RUN_MESSAGE_REQ:
+		value_str = "'MSGID_QUEUE_RUN_MESSAGE_REQ-47'"
+	elif enum_value == MSGID_QUEUE_RUN_MESSAGE_RSP:
+		value_str = "'MSGID_QUEUE_RUN_MESSAGE_RSP-48'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:
