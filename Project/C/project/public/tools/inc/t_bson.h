@@ -58,6 +58,7 @@ bool t_bson_array_inq_string(void *pBson, size_t index, char **ppStringValue, si
 bool t_bson_array_cpy_string(void *pBson, size_t index, char *pStringValue, size_t *pStringLen);
 
 void t_bson_array_add_bin(void *pBson, char *value_ptr, size_t value_len);
+void t_bson_array_add_mbuf(void *pBson, MBUF *mbuf_data);
 bool t_bson_array_inq_bin(void *pBson, size_t index, char **ppBinValue, size_t *pBinLen);
 bool t_bson_array_cpy_bin(void *pBson, size_t index, char *pBinValue, size_t *pBinLen);
 

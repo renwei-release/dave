@@ -280,7 +280,9 @@ sync_client_tx_run_thread_msg_req(
 	if(msg_type == BaseMsgType_Unicast_queue)
 	{
 		if(_sync_client_qtx(pServer, route_src, route_dst, src, dst, msg_id, msg_head) == dave_true)
+		{
 			return dave_true;
+		}
 	}
 
 	return _sync_client_tx(pServer, ORDER_CODE_RUN_THREAD_MSG_REQ, msg_head);

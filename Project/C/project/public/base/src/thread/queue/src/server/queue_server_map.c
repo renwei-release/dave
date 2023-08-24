@@ -141,7 +141,7 @@ queue_server_map_add(s8 *thread_name, s8 *gid)
 		_queue_server_map_add(pMap, gid);
 	});
 
-	QUEUELOG("thread:%s gid:%s", thread_name, gid);
+	QUEUETRACE("thread:%s gid:%s", thread_name, gid);
 }
 
 void
@@ -149,7 +149,7 @@ queue_server_map_del(s8 *thread_name, s8 *gid)
 {
 	QueueServerMap *pMap = _queue_server_map_inq(thread_name);
 
-	QUEUELOG("thread:%s gid:%s", thread_name, gid);
+	QUEUETRACE("thread:%s gid:%s", thread_name, gid);
 
 	SAFECODEv1(_map_pv, {
 		_queue_server_map_del(pMap, gid);

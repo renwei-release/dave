@@ -333,6 +333,22 @@ t_bson_array_bin_add(tBsonObject *pBson, char *valur_ptr, size_t value_len)
 }
 
 void
+t_bson_array_mbuf_add(tBsonObject *pBson, MBUF *mbuf_data)
+{
+	tBsonData *pData;
+
+	if(pBson->type != tBsonType_array)
+	{
+		TOOLSABNOR("invalid type:%d", pBson->type);
+		return;
+	}
+
+	pData = t_bson_mbuf_build(NULL, 0, mbuf_data);
+
+	_t_bson_add(pBson, pData);
+}
+
+void
 t_bson_array_object_add(tBsonObject *pBson, tBsonObject *pAddBson)
 {
 	tBsonData *pData;

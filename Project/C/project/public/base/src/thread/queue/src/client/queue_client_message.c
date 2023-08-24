@@ -100,7 +100,7 @@ _queue_client_message_download(QueueClientMap *pMap, s8 *thread_name, s8 *queue_
 		return dave_false;
 	}
 
-	QUEUELOG("%s:%s->%s:%s", pRsp->src_name, pRsp->src_gid, pRsp->dst_name, pRsp->dst_gid);
+	QUEUEDEBUG("%s:%s->%s:%s", pRsp->src_name, pRsp->src_gid, pRsp->dst_name, pRsp->dst_gid);
 
 	_queue_client_message_run_req(pMap, pRsp->src_name, pRsp->dst_name, pRsp->src_gid, pRsp->dst_gid, pRsp->msg);
 
@@ -199,7 +199,7 @@ queue_client_message_update(QueueUpdateStateReq *pReq)
 		return;
 	}
 
-	QUEUELOG("%s:%s->%s:%s %s queue_gid:%s",
+	QUEUEDEBUG("%s:%s->%s:%s %s queue_gid:%s",
 		pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
 		msgstr(pReq->msg_id),
 		pReq->queue_gid);
@@ -228,7 +228,7 @@ queue_client_message_run_rsp(QueueRunMsgRsp *pRsp)
 	pMap->run_rsp_counter ++;
 	t_unlock_spin(&(pMap->pv));
 
-	QUEUELOG("ret:%s name:%s msg_number:%lu thread_number:%lu",
+	QUEUEDEBUG("ret:%s name:%s msg_number:%lu thread_number:%lu",
 		retstr(pRsp->ret), pRsp->name,
 		pRsp->msg_number, pRsp->thread_number);
 

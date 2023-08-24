@@ -238,6 +238,12 @@ t_bson_array_add_bin(void *pBson, char *value_ptr, size_t value_len)
 	t_bson_array_bin_add((tBsonObject *)pBson, value_ptr, value_len);
 }
 
+void
+t_bson_array_add_mbuf(void *pBson, MBUF *mbuf_data)
+{
+	t_bson_array_mbuf_add((tBsonObject *)pBson, mbuf_data);
+}
+
 bool
 t_bson_array_inq_bin(void *pBson, size_t index, char **ppBinValue, size_t *pBinLen)
 {

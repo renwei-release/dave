@@ -24,7 +24,7 @@ _thread_cfg_update_sys_mem_max_use_percentage(void)
 {
 	ub use_percentage = cfg_get_ub(CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE, default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE);
 
-	if((use_percentage >= 100) || (use_percentage <= 10))
+	if((use_percentage >= 4096) || (use_percentage <= 10))
 	{
 		THREADLOG("find invalid %s:%d, reset by default:%d",
 			CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE,

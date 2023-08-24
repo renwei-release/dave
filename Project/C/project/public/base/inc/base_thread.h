@@ -77,6 +77,7 @@ typedef struct {
 	ub msg_build_serial;
 
 	void *user_ptr;
+	void *queue_ptr;
 
 	void *msg_chain;
 	void *msg_router;

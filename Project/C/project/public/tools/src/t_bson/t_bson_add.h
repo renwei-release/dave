@@ -22,6 +22,7 @@ void t_bson_array_int64_add(tBsonObject *pBson, u64 value);
 void t_bson_array_double_add(tBsonObject *pBson, double value);
 void t_bson_array_string_add(tBsonObject *pBson, char *valur_ptr, size_t value_len);
 void t_bson_array_bin_add(tBsonObject *pBson, char *valur_ptr, size_t value_len);
+void t_bson_array_mbuf_add(tBsonObject *pBson, MBUF *mbuf_data);
 void t_bson_array_object_add(tBsonObject *pBson, tBsonObject *pAddBson);
 
 #endif

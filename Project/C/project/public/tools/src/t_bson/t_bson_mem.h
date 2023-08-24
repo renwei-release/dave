@@ -26,6 +26,7 @@ tBsonData * t_bson_int64_build(char *key_ptr, size_t key_len, u64 value);
 tBsonData * t_bson_double_build(char *key_ptr, size_t key_len, double value);
 tBsonData * t_bson_string_build(char *key_ptr, size_t key_len, char *value_ptr, size_t value_len);
 tBsonData * t_bson_bin_build(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
+tBsonData * t_bson_mbuf_build(char *key_ptr, size_t key_len, MBUF *mbuf_data);
 tBsonData * t_bson_object_build(char *key_ptr, size_t key_len, tBsonObject *pBson);
 
 #endif

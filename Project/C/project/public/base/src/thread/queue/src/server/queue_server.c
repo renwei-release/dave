@@ -51,7 +51,7 @@ _queue_server_main(MSGBODY *msg)
 				_queue_server_remote_remove((ThreadRemoteIDRemoveMsg *)(msg->msg_body));
 			break;
 		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
-				queue_server_message_upload(msg->msg_src, (QueueUploadMsgReq *)(msg->msg_body));
+				queue_server_message_upload((QueueUploadMsgReq *)(msg->msg_body));
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				queue_server_message_download(msg->msg_src, (QueueDownloadMsgReq *)(msg->msg_body));

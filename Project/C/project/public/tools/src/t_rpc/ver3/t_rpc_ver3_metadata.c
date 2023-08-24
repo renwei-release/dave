@@ -26,6 +26,16 @@ _t_rpc_ver3_zip_bin(u8 *zip_data, ub zip_len)
 	return pArrayBson;
 }
 
+static inline void *
+_t_rpc_ver3_zip_mbuf(MBUF *mbuf_data)
+{
+	void *pArrayBson = t_bson_malloc_array();
+
+	t_bson_array_add_mbuf(pArrayBson, mbuf_data);
+
+	return pArrayBson;
+}
+
 static inline ub
 _t_rpc_ver3_unzip_bin(u8 *unzip_data, ub unzip_len, void *pArrayBson)
 {
@@ -143,34 +153,24 @@ static inline void *
 __t_rpc_ver3_zip_MBUF_ptr_local__(MBUF *zip_data, s8 *fun, ub line)
 {
 	void *pBson, *pArrayBson;
-	ub array_index, array_len;
-	MBUF *zip_data_loop = zip_data;
 	s8 temp_buffer[128];
 
 	pBson = t_bson_malloc_object();
 
-	array_index = 0;
-
-	while((zip_data_loop != NULL) && (zip_data_loop->len > 0) && (array_index < 10240))
+	if(zip_data != NULL)
 	{
-		pArrayBson = t_rpc_ver3_zip_u8_d((u8 *)(zip_data_loop->payload), zip_data_loop->len);
-		array_len = zip_data_loop->len;
+		pArrayBson = _t_rpc_ver3_zip_mbuf(zip_data);
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", 0);
+		t_bson_add_int(pBson, temp_buffer, zip_data->tot_len);
+		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", 0);
+		t_bson_add_object(pBson, temp_buffer, pArrayBson);
 
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
-		t_bson_add_int(pBson, (char *)temp_buffer, array_len);
-		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
-		t_bson_add_object(pBson, (char *)temp_buffer, pArrayBson);
-
-		array_index ++;
-		zip_data_loop = zip_data_loop->next;
+		t_bson_add_int(pBson, "array_number", 1);
 	}
-
-	if(array_index >= 10240)
+	else
 	{
-		TOOLSABNOR("invalid array_index:%d <%s:%d>", array_index, fun, line);
+		t_bson_add_int(pBson, "array_number", 0);
 	}
-
-	t_bson_add_int(pBson, "array_number", array_index);
 
 	dave_mfree(zip_data);
 
@@ -194,7 +194,7 @@ __t_rpc_ver3_unzip_MBUF_ptr_local__(MBUF **unzip_data, void *pBson, s8 *fun, ub 
 	while(array_index < array_number)
 	{
 		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", array_index);
-		t_bson_inq_int(pBson, (char *)temp_buffer, &array_len);
+		t_bson_inq_int(pBson, temp_buffer, &array_len);
 		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
 		pArrayBson = t_bson_inq_object(pBson, (char *)temp_buffer);
 

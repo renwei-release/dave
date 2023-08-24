@@ -34,7 +34,7 @@ _queue_server_message_key(s8 *key_ptr, ub key_len, s8 *dst_name, s8 *dst_gid)
 	return key_ptr;
 }
 
-static QueueMessage *
+static inline QueueMessage *
 _queue_server_message_malloc(s8 *name, s8 *gid)
 {
 	QueueMessage *pMessage = dave_ralloc(sizeof(QueueMessage));
@@ -50,7 +50,7 @@ _queue_server_message_malloc(s8 *name, s8 *gid)
 	return pMessage;
 }
 
-static void
+static inline void
 _queue_server_message_free(QueueMessage *pMessage)
 {
 	thread_queue_free(pMessage->pQueue, 1);
@@ -60,7 +60,7 @@ _queue_server_message_free(QueueMessage *pMessage)
 	dave_free(pMessage);
 }
 
-static QueueMessage *
+static inline QueueMessage *
 _queue_server_message_inq(s8 *name, s8 *gid)
 {
 	s8 key[256];
@@ -84,21 +84,26 @@ _queue_server_message_inq(s8 *name, s8 *gid)
 	return pMessage;
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _queue_server_message_build_msg(QueueUploadMsgReq *pReq)
 {
 	ThreadMsg *pMsg;
 
 	pMsg = (ThreadMsg *)dave_malloc(sizeof(ThreadMsg));
 
-	dave_strcpy(pMsg->msg_body.src_name, pReq->src_name, sizeof(pMsg->msg_body.src_name));
-	dave_strcpy(pMsg->msg_body.dst_name, pReq->dst_name, sizeof(pMsg->msg_body.dst_name));
+	pMsg->msg_body.msg_id = pReq->msg_id;
+	pMsg->msg_body.msg_len = 0;
+	pMsg->msg_body.msg_body = NULL;
+
+	pMsg->msg_body.user_ptr = NULL;
+	pMsg->msg_body.queue_ptr = pReq->msg;
+
+	pMsg->msg_body.msg_chain = pMsg->msg_body.msg_router = NULL;
+
 	dave_strcpy(pMsg->msg_body.src_gid, pReq->src_gid, sizeof(pMsg->msg_body.src_gid));
 	dave_strcpy(pMsg->msg_body.dst_gid, pReq->dst_gid, sizeof(pMsg->msg_body.dst_gid));
-	pMsg->msg_body.msg_id = pReq->msg_id;
-	pMsg->msg_body.msg_len = pReq->msg->tot_len;
-	pMsg->msg_body.msg_body = pReq->msg;
-	pMsg->msg_body.user_ptr = pReq->ptr;
+	dave_strcpy(pMsg->msg_body.src_name, pReq->src_name, sizeof(pMsg->msg_body.src_name));
+	dave_strcpy(pMsg->msg_body.dst_name, pReq->dst_name, sizeof(pMsg->msg_body.dst_name));
 
 	pMsg->pQueue = NULL;
 	pMsg->next = NULL;
@@ -106,31 +111,31 @@ _queue_server_message_build_msg(QueueUploadMsgReq *pReq)
 	return pMsg;
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _queue_server_message_read_msg(ThreadQueue *pQueue)
 {
 	return thread_queue_read(pQueue);
 }
 
-static void
+static inline void
 _queue_server_message_clean_msg(ThreadMsg *pMsg)
 {
-	if(pMsg->msg_body.msg_body != NULL)
+	if(pMsg->msg_body.queue_ptr != NULL)
 	{
-		dave_mfree(pMsg->msg_body.msg_body);
-		pMsg->msg_body.msg_body = NULL;
+		dave_mfree(pMsg->msg_body.queue_ptr);
+		pMsg->msg_body.queue_ptr = NULL;
 	}
 
 	dave_free(pMsg);
 }
 
-static ub
+static inline ub
 _queue_server_message_number_msg(QueueMessage *pMessage)
 {
 	return pMessage->pQueue->list_number;
 }
 
-static void
+static inline void
 _queue_server_message_update_client_state(s8 *gid, ThreadMsg *pMsg, QueueMessage *pMessage)
 {
 	QueueUpdateStateReq *pReq = thread_msg(pReq);
@@ -147,7 +152,7 @@ _queue_server_message_update_client_state(s8 *gid, ThreadMsg *pMsg, QueueMessage
 	gid_msg(gid, QUEUE_CLIENT_THREAD_NAME, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);	
 }
 
-static void
+static inline void
 _queue_server_message_update_map_state(QueueServerMap *pMap, ThreadMsg *pMsg, QueueMessage *pMessage)
 {
 	ub index;
@@ -161,7 +166,7 @@ _queue_server_message_update_map_state(QueueServerMap *pMap, ThreadMsg *pMsg, Qu
 	}
 }
 
-static void
+static inline void
 _queue_server_message_update_state(QueueMessage *pMessage)
 {
 	ThreadQueue *pQueue = pMessage->pQueue;
@@ -184,7 +189,7 @@ _queue_server_message_update_state(QueueMessage *pMessage)
 	}
 }
 
-static dave_bool
+static inline dave_bool
 _queue_server_message_upload(ThreadMsg *pMsg)
 {
 	QueueMessage *pMessage;
@@ -216,7 +221,7 @@ _queue_server_message_download_(s8 *name, s8 *gid)
 	return _queue_server_message_read_msg(pMessage->pQueue);
 }
 
-static ThreadMsg *
+static inline ThreadMsg *
 _queue_server_message_download(QueueDownloadMsgReq *pReq)
 {
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0' };
@@ -244,7 +249,7 @@ _queue_server_message_download(QueueDownloadMsgReq *pReq)
 	return NULL;
 }
 
-static void
+static inline void
 _queue_server_message_timerout(void *ramkv, s8 *key)
 {
 	QueueMessage *pMessage = kv_inq_key_ptr(_message_kv, key);
@@ -255,7 +260,7 @@ _queue_server_message_timerout(void *ramkv, s8 *key)
 	_queue_server_message_update_state(pMessage);
 }
 
-static RetCode
+static inline RetCode
 _queue_server_message_recycle(void *ramkv, s8 *key)
 {
 	QueueMessage *pMessage = kv_del_key_ptr(_message_kv, key);
@@ -287,11 +292,11 @@ queue_server_message_exit(void)
 }
 
 void
-queue_server_message_upload(ThreadId src, QueueUploadMsgReq *pReq)
+queue_server_message_upload(QueueUploadMsgReq *pReq)
 {
 	ThreadMsg *pMsg = _queue_server_message_build_msg(pReq);
 
-	QUEUELOG("%s:%s->%s:%s msg_id:%s",
+	QUEUEDEBUG("%s:%s->%s:%s msg_id:%s",
 		pReq->src_name, pReq->src_gid,
 		pReq->dst_name, pReq->dst_gid,
 		msgstr(pReq->msg_id));
@@ -330,15 +335,15 @@ queue_server_message_download(ThreadId src, QueueDownloadMsgReq *pReq)
 		dave_strcpy(pRsp->dst_name, pMsg->msg_body.dst_name, sizeof(pRsp->dst_name));
 		dave_strcpy(pRsp->src_gid, pMsg->msg_body.src_gid, sizeof(pRsp->src_gid));
 		dave_strcpy(pRsp->dst_gid, pMsg->msg_body.dst_gid, sizeof(pRsp->dst_gid));
-		pRsp->msg = pMsg->msg_body.msg_body;
+		pRsp->msg = pMsg->msg_body.queue_ptr;
 
-		pMsg->msg_body.msg_body = NULL;
+		pMsg->msg_body.queue_ptr = NULL;
 
 		_queue_server_message_clean_msg(pMsg);
 	}
 	pRsp->ptr = pReq->ptr;
 
-	QUEUELOG("%s:%s->%s:%s ret:%s",
+	QUEUEDEBUG("%s:%s->%s:%s ret:%s",
 		pRsp->src_name, pRsp->src_gid,
 		pRsp->dst_name, pRsp->dst_gid,
 		retstr(pRsp->ret));

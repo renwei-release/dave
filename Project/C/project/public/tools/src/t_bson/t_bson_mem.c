@@ -68,6 +68,40 @@ _t_bson_bin_to_mem(char *bin_ptr, size_t bin_len)
 	return mem_ptr;
 }
 
+static inline char *
+_t_bson_mbuf_to_mem(MBUF *mbuf_data, ub *len_data)
+{
+	char *mem_ptr;
+	ub mem_len, mem_index;
+
+	mem_len = (mbuf_data == NULL ? 0 : mbuf_data->tot_len) + 1;
+	mem_ptr = _t_bson_mem_malloc(mem_len);
+
+	mem_index = 0;
+	while(mbuf_data != NULL)
+	{
+		if((mem_index + mbuf_data->len) > mem_len)
+		{
+			TOOLSLOG("find invalid data:%d/%d/%d", mem_index, mbuf_data->len, mem_len);
+			break;
+		}
+
+		memcpy(&mem_ptr[mem_index], mbuf_data->payload, mbuf_data->len);
+		mem_index += mbuf_data->len;
+
+		mbuf_data = mbuf_data->next;
+	}
+	if(mem_index != (mem_len - 1))
+	{
+		TOOLSLOG("find invalid data:%d/%d", mem_index, mem_len);
+	}
+
+	*len_data = mem_index;
+	mem_ptr[mem_index] = '\0';
+
+	return mem_ptr;
+}
+
 static inline tBsonData *
 _t_bson_data_malloc(char *key_ptr, size_t key_len)
 {
@@ -343,6 +377,23 @@ t_bson_bin_build(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_le
 	pData->type = tBsonType_bin;
 	pData->value_len = value_len;
 	pData->value_ptr.mem_value = _t_bson_bin_to_mem(valur_ptr, pData->value_len);
+
+	pData->serialize_estimated_len += pData->value_len;
+
+	return pData;
+}
+
+tBsonData *
+t_bson_mbuf_build(char *key_ptr, size_t key_len, MBUF *mbuf_data)
+{
+	tBsonData *pData;
+
+	pData = _t_bson_data_malloc(key_ptr, key_len);
+	if(pData == NULL)
+		return NULL;
+
+	pData->type = tBsonType_bin;
+	pData->value_ptr.mem_value = _t_bson_mbuf_to_mem(mbuf_data, &(pData->value_len));
 
 	pData->serialize_estimated_len += pData->value_len;
 
