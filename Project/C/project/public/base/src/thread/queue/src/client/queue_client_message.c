@@ -45,21 +45,34 @@ static inline dave_bool
 _queue_client_message_check_is_ready(QueueUpdateStateReq *pReq)
 {
 	if(queue_client_map_inq(pReq->src_name) == NULL)
+	{
+		QUEUELOG("src_name:%s not ready!", pReq->src_name);
 		return dave_false;
+	}
 
-	if(thread_sync_gid_ready(pReq->src_gid) == dave_false)
+	if(queue_client_gid_map_inq(pReq->src_gid) == NULL)
+	{
+		QUEUELOG("src_gid:%s not ready!", pReq->src_gid);
 		return dave_false;
+	}
 
 	if(thread_id(pReq->dst_name) == INVALID_THREAD_ID)
+	{
+		QUEUELOG("dst_name:%s not ready!", pReq->dst_name);
 		return dave_false;
+	}
 
 	return dave_true;
 }
 
 static void
-_queue_client_message_run_req(s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid, MBUF *msg)
+_queue_client_message_run_req(QueueClientMap *pMap, s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid, MBUF *msg)
 {
 	QueueRunMsgReq *pReq = thread_msg(pReq);
+
+	t_lock_spin(&(pMap->pv));
+	pMap->run_req_counter ++;
+	t_unlock_spin(&(pMap->pv));
 
 	dave_strcpy(pReq->src_name, src_name, sizeof(pReq->src_name));
 	dave_strcpy(pReq->dst_name, dst_name, sizeof(pReq->dst_name));
@@ -72,7 +85,7 @@ _queue_client_message_run_req(s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_g
 }
 
 static dave_bool
-_queue_client_message_download(s8 *thread_name, s8 *queue_gid)
+_queue_client_message_download(QueueClientMap *pMap, s8 *thread_name, s8 *queue_gid)
 {
 	QueueDownloadMsgReq *pReq = thread_msg(pReq);
 	QueueDownloadMsgRsp *pRsp;
@@ -87,7 +100,9 @@ _queue_client_message_download(s8 *thread_name, s8 *queue_gid)
 		return dave_false;
 	}
 
-	_queue_client_message_run_req(pRsp->src_name, pRsp->dst_name, pRsp->src_gid, pRsp->dst_gid, pRsp->msg);
+	QUEUELOG("%s:%s->%s:%s", pRsp->src_name, pRsp->src_gid, pRsp->dst_name, pRsp->dst_gid);
+
+	_queue_client_message_run_req(pMap, pRsp->src_name, pRsp->dst_name, pRsp->src_gid, pRsp->dst_gid, pRsp->msg);
 
 	return dave_true;
 }
@@ -95,17 +110,24 @@ _queue_client_message_download(s8 *thread_name, s8 *queue_gid)
 static void
 _queue_client_message_run_rsp(QueueClientMap *pMap, ub download_number_threshold)
 {
-	ub download_number_index, queue_index;
+	ub queue_number, download_number_index, queue_index;
+
+	queue_number = pMap->queue_number;
+	if(queue_number == 0)
+		return;
 
 	for(download_number_index=0; download_number_index<download_number_threshold; download_number_index++)
 	{
-		queue_index = (pMap->queue_index ++) % pMap->queue_number;
+		queue_index = (pMap->queue_index ++) % queue_number;
 		if(queue_index >= QUEUE_CLIENT_MAP_MAX)
 			queue_index = 0;
 
-		if(_queue_client_message_download(pMap->thread_name, pMap->queue_gid[queue_index]) == dave_false)
+		if(pMap->queue_gid[queue_index][0] != '\0')
 		{
-			queue_client_map_queue_del(pMap, pMap->queue_gid[queue_index]);
+			if(_queue_client_message_download(pMap, pMap->thread_name, pMap->queue_gid[queue_index]) == dave_false)
+			{
+				queue_client_map_queue_del(pMap, pMap->queue_gid[queue_index]);
+			}
 		}
 	}
 }
@@ -177,9 +199,14 @@ queue_client_message_update(QueueUpdateStateReq *pReq)
 		return;
 	}
 
+	QUEUELOG("%s:%s->%s:%s %s queue_gid:%s",
+		pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
+		msgstr(pReq->msg_id),
+		pReq->queue_gid);
+
 	queue_client_map_queue_add(pMap, pReq->queue_gid);
 
-	if(_queue_client_message_download(pReq->dst_name, pReq->queue_gid) == dave_false)
+	if(_queue_client_message_download(pMap, pReq->dst_name, pReq->queue_gid) == dave_false)
 	{
 		queue_client_map_queue_del(pMap, pReq->queue_gid);
 	}
@@ -196,6 +223,14 @@ queue_client_message_run_rsp(QueueRunMsgRsp *pRsp)
 		QUEUELOG("can't find thread:%s", pRsp->name);
 		return;
 	}
+
+	t_lock_spin(&(pMap->pv));
+	pMap->run_rsp_counter ++;
+	t_unlock_spin(&(pMap->pv));
+
+	QUEUELOG("ret:%s name:%s msg_number:%lu thread_number:%lu",
+		retstr(pRsp->ret), pRsp->name,
+		pRsp->msg_number, pRsp->thread_number);
 
 	download_number_threshold = _queue_client_message_download_number_threshold(pRsp->msg_number, pRsp->thread_number);
 

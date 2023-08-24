@@ -11,14 +11,14 @@ import (
 	"dave/public/tools"
 )
 
-var VERSION_PRODUCT = "TEST"
+var VERSION_PRODUCT = "AIB"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "14"
 var VERSION_REV = "3"
-var VERSION_DATE_TIME = "20230820173019"
+var VERSION_DATE_TIME = "20230824150929"
 var VERSION_LEVEL = "Alpha"
-var __BUILD_MAC_ADDRESS__ = "000C2921BC3C"
+var __BUILD_MAC_ADDRESS__ = "000C29960DBF"
 var __BUILD_HOSTNAME__ = "fedora-renwei-fedora-docker"
 var __BUILD_USERNAME__ = "root"
 

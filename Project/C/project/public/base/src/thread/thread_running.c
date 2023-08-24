@@ -22,6 +22,8 @@ static inline void
 _thread_running_queue_end(ThreadStruct *pThread, MSGBODY *msg)
 {
 	if((pThread->thread_flag & THREAD_THREAD_FLAG)
+		&& ((pThread->thread_flag & THREAD_REMOTE_FLAG) == 0x00)
+		&& ((pThread->thread_flag & THREAD_CORE_FLAG) == 0x00)
 		&& (msg->msg_type == BaseMsgType_Unicast_queue))
 	{
 		QueueRunMsgRsp *pRsp = thread_msg(pRsp);

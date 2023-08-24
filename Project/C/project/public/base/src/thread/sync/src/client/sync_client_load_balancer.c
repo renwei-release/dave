@@ -121,6 +121,7 @@ _sync_client_chose_server(MSGBODY *pMsg)
 		pServer = sync_client_data_sync_server();
 	}
 	else if((pMsg->msg_type != BaseMsgType_Unicast)
+		&& (pMsg->msg_type != BaseMsgType_Unicast_queue)
 		&& (pMsg->msg_type != BaseMsgType_Broadcast_thread))
 	{
 		/*

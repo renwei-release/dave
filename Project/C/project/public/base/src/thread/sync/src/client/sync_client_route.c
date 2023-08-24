@@ -197,7 +197,8 @@ _sync_client_message_thread(MSGBODY *pMsg)
 void
 sync_client_message_route(MSGBODY *pMsg)
 {
-	if(pMsg->msg_type == BaseMsgType_Unicast)
+	if((pMsg->msg_type == BaseMsgType_Unicast)
+		|| (pMsg->msg_type == BaseMsgType_Unicast_queue))
 	{
 		_sync_client_message_send(pMsg);
 	}

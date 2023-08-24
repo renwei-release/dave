@@ -7387,6 +7387,7 @@ t_rpc_ver3_zip_ThreadLocalReadyMsg(ThreadLocalReadyMsg *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "ThreadId-local_thread_id", t_rpc_ver3_zip_ThreadId(zip_data->local_thread_id));
 	t_bson_add_object(pStructBson, "s8-local_thread_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->local_thread_name), 1, 128));
+	t_bson_add_object(pStructBson, "ub-thread_flag", t_rpc_ver3_zip_ub(zip_data->thread_flag));
 
 	return pStructBson;
 }
@@ -7411,6 +7412,7 @@ t_rpc_ver3_unzip_ThreadLocalReadyMsg(void **unzip_data, ub *unzip_len, void *pSt
 
 		t_rpc_ver3_unzip_ThreadId(&(pUnzip->local_thread_id), t_bson_inq_object(pStructBson, "ThreadId-local_thread_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->local_thread_name), 1, 128, t_bson_inq_object(pStructBson, "s8-local_thread_name"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->thread_flag), t_bson_inq_object(pStructBson, "ub-thread_flag"));
 	}
 
 	return ret;
@@ -7443,6 +7445,7 @@ t_rpc_ver3_zip_ThreadLocalRemoveMsg(ThreadLocalRemoveMsg *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "ThreadId-local_thread_id", t_rpc_ver3_zip_ThreadId(zip_data->local_thread_id));
 	t_bson_add_object(pStructBson, "s8-local_thread_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->local_thread_name), 1, 128));
+	t_bson_add_object(pStructBson, "ub-thread_flag", t_rpc_ver3_zip_ub(zip_data->thread_flag));
 
 	return pStructBson;
 }
@@ -7467,6 +7470,7 @@ t_rpc_ver3_unzip_ThreadLocalRemoveMsg(void **unzip_data, ub *unzip_len, void *pS
 
 		t_rpc_ver3_unzip_ThreadId(&(pUnzip->local_thread_id), t_bson_inq_object(pStructBson, "ThreadId-local_thread_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->local_thread_name), 1, 128, t_bson_inq_object(pStructBson, "s8-local_thread_name"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->thread_flag), t_bson_inq_object(pStructBson, "ub-thread_flag"));
 	}
 
 	return ret;

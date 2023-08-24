@@ -18,6 +18,9 @@ typedef struct {
 	ub queue_number;
 	s8 queue_gid[QUEUE_CLIENT_MAP_MAX][DAVE_GLOBALLY_IDENTIFIER_LEN];
 
+	ub run_req_counter;
+	ub run_rsp_counter;
+
 	TLock pv;
 } QueueClientMap;
 
@@ -30,6 +33,12 @@ void queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid);
 void queue_client_map_queue_del(QueueClientMap *pMap, s8 *queue_gid);
 void queue_client_map_queue_del_all(s8 *queue_gid);
 QueueClientMap * queue_client_map_inq(s8 *thread_name);
+
+void queue_client_gid_map_add(s8 *thread_name, s8 *gid);
+void queue_client_gid_map_del(s8 *gid);
+QueueClientMap * queue_client_gid_map_inq(s8 *gid);
+
+ub queue_client_map_info(s8 *info_ptr, ub info_len);
 
 #endif
 

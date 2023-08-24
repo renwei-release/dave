@@ -1927,6 +1927,7 @@ base_thread_id_event(
 void *
 base_thread_id_co(
 	ThreadId src_id, ThreadId dst_id,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -1951,6 +1952,7 @@ base_thread_id_co(
 	return thread_co_id(
 		pSrcThread,
 		dst_id,
+		msg_type,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -2001,6 +2003,7 @@ base_thread_name_msg(
 dave_bool
 base_thread_name_event(
 	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
@@ -2028,7 +2031,7 @@ base_thread_name_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_name_msg(src_id, dst_thread, BaseMsgType_Unicast, req_id, req_len, req_body, fun, line);
+		return base_thread_name_msg(src_id, dst_thread, msg_type, req_id, req_len, req_body, fun, line);
 	}
 
 	thread_clean_user_input_data(req_body, req_id);
@@ -2039,6 +2042,7 @@ base_thread_name_event(
 void *
 base_thread_name_co(
 	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -2077,6 +2081,7 @@ base_thread_name_co(
 	return thread_co_name(
 		pSrcThread,
 		dst_thread,
+		msg_type,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -2085,6 +2090,7 @@ base_thread_name_co(
 dave_bool
 base_thread_gid_msg(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
@@ -2114,17 +2120,18 @@ base_thread_gid_msg(
 	{
 		return thread_msg_buffer_gid_push(
 			src_id, gid, dst_thread,
-			BaseMsgType_Unicast,
+			msg_type,
 			msg_id, msg_len, msg_body,
 			fun, line);
 	}
 
-	return base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, msg_id, msg_len, msg_body, 0, fun, line);
+	return base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, msg_type, msg_id, msg_len, msg_body, 0, fun, line);
 }
 
 dave_bool
 base_thread_gid_event(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
@@ -2152,7 +2159,7 @@ base_thread_gid_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_gid_msg(src_id, gid, dst_thread, req_id, req_len, req_body, fun, line);
+		return base_thread_gid_msg(src_id, gid, dst_thread, msg_type, req_id, req_len, req_body, fun, line);
 	}
 
 	thread_clean_user_input_data(req_body, req_id);
@@ -2163,6 +2170,7 @@ base_thread_gid_event(
 void *
 base_thread_gid_co(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -2201,6 +2209,7 @@ base_thread_gid_co(
 	return thread_co_gid(
 		pSrcThread,
 		gid, dst_thread,
+		msg_type,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -2209,6 +2218,7 @@ base_thread_gid_co(
 dave_bool
 base_thread_uid_msg(
 	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
 	ub msg_id, ub msg_len, u8 *msg_body,
 	s8 *fun, ub line)
 {
@@ -2240,7 +2250,7 @@ base_thread_uid_msg(
 	{
 		return thread_msg_buffer_uid_push(
 			src_id, uid,
-			BaseMsgType_Unicast,
+			msg_type,
 			msg_id, msg_len, msg_body,
 			fun, line);		
 	}
@@ -2249,7 +2259,7 @@ base_thread_uid_msg(
 		NULL, pRouter,
 		NULL, NULL,
 		src_id, dst_id,
-		BaseMsgType_Unicast,
+		msg_type,
 		msg_id, msg_len, msg_body,
 		0,
 		fun, line);
@@ -2258,6 +2268,7 @@ base_thread_uid_msg(
 dave_bool
 base_thread_uid_event(
 	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id, base_thread_fun rsp_fun,
 	s8 *fun, ub line)
@@ -2285,7 +2296,7 @@ base_thread_uid_event(
 
 	if(base_thread_msg_register(src_id, rsp_id, rsp_fun, NULL) == RetCode_OK)
 	{
-		return base_thread_uid_msg(src_id, uid, req_id, req_len, req_body, fun, line);
+		return base_thread_uid_msg(src_id, uid, msg_type, req_id, req_len, req_body, fun, line);
 	}
 
 	thread_clean_user_input_data(req_body, req_id);
@@ -2296,6 +2307,7 @@ base_thread_uid_event(
 void *
 base_thread_uid_co(
 	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -2335,6 +2347,7 @@ base_thread_uid_co(
 	return thread_co_uid(
 		pSrcThread,
 		uid,
+		msg_type,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);

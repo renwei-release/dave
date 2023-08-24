@@ -13,6 +13,8 @@
 #include "dave_os.h"
 #include "queue_client_map.h"
 #include "queue_client_message.h"
+#include "queue_client_debug.h"
+#include "queue_log.h"
 
 static ThreadId _queue_client_thread;
 
@@ -32,6 +34,8 @@ static void
 _queue_client_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	queue_client_map_add(pReady->remote_thread_name);
+
+	queue_client_gid_map_add(pReady->remote_thread_name, pReady->globally_identifier);
 }
 
 static void
@@ -41,12 +45,17 @@ _queue_client_remote_id_remove(ThreadRemoteIDRemoveMsg *pRemove)
 	{
 		queue_client_map_queue_del_all(pRemove->globally_identifier);
 	}
+
+	queue_client_gid_map_del(pRemove->remote_thread_name);
 }
 
 static void
 _queue_client_local_ready(ThreadLocalReadyMsg *pReady)
 {
-	queue_client_map_add(pReady->local_thread_name);
+	if((pReady->thread_flag & THREAD_PRIVATE_FLAG) == 0x00)
+	{
+		queue_client_map_add(pReady->local_thread_name);
+	}
 }
 
 static void
@@ -67,6 +76,9 @@ _queue_client_main(MSGBODY *msg)
 {
 	switch((ub)(msg->msg_id))
 	{
+		case MSGID_DEBUG_REQ:
+				queue_client_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
 		case MSGID_REMOTE_THREAD_READY:
 				_queue_client_remote_ready((ThreadRemoteReadyMsg *)(msg->msg_body));
 			break;

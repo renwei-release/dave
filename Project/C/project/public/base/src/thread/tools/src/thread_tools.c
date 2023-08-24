@@ -614,6 +614,7 @@ thread_local_ready_notify(s8 *thread_name)
 	pReady = thread_msg(pReady);
 	pReady->local_thread_id = pMyThread->thread_id;
 	dave_strcpy(pReady->local_thread_name, thread_name, sizeof(pReady->local_thread_name));
+	pReady->thread_flag = pMyThread->thread_flag;
 	broadcast_local_no_me(MSGID_LOCAL_THREAD_READY, pReady);
 
 	// other to me.
@@ -629,6 +630,7 @@ thread_local_ready_notify(s8 *thread_name)
 				pReady = thread_msg(pReady);
 				pReady->local_thread_id = pOtherThread->thread_id;
 				dave_strcpy(pReady->local_thread_name, pOtherThread->thread_name, sizeof(pReady->local_thread_name));
+				pReady->thread_flag = pOtherThread->thread_flag;
 				name_msg(pMyThread->thread_name, MSGID_LOCAL_THREAD_READY, pReady);	
 			}
 		}
@@ -659,6 +661,7 @@ thread_local_remove_notify(s8 *thread_name)
 	
 			pRemove->local_thread_id = pThread->thread_id;
 			dave_strcpy(pRemove->local_thread_name, pThread->thread_name, sizeof(pRemove->local_thread_name));
+			pRemove->thread_flag = pThread->thread_flag;
 	
 			broadcast_local_no_me(MSGID_LOCAL_THREAD_REMOVE, pRemove);
 		}

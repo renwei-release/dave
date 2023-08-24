@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "TEST"
+#define VERSION_PRODUCT "AIB"
 
 #ifdef __x86_64__
  #define VERSION_ARCH "-x86-64"
@@ -40,7 +40,7 @@
 #endif
 #define VERSION_REV "3"
 
-#define VERSION_DATE_TIME "20230820173019"
+#define VERSION_DATE_TIME "20230824150929"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -48,7 +48,7 @@
  #define VERSION_LEVEL "Beta"
 #endif
 
-#define __BUILD_MAC_ADDRESS__ "000C2921BC3C"
+#define __BUILD_MAC_ADDRESS__ "000C29960DBF"
 #define __BUILD_HOSTNAME__ "fedora-renwei-fedora-docker"
 #define __BUILD_USERNAME__ "root"
 

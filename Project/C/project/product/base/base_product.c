@@ -157,8 +157,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		rcfg_set("base_product_ttl_debug", "debug", 60);
 	}
 
-	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
-		|| (dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true))
+	if(dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
 	{
 		_base_thread_rpc_debug_req_use_go(pReady);
 	}
@@ -268,7 +267,7 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 
 	debug_thread = "main_aib";
 	BASELOG("RPC_DEBUG %s", debug_thread);
-	pRsp = name_co(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
+	pRsp = name_qco(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
 		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", debug_thread, &req, pRsp->ptr);
@@ -284,9 +283,9 @@ _base_thread_init(MSGBODY *msg)
 {
 	BDATALOG("INIT", "%s booting!", dave_verno());
 
-	base_timer_creat("basetimer", _base_timer_out, 185 * 1000);
+	base_timer_creat("basetimer", _base_timer_out, 360 * 1000);
 
-	base_timer_creat("basetimer3", _base_timer_out_3, 3 * 1000);
+	base_timer_creat("basetimer3", _base_timer_out_3, 30 * 1000);
 }
 
 static void

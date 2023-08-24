@@ -169,12 +169,14 @@ typedef struct {
 typedef struct {
 	ThreadId local_thread_id;
 	s8 local_thread_name[128];
+	ub thread_flag;
 } ThreadLocalReadyMsg;
 
 /* for MSGID_LOCAL_THREAD_REMOVE message */
 typedef struct {
 	ThreadId local_thread_id;
 	s8 local_thread_name[128];
+	ub thread_flag;
 } ThreadLocalRemoveMsg;
 
 /* for MSGID_INNER_LOOP message */

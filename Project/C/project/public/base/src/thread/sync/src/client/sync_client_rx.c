@@ -94,18 +94,18 @@ _sync_client_rx_disconnect(s32 socket)
 }
 
 static inline void
-_sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	s8 verno[DAVE_VERNO_STR_LEN];
 	ub frame_index = 0;
 	u8 detect_my_ip[16];
 
-	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, verno, sizeof(verno));
-	frame_index += sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->globally_identifier, sizeof(pServer->globally_identifier));
-	frame_index += sync_ip_unpacket(&frame[frame_index], frame_len-frame_index, detect_my_ip);
+	frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, verno, sizeof(verno));
+	frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pServer->globally_identifier, sizeof(pServer->globally_identifier));
+	frame_index += sync_ip_unpacket(&frame_ptr[frame_index], frame_len-frame_index, detect_my_ip);
 	if(frame_index < frame_len)
 	{
-		sync_str_unpacket(&frame[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
+		sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
 	}
 
 	if(pServer->work_start_second == 0)
@@ -125,11 +125,11 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame)
 }
 
 static inline void
-_sync_client_rx_heartbeat_req(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_heartbeat_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	ub recv_data_counter, send_data_counter;
 
-	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, NULL);
+	sync_heartbeat_unpacket(frame_ptr, frame_len, &recv_data_counter, &send_data_counter, NULL);
 
 	SYNCDEBUG("%d/%s", pServer->server_socket, pServer->verno);
 
@@ -137,23 +137,23 @@ _sync_client_rx_heartbeat_req(SyncServer *pServer, ub frame_len, u8 *frame)
 }
 
 static inline void
-_sync_client_rx_heartbeat_rsp(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_heartbeat_rsp(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	ub recv_data_counter, send_data_counter;
 	DateStruct date = t_time_get_date(NULL);
 
-	sync_heartbeat_unpacket(frame, frame_len, &recv_data_counter, &send_data_counter, &date);
+	sync_heartbeat_unpacket(frame_ptr, frame_len, &recv_data_counter, &send_data_counter, &date);
 
 	sync_client_ntp(pServer, date);
 }
 
 static inline void
-_sync_client_rx_sync_thread_name_req(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_sync_thread_name_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	s8 thread_name[SYNC_THREAD_NAME_LEN];
 	sb thread_index;
 
-	sync_thread_name_unpacket(frame, frame_len, pServer->verno, pServer->globally_identifier, thread_name, &thread_index);
+	sync_thread_name_unpacket(frame_ptr, frame_len, pServer->verno, pServer->globally_identifier, thread_name, &thread_index);
 
 	if(thread_name[0] != '\0')
 	{
@@ -185,14 +185,14 @@ _sync_client_rx_sync_thread_name_req(SyncServer *pServer, ub frame_len, u8 *fram
 }
 
 static inline void
-_sync_client_rx_sync_thread_name_rsp(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_sync_thread_name_rsp(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	s8 verno[DAVE_VERNO_STR_LEN];
 	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 thread_name[SYNC_THREAD_NAME_LEN];
 	sb thread_index;
 
-	sync_thread_name_unpacket(frame, frame_len, verno, globally_identifier, thread_name, &thread_index);
+	sync_thread_name_unpacket(frame_ptr, frame_len, verno, globally_identifier, thread_name, &thread_index);
 	if(thread_index >= 0)
 	{
 		pServer->sync_thread_name_index = thread_index;
@@ -245,7 +245,7 @@ _sync_client_rx_sync_thread_name_rsp(SyncServer *pServer, ub frame_len, u8 *fram
 }
 
 static inline void
-_sync_client_rx_run_thread_msg_rsp(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_run_thread_msg_rsp(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	/*
 	 * No need to process this message.
@@ -253,13 +253,13 @@ _sync_client_rx_run_thread_msg_rsp(SyncServer *pServer, ub frame_len, u8 *frame)
 }
 
 static inline void
-_sync_client_rx_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
-	sync_client_run_thread(pServer, frame_len, frame);
+	sync_client_run_thread(pServer, frame_len, frame_ptr);
 }
 
 static inline void
-_sync_client_rx_test_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_test_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	s8 my_name[SYNC_THREAD_NAME_LEN];
 	s8 other_name[SYNC_THREAD_NAME_LEN];
@@ -269,7 +269,7 @@ _sync_client_rx_test_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *f
 	dave_bool match;
 
 	sync_msg_unpacket(
-		frame, frame_len,
+		frame_ptr, frame_len,
 		NULL, NULL, other_name, my_name, &msg_id,
 		NULL, NULL, NULL,
 		&msg_len, &msg_body);
@@ -309,7 +309,7 @@ _sync_client_rx_test_run_thread_msg_req(SyncServer *pServer, ub frame_len, u8 *f
 }
 
 static inline void
-_sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *frame)
+_sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 {
 	ThreadId route_src, route_dst;
 	s8 src[SYNC_THREAD_NAME_LEN];
@@ -323,7 +323,7 @@ _sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *fram
 	ub msg_len = 0;
 
 	sync_msg_unpacket(
-		frame, frame_len,
+		frame_ptr, frame_len,
 		&route_src, &route_dst, src, dst, &msg_id,
 		&msg_type, &src_attrib, &dst_attrib,
 		&packet_len, &packet_ptr);

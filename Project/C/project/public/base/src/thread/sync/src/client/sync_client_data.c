@@ -646,18 +646,24 @@ _sync_client_data_gid_kv_add(s8 *gid, SyncServer *pServer)
 	 * Each GID will have two service links, 
 	 * only one of which will be considered for now.
 	 */
+	SYNCDEBUG("gid:%s verno:%s", gid, pServer->verno);
+
 	kv_add_key_ptr(_gid_to_server_kv, gid, pServer);
 }
 
 static inline void
 _sync_client_data_gid_kv_del(s8 *gid)
 {
+	SYNCDEBUG("gid:%s", gid);
+
 	kv_del_key_ptr(_gid_to_server_kv, gid);
 }
 
 static inline SyncServer *
 _sync_client_data_gid_kv_inq(s8 *gid)
 {
+	SYNCDEBUG("gid:%s", gid);
+
 	return kv_inq_key_ptr(_gid_to_server_kv, gid);
 }
 

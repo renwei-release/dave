@@ -17,7 +17,6 @@
 extern void sync_client_init(s8 *sync_domain);
 extern void sync_client_exit(void);
 extern ThreadId sync_client_thread_id(ThreadId thread_id);
-extern dave_bool sync_client_gid_ready(s8 *gid);
 #endif
 #ifdef SYNC_STACK_SERVER
 extern void sync_server_init(void);
@@ -75,16 +74,6 @@ thread_sync_thread_id(ThreadId thread_id)
 	return sync_client_thread_id(thread_id);
 #else
 	return thread_id;
-#endif
-}
-
-dave_bool
-thread_sync_gid_ready(s8 *gid)
-{
-#ifdef SYNC_STACK_CLIENT
-	return sync_client_gid_ready(gid);
-#else
-	return dave_false;
 #endif
 }
 

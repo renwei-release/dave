@@ -855,14 +855,5 @@ sync_client_thread_id(ThreadId thread_id)
 		return new_id;
 }
 
-dave_bool
-sync_client_gid_ready(s8 *gid)
-{
-	if(sync_client_gid_to_server(gid) == NULL)
-		return dave_false;
-	else
-		return dave_true;
-}
-
 #endif
 

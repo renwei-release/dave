@@ -25,7 +25,7 @@
 
 #define QUEUEABNOR(a, ...) { DAVEABNORMAL("[QUEUE Abnormal]<%s:%d>", __func__, __LINE__); DAVEABNORMAL((const char*)a, ##__VA_ARGS__); DAVEABNORMAL("\n"); }
 
-#define QUEUELOG(a, ...) { DAVELOG("[SYNC]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
+#define QUEUELOG(a, ...) { DAVELOG("[QUEUE]<%s:%d>", __func__, __LINE__); DAVELOG((const char*)a, ##__VA_ARGS__); DAVELOG("\n"); }
 
 #endif
 

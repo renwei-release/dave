@@ -966,12 +966,14 @@ type ThreadIdle struct {
 type ThreadLocalReadyMsg struct {
 	Local_thread_id uint64
 	Local_thread_name [128] byte
+	Thread_flag uint64
 }
 
 /* for MSGID_LOCAL_THREAD_REMOVE message */
 type ThreadLocalRemoveMsg struct {
 	Local_thread_id uint64
 	Local_thread_name [128] byte
+	Thread_flag uint64
 }
 
 /* for MSGID_REMOTE_THREAD_ID_READY message */

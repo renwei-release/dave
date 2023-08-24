@@ -291,6 +291,11 @@ queue_server_message_upload(ThreadId src, QueueUploadMsgReq *pReq)
 {
 	ThreadMsg *pMsg = _queue_server_message_build_msg(pReq);
 
+	QUEUELOG("%s:%s->%s:%s msg_id:%s",
+		pReq->src_name, pReq->src_gid,
+		pReq->dst_name, pReq->dst_gid,
+		msgstr(pReq->msg_id));
+
 	if(_queue_server_message_upload(pMsg) == dave_false)
 	{
 		QUEUEABNOR("can't add %s:%s->%s:%s %s",
@@ -332,6 +337,11 @@ queue_server_message_download(ThreadId src, QueueDownloadMsgReq *pReq)
 		_queue_server_message_clean_msg(pMsg);
 	}
 	pRsp->ptr = pReq->ptr;
+
+	QUEUELOG("%s:%s->%s:%s ret:%s",
+		pRsp->src_name, pRsp->src_gid,
+		pRsp->dst_name, pRsp->dst_gid,
+		retstr(pRsp->ret));
 
 	id_msg(src, MSGID_QUEUE_DOWNLOAD_MESSAGE_RSP, pRsp);
 }

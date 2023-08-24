@@ -1088,6 +1088,7 @@ class ThreadLocalReadyMsg (Structure):
 	_fields_ = [
 		("local_thread_id", c_ulonglong),
 		("local_thread_name", c_char * 128),
+		("thread_flag", c_ulonglong),
 ]
 
 #* for MSGID_LOCAL_THREAD_REMOVE message *#
@@ -1095,6 +1096,7 @@ class ThreadLocalRemoveMsg (Structure):
 	_fields_ = [
 		("local_thread_id", c_ulonglong),
 		("local_thread_name", c_char * 128),
+		("thread_flag", c_ulonglong),
 ]
 
 #* for MSGID_REMOTE_THREAD_ID_READY message *#

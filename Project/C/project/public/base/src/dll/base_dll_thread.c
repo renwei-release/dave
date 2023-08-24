@@ -108,6 +108,7 @@ dave_dll_thread_id_co(unsigned long long dst_id, int req_id, int req_len, void *
 
 	return base_thread_id_co(
 		src_id, (ThreadId)dst_id,
+		BaseMsgType_Unicast,
 		req_id, req_len, req_body,
 		rsp_id,
 		(s8 *)fun, (ub)line);
@@ -157,6 +158,7 @@ dave_dll_thread_name_co(char *dst_thread, int req_id, int req_len, void *req_bod
 
 	return base_thread_name_co(
 		src_id, (s8 *)dst_thread,
+		BaseMsgType_Unicast,
 		req_id, req_len, req_body,
 		rsp_id,
 		(s8 *)fun, (ub)line);
@@ -178,6 +180,7 @@ dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, vo
 
 	if(base_thread_gid_msg(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
+		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{
@@ -205,6 +208,7 @@ dave_dll_thread_gid_co(char *gid, char *dst_thread, int req_id, int req_len, voi
 
 	return base_thread_gid_co(
 		src_id, (s8 *)gid, (s8 *)dst_thread,
+		BaseMsgType_Unicast,
 		req_id, req_len, req_body,
 		rsp_id,
 		(s8 *)fun, (ub)line);
@@ -226,6 +230,7 @@ dave_dll_thread_uid_msg(char *uid, int msg_id, int msg_len, void *msg_body, char
 
 	if(base_thread_uid_msg(
 		src_id, (s8 *)uid,
+		BaseMsgType_Unicast,
 		(ub)msg_id, (ub)msg_len, (u8 *)msg_body,
 		(s8 *)fun, (ub)line) == dave_true)
 	{
@@ -253,6 +258,7 @@ dave_dll_thread_uid_co(char *uid, int req_id, int req_len, void *req_body, int r
 
 	return base_thread_uid_co(
 		src_id, (s8 *)uid,
+		BaseMsgType_Unicast,
 		req_id, req_len, req_body,
 		rsp_id,
 		(s8 *)fun, (ub)line);

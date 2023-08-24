@@ -15,7 +15,11 @@
 #endif
 
 #ifdef EXTER_ENABLE_BLOCK
-#define EXTER_MEM_MAX 8
+ #ifdef __DAVE_PRODUCT_QUEUE__
+  #define EXTER_MEM_MAX 64
+ #else
+  #define EXTER_MEM_MAX 8
+ #endif
 #define EXTER_MEM_NAME "EXTER"
 
 static BlockMem _exter_mem[EXTER_MEM_MAX];

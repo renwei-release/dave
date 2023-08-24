@@ -42,9 +42,9 @@ sync_client_queue_upload(
 
 	dave_strcpy(pReq->src_name, src, sizeof(pReq->src_name));
 	dave_strcpy(pReq->dst_name, dst, sizeof(pReq->dst_name));
-	dave_strcpy(pReq->src_gid, globally_identifier(), sizeof(pReq->src_name));
-	if(thread_get_net(route_dst) == SYNC_NET_INDEX_MAX)
-		dave_strcpy(pReq->dst_gid, pServer->globally_identifier, sizeof(pReq->src_name));
+	dave_strcpy(pReq->src_gid, globally_identifier(), sizeof(pReq->src_gid));
+	if(thread_get_net(route_dst) != SYNC_NET_INDEX_MAX)
+		dave_strcpy(pReq->dst_gid, pServer->globally_identifier, sizeof(pReq->dst_gid));
 	else
 		pReq->dst_gid[0] = '\0';
 	pReq->msg_id = msg_id;

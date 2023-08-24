@@ -35,6 +35,7 @@ _thread_ready_co_msg(
 	void *msg_router,
 	ThreadStruct *pSrcThread,
 	ThreadId dst_id,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -53,7 +54,7 @@ _thread_ready_co_msg(
 		NULL, msg_router,
 		NULL, NULL,
 		src_id, dst_id,
-		BaseMsgType_Unicast,
+		msg_type,
 		req_id, req_len, req_body,
 		0,
 		fun, line) == dave_true)
@@ -75,6 +76,7 @@ static inline void *
 _thread_no_ready_co_msg(
 	ThreadStruct *pSrcThread,
 	s8 *gid, s8 *dst_thread, s8 *uid,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -93,7 +95,7 @@ _thread_no_ready_co_msg(
 	{
 		if(thread_msg_buffer_gid_push(
 			src_id, gid, dst_thread,
-			BaseMsgType_Unicast,
+			msg_type,
 			req_id, req_len, req_body,
 			fun, line) == dave_true)
 		{
@@ -153,6 +155,7 @@ void *
 thread_co_id(
 	ThreadStruct *pSrcThread,
 	ThreadId dst_id,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -193,6 +196,7 @@ thread_co_id(
 		NULL,
 		pSrcThread,
 		dst_id,
+		msg_type,
 		req_id, req_len, req_body,
 		rsp_id,
 		fun, line);
@@ -202,6 +206,7 @@ void *
 thread_co_name(
 	ThreadStruct *pSrcThread,
 	s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -239,6 +244,7 @@ thread_co_name(
 			NULL,
 			pSrcThread,
 			dst_id,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
@@ -248,6 +254,7 @@ thread_co_name(
 		return _thread_no_ready_co_msg(
 			pSrcThread,
 			NULL, dst_thread, NULL,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
@@ -258,6 +265,7 @@ void *
 thread_co_gid(
 	ThreadStruct *pSrcThread,
 	s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -295,6 +303,7 @@ thread_co_gid(
 			NULL,
 			pSrcThread,
 			dst_id,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
@@ -304,6 +313,7 @@ thread_co_gid(
 		return _thread_no_ready_co_msg(
 			pSrcThread,
 			gid, dst_thread, NULL,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
@@ -314,6 +324,7 @@ void *
 thread_co_uid(
 	ThreadStruct *pSrcThread,
 	s8 *uid,
+	BaseMsgType msg_type,
 	ub req_id, ub req_len, u8 *req_body,
 	ub rsp_id,
 	s8 *fun, ub line)
@@ -353,6 +364,7 @@ thread_co_uid(
 			pRouter,
 			pSrcThread,
 			dst_id,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
@@ -362,65 +374,11 @@ thread_co_uid(
 		return _thread_no_ready_co_msg(
 			pSrcThread,
 			NULL, NULL, uid,
+			msg_type,
 			req_id, req_len, req_body,
 			rsp_id,
 			fun, line);
 	}
-}
-
-#else
-
-#include "dave_base.h"
-#include "thread_parameter.h"
-#include "thread_struct.h"
-#include "thread_log.h"
-
-void *
-thread_co_id(
-	ThreadStruct *pSrcThread,
-	ThreadId dst_id,
-	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id,
-	s8 *fun, ub line)
-{
-	THREADLOG("unsupport <%s:%d>", fun, line);
-	return NULL;
-}
-
-void *
-thread_co_name(
-	ThreadStruct *pSrcThread,
-	s8 *dst_thread,
-	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id,
-	s8 *fun, ub line)
-{
-	THREADLOG("unsupport <%s:%d>", fun, line);
-	return NULL;
-}
-
-void *
-thread_co_gid(
-	ThreadStruct *pSrcThread,
-	s8 *gid, s8 *dst_thread,
-	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id,
-	s8 *fun, ub line)
-{
-	THREADLOG("unsupport <%s:%d>", fun, line);
-	return NULL;
-}
-
-void *
-thread_co_uid(
-	ThreadStruct *pSrcThread,
-	s8 *uid,
-	ub req_id, ub req_len, u8 *req_body,
-	ub rsp_id,
-	s8 *fun, ub line)
-{
-	THREADLOG("unsupport <%s:%d>", fun, line);
-	return NULL;
 }
 
 #endif
