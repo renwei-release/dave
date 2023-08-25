@@ -810,8 +810,8 @@ class QueueUpdateStateReq (Structure):
 		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
 		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
-		("msg_id", c_ulonglong),
-		("queue_number", c_ulonglong),
+		("msg_number", c_ulonglong),
+		("msg", POINTER(MBUF)),
 		("queue_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 		("ptr", POINTER(c_char)),
 ]
@@ -820,6 +820,11 @@ class QueueUpdateStateReq (Structure):
 class QueueUpdateStateRsp (Structure):
 	_fields_ = [
 		("ret", c_longlong),
+		("src_name", c_char * DAVE_THREAD_NAME_LEN),
+		("dst_name", c_char * DAVE_THREAD_NAME_LEN),
+		("src_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("dst_gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("msg", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
 

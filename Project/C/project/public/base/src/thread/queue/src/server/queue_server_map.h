@@ -14,6 +14,9 @@
 
 typedef struct {
 	s8 thread_name[DAVE_THREAD_NAME_LEN];
+
+	ub client_index;
+	ub client_number;
 	s8 client_gid[QUEUE_SERVER_MAP_MAX][DAVE_GLOBALLY_IDENTIFIER_LEN];
 } QueueServerMap;
 

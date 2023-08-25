@@ -56,6 +56,9 @@ _queue_server_main(MSGBODY *msg)
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				queue_server_message_download(msg->msg_src, (QueueDownloadMsgReq *)(msg->msg_body));
 			break;
+		case MSGID_QUEUE_UPDATE_STATE_RSP:
+				
+			break;
 		default:
 			break;
 	}

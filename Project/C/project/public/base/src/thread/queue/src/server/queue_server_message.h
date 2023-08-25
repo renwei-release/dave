@@ -14,6 +14,7 @@ void queue_server_message_exit(void);
 
 void queue_server_message_upload(QueueUploadMsgReq *pReq);
 void queue_server_message_download(ThreadId src, QueueDownloadMsgReq *pReq);
+void queue_server_message_update_state_rsp(QueueUpdateStateRsp *pRsp);
 
 ub queue_server_message_info(s8 *info_ptr, ub info_len);
 

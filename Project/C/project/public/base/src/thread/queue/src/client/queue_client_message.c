@@ -162,6 +162,48 @@ _queue_client_message_download_number_threshold(ub msg_number, ub thread_number)
 	return download_number_threshold;
 }
 
+static dave_bool
+_queue_client_message_update(QueueUpdateStateReq *pReq)
+{
+	QueueClientMap *pMap = _queue_client_message_check_is_my(pReq->dst_name, pReq->dst_gid);
+
+	if(pMap == NULL)
+	{
+		QUEUELOG("%s:%s->%s:%s queue_gid:%s, it's not my message!",
+			pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
+			pReq->queue_gid);
+		return dave_false;
+	}
+
+	if(_queue_client_message_check_is_ready(pReq) == dave_false)
+	{
+		QUEUELOG("%s:%s->%s:%s queue_gid:%s, local not ready!",
+			pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
+			pReq->queue_gid);
+		return dave_false;
+	}
+
+	QUEUEDEBUG("%s:%s->%s:%s queue_gid:%s",
+		pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
+		pReq->queue_gid);
+
+	queue_client_map_queue_add(pMap, pReq->queue_gid);
+
+	if(pReq->msg == NULL)
+	{
+		if(_queue_client_message_download(pMap, pReq->dst_name, pReq->queue_gid) == dave_false)
+		{
+			queue_client_map_queue_del(pMap, pReq->queue_gid);
+		}
+	}
+	else
+	{
+		_queue_client_message_run_req(pMap, pReq->src_name, pReq->dst_name, pReq->src_gid, pReq->dst_gid, pReq->msg);
+	}
+
+	return dave_true;
+}
+
 // =====================================================================
 
 void
@@ -177,38 +219,21 @@ queue_client_message_exit(void)
 }
 
 void
-queue_client_message_update(QueueUpdateStateReq *pReq)
+queue_client_message_update(ThreadId src, QueueUpdateStateReq *pReq)
 {
-	QueueClientMap *pMap = _queue_client_message_check_is_my(pReq->dst_name, pReq->dst_gid);
-
-	if(pMap == NULL)
+	if(_queue_client_message_update(pReq) == dave_false)
 	{
-		QUEUELOG("%s:%s->%s:%s %s queue_gid:%s, it's not my message!",
-			pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
-			msgstr(pReq->msg_id),
-			pReq->queue_gid);
-		return;
-	}
+		QueueUpdateStateRsp *pRsp = thread_msg(pRsp);
 
-	if(_queue_client_message_check_is_ready(pReq) == dave_false)
-	{
-		QUEUELOG("%s:%s->%s:%s %s queue_gid:%s, local not ready!",
-			pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
-			msgstr(pReq->msg_id),
-			pReq->queue_gid);
-		return;
-	}
+		pRsp->ret = RetCode_not_ready;
+		dave_strcpy(pRsp->src_name, pReq->src_name, sizeof(pRsp->src_name));
+		dave_strcpy(pRsp->dst_name, pReq->dst_name, sizeof(pRsp->dst_name));
+		dave_strcpy(pRsp->src_gid, pReq->src_gid, sizeof(pRsp->src_gid));
+		dave_strcpy(pRsp->dst_gid, pReq->dst_gid, sizeof(pRsp->dst_gid));
+		pRsp->msg = pReq->msg;
+		pRsp->ptr = pReq->ptr;
 
-	QUEUEDEBUG("%s:%s->%s:%s %s queue_gid:%s",
-		pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
-		msgstr(pReq->msg_id),
-		pReq->queue_gid);
-
-	queue_client_map_queue_add(pMap, pReq->queue_gid);
-
-	if(_queue_client_message_download(pMap, pReq->dst_name, pReq->queue_gid) == dave_false)
-	{
-		queue_client_map_queue_del(pMap, pReq->queue_gid);
+		id_msg(src, MSGID_QUEUE_UPDATE_STATE_RSP, pRsp);
 	}
 }
 

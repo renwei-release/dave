@@ -718,8 +718,8 @@ type QueueUpdateStateReq struct {
 	Dst_name [DAVE_THREAD_NAME_LEN] byte
 	Src_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 	Dst_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
-	Msg_id uint64
-	Queue_number uint64
+	Msg_number uint64
+	Msg *MBUF
 	Queue_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 	Ptr uint64
 }
@@ -727,6 +727,11 @@ type QueueUpdateStateReq struct {
 /* for MSGID_QUEUE_UPDATE_STATE_RSP message */
 type QueueUpdateStateRsp struct {
 	Ret int64
+	Src_name [DAVE_THREAD_NAME_LEN] byte
+	Dst_name [DAVE_THREAD_NAME_LEN] byte
+	Src_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Dst_gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Msg *MBUF
 	Ptr uint64
 }
 

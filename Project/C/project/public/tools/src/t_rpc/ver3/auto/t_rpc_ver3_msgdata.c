@@ -5512,8 +5512,8 @@ t_rpc_ver3_zip_QueueUpdateStateReq(QueueUpdateStateReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-dst_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_name), 1, DAVE_THREAD_NAME_LEN));
 	t_bson_add_object(pStructBson, "s8-src_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 	t_bson_add_object(pStructBson, "s8-dst_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
-	t_bson_add_object(pStructBson, "ub-msg_id", t_rpc_ver3_zip_ub(zip_data->msg_id));
-	t_bson_add_object(pStructBson, "ub-queue_number", t_rpc_ver3_zip_ub(zip_data->queue_number));
+	t_bson_add_object(pStructBson, "ub-msg_number", t_rpc_ver3_zip_ub(zip_data->msg_number));
+	t_bson_add_object(pStructBson, "MBUF-msg", t_rpc_ver3_zip_MBUF_ptr(zip_data->msg));
 	t_bson_add_object(pStructBson, "s8-queue_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->queue_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
@@ -5542,8 +5542,8 @@ t_rpc_ver3_unzip_QueueUpdateStateReq(void **unzip_data, ub *unzip_len, void *pSt
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-dst_name"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-src_gid"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-dst_gid"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->msg_id), t_bson_inq_object(pStructBson, "ub-msg_id"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->queue_number), t_bson_inq_object(pStructBson, "ub-queue_number"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->msg_number), t_bson_inq_object(pStructBson, "ub-msg_number"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->msg), t_bson_inq_object(pStructBson, "MBUF-msg"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->queue_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-queue_gid"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
@@ -5580,6 +5580,11 @@ t_rpc_ver3_zip_QueueUpdateStateRsp(QueueUpdateStateRsp *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-src_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_name), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-dst_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_name), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-src_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-dst_gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "MBUF-msg", t_rpc_ver3_zip_MBUF_ptr(zip_data->msg));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -5604,6 +5609,11 @@ t_rpc_ver3_unzip_QueueUpdateStateRsp(void **unzip_data, ub *unzip_len, void *pSt
 		*unzip_len = sizeof(QueueUpdateStateRsp);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-src_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-dst_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-src_gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst_gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-dst_gid"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->msg), t_bson_inq_object(pStructBson, "MBUF-msg"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

@@ -45,6 +45,12 @@ thread_gid_table_add(s8 *gid, s8 *thread_name, ThreadId remote_id)
 {
 	s8 key[1024];
 
+	if((gid[0] == '\0') || (thread_name[0] == '\0'))
+	{
+		THREADLOG("empty gid:%s or thread_name:%s", gid, thread_name);
+		return;
+	}
+
 	kv_add_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name), (void *)remote_id);
 
 	thread_msg_buffer_gid_pop(gid, thread_name);
@@ -63,6 +69,12 @@ thread_gid_table_inq(s8 *gid, s8 *thread_name)
 {
 	s8 key[1024];
 	void *ptr;
+
+	if((gid[0] == '\0') || (thread_name[0] == '\0'))
+	{
+		THREADLOG("empty gid:%s or thread_name:%s", gid, thread_name);
+		return INVALID_THREAD_ID;
+	}
 
 	ptr = kv_inq_key_ptr(_pKV, _thread_gid_key(key, sizeof(key), gid, thread_name));
 	if(ptr == NULL)

@@ -24,6 +24,8 @@ _queue_server_map_malloc(s8 *thread_name)
 
 	dave_strcpy(pMap->thread_name, thread_name, sizeof(pMap->thread_name));
 
+	pMap->client_index = pMap->client_number = 0;
+
 	return pMap;
 }
 
@@ -58,6 +60,11 @@ _queue_server_map_add(QueueServerMap *pMap, s8 *gid)
 		if(pMap->client_gid[index][0] == '\0')
 		{
 			dave_strcpy(pMap->client_gid[index], gid, DAVE_GLOBALLY_IDENTIFIER_LEN);
+			if((++ pMap->client_number) > QUEUE_SERVER_MAP_MAX)
+			{
+				QUEUELOG("invalid client_number:%d", pMap->client_number);
+				pMap->client_number = QUEUE_SERVER_MAP_MAX;
+			}
 			return;
 		}
 
@@ -95,6 +102,12 @@ _queue_server_map_del(QueueServerMap *pMap, s8 *gid)
 		{
 			dave_strcpy(pMap->client_gid[copy_index ++], pMap->client_gid[index], DAVE_GLOBALLY_IDENTIFIER_LEN);
 		}
+	}
+	pMap->client_number = copy_index;
+	if(pMap->client_number > QUEUE_SERVER_MAP_MAX)
+	{
+		QUEUELOG("invalid client_number:%d", pMap->client_number);
+		pMap->client_number = QUEUE_SERVER_MAP_MAX;
 	}
 	for(copy_index=0; copy_index<QUEUE_SERVER_MAP_MAX; copy_index++)
 	{

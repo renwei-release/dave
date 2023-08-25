@@ -18,16 +18,13 @@
 
 static ThreadId _queue_server_thread = INVALID_THREAD_ID;
 
-// =====================================================================
-
-dave_bool
-sync_client_queue_upload(
-	SyncServer *pServer,
-	ThreadId route_src, ThreadId route_dst,
-	s8 *src, s8 *dst,
-	ub msg_id,
-	MBUF *data)
+static inline dave_bool
+_sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id)
 {
+	if(pServer->server_type == SyncServerType_sync_client)
+	{
+		return dave_false;
+	}
 	if(_queue_server_thread == INVALID_THREAD_ID)
 	{
 		_queue_server_thread = thread_id(QUEUE_SERVER_THREAD_NAME);
@@ -38,6 +35,17 @@ sync_client_queue_upload(
 		return dave_false;
 	}
 
+	return dave_true;
+}
+
+static inline dave_bool
+_sync_client_queue_upload(
+	SyncServer *pServer,
+	ThreadId route_src, ThreadId route_dst,
+	s8 *src, s8 *dst,
+	ub msg_id,
+	MBUF *data)
+{
 	QueueUploadMsgReq *pReq = thread_msg(pReq);
 
 	dave_strcpy(pReq->src_name, src, sizeof(pReq->src_name));
@@ -58,6 +66,27 @@ sync_client_queue_upload(
 	}
 
 	return dave_true;
+}
+
+// =====================================================================
+
+dave_bool
+sync_client_queue_upload(
+	SyncServer *pServer,
+	ThreadId route_src, ThreadId route_dst,
+	s8 *src, s8 *dst,
+	ub msg_id,
+	MBUF *data)
+{
+	if(_sync_client_queue_can_be_upload(pServer, src, dst, msg_id) == dave_false)
+		return dave_false;
+
+	return _sync_client_queue_upload(
+		pServer,
+		route_src, route_dst,
+		src, dst,
+		msg_id,
+		data);
 }
 
 void

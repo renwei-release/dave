@@ -12,7 +12,7 @@
 void queue_client_message_init(void);
 void queue_client_message_exit(void);
 
-void queue_client_message_update(QueueUpdateStateReq *pReq);
+void queue_client_message_update(ThreadId src, QueueUpdateStateReq *pReq);
 
 void queue_client_message_run_rsp(QueueRunMsgRsp *pRsp);
 

@@ -98,7 +98,7 @@ _queue_client_main(MSGBODY *msg)
 				_queue_client_local_remove((ThreadLocalRemoveMsg *)(msg->msg_body));
 			break;
 		case MSGID_QUEUE_UPDATE_STATE_REQ:
-				queue_client_message_update((QueueUpdateStateReq *)(msg->msg_body));
+				queue_client_message_update(msg->msg_src, (QueueUpdateStateReq *)(msg->msg_body));
 			break;
 		case MSGID_QUEUE_RUN_MESSAGE_RSP:
 				queue_client_message_run_rsp((QueueRunMsgRsp *)(msg->msg_body));

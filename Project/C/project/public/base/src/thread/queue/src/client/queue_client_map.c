@@ -89,12 +89,12 @@ _queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid)
 	{
 		if(pMap->queue_gid[index][0] == '\0')
 		{
+			dave_strcpy(pMap->queue_gid[index], queue_gid, DAVE_GLOBALLY_IDENTIFIER_LEN);
 			if((++ pMap->queue_number) > QUEUE_CLIENT_MAP_MAX)
 			{
 				QUEUELOG("invalid queue_number:%d", pMap->queue_number);
 				pMap->queue_number = QUEUE_CLIENT_MAP_MAX;
 			}
-			dave_strcpy(pMap->queue_gid[index], queue_gid, DAVE_GLOBALLY_IDENTIFIER_LEN);
 			return;
 		}
 	

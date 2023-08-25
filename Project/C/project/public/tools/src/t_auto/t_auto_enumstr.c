@@ -3999,6 +3999,9 @@ t_auto_RetCode_str(RetCode enum_value)
 		case RetCode_Unauthorized_access:
 				value_str = "'RetCode_Unauthorized_access--120'";
 			break;
+		case RetCode_not_ready:
+				value_str = "'RetCode_not_ready--121'";
+			break;
 		case RetCode_max:
 				value_str = "'RetCode_max-0x1fffffffffffffff'";
 			break;

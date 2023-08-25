@@ -1459,6 +1459,8 @@ def t_auto_RetCode_str(enum_value):
 		value_str = "'RetCode_db_sql_failed--119'"
 	elif enum_value == RetCode_Unauthorized_access:
 		value_str = "'RetCode_Unauthorized_access--120'"
+	elif enum_value == RetCode_not_ready:
+		value_str = "'RetCode_not_ready--121'"
 	elif enum_value == RetCode_max:
 		value_str = "'RetCode_max-0x1fffffffffffffff'"
 	else:
