@@ -879,6 +879,8 @@ class RPCDebugReq (Structure):
 		("void_debug", POINTER(c_char)),
 		("date_debug", DateStruct),
 		("mbuf_debug", POINTER(MBUF)),
+		("req_time", c_ulonglong),
+		("rsp_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -901,6 +903,8 @@ class RPCDebugRsp (Structure):
 		("void_debug", POINTER(c_char)),
 		("date_debug", DateStruct),
 		("mbuf_debug", POINTER(MBUF)),
+		("req_time", c_ulonglong),
+		("rsp_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 

@@ -98,6 +98,7 @@ _thread_wait_msg_show(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 
 	_thread_wait_queue_show(pShow, MAX_WAIT_BUFFER, pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
 	_thread_wait_queue_show(pShow, MAX_WAIT_BUFFER, pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+	_thread_wait_queue_show(pShow, MAX_WAIT_BUFFER, pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
 
 	for(buffer_index=0; buffer_index<MAX_WAIT_BUFFER; buffer_index++)
 	{

@@ -6,9 +6,10 @@
 # */
 
 NAME_PRODUCT=dave	# SYNC LOG ...
+name_PRODUCT=$(shell echo $(NAME_PRODUCT) | tr A-Z a-z)
 LEVEL_PRODUCT=alpha	# profiling alpha beta
 FORM=BIN
-DEPLOYPATH=../../../../Deploy/deploy/$(shell echo $(NAME_PRODUCT) | tr A-Z a-z)/file_system/project
+DEPLOYPATH=../../../../Deploy/deploy/$(name_PRODUCT)/file_system/project
 
 ifeq ($(LEVEL_PRODUCT), profiling)
 	MAKE_LEVEL_PRODUCT=alpha

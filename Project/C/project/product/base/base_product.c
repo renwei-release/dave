@@ -145,7 +145,7 @@ _base_msg_timer_out(ProcessMsgTimerOutMsg *pTimerOut)
 static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
-	BASELOG("%lx/%s/%s/%s",
+	BASEDEBUG("%lx/%s/%s/%s",
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
@@ -166,7 +166,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 static void
 _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 {
-	BASELOG("%lx/%s/%s",
+	BASEDEBUG("%lx/%s/%s",
 		pReady->remote_thread_id,
 		pReady->remote_thread_name, pReady->globally_identifier);
 }
@@ -246,6 +246,7 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 	RPCDebugReq req;
 	RPCDebugRsp *pRsp;
 	s8 *debug_thread = "main_aib";
+	ub req_time, rsp_time;
 
 	dave_memset(&req, 0x00, sizeof(RPCDebugReq));
 
@@ -263,6 +264,7 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 	req.float_debug = FLOAT_DEBUG_VALUE;
 	req.double_debug = DOUBLE_DEBUG_VALUE;
 	req.void_debug = VOID_DEBUG_VALUE;
+	req.req_time = req.rsp_time = dave_os_time_ms();
 	req.ptr = &req;
 
 	debug_thread = "main_aib";
@@ -270,7 +272,10 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 	pRsp = name_qco(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
-		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", debug_thread, &req, pRsp->ptr);
+		req_time = pRsp->rsp_time - pRsp->req_time;
+		rsp_time = dave_os_time_ms() - pRsp->rsp_time;
+
+		BASELOG("name_co(%s) successfully! req_time:%ld rsp_time:%ld", debug_thread, req_time, rsp_time);
 	}
 	else
 	{
@@ -283,9 +288,9 @@ _base_thread_init(MSGBODY *msg)
 {
 	BDATALOG("INIT", "%s booting!", dave_verno());
 
-	base_timer_creat("basetimer", _base_timer_out, 360 * 1000);
+	base_timer_creat("basetimer", _base_timer_out, 720 * 1000);
 
-	base_timer_creat("basetimer3", _base_timer_out_3, 30 * 1000);
+	base_timer_creat("basetimer3", _base_timer_out_3, 3 * 1000);
 }
 
 static void

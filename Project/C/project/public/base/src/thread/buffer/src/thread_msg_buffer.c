@@ -22,6 +22,7 @@
 
 typedef struct {
 	ThreadId src_id;
+	ThreadId dst_id;
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 	s8 dst_thread[THREAD_NAME_MAX];
 	s8 uid[DAVE_UID_LEN];
@@ -77,6 +78,7 @@ _thread_msg_buffer_malloc(
 	pBuffer = dave_malloc(sizeof(MsgBuffer));
 
 	pBuffer->src_id = src_id;
+	pBuffer->dst_id = INVALID_THREAD_ID;
 	if(gid != NULL)
 	{
 		dave_strcpy(pBuffer->gid, gid, sizeof(pBuffer->gid));
@@ -270,6 +272,37 @@ _thread_msg_buffer_pop(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
 	}
 
 	pBuffer = pMsgList->head;
+	if(pBuffer == NULL)
+	{
+		return NULL;
+	}
+
+	if((gid != NULL) && (dst_thread != NULL))
+	{
+		pBuffer->dst_id = thread_gid_table_inq(gid, dst_thread);
+	}
+	else if(dst_thread != NULL)
+	{
+		pBuffer->dst_id = thread_id(dst_thread);
+	}
+	else if(uid != NULL)
+	{
+		pBuffer->dst_id = thread_router_check_uid(uid);
+	}
+
+	if(pBuffer->dst_id == INVALID_THREAD_ID)
+	{
+		THREADLOG("gid:%s dst_thread:%s uid:%s If you don't redo the messages, they might never get out.",
+			gid, dst_thread, uid);
+		return NULL;
+	}
+	if(thread_has_initialization(pBuffer->dst_id) == dave_false)
+	{
+		THREADLOG("gid:%s dst_thread:%s uid:%s If you don't redo the messages, they might never get out.",
+			gid, dst_thread, uid);
+		pBuffer->dst_id = INVALID_THREAD_ID;
+		return NULL;
+	}
 
 	if((pMsgList->head == NULL)
 		|| (pMsgList->head->next == NULL)
@@ -285,125 +318,213 @@ _thread_msg_buffer_pop(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
 	return pBuffer;
 }
 
-static void
-_thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
+static dave_bool
+_thread_msg_buffer_public_push(
+	void *ramkv,
+	ThreadId src_id, s8 *gid, s8 *dst_thread, s8 *uid,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
 {
 	MsgBuffer *pBuffer;
-	ThreadId dst_id;
+
+	pBuffer = _thread_msg_buffer_malloc(
+		src_id, gid, dst_thread, uid,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
+
+	THREADDEBUG("%s->%s:%s",
+		thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id));
+
+	_thread_msg_buffer_push(ramkv, pBuffer);
+
+	thread_clean_user_input_data(msg_body, msg_id);
+
+	return dave_true;
+}
+
+static void
+_thread_msg_buffer_public_pop(void *ramkv, s8 *gid, s8 *dst_thread, s8 *uid)
+{
+	MsgBuffer *pBuffer;
 
 	do {
-		pBuffer = _thread_msg_buffer_pop(ramkv, gid, dst_thread, NULL);
+		pBuffer = _thread_msg_buffer_pop(ramkv, gid, dst_thread, uid);
 		if(pBuffer == NULL)
 			break;
 
-		dst_id = thread_gid_table_inq(gid, dst_thread);
+		THREADDEBUG("%s->%s:%s",
+			thread_id_to_name(pBuffer->src_id), thread_id_to_name(pBuffer->dst_id), msgstr(pBuffer->msg_id));
 
-		if(dst_id != INVALID_THREAD_ID)
+		if(pBuffer->dst_id != INVALID_THREAD_ID)
 		{
 			if(base_thread_id_msg(
 				NULL, NULL,
 				NULL, NULL,
-				pBuffer->src_id, dst_id,
+				pBuffer->src_id, pBuffer->dst_id,
 				pBuffer->msg_type,
 				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
 				0,
 				pBuffer->fun, pBuffer->line) == dave_false)
 			{
-				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
+				THREADABNOR("%s->%s:%s send failed(%s/%s/%s)! <%s:%d>",
 					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+					gid, dst_thread, uid,
 					pBuffer->fun, pBuffer->line);
 			}
 		}
 		else
 		{
-			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
+			THREADABNOR("%s->%s:%s not ready(%s/%s/%s)! <%s:%d>",
 				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
+				gid, dst_thread, uid,
 				pBuffer->fun, pBuffer->line);
 		}
 
 		_thread_msg_buffer_free(pBuffer);
 	} while(pBuffer != NULL);
+}
+
+static dave_bool
+_thread_msg_buffer_gid_push(
+	void *ramkv,
+	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	return _thread_msg_buffer_public_push(
+		ramkv,
+		src_id, gid, dst_thread, NULL,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
+}
+
+static void
+_thread_msg_buffer_gid_pop(void *ramkv, s8 *gid, s8 *dst_thread)
+{
+	_thread_msg_buffer_public_pop(ramkv, gid, dst_thread, NULL);
+}
+
+static dave_bool
+_thread_msg_buffer_thread_push(
+	void *ramkv,
+	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	return _thread_msg_buffer_public_push(
+		ramkv,
+		src_id, NULL, dst_thread, NULL,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
 }
 
 static void
 _thread_msg_buffer_thread_pop(void *ramkv, s8 *dst_thread)
 {
-	MsgBuffer *pBuffer;
-	ThreadId dst_id;
+	_thread_msg_buffer_public_pop(ramkv, NULL, dst_thread, NULL);
+}
 
-	do {
-		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, dst_thread, NULL);
-		if(pBuffer == NULL)
-			break;
-
-		dst_id = thread_id(pBuffer->dst_thread);
-
-		if(dst_id != INVALID_THREAD_ID)
-		{
-			if(base_thread_id_msg(
-				NULL, NULL,
-				NULL, NULL,
-				pBuffer->src_id, dst_id,
-				pBuffer->msg_type,
-				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
-				0,
-				pBuffer->fun, pBuffer->line) == dave_false)
-			{
-				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
-					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
-					pBuffer->fun, pBuffer->line);
-			}
-		}
-		else
-		{
-			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
-				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
-				pBuffer->fun, pBuffer->line);
-		}
-
-		_thread_msg_buffer_free(pBuffer);
-	} while(pBuffer != NULL);
+static dave_bool
+_thread_msg_buffer_uid_push(
+	void *ramkv,
+	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	return _thread_msg_buffer_public_push(
+		ramkv,
+		src_id, NULL, NULL, uid,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
 }
 
 static void
 _thread_msg_buffer_uid_pop(void *ramkv, s8 *uid)
 {
-	MsgBuffer *pBuffer;
-	ThreadId dst_id;
-	ThreadRouter *pRouter;
+	_thread_msg_buffer_public_pop(ramkv, NULL, NULL, uid);
+}
 
-	do {
-		pBuffer = _thread_msg_buffer_pop(ramkv, NULL, NULL, uid);
-		if(pBuffer == NULL)
-			break;
+static dave_bool
+_thread_msg_buffer_safe_gid_push(
+	ThreadId src_id, s8 *gid, s8 *dst_thread,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	dave_bool ret = dave_false;
 
-		dst_id = thread_router_pop_msg(&pRouter, uid);
+	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_gid_push(
+		_thread_msg_buf_ramkv,
+		src_id, gid, dst_thread,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line); );
 
-		if(dst_id != INVALID_THREAD_ID)
-		{
-			if(base_thread_id_msg(
-				NULL, pRouter,
-				NULL, NULL,
-				pBuffer->src_id, dst_id,
-				pBuffer->msg_type,
-				pBuffer->msg_id, pBuffer->msg_len, pBuffer->msg_body,
-				0,
-				pBuffer->fun, pBuffer->line) == dave_false)
-			{
-				THREADABNOR("%s->%s:%s send failed! <%s:%d>",
-					thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
-					pBuffer->fun, pBuffer->line);
-			}
-		}
-		else
-		{
-			THREADABNOR("%s->%s:%s not ready! <%s:%d>",
-				thread_id_to_name(pBuffer->src_id), pBuffer->dst_thread, msgstr(pBuffer->msg_id),
-				pBuffer->fun, pBuffer->line);
-		}
+	return ret;
+}
 
-		_thread_msg_buffer_free(pBuffer);
-	} while(pBuffer != NULL);
+static void
+_thread_msg_buffer_safe_gid_pop(s8 *gid, s8 *dst_thread)
+{
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_gid_pop(_thread_msg_buf_ramkv, gid, dst_thread); );
+}
+
+static dave_bool
+_thread_msg_buffer_safe_thread_push(
+	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	dave_bool ret = dave_false;
+
+	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_thread_push(
+		_thread_msg_buf_ramkv,
+		src_id, dst_thread,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line); );
+
+	return ret;
+}
+
+static void
+_thread_msg_buffer_safe_thread_pop(s8 *dst_thread)
+{
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_thread_pop(_thread_msg_buf_ramkv, dst_thread); );
+}
+
+static dave_bool
+_thread_msg_buffer_safe_uid_push(
+	ThreadId src_id, s8 *uid,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	dave_bool ret = dave_false;
+
+	SAFECODEv1(_thread_msg_buf_pv, ret = _thread_msg_buffer_uid_push(
+		_thread_msg_buf_ramkv,
+		src_id, uid,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line); );
+
+	return ret;
+}
+
+static void
+_thread_msg_buffer_safe_uid_pop(s8 *uid)
+{
+	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_uid_pop(_thread_msg_buf_ramkv, uid); );
 }
 
 static void
@@ -448,41 +569,6 @@ _thread_msg_buffer_is_timer_out(MsgList *pMsgList)
 }
 
 static void
-_thread_msg_buffer_is_ready(void *ramkv, MsgList *pMsgList)
-{
-	MsgBuffer *pReady = pMsgList->head;
-
-	if((pReady->gid[0] != '\0') && (pReady->dst_thread[0] != '\0'))
-	{
-		if(thread_gid_table_inq(pReady->gid, pReady->dst_thread) != INVALID_THREAD_ID)
-		{
-			_thread_msg_buffer_gid_pop(ramkv, pReady->gid, pReady->dst_thread);	
-		}
-	}
-	else if(pReady->dst_thread[0] != '\0')
-	{
-		if(thread_id(pReady->dst_thread) != INVALID_THREAD_ID)
-		{
-			_thread_msg_buffer_thread_pop(ramkv, pReady->dst_thread);	
-		}
-	}
-	else if(pReady->uid[0] != '\0')
-	{
-		if(thread_router_check_uid(pReady->uid) != INVALID_THREAD_ID)
-		{
-			_thread_msg_buffer_uid_pop(ramkv, pReady->uid);
-		}
-	}
-	else
-	{
-		THREADABNOR("find invalid buffer! %s->%s:%s gid:%s <%s:%d>",
-			thread_id_to_name(pReady->src_id), pReady->dst_thread, msgstr(pReady->msg_id),
-			pReady->gid,
-			pReady->fun, pReady->line);
-	}
-}
-
-static void
 _thread_msg_buffer_tick(void *ramkv, s8 *buffer_key)
 {
 	MsgList *pMsgList = _thread_msg_buffer_list_inq(ramkv, NULL, NULL, NULL, buffer_key);
@@ -498,10 +584,7 @@ _thread_msg_buffer_tick(void *ramkv, s8 *buffer_key)
 			msgstr(pMsgList->head->msg_id),
 			pMsgList->head->life, pMsgList->life);
 
-		if(_thread_msg_buffer_is_timer_out(pMsgList) != NULL)
-		{
-			_thread_msg_buffer_is_ready(ramkv, pMsgList);
-		}
+		_thread_msg_buffer_is_timer_out(pMsgList);
 
 		if((++ pMsgList->life) > THREAD_MSG_BUFFER_LIFE_MAX)
 		{
@@ -516,56 +599,10 @@ _thread_msg_buffer_safe_tick(void *ramkv, s8 *buffer_key)
 	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_tick(ramkv, buffer_key); );
 }
 
-static void
-_thread_msg_buffer_safe_push(void *ramkv, MsgBuffer *pBuffer)
-{
-	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_push(ramkv, pBuffer); );
-}
-
-static void
-_thread_msg_buffer_safe_thread_pop(s8 *dst_thread)
-{
-	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_thread_pop(_thread_msg_buf_ramkv, dst_thread); );
-}
-
-static void
-_thread_msg_buffer_safe_gid_pop(s8 *gid, s8 *dst_thread)
-{
-	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_gid_pop(_thread_msg_buf_ramkv, gid, dst_thread); );
-}
-
-static void
-_thread_msg_buffer_safe_uid_pop(s8 *uid)
-{
-	SAFECODEv1(_thread_msg_buf_pv, _thread_msg_buffer_uid_pop(_thread_msg_buf_ramkv, uid); );
-}
-
 static RetCode
 _thread_msg_buffer_safe_recycle(void *ramkv, s8 *buffer_key)
 {
 	return _thread_msg_buffer_list_free(ramkv, NULL, NULL, NULL, buffer_key);
-}
-
-static dave_bool
-_thread_msg_buffer_public_push(
-	ThreadId src_id, s8 *gid, s8 *dst_thread, s8 *uid,
-	BaseMsgType msg_type,
-	ub msg_id, ub msg_len, u8 *msg_body,
-	s8 *fun, ub line)
-{
-	MsgBuffer *pBuffer;
-
-	pBuffer = _thread_msg_buffer_malloc(
-		src_id, gid, dst_thread, uid,
-		msg_type,
-		msg_id, msg_len, msg_body,
-		fun, line);
-
-	_thread_msg_buffer_safe_push(_thread_msg_buf_ramkv, pBuffer);
-
-	thread_clean_user_input_data(msg_body, msg_id);
-
-	return dave_true;
 }
 
 static inline void
@@ -604,30 +641,6 @@ thread_msg_buffer_exit(void)
 }
 
 dave_bool
-thread_msg_buffer_thread_push(
-	ThreadId src_id, s8 *dst_thread,
-	BaseMsgType msg_type,
-	ub msg_id, ub msg_len, u8 *msg_body,
-	s8 *fun, ub line)
-{
-	_thread_msg_buffer_pre();
-
-	return _thread_msg_buffer_public_push(
-		src_id, NULL, dst_thread, NULL,
-		msg_type,
-		msg_id, msg_len, msg_body,
-		fun, line);
-}
-
-void
-thread_msg_buffer_thread_pop(s8 *dst_thread)
-{
-	_thread_msg_buffer_pre();
-
-	_thread_msg_buffer_safe_thread_pop(dst_thread);
-}
-
-dave_bool
 thread_msg_buffer_gid_push(
 	ThreadId src_id, s8 *gid, s8 *dst_thread,
 	BaseMsgType msg_type,
@@ -636,8 +649,10 @@ thread_msg_buffer_gid_push(
 {
 	_thread_msg_buffer_pre();
 
-	return _thread_msg_buffer_public_push(
-		src_id, gid, dst_thread, NULL,
+	THREADTRACE("gid:%s dst_thread:%s msg_id:%s", gid, dst_thread, msgstr(msg_id));
+
+	return _thread_msg_buffer_safe_gid_push(
+		src_id, gid, dst_thread,
 		msg_type,
 		msg_id, msg_len, msg_body,
 		fun, line);
@@ -648,7 +663,37 @@ thread_msg_buffer_gid_pop(s8 *gid, s8 *dst_thread)
 {
 	_thread_msg_buffer_pre();
 
+	THREADTRACE("gid:%s dst_thread:%s", gid, dst_thread);
+
 	_thread_msg_buffer_safe_gid_pop(gid, dst_thread);
+}
+
+dave_bool
+thread_msg_buffer_thread_push(
+	ThreadId src_id, s8 *dst_thread,
+	BaseMsgType msg_type,
+	ub msg_id, ub msg_len, u8 *msg_body,
+	s8 *fun, ub line)
+{
+	_thread_msg_buffer_pre();
+
+	THREADTRACE("dst_thread:%s msg_id:%s", dst_thread, msgstr(msg_id));
+
+	return _thread_msg_buffer_safe_thread_push(
+		src_id, dst_thread,
+		msg_type,
+		msg_id, msg_len, msg_body,
+		fun, line);
+}
+
+void
+thread_msg_buffer_thread_pop(s8 *dst_thread)
+{
+	_thread_msg_buffer_pre();
+
+	THREADTRACE("dst_thread:%s", dst_thread);
+
+	_thread_msg_buffer_safe_thread_pop(dst_thread);
 }
 
 dave_bool
@@ -660,8 +705,10 @@ thread_msg_buffer_uid_push(
 {
 	_thread_msg_buffer_pre();
 
-	return _thread_msg_buffer_public_push(
-		src_id, NULL, NULL, uid,
+	THREADTRACE("uid:%s msg_id:%s", uid, msgstr(msg_id));
+
+	return _thread_msg_buffer_safe_uid_push(
+		src_id, uid,
 		msg_type,
 		msg_id, msg_len, msg_body,
 		fun, line);
@@ -671,6 +718,8 @@ void
 thread_msg_buffer_uid_pop(s8 *uid)
 {
 	_thread_msg_buffer_pre();
+
+	THREADTRACE("uid:%s", uid);
 
 	_thread_msg_buffer_safe_uid_pop(uid);
 }

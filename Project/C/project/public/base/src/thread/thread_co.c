@@ -106,7 +106,7 @@ _thread_no_ready_co_msg(
 	{
 		if(thread_msg_buffer_thread_push(
 			src_id, dst_thread,
-			BaseMsgType_Unicast,
+			msg_type,
 			req_id, req_len, req_body,
 			fun, line) == dave_true)
 		{
@@ -117,7 +117,7 @@ _thread_no_ready_co_msg(
 	{
 		if(thread_msg_buffer_uid_push(
 			src_id, uid,
-			BaseMsgType_Unicast,
+			msg_type,
 			req_id, req_len, req_body,
 			fun, line) == dave_true)
 		{

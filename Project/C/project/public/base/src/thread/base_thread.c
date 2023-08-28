@@ -27,15 +27,13 @@
 #include "thread_remote_id_table.h"
 #include "thread_gid_table.h"
 #include "thread_seq_msg.h"
+#include "thread_flow_control.h"
 #include "thread_running.h"
 #include "thread_coroutine.h"
 #include "thread_chain.h"
 #include "thread_router.h"
 #include "thread_co.h"
 #include "thread_log.h"
-
-extern ub thread_cfg_system_memory_max_use_percentage(void);
-extern ub thread_cfg_multiple_coroutine_on_thread(void);
 
 #define SYSTEM_READY_COUNTER 64
 
@@ -446,64 +444,6 @@ _thread_safe_read_pre_queue(ThreadStruct *pThread)
 	return pMsg;
 }
 
-static inline dave_bool
-_thread_flow_control_(ThreadStruct *pThread)
-{
-	ub site_counter;
-
-	/*
-	 * if the memory is not enough, we will not read the message.
-	 * This is worried that the application layer may consume a lot of memory
-	 * when handling these news, and the operating system may kill this process.
-	 * This is the behavior of throttling based on memory usage.
-	 */
-
-	if(((pThread->thread_flag & THREAD_THREAD_FLAG) == 0x00)
-		|| (pThread->thread_flag & THREAD_PRIVATE_FLAG)
-		|| ((pThread->thread_flag & THREAD_COROUTINE_FLAG) == 0x00)
-		|| (pThread->thread_flag & THREAD_CORE_FLAG)
-		|| (pThread->attrib == REMOTE_TASK_ATTRIB))
-	{
-		return dave_true;
-	}
-
-	if((pThread->thread_flag & THREAD_THREAD_FLAG)
-		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
-	{
-		site_counter = pThread->coroutines_site_creat_counter - pThread->coroutines_site_release_counter;
-	
-		if(site_counter >= (pThread->level_number * thread_cfg_multiple_coroutine_on_thread()))
-		{
-			return dave_false;
-		}
-	}
-
-	if(dave_os_memory_use_percentage() > thread_cfg_system_memory_max_use_percentage())
-	{
-		return dave_false;
-	}
-
-	return dave_true;
-}
-
-static inline dave_bool
-_thread_flow_control(ThreadStruct *pThread)
-{
-	dave_bool ret = _thread_flow_control_(pThread);
-
-	if(ret == dave_false)
-	{
-		THREADLTRACE(3, 1,
-			"Service %s at flow control! memory(sys:%ld cfg:%ld) coroutines(creat:%ld release:%ld max number of coroutine:%ld)",
-			pThread->thread_name,
-			dave_os_memory_use_percentage(), thread_cfg_system_memory_max_use_percentage(),
-			pThread->coroutines_site_creat_counter, pThread->coroutines_site_release_counter,
-			pThread->level_number * thread_cfg_multiple_coroutine_on_thread());
-	}
-
-	return ret;
-}
-
 static inline RetCode
 _thread_write_msg(
 	void *msg_chain, void *msg_router,
@@ -615,7 +555,7 @@ _thread_read_msg(ThreadStruct *pThread, void *pTThread)
 
 	if(pMsg == NULL)
 	{
-		if(_thread_flow_control(pThread) == dave_true)
+		if(thread_flow_control(pThread) == dave_true)
 		{
 			pMsg = _thread_safe_read_seq_queue(pThread);
 			if(pMsg == NULL)

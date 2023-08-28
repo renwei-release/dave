@@ -34,6 +34,10 @@ _sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_i
 		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
 		return dave_false;
 	}
+	if(base_thread_has_initialization(_queue_server_thread) == dave_false)
+	{
+		return dave_false;
+	}
 
 	return dave_true;
 }
@@ -58,6 +62,8 @@ _sync_client_queue_upload(
 	pReq->msg_id = msg_id;
 	pReq->msg = data;
 	pReq->ptr = NULL;
+
+	SYNCDEBUG("%s->%s:%s", src, dst, msgstr(msg_id));
 
 	if(id_msg(_queue_server_thread, MSGID_QUEUE_UPLOAD_MESSAGE_REQ, pReq) == dave_false)
 	{

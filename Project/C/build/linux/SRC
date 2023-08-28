@@ -1,4 +1,17 @@
-SOURCES=$(shell find `pwd`/../../project -name '*.c')
-SOURCES+=$(shell find `pwd`/../../project -name '*.cpp')
-SOURCES+=$(shell find `pwd`/../../project -name '*.cc')
-SOURCES+=$(shell find `pwd`/../../project -name '*.S')
+SOURCES=$(shell echo `pwd`/../../project/dave_main.c)
+
+SOURCES+=$(shell find `pwd`/../../project/components -name '*.c')
+SOURCES+=$(shell find `pwd`/../../project/components -name '*.cpp')
+SOURCES+=$(shell find `pwd`/../../project/components -name '*.cc')
+SOURCES+=$(shell find `pwd`/../../project/components -name '*.S')
+
+SOURCES+=$(shell echo `pwd`/../../project/product/dave_product.c)
+SOURCES+=$(shell find `pwd`/../../project/product/$(name_PRODUCT) -name '*.c')
+SOURCES+=$(shell find `pwd`/../../project/product/$(name_PRODUCT) -name '*.cpp')
+SOURCES+=$(shell find `pwd`/../../project/product/$(name_PRODUCT) -name '*.cc')
+SOURCES+=$(shell find `pwd`/../../project/product/$(name_PRODUCT) -name '*.S')
+
+SOURCES+=$(shell find `pwd`/../../project/public -name '*.c')
+SOURCES+=$(shell find `pwd`/../../project/public -name '*.cpp')
+SOURCES+=$(shell find `pwd`/../../project/public -name '*.cc')
+SOURCES+=$(shell find `pwd`/../../project/public -name '*.S')

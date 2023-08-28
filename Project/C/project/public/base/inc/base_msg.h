@@ -245,6 +245,8 @@ typedef struct {
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
+	ub req_time;
+	ub rsp_time;
 	void *ptr;
 } RPCDebugReq;
 
@@ -266,6 +268,8 @@ typedef struct {
 	void *void_debug;
 	DateStruct date_debug;
 	MBUF *mbuf_debug;
+	ub req_time;
+	ub rsp_time;
 	void *ptr;
 } RPCDebugRsp;
 

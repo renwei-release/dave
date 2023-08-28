@@ -169,6 +169,12 @@ _sync_client_thread_active_pop(void *ramkv, s8 *key)
 	}
 	else
 	{
+		if((pActive->pServer->server_ready == dave_false)
+			|| (thread_has_initialization(pActive->thread_id) == dave_false))
+		{
+			return;
+		}
+
 		SYNCTRACE("server_socket:%d server_ready:%d ready_or_remove_flag:%d thread:%s/%lx",
 			pActive->pServer->server_socket, pActive->pServer->server_ready,
 			pActive->ready_or_remove_flag,

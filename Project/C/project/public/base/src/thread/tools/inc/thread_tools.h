@@ -45,7 +45,7 @@ ThreadMsg * thread_build_msg(
 	void *msg_chain, void *msg_router,
 	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
-	ub msg_id, ub data_len, u8 *data,
+	ub msg_id, ub msg_len, u8 *msg_body,
 	BaseMsgType msg_type,
 	s8 *fun, ub line);
 

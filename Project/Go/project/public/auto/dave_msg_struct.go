@@ -781,6 +781,8 @@ type RPCDebugReq struct {
 	Void_debug unsafe.Pointer
 	Date_debug DateStruct
 	Mbuf_debug *MBUF
+	Req_time uint64
+	Rsp_time uint64
 	Ptr uint64
 }
 
@@ -802,6 +804,8 @@ type RPCDebugRsp struct {
 	Void_debug unsafe.Pointer
 	Date_debug DateStruct
 	Mbuf_debug *MBUF
+	Req_time uint64
+	Rsp_time uint64
 	Ptr uint64
 }
 

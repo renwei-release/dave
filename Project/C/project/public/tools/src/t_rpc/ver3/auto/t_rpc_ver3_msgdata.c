@@ -5902,6 +5902,8 @@ t_rpc_ver3_zip_RPCDebugReq(RPCDebugReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "void-void_debug", t_rpc_ver3_zip_void_ptr(zip_data->void_debug));
 	t_bson_add_object(pStructBson, "DateStruct-date_debug", t_rpc_ver3_zip_DateStruct(&(zip_data->date_debug)));
 	t_bson_add_object(pStructBson, "MBUF-mbuf_debug", t_rpc_ver3_zip_MBUF_ptr(zip_data->mbuf_debug));
+	t_bson_add_object(pStructBson, "ub-req_time", t_rpc_ver3_zip_ub(zip_data->req_time));
+	t_bson_add_object(pStructBson, "ub-rsp_time", t_rpc_ver3_zip_ub(zip_data->rsp_time));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -5941,6 +5943,8 @@ t_rpc_ver3_unzip_RPCDebugReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->void_debug), t_bson_inq_object(pStructBson, "void-void_debug"));
 		t_rpc_ver3_unzip_DateStruct(&(pUnzip->date_debug), t_bson_inq_object(pStructBson, "DateStruct-date_debug"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->mbuf_debug), t_bson_inq_object(pStructBson, "MBUF-mbuf_debug"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->req_time), t_bson_inq_object(pStructBson, "ub-req_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->rsp_time), t_bson_inq_object(pStructBson, "ub-rsp_time"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -5991,6 +5995,8 @@ t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "void-void_debug", t_rpc_ver3_zip_void_ptr(zip_data->void_debug));
 	t_bson_add_object(pStructBson, "DateStruct-date_debug", t_rpc_ver3_zip_DateStruct(&(zip_data->date_debug)));
 	t_bson_add_object(pStructBson, "MBUF-mbuf_debug", t_rpc_ver3_zip_MBUF_ptr(zip_data->mbuf_debug));
+	t_bson_add_object(pStructBson, "ub-req_time", t_rpc_ver3_zip_ub(zip_data->req_time));
+	t_bson_add_object(pStructBson, "ub-rsp_time", t_rpc_ver3_zip_ub(zip_data->rsp_time));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -6030,6 +6036,8 @@ t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->void_debug), t_bson_inq_object(pStructBson, "void-void_debug"));
 		t_rpc_ver3_unzip_DateStruct(&(pUnzip->date_debug), t_bson_inq_object(pStructBson, "DateStruct-date_debug"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->mbuf_debug), t_bson_inq_object(pStructBson, "MBUF-mbuf_debug"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->req_time), t_bson_inq_object(pStructBson, "ub-req_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->rsp_time), t_bson_inq_object(pStructBson, "ub-rsp_time"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

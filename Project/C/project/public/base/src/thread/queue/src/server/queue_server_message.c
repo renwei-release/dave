@@ -150,27 +150,6 @@ _queue_server_message_number_msg(QueueMessage *pMessage)
 	return pMessage->pQueue->list_number;
 }
 
-static inline dave_bool
-_queue_server_message_update_state_req(
-	s8 *gid,
-	s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid,
-	MBUF *msg,
-	ub msg_number)
-{
-	QueueUpdateStateReq *pReq = thread_msg(pReq);
-
-	dave_strcpy(pReq->src_name, src_name, sizeof(pReq->src_name));
-	dave_strcpy(pReq->dst_name, dst_name, sizeof(pReq->dst_name));
-	dave_strcpy(pReq->src_gid, src_gid, sizeof(pReq->src_gid));
-	dave_strcpy(pReq->dst_gid, dst_gid, sizeof(pReq->dst_gid));
-	pReq->msg_number = msg_number;
-	pReq->msg = msg;
-	dave_strcpy(pReq->queue_gid, globally_identifier(), sizeof(pReq->queue_gid));
-	pReq->ptr = NULL;
-
-	return gid_msg(gid, QUEUE_CLIENT_THREAD_NAME, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);	
-}
-
 static inline void
 _queue_server_message_update_state_rsp(s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid, MBUF *msg)
 {
@@ -193,7 +172,28 @@ _queue_server_message_update_state_rsp(s8 *src_name, s8 *dst_name, s8 *src_gid, 
 }
 
 static inline dave_bool
-_queue_server_message_update_map_state(
+_queue_server_message_update_state_req(
+	s8 *gid,
+	s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid,
+	MBUF *msg,
+	ub msg_number)
+{
+	QueueUpdateStateReq *pReq = thread_msg(pReq);
+
+	dave_strcpy(pReq->src_name, src_name, sizeof(pReq->src_name));
+	dave_strcpy(pReq->dst_name, dst_name, sizeof(pReq->dst_name));
+	dave_strcpy(pReq->src_gid, src_gid, sizeof(pReq->src_gid));
+	dave_strcpy(pReq->dst_gid, dst_gid, sizeof(pReq->dst_gid));
+	pReq->msg_number = msg_number;
+	pReq->msg = msg;
+	dave_strcpy(pReq->queue_gid, globally_identifier(), sizeof(pReq->queue_gid));
+	pReq->ptr = NULL;
+
+	return gid_msg(gid, QUEUE_CLIENT_THREAD_NAME, MSGID_QUEUE_UPDATE_STATE_REQ, pReq);	
+}
+
+static inline dave_bool
+_queue_server_message_update_state_map(
 	QueueServerMap *pMap,
 	s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid,
 	MBUF *msg,
@@ -252,7 +252,7 @@ _queue_server_message_update_notify(ThreadQueue *pQueue, QueueServerMap *pMap)
 
 		for(client_counter=0; client_counter<client_number; client_counter++)
 		{
-			_queue_server_message_update_map_state(
+			_queue_server_message_update_state_map(
 				pMap,
 				pMsg->msg_body.src_name, pMsg->msg_body.dst_name,
 				pMsg->msg_body.src_gid, pMsg->msg_body.dst_gid,
@@ -271,11 +271,11 @@ _queue_server_message_update_download(ThreadQueue *pQueue, QueueServerMap *pMap)
 	pMsg = _queue_server_message_read_msg(pQueue);
 	if(pMsg != NULL)
 	{
-		if(_queue_server_message_update_map_state(
+		if(_queue_server_message_update_state_map(
 			pMap,
 			pMsg->msg_body.src_name, pMsg->msg_body.dst_name,
 			pMsg->msg_body.src_gid, pMsg->msg_body.dst_gid,
-			pMsg->msg_body.queue_ptr,
+			(MBUF *)(pMsg->msg_body.queue_ptr),
 			pQueue->list_number) == dave_true)
 		{
 			pMsg->msg_body.queue_ptr = NULL;
