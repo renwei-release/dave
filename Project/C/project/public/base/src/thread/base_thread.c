@@ -473,7 +473,7 @@ _thread_write_msg(
 		&hold_body) == dave_false)
 	{
 		pMsg = thread_build_msg(
-					pDstThread,
+					pDstThread->thread_id, pDstThread->attrib,
 					msg_chain, msg_router,
 					src_gid, src_name,
 					src_id, dst_id,

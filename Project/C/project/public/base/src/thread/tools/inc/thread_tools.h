@@ -41,7 +41,7 @@ dave_bool __thread_enable_coroutine__(ThreadStruct *pThread, ub msg_id, s8 *fun,
 #define thread_enable_coroutine(pThread, msg_id) __thread_enable_coroutine__(pThread, msg_id, (s8 *)__func__, (ub)__LINE__)
 
 ThreadMsg * thread_build_msg(
-	ThreadStruct *pThread,
+	ThreadId thread_id, TaskAttribute thread_attrib,
 	void *msg_chain, void *msg_router,
 	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,

@@ -8,11 +8,13 @@
 #include "base_macro.h"
 #include "thread_sync.h"
 #if defined(SYNC_STACK_CLIENT)
+#include "dave_base.h"
 #include "dave_tools.h"
 #include "base_tools.h"
 #include "thread_tools.h"
 #include "sync_client_data.h"
 #include "sync_client_run.h"
+#include "sync_client_route.h"
 #include "sync_param.h"
 #include "sync_log.h"
 
@@ -42,6 +44,25 @@ _sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_i
 	return dave_true;
 }
 
+static inline void
+_sync_client_queue_msg(
+	ThreadId route_src, ThreadId route_dst,
+	QueueUploadMsgReq *pReq)
+{
+	ThreadMsg *pMsg = thread_build_msg(
+		_queue_server_thread, REMOTE_TASK_ATTRIB,
+		NULL, NULL,
+		pReq->src_gid, pReq->src_name,
+		thread_get_local(route_src), _queue_server_thread,
+		MSGID_QUEUE_UPLOAD_MESSAGE_REQ, sizeof(*pReq), (u8 *)pReq,
+		BaseMsgType_Unicast,
+		(s8 *)__func__, __LINE__);
+
+	sync_client_message_route(&(pMsg->msg_body));
+
+	thread_clean_msg(pMsg);
+}
+
 static inline dave_bool
 _sync_client_queue_upload(
 	SyncServer *pServer,
@@ -65,11 +86,13 @@ _sync_client_queue_upload(
 
 	SYNCDEBUG("%s->%s:%s", src, dst, msgstr(msg_id));
 
-	if(id_msg(_queue_server_thread, MSGID_QUEUE_UPLOAD_MESSAGE_REQ, pReq) == dave_false)
-	{
-		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
-		return dave_false;
-	}
+	_sync_client_queue_msg(route_src, route_dst, pReq);
+
+//	if(id_msg(_queue_server_thread, MSGID_QUEUE_UPLOAD_MESSAGE_REQ, pReq) == dave_false)
+//	{
+//		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
+//		return dave_false;
+//	}
 
 	return dave_true;
 }

@@ -1035,7 +1035,7 @@ __thread_thread_write__(
 	pThread = thread_find_busy_thread(pTThread->thread_id);
 
 	pMsg = thread_build_msg(
-		pThread,
+		pThread->thread_id, pThread->attrib,
 		msg_chain, msg_router,
 		NULL, NULL,
 		pThread->thread_id, pThread->thread_id,

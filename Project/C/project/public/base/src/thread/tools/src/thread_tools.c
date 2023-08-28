@@ -140,7 +140,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 static inline void
 _thread_build_msg_body(
 	MSGBODY *pBody,
-	ThreadStruct *pThread,
+	ThreadId thread_id, TaskAttribute thread_attrib,
 	void *msg_chain, void *msg_router,
 	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
@@ -157,10 +157,7 @@ _thread_build_msg_body(
 	}
 	else
 	{
-		if(pThread == NULL)
-			pBody->msg_dst = INVALID_THREAD_ID;
-		else
-			pBody->msg_dst = pThread->thread_id;
+		pBody->msg_dst = thread_id;
 	}
 	pBody->msg_id = msg_id;
 	pBody->msg_type = msg_type;
@@ -171,10 +168,7 @@ _thread_build_msg_body(
 	}
 	else
 	{
-		if(pThread == NULL)
-			pBody->dst_attrib = LOCAL_TASK_ATTRIB;
-		else
-			pBody->dst_attrib = pThread->attrib;
+		pBody->dst_attrib = thread_attrib;
 	}
 
 	pBody->msg_len = msg_len;
@@ -410,7 +404,7 @@ __thread_enable_coroutine__(ThreadStruct *pThread, ub msg_id, s8 *fun, ub line)
 
 ThreadMsg *
 thread_build_msg(
-	ThreadStruct *pThread,
+	ThreadId thread_id, TaskAttribute thread_attrib,
 	void *msg_chain, void *msg_router,
 	s8 *src_gid, s8 *src_name,
 	ThreadId src_id, ThreadId dst_id,
@@ -424,7 +418,7 @@ thread_build_msg(
 
 	_thread_build_msg_body(
 		&(pMsg->msg_body),
-		pThread,
+		thread_id, thread_attrib,
 		msg_chain, msg_router,
 		src_gid, src_name,
 		src_id, dst_id,

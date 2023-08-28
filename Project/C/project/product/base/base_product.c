@@ -241,7 +241,7 @@ _base_timer_out(TIMERID timer_id, ub thread_index)
 }
 
 static void
-_base_timer_out_3(TIMERID timer_id, ub thread_index)
+_base_loop(MSGBODY *msg)
 {
 	RPCDebugReq req;
 	RPCDebugRsp *pRsp;
@@ -268,7 +268,6 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 	req.ptr = &req;
 
 	debug_thread = "main_aib";
-	BASELOG("RPC_DEBUG %s", debug_thread);
 	pRsp = name_qco(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
 	if(pRsp != NULL)
 	{
@@ -281,6 +280,16 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 	{
 		BASELOG("%s timer out!", debug_thread);
 	}
+
+	inner_loop(_base_loop);
+}
+
+static void
+_base_timer_out_3(TIMERID timer_id, ub thread_index)
+{
+	base_timer_die(timer_id);
+
+	_base_loop(NULL);
 }
 
 static void
