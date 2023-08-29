@@ -30,6 +30,7 @@
 #include "thread_flow_control.h"
 #include "thread_running.h"
 #include "thread_coroutine.h"
+#include "thread_queue_end.h"
 #include "thread_chain.h"
 #include "thread_router.h"
 #include "thread_co.h"
@@ -473,13 +474,13 @@ _thread_write_msg(
 		&hold_body) == dave_false)
 	{
 		pMsg = thread_build_msg(
-					pDstThread->thread_id, pDstThread->attrib,
-					msg_chain, msg_router,
-					src_gid, src_name,
-					src_id, dst_id,
-					msg_id, msg_len, msg_body,
-					msg_type,
-					fun, line);
+				pDstThread->thread_id, pDstThread->attrib,
+				msg_chain, msg_router,
+				src_gid, src_name,
+				src_id, dst_id,
+				msg_id, msg_len, msg_body,
+				msg_type,
+				fun, line);
 
 		ret = _thread_safe_write_pre_queue(pDstThread, pMsg);
 		if(ret == RetCode_not_my_data)
@@ -510,6 +511,8 @@ _thread_write_msg(
 			msg_chain, msg_router,
 			src_id, dst_id,
 			msg_id, msg_len, msg_body);
+
+		thread_queue_end(pDstThread, msg_type);
 
 		if(hold_body == dave_false)
 		{

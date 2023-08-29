@@ -372,7 +372,7 @@ sync_client_msg_buffer_push(
 	}
 	else
 	{
-		SYNCLOG("%s->%s:%s buffer push success!", src, dst, msgstr(msg_id));
+		SYNCTRACE("%s->%s:%s buffer push success!", src, dst, msgstr(msg_id));
 	}
 }
 

@@ -289,6 +289,7 @@ _base_timer_out_3(TIMERID timer_id, ub thread_index)
 {
 	base_timer_die(timer_id);
 
+	BASELOG("");
 	_base_loop(NULL);
 }
 

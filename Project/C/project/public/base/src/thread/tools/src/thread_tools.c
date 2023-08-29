@@ -674,6 +674,7 @@ thread_num_msg(ThreadStruct *pThread, ub msg_id)
 
 	number = thread_queue_num_msg(pThread->msg_queue, THREAD_MSG_QUEUE_NUM, msg_id);
 	number += thread_queue_num_msg(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM, msg_id);
+	number += thread_queue_num_msg(pThread->pre_queue, THREAD_PRE_QUEUE_NUM, msg_id);
 
 	return number;
 }

@@ -45,7 +45,7 @@ _sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_i
 }
 
 static inline void
-_sync_client_queue_msg(
+_sync_client_queue_send_msg(
 	ThreadId route_src, ThreadId route_dst,
 	QueueUploadMsgReq *pReq)
 {
@@ -86,13 +86,7 @@ _sync_client_queue_upload(
 
 	SYNCDEBUG("%s->%s:%s", src, dst, msgstr(msg_id));
 
-	_sync_client_queue_msg(route_src, route_dst, pReq);
-
-//	if(id_msg(_queue_server_thread, MSGID_QUEUE_UPLOAD_MESSAGE_REQ, pReq) == dave_false)
-//	{
-//		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
-//		return dave_false;
-//	}
+	_sync_client_queue_send_msg(route_src, route_dst, pReq);
 
 	return dave_true;
 }

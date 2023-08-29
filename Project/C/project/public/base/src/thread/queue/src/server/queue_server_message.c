@@ -26,7 +26,7 @@ typedef struct {
 
 static void *_message_kv = NULL;
 static TLock _message_pv;
-static ub _out_fo_order_download;
+static ub _out_of_order_download;
 
 static inline s8 *
 _queue_server_message_key(s8 *key_ptr, ub key_len, s8 *dst_name, s8 *dst_gid)
@@ -351,7 +351,7 @@ _queue_server_message_download(QueueDownloadMsgReq *pReq)
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0' };
 	ThreadMsg *pMsg;
 
-	if((_out_fo_order_download ++) % 2 == 0)
+	if((_out_of_order_download ++) % 2 == 0)
 	{
 		pMsg = _queue_server_message_download_(pReq->name, gid);
 		if(pMsg != NULL)
@@ -394,7 +394,7 @@ _queue_server_message_recycle(void *ramkv, s8 *key)
 		return RetCode_empty_data;
 	}
 
-	_queue_server_message_free(pMessage);
+	SAFECODEv1(_message_pv, { _queue_server_message_free(pMessage); });
 
 	return RetCode_OK;
 }
@@ -406,7 +406,7 @@ queue_server_message_init(void)
 {
 	_message_kv = kv_malloc("queue-server-message", 5, _queue_server_message_timerout);
 	t_lock_reset(&_message_pv);
-	_out_fo_order_download = t_rand();
+	_out_of_order_download = t_rand();
 }
 
 void

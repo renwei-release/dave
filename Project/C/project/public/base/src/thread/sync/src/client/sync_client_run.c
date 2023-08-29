@@ -42,6 +42,7 @@ _sync_client_run_thread_msg(
 	ThreadId src_thread, ThreadId dst_thread,
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	ub msg_id,
+	BaseMsgType msg_type,
 	ub msg_len, u8 *msg_body)
 {
 	ub net_index;
@@ -101,7 +102,7 @@ _sync_client_run_thread_msg(
 		pChain, pRouter,
 		pServer->globally_identifier, src,
 		route_src, route_dst,
-		BaseMsgType_Unicast,
+		msg_type,
 		msg_id, msg_len, msg_body,
 		0,
 		(s8 *)__func__, (ub)__LINE__);
@@ -169,6 +170,7 @@ _sync_client_run_thread(
 			src_thread, dst_thread,
 			src_attrib, dst_attrib,
 			msg_id,
+			msg_type,
 			msg_len, msg_body);
 	}
 	else
