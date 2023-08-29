@@ -12,9 +12,9 @@
 #include "thread_log.h"
 
 #define CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE "SysMemMaxUsePercentage"
-#define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 95
+#define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 98
 #define CFG_MULTIPLE_COROUTINE_ON_THREAD "MultipleCoroutineOnThread"
-#define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 20
+#define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 100
 
 static ub _sys_mem_max_use_percentage = 0;
 static ub _multiple_coroutine_on_thread = 0;
@@ -24,7 +24,7 @@ _thread_cfg_update_sys_mem_max_use_percentage(void)
 {
 	ub use_percentage = cfg_get_ub(CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE, default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE);
 
-	if((use_percentage >= 4096) || (use_percentage <= 10))
+	if((use_percentage >= 100) || (use_percentage <= 10))
 	{
 		THREADLOG("find invalid %s:%d, reset by default:%d",
 			CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE,
@@ -50,7 +50,7 @@ _thread_cfg_update_multiple_coroutine_on_thread(void)
 {
 	ub multiple = cfg_get_ub(CFG_MULTIPLE_COROUTINE_ON_THREAD, default_CFG_MULTIPLE_COROUTINE_ON_THREAD);
 
-	if((multiple >= 100) || (multiple == 0))
+	if((multiple >= 4096) || (multiple == 0))
 	{
 		THREADLOG("find invalid %s:%d, reset by default:%d",
 			CFG_MULTIPLE_COROUTINE_ON_THREAD,

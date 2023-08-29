@@ -43,8 +43,8 @@ _base_dos_thread_name(s8 *thread_name, ub thread_len)
 	if(_base_dos_is_private() == dave_false)
 	{
 		dave_strcpy(product_name, dave_verno_my_product(), sizeof(product_name));
-		t_stdio_tolowers(product_name);
-		dave_snprintf(thread_name, thread_len, "%s_%s", DOS_THREAD_NAME);
+		lower(product_name);
+		dave_snprintf(thread_name, thread_len, "%s_%s", DOS_THREAD_NAME, product_name);
 	}
 	else
 	{

@@ -594,14 +594,16 @@ _sync_client_cfg_update(CFGUpdate *pUpdate)
 static inline void
 _sync_client_route(MSGBODY *pMsg)
 {
+	ThreadId msg_dst;
+
 	if((pMsg->msg_type == BaseMsgType_Broadcast_local)
 		|| (pMsg->msg_type == BaseMsgType_Broadcast_local_no_me))
 	{
 		return;
 	}
 
-	pMsg->msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
-	if(pMsg->msg_dst == INVALID_THREAD_ID)
+	msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
+	if(msg_dst == INVALID_THREAD_ID)
 	{
 		SYNCLOG("%lx/%s->%lx/%s:%s change failed!",
 			pMsg->msg_src, thread_name(pMsg->msg_src),
@@ -609,6 +611,7 @@ _sync_client_route(MSGBODY *pMsg)
 			msgstr(pMsg->msg_id));
 		return;
 	}
+	pMsg->msg_dst = msg_dst;
 
 	sync_client_message_route(pMsg);
 }
@@ -803,6 +806,7 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 		case MSGID_REMOTE_THREAD_READY:
 		case MSGID_REMOTE_THREAD_REMOVE:
+		case MSGID_ECHO:
 			break;
 		default:
 				_sync_client_route(msg);

@@ -10,24 +10,17 @@
 #include "dave_base.h"
 #include "dave_os.h"
 #include "dave_tools.h"
+#include "base_tools.h"
 #include "dos_tools.h"
 #include "dos_show.h"
 #include "dos_cmd.h"
 #include "dos_log.h"
 
 static void
-_dos_echo(dave_bool echo_multiple, s8 *thread_name)
+_dos_echo(dave_bool echo_multiple)
 {
-	ThreadId echo_id = thread_id(thread_name);
-	MsgIdEcho *pEcho;
+	MsgIdEcho *pEcho = thread_reset_msg(pEcho);
 
-	if(echo_id == INVALID_THREAD_ID)
-	{
-		dos_print("can't find %s", thread_name);
-		return;
-	}
-
-	pEcho = thread_reset_msg(pEcho);
 	pEcho->echo_counter = 0;
 	pEcho->echo_time = dave_os_time_us();
 	pEcho->echo_multiple = echo_multiple;
@@ -35,16 +28,16 @@ _dos_echo(dave_bool echo_multiple, s8 *thread_name)
 	dave_snprintf(pEcho->msg, sizeof(pEcho->msg), "echo counter:%ld time:%ld", pEcho->echo_counter, pEcho->echo_time);
 
 	dos_print("%s start echo (%s) ......",
-		thread_name,
+		thread_name(main_thread_id_get()),
 		pEcho->echo_multiple == dave_true ? "multiple" : "single");
 
-	id_msg(echo_id, MSGID_ECHO, pEcho);
+	id_msg(main_thread_id_get(), MSGID_ECHO, pEcho);
 }
 
 static RetCode
 _dos_echo_help(void)
 {
-	dos_print("Usage: echo [true]|[false] [thread name]\nStart the echo test to test the link connection performance.!");
+	dos_print("Usage: echo [true]|[false]\nStart the echo test to test the link connection performance.!");
 	return RetCode_OK;
 }
 
@@ -53,15 +46,10 @@ _dos_echo_cmd(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index = 0;
 	dave_bool echo_multiple;
-	s8 thread_name[128];
 
 	cmd_index += dos_load_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &echo_multiple);
-	dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, thread_name, sizeof(thread_name));
 
-	if(thread_name[0] == '\0')
-		return RetCode_Invalid_parameter;
-
-	_dos_echo(echo_multiple, thread_name);
+	_dos_echo(echo_multiple);
 
 	return RetCode_OK;
 }

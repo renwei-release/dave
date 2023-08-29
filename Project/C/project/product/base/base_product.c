@@ -13,7 +13,7 @@
 #include "dave_3rdparty.h"
 #include "dave_bdata.h"
 #include "dave_store.h"
-#include "base_debug.h"
+#include "base_test.h"
 #include "base_log.h"
 
 #define RET_DEBUG_VALUE RetCode_OK
