@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2022 - 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include "dave_base.h"
 #include "dave_tools.h"
+#include "dave_os.h"
 #include "dave_verno.h"
 #include "thread_struct.h"
 #include "thread_thread.h"
@@ -203,7 +204,7 @@ _tthread_wakeup_thread(ThreadThread *pTThread)
 		return dave_true;
 }
 
-static inline sb
+static inline ub
 _tthread_running_fun(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wakeup_index, dave_bool enable_stack)
 {
 	if(_schedule_thread_fun != NULL)
@@ -211,19 +212,21 @@ _tthread_running_fun(void *pTThread, ThreadId thread_id, s8 *thread_name, ub wak
 		return _schedule_thread_fun(pTThread, thread_id, thread_name, wakeup_index, dave_false);
 	}
 
-	return -1;
+	return 0;
 }
 
-static void
+static inline void
 _tthread_running_thread(ThreadThread *pTThread)
 {
-	sb loop_counter;
+	ub msg_number;
 
-	loop_counter = _tthread_running_fun(pTThread, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
-
-	while(((loop_counter --) >= 0) && (pTThread->state == ThreadState_RUNNING))
+	while(pTThread->state == ThreadState_RUNNING)
 	{
-		_tthread_running_fun(pTThread, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
+		msg_number = _tthread_running_fun(pTThread, pTThread->thread_id, pTThread->thread_name, pTThread->wakeup_index, dave_false);
+		if(msg_number == 0)
+		{
+			break;
+		}
 	}
 }
 
@@ -1035,7 +1038,7 @@ __thread_thread_write__(
 	pThread = thread_find_busy_thread(pTThread->thread_id);
 
 	pMsg = thread_build_msg(
-		pThread,
+		pThread->thread_id, pThread->attrib,
 		msg_chain, msg_router,
 		NULL, NULL,
 		pThread->thread_id, pThread->thread_id,

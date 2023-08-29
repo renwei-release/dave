@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "AIB"
+#define VERSION_PRODUCT "BBS"
 
 #ifdef __x86_64__
  #define VERSION_ARCH "-x86-64"
@@ -40,7 +40,7 @@
 #endif
 #define VERSION_REV "4"
 
-#define VERSION_DATE_TIME "20230828114839"
+#define VERSION_DATE_TIME "20230829131632"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"

@@ -164,7 +164,15 @@ queue_client_map_exit(void)
 void
 queue_client_map_add(s8 *thread_name)
 {
-	QueueClientMap *pMap = _queue_client_map_add(thread_name);
+	QueueClientMap *pMap;
+
+	if((thread_name == NULL) || (thread_name[0] == '\0'))
+	{
+		QUEUELOG("invalid thread_name:%s", thread_name);
+		return;
+	}
+
+	pMap = _queue_client_map_add(thread_name);
 
 	dave_strcpy(pMap->thread_name, thread_name, sizeof(pMap->thread_name));
 }

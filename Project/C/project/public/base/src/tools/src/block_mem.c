@@ -54,7 +54,7 @@ block_mem_free_fun __block_mem_free__ = BLOCK_FREE;
 block_mem_len_fun __block_mem_len__ = BLOCK_LEN;
 
 static inline ub
-_block_mem_base_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock)
+_block_mem_base_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlock, ub *percentage_of_usage)
 {
 	ub info_index = 0, block_index;
 	ub core_number, total_number;
@@ -67,10 +67,12 @@ _block_mem_base_info(char *block_name, s8 *info_ptr, ub info_len, BlockMem *pBlo
 		total_number += CORE_MEM_MAX;
 	}
 
+	*percentage_of_usage = (core_number * 100) / total_number;
+
 	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 		"%s MEMORY INFORMATION:%d\%(%d/%d)\n",
 		block_name,
-		(core_number * 100) / total_number, core_number, total_number);
+		*percentage_of_usage, core_number, total_number);
 
 	return info_index;
 }
@@ -709,15 +711,16 @@ block_memory(BlockMem *pBlock, void *user_ptr, s8 *file, ub line)
 ub
 block_info(char *block_name, BlockMem *pBlock, s8 *info_ptr, ub info_len, dave_bool base_flag, dave_bool detail_flag, ub warning_number_exceeded)
 {
-	ub info_index;
+	ub info_index = 0, percentage_of_usage = 0;
 
 	if(base_flag == dave_true)
 	{
-		info_index = _block_mem_base_info(block_name, info_ptr, info_len, pBlock);
+		info_index += _block_mem_base_info(block_name, &info_ptr[info_index], info_len-info_index, pBlock, &percentage_of_usage);
 	}
-	else
+
+	if((base_flag == dave_false) || (percentage_of_usage >= 30))
 	{
-		info_index = _block_mem_top_info(block_name, info_ptr, info_len, pBlock, warning_number_exceeded);
+		info_index += _block_mem_top_info(block_name, &info_ptr[info_index], info_len-info_index, pBlock, warning_number_exceeded);
 		if((info_index > 0) && (detail_flag == dave_true))
 		{
 			BLOCKMEMLOG("\nPlease note that the following memory has not been released(%s):\n%s", block_name, info_ptr);
