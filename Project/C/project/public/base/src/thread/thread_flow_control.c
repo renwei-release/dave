@@ -19,13 +19,20 @@ extern ub thread_cfg_multiple_coroutine_on_thread(void);
 static inline dave_bool
 _thread_flow_control(
 	ThreadStruct *pThread,
-	ub *memory_use_percentage, ub *coroutines_site_creat_counter, ub *coroutines_site_release_counter)
+	ub *memory_use_percentage,
+	ub *coroutines_site_creat_counter, ub *coroutines_site_release_counter, ub *site_counter)
 {
-	ub site_counter;
-
 	*memory_use_percentage = 0;
 	*coroutines_site_creat_counter = pThread->coroutines_site_creat_counter;
 	*coroutines_site_release_counter = pThread->coroutines_site_release_counter;
+	if((*coroutines_site_creat_counter) > (*coroutines_site_release_counter))
+	{
+		*site_counter = (*coroutines_site_creat_counter) - (*coroutines_site_release_counter);
+	}
+	else
+	{
+		*site_counter = 0;
+	}
 
 	/*
 	 * if the memory is not enough, we will not read the message.
@@ -46,9 +53,7 @@ _thread_flow_control(
 	if((pThread->thread_flag & THREAD_THREAD_FLAG)
 		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG))
 	{
-		site_counter = *coroutines_site_creat_counter - *coroutines_site_release_counter;
-	
-		if(site_counter >= (pThread->level_number * thread_cfg_multiple_coroutine_on_thread()))
+		if((*site_counter) >= (pThread->level_number * thread_cfg_multiple_coroutine_on_thread()))
 		{
 			*memory_use_percentage = dave_os_memory_use_percentage();
 
@@ -58,7 +63,7 @@ _thread_flow_control(
 
 	*memory_use_percentage = dave_os_memory_use_percentage();
 
-	if(*memory_use_percentage > thread_cfg_system_memory_max_use_percentage())
+	if(*memory_use_percentage >= thread_cfg_system_memory_max_use_percentage())
 	{
 		return dave_false;
 	}
@@ -71,18 +76,20 @@ _thread_flow_control(
 dave_bool
 thread_flow_control(ThreadStruct *pThread)
 {
-	ub memory_use_percentage, coroutines_site_creat_counter, coroutines_site_release_counter;
+	ub memory_use_percentage, coroutines_site_creat_counter, coroutines_site_release_counter, site_counter;
 	dave_bool ret = _thread_flow_control(
 		pThread,
-		&memory_use_percentage, &coroutines_site_creat_counter, &coroutines_site_release_counter);
+		&memory_use_percentage,
+		&coroutines_site_creat_counter, &coroutines_site_release_counter, &site_counter);
 
 	if(ret == dave_false)
 	{
 		THREADLTRACE(3, 1,
-			"Service %s at flow control! memory(sys:%ld cfg:%ld) coroutines(creat:%ld release:%ld max number of coroutine:%ld)",
+			"Service %s at flow control! memory(sys:%ld cfg:%ld) coroutines(creat:%ld release:%ld max number of coroutine:%ld/%ld)",
 			pThread->thread_name,
 			memory_use_percentage, thread_cfg_system_memory_max_use_percentage(),
 			coroutines_site_creat_counter, coroutines_site_release_counter,
+			site_counter,
 			pThread->level_number * thread_cfg_multiple_coroutine_on_thread());
 	}
 
