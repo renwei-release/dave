@@ -46,6 +46,8 @@ dave_bool sync_client_tx_rpcver_req(SyncServer *pServer);
 
 dave_bool sync_client_tx_rpcver_rsp(SyncServer *pServer);
 
+dave_bool sync_client_tx_service_statement(SyncServer *pServer, s8 *service_statement);
+
 dave_bool sync_client_tx_system_state(dave_bool busy);
 
 #endif

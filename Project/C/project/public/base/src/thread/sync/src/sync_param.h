@@ -36,6 +36,10 @@
 
 #define SYNC_RPC_BIG_PACKAGE (4 * 1024 * 1024)
 
+typedef struct {
+	dave_bool support_queue_server;
+} ServiceStatement;
+
 typedef enum {
 	SyncServerType_sync_client,
 	SyncServerType_client,
@@ -93,6 +97,7 @@ typedef struct {
 	dave_bool server_cnt;
 	dave_bool server_booting;
 	dave_bool server_ready;
+	dave_bool server_busy;
 
 	sb left_timer;
 	sb reconnect_times;
@@ -129,6 +134,8 @@ typedef struct {
 	 * 处理的时间顺序。
 	 */
 	ub shadow_index;
+
+	ServiceStatement service_statement;
 } SyncServer;
 
 typedef struct {

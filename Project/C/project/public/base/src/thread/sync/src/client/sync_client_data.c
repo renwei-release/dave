@@ -21,6 +21,7 @@
 #include "sync_client_link.h"
 #include "sync_client_thread.h"
 #include "sync_client_thread_ready_remove.h"
+#include "sync_client_service_statement.h"
 #include "sync_cfg.h"
 #include "sync_test.h"
 #include "sync_lock.h"
@@ -54,6 +55,7 @@ _sync_client_data_reset_server_(SyncServer *pServer)
 	pServer->server_cnt = dave_false;
 	pServer->server_booting = dave_false;
 	pServer->server_ready = dave_false;
+	pServer->server_busy = dave_false;
 
 	pServer->left_timer = SYNC_SERVER_LEFT_MAX;
 	pServer->reconnect_times = SYNC_RECONNECT_TIMES;
@@ -86,6 +88,8 @@ _sync_client_data_reset_server_(SyncServer *pServer)
 	{
 		pServer->shadow_index = SERVER_DATA_MAX;
 	}
+
+	sync_client_service_statement_reset(pServer);
 }
 
 static void

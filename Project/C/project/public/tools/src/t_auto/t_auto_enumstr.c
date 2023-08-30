@@ -3504,6 +3504,9 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 		case ORDER_CODE_RPCVER_RSP:
 				value_str = "'ORDER_CODE_RPCVER_RSP-0x0221'";
 			break;
+		case ORDER_CODE_SERVICE_STATEMENT:
+				value_str = "'ORDER_CODE_SERVICE_STATEMENT-0x0222'";
+			break;
 		case ORDER_CODE_SUPPORT_NO_CRC:
 				value_str = "'ORDER_CODE_SUPPORT_NO_CRC-0x7001'";
 			break;

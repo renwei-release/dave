@@ -8,6 +8,8 @@
 #ifndef __SYNC_CLIENT_QUEUE_H__
 #define __SYNC_CLIENT_QUEUE_H__
 
+BaseMsgType sync_client_queue_enable(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, BaseMsgType msg_type);
+
 dave_bool sync_client_queue_upload(
 	SyncServer *pServer,
 	ThreadId route_src, ThreadId route_dst,

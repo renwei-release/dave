@@ -248,6 +248,8 @@ sync_client_tx_run_thread_msg_req(
 	MBUF *zip_body;
 	MBUF *msg_head;
 
+	msg_type = sync_client_queue_enable(pServer, src, dst, msg_id, msg_type);
+
 	zip_body = t_rpc_zip(thread_chain_to_bson(msg_chain), thread_router_to_bson(msg_router), msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
 	{
@@ -387,6 +389,16 @@ sync_client_tx_rpcver_rsp(SyncServer *pServer)
 	snd_buffer = sync_rpcver_packet(3);
 
 	return _sync_client_tx(pServer, ORDER_CODE_RPCVER_RSP, snd_buffer);
+}
+
+dave_bool
+sync_client_tx_service_statement(SyncServer *pServer, s8 *service_statement)
+{
+	MBUF *snd_buffer = dave_mmalloc(256 + dave_strlen(service_statement));
+
+	snd_buffer->len = snd_buffer->tot_len = sync_str_packet((u8 *)ms8(snd_buffer), mlen(snd_buffer), service_statement);
+
+	return _sync_client_tx(pServer, ORDER_CODE_SERVICE_STATEMENT, snd_buffer);
 }
 
 dave_bool

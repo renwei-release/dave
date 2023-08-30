@@ -30,6 +30,7 @@
 #include "sync_client_info.h"
 #include "sync_client_route.h"
 #include "sync_client_queue.h"
+#include "sync_client_service_statement.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -471,8 +472,8 @@ _sync_client_booting_time(void)
 			pServer->booting_reciprocal = SYNC_BOOTING_RECIPROCAL;
 
 			sync_client_tx_my_verno(pServer);
-
 			sync_client_tx_rpcver_req(pServer);
+			sync_client_service_statement_tx(pServer);
 		}
 	}
 }

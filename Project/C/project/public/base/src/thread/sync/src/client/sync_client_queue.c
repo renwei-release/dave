@@ -27,6 +27,10 @@ _sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_i
 	{
 		return dave_false;
 	}
+	if(pServer->service_statement.support_queue_server == dave_false)
+	{
+		return dave_false;
+	}
 	if(_queue_server_thread == INVALID_THREAD_ID)
 	{
 		_queue_server_thread = thread_id(QUEUE_SERVER_THREAD_NAME);
@@ -92,6 +96,30 @@ _sync_client_queue_upload(
 }
 
 // =====================================================================
+
+BaseMsgType
+sync_client_queue_enable(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, BaseMsgType msg_type)
+{
+	if((msg_type != BaseMsgType_Unicast) && (msg_type != BaseMsgType_Unicast_queue))
+	{
+		return msg_type;
+	}
+
+	if((msg_type == BaseMsgType_Unicast) && (pServer->server_busy == dave_true))
+	{
+		msg_type = BaseMsgType_Unicast_queue;
+	}
+
+	if(msg_type == BaseMsgType_Unicast_queue)
+	{
+		if(_sync_client_queue_can_be_upload(pServer, src, dst, msg_id) == dave_false)
+		{
+			msg_type = BaseMsgType_Unicast;
+		}
+	}
+
+	return msg_type;
+}
 
 dave_bool
 sync_client_queue_upload(

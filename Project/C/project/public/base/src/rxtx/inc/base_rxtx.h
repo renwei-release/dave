@@ -58,6 +58,7 @@ typedef enum {
 	ORDER_CODE_HEARTBEAT_RSP				= 0x0219,
 	ORDER_CODE_RPCVER_REQ					= 0x0220,
 	ORDER_CODE_RPCVER_RSP					= 0x0221,
+	ORDER_CODE_SERVICE_STATEMENT			= 0x0222,
 
 	/* system function order code */
 	ORDER_CODE_SUPPORT_NO_CRC				= 0x7001,
