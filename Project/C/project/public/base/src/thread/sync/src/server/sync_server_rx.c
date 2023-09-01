@@ -917,6 +917,8 @@ _sync_server_rx(SyncClient *pClient, ORDER_CODE order_id, ub frame_len, u8 *fram
 		case ORDER_CODE_RPCVER_RSP:
 				_sync_server_rx_rpcver_rsp(pClient, frame_len, frame_ptr);
 			break;
+		case ORDER_CODE_SERVICE_STATEMENT:
+			break;
 		default:
 				SYNCLOG("can't process order_id:%x", order_id);
 			break;

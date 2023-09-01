@@ -1042,12 +1042,28 @@ class StoreMysqlRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_SYSTEM_BUSY message *#
+class SystemBusy (Structure):
+	_fields_ = [
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_SYSTEM_DECOUPLING message *#
 class SystemDecoupling (Structure):
 	_fields_ = [
 		("socket", c_int),
 		("verno", c_char * DAVE_VERNO_STR_LEN),
 		("NetInfo", SocNetInfo),
+]
+
+#* for MSGID_SYSTEM_IDLE message *#
+class SystemIdle (Structure):
+	_fields_ = [
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("verno", c_char * DAVE_VERNO_STR_LEN),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_SYSTEM_MOUNT message *#
@@ -1081,7 +1097,6 @@ class ThreadBusy (Structure):
 	_fields_ = [
 		("thread_id", c_ulonglong),
 		("thread_name", c_char * DAVE_THREAD_NAME_LEN),
-		("msg_id", c_ulonglong),
 		("msg_number", c_ulonglong),
 ]
 

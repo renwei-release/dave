@@ -19,6 +19,7 @@
 #include "sync_client_link.h"
 #include "sync_client_tools.h"
 #include "sync_client_msg_buffer.h"
+#include "sync_client_service_statement.h"
 #include "sync_log.h"
 
 typedef struct {
@@ -27,9 +28,10 @@ typedef struct {
 } ServerInfoStatistics;
 
 static ub
-_sync_client_info_show_server(SyncServer *pServer, s8 *info, ub info_len)
+_sync_client_info_show_server(SyncServer *pServer, s8 *info_ptr, ub info_len)
 {
 	ub current_second = dave_os_time_s(), work_on_second;
+	s8 service_statement_str[256];
 	ub info_index = 0;
 	s8 second_str[32];
 
@@ -37,12 +39,15 @@ _sync_client_info_show_server(SyncServer *pServer, s8 *info, ub info_len)
 		work_on_second = 0;
 	else
 		work_on_second = current_second - pServer->work_start_second;
-	
-	info_index += dave_snprintf(&info[info_index], info_len-info_index,
-		" %x %s s:%04x %d%d%d%d l:%02d/%02d i:%02x T:%s s-%lu:%lu/r-%lu:%lu %s/%s/%s %s\n",
+
+	sync_client_service_statement_info(service_statement_str, sizeof(service_statement_str), pServer);
+
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+		" %x %s s:%04x %d%d%d%d%d %s l:%02d/%02d i:%02x T:%s s-%lu:%lu/r-%lu:%lu\n %s/%s/%s %s\n",
 		pServer,
 		sync_client_type_to_str(pServer->server_type), pServer->server_socket,
-		pServer->server_connecting, pServer->server_cnt, pServer->server_booting, pServer->server_ready,
+		pServer->server_connecting, pServer->server_cnt, pServer->server_booting, pServer->server_ready, pServer->server_busy,
+		service_statement_str,
 		pServer->left_timer, pServer->reconnect_times,
 		pServer->server_index,
 		sync_work_start_second_str(work_on_second, second_str, sizeof(second_str)),

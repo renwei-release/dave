@@ -270,8 +270,69 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
+static void
+_sync_client_server_busy(SyncServer *pServer)
+{
+	SYNCLOG("%s/%s %s->busy",
+		pServer->globally_identifier, pServer->verno,
+		pServer->server_busy==dave_true?"busy":"idle");
+
+	pServer->server_busy = dave_true;
+}
+
+static void
+_sync_client_server_idle(SyncServer *pServer)
+{
+	SYNCLOG("%s/%s %s->idle",
+		pServer->globally_identifier, pServer->verno,
+		pServer->server_busy==dave_true?"busy":"idle");
+
+	pServer->server_busy = dave_false;
+}
+
+static void
+_sync_client_thread_busy(SyncServer *pServer, ThreadBusy *pBusy)
+{
+	_sync_client_server_busy(pServer);
+}
+
+static void
+_sync_client_thread_idle(SyncServer *pServer, ThreadIdle *pIdle)
+{
+	_sync_client_server_idle(pServer);
+}
+
+static void
+_sync_client_client_busy(SyncServer *pServer, ClientBusy *pBusy)
+{
+	_sync_client_server_busy(pServer);
+}
+
+static void
+_sync_client_client_idle(SyncServer *pServer, ClientIdle *pIdle)
+{
+	_sync_client_server_idle(pServer);
+}
+
+static void
+_sync_client_system_busy(SyncServer *pServer, SystemBusy *pBusy)
+{
+	SYNCTRACE("%s/%s", pBusy->gid, pBusy->verno);
+
+	_sync_client_server_busy(pServer);
+}
+
+static void
+_sync_client_system_idle(SyncServer *pServer, SystemIdle *pIdle)
+{
+	SYNCTRACE("%s/%s", pIdle->gid, pIdle->verno);
+
+	_sync_client_server_idle(pServer);
+}
+
 static inline dave_bool
 _sync_client_run_internal(
+	SyncServer *pServer,
 	s8 *src, s8 *dst,
 	ub msg_id,
 	ub msg_len, u8 *msg_body)
@@ -280,6 +341,24 @@ _sync_client_run_internal(
 
 	switch(msg_id)
 	{
+		case MSGID_THREAD_BUSY:
+				_sync_client_thread_busy(pServer, (ThreadBusy *)(msg_body));
+			break;
+		case MSGID_THREAD_IDLE:
+				_sync_client_thread_idle(pServer, (ThreadIdle *)(msg_body));
+			break;
+		case MSGID_CLIENT_BUSY:
+				_sync_client_client_busy(pServer, (ClientBusy *)(msg_body));
+			break;
+		case MSGID_CLIENT_IDLE:
+				_sync_client_client_idle(pServer, (ClientIdle *)(msg_body));
+			break;
+		case MSGID_SYSTEM_BUSY:
+				_sync_client_system_busy(pServer, (SystemBusy *)(msg_body));
+			break;
+		case MSGID_SYSTEM_IDLE:
+				_sync_client_system_idle(pServer, (SystemIdle *)(msg_body));
+			break;
 		case MSGID_CFG_UPDATE:
 				_sync_client_run_cfg_update((CFGUpdate *)(msg_body));
 			break;
@@ -410,13 +489,16 @@ sync_client_run_exit(void)
 }
 
 void
-sync_client_run_thread(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
+sync_client_run_thread(
+	SyncServer *pServer,
+	ub frame_len, u8 *frame_ptr)
 {
 	_sync_client_run_thread_frame(pServer, frame_len, frame_ptr);
 }
 
 void
 sync_client_run_internal(
+	SyncServer *pServer,
 	s8 *src, s8 *dst,
 	ub msg_id,
 	ub msg_len, u8 *msg_body)
@@ -424,6 +506,7 @@ sync_client_run_internal(
 	SYNCDEBUG("%s->%s:%s:%d", src, dst, msgstr(msg_id), msg_len);
 
 	if(_sync_client_run_internal(
+			pServer,
 			src, dst,
 			msg_id,
 			msg_len, msg_body) == dave_true)

@@ -56,7 +56,7 @@ sync_client_service_statement_rx(SyncServer *pServer, ub frame_len, s8 *frame_pt
 
 		if(dave_json_c_get_boolean(pJson, _service_statement_table[table_index], &bool_data) == dave_true)
 		{
-			SYNCLOG("%s/%s %s %s",
+			SYNCTRACE("%s/%s %s %s",
 				pServer->globally_identifier, pServer->verno,
 				bool_data == dave_true ? "support" : "unsupported",
 				_service_statement_table[table_index]);
@@ -88,6 +88,14 @@ sync_client_service_statement_tx(SyncServer *pServer)
 	sync_client_tx_service_statement(pServer, dave_json_to_string(pJson, NULL));
 
 	dave_json_free(pJson);
+}
+
+ub
+sync_client_service_statement_info(s8 *info_ptr, ub info_len, SyncServer *pServer)
+{
+	return dave_snprintf(info_ptr, info_len,
+		"%d",
+		pServer->service_statement.support_queue_server);
 }
 
 #endif

@@ -8,7 +8,10 @@
 #ifndef __SYNC_CLIENT_TX_H__
 #define __SYNC_CLIENT_TX_H__
 
-dave_bool sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_bool pop_flag);
+dave_bool sync_client_tx_run_internal_msg_req(
+	SyncServer *pServer,
+	ub msg_id, ub msg_len, void *msg_body,
+	dave_bool pop_flag);
 
 void sync_client_tx_my_verno(SyncServer *pServer);
 
@@ -47,8 +50,6 @@ dave_bool sync_client_tx_rpcver_req(SyncServer *pServer);
 dave_bool sync_client_tx_rpcver_rsp(SyncServer *pServer);
 
 dave_bool sync_client_tx_service_statement(SyncServer *pServer, s8 *service_statement);
-
-dave_bool sync_client_tx_system_state(dave_bool busy);
 
 #endif
 

@@ -147,7 +147,7 @@ _queue_server_message_clean_msg(ThreadMsg *pMsg)
 static inline ub
 _queue_server_message_number_msg(QueueMessage *pMessage)
 {
-	return pMessage->pQueue->list_number;
+	return pMessage->pQueue->msg_number;
 }
 
 static inline void
@@ -257,7 +257,7 @@ _queue_server_message_update_notify(ThreadQueue *pQueue, QueueServerMap *pMap)
 				pMsg->msg_body.src_name, pMsg->msg_body.dst_name,
 				pMsg->msg_body.src_gid, pMsg->msg_body.dst_gid,
 				NULL,
-				pQueue->list_number);
+				pQueue->msg_number);
 		}
 		dave_free(pMsg);
 	}
@@ -276,7 +276,7 @@ _queue_server_message_update_download(ThreadQueue *pQueue, QueueServerMap *pMap)
 			pMsg->msg_body.src_name, pMsg->msg_body.dst_name,
 			pMsg->msg_body.src_gid, pMsg->msg_body.dst_gid,
 			(MBUF *)(pMsg->msg_body.queue_ptr),
-			pQueue->list_number) == dave_true)
+			pQueue->msg_number) == dave_true)
 		{
 			pMsg->msg_body.queue_ptr = NULL;
 			_queue_server_message_clean_msg(pMsg);
@@ -381,7 +381,7 @@ _queue_server_message_timerout(void *ramkv, s8 *key)
 	if(pMessage == NULL)
 		return;
 
-	_queue_server_message_update_state(pMessage, pMessage->pQueue->list_number);
+	_queue_server_message_update_state(pMessage, pMessage->pQueue->msg_number);
 }
 
 static inline RetCode
@@ -504,7 +504,7 @@ queue_server_message_info(s8 *info_ptr, ub info_len)
 		if(pMessage == NULL)
 			break;
 
-		thread_queue_total(&unprocessed_counter, &received_counter, &processed_counter, pMessage->pQueue, 1);
+		thread_queue_total_detail(&unprocessed_counter, &received_counter, &processed_counter, pMessage->pQueue, 1);
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 			" %s%s%s %lu/%lu:%lu\n",

@@ -16,9 +16,9 @@
 
 #ifdef EXTER_ENABLE_BLOCK
  #ifdef __DAVE_PRODUCT_QUEUE__
-  #define EXTER_MEM_MAX 64
+  #define EXTER_MEM_MAX 256
  #else
-  #define EXTER_MEM_MAX 8
+  #define EXTER_MEM_MAX 16
  #endif
 #define EXTER_MEM_NAME "EXTER"
 

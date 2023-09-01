@@ -65,7 +65,9 @@ void thread_local_ready_notify(s8 *thread_name);
 
 void thread_local_remove_notify(s8 *thread_name);
 
-ub thread_num_msg(ThreadStruct *pThread, ub msg_id);
+ub thread_total_msg(ThreadStruct *pThread, ub msg_id);
+
+ub thread_total_number(ThreadStruct *pThread);
 
 #endif
 

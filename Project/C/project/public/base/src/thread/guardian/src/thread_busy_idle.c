@@ -9,343 +9,146 @@
 #ifdef __DAVE_BASE__
 #include "dave_base.h"
 #include "dave_tools.h"
-#include "dave_os.h"
+#include "dave_verno.h"
+#include "base_tools.h"
 #include "thread_parameter.h"
-#include "thread_mem.h"
 #include "thread_struct.h"
-#include "thread_thread.h"
 #include "thread_tools.h"
-#include "thread_quit.h"
-#include "thread_statistics.h"
-#include "thread_call.h"
 #include "thread_log.h"
 
-#define THREAD_BUSY_MSG_NOTIFY_MIN 1024
+#define HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED 5
 
-#define CFG_THREAD_BUSY_MSG_MIN (s8 *)"ThreadBusyMsgMin"
+static ThreadStruct *_thread_struct = NULL;
+static ub _notify_last_time = 0;
+static dave_bool _notify_busy_flag = dave_false;
 
-typedef struct {
-	ThreadId thread_id;
-	ub msg_id;
-	ub msg_number;
-	void *next;
-} ThreadBusyIdleList;
-
-typedef struct {
-	ThreadStruct *pThread;
-	ThreadBusyIdleList *pList;
-} ThreadBusyIdle;
-
-static ThreadBusyIdle _thread_busy_idle[THREAD_MAX];
-static ub _thread_busy_msg_notify_min = THREAD_BUSY_MSG_NOTIFY_MIN;
-
-static void
-_thread_busy_idle_free_list(ThreadBusyIdle *pThread)
+static inline void
+_thread_busy_idle_system_notify(dave_bool notify_busy_flag)
 {
-	ThreadBusyIdleList *pList = pThread->pList;
-	ThreadBusyIdleList *pTemp;
+	THREADLOG("****** system on %s ******",
+		notify_busy_flag == dave_true? "busy" : "idle");
 
-	while(pList != NULL)
+	if(notify_busy_flag == dave_true)
 	{
-		pTemp = pList->next;
+		SystemBusy *pBusy = thread_msg(pBusy);
 
-		THREADDEBUG("thread_id:%d msg_id:%d pList:%x", pList->thread_id, pList->msg_id, pList);
+		dave_strcpy(pBusy->gid, globally_identifier(), sizeof(pBusy->gid));
+		dave_strcpy(pBusy->verno, dave_verno(), sizeof(pBusy->verno));
 
-		dave_free(pList);
-
-		pList = pTemp;
+		name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_SYSTEM_BUSY, pBusy);
 	}
-
-	pThread->pList = NULL;
-}
-
-static ThreadBusyIdleList *
-_thread_busy_idle_malloc_list(ThreadId thread_id, ub msg_id)
-{
-	ThreadBusyIdleList *pList;
-
-	pList = dave_ralloc(sizeof(ThreadBusyIdleList));
-
-	pList->thread_id = thread_id;
-	pList->msg_id = msg_id;
-	pList->msg_number = 1;
-	pList->next = NULL;
-
-	THREADDEBUG("thread_id:%d msg_id:%d pList:%x", pList->thread_id, pList->msg_id, pList);
-
-	return pList;
-}
-
-static void
-_thread_busy_idle_reset(ThreadStruct *thread_struct)
-{
-	ub thread_index;
-
-	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
+	else
 	{
-		dave_memset(&_thread_busy_idle[thread_index], 0x00, sizeof(ThreadBusyIdle));
+		SystemIdle *pIdle = thread_msg(pIdle);
 
-		_thread_busy_idle[thread_index].pThread = &thread_struct[thread_index];
-		_thread_busy_idle[thread_index].pList = NULL;
+		dave_strcpy(pIdle->gid, globally_identifier(), sizeof(pIdle->gid));
+		dave_strcpy(pIdle->verno, dave_verno(), sizeof(pIdle->verno));
+
+		name_msg(SYNC_CLIENT_THREAD_NAME, MSGID_SYSTEM_IDLE, pIdle);
 	}
 }
 
-static void
-_thread_busy_idle_clear(void)
+static inline ub
+_thread_busy_idle_total_number(ThreadStruct *pThread)
 {
-	ub thread_index;
+	ub total_msg_number, coroutines_site_creat_counter, coroutines_site_release_counter;
 
-	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
+	total_msg_number = thread_total_number(pThread);
+
+	coroutines_site_creat_counter = pThread->coroutines_site_creat_counter;
+	coroutines_site_release_counter = pThread->coroutines_site_release_counter;
+	if(coroutines_site_creat_counter > coroutines_site_release_counter)
 	{
-		_thread_busy_idle_free_list(&_thread_busy_idle[thread_index]);
+		total_msg_number += (coroutines_site_creat_counter - coroutines_site_release_counter);
 	}
+
+	return total_msg_number;
 }
 
-static dave_bool
-_thread_busy_idle_on_list(ThreadBusyIdleList *pList, ThreadId thread_id, ub msg_id)
+static inline dave_bool
+_thread_busy_idle_detected_busy(ThreadStruct *pThread)
 {
-	while(pList != NULL)
+	ub total_msg_number;
+
+	total_msg_number = _thread_busy_idle_total_number(pThread);
+
+	if(total_msg_number >= (2 * pThread->level_number))
 	{
-		if((pList->thread_id == thread_id) && (pList->msg_id == msg_id))
-		{
-			pList->msg_number ++;
-
-			return dave_true;
-		}
-
-		pList = pList->next;
+		return dave_true;
 	}
 
 	return dave_false;
 }
 
-static ThreadBusyIdleList *
-_thread_busy_idle_add_list(ThreadBusyIdleList *pList, ThreadId thread_id, ub msg_id)
+static inline dave_bool
+_thread_busy_idle_detected_idle(ThreadStruct *pThread)
 {
-	ThreadBusyIdleList *pNewList = _thread_busy_idle_malloc_list(thread_id, msg_id);
-	ThreadBusyIdleList *pNextList;
+	ub total_msg_number;
 
-	if(pList == NULL)
+	total_msg_number = _thread_busy_idle_total_number(pThread);
+
+	if(total_msg_number == 0)
 	{
-		pList = pNewList;
-	}
-	else
-	{
-		pNextList = pList;
-
-		while(pNextList->next != NULL)
-		{
-			pNextList = pNextList->next;
-		}
-
-		pNextList->next = pNewList;
+		return dave_true;
 	}
 
-	return pList;
-}
-
-static ThreadBusyIdleList *
-_thread_busy_idle_read_on_msg(ThreadQueue *pQueue)
-{
-	ub list_index;
-	ThreadMsg *pTemp;
-	ThreadBusyIdleList *pList;
-
-	if(pQueue->list_number < _thread_busy_msg_notify_min)
-	{
-		return NULL;
-	}
-
-	pTemp = pQueue->queue_head;
-	pList = NULL;
-
-	for(list_index=0; list_index<pQueue->list_number; list_index++)
-	{
-		if(pTemp == NULL)
-			break;
-
-		if(_thread_busy_idle_on_list(pList, pTemp->msg_body.msg_src, pTemp->msg_body.msg_id) == dave_false)
-		{
-			pList = _thread_busy_idle_add_list(pList, pTemp->msg_body.msg_src, pTemp->msg_body.msg_id);
-		}
-
-		pTemp = (ThreadMsg *)(pTemp->next);
-	}
-
-	return pList;
-}
-
-static ThreadBusyIdleList *
-_thread_busy_idle_read_on_queue(ThreadQueue *pQueue_ptr, ub queue_number)
-{
-	ub queue_index;
-	ThreadBusyIdleList *pMsgList = NULL, *pNewList, *pTempList;
-
-	for(queue_index=0; queue_index<queue_number; queue_index++)
-	{
-		pNewList = _thread_busy_idle_read_on_msg(&(pQueue_ptr[queue_index]));
-
-		if(pMsgList == NULL)
-		{
-			pMsgList = pNewList;
-		}
-		else
-		{
-			pTempList = pMsgList;
-			while(pTempList->next != NULL) pTempList = pTempList->next;
-			pTempList->next = pNewList;
-		}
-	}
-
-	return pMsgList;
-}
-
-static void
-_thread_busy_idle_build_list(ThreadBusyIdle *pThread)
-{
-	ThreadBusyIdleList *pMsgList = NULL, *pSeqList = NULL, *pNextList;
-
-	pMsgList = _thread_busy_idle_read_on_queue(pThread->pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	pSeqList = _thread_busy_idle_read_on_queue(pThread->pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-
-	pThread->pList = pMsgList;
-
-	if(pThread->pList == NULL)
-	{
-		pThread->pList = pSeqList;
-	}
-	else
-	{
-		pNextList = pThread->pList;
-		while(pNextList->next != NULL) pNextList = pNextList->next;
-		pNextList->next = pSeqList;
-	}
-}
-
-static void
-_thread_busy_idle_notify_busy(ThreadBusyIdle *pThread)
-{
-	dave_bool busy_flag = dave_false;
-	ThreadBusyIdleList *pList;
-	ThreadBusy *pBusy;
-	ub msg_queue_total, seq_queue_total;
-
-	msg_queue_total = thread_queue_list(pThread->pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	seq_queue_total = thread_queue_list(pThread->pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-
-	if((msg_queue_total > _thread_busy_msg_notify_min)
-		|| (seq_queue_total > _thread_busy_msg_notify_min))
-	{
-		busy_flag = dave_true;
-	}
-
-	if(busy_flag == dave_true)
-	{
-		THREADDEBUG("thread:%s busy start .......", pThread->pThread->thread_name);
-
-		_thread_busy_idle_build_list(pThread);
-
-		pList = pThread->pList;
-
-		while(pList != NULL)
-		{
-			pBusy = thread_msg(pBusy);
-	
-			pBusy->thread_id = pThread->pThread->thread_id;
-			dave_strcpy(pBusy->thread_name, pThread->pThread->thread_name, DAVE_THREAD_NAME_LEN);
-			pBusy->msg_id = pList->msg_id;
-			pBusy->msg_number = pList->msg_number;
-
-			THREADLOG("thread:%s msg:%s number:%d busy to %s",
-				pBusy->thread_name, msgstr(pBusy->msg_id), pBusy->msg_number,
-				thread_name(pList->thread_id));
-
-			id_msg(pList->thread_id, MSGID_THREAD_BUSY, pBusy);
-	
-			pList = pList->next;
-		}
-	}
-}
-
-static void
-_thread_busy_idle_notify_idle(ThreadBusyIdle *pThread)
-{
-	dave_bool idle_flag = dave_false;
-	ThreadBusyIdleList *pList;
-	ThreadIdle *pIdle;
-	ub msg_queue_total, seq_queue_total;
-
-	msg_queue_total = thread_queue_list(pThread->pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	seq_queue_total = thread_queue_list(pThread->pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-
-	if((msg_queue_total == 0)
-		&& (seq_queue_total == 0))
-	{
-		idle_flag = dave_true;
-	}
-
-	if(idle_flag == dave_true)
-	{
-		pList = pThread->pList;
-
-		THREADDEBUG("thread:%s idle start ...... msg:%d list:%d pList:%x",
-			pThread->pThread->thread_name,
-			msg_queue_total,
-			seq_queue_total,
-			pList);
-
-		while(pList != NULL)
-		{
-			pIdle = thread_msg(pIdle);
-	
-			pIdle->thread_id = pThread->pThread->thread_id;
-			dave_strcpy(pIdle->thread_name, pThread->pThread->thread_name, DAVE_THREAD_NAME_LEN);
-
-			THREADLOG("thread:%s idle to %s", pIdle->thread_name, thread_name(pList->thread_id));
-
-			id_msg(pList->thread_id, MSGID_THREAD_IDLE, pIdle);
-	
-			pList = pList->next;
-		}
-	
-		_thread_busy_idle_free_list(pThread);
-	}
-}
-
-static void
-_thread_busy_idle_notify(ThreadBusyIdle *pThread)
-{
-	if(pThread->pList == NULL)
-	{
-		_thread_busy_idle_notify_busy(pThread);
-	}
-	else
-	{
-		_thread_busy_idle_notify_idle(pThread);
-	}
+	return dave_false;
 }
 
 static void
 _thread_busy_idle_check(void)
 {
 	ub thread_index;
+	ThreadStruct *pThread;
+	dave_bool notify_busy, notify_idle;
+
+	notify_busy = notify_idle = dave_false;
 
 	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 	{
-		if((_thread_busy_idle[thread_index].pThread != NULL)
-			&& (_thread_busy_idle[thread_index].pThread->thread_id != INVALID_THREAD_ID))
+		pThread = &_thread_struct[thread_index];
+	
+		if((pThread->thread_id != INVALID_THREAD_ID)
+			&& (pThread->has_initialization == dave_true)
+			&& (pThread->thread_flag & THREAD_THREAD_FLAG)
+			&& ((pThread->thread_flag & THREAD_REMOTE_FLAG) == 0x00)
+			&& ((pThread->thread_flag & THREAD_PRIVATE_FLAG) == 0x00)
+			&& ((pThread->thread_flag & THREAD_CORE_FLAG) == 0x00))
 		{
-			_thread_busy_idle_notify(&_thread_busy_idle[thread_index]);
+			if(_notify_busy_flag == dave_false)
+			{
+				if(_thread_busy_idle_detected_busy(pThread) == dave_true)
+				{
+					notify_busy = dave_true;
+					break;
+				}
+			}
+			else
+			{
+				if(_thread_busy_idle_detected_idle(pThread) == dave_false)
+				{
+					break;
+				}
+			}
 		}
 	}
-}
+	if((_notify_busy_flag == dave_true) && (thread_index >= THREAD_MAX))
+	{
+		notify_idle = dave_true;
+	}
 
-static void
-_thread_busy_idle_cfg_reset(void)
-{
-	_thread_busy_msg_notify_min = cfg_get_ub(CFG_THREAD_BUSY_MSG_MIN, THREAD_BUSY_MSG_NOTIFY_MIN);
-
-	THREADDEBUG("_thread_busy_msg_notify_min:%d", _thread_busy_msg_notify_min);
+	if(notify_busy == dave_true)
+	{
+		_notify_last_time = dave_os_time_s();
+		_notify_busy_flag = dave_true;
+		_thread_busy_idle_system_notify(_notify_busy_flag);
+	}
+	else if(notify_idle == dave_true)
+	{
+		_notify_last_time = dave_os_time_s();
+		_notify_busy_flag = dave_false;
+		_thread_busy_idle_system_notify(_notify_busy_flag);
+	}
 }
 
 // =====================================================================
@@ -353,29 +156,25 @@ _thread_busy_idle_cfg_reset(void)
 void
 thread_busy_idle_init(ThreadStruct *thread_struct)
 {
-	_thread_busy_idle_cfg_reset();
-
-	_thread_busy_idle_reset(thread_struct);
+	_thread_struct = thread_struct;
+	_notify_last_time = dave_os_time_s();
+	_notify_busy_flag = dave_false;
 }
 
 void
 thread_busy_idle_exit(void)
 {
-	_thread_busy_idle_clear();
-}
 
-void
-thread_busy_idle_cfg_update(CFGUpdate *pUpdate)
-{
-	if(dave_strcmp(pUpdate->cfg_name, CFG_THREAD_BUSY_MSG_MIN) == dave_true)
-	{
-		_thread_busy_idle_cfg_reset();
-	}
 }
 
 void
 thread_busy_idle_check(void)
 {
+	if((dave_os_time_s() - _notify_last_time) < HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED)
+	{
+		return;
+	}
+
 	_thread_busy_idle_check();
 }
 

@@ -63,7 +63,7 @@ _thread_queue_malloc(ThreadQueue *pQueue_ptr, ub queue_number)
 
 			pQueue->on_queue_process = dave_false;
 
-			pQueue->list_number = 0;
+			pQueue->msg_number = 0;
 			pQueue->queue_head = pQueue->queue_tail = NULL;
 
 			pQueue->queue_received_counter = 0;
@@ -86,7 +86,7 @@ _thread_queue_free(ThreadQueue *pQueue_ptr, ub queue_number)
 	
 		SAFECODEv2W(pQueue->queue_opt_pv, {
 
-			for(list_index=0; list_index<pQueue->list_number; list_index++)
+			for(list_index=0; list_index<pQueue->msg_number; list_index++)
 			{
 				if(pQueue->queue_head == NULL)
 					break;
@@ -96,14 +96,14 @@ _thread_queue_free(ThreadQueue *pQueue_ptr, ub queue_number)
 				pQueue->queue_head = pNext;
 			}
 
-			if(list_index < pQueue->list_number)
+			if(list_index < pQueue->msg_number)
 			{
 				THREADLOG("Arithmetic error:%d/%d/%x",
-					list_index, pQueue->list_number,
+					list_index, pQueue->msg_number,
 					pQueue->queue_head);
 			}
 
-			pQueue->list_number = 0;
+			pQueue->msg_number = 0;
 			pQueue->queue_head = pQueue->queue_tail = NULL;
 
 			pQueue->queue_received_counter = 0;
@@ -122,7 +122,7 @@ _thread_queue_sum_total(ub *unprocessed, ub *received, ub *processed, ThreadQueu
 
 	for(queue_index=0; queue_index<queue_number; queue_index++)
 	{
-		unprocessed_total_counter += (pQueue_ptr[queue_index].list_number);
+		unprocessed_total_counter += (pQueue_ptr[queue_index].msg_number);
 		list_received_counter += (pQueue_ptr[queue_index].queue_received_counter);
 		list_processed_counter += (pQueue_ptr[queue_index].queue_processed_counter);
 	}
@@ -144,7 +144,7 @@ _thread_queue_list_total(ThreadQueue *pQueue_ptr, ub queue_number)
 	{
 		pQueue = &(pQueue_ptr[queue_index]);
 
-		list_total_counter += (pQueue->list_number);
+		list_total_counter += (pQueue->msg_number);
 	}
 
 	return list_total_counter;
@@ -173,7 +173,7 @@ _thread_queue_num_msg_id(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 
 			pNext = pQueue->queue_head;
 
-			for(list_index=0; list_index<pQueue->list_number; list_index++)
+			for(list_index=0; list_index<pQueue->msg_number; list_index++)
 			{
 				if(pNext == NULL)
 					break;
@@ -186,10 +186,10 @@ _thread_queue_num_msg_id(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 				pNext = (ThreadMsg *)(pNext->next);
 			}
 
-			if(list_index < pQueue->list_number)
+			if(list_index < pQueue->msg_number)
 			{
 				THREADLOG("Arithmetic error:%d/%d/%x",
-					list_index, pQueue->list_number,
+					list_index, pQueue->msg_number,
 					pQueue->queue_head);
 			}
 
@@ -202,7 +202,7 @@ _thread_queue_num_msg_id(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
 static inline ub
 _thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 {
-	pQueue->list_number ++;
+	pQueue->msg_number ++;
 
 	if(pQueue->queue_head == NULL)
 	{
@@ -217,7 +217,7 @@ _thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 
 	pMsg->msg_body.msg_build_serial = pQueue->queue_received_counter ++;
 
-	return pQueue->list_number;
+	return pQueue->msg_number;
 }
 
 static inline ThreadMsg *
@@ -240,13 +240,13 @@ _thread_queue_read(ThreadQueue *pQueue)
 		pQueue->queue_head = (ThreadMsg *)(pQueue->queue_head->next);
 	}
 
-	if(pQueue->list_number == 0)
+	if(pQueue->msg_number == 0)
 	{
 		THREADLOG("Arithmetic error");
 	}
 	else
 	{
-		pQueue->list_number --;
+		pQueue->msg_number --;
 	}
 
 	pQueue->queue_processed_counter ++;
@@ -304,11 +304,11 @@ thread_queue_free(ThreadQueue *pQueue, ub queue_number)
 ub
 thread_queue_write(ThreadQueue *pQueue, ThreadMsg *pMsg)
 {
-	ub list_number = 0;
+	ub msg_number = 0;
 
-	SAFECODEv2W(pQueue->queue_opt_pv, list_number = _thread_queue_write(pQueue, pMsg); );
+	SAFECODEv2W(pQueue->queue_opt_pv, msg_number = _thread_queue_write(pQueue, pMsg); );
 
-	return list_number;
+	return msg_number;
 }
 
 ThreadMsg *
@@ -369,25 +369,25 @@ thread_queue_on_process_down(ThreadQueue *pQueue)
 	SAFECODEv2W(pQueue->queue_opt_pv, { pQueue->on_queue_process = dave_false; } );
 }
 
-ub
-thread_queue_num_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
-{
-	if(msg_id == MSGID_RESERVED)
-		return _thread_queue_num_msg_any(pQueue_ptr, queue_number);
-	else
-		return _thread_queue_num_msg_id(pQueue_ptr, queue_number, msg_id);
-}
-
 void
-thread_queue_total(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
+thread_queue_total_detail(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
 {
 	_thread_queue_sum_total(unprocessed, received, processed, pQueue_ptr, queue_number);
 }
 
 ub
-thread_queue_list(ThreadQueue *pQueue_ptr, ub queue_number)
+thread_queue_total_number(ThreadQueue *pQueue_ptr, ub queue_number)
 {
 	return _thread_queue_list_total(pQueue_ptr, queue_number);
+}
+
+ub
+thread_queue_total_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id)
+{
+	if(msg_id == MSGID_RESERVED)
+		return _thread_queue_num_msg_any(pQueue_ptr, queue_number);
+	else
+		return _thread_queue_num_msg_id(pQueue_ptr, queue_number, msg_id);
 }
 
 #endif

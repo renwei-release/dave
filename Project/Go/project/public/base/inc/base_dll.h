@@ -50,19 +50,35 @@ API void dave_dll_thread_msg_release(void *ptr, char *fun, int line);
 
 API int dave_dll_thread_id_msg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
+API int dave_dll_thread_id_qmsg(unsigned long long dst_id, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
 API void * dave_dll_thread_id_co(unsigned long long dst_id, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
+
+API void * dave_dll_thread_id_qco(unsigned long long dst_id, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
 
 API int dave_dll_thread_name_msg(char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
+API int dave_dll_thread_name_qmsg(char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
 API void * dave_dll_thread_name_co(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
+
+API void * dave_dll_thread_name_qco(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
 
 API int dave_dll_thread_gid_msg(char *gid, char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
+API int dave_dll_thread_gid_qmsg(char *gid, char *dst_thread, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
 API void * dave_dll_thread_gid_co(char *gid, char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
+
+API void * dave_dll_thread_gid_qco(char *gid, char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
 
 API int dave_dll_thread_uid_msg(char *uid, int msg_id, int msg_len, void *msg_body, char *fun, int line);
 
+API int dave_dll_thread_uid_qmsg(char *uid, int msg_id, int msg_len, void *msg_body, char *fun, int line);
+
 API void * dave_dll_thread_uid_co(char *uid, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
+
+API void * dave_dll_thread_uid_qco(char *uid, int req_id, int req_len, void *req_body, int rsp_id, char *fun, int line);
 
 API void * dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line);
 

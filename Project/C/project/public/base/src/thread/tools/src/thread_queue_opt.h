@@ -26,11 +26,11 @@ ThreadMsg * thread_queue_on_process_up(ThreadQueue *pQueue);
 
 void thread_queue_on_process_down(ThreadQueue *pQueue);
 
-ub thread_queue_num_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id);
+void thread_queue_total_detail(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number);
 
-void thread_queue_total(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number);
+ub thread_queue_total_number(ThreadQueue *pQueue_ptr, ub queue_number);
 
-ub thread_queue_list(ThreadQueue *pQueue_ptr, ub queue_number);
+ub thread_queue_total_msg(ThreadQueue *pQueue_ptr, ub queue_number, ub msg_id);
 
 #endif
 

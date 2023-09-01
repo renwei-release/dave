@@ -100,14 +100,21 @@ _sync_client_queue_upload(
 BaseMsgType
 sync_client_queue_enable(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, BaseMsgType msg_type)
 {
-	if((msg_type != BaseMsgType_Unicast) && (msg_type != BaseMsgType_Unicast_queue))
+	if(msg_type != BaseMsgType_Unicast_queue)
 	{
 		return msg_type;
 	}
 
-	if((msg_type == BaseMsgType_Unicast) && (pServer->server_busy == dave_true))
+	if(pServer->server_busy == dave_false)
 	{
-		msg_type = BaseMsgType_Unicast_queue;
+		/*
+		 * When not busy,
+		 * messages that need to go to the queue service can go to the non-queue service.
+		 */
+		if(msg_type == BaseMsgType_Unicast_queue)
+		{
+			msg_type = BaseMsgType_Unicast;
+		}
 	}
 
 	if(msg_type == BaseMsgType_Unicast_queue)

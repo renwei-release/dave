@@ -79,6 +79,13 @@ _sync_server_run_internal(
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				_sync_server_run_cfg_remote_update(pClient, (CFGRemoteSyncUpdate *)(msg_body));
 			break;
+		case MSGID_THREAD_BUSY:
+		case MSGID_THREAD_IDLE:
+		case MSGID_CLIENT_BUSY:
+		case MSGID_CLIENT_IDLE:
+		case MSGID_SYSTEM_BUSY:
+		case MSGID_SYSTEM_IDLE:
+			break;
 		default:
 				process_flag = dave_false;
 			break;

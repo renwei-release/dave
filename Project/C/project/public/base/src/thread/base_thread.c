@@ -346,7 +346,7 @@ _thread_safe_read_msg_queue(ThreadStruct *pThread)
 
 		pQueue = &(pThread->msg_queue[queue_index ++]);
 
-		if(pQueue->list_number > 0)
+		if(pQueue->msg_number > 0)
 		{
 			pMsg = thread_queue_read(pQueue);
 		}
@@ -390,7 +390,7 @@ _thread_safe_read_seq_queue(ThreadStruct *pThread)
 
 		pQueue = &(pThread->seq_queue[queue_index ++]);
 
-		if((pQueue->list_number > 0)
+		if((pQueue->msg_number > 0)
 			&& (pQueue->on_queue_process == dave_false))
 		{
 			pMsg = thread_queue_on_process_up(pQueue);
@@ -436,7 +436,7 @@ _thread_safe_read_pre_queue(ThreadStruct *pThread)
 
 		pQueue = &(pThread->pre_queue[queue_index ++]);
 
-		if(pQueue->list_number > 0)
+		if(pQueue->msg_number > 0)
 		{
 			pMsg = thread_queue_read(pQueue);
 		}
@@ -755,7 +755,7 @@ _thread_build_tick_message(void)
 
 				if(pThread->thread_flag & THREAD_TICK_WAKEUP)
 				{
-					if(thread_num_msg(pThread, MSGID_RESERVED) == 0)
+					if(thread_total_number(pThread) == 0)
 					{
 						pWakeup = thread_msg(pWakeup);
 
@@ -818,7 +818,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		THREADLOG("id:%d index:%d name:%s/%s wakeup:%d has already withdrawn!",
 			thread_id, thread_index, pThread->thread_name, thread_name, wakeup_index);
 
-		return thread_num_msg(pThread, MSGID_RESERVED);
+		return thread_total_number(pThread);
 	}
 
 	if(thread_id != pThread->thread_id)
@@ -826,7 +826,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		THREADABNOR("thread_id mismatch! %d,%d/%s,%d",
 			thread_id, pThread->thread_id, pThread->thread_name, thread_index);
 
-		return thread_num_msg(pThread, MSGID_RESERVED);
+		return thread_total_number(pThread);
 	}
 
 	pMsg = _thread_read_msg(pThread, pTThread);
@@ -867,7 +867,7 @@ _thread_one_message_execution(void *pTThread, ThreadId thread_id, s8 *thread_nam
 		thread_clean_msg(pMsg);
 	}
 
-	return thread_num_msg(pThread, MSGID_RESERVED);
+	return thread_total_number(pThread);
 }
 
 static inline ub
@@ -1813,7 +1813,7 @@ base_thread_id_msg(
 
 		if((msg_number > 0)
 			&& (dst_id != INVALID_THREAD_ID)
-			&& (thread_num_msg(thread_find_busy_thread(dst_id), msg_id) > msg_number))
+			&& (thread_total_msg(thread_find_busy_thread(dst_id), msg_id) > msg_number))
 		{
 			ret  = dave_true; free_input = dave_true;		
 		}

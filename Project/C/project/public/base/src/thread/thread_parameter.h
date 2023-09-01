@@ -10,7 +10,7 @@
 
 #define THREAD_NAME_MAX (DAVE_THREAD_NAME_LEN)
 // the max is 1024, please see LOCAL_MAX_VALUE define.
-#define THREAD_MAX (256)
+#define THREAD_MAX (64)
 #define THREAD_THREAD_MAX (1024)
 #define THREAD_MSG_QUEUE_NUM (64)
 #define THREAD_SEQ_QUEUE_NUM (32)

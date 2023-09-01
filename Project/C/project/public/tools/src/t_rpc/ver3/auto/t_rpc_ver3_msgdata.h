@@ -577,10 +577,20 @@ dave_bool t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void 
 void * t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_StoreMysqlRsp(void);
 
+void * t_rpc_ver3_zip_SystemBusy(SystemBusy *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SystemBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SystemBusy(SystemBusy *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SystemBusy(void);
+
 void * t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemDecoupling(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SystemDecoupling(SystemDecoupling *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_SystemDecoupling(void);
+
+void * t_rpc_ver3_zip_SystemIdle(SystemIdle *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SystemIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SystemIdle(SystemIdle *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SystemIdle(void);
 
 void * t_rpc_ver3_zip_SystemMount(SystemMount *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemMount(void **unzip_data, ub *unzip_len, void *pStructBson);

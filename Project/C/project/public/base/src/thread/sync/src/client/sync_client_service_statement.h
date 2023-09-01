@@ -14,5 +14,7 @@ void sync_client_service_statement_rx(SyncServer *pServer, ub frame_len, s8 *fra
 
 void sync_client_service_statement_tx(SyncServer *pServer);
 
+ub sync_client_service_statement_info(s8 *info_ptr, ub info_len, SyncServer *pServer);
+
 #endif
 

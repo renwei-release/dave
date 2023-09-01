@@ -32,7 +32,7 @@ thread_queue_end(ThreadStruct *pThread, BaseMsgType msg_type)
 
 		pRsp->ret = RetCode_OK;
 		dave_strcpy(pRsp->name, pThread->thread_name, sizeof(pRsp->name));
-		pRsp->msg_number = thread_num_msg(pThread, MSGID_RESERVED);
+		pRsp->msg_number = thread_total_number(pThread);
 		pRsp->thread_number = pThread->level_number;
 		pRsp->ptr = NULL;
 

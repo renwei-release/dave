@@ -157,8 +157,6 @@ static void
 _thread_guardian_cfg_update(CFGUpdate *pUpdate)
 {
 	thread_chain_reload_cfg(pUpdate);
-
-	thread_busy_idle_cfg_update(pUpdate);
 }
 
 static void

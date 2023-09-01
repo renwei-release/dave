@@ -6997,6 +6997,67 @@ t_rpc_ver3_sizeof_StoreMysqlRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_SystemBusy(SystemBusy *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SystemBusy) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SystemBusy) does not match(%d/%d), please contact the message settlers!", sizeof(SystemBusy), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-verno", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->verno), 1, DAVE_VERNO_STR_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SystemBusy(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SystemBusy *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SystemBusy);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->verno), 1, DAVE_VERNO_STR_LEN, t_bson_inq_object(pStructBson, "s8-verno"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_SystemBusy(SystemBusy *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SystemBusy(void)
+{
+	return sizeof(SystemBusy);
+}
+
+void *
 t_rpc_ver3_zip_SystemDecoupling(SystemDecoupling *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -7052,6 +7113,67 @@ ub
 t_rpc_ver3_sizeof_SystemDecoupling(void)
 {
 	return sizeof(SystemDecoupling);
+}
+
+void *
+t_rpc_ver3_zip_SystemIdle(SystemIdle *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SystemIdle) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SystemIdle) does not match(%d/%d), please contact the message settlers!", sizeof(SystemIdle), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-verno", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->verno), 1, DAVE_VERNO_STR_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SystemIdle(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SystemIdle *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SystemIdle);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->verno), 1, DAVE_VERNO_STR_LEN, t_bson_inq_object(pStructBson, "s8-verno"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_SystemIdle(SystemIdle *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SystemIdle(void)
+{
+	return sizeof(SystemIdle);
 }
 
 void *
@@ -7289,7 +7411,6 @@ t_rpc_ver3_zip_ThreadBusy(ThreadBusy *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "ThreadId-thread_id", t_rpc_ver3_zip_ThreadId(zip_data->thread_id));
 	t_bson_add_object(pStructBson, "s8-thread_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->thread_name), 1, DAVE_THREAD_NAME_LEN));
-	t_bson_add_object(pStructBson, "ub-msg_id", t_rpc_ver3_zip_ub(zip_data->msg_id));
 	t_bson_add_object(pStructBson, "ub-msg_number", t_rpc_ver3_zip_ub(zip_data->msg_number));
 
 	return pStructBson;
@@ -7315,7 +7436,6 @@ t_rpc_ver3_unzip_ThreadBusy(void **unzip_data, ub *unzip_len, void *pStructBson)
 
 		t_rpc_ver3_unzip_ThreadId(&(pUnzip->thread_id), t_bson_inq_object(pStructBson, "ThreadId-thread_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->thread_name), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-thread_name"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->msg_id), t_bson_inq_object(pStructBson, "ub-msg_id"));
 		t_rpc_ver3_unzip_ub(&(pUnzip->msg_number), t_bson_inq_object(pStructBson, "ub-msg_number"));
 	}
 

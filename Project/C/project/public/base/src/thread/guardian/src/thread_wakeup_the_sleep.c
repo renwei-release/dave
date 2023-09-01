@@ -21,7 +21,7 @@
 
 #define WAIT_SOME_TIME_THEN_WAKEUP 3
 
-static void
+static inline void
 _thread_wakeup_the_wakeup_failed_thread(ThreadStruct *thread_struct)
 {
 	ub thread_index;
@@ -40,11 +40,11 @@ _thread_wakeup_the_wakeup_failed_thread(ThreadStruct *thread_struct)
 	}
 }
 
-static void
+static inline void
 _thread_wakeup_the_idle_thread(ThreadStruct *thread_struct)
 {
 	ub thread_index;
-	ub msg_list_total, seq_list_total, current_idle_total;
+	ub current_idle_total;
 	ThreadStruct *pThread;
 	ub current_time = dave_os_time_s();
 
@@ -55,10 +55,7 @@ _thread_wakeup_the_idle_thread(ThreadStruct *thread_struct)
 		if((pThread->thread_id != INVALID_THREAD_ID)
 			&& (pThread->thread_flag & THREAD_THREAD_FLAG))
 		{
-			msg_list_total = thread_queue_list(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-			seq_list_total = thread_queue_list(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-
-			current_idle_total = msg_list_total + seq_list_total;
+			current_idle_total = thread_total_number(pThread);
 
 			if((current_idle_total == 0) || (current_idle_total != pThread->message_idle_total))
 			{

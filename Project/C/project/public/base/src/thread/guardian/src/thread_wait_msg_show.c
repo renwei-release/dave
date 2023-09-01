@@ -72,7 +72,7 @@ _thread_wait_queue_show(WaitMsgShow *show_ptr, ub show_num, ThreadQueue *pQueue_
 
 		pMsg = pQueue->queue_head;
 
-		for(list_index=0; list_index<pQueue->list_number; list_index++)
+		for(list_index=0; list_index<pQueue->msg_number; list_index++)
 		{
 			if(pMsg == NULL)
 				break;

@@ -71,9 +71,9 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 	{
 		if(pThread[thread_index].thread_id != INVALID_THREAD_ID)
 		{
-			thread_queue_total(&msg_unprocessed_counter, &msg_received_counter, &msg_processed_counter, pThread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
-			thread_queue_total(&seq_unprocessed_counter, &seq_received_counter, &seq_processed_counter, pThread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
-			thread_queue_total(&pre_unprocessed_counter, &pre_received_counter, &pre_processed_counter, pThread[thread_index].pre_queue, THREAD_PRE_QUEUE_NUM);
+			thread_queue_total_detail(&msg_unprocessed_counter, &msg_received_counter, &msg_processed_counter, pThread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
+			thread_queue_total_detail(&seq_unprocessed_counter, &seq_received_counter, &seq_processed_counter, pThread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
+			thread_queue_total_detail(&pre_unprocessed_counter, &pre_received_counter, &pre_processed_counter, pThread[thread_index].pre_queue, THREAD_PRE_QUEUE_NUM);
 			co_unprocessed_counter = pThread[thread_index].coroutines_site_creat_counter - pThread[thread_index].coroutines_site_release_counter;
 			co_received_counter = pThread[thread_index].coroutines_site_creat_counter;
 			co_processed_counter = pThread[thread_index].coroutines_site_release_counter;
@@ -663,7 +663,7 @@ thread_local_remove_notify(s8 *thread_name)
 }
 
 ub
-thread_num_msg(ThreadStruct *pThread, ub msg_id)
+thread_total_msg(ThreadStruct *pThread, ub msg_id)
 {
 	ub number;
 
@@ -672,9 +672,26 @@ thread_num_msg(ThreadStruct *pThread, ub msg_id)
 		return 0;
 	}
 
-	number = thread_queue_num_msg(pThread->msg_queue, THREAD_MSG_QUEUE_NUM, msg_id);
-	number += thread_queue_num_msg(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM, msg_id);
-	number += thread_queue_num_msg(pThread->pre_queue, THREAD_PRE_QUEUE_NUM, msg_id);
+	number = thread_queue_total_msg(pThread->msg_queue, THREAD_MSG_QUEUE_NUM, msg_id);
+	number += thread_queue_total_msg(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM, msg_id);
+	number += thread_queue_total_msg(pThread->pre_queue, THREAD_PRE_QUEUE_NUM, msg_id);
+
+	return number;
+}
+
+ub
+thread_total_number(ThreadStruct *pThread)
+{
+	ub number;
+
+	if(pThread == NULL)
+	{
+		return 0;
+	}
+
+	number = thread_queue_total_number(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
+	number += thread_queue_total_number(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
+	number += thread_queue_total_number(pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
 
 	return number;
 }

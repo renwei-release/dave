@@ -12,8 +12,6 @@ void thread_busy_idle_init(ThreadStruct *thread_struct);
 
 void thread_busy_idle_exit(void);
 
-void thread_busy_idle_cfg_update(CFGUpdate *pUpdate);
-
 void thread_busy_idle_check(void);
 
 #endif

@@ -928,11 +928,25 @@ type StoreMysqlRsp struct {
 	Ptr uint64
 }
 
+/* for MSGID_SYSTEM_BUSY message */
+type SystemBusy struct {
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Ptr uint64
+}
+
 /* for MSGID_SYSTEM_DECOUPLING message */
 type SystemDecoupling struct {
 	Socket int32
 	Verno [DAVE_VERNO_STR_LEN] byte
 	Netinfo SocNetInfo
+}
+
+/* for MSGID_SYSTEM_IDLE message */
+type SystemIdle struct {
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Verno [DAVE_VERNO_STR_LEN] byte
+	Ptr uint64
 }
 
 /* for MSGID_SYSTEM_MOUNT message */
@@ -961,7 +975,6 @@ type TemporarilyDefineMessageMsg struct {
 type ThreadBusy struct {
 	Thread_id uint64
 	Thread_name [DAVE_THREAD_NAME_LEN] byte
-	Msg_id uint64
 	Msg_number uint64
 }
 

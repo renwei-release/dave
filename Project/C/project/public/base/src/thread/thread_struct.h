@@ -35,7 +35,7 @@ typedef struct {
 
 	dave_bool on_queue_process;
 
-	ub list_number;
+	ub msg_number;
 	ThreadMsg *queue_head;
 	ThreadMsg *queue_tail;
 

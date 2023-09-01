@@ -129,7 +129,6 @@ typedef struct {
 typedef struct {
 	ThreadId thread_id;
 	s8 thread_name[DAVE_THREAD_NAME_LEN];
-	ub msg_id;
 	ub msg_number;
 } ThreadBusy;
 
@@ -372,6 +371,20 @@ typedef struct {
 	ub thread_number;
 	void *ptr;
 } QueueRunMsgRsp;
+
+/* for MSGID_SYSTEM_BUSY message */
+typedef struct {
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 verno[DAVE_VERNO_STR_LEN];
+	void *ptr;
+} SystemBusy;
+
+/* for MSGID_SYSTEM_IDLE message */
+typedef struct {
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 verno[DAVE_VERNO_STR_LEN];
+	void *ptr;
+} SystemIdle;
 
 #endif
 

@@ -30,6 +30,7 @@
 #include "sync_client_info.h"
 #include "sync_client_route.h"
 #include "sync_client_queue.h"
+#include "sync_client_app_tx.h"
 #include "sync_client_service_statement.h"
 #include "sync_test.h"
 #include "sync_lock.h"
@@ -503,15 +504,19 @@ _sync_client_guard_time(TIMERID timer_id, ub thread_index)
 }
 
 static void
-_sync_client_busy(ClientBusy *pBusy)
+_sync_client_system_busy(SystemBusy *pBusy)
 {
-	sync_client_tx_system_state(dave_true);
+	sync_client_data_set_busy(dave_true);
+
+	sync_client_tx_system_state(NULL);
 }
 
 static void
-_sync_client_idle(ClientIdle *pIdle)
+_sync_client_system_idle(SystemIdle *pIdle)
 {
-	sync_client_tx_system_state(dave_false);
+	sync_client_data_set_busy(dave_false);
+
+	sync_client_tx_system_state(NULL);
 }
 
 static void
@@ -726,7 +731,10 @@ _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 static void
 _sync_client_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 {
-	sync_client_tx_run_internal_msg_req(MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), pUpdate, dave_false);
+	sync_client_tx_run_internal_msg_req(
+		sync_client_data_sync_server(),
+		MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), pUpdate,
+		dave_false);
 }
 
 static void
@@ -772,11 +780,11 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_SYSTEM_DECOUPLING:
 				_sync_client_safe_system_decoupling(msg->msg_src, (SystemDecoupling *)(msg->msg_body));
 			break;
-		case MSGID_CLIENT_BUSY:
-				_sync_client_busy((ClientBusy *)(msg->msg_body));
+		case MSGID_SYSTEM_BUSY:
+				_sync_client_system_busy((SystemBusy *)(msg->msg_body));
 			break;
-		case MSGID_CLIENT_IDLE:
-				_sync_client_idle((ClientIdle *)(msg->msg_body));
+		case MSGID_SYSTEM_IDLE:
+				_sync_client_system_idle((SystemIdle *)(msg->msg_body));
 			break;
 		case MSGID_INTERNAL_LOOP:
 				SYNCLOG("This message should not appear here, it is already handled in module base_rxtx!");
@@ -808,6 +816,10 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_REMOTE_THREAD_READY:
 		case MSGID_REMOTE_THREAD_REMOVE:
 		case MSGID_ECHO:
+		case MSGID_THREAD_BUSY:
+		case MSGID_THREAD_IDLE:
+		case MSGID_CLIENT_BUSY:
+		case MSGID_CLIENT_IDLE:
 			break;
 		default:
 				_sync_client_route(msg);

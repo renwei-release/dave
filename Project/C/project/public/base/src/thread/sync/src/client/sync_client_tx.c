@@ -108,33 +108,21 @@ _sync_client_tx_run_internal_msg_v2_req(
 	return _sync_client_tx(pServer, ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ, snd_buffer);
 }
 
-static dave_bool
-_sync_client_tx_busy(void)
-{
-	ClientBusy busy;
-
-	dave_strcpy(busy.verno, dave_verno(), DAVE_VERNO_STR_LEN);
-
-	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_BUSY, sizeof(ClientBusy), &busy, dave_false);
-}
-
-static dave_bool
-_sync_client_tx_idle(void)
-{
-	ClientIdle idle; 
-
-	dave_strcpy(idle.verno, dave_verno(), DAVE_VERNO_STR_LEN);
-
-	return sync_client_tx_run_internal_msg_req(MSGID_CLIENT_IDLE, sizeof(ClientIdle), &idle, dave_false);
-}
-
 // =====================================================================
 
 dave_bool
-sync_client_tx_run_internal_msg_req(ub msg_id, ub msg_len, void *msg_body, dave_bool pop_flag)
+sync_client_tx_run_internal_msg_req(
+	SyncServer *pServer,
+	ub msg_id, ub msg_len, void *msg_body,
+	dave_bool pop_flag)
 {
-	SyncServer *pServer = sync_client_data_sync_server();
 	dave_bool ret;
+
+	if(pServer == NULL)
+	{
+		SYNCLOG("send msg:%s failed! pServer is NULL.", msgstr(msg_id));
+		return dave_false;
+	}
 
 	SYNCTRACE("server_cnt:%d msg_id:%s", pServer->server_cnt, msgstr(msg_id));
 
@@ -399,21 +387,6 @@ sync_client_tx_service_statement(SyncServer *pServer, s8 *service_statement)
 	snd_buffer->len = snd_buffer->tot_len = sync_str_packet((u8 *)ms8(snd_buffer), mlen(snd_buffer), service_statement);
 
 	return _sync_client_tx(pServer, ORDER_CODE_SERVICE_STATEMENT, snd_buffer);
-}
-
-dave_bool
-sync_client_tx_system_state(dave_bool busy)
-{
-	SYNCLOG("%s", busy==dave_true?"busy":"idle");
-
-	if(busy == dave_true)
-	{
-		return _sync_client_tx_busy();
-	}
-	else
-	{
-		return _sync_client_tx_idle();
-	}
 }
 
 #endif

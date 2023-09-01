@@ -65,5 +65,9 @@ LinkThread * sync_client_data_thread_on_name(s8 *thread_name);
 
 SyncServer * sync_client_gid_to_server(s8 *gid);
 
+void sync_client_data_set_busy(dave_bool busy_flag);
+
+dave_bool sync_client_data_get_busy(void);
+
 #endif
 

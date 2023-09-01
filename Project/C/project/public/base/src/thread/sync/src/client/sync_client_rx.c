@@ -26,6 +26,7 @@
 #include "sync_client_link.h"
 #include "sync_client_ntp.h"
 #include "sync_client_service_statement.h"
+#include "sync_client_app_tx.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -109,18 +110,21 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 		sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pServer->host_name, sizeof(pServer->host_name));
 	}
 
+	dave_strcpy(pServer->verno, verno, sizeof(pServer->verno));
+
 	if(pServer->work_start_second == 0)
 	{
 		pServer->work_start_second = dave_os_time_s();
 
-		SYNCLOG("server:%x socket:%d %s/%s/%s (%d%d%d%d)",
+		SYNCLOG("server:%x socket:%d %s/%s/%s (%d%d%d%d%d)",
 			pServer, pServer->server_socket,
-			pServer->globally_identifier, verno, pServer->host_name,
+			pServer->globally_identifier, pServer->verno, pServer->host_name,
 			pServer->server_connecting, pServer->server_cnt,
-			pServer->server_booting, pServer->server_ready);
-	}
+			pServer->server_booting, pServer->server_ready,
+			pServer->server_busy);
 
-	dave_strcpy(pServer->verno, verno, sizeof(pServer->verno));
+		sync_client_tx_system_state(pServer);
+	}
 
 	_sync_client_thread_name_sync_booting(pServer, detect_my_ip);
 }
@@ -337,7 +341,7 @@ _sync_client_rx_run_internal_msg_req(SyncServer *pServer, ub frame_len, u8 *fram
 
 	if((src[0] != '\0') && (dst[0] != '\0') && (msg_id != MSGID_RESERVED) && (msg_len > 0))
 	{
-		sync_client_run_internal(src, dst, msg_id, msg_len, msg_body);
+		sync_client_run_internal(pServer, src, dst, msg_id, msg_len, msg_body);
 	}
 	else
 	{
@@ -379,7 +383,7 @@ _sync_client_rx_run_internal_msg_v2_req(SyncServer *pServer, ub frame_len, u8 *f
 
 	if((src[0] != '\0') && (dst[0] != '\0') && (msg_id != MSGID_RESERVED) && (msg_len > 0))
 	{
-		sync_client_run_internal(src, dst, msg_id, msg_len, msg_body);
+		sync_client_run_internal(pServer, src, dst, msg_id, msg_len, msg_body);
 	}
 	else
 	{

@@ -89,7 +89,10 @@ _sync_client_internal_buffer_pop(void)
 				if(_head->pServer->server_cnt == dave_false)
 					break;
 
-				if(sync_client_tx_run_internal_msg_req(_head->msg_id, _head->msg_len, _head->msg_body, dave_true) == dave_false)
+				if(sync_client_tx_run_internal_msg_req(
+						_head->pServer,
+						_head->msg_id, _head->msg_len, _head->msg_body,
+						dave_true) == dave_false)
 					break;
 
 				SYNCTRACE("msg_id:%s msg_len:%d", msgstr(_head->msg_id), _head->msg_len);

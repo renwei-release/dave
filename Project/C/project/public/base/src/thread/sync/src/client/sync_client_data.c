@@ -42,6 +42,7 @@ static LinkThread _link_thread[SYNC_THREAD_MAX];
 static s8 _local_thread_name[SYNC_THREAD_MAX][SYNC_THREAD_NAME_LEN];
 static void *_thread_id_to_link_kv = NULL;
 static void *_gid_to_server_kv = NULL;
+static dave_bool _system_busy_flag = dave_false;
 
 static LinkThread * _sync_client_data_thread_del(SyncServer *pServer, s8 *thread_name, ub thread_index);
 
@@ -871,6 +872,7 @@ sync_client_data_init(void)
 	dave_memset(_socket_fast_index, 0x00, sizeof(_socket_fast_index));
 	dave_memset(_link_thread, 0x00, sizeof(_link_thread));
 	dave_memset(_local_thread_name, 0x00, sizeof(_local_thread_name));
+	_system_busy_flag = dave_false;
 
 	_sync_client_data_link_kv_init();
 
@@ -1148,6 +1150,18 @@ SyncServer *
 sync_client_gid_to_server(s8 *gid)
 {
 	return _sync_client_data_gid_kv_inq(gid);
+}
+
+void
+sync_client_data_set_busy(dave_bool busy_flag)
+{
+	_system_busy_flag = busy_flag;
+}
+
+dave_bool
+sync_client_data_get_busy(void)
+{
+	return _system_busy_flag;
 }
 
 #endif
