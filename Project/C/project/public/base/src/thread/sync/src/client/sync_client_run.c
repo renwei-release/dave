@@ -273,7 +273,7 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 static void
 _sync_client_server_busy(SyncServer *pServer)
 {
-	SYNCLOG("%s/%s %s->busy",
+	SYNCTRACE("%s/%s %s->busy",
 		pServer->globally_identifier, pServer->verno,
 		pServer->server_busy==dave_true?"busy":"idle");
 
@@ -283,7 +283,7 @@ _sync_client_server_busy(SyncServer *pServer)
 static void
 _sync_client_server_idle(SyncServer *pServer)
 {
-	SYNCLOG("%s/%s %s->idle",
+	SYNCTRACE("%s/%s %s->idle",
 		pServer->globally_identifier, pServer->verno,
 		pServer->server_busy==dave_true?"busy":"idle");
 
