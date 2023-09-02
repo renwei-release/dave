@@ -608,16 +608,19 @@ _sync_client_route(MSGBODY *pMsg)
 		return;
 	}
 
-	msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
-	if(msg_dst == INVALID_THREAD_ID)
+	if(pMsg->msg_type != BaseMsgType_Broadcast_remote)
 	{
-		SYNCLOG("%lx/%s->%lx/%s:%s change failed!",
-			pMsg->msg_src, thread_name(pMsg->msg_src),
-			pMsg->msg_dst, thread_name(pMsg->msg_dst),
-			msgstr(pMsg->msg_id));
-		return;
+		msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
+		if(msg_dst == INVALID_THREAD_ID)
+		{
+			SYNCLOG("%lx/%s->%lx/%s:%s change failed!",
+				pMsg->msg_src, thread_name(pMsg->msg_src),
+				pMsg->msg_dst, thread_name(pMsg->msg_dst),
+				msgstr(pMsg->msg_id));
+			return;
+		}
+		pMsg->msg_dst = msg_dst;
 	}
-	pMsg->msg_dst = msg_dst;
 
 	sync_client_message_route(pMsg);
 }
@@ -815,7 +818,6 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 		case MSGID_REMOTE_THREAD_READY:
 		case MSGID_REMOTE_THREAD_REMOVE:
-		case MSGID_ECHO:
 		case MSGID_THREAD_BUSY:
 		case MSGID_THREAD_IDLE:
 		case MSGID_CLIENT_BUSY:

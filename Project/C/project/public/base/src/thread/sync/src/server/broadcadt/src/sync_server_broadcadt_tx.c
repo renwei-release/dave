@@ -53,8 +53,6 @@ _sync_server_broadcadt_the_msg_to_all_client(
 
 		if(pDstThread->thread_name[0] != '\0')
 		{
-			SYNCTRACE("%s->%s:%d", pSrcThread->thread_name, pDstThread->thread_name, msg_id);
-
 			for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 			{
 				pDstClient = pDstThread->pClient[client_index];

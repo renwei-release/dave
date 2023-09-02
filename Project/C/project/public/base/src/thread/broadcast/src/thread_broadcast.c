@@ -38,8 +38,7 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 		return dave_false;
 	}
 
-	if((type == BaseMsgType_Broadcast_thread)
-		&& (base_thread_attrib(self_id) == LOCAL_TASK_ATTRIB)
+	if((base_thread_attrib(self_id) == LOCAL_TASK_ATTRIB)
 		&& (thread_must_in_local(thread_name(self_id)) == dave_false))
 	{
 		dst_id = thread_id(dst_name);
@@ -50,7 +49,14 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 
 		if(dst_id != INVALID_THREAD_ID)
 		{
-			ret = base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, dst_id, type, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
+			ret = base_thread_id_msg(
+					NULL, NULL,
+					NULL, NULL,
+					self_id, dst_id,
+					type,
+					msg_id, broadcast_len, broadcast_msg,
+					0,
+					fun, line);
 		}
 		else
 		{
@@ -66,43 +72,37 @@ _thread_broadcast_thread_msg(BaseMsgType type, ThreadId self_id, s8 *dst_name, u
 static dave_bool
 _thread_broadcast_remote_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line)
 {
-	ThreadId syncc_id;
 	ub broadcast_len;
 	u8 *broadcast_msg;
-	ub thread_index;
+	ThreadId src_id, dst_id;
 
 	if((type != BaseMsgType_Broadcast_remote) && (type != BaseMsgType_Broadcast_total))
 	{
 		return dave_false;
 	}
 
-	syncc_id = thread_id(SYNC_CLIENT_THREAD_NAME);
-	if(syncc_id == INVALID_THREAD_ID)
-	{
-		return dave_false;
-	}
-
-	if(((type == BaseMsgType_Broadcast_remote) || (type == BaseMsgType_Broadcast_total))
-		&& (base_thread_attrib(self_id) == LOCAL_TASK_ATTRIB)
+	if((base_thread_attrib(self_id) == LOCAL_TASK_ATTRIB)
 		&& (thread_must_in_local(thread_name(self_id)) == dave_false))
 	{
-		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
-		{
-			if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
-				&& (_thread[thread_index].thread_id != self_id)
-				&& (base_thread_attrib(_thread[thread_index].thread_id) == REMOTE_TASK_ATTRIB))
-			{
-				broadcast_len = msg_len;
-				broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
-				dave_memcpy(broadcast_msg, msg_body, broadcast_len);
+		broadcast_len = msg_len;
+		broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+		dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
-				THREADDEBUG("%s>%s:%s",
-					thread_name(self_id), thread_name(_thread[thread_index].thread_id),
-					msgstr(msg_id));
+		THREADDEBUG("%s->%s:%s",
+			thread_name(self_id), SYNC_CLIENT_THREAD_NAME,
+			msgstr(msg_id));
 
-				base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, _thread[thread_index].thread_id, BaseMsgType_Broadcast_remote, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
-			}
-		}
+		src_id = self_id;
+		dst_id = thread_set_remote(thread_id(SYNC_CLIENT_THREAD_NAME), 0xffff, 0xffff);
+
+		base_thread_id_msg(
+			NULL, NULL,
+			NULL, NULL,
+			src_id, dst_id,
+			BaseMsgType_Broadcast_remote,
+			msg_id, broadcast_len, broadcast_msg,
+			0,
+			fun, line);
 	}
 
 	return dave_true;
@@ -122,27 +122,31 @@ _thread_broadcast_local_msg(BaseMsgType type, ThreadId self_id, ub msg_id, ub ms
 		return dave_false;
 	}
 
-	if((type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total) || (type == BaseMsgType_Broadcast_local_no_me))
+	for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
 	{
-		for(thread_index=0; thread_index<THREAD_MAX; thread_index++)
+		if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
+			&& ((_thread[thread_index].thread_id != self_id) || (type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total))
+			&& (base_thread_attrib(_thread[thread_index].thread_id) == LOCAL_TASK_ATTRIB))
 		{
-			if((_thread[thread_index].thread_id != INVALID_THREAD_ID)
-				&& ((_thread[thread_index].thread_id != self_id) || (type == BaseMsgType_Broadcast_local) || (type == BaseMsgType_Broadcast_total))
-				&& (base_thread_attrib(_thread[thread_index].thread_id) == LOCAL_TASK_ATTRIB))
-			{
-				broadcast_len = msg_len;
-				broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
-				dave_memcpy(broadcast_msg, msg_body, broadcast_len);
+			broadcast_len = msg_len;
+			broadcast_msg = base_thread_msg_creat(broadcast_len, dave_false, (s8 *)__func__, (ub)__LINE__);
+			dave_memcpy(broadcast_msg, msg_body, broadcast_len);
 
-				THREADDEBUG("%s>%s:%s",
-					thread_name(self_id), thread_name(_thread[thread_index].thread_id),
-					msgstr(msg_id));
+			THREADDEBUG("%s->%s:%s",
+				thread_name(self_id), thread_name(_thread[thread_index].thread_id),
+				msgstr(msg_id));
 
-				/*
-				 * Local broadcast message unified priority message queue processing.
-				 */
-				base_thread_id_msg(NULL, NULL, NULL, NULL, self_id, _thread[thread_index].thread_id, BaseMsgType_pre_msg, msg_id, broadcast_len, broadcast_msg, 0, fun, line);
-			}
+			/*
+			 * Local broadcast message unified priority message queue processing.
+			 */
+			base_thread_id_msg(
+				NULL, NULL,
+				NULL, NULL,
+				self_id, _thread[thread_index].thread_id,
+				BaseMsgType_pre_msg,
+				msg_id, broadcast_len, broadcast_msg,
+				0,
+				fun, line);
 		}
 	}
 

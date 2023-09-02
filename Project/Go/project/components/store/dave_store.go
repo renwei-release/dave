@@ -24,7 +24,7 @@ func _store_sql_co(sql_string string) (*auto.StoreMysqlRsp, error){
 	req.Sql = base.T_gostring2mbuf(sql_string)
 	req.Ptr = 0
 
-	pRsp := (*auto.StoreMysqlRsp)(base.Name_co(STORE_THREAD_NAME, auto.STORE_MYSQL_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.STORE_MYSQL_RSP))
+	pRsp := (*auto.StoreMysqlRsp)(base.Write_co(STORE_THREAD_NAME, auto.STORE_MYSQL_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.STORE_MYSQL_RSP))
 	if pRsp == nil {
 		return nil, errors.New("co timer out")
 	}
@@ -32,27 +32,12 @@ func _store_sql_co(sql_string string) (*auto.StoreMysqlRsp, error){
 	return pRsp, nil
 }
 
-func _store_sql_sync(sql_string string) (*auto.StoreMysqlRsp, error){
-	req := auto.StoreMysqlReq{}
-	req.Sql = base.T_gostring2mbuf(sql_string)
-	req.Ptr = 0
-
-	rsp := auto.StoreMysqlRsp{}
-
-	ret := base.Sync_msg(STORE_THREAD_NAME, auto.STORE_MYSQL_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.STORE_MYSQL_RSP, int(unsafe.Sizeof(rsp)), unsafe.Pointer(&rsp))
-	if ret == false {
-		return nil, errors.New("sync error!")
-	}
-
-	return &rsp, nil
-}
-
 // =====================================================================
 
 func STORESQL(format string, sql ...interface{}) (*tools.Json, error) {
 	sql_string := fmt.Sprintf(format, sql...)
 
-	pRsp, err := _store_sql_sync(sql_string)
+	pRsp, err := _store_sql_co(sql_string)
 	if err != nil {
 		return nil, err
 	}

@@ -34,6 +34,9 @@ dave_bool t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void
 void * t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data);
 dave_bool t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson);
 
+void * t_rpc_ver3_zip_EchoType(EchoType zip_data);
+dave_bool t_rpc_ver3_unzip_EchoType(EchoType *unzip_data, void *pArrayBson);
+
 void * t_rpc_ver3_zip_EnableKeepAliveFlag(EnableKeepAliveFlag zip_data);
 dave_bool t_rpc_ver3_unzip_EnableKeepAliveFlag(EnableKeepAliveFlag *unzip_data, void *pArrayBson);
 

@@ -31,6 +31,7 @@ void queue_client_map_add(s8 *thread_name);
 void queue_client_map_del(s8 *thread_name);
 void queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid);
 void queue_client_map_queue_del(QueueClientMap *pMap, s8 *queue_gid);
+s8 * queue_client_map_queue_inq(QueueClientMap *pMap, s8 *queue_gid_ptr, ub queue_gid_len, ub queue_index);
 void queue_client_map_queue_del_all(s8 *queue_gid);
 QueueClientMap * queue_client_map_inq(s8 *thread_name);
 

@@ -21,7 +21,7 @@
 static ThreadId _queue_server_thread = INVALID_THREAD_ID;
 
 static inline dave_bool
-_sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id)
+_sync_client_queue_can_be_upload(SyncServer *pServer, ThreadId src, ThreadId dst, ub msg_id)
 {
 	if(pServer->server_type == SyncServerType_sync_client)
 	{
@@ -37,7 +37,12 @@ _sync_client_queue_can_be_upload(SyncServer *pServer, s8 *src, s8 *dst, ub msg_i
 	}
 	if(_queue_server_thread == INVALID_THREAD_ID)
 	{
-		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!", src, dst, msgstr(msg_id));
+		SYNCLTRACE(60, 1, "%s->%s:%s send it over a link channel!",
+			thread_name(src), thread_name(dst), msgstr(msg_id));
+		return dave_false;
+	}
+	if(thread_get_local(dst) == _queue_server_thread)
+	{
 		return dave_false;
 	}
 	if(base_thread_has_initialization(_queue_server_thread) == dave_false)
@@ -98,7 +103,7 @@ _sync_client_queue_upload(
 // =====================================================================
 
 BaseMsgType
-sync_client_queue_enable(SyncServer *pServer, s8 *src, s8 *dst, ub msg_id, BaseMsgType msg_type)
+sync_client_queue_enable(SyncServer *pServer, ThreadId src, ThreadId dst, ub msg_id, BaseMsgType msg_type)
 {
 	if(msg_type != BaseMsgType_Unicast_queue)
 	{
@@ -136,9 +141,6 @@ sync_client_queue_upload(
 	ub msg_id,
 	MBUF *data)
 {
-	if(_sync_client_queue_can_be_upload(pServer, src, dst, msg_id) == dave_false)
-		return dave_false;
-
 	return _sync_client_queue_upload(
 		pServer,
 		route_src, route_dst,

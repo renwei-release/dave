@@ -17,7 +17,7 @@
 static void *_map_kv = NULL;
 static TLock _map_pv;
 
-static QueueServerMap *
+static inline QueueServerMap *
 _queue_server_map_malloc(s8 *thread_name)
 {
 	QueueServerMap *pMap = dave_ralloc(sizeof(QueueServerMap));
@@ -29,13 +29,13 @@ _queue_server_map_malloc(s8 *thread_name)
 	return pMap;
 }
 
-static void
+static inline void
 _queue_server_map_free(QueueServerMap *pMap)
 {
 	dave_free(pMap);
 }
 
-static QueueServerMap *
+static inline QueueServerMap *
 _queue_server_map_inq(s8 *thread_name)
 {
 	QueueServerMap *pMap = kv_inq_key_ptr(_map_kv, thread_name);
@@ -50,7 +50,7 @@ _queue_server_map_inq(s8 *thread_name)
 	return pMap;
 }
 
-static void
+static inline void
 _queue_server_map_add(QueueServerMap *pMap, s8 *gid)
 {
 	ub index;
@@ -78,7 +78,7 @@ _queue_server_map_add(QueueServerMap *pMap, s8 *gid)
 		gid, pMap->thread_name);
 }
 
-static void
+static inline void
 _queue_server_map_del(QueueServerMap *pMap, s8 *gid)
 {
 	ub index, copy_index;
@@ -115,7 +115,7 @@ _queue_server_map_del(QueueServerMap *pMap, s8 *gid)
 	}
 }
 
-static RetCode
+static inline RetCode
 _queue_server_map_recycle(void *ramkv, s8 *key)
 {
 	QueueServerMap *pMap = kv_del_key_ptr(_map_kv, key);

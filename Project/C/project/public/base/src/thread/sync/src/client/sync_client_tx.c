@@ -236,7 +236,7 @@ sync_client_tx_run_thread_msg_req(
 	MBUF *zip_body;
 	MBUF *msg_head;
 
-	msg_type = sync_client_queue_enable(pServer, src, dst, msg_id, msg_type);
+	msg_type = sync_client_queue_enable(pServer, route_src, route_dst, msg_id, msg_type);
 
 	zip_body = t_rpc_zip(thread_chain_to_bson(msg_chain), thread_router_to_bson(msg_router), msg_id, msg_body, msg_len);
 	if(zip_body == NULL)
@@ -261,7 +261,8 @@ sync_client_tx_run_thread_msg_req(
 
 	dave_mchain(msg_head, zip_body);
 
-	SYNCDEBUG("%s/%lx/%d/%d->%s/%lx/%d/%d id:%d len:%d/%d",
+	SYNCDEBUG("%s %s/%lx/%d/%d->%s/%lx/%d/%d id:%d len:%d/%d",
+		pServer->verno,
 		src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 		msg_id, msg_head->tot_len, zip_body->len);

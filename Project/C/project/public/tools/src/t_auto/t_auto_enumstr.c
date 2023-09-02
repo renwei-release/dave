@@ -1245,6 +1245,33 @@ t_auto_DaveDataType_str(DaveDataType enum_value)
 }
 
 s8 *
+t_auto_EchoType_str(EchoType enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case EchoType_user:
+				value_str = "'EchoType_user'";
+			break;
+		case EchoType_req:
+				value_str = "'EchoType_req'";
+			break;
+		case EchoType_rsp:
+				value_str = "'EchoType_rsp'";
+			break;
+		case EchoType_random:
+				value_str = "'EchoType_random'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value)
 {
 	s8 *value_str = _string_buf;
@@ -4694,12 +4721,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case STORE_MYSQL_RSP:
 				value_str = "'STORE_MYSQL_RSP-3002'";
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ-4029'";
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				value_str = "'DBMSG_SYS_INQ_CHANNEL_RSP-4030'";
 			break;
 		case DBMSG_SYS_INQ_IMAGE_REQ:
 				value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'";

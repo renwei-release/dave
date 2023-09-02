@@ -142,12 +142,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				pBson = t_rpc_ver3_zip_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, msg_len);
 			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				pBson = t_rpc_ver3_zip_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, msg_len);
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				pBson = t_rpc_ver3_zip_DBSysInqChannelRsp((DBSysInqChannelRsp *)msg_body, msg_len);
-			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
 				pBson = t_rpc_ver3_zip_DBSysInqImageFeatureReq((DBSysInqImageFeatureReq *)msg_body, msg_len);
 			break;
@@ -562,12 +556,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ret = t_rpc_ver3_unzip_DBSysAddWeiChatRsp(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				ret = t_rpc_ver3_unzip_DBSysInqChannelReq(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				ret = t_rpc_ver3_unzip_DBSysInqChannelRsp(msg_body, msg_len, pBson);
 			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
 				ret = t_rpc_ver3_unzip_DBSysInqImageFeatureReq(msg_body, msg_len, pBson);
@@ -984,12 +972,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				ptr = t_rpc_ver3_ptr_DBSysAddWeiChatRsp((DBSysAddWeiChatRsp *)msg_body, new_ptr);
 			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				ptr = t_rpc_ver3_ptr_DBSysInqChannelReq((DBSysInqChannelReq *)msg_body, new_ptr);
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				ptr = t_rpc_ver3_ptr_DBSysInqChannelRsp((DBSysInqChannelRsp *)msg_body, new_ptr);
-			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
 				ptr = t_rpc_ver3_ptr_DBSysInqImageFeatureReq((DBSysInqImageFeatureReq *)msg_body, new_ptr);
 			break;
@@ -1404,12 +1386,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case DBMSG_SYS_ADD_WEICHAT_RSP:
 				msg_len = t_rpc_ver3_sizeof_DBSysAddWeiChatRsp();
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_REQ:
-				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelReq();
-			break;
-		case DBMSG_SYS_INQ_CHANNEL_RSP:
-				msg_len = t_rpc_ver3_sizeof_DBSysInqChannelRsp();
 			break;
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ:
 				msg_len = t_rpc_ver3_sizeof_DBSysInqImageFeatureReq();

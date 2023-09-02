@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -17,19 +17,15 @@
 #include "dos_log.h"
 
 static void
-_dos_echo(dave_bool echo_multiple)
+_dos_echo(dave_bool concurrent_flag)
 {
 	MsgIdEcho *pEcho = thread_reset_msg(pEcho);
 
-	pEcho->echo_counter = 0;
-	pEcho->echo_time = dave_os_time_us();
-	pEcho->echo_multiple = echo_multiple;
-	pEcho->concurrency_flag = dave_false;
-	dave_snprintf(pEcho->msg, sizeof(pEcho->msg), "echo counter:%ld time:%ld", pEcho->echo_counter, pEcho->echo_time);
+	pEcho->concurrent_flag = concurrent_flag;
 
 	dos_print("%s start echo (%s) ......",
 		thread_name(main_thread_id_get()),
-		pEcho->echo_multiple == dave_true ? "multiple" : "single");
+		pEcho->concurrent_flag == dave_true ? "concurrent" : "single");
 
 	id_msg(main_thread_id_get(), MSGID_ECHO, pEcho);
 }
@@ -45,11 +41,11 @@ static RetCode
 _dos_echo_cmd(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index = 0;
-	dave_bool echo_multiple;
+	dave_bool concurrent_flag;
 
-	cmd_index += dos_load_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &echo_multiple);
+	cmd_index += dos_load_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &concurrent_flag);
 
-	_dos_echo(echo_multiple);
+	_dos_echo(concurrent_flag);
 
 	return RetCode_OK;
 }

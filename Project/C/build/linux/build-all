@@ -37,6 +37,8 @@ if [ "$LEVEL" == "all" ]; then
 fi
 
 if [[ `grep -c "warning:" $OUTPUTFILE` -ne '0' ]] || [[ `grep -c "error:" $OUTPUTFILE` -ne '0' ]];then
+   echo -e `grep "warning:" $OUTPUTFILE`
+   echo -e `grep "error:" $OUTPUTFILE`
    echo -e "\033[31mfound some problems!\033[0m"
    echo -e "For details, please check:${OUTPUTFILE}"
 else

@@ -9,8 +9,6 @@
 #define __IO_TEST_H__
 #include "dave_base.h"
 
-void io_echo(ThreadId src, MsgIdEcho *pEcho);
-
 void io_debug(ThreadId src, DebugReq *pReq);
 
 #endif

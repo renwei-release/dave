@@ -65,7 +65,7 @@ _queue_client_message_check_is_ready(QueueUpdateStateReq *pReq)
 	return dave_true;
 }
 
-static void
+static inline void
 _queue_client_message_run_req(QueueClientMap *pMap, s8 *src_name, s8 *dst_name, s8 *src_gid, s8 *dst_gid, MBUF *msg)
 {
 	QueueRunMsgReq *pReq = thread_msg(pReq);
@@ -84,7 +84,7 @@ _queue_client_message_run_req(QueueClientMap *pMap, s8 *src_name, s8 *dst_name, 
 	id_msg(_sync_client_thread, MSGID_QUEUE_RUN_MESSAGE_REQ, pReq);
 }
 
-static dave_bool
+static inline dave_bool
 _queue_client_message_download(QueueClientMap *pMap, s8 *thread_name, s8 *queue_gid)
 {
 	QueueDownloadMsgReq *pReq = thread_msg(pReq);
@@ -107,10 +107,11 @@ _queue_client_message_download(QueueClientMap *pMap, s8 *thread_name, s8 *queue_
 	return dave_true;
 }
 
-static void
+static inline void
 _queue_client_message_run_rsp(QueueClientMap *pMap, ub download_number_threshold)
 {
 	ub queue_number, download_number_index, queue_index;
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
 
 	queue_number = pMap->queue_number;
 	if(queue_number == 0)
@@ -122,17 +123,19 @@ _queue_client_message_run_rsp(QueueClientMap *pMap, ub download_number_threshold
 		if(queue_index >= QUEUE_CLIENT_MAP_MAX)
 			queue_index = 0;
 
-		if(pMap->queue_gid[queue_index][0] != '\0')
+		queue_client_map_queue_inq(pMap, gid, sizeof(gid), queue_index);
+
+		if(gid[0] != '\0')
 		{
-			if(_queue_client_message_download(pMap, pMap->thread_name, pMap->queue_gid[queue_index]) == dave_false)
+			if(_queue_client_message_download(pMap, pMap->thread_name, gid) == dave_false)
 			{
-				queue_client_map_queue_del(pMap, pMap->queue_gid[queue_index]);
+				queue_client_map_queue_del(pMap, gid);
 			}
 		}
 	}
 }
 
-static ub
+static inline ub
 _queue_client_message_download_number_threshold(ub msg_number, ub thread_number)
 {
 	ub download_number_threshold;
@@ -162,7 +165,7 @@ _queue_client_message_download_number_threshold(ub msg_number, ub thread_number)
 	return download_number_threshold;
 }
 
-static dave_bool
+static inline dave_bool
 _queue_client_message_update(QueueUpdateStateReq *pReq)
 {
 	QueueClientMap *pMap = _queue_client_message_check_is_my(pReq->dst_name, pReq->dst_gid);
@@ -191,6 +194,14 @@ _queue_client_message_update(QueueUpdateStateReq *pReq)
 
 	if(pReq->msg == NULL)
 	{
+		if(pReq->queue_gid[0] == '\0')
+		{
+			QUEUELOG("%s:%s->%s:%s queue_gid:%s, queue_id is empty!",
+				pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid,
+				pReq->queue_gid);
+			return dave_false;
+		}
+	
 		if(_queue_client_message_download(pMap, pReq->dst_name, pReq->queue_gid) == dave_false)
 		{
 			queue_client_map_queue_del(pMap, pReq->queue_gid);

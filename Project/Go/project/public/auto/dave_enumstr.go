@@ -148,6 +148,20 @@ func T_auto_CVSearchOpt_str(enum_value int64) string {
 	return value_str
 }
 
+func T_auto_EchoType_str(enum_value int64) string {
+	var value_str string
+
+	switch enum_value {
+		case EchoType_user: value_str = "'EchoType_user'"
+		case EchoType_req: value_str = "'EchoType_req'"
+		case EchoType_rsp: value_str = "'EchoType_rsp'"
+		case EchoType_random: value_str = "'EchoType_random'"
+		default: value_str = fmt.Sprintf("'%v'", enum_value)
+	}
+
+	return value_str
+}
+
 func T_auto_EnableKeepAliveFlag_str(enum_value int64) string {
 	var value_str string
 
@@ -1105,8 +1119,6 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case APPMSG_FUNCTION_UNREGISTER_RSP: value_str = "'APPMSG_FUNCTION_UNREGISTER_RSP-2135'"
 		case STORE_MYSQL_REQ: value_str = "'STORE_MYSQL_REQ-3001'"
 		case STORE_MYSQL_RSP: value_str = "'STORE_MYSQL_RSP-3002'"
-		case DBMSG_SYS_INQ_CHANNEL_REQ: value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ-4029'"
-		case DBMSG_SYS_INQ_CHANNEL_RSP: value_str = "'DBMSG_SYS_INQ_CHANNEL_RSP-4030'"
 		case DBMSG_SYS_INQ_IMAGE_REQ: value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'"
 		case DBMSG_SYS_INQ_IMAGE_RSP: value_str = "'DBMSG_SYS_INQ_IMAGE_RSP-4213'"
 		case DBMSG_SYS_INQ_MUSEUM_REQ: value_str = "'DBMSG_SYS_INQ_MUSEUM_REQ-4214'"

@@ -21,30 +21,6 @@ typedef enum {
 	REQ_TYPE_MAX		 = 0x1fffffff
 } ReqType;
 
-/* for DBMSG_SYS_INQ_CHANNEL_REQ message */
-typedef struct {
-	s8 channel_name[DAVE_NORMAL_NAME_LEN];
-	ub table_id;
-	void *ptr;
-} DBSysInqChannelReq;
-
-/* for DBMSG_SYS_INQ_CHANNEL_RSP message */
-typedef struct {
-	ErrCode ret;
-	dave_bool valid_flag;
-	s8 db_name[DAVE_NORMAL_NAME_LEN];
-	s8 channel_name[DAVE_NORMAL_NAME_LEN];
-	ub table_id;
-	s8 password[DAVE_PASSWORD_LEN];
-	s8 auth_key_str[DAVE_AUTH_KEY_STR_LEN];
-	ChannelInfo channel_info;
-	DateStruct validity_date;
-	ub next_store_table_id;
-	s8 uip_cmd_str[DAVE_UIP_CMD_STR_LEN];
-	s8 forbidden_uip_cmd_str[DAVE_UIP_CMD_STR_LEN];
-	void *ptr;
-} DBSysInqChannelRsp;
-
 /* for DBMSG_SYS_INQ_IMAGE_REQ message */
 typedef struct {
 	s8 image_id[DAVE_SHA1_IMAGE_ID];

@@ -368,14 +368,6 @@ class WeiChatUserInfo (Structure):
 ]
 
 #* for None message *#
-class ChannelInfo (Structure):
-	_fields_ = [
-		("domain", c_char * DAVE_DOMAIN_LEN),
-		("tenant_name", c_char * DAVE_TENANT_NAME_LEN),
-		("tenant_id", c_ulonglong),
-]
-
-#* for None message *#
 class HttpKeyValue (Structure):
 	_fields_ = [
 		("key", c_char * DAVE_HTTP_KEY_LEN),

@@ -2780,148 +2780,6 @@ t_rpc_ver3_sizeof_DBSysAddWeiChatRsp(void)
 }
 
 void *
-t_rpc_ver3_zip_DBSysInqChannelReq(DBSysInqChannelReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(DBSysInqChannelReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(DBSysInqChannelReq) does not match(%d/%d), please contact the message settlers!", sizeof(DBSysInqChannelReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-channel_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->channel_name), 1, DAVE_NORMAL_NAME_LEN));
-	t_bson_add_object(pStructBson, "ub-table_id", t_rpc_ver3_zip_ub(zip_data->table_id));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_DBSysInqChannelReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		DBSysInqChannelReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(DBSysInqChannelReq);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->channel_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-channel_name"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->table_id), t_bson_inq_object(pStructBson, "ub-table_id"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_DBSysInqChannelReq(DBSysInqChannelReq *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_DBSysInqChannelReq(void)
-{
-	return sizeof(DBSysInqChannelReq);
-}
-
-void *
-t_rpc_ver3_zip_DBSysInqChannelRsp(DBSysInqChannelRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(DBSysInqChannelRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(DBSysInqChannelRsp) does not match(%d/%d), please contact the message settlers!", sizeof(DBSysInqChannelRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
-	t_bson_add_object(pStructBson, "dave_bool-valid_flag", t_rpc_ver3_zip_dave_bool(zip_data->valid_flag));
-	t_bson_add_object(pStructBson, "s8-db_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->db_name), 1, DAVE_NORMAL_NAME_LEN));
-	t_bson_add_object(pStructBson, "s8-channel_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->channel_name), 1, DAVE_NORMAL_NAME_LEN));
-	t_bson_add_object(pStructBson, "ub-table_id", t_rpc_ver3_zip_ub(zip_data->table_id));
-	t_bson_add_object(pStructBson, "s8-password", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->password), 1, DAVE_PASSWORD_LEN));
-	t_bson_add_object(pStructBson, "s8-auth_key_str", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->auth_key_str), 1, DAVE_AUTH_KEY_STR_LEN));
-	t_bson_add_object(pStructBson, "ChannelInfo-channel_info", t_rpc_ver3_zip_ChannelInfo(&(zip_data->channel_info)));
-	t_bson_add_object(pStructBson, "DateStruct-validity_date", t_rpc_ver3_zip_DateStruct(&(zip_data->validity_date)));
-	t_bson_add_object(pStructBson, "ub-next_store_table_id", t_rpc_ver3_zip_ub(zip_data->next_store_table_id));
-	t_bson_add_object(pStructBson, "s8-uip_cmd_str", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->uip_cmd_str), 1, DAVE_UIP_CMD_STR_LEN));
-	t_bson_add_object(pStructBson, "s8-forbidden_uip_cmd_str", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->forbidden_uip_cmd_str), 1, DAVE_UIP_CMD_STR_LEN));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_DBSysInqChannelRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		DBSysInqChannelRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(DBSysInqChannelRsp);
-
-		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
-		t_rpc_ver3_unzip_dave_bool(&(pUnzip->valid_flag), t_bson_inq_object(pStructBson, "dave_bool-valid_flag"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->db_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-db_name"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->channel_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-channel_name"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->table_id), t_bson_inq_object(pStructBson, "ub-table_id"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->password), 1, DAVE_PASSWORD_LEN, t_bson_inq_object(pStructBson, "s8-password"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->auth_key_str), 1, DAVE_AUTH_KEY_STR_LEN, t_bson_inq_object(pStructBson, "s8-auth_key_str"));
-		t_rpc_ver3_unzip_ChannelInfo(&(pUnzip->channel_info), t_bson_inq_object(pStructBson, "ChannelInfo-channel_info"));
-		t_rpc_ver3_unzip_DateStruct(&(pUnzip->validity_date), t_bson_inq_object(pStructBson, "DateStruct-validity_date"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->next_store_table_id), t_bson_inq_object(pStructBson, "ub-next_store_table_id"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->uip_cmd_str), 1, DAVE_UIP_CMD_STR_LEN, t_bson_inq_object(pStructBson, "s8-uip_cmd_str"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->forbidden_uip_cmd_str), 1, DAVE_UIP_CMD_STR_LEN, t_bson_inq_object(pStructBson, "s8-forbidden_uip_cmd_str"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_DBSysInqChannelRsp(DBSysInqChannelRsp *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_DBSysInqChannelRsp(void)
-{
-	return sizeof(DBSysInqChannelRsp);
-}
-
-void *
 t_rpc_ver3_zip_DBSysInqImageFeatureReq(DBSysInqImageFeatureReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -4961,10 +4819,19 @@ t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len)
 
 	pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "ub-echo_counter", t_rpc_ver3_zip_ub(zip_data->echo_counter));
-	t_bson_add_object(pStructBson, "ub-echo_time", t_rpc_ver3_zip_ub(zip_data->echo_time));
-	t_bson_add_object(pStructBson, "dave_bool-echo_multiple", t_rpc_ver3_zip_dave_bool(zip_data->echo_multiple));
-	t_bson_add_object(pStructBson, "dave_bool-concurrency_flag", t_rpc_ver3_zip_dave_bool(zip_data->concurrency_flag));
+	t_bson_add_object(pStructBson, "EchoType-type", t_rpc_ver3_zip_EchoType(zip_data->type));
+	t_bson_add_object(pStructBson, "s8-gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-thread", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->thread), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "ub-echo_total_counter", t_rpc_ver3_zip_ub(zip_data->echo_total_counter));
+	t_bson_add_object(pStructBson, "ub-echo_total_time", t_rpc_ver3_zip_ub(zip_data->echo_total_time));
+	t_bson_add_object(pStructBson, "ub-echo_cycle_counter", t_rpc_ver3_zip_ub(zip_data->echo_cycle_counter));
+	t_bson_add_object(pStructBson, "ub-echo_cycle_time", t_rpc_ver3_zip_ub(zip_data->echo_cycle_time));
+	t_bson_add_object(pStructBson, "ub-echo_req_time", t_rpc_ver3_zip_ub(zip_data->echo_req_time));
+	t_bson_add_object(pStructBson, "ub-echo_rsp_time", t_rpc_ver3_zip_ub(zip_data->echo_rsp_time));
+	t_bson_add_object(pStructBson, "dave_bool-concurrent_flag", t_rpc_ver3_zip_dave_bool(zip_data->concurrent_flag));
+	t_bson_add_object(pStructBson, "ub-concurrent_tps_time", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_time));
+	t_bson_add_object(pStructBson, "ub-concurrent_tps_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_counter));
+	t_bson_add_object(pStructBson, "ub-concurrent_total_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_total_counter));
 	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 256));
 
 	return pStructBson;
@@ -4988,10 +4855,19 @@ t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson)
 		*unzip_data = pUnzip;
 		*unzip_len = sizeof(MsgIdEcho);
 
-		t_rpc_ver3_unzip_ub(&(pUnzip->echo_counter), t_bson_inq_object(pStructBson, "ub-echo_counter"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->echo_time), t_bson_inq_object(pStructBson, "ub-echo_time"));
-		t_rpc_ver3_unzip_dave_bool(&(pUnzip->echo_multiple), t_bson_inq_object(pStructBson, "dave_bool-echo_multiple"));
-		t_rpc_ver3_unzip_dave_bool(&(pUnzip->concurrency_flag), t_bson_inq_object(pStructBson, "dave_bool-concurrency_flag"));
+		t_rpc_ver3_unzip_EchoType(&(pUnzip->type), t_bson_inq_object(pStructBson, "EchoType-type"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->thread), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-thread"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_total_counter), t_bson_inq_object(pStructBson, "ub-echo_total_counter"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_total_time), t_bson_inq_object(pStructBson, "ub-echo_total_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_cycle_counter), t_bson_inq_object(pStructBson, "ub-echo_cycle_counter"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_cycle_time), t_bson_inq_object(pStructBson, "ub-echo_cycle_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_req_time), t_bson_inq_object(pStructBson, "ub-echo_req_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->echo_rsp_time), t_bson_inq_object(pStructBson, "ub-echo_rsp_time"));
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->concurrent_flag), t_bson_inq_object(pStructBson, "dave_bool-concurrent_flag"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->concurrent_tps_time), t_bson_inq_object(pStructBson, "ub-concurrent_tps_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->concurrent_tps_counter), t_bson_inq_object(pStructBson, "ub-concurrent_tps_counter"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->concurrent_total_counter), t_bson_inq_object(pStructBson, "ub-concurrent_total_counter"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 256, t_bson_inq_object(pStructBson, "s8-msg"));
 	}
 

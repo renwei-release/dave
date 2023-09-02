@@ -278,12 +278,6 @@ type WeiChatUserInfo struct {
 	Ti TerminalInformation
 }
 
-type ChannelInfo struct {
-	Domain [DAVE_DOMAIN_LEN] byte
-	Tenant_name [DAVE_TENANT_NAME_LEN] byte
-	Tenant_id uint64
-}
-
 type ImageIntroduction struct {
 	Image_id [DAVE_SHA1_IMAGE_ID] byte
 	Painter PainterIntroduction

@@ -13,6 +13,7 @@
 #include "dave_3rdparty.h"
 #include "dave_bdata.h"
 #include "dave_store.h"
+#include "dave_echo.h"
 #include "base_test.h"
 #include "base_log.h"
 
@@ -45,7 +46,27 @@ _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 }
 
 static void
-_base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
+_base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
+{
+	RPCDebugRsp *pRsp = thread_msg(pRsp);
+
+	*pRsp = (*(RPCDebugRsp *)(pReq));
+
+	BASEDEBUG("from:%lx/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+		src, thread_name(src),
+		pRsp->s8_debug, pRsp->u8_debug,
+		pRsp->s16_debug, pRsp->u16_debug,
+		pRsp->s32_debug, pRsp->u32_debug,
+		pRsp->s64_debug, pRsp->u64_debug,
+		pRsp->ptr);
+
+	dave_strcpy(pRsp->rsp_thread, thread_name(_base_thread), sizeof(pRsp->rsp_thread));
+
+	id_msg(src, MSGID_RPC_DEBUG_RSP, pRsp);
+}
+
+static void
+_base_thread_rpc_debug(ThreadRemoteIDReadyMsg *pReady)
 {
 	RPCDebugReq req;
 	RPCDebugRsp *pRsp;
@@ -86,54 +107,6 @@ _base_thread_rpc_debug_req_use_go(ThreadRemoteIDReadyMsg *pReady)
 		BASELOG("gid_co(%s/%s) successfully! ptr:%lx/%lx", pReady->globally_identifier, pReady->remote_thread_name, &req, pRsp->ptr);
 		_base_thread_rpc_debug_rsp(pReady->remote_thread_id, pRsp);
 	}
-	pRsp = name_co("bbs", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", "bbs", &req, pRsp->ptr);
-		_base_thread_rpc_debug_rsp(thread_id("bbs"), pRsp);
-	}
-
-	pRsp = uid_co("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("uiddebug 1 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
-	}
-	pRsp = uid_co("uiddebug", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("uiddebug 2 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
-	}
-
-	pRsp = uid_co("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("uidtest 1 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
-	}
-	pRsp = uid_co("uidtest", MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("uidtest 2 uid_co(%s) successfully! ptr:%lx/%lx", pRsp->rsp_thread, &req, pRsp->ptr);
-	}
-}
-
-static void
-_base_thread_rpc_debug_req(ThreadId src, RPCDebugReq *pReq)
-{
-	RPCDebugRsp *pRsp = thread_msg(pRsp);
-
-	*pRsp = (*(RPCDebugRsp *)(pReq));
-
-	BASEDEBUG("from:%lx/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
-		src, thread_name(src),
-		pRsp->s8_debug, pRsp->u8_debug,
-		pRsp->s16_debug, pRsp->u16_debug,
-		pRsp->s32_debug, pRsp->u32_debug,
-		pRsp->s64_debug, pRsp->u64_debug,
-		pRsp->ptr);
-
-	dave_strcpy(pRsp->rsp_thread, thread_name(_base_thread), sizeof(pRsp->rsp_thread));
-
-	id_msg(src, MSGID_RPC_DEBUG_RSP, pRsp);
 }
 
 static void
@@ -157,9 +130,10 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		rcfg_set("base_product_ttl_debug", "debug", 60);
 	}
 
-	if(dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
+	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
+		|| (dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true))
 	{
-		_base_thread_rpc_debug_req_use_go(pReady);
+		_base_thread_rpc_debug(pReady);
 	}
 }
 
@@ -182,70 +156,9 @@ _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 }
 
 static void
-_base_timer_out(TIMERID timer_id, ub thread_index)
-{
-	s8 *key = (s8 *)"base_product_ttl_debug";
-	s8 value[1024];
-
-	dave_snprintf(value, sizeof(value), "%d", t_rand());
-
-	BASELOG("key:%s value:%s", key, value);
-
-	rcfg_set(key, value, 60);
-
-	RPCDebugReq req;
-	RPCDebugRsp *pRsp;
-	s8 *debug_thread = "main_aib";
-
-	dave_memset(&req, 0x00, sizeof(RPCDebugReq));
-
-	req.ret_debug = RET_DEBUG_VALUE;
-	dave_strcpy(req.req_thread, thread_name(_base_thread), sizeof(req.req_thread));
-	dave_strcpy(req.str_debug, debug_thread, sizeof(req.str_debug));
-	req.s8_debug = S8_DEBUG_VALUE;
-	req.u8_debug = U8_DEBUG_VALUE;
-	req.s16_debug = S16_DEBUG_VALUE;
-	req.u16_debug = U16_DEBUG_VALUE;
-	req.s32_debug = S32_DEBUG_VALUE;
-	req.u32_debug = U32_DEBUG_VALUE;
-	req.s64_debug = S64_DEBUG_VALUE;
-	req.u64_debug = U64_DEBUG_VALUE;
-	req.float_debug = FLOAT_DEBUG_VALUE;
-	req.double_debug = DOUBLE_DEBUG_VALUE;
-	req.void_debug = VOID_DEBUG_VALUE;
-	req.ptr = &req;
-
-	debug_thread = "main_aib";
-	BASELOG("RPC_DEBUG %s", debug_thread);
-	pRsp = name_co(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", debug_thread, &req, pRsp->ptr);
-	}
-	else
-	{
-		BASELOG("%s timer out!", debug_thread);
-	}
-
-	debug_thread = "bbs";
-	BASELOG("RPC_DEBUG %s", debug_thread);
-	pRsp = name_co(debug_thread, MSGID_RPC_DEBUG_REQ, &req, MSGID_RPC_DEBUG_RSP);
-	if(pRsp != NULL)
-	{
-		BASELOG("name_co(%s) successfully! ptr:%lx/%lx", debug_thread, &req, pRsp->ptr);
-	}
-	else
-	{
-		BASELOG("%s timer out!", debug_thread);
-	}
-}
-
-static void
 _base_thread_init(MSGBODY *msg)
 {
 	BDATALOG("INIT", "%s booting!", dave_verno());
-
-	base_timer_creat("basetimer", _base_timer_out, 720 * 1000);
 }
 
 static void
@@ -257,7 +170,7 @@ _base_thread_main(MSGBODY *msg)
 				base_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
 		case MSGID_ECHO:
-				base_echo(msg->msg_src, (MsgIdEcho *)(msg->msg_body));
+				dave_echo(msg->msg_src, msg->msg_dst, (MsgIdEcho *)(msg->msg_body));
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				_base_msg_timer_out((ProcessMsgTimerOutMsg *)(msg->msg_body));

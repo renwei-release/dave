@@ -236,6 +236,20 @@ def t_auto_CVSearchOpt_str(enum_value):
 	return value_str
 
 
+def t_auto_EchoType_str(enum_value):
+	if enum_value == EchoType_user:
+		value_str = "'EchoType_user'"
+	elif enum_value == EchoType_req:
+		value_str = "'EchoType_req'"
+	elif enum_value == EchoType_rsp:
+		value_str = "'EchoType_rsp'"
+	elif enum_value == EchoType_random:
+		value_str = "'EchoType_random'"
+	else:
+		value_str = f'{enum_value}'
+	return value_str
+
+
 def t_auto_EnableKeepAliveFlag_str(enum_value):
 	if enum_value == KeepAlive_enable:
 		value_str = "'KeepAlive_enable-0x01234567'"
@@ -1779,10 +1793,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'STORE_MYSQL_REQ-3001'"
 	elif enum_value == STORE_MYSQL_RSP:
 		value_str = "'STORE_MYSQL_RSP-3002'"
-	elif enum_value == DBMSG_SYS_INQ_CHANNEL_REQ:
-		value_str = "'DBMSG_SYS_INQ_CHANNEL_REQ-4029'"
-	elif enum_value == DBMSG_SYS_INQ_CHANNEL_RSP:
-		value_str = "'DBMSG_SYS_INQ_CHANNEL_RSP-4030'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_REQ:
 		value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_RSP:

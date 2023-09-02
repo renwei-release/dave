@@ -124,6 +124,13 @@ const (
 )
 
 const (
+	EchoType_user int64 = iota
+	EchoType_req
+	EchoType_rsp
+	EchoType_random
+)
+
+const (
 	KeepAlive_enable = 0x01234567 + iota
 	KeepAlive_disable = 0x09abcdef
 )

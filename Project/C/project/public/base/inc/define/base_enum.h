@@ -149,5 +149,12 @@ typedef enum {
 	BuildingBlocksOpt_max
 } BuildingBlocksOpt;
 
+typedef enum {
+	EchoType_user,
+	EchoType_req,
+	EchoType_rsp,
+	EchoType_random,
+} EchoType;
+
 #endif
 

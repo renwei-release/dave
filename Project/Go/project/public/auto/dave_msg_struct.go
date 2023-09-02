@@ -357,30 +357,6 @@ type DBSysAddWeiChatRsp struct {
 	Ptr uint64
 }
 
-/* for DBMSG_SYS_INQ_CHANNEL_REQ message */
-type DBSysInqChannelReq struct {
-	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Table_id uint64
-	Ptr uint64
-}
-
-/* for DBMSG_SYS_INQ_CHANNEL_RSP message */
-type DBSysInqChannelRsp struct {
-	Ret int64
-	Valid_flag int8
-	Db_name [DAVE_NORMAL_NAME_LEN] byte
-	Channel_name [DAVE_NORMAL_NAME_LEN] byte
-	Table_id uint64
-	Password [DAVE_PASSWORD_LEN] byte
-	Auth_key_str [DAVE_AUTH_KEY_STR_LEN] byte
-	Channel_info ChannelInfo
-	Validity_date DateStruct
-	Next_store_table_id uint64
-	Uip_cmd_str [DAVE_UIP_CMD_STR_LEN] byte
-	Forbidden_uip_cmd_str [DAVE_UIP_CMD_STR_LEN] byte
-	Ptr uint64
-}
-
 /* for DBMSG_SYS_INQ_IMAGE_FEATURE_REQ message */
 type DBSysInqImageFeatureReq struct {
 	Table_name [DAVE_NORMAL_NAME_LEN] byte
@@ -646,10 +622,19 @@ type MsgBlocksRsp struct {
 
 /* for MSGID_ECHO message */
 type MsgIdEcho struct {
-	Echo_counter uint64
-	Echo_time uint64
-	Echo_multiple int8
-	Concurrency_flag int8
+	Type int32
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Thread [DAVE_THREAD_NAME_LEN] byte
+	Echo_total_counter uint64
+	Echo_total_time uint64
+	Echo_cycle_counter uint64
+	Echo_cycle_time uint64
+	Echo_req_time uint64
+	Echo_rsp_time uint64
+	Concurrent_flag int8
+	Concurrent_tps_time uint64
+	Concurrent_tps_counter uint64
+	Concurrent_total_counter uint64
 	Msg [256] byte
 }
 

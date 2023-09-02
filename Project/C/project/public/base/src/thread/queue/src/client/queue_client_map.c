@@ -15,7 +15,7 @@
 static void *_client_map_kv = NULL;
 static void *_gid_map_kv = NULL;
 
-static QueueClientMap *
+static inline QueueClientMap *
 _queue_client_map_malloc(s8 *thread_name)
 {
 	QueueClientMap *pMap = dave_ralloc(sizeof(QueueClientMap));
@@ -30,13 +30,13 @@ _queue_client_map_malloc(s8 *thread_name)
 	return pMap;
 }
 
-static void
+static inline void
 _queue_client_map_free(QueueClientMap *pMap)
 {
 	dave_free(pMap);
 }
 
-static RetCode
+static inline RetCode
 _queue_client_map_recycle(void *ramkv, s8 *key)
 {
 	QueueClientMap *pMap = kv_del_key_ptr(_client_map_kv, key);
@@ -51,7 +51,7 @@ _queue_client_map_recycle(void *ramkv, s8 *key)
 	return RetCode_OK;
 }
 
-static QueueClientMap *
+static inline QueueClientMap *
 _queue_client_map_inq(s8 *thread_name)
 {
 	QueueClientMap *pMap = kv_inq_key_ptr(_client_map_kv, thread_name);
@@ -59,7 +59,7 @@ _queue_client_map_inq(s8 *thread_name)
 	return pMap;
 }
 
-static QueueClientMap *
+static inline QueueClientMap *
 _queue_client_map_add(s8 *thread_name)
 {
 	QueueClientMap *pMap = _queue_client_map_inq(thread_name);
@@ -74,13 +74,13 @@ _queue_client_map_add(s8 *thread_name)
 	return pMap;
 }
 
-static void
+static inline void
 _queue_client_map_del(s8 *thread_name)
 {
 	_queue_client_map_recycle(_client_map_kv, thread_name);
 }
 
-static void
+static inline void
 _queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid)
 {
 	ub index;
@@ -108,7 +108,7 @@ _queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid)
 		queue_gid, pMap->thread_name);
 }
 
-static void
+static inline void
 _queue_client_map_queue_del(QueueClientMap *pMap, s8 *queue_gid)
 {
 	ub index, copy_index;
@@ -143,6 +143,19 @@ _queue_client_map_queue_del(QueueClientMap *pMap, s8 *queue_gid)
 	{
 		pMap->queue_gid[copy_index][0] = '\0';
 	}
+}
+
+static inline void
+_queue_client_map_queue_inq(QueueClientMap *pMap, s8 *queue_gid_ptr, ub queue_gid_len, ub queue_index)
+{
+	if((queue_index >= QUEUE_CLIENT_MAP_MAX)
+		|| (pMap->queue_gid[queue_index][0] == '\0'))
+	{
+		queue_gid_ptr[0] = '\0';
+		return;
+	}
+
+	dave_strcpy(queue_gid_ptr, pMap->queue_gid[queue_index], queue_gid_len);
 }
 
 // =====================================================================
@@ -186,7 +199,7 @@ queue_client_map_del(s8 *thread_name)
 void
 queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid)
 {
-	SAFECODEv1(pMap->pv, {
+	SAFECODEv2W(pMap->pv, {
 		_queue_client_map_queue_add(pMap, queue_gid);
 	});
 }
@@ -194,9 +207,19 @@ queue_client_map_queue_add(QueueClientMap *pMap, s8 *queue_gid)
 void
 queue_client_map_queue_del(QueueClientMap *pMap, s8 *queue_gid)
 {
-	SAFECODEv1(pMap->pv, {
+	SAFECODEv2W(pMap->pv, {
 		_queue_client_map_queue_del(pMap, queue_gid);
 	});
+}
+
+s8 *
+queue_client_map_queue_inq(QueueClientMap *pMap, s8 *queue_gid_ptr, ub queue_gid_len, ub queue_index)
+{
+	SAFECODEv2R(pMap->pv, {
+		_queue_client_map_queue_inq(pMap, queue_gid_ptr, queue_gid_len, queue_index);
+	});
+
+	return queue_gid_ptr;
 }
 
 void

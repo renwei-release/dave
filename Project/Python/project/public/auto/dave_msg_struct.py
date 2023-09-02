@@ -405,32 +405,6 @@ class DBSysAddWeiChatRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for DBMSG_SYS_INQ_CHANNEL_REQ message *#
-class DBSysInqChannelReq (Structure):
-	_fields_ = [
-		("channel_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("table_id", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for DBMSG_SYS_INQ_CHANNEL_RSP message *#
-class DBSysInqChannelRsp (Structure):
-	_fields_ = [
-		("ret", c_longlong),
-		("valid_flag", c_char),
-		("db_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("channel_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("table_id", c_ulonglong),
-		("password", c_char * DAVE_PASSWORD_LEN),
-		("auth_key_str", c_char * DAVE_AUTH_KEY_STR_LEN),
-		("channel_info", ChannelInfo),
-		("validity_date", DateStruct),
-		("next_store_table_id", c_ulonglong),
-		("uip_cmd_str", c_char * DAVE_UIP_CMD_STR_LEN),
-		("forbidden_uip_cmd_str", c_char * DAVE_UIP_CMD_STR_LEN),
-		("ptr", POINTER(c_char)),
-]
-
 #* for DBMSG_SYS_INQ_IMAGE_FEATURE_REQ message *#
 class DBSysInqImageFeatureReq (Structure):
 	_fields_ = [
@@ -729,10 +703,19 @@ class MsgBlocksRsp (Structure):
 #* for MSGID_ECHO message *#
 class MsgIdEcho (Structure):
 	_fields_ = [
-		("echo_counter", c_ulonglong),
-		("echo_time", c_ulonglong),
-		("echo_multiple", c_char),
-		("concurrency_flag", c_char),
+		("type", c_int),
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("thread", c_char * DAVE_THREAD_NAME_LEN),
+		("echo_total_counter", c_ulonglong),
+		("echo_total_time", c_ulonglong),
+		("echo_cycle_counter", c_ulonglong),
+		("echo_cycle_time", c_ulonglong),
+		("echo_req_time", c_ulonglong),
+		("echo_rsp_time", c_ulonglong),
+		("concurrent_flag", c_char),
+		("concurrent_tps_time", c_ulonglong),
+		("concurrent_tps_counter", c_ulonglong),
+		("concurrent_total_counter", c_ulonglong),
 		("msg", c_char * 256),
 ]
 

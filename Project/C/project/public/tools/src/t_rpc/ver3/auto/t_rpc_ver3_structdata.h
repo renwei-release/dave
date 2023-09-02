@@ -182,12 +182,6 @@ dave_bool t_rpc_ver3_unzip_WeiChatUserInfo(WeiChatUserInfo *unzip_data, void *pS
 void * t_rpc_ver3_zip_WeiChatUserInfo_d(WeiChatUserInfo *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_WeiChatUserInfo_d(WeiChatUserInfo *unzip_data, ub unzip_len, void *pArrayBson);
 
-void * t_rpc_ver3_zip_ChannelInfo(ChannelInfo *zip_data);
-dave_bool t_rpc_ver3_unzip_ChannelInfo(ChannelInfo *unzip_data, void *pStructBson);
-
-void * t_rpc_ver3_zip_ChannelInfo_d(ChannelInfo *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ChannelInfo_d(ChannelInfo *unzip_data, ub unzip_len, void *pArrayBson);
-
 void * t_rpc_ver3_zip_ImageIntroduction(ImageIntroduction *zip_data);
 dave_bool t_rpc_ver3_unzip_ImageIntroduction(ImageIntroduction *unzip_data, void *pStructBson);
 

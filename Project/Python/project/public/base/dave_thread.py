@@ -51,18 +51,16 @@ def write_msg(dst, msg_id, class_instance):
     return
 
 
-def sync_msg(dst, req_msg_id, req_class_instance, rsp_msg_id, rsp_class_instance):
+def write_qmsg(dst, msg_id, class_instance):
     __func__, __LINE__ = t_sys_myline(2)
 
-    if isinstance(dst, str) == True:
-        dst = bytes(dst, encoding='utf8')
-
-    davelib.dave_dll_thread_sync_msg.restype = c_void_p
-    ret = davelib.dave_dll_thread_sync_msg(c_char_p(dst), c_int(req_msg_id), c_int(sizeof(req_class_instance.contents)), req_class_instance, c_int(rsp_msg_id), c_int(sizeof(rsp_class_instance.contents)), rsp_class_instance, c_char_p(__func__), c_int(__LINE__))
-    if ret == None:
-        return False
+    if isinstance(dst, c_char) or isinstance(dst, c_char_p) or isinstance(dst, str) or isinstance(dst, bytes):
+        if isinstance(dst, str) == True:
+            dst = bytes(dst, encoding='utf8')
+        davelib.dave_dll_thread_name_qmsg(c_char_p(dst), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
     else:
-        return True
+        davelib.dave_dll_thread_id_qmsg(c_uint64(dst), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
+    return
 
 
 def write_co(dst, req_id, pReq, rsp_id, rsp_class):
@@ -81,6 +79,38 @@ def write_co(dst, req_id, pReq, rsp_id, rsp_class):
         return None
 
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
+
+
+def write_qco(dst, req_id, pReq, rsp_id, rsp_class):
+    __func__, __LINE__ = t_sys_myline(2)
+
+    if isinstance(dst, c_char) or isinstance(dst, c_char_p) or isinstance(dst, str) or isinstance(dst, bytes):
+        if isinstance(dst, str) == True:
+            dst = bytes(dst, encoding='utf8')
+        davelib.dave_dll_thread_name_co.restype = c_void_p
+        pRsp = davelib.dave_dll_thread_name_qco(c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
+    else:
+        davelib.dave_dll_thread_id_co.restype = c_void_p
+        pRsp = davelib.dave_dll_thread_id_qco(c_uint64(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
+
+    if pRsp == None:
+        return None
+
+    return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
+
+
+def sync_msg(dst, req_msg_id, req_class_instance, rsp_msg_id, rsp_class_instance):
+    __func__, __LINE__ = t_sys_myline(2)
+
+    if isinstance(dst, str) == True:
+        dst = bytes(dst, encoding='utf8')
+
+    davelib.dave_dll_thread_sync_msg.restype = c_void_p
+    ret = davelib.dave_dll_thread_sync_msg(c_char_p(dst), c_int(req_msg_id), c_int(sizeof(req_class_instance.contents)), req_class_instance, c_int(rsp_msg_id), c_int(sizeof(rsp_class_instance.contents)), rsp_class_instance, c_char_p(__func__), c_int(__LINE__))
+    if ret == None:
+        return False
+    else:
+        return True
 
 
 def broadcast_msg(thread_name, msg_id, class_instance):

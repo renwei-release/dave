@@ -102,6 +102,25 @@ t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson)
 }
 
 void *
+t_rpc_ver3_zip_EchoType(EchoType zip_data)
+{
+	return _t_rpc_zip_enumdata((sb)zip_data);
+}
+
+dave_bool
+t_rpc_ver3_unzip_EchoType(EchoType *unzip_data, void *pArrayBson)
+{
+	sb sb_unzip_data;
+	dave_bool ret;
+
+	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
+
+	*unzip_data = (EchoType)sb_unzip_data;
+
+	return ret;
+}
+
+void *
 t_rpc_ver3_zip_EnableKeepAliveFlag(EnableKeepAliveFlag zip_data)
 {
 	return _t_rpc_zip_enumdata((sb)zip_data);

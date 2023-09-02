@@ -12,6 +12,7 @@
 #include "dave_http.h"
 #include "dave_uip.h"
 #include "dave_verno.h"
+#include "dave_echo.h"
 #include "io_test.h"
 
 static ThreadId _io_thread = INVALID_THREAD_ID;
@@ -32,7 +33,7 @@ _io_thread_main(MSGBODY *msg)
 				io_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
 		case MSGID_ECHO:
-				io_echo(msg->msg_src, (MsgIdEcho *)(msg->msg_body));
+				dave_echo(msg->msg_src, msg->msg_dst, (MsgIdEcho *)(msg->msg_body));
 			break;
 		default:
 			break;

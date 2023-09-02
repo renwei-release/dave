@@ -13,6 +13,8 @@
 #define CFG_LOCALHOST "LOCALHOST"
 #define CFG_PRODUCT_NAME "ProductName"
 
+extern s8 * globally_identifier(void);
+
 // =====================================================================
 
 s8 *
@@ -67,5 +69,11 @@ t_gp_base_path(s8 *path_ptr, ub path_len)
 	lower(path_ptr);
 
 	return path_ptr;
+}
+
+s8 *
+t_gp_globally_identifier(void)
+{
+	return globally_identifier();
 }
 

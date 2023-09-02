@@ -44,6 +44,7 @@ s8 *t_auto_CommentAttributes_str(CommentAttributes enum_value);
 s8 *t_auto_CountryCode_str(CountryCode enum_value);
 s8 *t_auto_CurrencyType_str(CurrencyType enum_value);
 s8 *t_auto_DaveDataType_str(DaveDataType enum_value);
+s8 *t_auto_EchoType_str(EchoType enum_value);
 s8 *t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value);
 s8 *t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value);
 s8 *t_auto_ErrCode_str(ErrCode enum_value);
