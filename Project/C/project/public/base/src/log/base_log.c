@@ -265,6 +265,12 @@ base_log_load(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return log_buffer_get(log_ptr, log_len, level);
 }
 
+dave_bool
+base_log_has_data(void)
+{
+	return log_buffer_has_data();
+}
+
 ub
 base_log_history(s8 *log_ptr, ub log_len)
 {

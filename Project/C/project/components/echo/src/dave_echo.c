@@ -40,6 +40,7 @@ _echo_start(ThreadId src, ThreadId dst, dave_bool concurrent_flag)
 	pReq->echo.echo_total_time = 0;
 
 	pReq->echo.echo_cycle_counter = 0;
+	pReq->echo.concurrent_cycle_counter = 0;
 	pReq->echo.echo_cycle_time = 0;
 
 	pReq->echo.echo_req_time = dave_os_time_us();
@@ -225,6 +226,8 @@ _echo_concurrent(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 				if(random_send_times > CONCURRENCY_TPS)
 					random_send_times = 0;
 			}
+
+			pGetEcho->concurrent_cycle_counter += random_send_times;
 			pGetEcho->concurrent_tps_counter += random_send_times;
 			pGetEcho->concurrent_total_counter += random_send_times;
 
@@ -254,15 +257,16 @@ _echo_single_rsp(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 
 	if((pGetEcho->echo_cycle_counter % HOW_MANY_CYCLES_DO_STATISTICS) == 0x00)
 	{
-		ECHOLOG("%s/%s %ldus C:%lds/%ld T:%lds/%ld %ldus %ld",
+		ECHOLOG("%s/%s C:%lds/%ld T:%lds/%ld %ldus/%ldus %ld",
 			pGetEcho->gid, pGetEcho->thread,
-			pGetEcho->echo_cycle_time / (pGetEcho->echo_cycle_counter * 2),
 			pGetEcho->echo_cycle_time/1000000, pGetEcho->echo_cycle_counter,
 			pGetEcho->echo_total_time/1000000, pGetEcho->echo_total_counter,
+			pGetEcho->echo_cycle_time/((pGetEcho->echo_cycle_counter*2)+(pGetEcho->concurrent_cycle_counter*2)),
 			pGetEcho->echo_total_time/((pGetEcho->concurrent_total_counter*2)+(pGetEcho->echo_total_counter*2)),
 			pGetEcho->concurrent_total_counter);
 
 		pGetEcho->echo_cycle_counter = 0;
+		pGetEcho->concurrent_cycle_counter = 0;
 		pGetEcho->echo_cycle_time = 0;
 	}
 

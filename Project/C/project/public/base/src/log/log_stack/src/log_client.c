@@ -97,6 +97,9 @@ _log_client_record_log(void)
 	s8 *frame;
 	TraceLevel level;
 
+	if(base_log_has_data() == dave_false)
+		return;
+
 	for(num_log=0; num_log<NUM_LOG_ONCE_SEND; num_log++)
 	{
 		data = dave_mmalloc(LOG_ONCE_SEND_BYTE_MAX);

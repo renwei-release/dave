@@ -31,6 +31,8 @@ void log_buffer_set(LogBuffer *pBuffer);
 
 ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
+dave_bool log_buffer_has_data(void);
+
 ub log_buffer_history(s8 *log_ptr, ub log_len);
 
 #endif

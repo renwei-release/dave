@@ -386,6 +386,18 @@ log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return _log_buffer_get(log_ptr, log_len, level);
 }
 
+dave_bool
+log_buffer_has_data(void)
+{
+	if((_log_list_w_index > _log_list_r_index)
+		|| (_log_lost_buffer.buffer_length > 0))
+	{
+		return dave_true;
+	}
+
+	return dave_false;
+}
+
 ub
 log_buffer_history(s8 *log_ptr, ub log_len)
 {

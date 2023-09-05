@@ -396,6 +396,7 @@ class MsgIdEcho (Structure):
 		("echo_total_counter", c_ulonglong),
 		("echo_total_time", c_ulonglong),
 		("echo_cycle_counter", c_ulonglong),
+		("concurrent_cycle_counter", c_ulonglong),
 		("echo_cycle_time", c_ulonglong),
 		("echo_req_time", c_ulonglong),
 		("echo_rsp_time", c_ulonglong),

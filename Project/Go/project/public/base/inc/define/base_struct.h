@@ -98,6 +98,7 @@ typedef struct {
 	ub echo_total_time;
 
 	ub echo_cycle_counter;
+	ub concurrent_cycle_counter;
 	ub echo_cycle_time;
 
 	ub echo_req_time;
