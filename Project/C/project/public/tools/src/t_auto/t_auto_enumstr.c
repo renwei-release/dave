@@ -1251,14 +1251,14 @@ t_auto_EchoType_str(EchoType enum_value)
 
 	switch(enum_value)
 	{
-		case EchoType_user:
-				value_str = "'EchoType_user'";
+		case EchoType_start:
+				value_str = "'EchoType_start'";
 			break;
-		case EchoType_req:
-				value_str = "'EchoType_req'";
+		case EchoType_stop:
+				value_str = "'EchoType_stop'";
 			break;
-		case EchoType_rsp:
-				value_str = "'EchoType_rsp'";
+		case EchoType_single:
+				value_str = "'EchoType_single'";
 			break;
 		case EchoType_random:
 				value_str = "'EchoType_random'";
@@ -4527,11 +4527,11 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_SYSTEM_DECOUPLING:
 				value_str = "'MSGID_SYSTEM_DECOUPLING-17'";
 			break;
-		case MSGID_MEMORY_WARNING:
-				value_str = "'MSGID_MEMORY_WARNING-18'";
+		case MSGID_ECHO_REQ:
+				value_str = "'MSGID_ECHO_REQ-18'";
 			break;
-		case MSGID_ECHO:
-				value_str = "'MSGID_ECHO-19'";
+		case MSGID_ECHO_RSP:
+				value_str = "'MSGID_ECHO_RSP-19'";
 			break;
 		case MSGID_INTERNAL_EVENTS:
 				value_str = "'MSGID_INTERNAL_EVENTS-20'";

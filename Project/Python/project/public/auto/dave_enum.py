@@ -119,10 +119,10 @@ CVSearchOpt_1 = CVSearchOpt_0 + 1
 CVSearchOpt_2 = CVSearchOpt_1 + 1
 CVSearchOpt_max = CVSearchOpt_2 + 1
 
-EchoType_user = 0
-EchoType_req = EchoType_user + 1
-EchoType_rsp = EchoType_req + 1
-EchoType_random = EchoType_rsp + 1
+EchoType_start = 0
+EchoType_stop = EchoType_start + 1
+EchoType_single = EchoType_stop + 1
+EchoType_random = EchoType_single + 1
 
 KeepAlive_enable = 0x01234567
 KeepAlive_disable = 0x09abcdef

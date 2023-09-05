@@ -59,7 +59,6 @@ _sync_client_remote_forwarded_msg(ub msg_id)
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 		case MSGID_SYSTEM_MOUNT:
 		case MSGID_SYSTEM_DECOUPLING:
-		case MSGID_MEMORY_WARNING:
 		case MSGID_THREAD_BUSY:
 		case MSGID_THREAD_IDLE:
 		case MSGID_CFG_UPDATE:

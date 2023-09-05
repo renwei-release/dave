@@ -152,9 +152,9 @@ func T_auto_EchoType_str(enum_value int64) string {
 	var value_str string
 
 	switch enum_value {
-		case EchoType_user: value_str = "'EchoType_user'"
-		case EchoType_req: value_str = "'EchoType_req'"
-		case EchoType_rsp: value_str = "'EchoType_rsp'"
+		case EchoType_start: value_str = "'EchoType_start'"
+		case EchoType_stop: value_str = "'EchoType_stop'"
+		case EchoType_single: value_str = "'EchoType_single'"
 		case EchoType_random: value_str = "'EchoType_random'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}
@@ -1054,8 +1054,8 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_CALL_FUNCTION: value_str = "'MSGID_CALL_FUNCTION-15'"
 		case MSGID_SYSTEM_MOUNT: value_str = "'MSGID_SYSTEM_MOUNT-16'"
 		case MSGID_SYSTEM_DECOUPLING: value_str = "'MSGID_SYSTEM_DECOUPLING-17'"
-		case MSGID_MEMORY_WARNING: value_str = "'MSGID_MEMORY_WARNING-18'"
-		case MSGID_ECHO: value_str = "'MSGID_ECHO-19'"
+		case MSGID_ECHO_REQ: value_str = "'MSGID_ECHO_REQ-18'"
+		case MSGID_ECHO_RSP: value_str = "'MSGID_ECHO_RSP-19'"
 		case MSGID_INTERNAL_EVENTS: value_str = "'MSGID_INTERNAL_EVENTS-20'"
 		case MSGID_THREAD_BUSY: value_str = "'MSGID_THREAD_BUSY-21'"
 		case MSGID_THREAD_IDLE: value_str = "'MSGID_THREAD_IDLE-22'"

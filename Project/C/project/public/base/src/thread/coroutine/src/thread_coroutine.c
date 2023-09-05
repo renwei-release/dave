@@ -16,9 +16,12 @@
 #include "thread_tools.h"
 #include "thread_coroutine.h"
 #include "coroutine_core.h"
+#include "coroutine_msg_site.h"
 #include "thread_log.h"
 
-#define COROUTINE_WAIT_TIMER 180
+#define COROUTINE_LIFE_TIMER 90
+#define COROUTINE_BASE_TIMER 30
+#define COROUTINE_LIFE_TIMES (COROUTINE_LIFE_TIMER / COROUTINE_BASE_TIMER)
 
 typedef enum {
 	wakeupevent_get_msg,
@@ -43,7 +46,8 @@ typedef struct {
 	sb site_life;
 
 	ThreadId src_thread;
-	ub msg_id;
+	ub req_msg_id;
+	ub rsp_msg_id;
 	ub msg_site;
 	ub wakeup_index;
 
@@ -57,7 +61,10 @@ typedef struct {
 	void *user_msg_ptr;
 } CoroutineSite;
 
-static void *_coroutine_kv = NULL;
+static inline void _thread_coroutine_wakeup_me(void *msg_chain, void *msg_router, CoroutineSite *pSite, wakeupevent event);
+
+static void *_coroutine_msg_kv = NULL;
+static void *_coroutine_site_kv = NULL;
 
 static inline ThreadId
 _thread_coroutine_set_index(ThreadId thread_id, ub *wakeup_index)
@@ -93,13 +100,19 @@ _thread_coroutine_key_kv(
 static inline void
 _thread_coroutine_add_kv_(s8 *key, CoroutineSite *pSite)
 {
-	kv_add_key_ptr(_coroutine_kv, key, pSite);
+	kv_add_key_ptr(_coroutine_msg_kv, key, pSite);
 }
 
 static inline CoroutineSite *
 _thread_coroutine_del_kv_(s8 *key)
 {
-	return (CoroutineSite *)kv_del_key_ptr(_coroutine_kv, key);
+	return (CoroutineSite *)kv_del_key_ptr(_coroutine_msg_kv, key);
+}
+
+static inline CoroutineSite *
+_thread_coroutine_inq_kv_(s8 *key)
+{
+	return (CoroutineSite *)kv_inq_key_ptr(_coroutine_msg_kv, key);
 }
 
 static inline void
@@ -107,17 +120,17 @@ _thread_coroutine_add_kv(CoroutineSite *pSite)
 {
 	s8 key[256];
 
-	if(_coroutine_kv == NULL)
+	if(_coroutine_msg_kv == NULL)
 		return;
 
 	_thread_coroutine_key_kv(
-		pSite->msg_id,
+		pSite->rsp_msg_id,
 		pSite->wakeup_index,
 		pSite->msg_site,
 		key, sizeof(key));
 
-	THREADDEBUG("msg_id:%s wakeup_index:%d msg_site:%lx key:%s",
-		msgstr(pSite->msg_id), pSite->wakeup_index, pSite->msg_site, key);
+	THREADDEBUG("rsp_msg_id:%s wakeup_index:%d msg_site:%lx key:%s",
+		msgstr(pSite->rsp_msg_id), pSite->wakeup_index, pSite->msg_site, key);
 
 	_thread_coroutine_add_kv_(key, pSite);
 }
@@ -130,7 +143,7 @@ _thread_coroutine_del_kv(
 {
 	s8 key[256];
 
-	if(_coroutine_kv == NULL)
+	if(_coroutine_msg_kv == NULL)
 		return NULL;
 
 	_thread_coroutine_key_kv(
@@ -142,26 +155,24 @@ _thread_coroutine_del_kv(
 	return _thread_coroutine_del_kv_(key);
 }
 
-/*
- * 考虑到竞争问题，
- * 我们把与这个线程有关的消息都在该线程自己的消息队列去排队执行。
- */
-static inline void
-_thread_coroutine_wakeup_me(
-	void *msg_chain, void *msg_router,
-	CoroutineSite *pSite, wakeupevent event)
+static inline CoroutineSite *
+_thread_coroutine_inq_kv(
+	ub msg_id,
+	ub wakeup_index,
+	ub msg_site)
 {
-	CoroutineWakeup *pWakeup;
+	s8 key[256];
 
-	pWakeup = thread_msg(pWakeup);
+	if(_coroutine_msg_kv == NULL)
+		return NULL;
 
-	pWakeup->wakeup_id = event;
+	_thread_coroutine_key_kv(
+		msg_id,
+		wakeup_index,
+		msg_site,
+		key, sizeof(key));
 
-	pWakeup->thread_index = pSite->thread_index;
-	pWakeup->wakeup_index = pSite->wakeup_index;
-	pWakeup->ptr = pSite;
-
-	thread_thread_write(msg_chain, msg_router, pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
+	return _thread_coroutine_inq_kv_(key);
 }
 
 static inline void *
@@ -203,8 +214,32 @@ _thread_coroutine_pop_msg_list(CoroutineSite *pSite)
 	return dave_true;
 }
 
+static inline ub
+_thread_coroutine_msg_site_malloc(CoroutineSite *pSite)
+{
+	if(pSite->msg_site == 0)
+	{
+		pSite->msg_site = coroutine_msg_site_malloc(pSite);
+	}
+	else
+	{
+		THREADABNOR("invalid malloc:%lx", pSite->msg_site);
+	}
+
+	return pSite->msg_site;
+}
+
+static inline void
+_thread_coroutine_msg_site_free(CoroutineSite *pSite)
+{
+	if(pSite->msg_site != 0)
+	{
+		pSite->msg_site = coroutine_msg_site_free(pSite->msg_site, pSite);
+	}
+}
+
 static inline CoroutineSite *
-_thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun coroutine_fun, base_thread_fun thread_fun, MSGBODY *msg)
+_thread_coroutine_site_malloc(ThreadStruct *pThread, coroutine_thread_fun coroutine_fun, base_thread_fun thread_fun, MSGBODY *msg)
 {
 	CoroutineSite *pSite = dave_malloc(sizeof(CoroutineSite));
 
@@ -214,8 +249,10 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 	pSite->msg = *msg;
 	pSite->co = NULL;
 
+	pSite->site_life = COROUTINE_LIFE_TIMES;
+
 	pSite->src_thread = INVALID_THREAD_ID;
-	pSite->msg_id = MSGID_RESERVED;
+	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
 	pSite->msg_site = 0;
 	pSite->wakeup_index = msg->thread_wakeup_index;
 
@@ -232,12 +269,13 @@ _thread_coroutine_info_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 	thread_other_lock();
 	pSite->pThread->coroutines_site_creat_counter ++;
 	thread_other_unlock();
+	kv_add_ub_ptr(_coroutine_site_kv, (ub)pSite, pSite);
 
 	return pSite;
 }
 
 static inline void
-_thread_coroutine_info_free(CoroutineSite *pSite)
+_thread_coroutine_site_free(CoroutineSite *pSite)
 {
 	if(pSite->msg.msg_body != NULL)
 	{
@@ -257,6 +295,9 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 		pSite->co = NULL;
 	}
 
+	_thread_coroutine_msg_site_free(pSite);
+
+	kv_del_ub_ptr(_coroutine_site_kv, (ub)pSite);
 	thread_other_lock();
 	pSite->pThread->coroutines_site_release_counter ++;
 	thread_other_unlock();
@@ -265,11 +306,20 @@ _thread_coroutine_info_free(CoroutineSite *pSite)
 }
 
 static inline void
+_thread_coroutine_running_step_8(CoroutineSite *pSite)
+{
+	if(coroutine_be_in_use(pSite->co) == dave_false)
+	{
+		_thread_coroutine_site_free(pSite);
+	}
+}
+
+static inline void
 _thread_coroutine_running_step_7(CoroutineSite *pSite)
 {
 	if(coroutine_be_in_use(pSite->co) == dave_false)
 	{
-		_thread_coroutine_info_free(pSite);
+		_thread_coroutine_site_free(pSite);
 	}
 }
 
@@ -283,6 +333,8 @@ _thread_coroutine_running_step_6(CoroutineWakeup *pWakeup, ub wakeup_index)
 		THREADABNOR("Algorithm error, wakeup_index mismatch:%d/%d",
 			pWakeup->wakeup_index, wakeup_index);
 	}
+	
+	_thread_coroutine_msg_site_free(pSite);
 
 	if(coroutine_resume(pSite->co) == dave_false)
 	{
@@ -313,13 +365,13 @@ _thread_coroutine_running_step_5(
 	}
 
 	if((pSite->thread_index != pDstThread->thread_index)
-		|| (pSite->msg_id != msg_id)
+		|| (pSite->rsp_msg_id != msg_id)
 		|| (pSite->msg_site != msg_site)
 		|| (pSite->wakeup_index != wakeup_index))
 	{
-		THREADABNOR("wait thread mismatch, thread_index:%d/%d msg_id:%s/%s msg_site:%lx/%lx wakeup_index:%ld/%ld",
+		THREADABNOR("wait thread mismatch, thread_index:%d/%d rsp_msg_id:%s/%s msg_site:%lx/%lx wakeup_index:%ld/%ld",
 			pSite->thread_index, pDstThread->thread_index,
-			msgstr(pSite->msg_id), msgstr(msg_id),
+			msgstr(pSite->rsp_msg_id), msgstr(msg_id),
 			pSite->msg_site, msg_site,
 			pSite->wakeup_index, wakeup_index);
 		return dave_false;
@@ -351,7 +403,7 @@ _thread_coroutine_running_step_4(void *param)
 	CoroutineSite *pSite = (CoroutineSite *)param;
 
 	THREADDEBUG("thread_index:%d wakeup_index:%d wait_msg:%s",
-		pSite->thread_index, pSite->wakeup_index, msgstr(pSite->msg_id));
+		pSite->thread_index, pSite->wakeup_index, msgstr(pSite->rsp_msg_id));
 
 	thread_thread_clean_coroutine_site(pSite->thread_index, pSite->wakeup_index);
 
@@ -362,6 +414,9 @@ _thread_coroutine_running_step_4(void *param)
 	}
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
+
+	pSite->src_thread = INVALID_THREAD_ID;
+	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
 
 	THREADDEBUG("wakeup me !!!!!!!!!!!!!!!!");
 
@@ -388,9 +443,12 @@ _thread_coroutine_running_step_3(
 		return NULL;
 	}
 
+	pSite->site_life = COROUTINE_LIFE_TIMES;
+
 	pSite->src_thread = *src_id;
-	pSite->msg_id = rsp_msg_id;
-	pSite->msg_site = (ub)(pSite);
+	pSite->req_msg_id = req_msg_id;
+	pSite->rsp_msg_id = rsp_msg_id;
+	pSite->msg_site = _thread_coroutine_msg_site_malloc(pSite);
 	pSite->wakeup_index = wakeup_index;
 
 	pSite->thread_index = pSrcThread->thread_index;
@@ -423,7 +481,7 @@ _thread_coroutine_running_step_2(void *param)
 static inline void
 _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun coroutine_fun, base_thread_fun thread_fun, MSGBODY *msg)
 {
-	CoroutineSite *pSite = _thread_coroutine_info_malloc(pThread, coroutine_fun, thread_fun, msg);
+	CoroutineSite *pSite = _thread_coroutine_site_malloc(pThread, coroutine_fun, thread_fun, msg);
 
 	pSite->co = coroutine_create(_thread_coroutine_running_step_2, pSite, msg);
 
@@ -433,11 +491,11 @@ _thread_coroutine_running_step_1(ThreadStruct *pThread, coroutine_thread_fun cor
 			thread_name(pSite->msg.msg_src), thread_name(pSite->msg.msg_dst), msgstr(pSite->msg.msg_id));
 	}
 
-	_thread_coroutine_running_step_7(pSite);
+	_thread_coroutine_running_step_8(pSite);
 }
 
 static inline void
-_thread_coroutine_wakeup(MSGBODY *thread_msg)
+_thread_coroutine_wakeup_process(MSGBODY *thread_msg)
 {
 	CoroutineWakeup *pWakeup = (CoroutineWakeup *)(thread_msg->msg_body);
 
@@ -450,8 +508,31 @@ _thread_coroutine_wakeup(MSGBODY *thread_msg)
 				_thread_coroutine_running_step_6(pWakeup, thread_msg->thread_wakeup_index);
 			break;
 		default:
+				THREADABNOR("invalid wakeup_id:%d", pWakeup->wakeup_id);
 			break;
 	}
+}
+
+/*
+ * 考虑到竞争问题，
+ * 我们把与这个线程有关的消息都在该线程自己的消息队列去排队执行。
+ */
+static inline void
+_thread_coroutine_wakeup_me(
+	void *msg_chain, void *msg_router,
+	CoroutineSite *pSite, wakeupevent event)
+{
+	CoroutineWakeup *pWakeup;
+
+	pWakeup = thread_msg(pWakeup);
+
+	pWakeup->wakeup_id = event;
+
+	pWakeup->thread_index = pSite->thread_index;
+	pWakeup->wakeup_index = pSite->wakeup_index;
+	pWakeup->ptr = pSite;
+
+	thread_thread_write(msg_chain, msg_router, pSite->thread_index, pSite->wakeup_index, MSGID_COROUTINE_WAKEUP, pWakeup);
 }
 
 static inline void
@@ -459,13 +540,18 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 {
 	CoroutineSite *pSite;
 
-	pSite = _thread_coroutine_del_kv_(key);
-	if(pSite != NULL)
+	pSite = _thread_coroutine_inq_kv_(key);
+	if((pSite != NULL) && ((-- pSite->site_life) <= 0))
 	{
-		THREADLOG("%s %lx:%lx pSite:%lx co:%lx",
+		_thread_coroutine_del_kv_(key);
+
+		_thread_coroutine_msg_site_free(pSite);
+
+		THREADLOG("%s %s/%lx:%s pSite:%ld/%lx co:%lx",
 			key,
-			pSite->src_thread, pSite->msg_id,
-			pSite, pSite->co);
+			thread_name(pSite->src_thread), pSite->src_thread, msgstr(pSite->rsp_msg_id),
+			pSite->site_life, pSite,
+			pSite->co);
 	
 		_thread_coroutine_wakeup_me(
 			NULL, NULL,
@@ -527,9 +613,13 @@ _thread_coroutine_init(void)
 
 	if(kv_init == dave_true)
 	{
-		if(_coroutine_kv == NULL)
+		if(_coroutine_msg_kv == NULL)
 		{
-			_coroutine_kv = kv_malloc("ckv", COROUTINE_WAIT_TIMER, _thread_coroutine_kv_timer_out);
+			_coroutine_msg_kv = kv_malloc("cmsgkv", COROUTINE_BASE_TIMER, _thread_coroutine_kv_timer_out);
+		}
+		if(_coroutine_site_kv == NULL)
+		{
+			_coroutine_site_kv = kv_malloc("csitekv", 0, NULL);
 		}
 	}
 }
@@ -538,6 +628,59 @@ static inline void
 _thread_coroutine_exit(void)
 {
 
+}
+
+static ub
+_thread_coroutine_site_data_info(s8 *info_ptr, ub info_len, CoroutineSite *pSite)
+{
+	return dave_snprintf(
+		info_ptr, info_len,
+		" %lx %s(%d/%d) %s->%s|%s\n",
+		pSite,
+		pSite->pThread->thread_name,
+		pSite->pThread->coroutines_site_creat_counter, pSite->pThread->coroutines_site_release_counter,
+		thread_name(pSite->src_thread),
+		msgstr(pSite->req_msg_id), msgstr(pSite->rsp_msg_id));
+}
+
+static ub
+_thread_coroutine_msg_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index, index;
+	CoroutineSite *pSite;
+
+	info_index = dave_snprintf(info_ptr, info_len, "COROUTINE MSG INFO:\n");
+
+	for(index=0; index<102400; index++)
+	{
+		pSite = kv_index_key_ptr(_coroutine_msg_kv, index);
+		if(pSite == NULL)
+			break;
+
+		info_index += _thread_coroutine_site_data_info(&info_ptr[info_index], info_len-info_index, pSite);
+	}
+
+	return info_index;
+}
+
+static ub
+_thread_coroutine_site_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index, index;
+	CoroutineSite *pSite;
+
+	info_index = dave_snprintf(info_ptr, info_len, "COROUTINE SITE INFO:\n");
+
+	for(index=0; index<102400; index++)
+	{
+		pSite = kv_index_key_ptr(_coroutine_site_kv, index);
+		if(pSite == NULL)
+			break;
+
+		info_index += _thread_coroutine_site_data_info(&info_ptr[info_index], info_len-info_index, pSite);
+	}
+
+	return info_index;
 }
 
 // =====================================================================
@@ -563,7 +706,7 @@ thread_coroutine_creat(ThreadStruct *pThread)
 
 	coroutine_core_creat();
 
-	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup, NULL);
+	base_thread_msg_register(pThread->thread_id, MSGID_COROUTINE_WAKEUP, _thread_coroutine_wakeup_process, NULL);
 }
 
 void
@@ -629,6 +772,17 @@ thread_coroutine_running_step_resume(
 		src_id,
 		pDstThread, dst_id,
 		msg_id, msg_body, msg_len);
+}
+
+ub
+thread_coroutine_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index;
+
+	info_index = _thread_coroutine_msg_info(info_ptr, info_len);
+	info_index += _thread_coroutine_site_info(&info_ptr[info_index], info_len-info_index);
+
+	return info_index;
 }
 
 #endif

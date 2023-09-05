@@ -2564,6 +2564,102 @@ t_rpc_ver3_unzip_BuildingBlocks_d(BuildingBlocks *unzip_data, ub unzip_len, void
 }
 
 void *
+t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data)
+{
+	void *pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "EchoType-type", t_rpc_ver3_zip_EchoType(zip_data->type));
+	t_bson_add_object(pStructBson, "s8-gid", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
+	t_bson_add_object(pStructBson, "s8-thread", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->thread), 1, DAVE_THREAD_NAME_LEN));
+	t_bson_add_object(pStructBson, "ub-echo_total_counter", t_rpc_ver3_zip_ub(zip_data->echo_total_counter));
+	t_bson_add_object(pStructBson, "ub-echo_total_time", t_rpc_ver3_zip_ub(zip_data->echo_total_time));
+	t_bson_add_object(pStructBson, "ub-echo_cycle_counter", t_rpc_ver3_zip_ub(zip_data->echo_cycle_counter));
+	t_bson_add_object(pStructBson, "ub-echo_cycle_time", t_rpc_ver3_zip_ub(zip_data->echo_cycle_time));
+	t_bson_add_object(pStructBson, "ub-echo_req_time", t_rpc_ver3_zip_ub(zip_data->echo_req_time));
+	t_bson_add_object(pStructBson, "ub-echo_rsp_time", t_rpc_ver3_zip_ub(zip_data->echo_rsp_time));
+	t_bson_add_object(pStructBson, "dave_bool-concurrent_flag", t_rpc_ver3_zip_dave_bool(zip_data->concurrent_flag));
+	t_bson_add_object(pStructBson, "ub-concurrent_tps_time", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_time));
+	t_bson_add_object(pStructBson, "ub-concurrent_tps_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_counter));
+	t_bson_add_object(pStructBson, "ub-concurrent_total_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_total_counter));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 256));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_MsgIdEcho(MsgIdEcho *unzip_data, void *pStructBson)
+{
+	dave_bool ret;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL on MsgIdEcho");
+		dave_memset(unzip_data, 0x00, sizeof(MsgIdEcho));
+		ret = dave_false;
+	}
+	else
+	{
+		t_rpc_ver3_unzip_EchoType(&(unzip_data->type), t_bson_inq_object(pStructBson, "EchoType-type"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->gid), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-gid"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->thread), 1, DAVE_THREAD_NAME_LEN, t_bson_inq_object(pStructBson, "s8-thread"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_total_counter), t_bson_inq_object(pStructBson, "ub-echo_total_counter"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_total_time), t_bson_inq_object(pStructBson, "ub-echo_total_time"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_cycle_counter), t_bson_inq_object(pStructBson, "ub-echo_cycle_counter"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_cycle_time), t_bson_inq_object(pStructBson, "ub-echo_cycle_time"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_req_time), t_bson_inq_object(pStructBson, "ub-echo_req_time"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->echo_rsp_time), t_bson_inq_object(pStructBson, "ub-echo_rsp_time"));
+		t_rpc_ver3_unzip_dave_bool(&(unzip_data->concurrent_flag), t_bson_inq_object(pStructBson, "dave_bool-concurrent_flag"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_tps_time), t_bson_inq_object(pStructBson, "ub-concurrent_tps_time"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_tps_counter), t_bson_inq_object(pStructBson, "ub-concurrent_tps_counter"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_total_counter), t_bson_inq_object(pStructBson, "ub-concurrent_total_counter"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->msg), 1, 256, t_bson_inq_object(pStructBson, "s8-msg"));
+		ret = dave_true;
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_zip_MsgIdEcho_d(MsgIdEcho *zip_data, ub zip_len)
+{
+	void *pArrayBson = t_bson_malloc_array();
+	ub zip_index;
+
+	for(zip_index=0; zip_index<zip_len; zip_index++)
+	{
+		t_bson_array_add_object(pArrayBson, t_rpc_ver3_zip_MsgIdEcho(&(zip_data[zip_index])));
+	}
+
+	return pArrayBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_MsgIdEcho_d(MsgIdEcho *unzip_data, ub unzip_len, void *pArrayBson)
+{
+	sb array_len, array_index;
+
+	dave_memset(unzip_data, 0x00, unzip_len * sizeof(MsgIdEcho));
+
+	if(pArrayBson == NULL)
+	{
+		return dave_false;
+	}
+
+	array_len = t_bson_array_number(pArrayBson);
+	if(array_len > (sb)unzip_len)
+	{
+		array_len = (sb)unzip_len;
+	}
+
+	for(array_index=0; array_index<array_len; array_index++)
+	{
+		t_rpc_ver3_unzip_MsgIdEcho(&unzip_data[array_index], t_bson_array_inq_object(pArrayBson, array_index));
+	}
+
+	return dave_true;
+}
+
+void *
 t_rpc_ver3_zip_SocNetInfo(SocNetInfo *zip_data)
 {
 	void *pStructBson = t_bson_malloc_object();

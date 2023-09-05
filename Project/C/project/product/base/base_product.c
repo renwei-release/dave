@@ -35,7 +35,7 @@ static ThreadId _base_thread = INVALID_THREAD_ID;
 static void
 _base_thread_rpc_debug_rsp(ThreadId src, RPCDebugRsp *pRsp)
 {
-	BASELOG("from:%s str:%s/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
+	BASETRACE("from:%s str:%s/%s 8:%d/%d 16:%d/%d 32:%d/%d 64:%ld/%ld ptr:%lx",
 		thread_name(src),
 		pRsp->str_debug, pRsp->str_debug,
 		pRsp->s8_debug, pRsp->u8_debug,
@@ -169,8 +169,9 @@ _base_thread_main(MSGBODY *msg)
 		case MSGID_DEBUG_REQ:
 				base_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
-		case MSGID_ECHO:
-				dave_echo(msg->msg_src, msg->msg_dst, (MsgIdEcho *)(msg->msg_body));
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				_base_msg_timer_out((ProcessMsgTimerOutMsg *)(msg->msg_body));

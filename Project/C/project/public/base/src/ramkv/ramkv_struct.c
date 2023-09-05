@@ -39,8 +39,6 @@ ___ramkv_malloc___(s8 *name, KvAttrib attrib, s8 *fun, ub line)
 
 	t_lock_reset(&(pKV->ramkv_pv));
 
-	dave_strcpy(pKV->thread_name, thread_name(self()), DAVE_THREAD_NAME_LEN);
-
 	dave_strcpy(pKV->name, name, RAMKV_NAME_MAX);
 	pKV->attrib = attrib;
 
@@ -68,13 +66,6 @@ ___ramkv_free___(KV *pKV, s8 *fun, ub line)
 
 	if(ramkv_check(pKV) == dave_false)
 		return;
-
-	if(dave_strcmp(pKV->thread_name, thread_name(self())) == dave_false)
-	{
-		KVABNOR("The resource requested by %s is released by %s! <%s:%d>",
-			pKV->thread_name, thread_name(self()),
-			fun, line);
-	}
 
 	ramkv_free_local(pKV);
 

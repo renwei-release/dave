@@ -11,6 +11,7 @@
 #include "dave_3rdparty.h"
 #include "dave_verno.h"
 #include "dave_base.h"
+#include "dave_echo.h"
 #include "store_msg.h"
 #include "store_mysql.h"
 
@@ -37,6 +38,10 @@ _store_main(MSGBODY *msg)
 	{
 		case MSGID_DEBUG_REQ:
 				store_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
 			break;
 		case STORE_MYSQL_REQ:
 				store_mysql_sql(msg->msg_src, msg->thread_wakeup_index, (StoreMysqlReq *)(msg->msg_body));

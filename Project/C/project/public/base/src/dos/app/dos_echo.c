@@ -16,24 +16,45 @@
 #include "dos_cmd.h"
 #include "dos_log.h"
 
-static void
-_dos_echo(dave_bool concurrent_flag)
+static RetCode
+_dos_echo(s8 *command)
 {
-	MsgIdEcho *pEcho = thread_reset_msg(pEcho);
+	MsgIdEchoReq *pEcho = thread_reset_msg(pEcho);
 
-	pEcho->concurrent_flag = concurrent_flag;
+	if((dave_strcmp(command, "concurrent") == dave_true)
+		|| (dave_strcmp(command, "c") == dave_true))
+	{
+		pEcho->echo.type = EchoType_start;
+		pEcho->echo.concurrent_flag = dave_true;
+	}
+	else if((dave_strcmp(command, "single") == dave_true)
+		|| (dave_strcmp(command, "s") == dave_true))
+	{
+		pEcho->echo.type = EchoType_start;
+		pEcho->echo.concurrent_flag = dave_false;
+	}
+	else if(dave_strcmp(command, "stop") == dave_true)
+	{
+		pEcho->echo.type = EchoType_stop;
+	}
+	else
+	{
+		return RetCode_Invalid_parameter;
+	}
 
-	dos_print("%s start echo (%s) ......",
+	dos_print("%s %s echo ......",
 		thread_name(main_thread_id_get()),
-		pEcho->concurrent_flag == dave_true ? "concurrent" : "single");
+		pEcho->echo.type == EchoType_start ? "start" : "stop");
 
-	id_msg(main_thread_id_get(), MSGID_ECHO, pEcho);
+	id_msg(main_thread_id_get(), MSGID_ECHO_REQ, pEcho);
+
+	return RetCode_OK;
 }
 
 static RetCode
 _dos_echo_help(void)
 {
-	dos_print("Usage: echo [true]|[false]\nStart the echo test to test the link connection performance.!");
+	dos_print("Usage: echo [concurrent]|[single]|[stop]\nStart the echo test to test the link connection performance.");
 	return RetCode_OK;
 }
 
@@ -41,13 +62,11 @@ static RetCode
 _dos_echo_cmd(s8 *cmd_ptr, ub cmd_len)
 {
 	ub cmd_index = 0;
-	dave_bool concurrent_flag;
+	s8 command[128];
 
-	cmd_index += dos_load_bool(&cmd_ptr[cmd_index], cmd_len-cmd_index, &concurrent_flag);
+	cmd_index += dos_load_string(&cmd_ptr[cmd_index], cmd_len-cmd_index, command, sizeof(command));
 
-	_dos_echo(concurrent_flag);
-
-	return RetCode_OK;
+	return _dos_echo(command);
 }
 
 // =====================================================================

@@ -599,11 +599,6 @@ type MainMsgPythonRsp struct {
 	Ptr uint64
 }
 
-/* for MSGID_MEMORY_WARNING message */
-type MemoryWarning struct {
-	Used_percentage uint64
-}
-
 /* for MSGID_BLOCKS_REQ message */
 type MsgBlocksReq struct {
 	Opt int32
@@ -620,22 +615,16 @@ type MsgBlocksRsp struct {
 	Ptr uint64
 }
 
-/* for MSGID_ECHO message */
-type MsgIdEcho struct {
-	Type int32
-	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
-	Thread [DAVE_THREAD_NAME_LEN] byte
-	Echo_total_counter uint64
-	Echo_total_time uint64
-	Echo_cycle_counter uint64
-	Echo_cycle_time uint64
-	Echo_req_time uint64
-	Echo_rsp_time uint64
-	Concurrent_flag int8
-	Concurrent_tps_time uint64
-	Concurrent_tps_counter uint64
-	Concurrent_total_counter uint64
-	Msg [256] byte
+/* for MSGID_ECHO_REQ message */
+type MsgIdEchoReq struct {
+	Echo MsgIdEcho
+	Ptr uint64
+}
+
+/* for MSGID_ECHO_RSP message */
+type MsgIdEchoRsp struct {
+	Echo MsgIdEcho
+	Ptr uint64
 }
 
 /* for MSGID_INNER_LOOP message */

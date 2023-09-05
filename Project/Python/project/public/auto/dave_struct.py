@@ -388,6 +388,25 @@ class BuildingBlocks (Structure):
 ]
 
 #* for None message *#
+class MsgIdEcho (Structure):
+	_fields_ = [
+		("type", c_int),
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("thread", c_char * DAVE_THREAD_NAME_LEN),
+		("echo_total_counter", c_ulonglong),
+		("echo_total_time", c_ulonglong),
+		("echo_cycle_counter", c_ulonglong),
+		("echo_cycle_time", c_ulonglong),
+		("echo_req_time", c_ulonglong),
+		("echo_rsp_time", c_ulonglong),
+		("concurrent_flag", c_char),
+		("concurrent_tps_time", c_ulonglong),
+		("concurrent_tps_counter", c_ulonglong),
+		("concurrent_total_counter", c_ulonglong),
+		("msg", c_char * 256),
+]
+
+#* for None message *#
 class SocNetInfo (Structure):
 	_fields_ = [
 		("domain", c_int),

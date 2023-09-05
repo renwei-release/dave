@@ -88,4 +88,27 @@ typedef struct {
 	ub release_quantity;
 } BuildingBlocks;
 
+typedef struct {
+	EchoType type;
+
+	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
+	s8 thread[DAVE_THREAD_NAME_LEN];
+
+	ub echo_total_counter;
+	ub echo_total_time;
+
+	ub echo_cycle_counter;
+	ub echo_cycle_time;
+
+	ub echo_req_time;
+	ub echo_rsp_time;
+
+	dave_bool concurrent_flag;
+	ub concurrent_tps_time;
+	ub concurrent_tps_counter;
+	ub concurrent_total_counter;
+
+	s8 msg[256];
+} MsgIdEcho;
+
 #endif

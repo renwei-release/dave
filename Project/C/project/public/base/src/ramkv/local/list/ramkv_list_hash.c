@@ -40,8 +40,8 @@ ramkv_hash(KV *pKV, KVHash *pHash, u8 *key_ptr, ub key_len, s8 *fun, ub line)
 
 	if(key_len >= RAMKV_KEY_MAX)
 	{
-		KVLOG("invalid key_len:%d thread:%s name:%s <%s:%d>",
-			key_len, pKV->thread_name, pKV->name, fun, line);
+		KVLOG("invalid key_len:%d name:%s <%s:%d>",
+			key_len, pKV->name, fun, line);
 		return dave_false;
 	}
 

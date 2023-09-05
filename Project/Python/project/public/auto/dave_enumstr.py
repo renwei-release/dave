@@ -237,12 +237,12 @@ def t_auto_CVSearchOpt_str(enum_value):
 
 
 def t_auto_EchoType_str(enum_value):
-	if enum_value == EchoType_user:
-		value_str = "'EchoType_user'"
-	elif enum_value == EchoType_req:
-		value_str = "'EchoType_req'"
-	elif enum_value == EchoType_rsp:
-		value_str = "'EchoType_rsp'"
+	if enum_value == EchoType_start:
+		value_str = "'EchoType_start'"
+	elif enum_value == EchoType_stop:
+		value_str = "'EchoType_stop'"
+	elif enum_value == EchoType_single:
+		value_str = "'EchoType_single'"
 	elif enum_value == EchoType_random:
 		value_str = "'EchoType_random'"
 	else:
@@ -1663,10 +1663,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_SYSTEM_MOUNT-16'"
 	elif enum_value == MSGID_SYSTEM_DECOUPLING:
 		value_str = "'MSGID_SYSTEM_DECOUPLING-17'"
-	elif enum_value == MSGID_MEMORY_WARNING:
-		value_str = "'MSGID_MEMORY_WARNING-18'"
-	elif enum_value == MSGID_ECHO:
-		value_str = "'MSGID_ECHO-19'"
+	elif enum_value == MSGID_ECHO_REQ:
+		value_str = "'MSGID_ECHO_REQ-18'"
+	elif enum_value == MSGID_ECHO_RSP:
+		value_str = "'MSGID_ECHO_RSP-19'"
 	elif enum_value == MSGID_INTERNAL_EVENTS:
 		value_str = "'MSGID_INTERNAL_EVENTS-20'"
 	elif enum_value == MSGID_THREAD_BUSY:

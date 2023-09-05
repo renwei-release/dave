@@ -40,5 +40,7 @@ dave_bool thread_coroutine_running_step_resume(
 	ThreadStruct *pDstThread, ThreadId dst_id,
 	ub msg_id, void *msg_body, ub msg_len);
 
+ub thread_coroutine_info(s8 *info_ptr, ub info_len);
+
 #endif
 

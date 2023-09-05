@@ -635,7 +635,7 @@ _ramkv_timer_base_time(KV *pKV, ub out_second)
 }
 
 static inline void
-_ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_callback outback_fun)
+_ramkv_timer_init(s8 *name, KV *pKV, ub out_second, ramkv_time_callback outback_fun)
 {
 	s8 name_buffer[256];
 
@@ -645,13 +645,13 @@ _ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_
 	}
 	if(out_second > KV_MAX_TIME)
 	{
-		KVDEBUG("%s creat %s has too large out_second:%d(%d), creat failed!",
-			thread_name, name, out_second, KV_MAX_TIME);
+		KVDEBUG("creat %s has too large out_second:%d(%d), creat failed!",
+			name, out_second, KV_MAX_TIME);
 		return;
 	}
 	if(pKV->ramkv_timer.timer_id != INVALID_TIMER_ID)
 	{
-		KVLOG("%s repeat init %s, why?", thread_name, name);
+		KVLOG("repeat init %s, why?", name);
 		return;
 	}
 
@@ -673,8 +673,7 @@ _ramkv_timer_init(s8 *thread_name, s8 *name, KV *pKV, ub out_second, ramkv_time_
 	pKV->ramkv_timer.timer_line = NULL;
 	pKV->ramkv_timer.key_ramkv = __base_ramkv_malloc__(dave_false, name_buffer, KvAttrib_list, 0, NULL, (s8 *)__func__, (ub)__LINE__);
 
-	KVDEBUG("thread:%s out_second:%d base_time:%d out_times:%d timer_name:%s/%s timer_id:%d",
-		thread_name,
+	KVDEBUG("out_second:%d base_time:%d out_times:%d timer_name:%s/%s timer_id:%d",
 		out_second, pKV->ramkv_timer.base_timer, pKV->ramkv_timer.out_times,
 		name_buffer, name, pKV->ramkv_timer.timer_id);
 }
@@ -744,7 +743,7 @@ ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback outback_fun)
 	pKV->ramkv_timer.timer_line = NULL;
 	pKV->ramkv_timer.key_ramkv = NULL;
 
-	SAFECODEv2W(pKV->ramkv_pv, _ramkv_timer_init(pKV->thread_name, pKV->name, pKV, out_second, outback_fun););
+	SAFECODEv2W(pKV->ramkv_pv, _ramkv_timer_init(pKV->name, pKV, out_second, outback_fun););
 }
 
 void

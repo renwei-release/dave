@@ -58,6 +58,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 	ub msg_unprocessed_counter, msg_received_counter, msg_processed_counter;
 	ub seq_unprocessed_counter, seq_received_counter, seq_processed_counter;
 	ub pre_unprocessed_counter, pre_received_counter, pre_processed_counter;
+	ub trd_unprocessed_counter, trd_received_counter, trd_processed_counter;
 	ub co_unprocessed_counter, co_received_counter, co_processed_counter;
 
 	msg_index = 0;
@@ -74,6 +75,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 			thread_queue_total_detail(&msg_unprocessed_counter, &msg_received_counter, &msg_processed_counter, pThread[thread_index].msg_queue, THREAD_MSG_QUEUE_NUM);
 			thread_queue_total_detail(&seq_unprocessed_counter, &seq_received_counter, &seq_processed_counter, pThread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
 			thread_queue_total_detail(&pre_unprocessed_counter, &pre_received_counter, &pre_processed_counter, pThread[thread_index].pre_queue, THREAD_PRE_QUEUE_NUM);
+			thread_thread_total_detail(&trd_unprocessed_counter, &trd_received_counter, &trd_processed_counter, pThread[thread_index].thread_index);			
 			co_unprocessed_counter = pThread[thread_index].coroutines_site_creat_counter - pThread[thread_index].coroutines_site_release_counter;
 			co_received_counter = pThread[thread_index].coroutines_site_creat_counter;
 			co_processed_counter = pThread[thread_index].coroutines_site_release_counter;
@@ -87,7 +89,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 
 			if(pThread[thread_index].thread_flag & THREAD_COROUTINE_FLAG)
 			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %sco%s:%lu/%lu:%lu f:%s t:%s i:%lx/%lu/%lu\n",
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu %sco%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
 					printf_len >= 24 ? "" : "\t",
 					printf_len < 16 ? "\t" : "",
 					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
@@ -102,6 +104,10 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 					(pre_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
 					pre_received_counter, pre_processed_counter,
 					pre_unprocessed_counter,
+					(trd_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
+					(trd_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
+					trd_received_counter, trd_processed_counter,
+					trd_unprocessed_counter,
 					(co_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
 					(co_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
 					co_received_counter, co_processed_counter,
@@ -110,9 +116,34 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 					pThread[thread_index].trace_on==dave_true ? "on" : "off",
 					pThread[thread_index].message_idle_time, pThread[thread_index].message_idle_total, pThread[thread_index].message_wakeup_counter);
 			}
+			else if(pThread[thread_index].thread_flag & THREAD_THREAD_FLAG)
+			{
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
+					printf_len >= 24 ? "" : "\t",
+					printf_len < 16 ? "\t" : "",
+					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
+					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
+					msg_received_counter, msg_processed_counter,
+					msg_unprocessed_counter,
+					(seq_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
+					(seq_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
+					seq_received_counter, seq_processed_counter,
+					seq_unprocessed_counter,
+					(pre_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
+					(pre_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
+					pre_received_counter, pre_processed_counter,
+					pre_unprocessed_counter,
+					(trd_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
+					(trd_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[0m" : "",
+					trd_received_counter, trd_processed_counter,
+					trd_unprocessed_counter,
+					thread_name(pThread[thread_index].father),
+					pThread[thread_index].trace_on==dave_true ? "on" : "off",
+					pThread[thread_index].message_idle_time, pThread[thread_index].message_idle_total, pThread[thread_index].message_wakeup_counter);
+			}
 			else
 			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu f:%s t:%s i:%lx/%lu/%lu\n",
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
 					printf_len >= 24 ? "" : "\t",
 					printf_len < 16 ? "\t" : "",
 					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",

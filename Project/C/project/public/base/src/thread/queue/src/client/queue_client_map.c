@@ -284,7 +284,7 @@ queue_client_map_info(s8 *info_ptr, ub info_len)
 			break;
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s->",
+			" %s<-",
 			pMap->thread_name);
 		for(map_index=0; map_index<QUEUE_CLIENT_MAP_MAX; map_index++)
 		{

@@ -58,8 +58,6 @@ typedef struct {
 
 	TLock ramkv_pv;
 
-	s8 thread_name[DAVE_THREAD_NAME_LEN];
-
 	KVTimer ramkv_timer;
 
 	s8 name[RAMKV_NAME_MAX];

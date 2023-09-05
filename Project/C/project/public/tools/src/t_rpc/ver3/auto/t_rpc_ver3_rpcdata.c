@@ -247,8 +247,11 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_DOS_FORWARD:
 				pBson = t_rpc_ver3_zip_DosForward((DosForward *)msg_body, msg_len);
 			break;
-		case MSGID_ECHO:
-				pBson = t_rpc_ver3_zip_MsgIdEcho((MsgIdEcho *)msg_body, msg_len);
+		case MSGID_ECHO_REQ:
+				pBson = t_rpc_ver3_zip_MsgIdEchoReq((MsgIdEchoReq *)msg_body, msg_len);
+			break;
+		case MSGID_ECHO_RSP:
+				pBson = t_rpc_ver3_zip_MsgIdEchoRsp((MsgIdEchoRsp *)msg_body, msg_len);
 			break;
 		case MSGID_INNER_LOOP:
 				pBson = t_rpc_ver3_zip_MsgInnerLoop((MsgInnerLoop *)msg_body, msg_len);
@@ -264,9 +267,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_LOCAL_THREAD_REMOVE:
 				pBson = t_rpc_ver3_zip_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body, msg_len);
-			break;
-		case MSGID_MEMORY_WARNING:
-				pBson = t_rpc_ver3_zip_MemoryWarning((MemoryWarning *)msg_body, msg_len);
 			break;
 		case MSGID_OS_NOTIFY:
 				pBson = t_rpc_ver3_zip_MsgOSNotify((MsgOSNotify *)msg_body, msg_len);
@@ -662,8 +662,11 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_DOS_FORWARD:
 				ret = t_rpc_ver3_unzip_DosForward(msg_body, msg_len, pBson);
 			break;
-		case MSGID_ECHO:
-				ret = t_rpc_ver3_unzip_MsgIdEcho(msg_body, msg_len, pBson);
+		case MSGID_ECHO_REQ:
+				ret = t_rpc_ver3_unzip_MsgIdEchoReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_ECHO_RSP:
+				ret = t_rpc_ver3_unzip_MsgIdEchoRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_INNER_LOOP:
 				ret = t_rpc_ver3_unzip_MsgInnerLoop(msg_body, msg_len, pBson);
@@ -679,9 +682,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_LOCAL_THREAD_REMOVE:
 				ret = t_rpc_ver3_unzip_ThreadLocalRemoveMsg(msg_body, msg_len, pBson);
-			break;
-		case MSGID_MEMORY_WARNING:
-				ret = t_rpc_ver3_unzip_MemoryWarning(msg_body, msg_len, pBson);
 			break;
 		case MSGID_OS_NOTIFY:
 				ret = t_rpc_ver3_unzip_MsgOSNotify(msg_body, msg_len, pBson);
@@ -1077,8 +1077,11 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_DOS_FORWARD:
 				ptr = t_rpc_ver3_ptr_DosForward((DosForward *)msg_body, new_ptr);
 			break;
-		case MSGID_ECHO:
-				ptr = t_rpc_ver3_ptr_MsgIdEcho((MsgIdEcho *)msg_body, new_ptr);
+		case MSGID_ECHO_REQ:
+				ptr = t_rpc_ver3_ptr_MsgIdEchoReq((MsgIdEchoReq *)msg_body, new_ptr);
+			break;
+		case MSGID_ECHO_RSP:
+				ptr = t_rpc_ver3_ptr_MsgIdEchoRsp((MsgIdEchoRsp *)msg_body, new_ptr);
 			break;
 		case MSGID_INNER_LOOP:
 				ptr = t_rpc_ver3_ptr_MsgInnerLoop((MsgInnerLoop *)msg_body, new_ptr);
@@ -1094,9 +1097,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case MSGID_LOCAL_THREAD_REMOVE:
 				ptr = t_rpc_ver3_ptr_ThreadLocalRemoveMsg((ThreadLocalRemoveMsg *)msg_body, new_ptr);
-			break;
-		case MSGID_MEMORY_WARNING:
-				ptr = t_rpc_ver3_ptr_MemoryWarning((MemoryWarning *)msg_body, new_ptr);
 			break;
 		case MSGID_OS_NOTIFY:
 				ptr = t_rpc_ver3_ptr_MsgOSNotify((MsgOSNotify *)msg_body, new_ptr);
@@ -1492,8 +1492,11 @@ _t_rpc_sizeof(ub msg_id)
 		case MSGID_DOS_FORWARD:
 				msg_len = t_rpc_ver3_sizeof_DosForward();
 			break;
-		case MSGID_ECHO:
-				msg_len = t_rpc_ver3_sizeof_MsgIdEcho();
+		case MSGID_ECHO_REQ:
+				msg_len = t_rpc_ver3_sizeof_MsgIdEchoReq();
+			break;
+		case MSGID_ECHO_RSP:
+				msg_len = t_rpc_ver3_sizeof_MsgIdEchoRsp();
 			break;
 		case MSGID_INNER_LOOP:
 				msg_len = t_rpc_ver3_sizeof_MsgInnerLoop();
@@ -1509,9 +1512,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_LOCAL_THREAD_REMOVE:
 				msg_len = t_rpc_ver3_sizeof_ThreadLocalRemoveMsg();
-			break;
-		case MSGID_MEMORY_WARNING:
-				msg_len = t_rpc_ver3_sizeof_MemoryWarning();
 			break;
 		case MSGID_OS_NOTIFY:
 				msg_len = t_rpc_ver3_sizeof_MsgOSNotify();

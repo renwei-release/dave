@@ -17,6 +17,7 @@ void dos_debug_reset(void);
 void dos_echo_reset(void);
 void dos_cfg_reset(void);
 void dos_sync_reset(void);
+void dos_queue_reset(void);
 void dos_log_reset(void);
 void dos_test_reset(void);
 
@@ -32,6 +33,7 @@ dos_app_reset(void)
 	dos_echo_reset();
 	dos_cfg_reset();
 	dos_sync_reset();
+	dos_queue_reset();
 	dos_log_reset();
 #if defined(GTEST_3RDPARTY)
 	dos_test_reset();

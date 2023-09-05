@@ -676,12 +676,6 @@ class MainMsgPythonRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for MSGID_MEMORY_WARNING message *#
-class MemoryWarning (Structure):
-	_fields_ = [
-		("used_percentage", c_ulonglong),
-]
-
 #* for MSGID_BLOCKS_REQ message *#
 class MsgBlocksReq (Structure):
 	_fields_ = [
@@ -700,23 +694,18 @@ class MsgBlocksRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for MSGID_ECHO message *#
-class MsgIdEcho (Structure):
+#* for MSGID_ECHO_REQ message *#
+class MsgIdEchoReq (Structure):
 	_fields_ = [
-		("type", c_int),
-		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
-		("thread", c_char * DAVE_THREAD_NAME_LEN),
-		("echo_total_counter", c_ulonglong),
-		("echo_total_time", c_ulonglong),
-		("echo_cycle_counter", c_ulonglong),
-		("echo_cycle_time", c_ulonglong),
-		("echo_req_time", c_ulonglong),
-		("echo_rsp_time", c_ulonglong),
-		("concurrent_flag", c_char),
-		("concurrent_tps_time", c_ulonglong),
-		("concurrent_tps_counter", c_ulonglong),
-		("concurrent_total_counter", c_ulonglong),
-		("msg", c_char * 256),
+		("echo", MsgIdEcho),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_ECHO_RSP message *#
+class MsgIdEchoRsp (Structure):
+	_fields_ = [
+		("echo", MsgIdEcho),
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_INNER_LOOP message *#

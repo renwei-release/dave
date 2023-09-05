@@ -29,6 +29,7 @@
 #include "thread_run_function.h"
 #include "thread_running.h"
 #include "thread_orchestration.h"
+#include "thread_coroutine.h"
 #include "thread_cfg.h"
 #include "thread_log.h"
 
@@ -101,6 +102,10 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 	else if(dave_strcmp(pReq->msg, "si") == dave_true)
 	{
 		thread_statistics_info(pRsp->msg, sizeof(pRsp->msg));
+	}
+	else if(dave_strcmp(pReq->msg, "co") == dave_true)
+	{
+		thread_coroutine_info(pRsp->msg, sizeof(pRsp->msg));
 	}
 	else
 	{

@@ -56,6 +56,7 @@ _thread_wakeup_the_idle_thread(ThreadStruct *thread_struct)
 			&& (pThread->thread_flag & THREAD_THREAD_FLAG))
 		{
 			current_idle_total = thread_total_number(pThread);
+			current_idle_total += thread_thread_total_number(pThread->thread_index);
 
 			if((current_idle_total == 0) || (current_idle_total != pThread->message_idle_total))
 			{

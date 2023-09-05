@@ -321,6 +321,23 @@ type BuildingBlocks struct {
 	Release_quantity uint64
 }
 
+type MsgIdEcho struct {
+	Type int32
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Thread [DAVE_THREAD_NAME_LEN] byte
+	Echo_total_counter uint64
+	Echo_total_time uint64
+	Echo_cycle_counter uint64
+	Echo_cycle_time uint64
+	Echo_req_time uint64
+	Echo_rsp_time uint64
+	Concurrent_flag int8
+	Concurrent_tps_time uint64
+	Concurrent_tps_counter uint64
+	Concurrent_total_counter uint64
+	Msg [256] byte
+}
+
 type SocNetInfo struct {
 	Domain int32
 	Type int32

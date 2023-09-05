@@ -150,9 +150,9 @@ typedef enum {
 } BuildingBlocksOpt;
 
 typedef enum {
-	EchoType_user,
-	EchoType_req,
-	EchoType_rsp,
+	EchoType_start,
+	EchoType_stop,
+	EchoType_single,
 	EchoType_random,
 } EchoType;
 

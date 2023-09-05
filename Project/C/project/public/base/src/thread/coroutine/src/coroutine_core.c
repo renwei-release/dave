@@ -263,6 +263,7 @@ _coroutine_release(void *co)
 		dave_free(pCore->ss_sp);
 
 		pCore->magic_data = 0x00;
+		pCore->be_in_use = dave_false;
 
 		pCore->ss_size = 0;
 		pCore->ss_sp = NULL;

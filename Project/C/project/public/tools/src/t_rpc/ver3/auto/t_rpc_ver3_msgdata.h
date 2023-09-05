@@ -392,11 +392,6 @@ dave_bool t_rpc_ver3_unzip_MainMsgPythonRsp(void **unzip_data, ub *unzip_len, vo
 void * t_rpc_ver3_ptr_MainMsgPythonRsp(MainMsgPythonRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_MainMsgPythonRsp(void);
 
-void * t_rpc_ver3_zip_MemoryWarning(MemoryWarning *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MemoryWarning(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MemoryWarning(MemoryWarning *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_MemoryWarning(void);
-
 void * t_rpc_ver3_zip_MsgBlocksReq(MsgBlocksReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgBlocksReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_MsgBlocksReq(MsgBlocksReq *struct_data, void *new_ptr);
@@ -407,10 +402,15 @@ dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *
 void * t_rpc_ver3_ptr_MsgBlocksRsp(MsgBlocksRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_MsgBlocksRsp(void);
 
-void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgIdEcho(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgIdEcho(MsgIdEcho *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_MsgIdEcho(void);
+void * t_rpc_ver3_zip_MsgIdEchoReq(MsgIdEchoReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgIdEchoReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_MsgIdEchoReq(MsgIdEchoReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_MsgIdEchoReq(void);
+
+void * t_rpc_ver3_zip_MsgIdEchoRsp(MsgIdEchoRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_MsgIdEchoRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_MsgIdEchoRsp(MsgIdEchoRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_MsgIdEchoRsp(void);
 
 void * t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgInnerLoop(void **unzip_data, ub *unzip_len, void *pStructBson);

@@ -124,9 +124,9 @@ const (
 )
 
 const (
-	EchoType_user int64 = iota
-	EchoType_req
-	EchoType_rsp
+	EchoType_start int64 = iota
+	EchoType_stop
+	EchoType_single
 	EchoType_random
 )
 

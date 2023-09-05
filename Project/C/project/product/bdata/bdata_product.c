@@ -11,6 +11,7 @@
 #include "dave_3rdparty.h"
 #include "dave_verno.h"
 #include "dave_base.h"
+#include "dave_echo.h"
 #include "bdata_msg.h"
 #include "recipient_log.h"
 #include "recorder_file.h"
@@ -28,6 +29,10 @@ _bdata_main(MSGBODY *msg)
 {
 	switch(msg->msg_id)
 	{
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
+			break;
 		case BDATA_LOG_REQ:
 				recipient_log(msg->msg_src, (BDataLogReq *)(msg->msg_body));
 			break;
