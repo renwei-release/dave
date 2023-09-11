@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -16,7 +16,8 @@
 #include "thread_tools.h"
 #include "thread_log.h"
 
-#define HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED 5
+#define HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED 30
+#define MESSAGE_QUEUING_MULTIPLE 3
 
 static ThreadStruct *_thread_struct = NULL;
 static ub _notify_last_time = 0;
@@ -72,7 +73,7 @@ _thread_busy_idle_detected_busy(ThreadStruct *pThread)
 
 	total_msg_number = _thread_busy_idle_total_number(pThread);
 
-	if(total_msg_number >= (2 * pThread->level_number))
+	if(total_msg_number >= (MESSAGE_QUEUING_MULTIPLE * pThread->level_number))
 	{
 		return dave_true;
 	}

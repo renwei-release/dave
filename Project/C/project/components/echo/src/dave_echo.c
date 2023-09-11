@@ -139,7 +139,7 @@ static void
 _echo_api_req(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
 {
 	if((pReq->echo.type == EchoType_random)
-		&& (((_echo_req_counter ++) % 8196) == 0)
+		&& (((_echo_req_counter ++) % 256) == 0)
 		&& ((t_rand() % 16) != 0))
 		_echo_api_req_co(gid, thread, pReq);
 	else

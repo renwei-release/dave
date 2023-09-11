@@ -14,7 +14,7 @@
 #define CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE "SysMemMaxUsePercentage"
 #define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 100
 #define CFG_MULTIPLE_COROUTINE_ON_THREAD "MultipleCoroutineOnThread"
-#define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 100
+#define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 1000
 
 static ub _sys_mem_max_use_percentage = 0;
 static ub _multiple_coroutine_on_thread = 0;
