@@ -27,6 +27,7 @@
 #include "sync_server_sync.h"
 #include "sync_server_run.h"
 #include "sync_server_msg_buffer.h"
+#include "sync_server_link_mode.h"
 #include "sync_server_info.h"
 #include "sync_cfg.h"
 #include "sync_lock.h"
@@ -201,6 +202,8 @@ _sync_server_reboot(RESTARTREQMSG *pRestart)
 
 		sync_server_run_exit();
 
+		sync_server_link_mode_exit();
+
 		if(_sync_server_socket != INVALID_SOCKET_ID)
 		{
 			_sync_server_disconnect(_sync_server_socket);
@@ -350,6 +353,8 @@ _sync_server_init(MSGBODY *msg)
 	sync_server_remote_cfg_init();
 
 	sync_server_msg_buffer_init();
+
+	sync_server_link_mode_init();
 
 	_sync_server_bind_req();
 

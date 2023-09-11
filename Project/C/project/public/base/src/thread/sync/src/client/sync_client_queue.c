@@ -152,12 +152,13 @@ sync_client_queue_upload(
 void
 sync_client_queue_run(QueueRunMsgReq *pReq)
 {
-	SyncServer *pServer = sync_client_gid_to_server(pReq->src_gid);
+	SyncServer *pServer = sync_client_gid_inq(pReq->src_gid);
 
 	if(pServer == NULL)
 	{
-		SYNCABNOR("%s:%s->%s:%s %s local not ready, discard message!",
-			pReq->src_name, pReq->src_gid, pReq->dst_name, pReq->dst_gid);
+		SYNCABNOR("%s:%s->%s:%s local not ready, discard message!",
+			pReq->src_name, pReq->src_gid,
+			pReq->dst_name, pReq->dst_gid);
 	}
 	else
 	{

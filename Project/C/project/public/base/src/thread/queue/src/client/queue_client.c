@@ -120,7 +120,7 @@ _queue_client_exit(MSGBODY *msg)
 void
 queue_client_init(void)
 {
-	ub thread_number = dave_os_cpu_process_number();
+	ub thread_number = 1;
 
 	_queue_client_thread = base_thread_creat(QUEUE_CLIENT_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _queue_client_init, _queue_client_main, _queue_client_exit);
 	if(_queue_client_thread == INVALID_THREAD_ID)

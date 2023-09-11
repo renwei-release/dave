@@ -62,7 +62,7 @@ _sync_server_reset_client(SyncClient *pClient)
 	pClient->rpc_version = 3;
 	pClient->work_start_second = 0;
 	dave_memset(&(pClient->NetInfo), 0x00, sizeof(SocNetInfo));
-	pClient->link_flag = dave_false;
+	pClient->link_up_flag = dave_false;
 	dave_memset(pClient->link_ip, 0x00, sizeof(pClient->link_ip));
 	pClient->link_port = 0;
 

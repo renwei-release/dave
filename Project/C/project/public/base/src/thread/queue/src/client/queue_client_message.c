@@ -271,7 +271,8 @@ queue_client_message_run_rsp(QueueRunMsgRsp *pRsp)
 	download_number_threshold = _queue_client_message_download_number_threshold(pRsp->msg_number, pRsp->thread_number);
 
 	QUEUEDEBUG("download_number_threshold:%d msg_number:%d thread_number:%d",
-		download_number_threshold, pRsp->msg_number, pRsp->thread_number);
+		download_number_threshold,
+		pRsp->msg_number, pRsp->thread_number);
 
 	if(download_number_threshold > 0)
 	{

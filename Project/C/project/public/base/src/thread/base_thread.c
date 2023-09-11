@@ -461,8 +461,9 @@ _thread_write_msg(
 
 	if(pDstThread->thread_id != thread_get_local(dst_id))
 	{
-		THREADLTRACE(60,1,"id:(%lx/%lx) mismatch! msg_id:%d can't sent! <%s:%d>",
-			pDstThread->thread_id, dst_id, msg_id, fun, line);
+		THREADLTRACE(60,1,"id:(%lx/%lx) mismatch! msg_id:%s can't sent! <%s:%d>",
+			pDstThread->thread_id, dst_id, msgstr(msg_id),
+			fun, line);
 		return RetCode_can_not_find_thread;
 	}
 
@@ -494,11 +495,11 @@ _thread_write_msg(
 
 		if(ret != RetCode_OK)
 		{
-			THREADLTRACE(60,1,"failed:%s %s->%s %d",
+			THREADLTRACE(60,1,"failed:%s %s->%s:%s",
 				retstr(ret),
 				_thread_get_name(pMsg->msg_body.msg_src),
 				_thread_get_name(pMsg->msg_body.msg_dst),
-				pMsg->msg_body.msg_id);
+				msgstr(pMsg->msg_body.msg_id));
 
 			thread_clean_msg(pMsg);
 

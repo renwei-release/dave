@@ -69,7 +69,7 @@ typedef struct {
 	sb rpc_version;
 	ub work_start_second;
 	SocNetInfo NetInfo;
-	dave_bool link_flag;
+	dave_bool link_up_flag;
 	u8 link_ip[16];
 	u16 link_port;
 

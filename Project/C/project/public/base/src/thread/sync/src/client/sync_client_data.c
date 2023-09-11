@@ -1045,8 +1045,6 @@ sync_client_data_server_add_client(s8 *verno, s8 *globally_identifier, u8 *ip, u
 
 	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_add_client(verno, globally_identifier, ip, port); } );
 
-	_sync_client_data_gid_kv_add(globally_identifier, pServer);
-
 	return pServer;
 }
 
@@ -1078,6 +1076,11 @@ sync_client_data_server_del_child(s32 socket)
 	SyncServer *pServer = NULL;
 
 	SAFECODEv2W(_sync_client_data_pv, { pServer = _sync_client_data_server_del_child(socket); } );
+
+	if(pServer != NULL)
+	{
+		_sync_client_data_gid_kv_del(pServer->globally_identifier);
+	}
 
 	return pServer;
 }
@@ -1146,8 +1149,14 @@ sync_client_data_thread_on_name(s8 *thread_name)
 	return sync_client_thread_id_to_thread(thread_id(thread_name));
 }
 
+void
+sync_client_gid_add(s8 *gid, SyncServer *pServer)
+{
+	_sync_client_data_gid_kv_add(gid, pServer);
+}
+
 SyncServer *
-sync_client_gid_to_server(s8 *gid)
+sync_client_gid_inq(s8 *gid)
 {
 	return _sync_client_data_gid_kv_inq(gid);
 }

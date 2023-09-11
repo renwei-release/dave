@@ -123,6 +123,8 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 			pServer->server_booting, pServer->server_ready,
 			pServer->server_busy);
 
+		sync_client_gid_add(pServer->globally_identifier, pServer);
+
 		sync_client_tx_system_state(pServer);
 	}
 

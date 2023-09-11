@@ -22,6 +22,7 @@
 #include "sync_server_remote_cfg.h"
 #include "sync_server_local_cfg.h"
 #include "sync_server_sync.h"
+#include "sync_server_link_mode.h"
 #include "sync_lock.h"
 #include "sync_test.h"
 #include "sync_log.h"
@@ -157,16 +158,16 @@ _sync_server_sync_link_to(SyncClient *pDstClient, SyncClient *pSrcClient)
 	dave_bool ret;
 	ub dst_client_index = pDstClient->client_index;
 
-	SYNCTRACE("verno:%s->%s(%s) link_port:%d link_flag:%d ready_flag:%d blocks_flag:%d client_flag:%d",
+	SYNCTRACE("verno:%s->%s(%s) link_port:%d link_up_flag:%d ready_flag:%d blocks_flag:%d client_flag:%d",
 		pSrcClient->verno, pDstClient->verno, pSrcClient->send_down_and_up_flag[dst_client_index]==dave_true?"up":"down",
 		pSrcClient->link_port,
-		pSrcClient->link_flag,
+		pSrcClient->link_up_flag,
 		pSrcClient->ready_flag,
 		pSrcClient->blocks_flag,
 		pSrcClient->client_flag);
 
 	if((pSrcClient->link_port != 0)
-		&& (pSrcClient->link_flag == dave_true)
+		&& (pSrcClient->link_up_flag == dave_true)
 		&& (pSrcClient->ready_flag == dave_true)
 		&& (pSrcClient->blocks_flag == dave_true)
 		&& (pSrcClient->client_flag == dave_true))
@@ -220,9 +221,13 @@ _sync_server_sync_link_to_me(SyncClient *pClient)
 	{
 		pOtherClient = sync_server_client(client_index);
 
-		if((pOtherClient != pClient) && (pOtherClient->client_socket != INVALID_SOCKET_ID))
+		if((pOtherClient != pClient)
+			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			_sync_server_sync_link_to(pClient, pOtherClient);
+			if(sync_server_link_mode(pClient, pOtherClient) == dave_true)
+			{
+				_sync_server_sync_link_to(pClient, pOtherClient);
+			}
 		}
 	}
 }
@@ -239,9 +244,13 @@ _sync_server_sync_link_to_other(SyncClient *pClient)
 	{
 		pOtherClient = sync_server_client(client_index);
 
-		if((pOtherClient != pClient) && (pOtherClient->client_socket != INVALID_SOCKET_ID))
+		if((pOtherClient != pClient)
+			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			_sync_server_sync_link_to(pOtherClient, pClient);
+			if(sync_server_link_mode(pOtherClient, pClient) == dave_true)
+			{
+				_sync_server_sync_link_to(pOtherClient, pClient);
+			}
 		}
 	}
 }
@@ -271,20 +280,23 @@ __sync_server_sync_link__(SyncClient *pClient, dave_bool up_flag, s8 *fun, ub li
 		up_flag==dave_true?"up":"down",
 		fun, line);
 
-	pClient->link_flag = up_flag;
+	pClient->link_up_flag = up_flag;
 
-	if(pClient->link_flag == dave_true)
+	if(pClient->link_up_flag == dave_false)
+	{
+		_sync_server_sync_link_to_other(pClient);
+	}
+	else
 	{
 		_sync_server_sync_link_to_me(pClient);
+		_sync_server_sync_link_to_other(pClient);
 	}
-
-	_sync_server_sync_link_to_other(pClient);
 }
 
 void
 sync_server_sync_auto_link(SyncClient *pClient)
 {
-	sync_server_sync_link(pClient, pClient->link_flag);
+	sync_server_sync_link(pClient, pClient->link_up_flag);
 }
 
 #endif
