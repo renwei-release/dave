@@ -32,6 +32,9 @@ bool t_bson_inq_string(void *pBson, char *key, char **ppStringValue, size_t *pSt
 bool t_bson_cpy_string(void *pBson, char *key, char *pStringValue, size_t StringLen);
 
 void t_bson_add_bin(void *pBson, char *key, char *value_ptr, size_t value_len);
+void t_bson_ins_bin(void *pBson, char *key, char *value_ptr, size_t value_len);
+void t_bson_add_mbuf(void *pBson, char *key, MBUF *mbuf_data);
+void t_bson_inq_mbuf(void *pBson, char *key, MBUF *mbuf_data);
 bool t_bson_inq_bin(void *pBson, char *key, char **ppBinValue, size_t *pBinLen);
 bool t_bson_cpy_bin(void *pBson, char *key, char *pBinValue, size_t *pBinLen);
 
@@ -58,7 +61,9 @@ bool t_bson_array_inq_string(void *pBson, size_t index, char **ppStringValue, si
 bool t_bson_array_cpy_string(void *pBson, size_t index, char *pStringValue, size_t *pStringLen);
 
 void t_bson_array_add_bin(void *pBson, char *value_ptr, size_t value_len);
+void t_bson_array_ins_bin(void *pBson, char *value_ptr, size_t value_len);
 void t_bson_array_add_mbuf(void *pBson, MBUF *mbuf_data);
+void t_bson_array_ins_mbuf(void *pBson, MBUF *mbuf_data);
 bool t_bson_array_inq_bin(void *pBson, size_t index, char **ppBinValue, size_t *pBinLen);
 bool t_bson_array_cpy_bin(void *pBson, size_t index, char *pBinValue, size_t *pBinLen);
 

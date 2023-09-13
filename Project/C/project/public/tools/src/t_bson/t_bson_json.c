@@ -276,6 +276,7 @@ t_bson_json(tBsonObject *pBson)
 					_t_bson_json_string(pJson, pData);
 				break;
 			case tBsonType_bin:
+			case tBsonType_bin_insertion:
 					_t_bson_json_bin(pJson, pData);
 				break;
 			case tBsonType_array:

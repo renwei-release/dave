@@ -379,6 +379,31 @@ _t_bson_test_cases_12(void)
 	dave_json_free(pJson);
 }
 
+static void
+_t_bson_test_cases_13(void)
+{
+	void *pBson, *pArray;
+	char *bin_ptr;
+	size_t bin_len;
+
+	pBson = t_bson_malloc_object();
+	t_bson_add_bin(pBson, (char *)"add_bin", (char *)"1234567890", 10);
+	t_bson_ins_bin(pBson, (char *)"ins_bin", (char *)"1234567890", 10);
+
+	pArray = t_bson_malloc_array();
+	t_bson_array_add_bin(pArray, (char *)"1234567890", 10);
+	t_bson_array_ins_bin(pArray, (char *)"1234567890", 10);
+
+	t_bson_inq_bin(pBson, (char *)"ins_bin", &bin_ptr, &bin_len);
+	EXPECT_STREQ(bin_ptr, (char *)"1234567890");
+	t_bson_array_inq_bin(pBson, 1, &bin_ptr, &bin_len);
+	EXPECT_STREQ(bin_ptr, (char *)"1234567890");
+
+	t_bson_add_object(pBson, (char *)"array", pArray);
+
+	t_bson_free_object(pBson);
+}
+
 // =====================================================================
 
 TEST(bson_case, bson_case_1) { _t_bson_test_cases_1(); }
@@ -393,6 +418,7 @@ TEST(bson_case, bson_case_9) { _t_bson_test_cases_9(); }
 TEST(bson_case, bson_case_10) { _t_bson_test_cases_10(); }
 TEST(bson_case, bson_case_11) { _t_bson_test_cases_11(); }
 TEST(bson_case, bson_case_12) { _t_bson_test_cases_12(); }
+TEST(bson_case, bson_case_13) { _t_bson_test_cases_13(); }
 
 #endif
 

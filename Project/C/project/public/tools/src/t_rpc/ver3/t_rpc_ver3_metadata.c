@@ -21,7 +21,7 @@ _t_rpc_ver3_zip_bin(u8 *zip_data, ub zip_len)
 {
 	void *pArrayBson = t_bson_malloc_array();
 
-	t_bson_array_add_bin(pArrayBson, (char *)zip_data, (int)zip_len);
+	t_bson_array_ins_bin(pArrayBson, (char *)zip_data, (int)zip_len);
 
 	return pArrayBson;
 }
@@ -31,7 +31,7 @@ _t_rpc_ver3_zip_mbuf(MBUF *mbuf_data)
 {
 	void *pArrayBson = t_bson_malloc_array();
 
-	t_bson_array_add_mbuf(pArrayBson, mbuf_data);
+	t_bson_array_ins_mbuf(pArrayBson, mbuf_data);
 
 	return pArrayBson;
 }
@@ -279,7 +279,7 @@ __t_rpc_ver3_zip_char_d__(char *zip_data, ub zip_h_len, ub zip_l_len, s8 *fun, u
 			str_len = zip_l_len - 1;
 		}
 
-		t_bson_array_add_bin(pArrayBson, str_data, str_len);
+		t_bson_array_ins_bin(pArrayBson, str_data, str_len);
 	}
 
 	return pArrayBson;

@@ -44,6 +44,8 @@ API void * dave_dll_mmalloc(int length, char *fun, int line);
 
 API int dave_dll_mfree(void *m, char *fun, int line);
 
+API char * dave_dll_self(void);
+
 API void * dave_dll_thread_msg(int msg_len, char *fun, int line);
 
 API void dave_dll_thread_msg_release(void *ptr, char *fun, int line);

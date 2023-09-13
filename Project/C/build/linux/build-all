@@ -6,6 +6,7 @@ OUTPUTFILE=${homepath}/build-all-`date +%Y-%m-%d-%H-%M-%S`.txt
 
 build()
 {
+   echo `date`
    echo -e "build project on : \033[36m${LEVEL}\033[0m"
 
    for project_name in $(ls ./)
@@ -15,6 +16,8 @@ build()
    if [ -d $last_project ]; then
       cd $last_project && chmod a+x clean && ./clean > /dev/null && cd ../
    fi
+
+   echo `date`
    echo -e "done!"
 }
 

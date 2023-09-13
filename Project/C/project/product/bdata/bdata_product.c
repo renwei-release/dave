@@ -31,7 +31,7 @@ _bdata_main(MSGBODY *msg)
 	{
 		case MSGID_ECHO_REQ:
 		case MSGID_ECHO_RSP:
-				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		case BDATA_LOG_REQ:
 				recipient_log(msg->msg_src, (BDataLogReq *)(msg->msg_body));

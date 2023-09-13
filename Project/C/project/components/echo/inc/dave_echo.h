@@ -8,7 +8,7 @@
 #ifndef __DAVE_ECHO_H__
 #define __DAVE_ECHO_H__
 
-void dave_echo(ThreadId src, ThreadId dst, ub msg_id, void *pMsg);
+void dave_echo(ThreadId src, ThreadId dst, ub msg_id, void *msg_body);
 
 #endif
 

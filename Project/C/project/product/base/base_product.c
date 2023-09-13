@@ -171,7 +171,7 @@ _base_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_ECHO_REQ:
 		case MSGID_ECHO_RSP:
-				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				_base_msg_timer_out((ProcessMsgTimerOutMsg *)(msg->msg_body));

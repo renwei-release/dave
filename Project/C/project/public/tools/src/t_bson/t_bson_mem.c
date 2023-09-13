@@ -384,6 +384,24 @@ t_bson_bin_build(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_le
 }
 
 tBsonData *
+t_bson_bin_insertion(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len)
+{
+	tBsonData *pData;
+
+	pData = _t_bson_data_malloc(key_ptr, key_len);
+	if(pData == NULL)
+		return NULL;
+
+	pData->type = tBsonType_bin_insertion;
+	pData->value_len = value_len;
+	pData->value_ptr.mem_value = valur_ptr;
+
+	pData->serialize_estimated_len += pData->value_len;
+
+	return pData;
+}
+
+tBsonData *
 t_bson_mbuf_build(char *key_ptr, size_t key_len, MBUF *mbuf_data)
 {
 	tBsonData *pData;
@@ -398,6 +416,15 @@ t_bson_mbuf_build(char *key_ptr, size_t key_len, MBUF *mbuf_data)
 	pData->serialize_estimated_len += pData->value_len;
 
 	return pData;
+}
+
+tBsonData *
+t_bson_mbuf_insertion(char *key_ptr, size_t key_len, MBUF *mbuf_data)
+{
+	if(mbuf_data->next != NULL)
+		return t_bson_mbuf_build(key_ptr, key_len, mbuf_data);
+	else
+		return t_bson_bin_insertion(key_ptr, key_len, ms8(mbuf_data), mlen(mbuf_data));
 }
 
 tBsonData *

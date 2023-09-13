@@ -55,6 +55,12 @@ _t_bson_array_head_to_serialize(tBsonType type, size_t value_len, unsigned char 
 		return 0;
 	}
 
+	/*
+	 * Compatible processing
+	 */
+	if(type == tBsonType_bin_insertion)
+		type = tBsonType_bin;
+
 	serialize_ptr[0] = type;
 	if(value_len <= 0)
 	{
@@ -72,15 +78,6 @@ _t_bson_array_head_to_serialize(tBsonType type, size_t value_len, unsigned char 
 	}
 
 	return 5;
-}
-
-static inline void
-_t_bson_rebuild_array_head_value_len(size_t value_len, unsigned char *serialize_ptr)
-{
-	serialize_ptr[1] = (unsigned char)(((unsigned int)value_len) >> 24);
-	serialize_ptr[2] = (unsigned char)(((unsigned int)value_len) >> 16);
-	serialize_ptr[3] = (unsigned char)(((unsigned int)value_len) >> 8);
-	serialize_ptr[4] = (unsigned char)value_len;
 }
 
 static inline size_t
@@ -150,6 +147,12 @@ _t_bson_head_to_serialize(tBsonType type, unsigned char *key_ptr, size_t key_len
 		return 0;
 	}
 
+	/*
+	 * Compatible processing
+	 */
+	if(type == tBsonType_bin_insertion)
+		type = tBsonType_bin;
+
 	serialize_ptr[0] = type;
 	if((key_ptr == NULL) || (key_len <= 0))
 	{
@@ -188,6 +191,15 @@ _t_bson_head_to_serialize(tBsonType type, unsigned char *key_ptr, size_t key_len
 	}
 
 	return serialize_index;
+}
+
+static inline void
+_t_bson_rebuild_array_head_value_len(size_t value_len, unsigned char *serialize_ptr)
+{
+	serialize_ptr[1] = (unsigned char)(((unsigned int)value_len) >> 24);
+	serialize_ptr[2] = (unsigned char)(((unsigned int)value_len) >> 16);
+	serialize_ptr[3] = (unsigned char)(((unsigned int)value_len) >> 8);
+	serialize_ptr[4] = (unsigned char)value_len;
 }
 
 static inline void
@@ -472,7 +484,88 @@ _t_bson_serialize_to_object(tBsonObject *pBson, unsigned char *key_ptr, size_t k
 		t_bson_object_add(pBson, (char *)key_ptr, key_len, pAddBson);
 }
 
-static size_t
+static inline size_t
+_t_bson_data_to_serialize(tBsonData *pData, unsigned char *serialize_ptr, size_t serialize_len)
+{
+	size_t value_len;
+
+	switch(pData->type)
+	{
+		case tBsonType_boolean:
+				value_len = _t_bson_boolean_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_int:
+				value_len = _t_bson_int_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_int64:
+				value_len = _t_bson_int64_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_double:
+				value_len = _t_bson_double_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_string:
+				value_len = _t_bson_string_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_bin:
+				value_len = _t_bson_bin_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_array:
+				value_len = _t_bson_array_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_object:
+				value_len = _t_bson_object_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_bin_insertion:
+				value_len = _t_bson_bin_to_serialize(pData, serialize_ptr, serialize_len);
+			break;
+		default:
+				TOOLSLOG("invalid data type:%d", pData->type);
+				value_len = 0;
+			break;
+	}
+
+	return value_len;
+}
+
+static inline void
+_t_bson_serialize_to_data(tBsonObject *pBson, tBsonType type, unsigned char *key_ptr, size_t key_len, unsigned char *serialize_ptr, size_t serialize_len)
+{
+	switch(type)
+	{
+		case tBsonType_boolean:
+				_t_bson_serialize_to_boolean(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_int:
+				_t_bson_serialize_to_int(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_int64:
+				_t_bson_serialize_to_int64(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_double:
+				_t_bson_serialize_to_double(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_string:
+				_t_bson_serialize_to_string(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_bin:
+				_t_bson_serialize_to_bin(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_array:
+				_t_bson_serialize_to_array(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_object:
+				_t_bson_serialize_to_object(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		case tBsonType_bin_insertion:
+				_t_bson_serialize_to_bin(pBson, key_ptr, key_len, serialize_ptr, serialize_len);
+			break;
+		default:
+				TOOLSLOG("invalid data type:%d", type);
+			break;
+	}
+}
+
+static inline size_t
 _t_bson_array_to_serialize_(tBsonObject *pArray, unsigned char *serialize_ptr, size_t serialize_len)
 {
 	size_t serialize_index, value_len;
@@ -502,57 +595,11 @@ _t_bson_array_to_serialize_(tBsonObject *pArray, unsigned char *serialize_ptr, s
 			pData->value_len,
 			&serialize_ptr[serialize_index], serialize_len-serialize_index);
 
-		switch(pData->type)
-		{
-			case tBsonType_boolean:
-					value_len = _t_bson_boolean_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_int:
-					value_len = _t_bson_int_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_int64:
-					value_len = _t_bson_int64_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_double:
-					value_len = _t_bson_double_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_string:
-					value_len = _t_bson_string_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_bin:
-					value_len = _t_bson_bin_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_array:
-					value_len = _t_bson_array_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_object:
-					value_len = _t_bson_object_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			default:
-					TOOLSLOG("invalid data type:%d", pData->type);
-					value_len = 0;
-				break;
-		}
-
-		serialize_index += value_len;
+		value_len = _t_bson_data_to_serialize(pData, &serialize_ptr[serialize_index], serialize_len-serialize_index);
 
 		_t_bson_rebuild_array_head_value_len(value_len, head_ptr);
+
+		serialize_index += value_len;
 
 		pData = (tBsonData *)(pData->next);
 	}
@@ -560,7 +607,7 @@ _t_bson_array_to_serialize_(tBsonObject *pArray, unsigned char *serialize_ptr, s
 	return serialize_index;
 }
 
-static tBsonObject *
+static inline tBsonObject *
 _t_bson_serialize_to_array_(unsigned char *serialize_ptr, size_t serialize_len)
 {
 	tBsonObject *pArray;
@@ -578,36 +625,8 @@ _t_bson_serialize_to_array_(unsigned char *serialize_ptr, size_t serialize_len)
 			&type,
 			&value_len,
 			&serialize_ptr[serialize_index], serialize_len - serialize_index);
-	
-		switch(type)
-		{
-			case tBsonType_boolean:
-					_t_bson_serialize_to_boolean(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_int:
-					_t_bson_serialize_to_int(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_int64:
-					_t_bson_serialize_to_int64(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_double:
-					_t_bson_serialize_to_double(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_string:
-					_t_bson_serialize_to_string(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_bin:
-					_t_bson_serialize_to_bin(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_array:
-					_t_bson_serialize_to_array(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_object:
-					_t_bson_serialize_to_object(pArray, NULL, -1, &serialize_ptr[serialize_index], value_len);
-				break;
-			default:
-				break;
-		}
+
+		_t_bson_serialize_to_data(pArray, type, NULL, -1, &serialize_ptr[serialize_index], value_len);
 
 		serialize_index += value_len;
 	}
@@ -620,7 +639,7 @@ _t_bson_serialize_to_array_(unsigned char *serialize_ptr, size_t serialize_len)
 	return pArray;
 }
 
-static size_t
+static inline size_t
 _t_bson_object_to_serialize_(tBsonObject *pBson, unsigned char *serialize_ptr, size_t serialize_len)
 {
 	size_t serialize_index, value_len;
@@ -651,57 +670,11 @@ _t_bson_object_to_serialize_(tBsonObject *pBson, unsigned char *serialize_ptr, s
 			pData->value_len,
 			&serialize_ptr[serialize_index], serialize_len-serialize_index);
 
-		switch(pData->type)
-		{
-			case tBsonType_boolean:
-					value_len = _t_bson_boolean_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_int:
-					value_len = _t_bson_int_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_int64:
-					value_len = _t_bson_int64_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_double:
-					value_len = _t_bson_double_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_string:
-					value_len = _t_bson_string_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_bin:
-					value_len = _t_bson_bin_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_array:
-					value_len = _t_bson_array_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			case tBsonType_object:
-					value_len = _t_bson_object_to_serialize(
-						pData,
-						&serialize_ptr[serialize_index], serialize_len - serialize_index);
-				break;
-			default:
-					TOOLSLOG("invalid data type:%d", pData->type);
-					value_len = 0;
-				break;
-		}
-
-		serialize_index += value_len;
+		value_len = _t_bson_data_to_serialize(pData, &serialize_ptr[serialize_index], serialize_len-serialize_index);
 
 		_t_bson_rebuild_head_value_len(value_len, head_ptr);
+
+		serialize_index += value_len;
 
 		pData = (tBsonData *)(pData->next);
 	}
@@ -709,7 +682,7 @@ _t_bson_object_to_serialize_(tBsonObject *pBson, unsigned char *serialize_ptr, s
 	return serialize_index;
 }
 
-static tBsonObject *
+static inline tBsonObject *
 _t_bson_serialize_to_object_(unsigned char *serialize_ptr, size_t serialize_len)
 {
 	tBsonObject *pBson;
@@ -728,36 +701,8 @@ _t_bson_serialize_to_object_(unsigned char *serialize_ptr, size_t serialize_len)
 			&type,
 			&key_ptr, &key_len, &value_len,
 			&serialize_ptr[serialize_index], serialize_len - serialize_index);
-	
-		switch(type)
-		{
-			case tBsonType_boolean:
-					_t_bson_serialize_to_boolean(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_int:
-					_t_bson_serialize_to_int(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_int64:
-					_t_bson_serialize_to_int64(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_double:
-					_t_bson_serialize_to_double(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_string:
-					_t_bson_serialize_to_string(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_bin:
-					_t_bson_serialize_to_bin(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_array:
-					_t_bson_serialize_to_array(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			case tBsonType_object:
-					_t_bson_serialize_to_object(pBson, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
-				break;
-			default:
-				break;
-		}
+
+		_t_bson_serialize_to_data(pBson, type, key_ptr, key_len, &serialize_ptr[serialize_index], value_len);
 
 		serialize_index += value_len;
 	}

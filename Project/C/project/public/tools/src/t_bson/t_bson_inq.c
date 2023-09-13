@@ -102,6 +102,18 @@ _t_bson_index_inq(tBsonObject *pBson, size_t inq_index)
 	return NULL;
 }
 
+static inline bool
+_t_bson_bin_inq(tBsonData *pData, char **ppBinValue, size_t *pBinLen)
+{
+	if(pData->value_ptr.mem_value == NULL)
+		return false;
+
+	*ppBinValue = pData->value_ptr.mem_value;
+	*pBinLen = pData->value_len;
+
+	return true;
+}
+
 // =====================================================================
 
 bool
@@ -231,21 +243,17 @@ t_bson_bin_inq(tBsonObject *pBson, char *key_ptr, size_t key_len, char **ppBinVa
 	if(pData == NULL)
 		return false;
 
-	if(pData->type != tBsonType_bin)
+	if((pData->type == tBsonType_bin_insertion)
+		|| (pData->type == tBsonType_bin))
+	{
+		return _t_bson_bin_inq(pData, ppBinValue, pBinLen);
+	}
+	else
 	{
 		TOOLSLOG("invalid type:%d key:%d/%s",
 			pData->type, pData->key_len, pData->key_ptr);
 		return false;
 	}
-
-	if(pData->value_ptr.mem_value == NULL)
-		return false;
-
-	*ppBinValue = pData->value_ptr.mem_value;
-	if(pBinLen != NULL)
-		*pBinLen = pData->value_len;
-
-	return true;
 }
 
 bool
@@ -428,20 +436,17 @@ t_bson_array_bin_inq(tBsonObject *pBson, size_t index, char **ppBinValue, size_t
 	if(pData == NULL)
 		return false;
 
-	if(pData->type != tBsonType_bin)
+	if((pData->type == tBsonType_bin_insertion)
+		|| (pData->type == tBsonType_bin))
+	{
+		return _t_bson_bin_inq(pData, ppBinValue, pBinLen);
+	}
+	else
 	{
 		TOOLSLOG("invalid type:%d key:%d/%s",
 			pData->type, pData->key_len, pData->key_ptr);
 		return false;
 	}
-
-	if(pData->value_ptr.mem_value == NULL)
-		return false;
-
-	*ppBinValue = pData->value_ptr.mem_value;
-	*pBinLen = pData->value_len;
-
-	return true;
 }
 
 bool

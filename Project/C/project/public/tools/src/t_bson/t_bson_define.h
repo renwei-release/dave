@@ -21,6 +21,7 @@ typedef enum {
 	tBsonType_bin = 6,
 	tBsonType_array = 7,
 	tBsonType_object = 8,
+	tBsonType_bin_insertion = 9,
 } tBsonType;
 
 typedef struct {

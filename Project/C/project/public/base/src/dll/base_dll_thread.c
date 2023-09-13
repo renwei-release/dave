@@ -233,6 +233,14 @@ _dll_thread_uid_co(char *uid, BaseMsgType msg_type, int req_id, int req_len, voi
 
 // =====================================================================
 
+char *
+dave_dll_self(void)
+{
+	ThreadId self_id = self();
+
+	return thread_name(self_id);
+}
+
 void *
 dave_dll_thread_msg(int msg_len, char *fun, int line)
 {

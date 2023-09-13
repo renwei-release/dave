@@ -113,6 +113,24 @@ t_bson_add_bin(void *pBson, char *key, char *value_ptr, size_t value_len)
 	t_bson_bin_add((tBsonObject *)pBson, key, 0, value_ptr, value_len);
 }
 
+void
+t_bson_ins_bin(void *pBson, char *key, char *value_ptr, size_t value_len)
+{
+	t_bson_bin_ins((tBsonObject *)pBson, key, 0, value_ptr, value_len);
+}
+
+void
+t_bson_add_mbuf(void *pBson, char *key, MBUF *mbuf_data)
+{
+	t_bson_mbuf_add((tBsonObject *)pBson, key, 0, mbuf_data);
+}
+
+void
+t_bson_inq_mbuf(void *pBson, char *key, MBUF *mbuf_data)
+{
+	t_bson_mbuf_ins((tBsonObject *)pBson, key, 0, mbuf_data);
+}
+
 bool
 t_bson_inq_bin(void *pBson, char *key, char **ppBinValue, size_t *pBinLen)
 {
@@ -239,9 +257,21 @@ t_bson_array_add_bin(void *pBson, char *value_ptr, size_t value_len)
 }
 
 void
+t_bson_array_ins_bin(void *pBson, char *value_ptr, size_t value_len)
+{
+	t_bson_array_bin_ins((tBsonObject *)pBson, value_ptr, value_len);
+}
+
+void
 t_bson_array_add_mbuf(void *pBson, MBUF *mbuf_data)
 {
 	t_bson_array_mbuf_add((tBsonObject *)pBson, mbuf_data);
+}
+
+void
+t_bson_array_ins_mbuf(void *pBson, MBUF *mbuf_data)
+{
+	t_bson_array_mbuf_ins((tBsonObject *)pBson, mbuf_data);
 }
 
 bool

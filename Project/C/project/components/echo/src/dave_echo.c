@@ -339,15 +339,15 @@ _echo_rsp(ThreadId src, ThreadId dst, MsgIdEchoRsp *pRsp)
 // =====================================================================
 
 void
-dave_echo(ThreadId src, ThreadId dst, ub msg_id, void *pMsg)
+dave_echo(ThreadId src, ThreadId dst, ub msg_id, void *msg_body)
 {
 	if(msg_id == MSGID_ECHO_REQ)
 	{
-		_echo_req(src, dst, pMsg);
+		_echo_req(src, dst, msg_body);
 	}
 	else if(msg_id == MSGID_ECHO_RSP)
 	{
-		_echo_rsp(src, dst, pMsg);
+		_echo_rsp(src, dst, msg_body);
 	}
 	else
 	{

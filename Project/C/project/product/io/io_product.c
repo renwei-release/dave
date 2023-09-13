@@ -34,7 +34,7 @@ _io_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_ECHO_REQ:
 		case MSGID_ECHO_RSP:
-				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, (MsgIdEcho *)(msg->msg_body));
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		default:
 			break;

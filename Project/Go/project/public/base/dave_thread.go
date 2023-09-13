@@ -22,6 +22,11 @@ import (
 
 // =====================================================================
 
+func Thread_self() string {
+	c_self_name := C.dave_dll_self()
+	return C.GoString(c_self_name)
+}
+
 func Thread_msg(msg_len int) unsafe.Pointer {
 	msg_ptr := C.dave_dll_thread_msg(C.int(msg_len), nil, C.int(0))
 	return msg_ptr
