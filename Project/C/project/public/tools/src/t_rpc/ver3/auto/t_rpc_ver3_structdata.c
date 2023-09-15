@@ -2574,13 +2574,13 @@ t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data)
 	t_bson_add_object(pStructBson, "ub-echo_total_counter", t_rpc_ver3_zip_ub(zip_data->echo_total_counter));
 	t_bson_add_object(pStructBson, "ub-echo_total_time", t_rpc_ver3_zip_ub(zip_data->echo_total_time));
 	t_bson_add_object(pStructBson, "ub-echo_cycle_counter", t_rpc_ver3_zip_ub(zip_data->echo_cycle_counter));
-	t_bson_add_object(pStructBson, "ub-concurrent_cycle_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_cycle_counter));
 	t_bson_add_object(pStructBson, "ub-echo_cycle_time", t_rpc_ver3_zip_ub(zip_data->echo_cycle_time));
 	t_bson_add_object(pStructBson, "ub-echo_req_time", t_rpc_ver3_zip_ub(zip_data->echo_req_time));
 	t_bson_add_object(pStructBson, "ub-echo_rsp_time", t_rpc_ver3_zip_ub(zip_data->echo_rsp_time));
 	t_bson_add_object(pStructBson, "dave_bool-concurrent_flag", t_rpc_ver3_zip_dave_bool(zip_data->concurrent_flag));
 	t_bson_add_object(pStructBson, "ub-concurrent_tps_time", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_time));
 	t_bson_add_object(pStructBson, "ub-concurrent_tps_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_counter));
+	t_bson_add_object(pStructBson, "ub-concurrent_cycle_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_cycle_counter));
 	t_bson_add_object(pStructBson, "ub-concurrent_total_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_total_counter));
 	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 256));
 
@@ -2606,13 +2606,13 @@ t_rpc_ver3_unzip_MsgIdEcho(MsgIdEcho *unzip_data, void *pStructBson)
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_total_counter), t_bson_inq_object(pStructBson, "ub-echo_total_counter"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_total_time), t_bson_inq_object(pStructBson, "ub-echo_total_time"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_cycle_counter), t_bson_inq_object(pStructBson, "ub-echo_cycle_counter"));
-		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_cycle_counter), t_bson_inq_object(pStructBson, "ub-concurrent_cycle_counter"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_cycle_time), t_bson_inq_object(pStructBson, "ub-echo_cycle_time"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_req_time), t_bson_inq_object(pStructBson, "ub-echo_req_time"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->echo_rsp_time), t_bson_inq_object(pStructBson, "ub-echo_rsp_time"));
 		t_rpc_ver3_unzip_dave_bool(&(unzip_data->concurrent_flag), t_bson_inq_object(pStructBson, "dave_bool-concurrent_flag"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_tps_time), t_bson_inq_object(pStructBson, "ub-concurrent_tps_time"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_tps_counter), t_bson_inq_object(pStructBson, "ub-concurrent_tps_counter"));
+		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_cycle_counter), t_bson_inq_object(pStructBson, "ub-concurrent_cycle_counter"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_total_counter), t_bson_inq_object(pStructBson, "ub-concurrent_total_counter"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->msg), 1, 256, t_bson_inq_object(pStructBson, "s8-msg"));
 		ret = dave_true;

@@ -66,16 +66,14 @@ func _main_msg_register() {
 	base.Dave_system_function_table_add(auto.MSGID_DEBUG_REQ, _fun_MSGID_DEBUG_REQ)
 	base.Dave_system_function_table_add(auto.MSGID_REMOTE_THREAD_ID_READY, _fun_MSGID_REMOTE_THREAD_ID_READY)
 	base.Dave_system_function_table_add(auto.MSGID_REMOTE_THREAD_ID_REMOVE, _fun_MSGID_REMOTE_THREAD_ID_REMOVE)
-	base.Dave_system_function_table_add(auto.MSGID_ECHO_REQ, echo.Dave_echo_req)
-	base.Dave_system_function_table_add(auto.MSGID_ECHO_RSP, echo.Dave_echo_rsp)
+	echo.Dave_echo_reg()
 }
 
 func _main_msg_unregister() {
 	base.Dave_system_function_table_del(auto.MSGID_DEBUG_REQ)
 	base.Dave_system_function_table_del(auto.MSGID_REMOTE_THREAD_ID_READY)
 	base.Dave_system_function_table_del(auto.MSGID_REMOTE_THREAD_ID_REMOVE)
-	base.Dave_system_function_table_del(auto.MSGID_ECHO_REQ)
-	base.Dave_system_function_table_del(auto.MSGID_ECHO_RSP)
+	echo.Dave_echo_unreg()
 }
 
 // =====================================================================

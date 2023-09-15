@@ -408,7 +408,7 @@ dave_dll_thread_broadcast_msg(char *thread_name, int msg_id, int msg_len, void *
 		line = __LINE__;
 	}
 
-	type = (thread_name == NULL ? BaseMsgType_Broadcast_total : BaseMsgType_Broadcast_thread);
+	type = (thread_name == NULL ? BaseMsgType_Broadcast_remote : (thread_name[0] == '\0' ? BaseMsgType_Broadcast_remote : BaseMsgType_Broadcast_thread));
 
 	if(base_thread_broadcast_msg(
 		type,

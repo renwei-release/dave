@@ -328,13 +328,13 @@ type MsgIdEcho struct {
 	Echo_total_counter uint64
 	Echo_total_time uint64
 	Echo_cycle_counter uint64
-	Concurrent_cycle_counter uint64
 	Echo_cycle_time uint64
 	Echo_req_time uint64
 	Echo_rsp_time uint64
 	Concurrent_flag int8
 	Concurrent_tps_time uint64
 	Concurrent_tps_counter uint64
+	Concurrent_cycle_counter uint64
 	Concurrent_total_counter uint64
 	Msg [256] byte
 }

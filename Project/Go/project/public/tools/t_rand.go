@@ -15,6 +15,12 @@ import (
 
 // =====================================================================
 
+func T_rand_ub() uint64 {
+	rand.Seed(time.Now().UnixNano())
+	return uint64(rand.Int31n(1000000000))
+}
+
 func T_rand() string {
-	return fmt.Sprintf("%016v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000000))
+	rand.Seed(time.Now().UnixNano())
+	return fmt.Sprintf("%016v", rand.Int31n(1000000000))
 }

@@ -16,63 +16,6 @@ static dave_bool _echo_working = dave_false;
 static ub _echo_req_counter = 0;
 
 static void
-_echo_start(ThreadId src, ThreadId dst, dave_bool concurrent_flag)
-{
-	MsgIdEchoReq *pReq = thread_msg(pReq);
-
-	if(_echo_working == dave_true)
-	{
-		ECHOLOG("The ECHO system is working!");
-		return;
-	}
-	_echo_working = dave_true;
-
-	ECHOLOG("%s->%s start %s echo ...",
-		thread_name(src), thread_name(dst),
-		concurrent_flag==dave_true?"concurrent":"single");
-
-	pReq->echo.type = EchoType_single;
-
-	dave_strcpy(pReq->echo.gid, t_gp_globally_identifier(), sizeof(pReq->echo.gid));
-	dave_strcpy(pReq->echo.thread, thread_name(dst), sizeof(pReq->echo.thread));
-
-	pReq->echo.echo_total_counter = 0;
-	pReq->echo.echo_total_time = 0;
-
-	pReq->echo.echo_cycle_counter = 0;
-	pReq->echo.concurrent_cycle_counter = 0;
-	pReq->echo.echo_cycle_time = 0;
-
-	pReq->echo.echo_req_time = dave_os_time_us();
-	pReq->echo.echo_rsp_time = 0;
-
-	pReq->echo.concurrent_flag = concurrent_flag;
-	pReq->echo.concurrent_tps_time = dave_os_time_us();
-	pReq->echo.concurrent_tps_counter = 0;
-	pReq->echo.concurrent_total_counter = 0;
-
-	dave_snprintf(pReq->echo.msg, sizeof(pReq->echo.msg), "user start echo!");
-
-	pReq->ptr = NULL;
-
-	broadcast_remote(MSGID_ECHO_REQ, pReq);
-}
-
-static void
-_echo_stop(ThreadId src, ThreadId dst)
-{
-	if(_echo_working == dave_false)
-	{
-		ECHOLOG("The ECHO system is not working!");
-		return;
-	}
-	_echo_working = dave_false;
-
-	ECHOLOG("%s->%s stop echo!",
-		thread_name(src), thread_name(dst));
-}
-
-static void
 _echo_api_req_msg(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
 {
 	switch(t_rand() % 6)
@@ -227,13 +170,72 @@ _echo_concurrent(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 					random_send_times = 0;
 			}
 
-			pGetEcho->concurrent_cycle_counter += random_send_times;
 			pGetEcho->concurrent_tps_counter += random_send_times;
+			pGetEcho->concurrent_cycle_counter += random_send_times;
 			pGetEcho->concurrent_total_counter += random_send_times;
 
 			_echo_random(src, dst, pGetEcho, random_send_times);
 		}
 	}
+}
+
+static void
+_echo_start(ThreadId src, ThreadId dst, dave_bool concurrent_flag)
+{
+	MsgIdEchoReq *pReq;
+
+	if(_echo_working == dave_true)
+	{
+		ECHOLOG("The ECHO system is working!");
+		return;
+	}
+	_echo_working = dave_true;
+
+	ECHOLOG("%s->%s start %s echo ...",
+		thread_name(src), thread_name(dst),
+		concurrent_flag==dave_true?"concurrent":"single");
+
+	pReq = thread_msg(pReq);
+
+	pReq->echo.type = EchoType_single;
+
+	dave_strcpy(pReq->echo.gid, t_gp_globally_identifier(), sizeof(pReq->echo.gid));
+	dave_strcpy(pReq->echo.thread, thread_name(dst), sizeof(pReq->echo.thread));
+
+	pReq->echo.echo_total_counter = 0;
+	pReq->echo.echo_total_time = 0;
+
+	pReq->echo.echo_cycle_counter = 0;
+	pReq->echo.echo_cycle_time = 0;
+
+	pReq->echo.echo_req_time = dave_os_time_us();
+	pReq->echo.echo_rsp_time = 0;
+
+	pReq->echo.concurrent_flag = concurrent_flag;
+	pReq->echo.concurrent_tps_time = dave_os_time_us();
+	pReq->echo.concurrent_tps_counter = 0;
+	pReq->echo.concurrent_cycle_counter = 0;
+	pReq->echo.concurrent_total_counter = 0;
+
+	dave_snprintf(pReq->echo.msg, sizeof(pReq->echo.msg), "user start echo!");
+
+	pReq->ptr = NULL;
+
+	broadcast_remote(MSGID_ECHO_REQ, pReq);
+}
+
+static void
+_echo_stop(ThreadId src, ThreadId dst)
+{
+	if(_echo_working == dave_false)
+	{
+		ECHOLOG("The ECHO system is not working!");
+		return;
+	}
+	_echo_working = dave_false;
+
+	ECHOLOG("%s->%s stop echo!",
+		thread_name(src), thread_name(dst));
 }
 
 static void
@@ -255,19 +257,19 @@ _echo_single_rsp(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 	pGetEcho->echo_cycle_counter ++;
 	pGetEcho->echo_cycle_time += echo_consume_time;
 
-	if((pGetEcho->echo_cycle_counter % HOW_MANY_CYCLES_DO_STATISTICS) == 0x00)
+	if(pGetEcho->echo_cycle_counter >= HOW_MANY_CYCLES_DO_STATISTICS)
 	{
 		ECHOLOG("%s/%s C:%lds/%ld T:%lds/%ld %ldus/%ldus %ld",
 			pGetEcho->gid, pGetEcho->thread,
 			pGetEcho->echo_cycle_time/1000000, pGetEcho->echo_cycle_counter,
 			pGetEcho->echo_total_time/1000000, pGetEcho->echo_total_counter,
 			pGetEcho->echo_cycle_time/((pGetEcho->echo_cycle_counter*2)+(pGetEcho->concurrent_cycle_counter*2)),
-			pGetEcho->echo_total_time/((pGetEcho->concurrent_total_counter*2)+(pGetEcho->echo_total_counter*2)),
-			pGetEcho->concurrent_total_counter);
+			pGetEcho->echo_total_time/((pGetEcho->echo_total_counter*2)+(pGetEcho->concurrent_total_counter*2)),
+			pGetEcho->echo_total_counter+pGetEcho->concurrent_total_counter);
 
 		pGetEcho->echo_cycle_counter = 0;
-		pGetEcho->concurrent_cycle_counter = 0;
 		pGetEcho->echo_cycle_time = 0;
+		pGetEcho->concurrent_cycle_counter = 0;
 	}
 
 	if(_echo_working == dave_true)

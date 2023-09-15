@@ -46,16 +46,30 @@ func byteStructOf(sp *[]byte) *sliceStruct {
 // =====================================================================
 
 func T_cgo_gobyte2gostring(go_byte []byte) string {
-	byte_string_len := 0
-	for ; byte_string_len < len(go_byte); byte_string_len++ {
-		if go_byte[byte_string_len] == 0 {
+	byte_len := 0
+	for ; byte_len < len(go_byte); byte_len++ {
+		if go_byte[byte_len] == 0 {
 			break
 		}
 	}
 
     go_string := string(go_byte)
-    stringStructOf(&go_string).len = byte_string_len
+    stringStructOf(&go_string).len = byte_len
     return go_string
+}
+
+func T_cgo_gostring2gobyte(go_byte []byte, go_string string) int {
+	string_len := 0
+	for ; (string_len < len(go_byte)) && (string_len < len(go_string)); string_len++ {
+		if go_string[string_len] == 0 {
+			break
+		}
+		go_byte[string_len] = go_string[string_len]
+	}
+
+	go_byte[string_len] = 0
+	byteStructOf(&go_byte).len = string_len
+	return string_len
 }
 
 func T_cgo_gostring2cbin(bin_len int64, bin_ptr unsafe.Pointer, go_string string) {

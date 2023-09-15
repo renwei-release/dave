@@ -98,7 +98,6 @@ typedef struct {
 	ub echo_total_time;
 
 	ub echo_cycle_counter;
-	ub concurrent_cycle_counter;
 	ub echo_cycle_time;
 
 	ub echo_req_time;
@@ -107,6 +106,7 @@ typedef struct {
 	dave_bool concurrent_flag;
 	ub concurrent_tps_time;
 	ub concurrent_tps_counter;
+	ub concurrent_cycle_counter;
 	ub concurrent_total_counter;
 
 	s8 msg[256];

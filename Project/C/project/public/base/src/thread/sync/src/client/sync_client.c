@@ -613,10 +613,11 @@ _sync_client_route(MSGBODY *pMsg)
 		msg_dst = sync_client_thread_id_change_from_user(pMsg->msg_dst, _sync_client_thread);
 		if(msg_dst == INVALID_THREAD_ID)
 		{
-			SYNCLOG("%lx/%s->%lx/%s:%s change failed!",
+			SYNCLOG("%lx/%s->%lx/%s:%s %s change failed!",
 				pMsg->msg_src, thread_name(pMsg->msg_src),
 				pMsg->msg_dst, thread_name(pMsg->msg_dst),
-				msgstr(pMsg->msg_id));
+				msgstr(pMsg->msg_id),
+				t_auto_BaseMsgType_str(pMsg->msg_type));
 			return;
 		}
 		pMsg->msg_dst = msg_dst;
