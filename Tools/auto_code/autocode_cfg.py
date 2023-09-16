@@ -20,7 +20,8 @@ forgettable_path_list = [
     "../../Project/C/project/public/tools/src",
     "../../Project/C/project/public/verno",
 	"../../Project/C/project/inc/third_party",
-	"../../Project/C/project/src/verno"
+	"../../Project/C/project/src/verno",
+    "../../Project/C/project/product/voip/src/cscf/osip"
 ]
 
 
