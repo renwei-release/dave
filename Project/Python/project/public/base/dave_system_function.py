@@ -27,7 +27,6 @@ system_function_table = {
     MSGID_REMOTE_THREAD_REMOVE: fun_None,
     MSGID_TRACE_SWITCH: fun_None,
     MSGID_PROCESS_MSG_TIMER_OUT: fun_None,
-    MSGID_CALL_FUNCTION: fun_None,
     MSGID_ECHO_REQ: fun_None,
     MSGID_ECHO_RSP: fun_None,
     MSGID_INTERNAL_EVENTS: fun_None,

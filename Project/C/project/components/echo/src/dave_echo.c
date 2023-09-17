@@ -107,6 +107,7 @@ _echo_snd_req(ThreadId src, ThreadId dst, EchoType type, MsgIdEcho *pGetEcho)
 	dave_strcpy(pReq->echo.thread, thread_name(dst), sizeof(pReq->echo.thread));
 
 	pReq->echo.echo_req_time = dave_os_time_us();
+	pReq->echo.echo_req_time = 0;
 
 	pReq->ptr = pReq;
 

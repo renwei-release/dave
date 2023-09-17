@@ -490,6 +490,8 @@ _sync_client_rx_link_down_req(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 
 	sync_link_unpacket(frame_ptr, frame_len, verno, sizeof(verno), ip, &port, globally_identifier, sizeof(globally_identifier));
 
+	SYNCTRACE("%s/%s", globally_identifier, verno);
+
 	sync_client_link_down(verno, globally_identifier, ip, port);
 
 	sync_client_tx_link_down_rsp(pServer, verno, ip, port);

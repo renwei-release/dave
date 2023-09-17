@@ -1205,6 +1205,192 @@ class UIPUnregisterRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for VOIPMSG_ADD_CALL_REQ message *#
+class VOIPAddCallReq (Structure):
+	_fields_ = [
+		("target", c_char * DAVE_URL_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_ADD_CALL_RSP message *#
+class VOIPAddCallRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("acc_id", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_ANSWER_CALL_REQ message *#
+class VOIPAnswerCallReq (Structure):
+	_fields_ = [
+		("target", c_char * DAVE_URL_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_ANSWER_CALL_RSP message *#
+class VOIPAnswerCallRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("call_id", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_CFG_GET_REQ message *#
+class VOIPCFGGetReq (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_CFG_GET_RSP message *#
+class VOIPCFGGetRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("server_addr", c_char * DAVE_URL_LEN),
+		("server_port", c_ulonglong),
+		("user", c_char * DAVE_USER_NAME_LEN),
+		("domain", c_char * DAVE_DOMAIN_LEN),
+		("password", c_char * DAVE_PASSWORD_LEN),
+		("impi", c_char * DAVE_IMPI_LEN),
+		("production_environment", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_CFG_SET_REQ message *#
+class VOIPCFGSetReq (Structure):
+	_fields_ = [
+		("server_addr", c_char * DAVE_URL_LEN),
+		("server_port", c_ulonglong),
+		("user", c_char * DAVE_USER_NAME_LEN),
+		("domain", c_char * DAVE_DOMAIN_LEN),
+		("password", c_char * DAVE_PASSWORD_LEN),
+		("impi", c_char * DAVE_IMPI_LEN),
+		("production_environment", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_CFG_SET_RSP message *#
+class VOIPCFGSetRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_HANGUP_CALL_REQ message *#
+class VOIPHangupCallReq (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_HANGUP_CALL_RSP message *#
+class VOIPHangupCallRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_HOLD_CALL_REQ message *#
+class VOIPHoldCallReq (Structure):
+	_fields_ = [
+		("call_id", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_HOLD_CALL_RSP message *#
+class VOIPHoldCallRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_LOGIN_REQ message *#
+class VOIPLoginReq (Structure):
+	_fields_ = [
+		("user_setup_flag", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_LOGIN_RSP message *#
+class VOIPLoginRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_LOGIN_STATUS_REQ message *#
+class VOIPLoginStatusReq (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_LOGIN_STATUS_RSP message *#
+class VOIPLoginStatusRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("user_setup_flag", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_MAKE_CALL_REQ message *#
+class VOIPMakeCallReq (Structure):
+	_fields_ = [
+		("conference", c_char),
+		("target", c_char * DAVE_CONF_USER_MAX*DAVE_URL_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_MAKE_CALL_RSP message *#
+class VOIPMakeCallRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("acc_id", c_longlong),
+		("call_id", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_MUTE_MODE_REQ message *#
+class VOIPMuteModeReq (Structure):
+	_fields_ = [
+		("mute", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_MUTE_MODE_RSP message *#
+class VOIPMuteModeRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_PUSH_TOKEN_SETUP_REQ message *#
+class VOIPPushTokenSetupReq (Structure):
+	_fields_ = [
+		("enable", c_char),
+		("token", c_char * DAVE_TOKEN_LEN),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_PUSH_TOKEN_SETUP_RSP message *#
+class VOIPPushTokenSetupRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_SEND_IM_REQ message *#
+class VOIPSendIMReq (Structure):
+	_fields_ = [
+		("target", c_char * DAVE_URL_LEN),
+		("content", c_char * DAVE_IM_LENGTH),
+		("ptr", POINTER(c_char)),
+]
+
+#* for VOIPMSG_SEND_IM_RSP message *#
+class VOIPSendIMRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_WAKEUP message *#
 class WAKEUPMSG (Structure):
 	_fields_ = [

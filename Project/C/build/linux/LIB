@@ -26,7 +26,7 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
 LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib -lyaml-cpp
 endif
-ifeq ($(words $(findstring $(VER_PRODUCT), VOIP AIC)), 1)
+ifeq ($(words $(findstring $(VER_PRODUCT), VOIP)), 1)
 LIB += -luuid -L../../../ThirdParty/build/pjsip/setup/lib -lpjsip-linux -lasound
 endif
 

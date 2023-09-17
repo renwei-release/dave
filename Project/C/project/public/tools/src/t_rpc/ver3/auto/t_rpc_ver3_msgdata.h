@@ -24,6 +24,7 @@
 #include "http_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
+#include "voip_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -686,6 +687,126 @@ void * t_rpc_ver3_zip_UIPUnregisterRsp(UIPUnregisterRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_UIPUnregisterRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_UIPUnregisterRsp(UIPUnregisterRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_UIPUnregisterRsp(void);
+
+void * t_rpc_ver3_zip_VOIPAddCallReq(VOIPAddCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPAddCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPAddCallReq(VOIPAddCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPAddCallReq(void);
+
+void * t_rpc_ver3_zip_VOIPAddCallRsp(VOIPAddCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPAddCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPAddCallRsp(VOIPAddCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPAddCallRsp(void);
+
+void * t_rpc_ver3_zip_VOIPAnswerCallReq(VOIPAnswerCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPAnswerCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPAnswerCallReq(VOIPAnswerCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPAnswerCallReq(void);
+
+void * t_rpc_ver3_zip_VOIPAnswerCallRsp(VOIPAnswerCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPAnswerCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPAnswerCallRsp(VOIPAnswerCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPAnswerCallRsp(void);
+
+void * t_rpc_ver3_zip_VOIPCFGGetReq(VOIPCFGGetReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPCFGGetReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPCFGGetReq(VOIPCFGGetReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPCFGGetReq(void);
+
+void * t_rpc_ver3_zip_VOIPCFGGetRsp(VOIPCFGGetRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPCFGGetRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPCFGGetRsp(VOIPCFGGetRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPCFGGetRsp(void);
+
+void * t_rpc_ver3_zip_VOIPCFGSetReq(VOIPCFGSetReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPCFGSetReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPCFGSetReq(VOIPCFGSetReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPCFGSetReq(void);
+
+void * t_rpc_ver3_zip_VOIPCFGSetRsp(VOIPCFGSetRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPCFGSetRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPCFGSetRsp(VOIPCFGSetRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPCFGSetRsp(void);
+
+void * t_rpc_ver3_zip_VOIPHangupCallReq(VOIPHangupCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPHangupCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPHangupCallReq(VOIPHangupCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPHangupCallReq(void);
+
+void * t_rpc_ver3_zip_VOIPHangupCallRsp(VOIPHangupCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPHangupCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPHangupCallRsp(VOIPHangupCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPHangupCallRsp(void);
+
+void * t_rpc_ver3_zip_VOIPHoldCallReq(VOIPHoldCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPHoldCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPHoldCallReq(VOIPHoldCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPHoldCallReq(void);
+
+void * t_rpc_ver3_zip_VOIPHoldCallRsp(VOIPHoldCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPHoldCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPHoldCallRsp(VOIPHoldCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPHoldCallRsp(void);
+
+void * t_rpc_ver3_zip_VOIPLoginReq(VOIPLoginReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPLoginReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPLoginReq(VOIPLoginReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPLoginReq(void);
+
+void * t_rpc_ver3_zip_VOIPLoginRsp(VOIPLoginRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPLoginRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPLoginRsp(VOIPLoginRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPLoginRsp(void);
+
+void * t_rpc_ver3_zip_VOIPLoginStatusReq(VOIPLoginStatusReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPLoginStatusReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPLoginStatusReq(VOIPLoginStatusReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPLoginStatusReq(void);
+
+void * t_rpc_ver3_zip_VOIPLoginStatusRsp(VOIPLoginStatusRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPLoginStatusRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPLoginStatusRsp(VOIPLoginStatusRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPLoginStatusRsp(void);
+
+void * t_rpc_ver3_zip_VOIPMakeCallReq(VOIPMakeCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPMakeCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPMakeCallReq(VOIPMakeCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPMakeCallReq(void);
+
+void * t_rpc_ver3_zip_VOIPMakeCallRsp(VOIPMakeCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPMakeCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPMakeCallRsp(VOIPMakeCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPMakeCallRsp(void);
+
+void * t_rpc_ver3_zip_VOIPMuteModeReq(VOIPMuteModeReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPMuteModeReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPMuteModeReq(VOIPMuteModeReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPMuteModeReq(void);
+
+void * t_rpc_ver3_zip_VOIPMuteModeRsp(VOIPMuteModeRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPMuteModeRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPMuteModeRsp(VOIPMuteModeRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPMuteModeRsp(void);
+
+void * t_rpc_ver3_zip_VOIPPushTokenSetupReq(VOIPPushTokenSetupReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPPushTokenSetupReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPPushTokenSetupReq(VOIPPushTokenSetupReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPPushTokenSetupReq(void);
+
+void * t_rpc_ver3_zip_VOIPPushTokenSetupRsp(VOIPPushTokenSetupRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPPushTokenSetupRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPPushTokenSetupRsp(VOIPPushTokenSetupRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPPushTokenSetupRsp(void);
+
+void * t_rpc_ver3_zip_VOIPSendIMReq(VOIPSendIMReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPSendIMReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPSendIMReq(VOIPSendIMReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPSendIMReq(void);
+
+void * t_rpc_ver3_zip_VOIPSendIMRsp(VOIPSendIMRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_VOIPSendIMRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_VOIPSendIMRsp(VOIPSendIMRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_VOIPSendIMRsp(void);
 
 void * t_rpc_ver3_zip_WAKEUPMSG(WAKEUPMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_WAKEUPMSG(void **unzip_data, ub *unzip_len, void *pStructBson);

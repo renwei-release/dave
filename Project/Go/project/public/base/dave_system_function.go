@@ -37,7 +37,6 @@ var (
         auto.MSGID_TRACE_SWITCH:               fun_None,
         auto.MSGID_PROCESS_MSG_TIMER_OUT:      fun_None,
         auto.MSGID_TEMPORARILY_DEFINE_MESSAGE: fun_None,
-        auto.MSGID_CALL_FUNCTION:              fun_None,
         auto.MSGID_SYSTEM_MOUNT:               fun_None,
         auto.MSGID_SYSTEM_DECOUPLING:          fun_None,
         auto.MSGID_ECHO_REQ:                   fun_None,

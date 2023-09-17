@@ -22,7 +22,7 @@ def thread_self():
     self_id = davelib.base_thread_get_self(c_char_p(__func__), c_int(__LINE__))
 
     davelib.base_thread_get_name.restype = c_char_p
-    return davelib.base_thread_get_name(c_longlong(self_id), c_char_p(__func__), c_int(__LINE__))
+    return str(davelib.base_thread_get_name(c_longlong(self_id), c_char_p(__func__), c_int(__LINE__)), encoding = "utf-8")
 
 
 def thread_msg(class_struct):
@@ -96,6 +96,32 @@ def write_qco(dst, req_id, pReq, rsp_id, rsp_class):
     if pRsp == None:
         return None
 
+    return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
+
+
+def gid_msg(gid, dst, msg_id, class_instance):
+    __func__, __LINE__ = t_sys_myline(2)
+    pRsp = davelib.dave_dll_thread_gid_msg(c_char_p(gid), c_char_p(dst), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
+    return    
+
+
+def gid_qmsg(gid, dst, msg_id, class_instance):
+    __func__, __LINE__ = t_sys_myline(2)
+    davelib.dave_dll_thread_gid_qmsg(c_char_p(gid), c_char_p(dst), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
+    return
+
+
+def gid_co(gid, dst, req_id, pReq, rsp_id, rsp_class):
+    __func__, __LINE__ = t_sys_myline(2)
+    davelib.dave_dll_thread_gid_co.restype = c_void_p
+    pRsp = davelib.dave_dll_thread_gid_co(c_char_p(gid), c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
+    return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
+
+
+def gid_qco(gid, dst, req_id, pReq, rsp_id, rsp_class):
+    __func__, __LINE__ = t_sys_myline(2)
+    davelib.dave_dll_thread_gid_co.restype = c_void_p
+    pRsp = davelib.dave_dll_thread_gid_qco(c_char_p(gid), c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
 
 

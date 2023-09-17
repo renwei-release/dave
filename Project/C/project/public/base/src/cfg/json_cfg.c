@@ -82,7 +82,7 @@ _base_json_cfg_read(FileOptFlag flag, s8 *file_name)
 	return pJson;
 }
 
-static dave_bool
+static RetCode
 _base_json_cfg_write(FileOptFlag flag, s8 *file_name, void *pJson)
 {
 	ub data_len;
@@ -92,7 +92,13 @@ _base_json_cfg_write(FileOptFlag flag, s8 *file_name, void *pJson)
 
 	dave_os_file_delete(flag, file_name);
 
-	return dave_os_file_write(flag, file_name, 0, data_len, data_ptr);
+	if(dave_os_file_write(flag, file_name, 0, data_len, data_ptr) == dave_false)
+	{
+		CFGLOG("file:%s data:%s write failed!", file_name, dave_json_to_string(pJson, NULL));
+		return RetCode_save_failed;
+	}
+
+	return RetCode_OK;
 }
 
 static RetCode
@@ -101,6 +107,7 @@ _base_json_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 	s8 file_name[1024];
 	FileOptFlag flag;
 	void *pJson;
+	RetCode ret;
 
 	flag = _base_json_cfg_file_path(dir, file_name, sizeof(file_name));
 
@@ -111,11 +118,11 @@ _base_json_cfg_dir_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len)
 		CFGABNOR("%s add failed!", name);
 	}
 
-	_base_json_cfg_write(flag, file_name, pJson);
+	ret = _base_json_cfg_write(flag, file_name, pJson);
 
 	dave_json_free(pJson);
 
-	return RetCode_OK;
+	return ret;
 }
 
 static dave_bool

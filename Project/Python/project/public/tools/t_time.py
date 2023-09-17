@@ -8,6 +8,7 @@
 import os
 import sys
 import time
+from datetime import datetime
 
 
 def t_time_current_str():
@@ -21,3 +22,7 @@ def t_time_current_str():
     second = "%02d" % time_tuple[5]
 
     return year+month+day+hour+minute+second
+
+
+def t_time_current_us():
+    return datetime.now().microsecond

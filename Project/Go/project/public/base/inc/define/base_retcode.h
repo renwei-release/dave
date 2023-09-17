@@ -134,6 +134,7 @@ typedef enum {
 	RetCode_db_sql_failed = -119,
 	RetCode_Unauthorized_access = -120,
 	RetCode_not_ready = -121,
+	RetCode_Unauthorized = -122,
 
 	RetCode_max = 0x1fffffffffffffff
 } RetCode;

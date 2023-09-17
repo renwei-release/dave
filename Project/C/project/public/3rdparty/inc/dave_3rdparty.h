@@ -44,6 +44,9 @@ extern "C"{
 #ifdef ETCD_3RDPARTY
 #include "dave_etcd.h"
 #endif
+#ifdef PJSIP_3RDPARTY
+#include "dave_pjsip.h"
+#endif
 
 #ifdef __cplusplus
 }

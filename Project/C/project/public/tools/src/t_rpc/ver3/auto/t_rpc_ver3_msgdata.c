@@ -29,6 +29,7 @@
 #include "http_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
+#include "voip_msg.h"
 #include "base_msg.h"
 #include "base_socket.h"
 
@@ -8274,6 +8275,1458 @@ ub
 t_rpc_ver3_sizeof_UIPUnregisterRsp(void)
 {
 	return sizeof(UIPUnregisterRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPAddCallReq(VOIPAddCallReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPAddCallReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPAddCallReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPAddCallReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-target", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->target), 1, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPAddCallReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPAddCallReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPAddCallReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->target), 1, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-target"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPAddCallReq(VOIPAddCallReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPAddCallReq(void)
+{
+	return sizeof(VOIPAddCallReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPAddCallRsp(VOIPAddCallRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPAddCallRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPAddCallRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPAddCallRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "sb-acc_id", t_rpc_ver3_zip_sb(zip_data->acc_id));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPAddCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPAddCallRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPAddCallRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_sb(&(pUnzip->acc_id), t_bson_inq_object(pStructBson, "sb-acc_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPAddCallRsp(VOIPAddCallRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPAddCallRsp(void)
+{
+	return sizeof(VOIPAddCallRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPAnswerCallReq(VOIPAnswerCallReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPAnswerCallReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPAnswerCallReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPAnswerCallReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-target", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->target), 1, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPAnswerCallReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPAnswerCallReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPAnswerCallReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->target), 1, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-target"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPAnswerCallReq(VOIPAnswerCallReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPAnswerCallReq(void)
+{
+	return sizeof(VOIPAnswerCallReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPAnswerCallRsp(VOIPAnswerCallRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPAnswerCallRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPAnswerCallRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPAnswerCallRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "sb-call_id", t_rpc_ver3_zip_sb(zip_data->call_id));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPAnswerCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPAnswerCallRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPAnswerCallRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_sb(&(pUnzip->call_id), t_bson_inq_object(pStructBson, "sb-call_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPAnswerCallRsp(VOIPAnswerCallRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPAnswerCallRsp(void)
+{
+	return sizeof(VOIPAnswerCallRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPCFGGetReq(VOIPCFGGetReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPCFGGetReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPCFGGetReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPCFGGetReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPCFGGetReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPCFGGetReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPCFGGetReq);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPCFGGetReq(VOIPCFGGetReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPCFGGetReq(void)
+{
+	return sizeof(VOIPCFGGetReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPCFGGetRsp(VOIPCFGGetRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPCFGGetRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPCFGGetRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPCFGGetRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-server_addr", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->server_addr), 1, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "ub-server_port", t_rpc_ver3_zip_ub(zip_data->server_port));
+	t_bson_add_object(pStructBson, "s8-user", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->user), 1, DAVE_USER_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-domain", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->domain), 1, DAVE_DOMAIN_LEN));
+	t_bson_add_object(pStructBson, "s8-password", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->password), 1, DAVE_PASSWORD_LEN));
+	t_bson_add_object(pStructBson, "s8-impi", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->impi), 1, DAVE_IMPI_LEN));
+	t_bson_add_object(pStructBson, "dave_bool-production_environment", t_rpc_ver3_zip_dave_bool(zip_data->production_environment));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPCFGGetRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPCFGGetRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPCFGGetRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->server_addr), 1, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-server_addr"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->server_port), t_bson_inq_object(pStructBson, "ub-server_port"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->user), 1, DAVE_USER_NAME_LEN, t_bson_inq_object(pStructBson, "s8-user"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->domain), 1, DAVE_DOMAIN_LEN, t_bson_inq_object(pStructBson, "s8-domain"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->password), 1, DAVE_PASSWORD_LEN, t_bson_inq_object(pStructBson, "s8-password"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->impi), 1, DAVE_IMPI_LEN, t_bson_inq_object(pStructBson, "s8-impi"));
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->production_environment), t_bson_inq_object(pStructBson, "dave_bool-production_environment"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPCFGGetRsp(VOIPCFGGetRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPCFGGetRsp(void)
+{
+	return sizeof(VOIPCFGGetRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPCFGSetReq(VOIPCFGSetReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPCFGSetReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPCFGSetReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPCFGSetReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-server_addr", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->server_addr), 1, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "ub-server_port", t_rpc_ver3_zip_ub(zip_data->server_port));
+	t_bson_add_object(pStructBson, "s8-user", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->user), 1, DAVE_USER_NAME_LEN));
+	t_bson_add_object(pStructBson, "s8-domain", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->domain), 1, DAVE_DOMAIN_LEN));
+	t_bson_add_object(pStructBson, "s8-password", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->password), 1, DAVE_PASSWORD_LEN));
+	t_bson_add_object(pStructBson, "s8-impi", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->impi), 1, DAVE_IMPI_LEN));
+	t_bson_add_object(pStructBson, "dave_bool-production_environment", t_rpc_ver3_zip_dave_bool(zip_data->production_environment));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPCFGSetReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPCFGSetReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPCFGSetReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->server_addr), 1, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-server_addr"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->server_port), t_bson_inq_object(pStructBson, "ub-server_port"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->user), 1, DAVE_USER_NAME_LEN, t_bson_inq_object(pStructBson, "s8-user"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->domain), 1, DAVE_DOMAIN_LEN, t_bson_inq_object(pStructBson, "s8-domain"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->password), 1, DAVE_PASSWORD_LEN, t_bson_inq_object(pStructBson, "s8-password"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->impi), 1, DAVE_IMPI_LEN, t_bson_inq_object(pStructBson, "s8-impi"));
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->production_environment), t_bson_inq_object(pStructBson, "dave_bool-production_environment"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPCFGSetReq(VOIPCFGSetReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPCFGSetReq(void)
+{
+	return sizeof(VOIPCFGSetReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPCFGSetRsp(VOIPCFGSetRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPCFGSetRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPCFGSetRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPCFGSetRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPCFGSetRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPCFGSetRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPCFGSetRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPCFGSetRsp(VOIPCFGSetRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPCFGSetRsp(void)
+{
+	return sizeof(VOIPCFGSetRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPHangupCallReq(VOIPHangupCallReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPHangupCallReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPHangupCallReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPHangupCallReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPHangupCallReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPHangupCallReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPHangupCallReq);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPHangupCallReq(VOIPHangupCallReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPHangupCallReq(void)
+{
+	return sizeof(VOIPHangupCallReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPHangupCallRsp(VOIPHangupCallRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPHangupCallRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPHangupCallRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPHangupCallRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPHangupCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPHangupCallRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPHangupCallRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPHangupCallRsp(VOIPHangupCallRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPHangupCallRsp(void)
+{
+	return sizeof(VOIPHangupCallRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPHoldCallReq(VOIPHoldCallReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPHoldCallReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPHoldCallReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPHoldCallReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "sb-call_id", t_rpc_ver3_zip_sb(zip_data->call_id));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPHoldCallReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPHoldCallReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPHoldCallReq);
+
+		t_rpc_ver3_unzip_sb(&(pUnzip->call_id), t_bson_inq_object(pStructBson, "sb-call_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPHoldCallReq(VOIPHoldCallReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPHoldCallReq(void)
+{
+	return sizeof(VOIPHoldCallReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPHoldCallRsp(VOIPHoldCallRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPHoldCallRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPHoldCallRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPHoldCallRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPHoldCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPHoldCallRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPHoldCallRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPHoldCallRsp(VOIPHoldCallRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPHoldCallRsp(void)
+{
+	return sizeof(VOIPHoldCallRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPLoginReq(VOIPLoginReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPLoginReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPLoginReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPLoginReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "dave_bool-user_setup_flag", t_rpc_ver3_zip_dave_bool(zip_data->user_setup_flag));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPLoginReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPLoginReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPLoginReq);
+
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->user_setup_flag), t_bson_inq_object(pStructBson, "dave_bool-user_setup_flag"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPLoginReq(VOIPLoginReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPLoginReq(void)
+{
+	return sizeof(VOIPLoginReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPLoginRsp(VOIPLoginRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPLoginRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPLoginRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPLoginRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPLoginRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPLoginRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPLoginRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPLoginRsp(VOIPLoginRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPLoginRsp(void)
+{
+	return sizeof(VOIPLoginRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPLoginStatusReq(VOIPLoginStatusReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPLoginStatusReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPLoginStatusReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPLoginStatusReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPLoginStatusReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPLoginStatusReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPLoginStatusReq);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPLoginStatusReq(VOIPLoginStatusReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPLoginStatusReq(void)
+{
+	return sizeof(VOIPLoginStatusReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPLoginStatusRsp(VOIPLoginStatusRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPLoginStatusRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPLoginStatusRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPLoginStatusRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "dave_bool-user_setup_flag", t_rpc_ver3_zip_dave_bool(zip_data->user_setup_flag));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPLoginStatusRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPLoginStatusRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPLoginStatusRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->user_setup_flag), t_bson_inq_object(pStructBson, "dave_bool-user_setup_flag"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPLoginStatusRsp(VOIPLoginStatusRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPLoginStatusRsp(void)
+{
+	return sizeof(VOIPLoginStatusRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPMakeCallReq(VOIPMakeCallReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPMakeCallReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPMakeCallReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPMakeCallReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "dave_bool-conference", t_rpc_ver3_zip_dave_bool(zip_data->conference));
+	t_bson_add_object(pStructBson, "s8-target", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->target), DAVE_CONF_USER_MAX, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPMakeCallReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPMakeCallReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPMakeCallReq);
+
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->conference), t_bson_inq_object(pStructBson, "dave_bool-conference"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->target), DAVE_CONF_USER_MAX, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-target"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPMakeCallReq(VOIPMakeCallReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPMakeCallReq(void)
+{
+	return sizeof(VOIPMakeCallReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPMakeCallRsp(VOIPMakeCallRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPMakeCallRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPMakeCallRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPMakeCallRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "sb-acc_id", t_rpc_ver3_zip_sb(zip_data->acc_id));
+	t_bson_add_object(pStructBson, "sb-call_id", t_rpc_ver3_zip_sb(zip_data->call_id));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPMakeCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPMakeCallRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPMakeCallRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_sb(&(pUnzip->acc_id), t_bson_inq_object(pStructBson, "sb-acc_id"));
+		t_rpc_ver3_unzip_sb(&(pUnzip->call_id), t_bson_inq_object(pStructBson, "sb-call_id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPMakeCallRsp(VOIPMakeCallRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPMakeCallRsp(void)
+{
+	return sizeof(VOIPMakeCallRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPMuteModeReq(VOIPMuteModeReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPMuteModeReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPMuteModeReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPMuteModeReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "dave_bool-mute", t_rpc_ver3_zip_dave_bool(zip_data->mute));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPMuteModeReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPMuteModeReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPMuteModeReq);
+
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->mute), t_bson_inq_object(pStructBson, "dave_bool-mute"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPMuteModeReq(VOIPMuteModeReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPMuteModeReq(void)
+{
+	return sizeof(VOIPMuteModeReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPMuteModeRsp(VOIPMuteModeRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPMuteModeRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPMuteModeRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPMuteModeRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPMuteModeRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPMuteModeRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPMuteModeRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPMuteModeRsp(VOIPMuteModeRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPMuteModeRsp(void)
+{
+	return sizeof(VOIPMuteModeRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPPushTokenSetupReq(VOIPPushTokenSetupReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPPushTokenSetupReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPPushTokenSetupReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPPushTokenSetupReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "dave_bool-enable", t_rpc_ver3_zip_dave_bool(zip_data->enable));
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, DAVE_TOKEN_LEN));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPPushTokenSetupReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPPushTokenSetupReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPPushTokenSetupReq);
+
+		t_rpc_ver3_unzip_dave_bool(&(pUnzip->enable), t_bson_inq_object(pStructBson, "dave_bool-enable"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, DAVE_TOKEN_LEN, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPPushTokenSetupReq(VOIPPushTokenSetupReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPPushTokenSetupReq(void)
+{
+	return sizeof(VOIPPushTokenSetupReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPPushTokenSetupRsp(VOIPPushTokenSetupRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPPushTokenSetupRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPPushTokenSetupRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPPushTokenSetupRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPPushTokenSetupRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPPushTokenSetupRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPPushTokenSetupRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPPushTokenSetupRsp(VOIPPushTokenSetupRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPPushTokenSetupRsp(void)
+{
+	return sizeof(VOIPPushTokenSetupRsp);
+}
+
+void *
+t_rpc_ver3_zip_VOIPSendIMReq(VOIPSendIMReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPSendIMReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPSendIMReq) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPSendIMReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-target", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->target), 1, DAVE_URL_LEN));
+	t_bson_add_object(pStructBson, "s8-content", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->content), 1, DAVE_IM_LENGTH));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPSendIMReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPSendIMReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPSendIMReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->target), 1, DAVE_URL_LEN, t_bson_inq_object(pStructBson, "s8-target"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->content), 1, DAVE_IM_LENGTH, t_bson_inq_object(pStructBson, "s8-content"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPSendIMReq(VOIPSendIMReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPSendIMReq(void)
+{
+	return sizeof(VOIPSendIMReq);
+}
+
+void *
+t_rpc_ver3_zip_VOIPSendIMRsp(VOIPSendIMRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(VOIPSendIMRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(VOIPSendIMRsp) does not match(%d/%d), please contact the message settlers!", sizeof(VOIPSendIMRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_VOIPSendIMRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		VOIPSendIMRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(VOIPSendIMRsp);
+
+		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_VOIPSendIMRsp(VOIPSendIMRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_VOIPSendIMRsp(void)
+{
+	return sizeof(VOIPSendIMRsp);
 }
 
 void *

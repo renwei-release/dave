@@ -51,7 +51,7 @@ func _echo_api_req(gid string, thread string, req auto.MsgIdEchoReq) {
 	_echo_req_counter += 1
 
 	if ((req.Echo.Type == int32(auto.EchoType_random)) && 
-		((_echo_req_counter) % 256 == 0) && 
+		(_echo_req_counter % 256 == 0) && 
 		((tools.T_rand_ub() % 16) == 0)) {
 		_echo_api_req_msg(gid, thread, req)
 	} else {
@@ -73,6 +73,7 @@ func _echo_snd_req(gid string, thread string, echo_type int64, getecho auto.MsgI
 	tools.T_cgo_gostring2gobyte(req.Echo.Thread[:], base.Thread_self())
 
 	req.Echo.Echo_req_time = tools.T_time_current_us()
+	req.Echo.Echo_rsp_time = 0
 
 	req.Ptr = 0
 
@@ -101,7 +102,7 @@ func _echo_random(gid string, thread string, getecho auto.MsgIdEcho, random_send
 	}
 }
 
-func _echo_concurrent(gid string, thread string, getecho auto.MsgIdEcho) {
+func _echo_concurrent(gid string, thread string, getecho auto.MsgIdEcho) auto.MsgIdEcho {
 	if getecho.Concurrent_flag == 1 {
 		random_send_times := tools.T_rand_ub() % 128
 		if random_send_times == 0 {
@@ -128,6 +129,8 @@ func _echo_concurrent(gid string, thread string, getecho auto.MsgIdEcho) {
 			_echo_random(gid, thread, getecho, random_send_times)
 		}
 	}
+
+	return getecho
 }
 
 func _echo_start(concurrent_flag int8) {
@@ -184,7 +187,7 @@ func _echo_single_req(src uint64, getecho auto.MsgIdEcho, ptr uint64) {
 	gid := tools.T_cgo_gobyte2gostring(getecho.Gid[:])
 	thread := tools.T_cgo_gobyte2gostring(getecho.Thread[:])
 
-	_echo_concurrent(gid, thread, getecho)
+	getecho = _echo_concurrent(gid, thread, getecho)
 
 	_echo_snd_rsp(src, auto.EchoType_single, getecho, ptr)
 }
@@ -216,7 +219,7 @@ func _echo_single_rsp(src uint64, getecho auto.MsgIdEcho) {
 		gid := tools.T_cgo_gobyte2gostring(getecho.Gid[:])
 		thread := tools.T_cgo_gobyte2gostring(getecho.Thread[:])
 
-		_echo_concurrent(gid, thread, getecho)
+		getecho = _echo_concurrent(gid, thread, getecho)
 
 		_echo_snd_req(gid, thread, auto.EchoType_single, getecho)
 	}

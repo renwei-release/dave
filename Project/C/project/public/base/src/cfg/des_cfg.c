@@ -407,6 +407,7 @@ _base_des_cfg_write(sb file_id, ConfigFileValue *pValue)
 	if(save_length != sizeof(ConfigFileValue))
 	{
 		CFGABNOR("save file failed:%d,%d", save_length, sizeof(ConfigFileValue));
+		ret = RetCode_save_failed;
 	}
 
 	pValue->head.data.value_len = back_value_len;

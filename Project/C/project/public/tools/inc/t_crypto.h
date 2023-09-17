@@ -29,5 +29,7 @@ dave_bool t_crypto_md5_str(s8 md5_str[DAVE_MD5_HASH_STR_LEN], u8 *encode_ptr, ub
 #define t_crypto_des_encode(key, key_len, txt, txt_len, pcks_flag) __t_crypto_des_encode__(key, key_len, txt, txt_len, pcks_flag, (s8 *)__func__, (ub)__LINE__)
 #define t_crypto_des_decode(key, key_len, txt, txt_len, pcks_flag) __t_crypto_des_decode__(key, key_len, txt, txt_len, pcks_flag, (s8 *)__func__, (ub)__LINE__)
 
+s8 * t_crypto_digest(s8 *nonce, s8 *cnonce, s8 *user, s8 *realm, s8 *pwd, s8 *nc, s8 *method, s8 *qop, s8 *uri);
+
 #endif
 

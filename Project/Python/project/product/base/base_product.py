@@ -7,6 +7,7 @@
 # */
 from public import *
 from .base_debug import *
+from components.echo.dave_echo import *
 
 
 def fun_MSGID_DEBUG_REQ(src_name, src_id, msg_len, msg_body):
@@ -35,7 +36,8 @@ def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
 def fun_cfg_update(name_ptr, name_len, value_ptr, value_len):
     DAVELOG(f'{name_len}/{name_ptr}:{value_len}/{value_ptr}')
     return
-cfg_reg("BaseCfgTest", fun_cfg_update)
+_fun_cfg_update = CFGREGFUNC(fun_cfg_update)
+cfg_reg("BaseCfgTest", _fun_cfg_update)
 
 
 # =====================================================================
@@ -45,6 +47,7 @@ def dave_product_init():
     dave_system_function_table_add(MSGID_DEBUG_REQ, fun_MSGID_DEBUG_REQ)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_READY, fun_MSGID_REMOTE_THREAD_ID_READY)
     dave_system_function_table_add(MSGID_REMOTE_THREAD_ID_REMOVE, fun_MSGID_REMOTE_THREAD_ID_REMOVE)
+    dave_echo_reg()
     return
 
 
@@ -52,4 +55,5 @@ def dave_product_exit():
     dave_system_function_table_del(MSGID_DEBUG_REQ)
     dave_system_function_table_del(MSGID_REMOTE_THREAD_ID_READY)
     dave_system_function_table_del(MSGID_REMOTE_THREAD_ID_REMOVE)
+    dave_echo_unreg()
     return

@@ -119,10 +119,18 @@ _sync_client_thread_active_push(dave_bool ready_or_remove_flag, ThreadId thread_
 
 	dave_snprintf(active_key, sizeof(active_key), "%lx%lx", pServer, pThread);
 
+	SYNCTRACE("%s %s %s",
+		ready_or_remove_flag==dave_true?"ready":"remove",
+		active_key, thread_name(thread_id));
+
 	pActive = kv_inq_key_ptr(_thread_active_ramkv, active_key);
 	if(pActive == NULL)
 	{
 		pActive = _sync_client_thread_active_malloc(ready_or_remove_flag, thread_id, pServer, pThread);
+
+		SYNCTRACE("%s %s %s/%s",
+			active_key, thread_name(thread_id),
+			pActive->globally_identifier, pActive->thread_name);
 
 		kv_add_key_ptr(_thread_active_ramkv, active_key, pActive);
 	}
@@ -169,29 +177,24 @@ _sync_client_thread_active_pop(void *ramkv, s8 *key)
 	}
 	else
 	{
-		if((pActive->pServer->server_ready == dave_false)
-			|| (thread_has_initialization(pActive->thread_id) == dave_false))
-		{
-			return;
-		}
-
-		SYNCTRACE("server_socket:%d server_ready:%d ready_or_remove_flag:%d thread:%s/%lx",
+		SYNCTRACE("server_socket:%d server_ready:%d ready_or_remove_flag:%d thread:%s/%lx init:%d",
 			pActive->pServer->server_socket, pActive->pServer->server_ready,
 			pActive->ready_or_remove_flag,
-			pActive->thread_name, pActive->thread_id);
+			pActive->thread_name, pActive->thread_id,
+			thread_has_initialization(pActive->thread_id));
 
-		if(pActive->pServer->server_socket == INVALID_SOCKET_ID)
+		if(pActive->ready_or_remove_flag == dave_false)
 		{
-			free_flag = dave_true;
-			if(pActive->ready_or_remove_flag == dave_false)
+			if(pActive->pServer->server_socket == INVALID_SOCKET_ID)
 			{
+				free_flag = dave_true;
 				_sync_client_thread_active_msg(pActive);
 			}
 		}
 		else
 		{
-			if((pActive->ready_or_remove_flag == dave_false)
-				|| (pActive->pServer->server_ready == dave_true))
+			if((pActive->pServer->server_ready == dave_true)
+				&& (thread_has_initialization(pActive->thread_id) == dave_true))
 			{
 				free_flag = dave_true;
 				_sync_client_thread_active_msg(pActive);

@@ -9,5 +9,11 @@ import random
 import string
 
 
+# =====================================================================
+
+def t_rand_ub():
+    return random.randint(0, 100000000000)
+
+
 def t_rand():
     return ''.join(random.sample(string.ascii_letters + string.digits, 16))

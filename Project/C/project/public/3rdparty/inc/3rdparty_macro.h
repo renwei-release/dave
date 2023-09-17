@@ -48,5 +48,9 @@
 #define ETCD_3RDPARTY
 #endif
 
+#ifdef __DAVE_PRODUCT_VOIP__
+// #define PJSIP_3RDPARTY
+#endif
+
 #endif
 

@@ -148,7 +148,15 @@ queue_server_map_exit(void)
 void
 queue_server_map_add(s8 *thread_name, s8 *gid)
 {
-	QueueServerMap *pMap = _queue_server_map_inq(thread_name);
+	QueueServerMap *pMap;
+
+	if((dave_strcmp(thread_name, QUEUE_CLIENT_THREAD_NAME) == dave_true)
+		|| (dave_strcmp(thread_name, QUEUE_SERVER_THREAD_NAME) == dave_true))
+	{
+		return;
+	}
+
+	pMap = _queue_server_map_inq(thread_name);
 
 	SAFECODEv1(_map_pv, {
 		_queue_server_map_add(pMap, gid);
@@ -160,7 +168,15 @@ queue_server_map_add(s8 *thread_name, s8 *gid)
 void
 queue_server_map_del(s8 *thread_name, s8 *gid)
 {
-	QueueServerMap *pMap = _queue_server_map_inq(thread_name);
+	QueueServerMap *pMap;
+
+	if((dave_strcmp(thread_name, QUEUE_CLIENT_THREAD_NAME) == dave_true)
+		|| (dave_strcmp(thread_name, QUEUE_SERVER_THREAD_NAME) == dave_true))
+	{
+		return;
+	}
+
+	pMap = _queue_server_map_inq(thread_name);
 
 	QUEUETRACE("thread:%s gid:%s", thread_name, gid);
 
