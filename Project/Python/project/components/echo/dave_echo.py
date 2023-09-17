@@ -209,6 +209,7 @@ def _echo_single_rsp(src, getecho):
         getecho = _echo_concurrent(getecho.gid, getecho.thread, getecho)
 
         _echo_snd_req(getecho.gid, getecho.thread, EchoType_single, getecho)
+
     return
 
 

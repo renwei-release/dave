@@ -23,13 +23,13 @@ def fun_MSGID_DEBUG_REQ(src_name, src_id, msg_len, msg_body):
 
 def fun_MSGID_REMOTE_THREAD_ID_READY(src_name, src_id, msg_len, msg_body):
     pReady = struct_copy(ThreadRemoteIDReadyMsg, msg_body, msg_len)
-    DAVELOG(f'{pReady.remote_thread_id} {pReady.remote_thread_name} {type(pReady.globally_identifier)}{pReady.globally_identifier}')
+    DAVELOG(f'{pReady.remote_thread_id} {pReady.remote_thread_name} {pReady.globally_identifier}')
     return
 
 
 def fun_MSGID_REMOTE_THREAD_ID_REMOVE(src_name, src_id, msg_len, msg_body):
     pRemove = struct_copy(ThreadRemoteIDRemoveMsg, msg_body, msg_len)
-    DAVELOG(f'{pRemove.remote_thread_id} {pRemove.remote_thread_name} {type(pRemove.globally_identifier)}{pRemove.globally_identifier}')
+    DAVELOG(f'{pRemove.remote_thread_id} {pRemove.remote_thread_name} {pRemove.globally_identifier}')
     return
 
 

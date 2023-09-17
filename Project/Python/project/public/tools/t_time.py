@@ -8,7 +8,6 @@
 import os
 import sys
 import time
-from datetime import datetime
 
 
 def t_time_current_str():
@@ -25,4 +24,7 @@ def t_time_current_str():
 
 
 def t_time_current_us():
-    return datetime.now().microsecond
+    seconds_since_epoch = time.time()
+
+    microseconds_since_epoch = seconds_since_epoch * 1000000
+    return int(microseconds_since_epoch)

@@ -42,7 +42,7 @@ _dos_echo(s8 *command)
 		return RetCode_Invalid_parameter;
 	}
 
-	dos_print("%s %s echo ......",
+	dos_print("%s %s echo",
 		thread_name(main_thread_id_get()),
 		pEcho->echo.type == EchoType_start ? "start" : "stop");
 
