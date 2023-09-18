@@ -46,7 +46,7 @@ _thread_ready_co_msg(
 
 	coroutine_site = thread_coroutine_running_step_setup(
 		pSrcThread,
-		&src_id,
+		&src_id, dst_id,
 		req_id, req_body,
 		rsp_id, NULL, 0);
 
@@ -64,8 +64,9 @@ _thread_ready_co_msg(
 
 	if(rsp_body == NULL)
 	{
-		THREADLTRACE(60,1,"thread:%s msg_id:%s co failed! <%s:%d>",
+		THREADLTRACE(60,1,"%s:%s<->%s:%s co failed! <%s:%d>",
 			pSrcThread->thread_name, msgstr(req_id),
+			thread_name(dst_id), msgstr(rsp_id),
 			fun, line);
 	}
 
@@ -87,7 +88,7 @@ _thread_no_ready_co_msg(
 
 	coroutine_site = thread_coroutine_running_step_setup(
 		pSrcThread,
-		&src_id,
+		&src_id, INVALID_THREAD_ID,
 		req_id, req_body,
 		rsp_id, NULL, 0);
 
@@ -127,8 +128,9 @@ _thread_no_ready_co_msg(
 
 	if(rsp_body == NULL)
 	{
-		THREADLTRACE(60,1,"thread:%s msg_id:%s sync failed! <%s:%d>",
+		THREADLTRACE(60,1,"%s:%s<->(%s/%s/%s)%s sync failed! <%s:%d>",
 			pSrcThread->thread_name, msgstr(req_id),
+			gid, dst_thread, uid, msgstr(rsp_id),
 			fun, line);
 	}
 

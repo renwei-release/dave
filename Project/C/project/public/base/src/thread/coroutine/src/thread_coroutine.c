@@ -19,7 +19,7 @@
 #include "coroutine_msg_site.h"
 #include "thread_log.h"
 
-#define COROUTINE_LIFE_TIMER 90
+#define COROUTINE_LIFE_TIMER 180
 #define COROUTINE_BASE_TIMER 30
 #define COROUTINE_LIFE_TIMES (COROUTINE_LIFE_TIMER / COROUTINE_BASE_TIMER)
 
@@ -46,8 +46,10 @@ typedef struct {
 	sb site_life;
 
 	ThreadId src_thread;
+	ThreadId dst_thread;
 	ub req_msg_id;
 	ub rsp_msg_id;
+	ub co_setup_time;
 	ub msg_site;
 	ub wakeup_index;
 
@@ -251,8 +253,9 @@ _thread_coroutine_site_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 
 	pSite->site_life = COROUTINE_LIFE_TIMES;
 
-	pSite->src_thread = INVALID_THREAD_ID;
+	pSite->src_thread = pSite->dst_thread = INVALID_THREAD_ID;
 	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
+	pSite->co_setup_time = 0;
 	pSite->msg_site = 0;
 	pSite->wakeup_index = msg->thread_wakeup_index;
 
@@ -415,8 +418,9 @@ _thread_coroutine_running_step_4(void *param)
 
 	thread_thread_set_coroutine_site(pSite->thread_index, pSite->wakeup_index, pSite);
 
-	pSite->src_thread = INVALID_THREAD_ID;
+	pSite->src_thread = pSite->dst_thread = INVALID_THREAD_ID;
 	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
+	pSite->co_setup_time = 0;
 
 	THREADDEBUG("wakeup me !!!!!!!!!!!!!!!!");
 
@@ -426,7 +430,7 @@ _thread_coroutine_running_step_4(void *param)
 static inline void *
 _thread_coroutine_running_step_3(
 	ThreadStruct *pSrcThread,
-	ThreadId *src_id,
+	ThreadId *src_id, ThreadId dst_id,
 	ub req_msg_id, u8 *req_msg_body,
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
@@ -446,8 +450,10 @@ _thread_coroutine_running_step_3(
 	pSite->site_life = COROUTINE_LIFE_TIMES;
 
 	pSite->src_thread = *src_id;
+	pSite->dst_thread = dst_id;
 	pSite->req_msg_id = req_msg_id;
 	pSite->rsp_msg_id = rsp_msg_id;
+	pSite->co_setup_time = dave_os_time_s();
 	pSite->msg_site = _thread_coroutine_msg_site_malloc(pSite);
 	pSite->wakeup_index = wakeup_index;
 
@@ -547,9 +553,11 @@ _thread_coroutine_kv_timer_out(void *ramkv, s8 *key)
 
 		_thread_coroutine_msg_site_free(pSite);
 
-		THREADLOG("%s %s/%lx:%s pSite:%ld/%lx co:%lx",
+		THREADLOG("%s %s/%lx:%s<->%s/%lx:%s time:%d/%d pSite:%ld/%lx co:%lx",
 			key,
-			thread_name(pSite->src_thread), pSite->src_thread, msgstr(pSite->rsp_msg_id),
+			thread_name(pSite->src_thread), pSite->src_thread, msgstr(pSite->req_msg_id),
+			thread_name(pSite->dst_thread), pSite->dst_thread, msgstr(pSite->rsp_msg_id),
+			dave_os_time_s(), pSite->co_setup_time,
 			pSite->site_life, pSite,
 			pSite->co);
 	
@@ -737,13 +745,13 @@ thread_coroutine_running_step_co(
 void *
 thread_coroutine_running_step_setup(
 	ThreadStruct *pSrcThread,
-	ThreadId *src_id,
+	ThreadId *src_id, ThreadId dst_id,
 	ub req_msg_id, u8 *req_msg_body,
 	ub rsp_msg_id, u8 *rsp_msg_body, ub rsp_msg_len)
 {
 	return _thread_coroutine_running_step_3(
 		pSrcThread,
-		src_id,
+		src_id, dst_id,
 		req_msg_id, req_msg_body,
 		rsp_msg_id, rsp_msg_body, rsp_msg_len);
 }
