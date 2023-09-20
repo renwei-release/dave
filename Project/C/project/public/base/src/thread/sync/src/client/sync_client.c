@@ -754,6 +754,7 @@ _sync_client_init(MSGBODY *msg)
 	sync_client_link_init();
 	sync_client_msg_buffer_init();
 	sync_client_internal_buffer_init();
+	sync_client_tx_init();
 
 	_sync_client_connect_all();
 
@@ -839,6 +840,7 @@ _sync_client_exit(MSGBODY *msg)
 	sync_client_thread_exit();
 	sync_client_link_exit();
 	sync_client_data_exit();
+	sync_client_tx_exit();
 }
 
 // =====================================================================

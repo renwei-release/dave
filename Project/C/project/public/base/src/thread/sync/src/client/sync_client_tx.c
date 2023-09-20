@@ -110,6 +110,18 @@ _sync_client_tx_run_internal_msg_v2_req(
 
 // =====================================================================
 
+void
+sync_client_tx_init(void)
+{
+	t_rpc_init();
+}
+
+void
+sync_client_tx_exit(void)
+{
+	t_rpc_exit();
+}
+
 dave_bool
 sync_client_tx_run_internal_msg_req(
 	SyncServer *pServer,

@@ -8,6 +8,10 @@
 #ifndef __SYNC_SERVER_TX_H__
 #define __SYNC_SERVER_TX_H__
 
+void sync_server_tx_init(void);
+
+void sync_server_tx_exit(void);
+
 RetCode sync_server_tx_run_thread_msg_req(
 	SyncThread *pSrcThread, SyncThread *pDstThread,
 	SyncClient *pSrcClient, SyncClient *pDstClient,

@@ -8,6 +8,7 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "t_rpc_ver3_rpcdata.h"
+#include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 
 static inline MBUF *
@@ -24,6 +25,8 @@ _t_rpc_zip_ver3(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, 
 
 	t_bson_free_object(pBson);
 
+	t_rpc_ver3_leave_mbuf();
+
 	return mbuf_data;
 }
 
@@ -34,6 +37,18 @@ _t_rpc_unzip_ver3(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *
 }
 
 // =====================================================================
+
+void
+t_rpc_init(void)
+{
+	t_rpc_ver3_metadata_init();
+}
+
+void
+t_rpc_exit(void)
+{
+	t_rpc_ver3_metadata_exit();
+}
 
 MBUF *
 t_rpc_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len)

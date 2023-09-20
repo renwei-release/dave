@@ -9,7 +9,7 @@
 CONTAINER=$1
 
 if [ "$CONTAINER" == "" ]; then
-   CONTAINER="vsystem-vwallet"
+   CONTAINER="vsystem-hub"
 fi
 
 docker attach ${CONTAINER}

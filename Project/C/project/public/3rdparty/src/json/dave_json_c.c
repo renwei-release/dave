@@ -992,6 +992,7 @@ dave_json_c_to_mbuf(void *pJson)
 
 	if(str_ptr == NULL)
 	{
+		PARTYABNOR("invalid pJson:%lx", pJson);
 		return NULL;
 	}
 

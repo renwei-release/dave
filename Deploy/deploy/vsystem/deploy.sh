@@ -16,7 +16,7 @@ fi
 SHHOMEPATH=$(cd `dirname $0`; pwd)
 
 if [ "$DEPLOYMODEL" == "" ]; then
-   DEPLOYMODEL="v-wallet"
+   DEPLOYMODEL="hub"
 fi
 
 if [[ "$DEPLOYMODEL" == "wallet" ]]; then
@@ -37,6 +37,21 @@ if [[ "$DEPLOYMODEL" == "system" ]]; then
    cd ../../
    chmod a+x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-vsystem -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
+   cd ${SHHOMEPATH}
+   rm -rf Dockerfile
+fi
+
+if [[ "$DEPLOYMODEL" == "hub" ]]; then
+   cd ../mongodb
+   ./deploy.sh
+   cd ${SHHOMEPATH}
+
+   cp MultiHUB-Dockerfile Dockerfile
+   IMAGE="hub_docker_image"
+   TAG="latest"
+   cd ../../
+   chmod a+x *.sh
+   ./deploy.sh -p ${PROJECT} -n ${PROJECT}-hub -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
 fi

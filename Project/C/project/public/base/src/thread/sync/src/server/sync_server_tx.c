@@ -179,6 +179,18 @@ _sync_server_tx_blocks_state(SyncClient *pClient)
 
 // =====================================================================
 
+void
+sync_server_tx_init(void)
+{
+	t_rpc_init();
+}
+
+void
+sync_server_tx_exit(void)
+{
+	t_rpc_exit();
+}
+
 RetCode
 sync_server_tx_run_thread_msg_req(
 	SyncThread *pSrcThread, SyncThread *pDstThread,

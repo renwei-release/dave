@@ -8,6 +8,11 @@
 #ifndef _T_RPC_VER3_METADATA_H__
 #define _T_RPC_VER3_METADATA_H__
 
+void t_rpc_ver3_metadata_init(void);
+void t_rpc_ver3_metadata_exit(void);
+
+void t_rpc_ver3_leave_mbuf(void);
+
 void t_rpc_ver3_metadata_work(dave_bool work_flag);
 
 void * __t_rpc_ver3_zip_dave_bool__(dave_bool zip_data, s8 *fun, ub line);

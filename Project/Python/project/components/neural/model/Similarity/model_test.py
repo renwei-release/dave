@@ -52,8 +52,8 @@ def _similarity_predict_topn(model_name, model_predict):
 
 
 def _similarity_predict_total_test():
-    from components.neural.model.Similarity.Text2Vec.model_predict import predict as Text2Vec_predict
-    _similarity_predict_topn("Text2vec", Text2Vec_predict("/project/model/trained_model/AI-Test-GNC-GPU-1-cuda11-renwei-docker/GanymedeNil/text2vec-large-chinese_JegoTrip_20230619064028"))
+    from components.neural.model.Similarity.bge_text2Vec.model_predict import predict as Text2Vec_predict
+    _similarity_predict_topn("Text2vec", Text2Vec_predict(None))
 
     #from components.neural.model.Similarity.TfidfVectorizer.model_predict import predict as TfidfVectorizer_predict
     #_similarity_predict_topn("TfidfVectorizer", TfidfVectorizer_predict())

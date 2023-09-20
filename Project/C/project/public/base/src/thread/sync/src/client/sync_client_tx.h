@@ -8,6 +8,10 @@
 #ifndef __SYNC_CLIENT_TX_H__
 #define __SYNC_CLIENT_TX_H__
 
+void sync_client_tx_init(void);
+
+void sync_client_tx_exit(void);
+
 dave_bool sync_client_tx_run_internal_msg_req(
 	SyncServer *pServer,
 	ub msg_id, ub msg_len, void *msg_body,

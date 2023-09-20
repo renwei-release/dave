@@ -15,6 +15,8 @@ _rpcinc_head = "\
 #define __T_RPC_H__\n\n"
 
 _rpcinc_end = "\
+void t_rpc_init(void);\n\
+void t_rpc_exit(void);\n\
 MBUF * t_rpc_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);\n\
 dave_bool t_rpc_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n\
 void * t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr);\n\

@@ -14,7 +14,38 @@
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 
+static TLock _metadata_pv;
+static MBUF *_mbuf_auto_free = NULL;
 static dave_bool _work_local_flag = dave_true;
+
+/*
+ * This is for action t_bson_array_ins_mbuf, 
+ * delayed release of memory
+ */
+static inline void
+_t_rpc_ver3_insert_mbuf(MBUF *mbuf_data)
+{
+	if(mbuf_data == NULL)
+		return;
+
+	t_lock_spin(&_metadata_pv);
+	_mbuf_auto_free = dave_mchain(_mbuf_auto_free, mbuf_data);
+	t_unlock_spin(&_metadata_pv);
+}
+
+static inline void
+_t_rpc_ver3_leave_mbuf(void)
+{
+	MBUF *mbuf_data;
+
+	t_lock_spin(&_metadata_pv);
+	mbuf_data = _mbuf_auto_free;
+	_mbuf_auto_free = NULL;
+	t_unlock_spin(&_metadata_pv);
+
+	if(mbuf_data != NULL)
+		dave_mfree(mbuf_data);
+}
 
 static inline void *
 _t_rpc_ver3_zip_bin(u8 *zip_data, ub zip_len)
@@ -32,6 +63,8 @@ _t_rpc_ver3_zip_mbuf(MBUF *mbuf_data)
 	void *pArrayBson = t_bson_malloc_array();
 
 	t_bson_array_ins_mbuf(pArrayBson, mbuf_data);
+
+	_t_rpc_ver3_insert_mbuf(mbuf_data);
 
 	return pArrayBson;
 }
@@ -172,8 +205,6 @@ __t_rpc_ver3_zip_MBUF_ptr_local__(MBUF *zip_data, s8 *fun, ub line)
 		t_bson_add_int(pBson, "array_number", 0);
 	}
 
-	dave_mfree(zip_data);
-
 	return pBson;
 }
 
@@ -231,6 +262,25 @@ __t_rpc_ver3_unzip_MBUF_ptr_remote__(MBUF **unzip_data, void *pArrayBson, s8 *fu
 }
 
 // =====================================================================
+
+void
+t_rpc_ver3_metadata_init(void)
+{
+	t_lock_reset(&_metadata_pv);
+	_mbuf_auto_free = NULL;
+}
+
+void
+t_rpc_ver3_metadata_exit(void)
+{
+	_t_rpc_ver3_leave_mbuf();
+}
+
+void
+t_rpc_ver3_leave_mbuf(void)
+{
+	_t_rpc_ver3_leave_mbuf();
+}
 
 void
 t_rpc_ver3_metadata_work(dave_bool work_flag)

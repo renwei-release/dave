@@ -356,6 +356,8 @@ _sync_server_init(MSGBODY *msg)
 
 	sync_server_link_mode_init();
 
+	sync_server_tx_init();
+
 	_sync_server_bind_req();
 
 	base_timer_creat("syncst", _sync_server_safe_guard_time, SYNC_SERVER_BASE_TIME);
@@ -405,7 +407,7 @@ _sync_server_main(MSGBODY *msg)
 static void
 _sync_server_exit(MSGBODY *msg)
 {
-
+	sync_server_tx_exit();
 }
 
 // =====================================================================
