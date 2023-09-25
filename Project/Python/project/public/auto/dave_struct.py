@@ -404,7 +404,19 @@ class MsgIdEcho (Structure):
 		("concurrent_tps_counter", c_ulonglong),
 		("concurrent_cycle_counter", c_ulonglong),
 		("concurrent_total_counter", c_ulonglong),
-		("msg", c_char * 256),
+		("s8_echo", c_char),
+		("u8_echo", c_char),
+		("s16_echo", c_short),
+		("u16_echo", c_ushort),
+		("s32_echo", c_int),
+		("u32_echo", c_uint),
+		("s64_echo", c_long),
+		("u64_echo", c_ulonglong),
+		("float_echo", c_float),
+		("double_echo", c_double),
+		("void_echo", POINTER(c_char)),
+		("string_echo", c_char * 256),
+		("mbuf_echo", POINTER(MBUF)),
 ]
 
 #* for None message *#

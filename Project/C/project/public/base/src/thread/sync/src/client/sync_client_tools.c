@@ -171,13 +171,13 @@ __sync_client_detected_rpc_efficiency__(ub msg_len, ub package_len, ub msg_id, s
 		 * 可以考虑在RPC Python工程里面收集所有带MBUF的消息ID。
 		 * 
 		 */
-		SYNCDEBUG("This message(%d)(P:%d M:%d) is not suitable for compression using RPC! <%s:%d>",
-			msg_id, package_len, msg_len, fun, line);
+		SYNCDEBUG("This message(%s)(P:%d M:%d) is not suitable for compression using RPC! <%s:%d>",
+			msgstr(msg_id), package_len, msg_len, fun, line);
 	}
 	if(package_len >= SYNC_RPC_BIG_PACKAGE)
 	{
-		SYNCLTRACE(60,1, "the msg content(%d) is too big of msg_id:%d! <%s:%d>",
-			package_len, msg_id, fun, line);
+		SYNCLTRACE(60,1, "the msg content(%d) is too big of msg_id:%s! <%s:%d>",
+			package_len, msgstr(msg_id), fun, line);
 	}
 }
 

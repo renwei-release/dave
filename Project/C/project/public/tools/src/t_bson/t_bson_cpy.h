@@ -13,6 +13,7 @@ bool t_bson_bin_cpy(tBsonObject *pBson, char *key_ptr, size_t key_len, char *pBi
 
 bool t_bson_array_string_cpy(tBsonObject *pBson, size_t index, char *pStringValue, size_t *pStringLen);
 bool t_bson_array_bin_cpy(tBsonObject *pBson, size_t index, char *pBinValue, size_t *pBinLen);
+MBUF * t_bson_array_mbuf_cpy(tBsonObject *pBson, size_t index);
 
 #endif
 

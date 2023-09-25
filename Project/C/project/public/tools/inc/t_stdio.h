@@ -192,8 +192,8 @@ s8 * t_stdio_touppers(s8 *str);
 s8 * t_stdio_strstr(s8 *buf, s8 *sub);
 s8 * t_stdio_remove_the_char_on_frist(s8 *data_ptr, s8 remove_char);
 
-void t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len);
-void t_stdio_print_char(const char *msg, u8 *char_data, ub char_len);
+void t_stdio_print_hex(const char *msg, u8 *hex_ptr, ub hex_len);
+void t_stdio_print_char(const char *msg, u8 *char_ptr, ub char_len);
 
 #define t_stdio_strcpy(dst, src, max_length) __t_stdio_strcpy__((s8 *)(dst), (const s8 *)(src), (ub)(max_length), (s8 *)__func__, (ub)__LINE__)
 #define t_stdio_strcmp(cmp1, cmp2) __t_stdio_strcmp__((s8 *)(cmp1), (s8 *)(cmp2), (s8 *)__func__, (ub)__LINE__)

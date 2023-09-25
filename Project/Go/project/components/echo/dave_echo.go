@@ -89,6 +89,7 @@ func _echo_snd_rsp(dst uint64, echo_type int64, getecho auto.MsgIdEcho, ptr uint
 	tools.T_cgo_gostring2gobyte(rsp.Echo.Gid[:], base.Globally_identifier())
 	tools.T_cgo_gostring2gobyte(rsp.Echo.Thread[:], base.Thread_self())
 
+	rsp.Echo.Echo_req_time = getecho.Echo_req_time
 	rsp.Echo.Echo_rsp_time = tools.T_time_current_us()
 
 	rsp.Ptr = ptr

@@ -116,3 +116,17 @@ t_bson_array_bin_cpy(tBsonObject *pBson, size_t index, char *pBinValue, size_t *
 	return true;
 }
 
+MBUF *
+t_bson_array_mbuf_cpy(tBsonObject *pBson, size_t index)
+{
+	char *bin_cpy_ptr;
+	size_t bin_cpy_len;
+
+	if(t_bson_array_bin_inq(pBson, index, &bin_cpy_ptr, &bin_cpy_len) == false)
+	{
+		return NULL;
+	}
+
+	return t_a2b_bin_to_mbuf(bin_cpy_ptr, bin_cpy_len);
+}
+

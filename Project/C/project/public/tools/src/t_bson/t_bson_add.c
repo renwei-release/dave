@@ -226,38 +226,6 @@ t_bson_bin_ins(tBsonObject *pBson, char *key_ptr, size_t key_len, char *valur_pt
 }
 
 void
-t_bson_mbuf_add(tBsonObject *pBson, char *key_ptr, size_t key_len, MBUF *mbuf_data)
-{
-	tBsonData *pData;
-
-	if(pBson->type != tBsonType_object)
-	{
-		TOOLSABNOR("invalid type:%d", pBson->type);
-		return;
-	}
-
-	pData = t_bson_mbuf_build(key_ptr, key_len, mbuf_data);
-
-	_t_bson_add(pBson, pData);
-}
-
-void
-t_bson_mbuf_ins(tBsonObject *pBson, char *key_ptr, size_t key_len, MBUF *mbuf_data)
-{
-	tBsonData *pData;
-
-	if(pBson->type != tBsonType_object)
-	{
-		TOOLSABNOR("invalid type:%d", pBson->type);
-		return;
-	}
-
-	pData = t_bson_mbuf_insertion(key_ptr, key_len, mbuf_data);
-
-	_t_bson_add(pBson, pData);
-}
-
-void
 t_bson_object_add(tBsonObject *pBson, char *key_ptr, size_t key_len, tBsonObject *pAddBson)
 {
 	tBsonData *pData;
@@ -397,7 +365,7 @@ t_bson_array_bin_ins(tBsonObject *pBson, char *valur_ptr, size_t value_len)
 }
 
 void
-t_bson_array_mbuf_add(tBsonObject *pBson, MBUF *mbuf_data)
+__t_bson_array_mbuf_add__(tBsonObject *pBson, MBUF *mbuf_data, s8 *fun, ub line)
 {
 	tBsonData *pData;
 
@@ -407,13 +375,13 @@ t_bson_array_mbuf_add(tBsonObject *pBson, MBUF *mbuf_data)
 		return;
 	}
 
-	pData = t_bson_mbuf_build(NULL, 0, mbuf_data);
+	pData = __t_bson_mbuf_build__(NULL, 0, mbuf_data, fun, line);
 
 	_t_bson_add(pBson, pData);
 }
 
 void
-t_bson_array_mbuf_ins(tBsonObject *pBson, MBUF *mbuf_data)
+__t_bson_array_mbuf_ins__(tBsonObject *pBson, MBUF *mbuf_data, s8 *fun, ub line)
 {
 	tBsonData *pData;
 
@@ -423,7 +391,7 @@ t_bson_array_mbuf_ins(tBsonObject *pBson, MBUF *mbuf_data)
 		return;
 	}
 
-	pData = t_bson_mbuf_insertion(NULL, 0, mbuf_data);
+	pData = __t_bson_mbuf_insertion__(NULL, 0, mbuf_data, fun, line);
 
 	_t_bson_add(pBson, pData);
 }

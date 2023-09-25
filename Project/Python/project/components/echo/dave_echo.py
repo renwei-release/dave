@@ -90,6 +90,7 @@ def _echo_snd_rsp(dst, echo_type, getecho, ptr):
     pRsp.contents.echo.gid = bytes(globally_identifier(), encoding='utf8')
     pRsp.contents.echo.thread = bytes(thread_self(), encoding='utf8')
 
+    pRsp.contents.echo.echo_req_time = getecho.echo_req_time
     pRsp.contents.echo.echo_rsp_time = t_time_current_us()
 
     pRsp.contents.ptr = ptr

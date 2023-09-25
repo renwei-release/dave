@@ -23,9 +23,9 @@ _t_rpc_zip_ver3(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, 
 
 	mbuf_data = t_bson_to_mbuf(pBson);
 
-	t_bson_free_object(pBson);
-
 	t_rpc_ver3_leave_mbuf();
+
+	t_bson_free_object(pBson);
 
 	return mbuf_data;
 }

@@ -27,8 +27,10 @@ tBsonData * t_bson_double_build(char *key_ptr, size_t key_len, double value);
 tBsonData * t_bson_string_build(char *key_ptr, size_t key_len, char *value_ptr, size_t value_len);
 tBsonData * t_bson_bin_build(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
 tBsonData * t_bson_bin_insertion(char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
-tBsonData * t_bson_mbuf_build(char *key_ptr, size_t key_len, MBUF *mbuf_data);
-tBsonData * t_bson_mbuf_insertion(char *key_ptr, size_t key_len, MBUF *mbuf_data);
+tBsonData * __t_bson_mbuf_build__(char *key_ptr, size_t key_len, MBUF *mbuf_data, s8 *fun, ub line);
+#define t_bson_mbuf_build(key_ptr, key_len, mbuf_data) __t_bson_mbuf_build__(key_ptr, key_len, mbuf_data, (s8 *)__func__, (ub)__LINE__)
+tBsonData * __t_bson_mbuf_insertion__(char *key_ptr, size_t key_len, MBUF *mbuf_data, s8 *fun, ub line);
+#define t_bson_mbuf_insertion(key_ptr, key_len, mbuf_data) __t_bson_mbuf_insertion__(key_ptr, key_len, mbuf_data, (s8 *)__func__, (ub)__LINE__)
 tBsonData * t_bson_object_build(char *key_ptr, size_t key_len, tBsonObject *pBson);
 
 #endif

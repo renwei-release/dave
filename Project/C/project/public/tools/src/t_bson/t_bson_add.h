@@ -15,8 +15,6 @@ void t_bson_double_add(tBsonObject *pBson, char *key_ptr, size_t key_len, double
 void t_bson_string_add(tBsonObject *pBson, char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
 void t_bson_bin_add(tBsonObject *pBson, char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
 void t_bson_bin_ins(tBsonObject *pBson, char *key_ptr, size_t key_len, char *valur_ptr, size_t value_len);
-void t_bson_mbuf_add(tBsonObject *pBson, char *key_ptr, size_t key_len, MBUF *mbuf_data);
-void t_bson_mbuf_ins(tBsonObject *pBson, char *key_ptr, size_t key_len, MBUF *mbuf_data);
 void t_bson_object_add(tBsonObject *pBson, char *key_ptr, size_t key_len, tBsonObject *pAddBson);
 
 void t_bson_array_boolean_add(tBsonObject *pBson, bool value);
@@ -26,8 +24,10 @@ void t_bson_array_double_add(tBsonObject *pBson, double value);
 void t_bson_array_string_add(tBsonObject *pBson, char *valur_ptr, size_t value_len);
 void t_bson_array_bin_add(tBsonObject *pBson, char *valur_ptr, size_t value_len);
 void t_bson_array_bin_ins(tBsonObject *pBson, char *valur_ptr, size_t value_len);
-void t_bson_array_mbuf_add(tBsonObject *pBson, MBUF *mbuf_data);
-void t_bson_array_mbuf_ins(tBsonObject *pBson, MBUF *mbuf_data);
+void __t_bson_array_mbuf_add__(tBsonObject *pBson, MBUF *mbuf_data, s8 *fun, ub line);
+#define t_bson_array_mbuf_add(pBson, mbuf_data) __t_bson_array_mbuf_add__(pBson, mbuf_data, (s8 *)__func__, (ub)__LINE__)
+void __t_bson_array_mbuf_ins__(tBsonObject *pBson, MBUF *mbuf_data, s8 *fun, ub line);
+#define t_bson_array_mbuf_ins(pBson, mbuf_data) __t_bson_array_mbuf_ins__(pBson, mbuf_data, (s8 *)__func__, (ub)__LINE__)
 void t_bson_array_object_add(tBsonObject *pBson, tBsonObject *pAddBson);
 
 #endif

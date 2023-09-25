@@ -47,10 +47,8 @@ typedef struct {
 static volatile dave_bool __system_startup__ = dave_false;
 static void *_main_thread_id = NULL;
 static volatile sb _system_wakeup_counter = 0;
-static ub _system_thread_pv_init_flag = 0x00;
 static TLock _system_thread_pv;
 static volatile ub _system_schedule_counter = 0;
-
 static ThreadStruct _thread[THREAD_MAX];
 static ThreadPriority _msg_priority[THREAD_MAX];
 static ThreadStack *_current_msg_stack = NULL;
@@ -1441,11 +1439,11 @@ _thread_reupdate_thread_flag(ub thread_flag)
 static inline void
 _thread_system_pv_init(void)
 {
-	if(_system_thread_pv_init_flag != 0x1234567890)
-	{
-		_system_thread_pv_init_flag = 0x1234567890;
+	static volatile sb __safe_pre_flag__ = 0;
+
+	SAFEPre(__safe_pre_flag__, {
 		t_lock_reset(&_system_thread_pv);
-	}
+	} );
 }
 
 // =====================================================================

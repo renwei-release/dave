@@ -10,7 +10,7 @@
 
 void http_recv_data_init(void);
 void http_recv_data_exit(void);
-void http_recv_data_plugin(s32 socket, ub nginx_port, ub msg_serial);
+void http_recv_data_plugin(s32 socket, ub nginx_port);
 void http_recv_data_plugout(s32 socket);
 
 #endif

@@ -119,18 +119,6 @@ t_bson_ins_bin(void *pBson, char *key, char *value_ptr, size_t value_len)
 	t_bson_bin_ins((tBsonObject *)pBson, key, 0, value_ptr, value_len);
 }
 
-void
-t_bson_add_mbuf(void *pBson, char *key, MBUF *mbuf_data)
-{
-	t_bson_mbuf_add((tBsonObject *)pBson, key, 0, mbuf_data);
-}
-
-void
-t_bson_inq_mbuf(void *pBson, char *key, MBUF *mbuf_data)
-{
-	t_bson_mbuf_ins((tBsonObject *)pBson, key, 0, mbuf_data);
-}
-
 bool
 t_bson_inq_bin(void *pBson, char *key, char **ppBinValue, size_t *pBinLen)
 {
@@ -262,18 +250,6 @@ t_bson_array_ins_bin(void *pBson, char *value_ptr, size_t value_len)
 	t_bson_array_bin_ins((tBsonObject *)pBson, value_ptr, value_len);
 }
 
-void
-t_bson_array_add_mbuf(void *pBson, MBUF *mbuf_data)
-{
-	t_bson_array_mbuf_add((tBsonObject *)pBson, mbuf_data);
-}
-
-void
-t_bson_array_ins_mbuf(void *pBson, MBUF *mbuf_data)
-{
-	t_bson_array_mbuf_ins((tBsonObject *)pBson, mbuf_data);
-}
-
 bool
 t_bson_array_inq_bin(void *pBson, size_t index, char **ppBinValue, size_t *pBinLen)
 {
@@ -284,6 +260,30 @@ bool
 t_bson_array_cpy_bin(void *pBson, size_t index, char *pBinValue, size_t *pBinLen)
 {
 	return t_bson_array_bin_cpy((tBsonObject *)pBson, index, pBinValue, pBinLen);
+}
+
+void
+__t_bson_array_add_mbuf__(void *pBson, MBUF *mbuf_data, s8 *fun, ub line)
+{
+	if(mbuf_data == NULL)
+		return;
+
+	__t_bson_array_mbuf_add__((tBsonObject *)pBson, mbuf_data, fun, line);
+}
+
+void
+__t_bson_array_ins_mbuf__(void *pBson, MBUF *mbuf_data, s8 *fun, ub line)
+{
+	if(mbuf_data == NULL)
+		return;
+
+	__t_bson_array_mbuf_ins__((tBsonObject *)pBson, mbuf_data, fun, line);
+}
+
+MBUF *
+t_bson_array_cpy_mbuf(void *pBson, size_t index)
+{
+	return t_bson_array_mbuf_cpy((tBsonObject *)pBson, index);
 }
 
 void

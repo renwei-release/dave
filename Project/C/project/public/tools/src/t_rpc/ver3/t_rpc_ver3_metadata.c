@@ -14,37 +14,68 @@
 #include "t_rpc_ver3_metadata.h"
 #include "tools_log.h"
 
-static TLock _metadata_pv;
-static MBUF *_mbuf_auto_free = NULL;
+#define MBUF_AUTO_FREE_ARRAY_NUMBER DAVE_SYS_THREAD_ID_MAX
+
 static dave_bool _work_local_flag = dave_true;
+static MBUF *_mbuf_auto_free_array_[MBUF_AUTO_FREE_ARRAY_NUMBER] = { NULL };
 
 /*
  * This is for action t_bson_array_ins_mbuf, 
  * delayed release of memory
  */
+static inline ub
+_t_rpc_ver3_sched_index(void)
+{
+	return dave_os_thread_id() % MBUF_AUTO_FREE_ARRAY_NUMBER;
+}
+
 static inline void
 _t_rpc_ver3_insert_mbuf(MBUF *mbuf_data)
 {
 	if(mbuf_data == NULL)
 		return;
 
-	t_lock_spin(&_metadata_pv);
-	_mbuf_auto_free = dave_mchain(_mbuf_auto_free, mbuf_data);
-	t_unlock_spin(&_metadata_pv);
+	ub sched_index = _t_rpc_ver3_sched_index();
+
+	_mbuf_auto_free_array_[sched_index] = dave_mchain(_mbuf_auto_free_array_[sched_index], mbuf_data);
 }
 
 static inline void
 _t_rpc_ver3_leave_mbuf(void)
 {
-	MBUF *mbuf_data;
+	ub sched_index = _t_rpc_ver3_sched_index();
 
-	t_lock_spin(&_metadata_pv);
-	mbuf_data = _mbuf_auto_free;
-	_mbuf_auto_free = NULL;
-	t_unlock_spin(&_metadata_pv);
+	if(_mbuf_auto_free_array_[sched_index] != NULL)
+	{
+		dave_mfree(_mbuf_auto_free_array_[sched_index]);
+		_mbuf_auto_free_array_[sched_index] = NULL;
+	}
+}
 
-	if(mbuf_data != NULL)
-		dave_mfree(mbuf_data);
+static inline void
+_t_rpc_ver3_init_mbuf(void)
+{
+	ub array_index;
+
+	for(array_index=0; array_index<MBUF_AUTO_FREE_ARRAY_NUMBER; array_index++)
+	{
+		_mbuf_auto_free_array_[array_index] = NULL;
+	}
+}
+
+static inline void
+_t_rpc_ver3_exit_mbuf(void)
+{
+	ub array_index;
+
+	for(array_index=0; array_index<MBUF_AUTO_FREE_ARRAY_NUMBER; array_index++)
+	{
+		if(_mbuf_auto_free_array_[array_index] != NULL)
+		{
+			dave_mfree(_mbuf_auto_free_array_[array_index]);
+			_mbuf_auto_free_array_[array_index] = NULL;
+		}
+	}
 }
 
 static inline void *
@@ -53,18 +84,6 @@ _t_rpc_ver3_zip_bin(u8 *zip_data, ub zip_len)
 	void *pArrayBson = t_bson_malloc_array();
 
 	t_bson_array_ins_bin(pArrayBson, (char *)zip_data, (int)zip_len);
-
-	return pArrayBson;
-}
-
-static inline void *
-_t_rpc_ver3_zip_mbuf(MBUF *mbuf_data)
-{
-	void *pArrayBson = t_bson_malloc_array();
-
-	t_bson_array_ins_mbuf(pArrayBson, mbuf_data);
-
-	_t_rpc_ver3_insert_mbuf(mbuf_data);
 
 	return pArrayBson;
 }
@@ -183,6 +202,24 @@ _t_rpc_ver3_unzip_void_ptr(void **unzip_data, void *pArrayBson, s8 *fun, ub line
 }
 
 static inline void *
+_t_rpc_ver3_zip_mbuf(MBUF *mbuf_data, s8 *fun, ub line)
+{
+	void *pArrayBson = t_bson_malloc_array();
+
+	__t_bson_array_ins_mbuf__(pArrayBson, mbuf_data, fun, line);
+
+	_t_rpc_ver3_insert_mbuf(mbuf_data);
+
+	return pArrayBson;
+}
+
+static inline MBUF *
+_t_rpc_ver3_unzip_mbuf(void *pArrayBson)
+{
+	return t_bson_array_cpy_mbuf(pArrayBson, 0);
+}
+
+static inline void *
 __t_rpc_ver3_zip_MBUF_ptr_local__(MBUF *zip_data, s8 *fun, ub line)
 {
 	void *pBson, *pArrayBson;
@@ -192,7 +229,8 @@ __t_rpc_ver3_zip_MBUF_ptr_local__(MBUF *zip_data, s8 *fun, ub line)
 
 	if(zip_data != NULL)
 	{
-		pArrayBson = _t_rpc_ver3_zip_mbuf(zip_data);
+		pArrayBson = _t_rpc_ver3_zip_mbuf(zip_data, fun, line);
+
 		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_len_%d", 0);
 		t_bson_add_int(pBson, temp_buffer, zip_data->tot_len);
 		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", 0);
@@ -229,17 +267,9 @@ __t_rpc_ver3_unzip_MBUF_ptr_local__(MBUF **unzip_data, void *pBson, s8 *fun, ub 
 		dave_snprintf(temp_buffer, sizeof(temp_buffer), "array_%d", array_index);
 		pArrayBson = t_bson_inq_object(pBson, (char *)temp_buffer);
 
-		unzip_data_loop = __base_mmalloc__(array_len + 1, fun, line);
-		if(t_rpc_ver3_unzip_u8_d((u8 *)(unzip_data_loop->payload), (ub)array_len, pArrayBson) == dave_false)
+		unzip_data_loop = _t_rpc_ver3_unzip_mbuf(pArrayBson);
+		if(unzip_data_loop != NULL)
 		{
-			TOOLSLTRACE(360,1,"can't find data on bson");
-			dave_mfree(unzip_data_loop);
-		}
-		else
-		{
-			unzip_data_loop->tot_len = unzip_data_loop->len = array_len;
-			((s8 *)(unzip_data_loop->payload))[unzip_data_loop->len] = '\0';
-
 			*unzip_data = dave_mchain(*unzip_data, unzip_data_loop);
 		}
 
@@ -266,14 +296,13 @@ __t_rpc_ver3_unzip_MBUF_ptr_remote__(MBUF **unzip_data, void *pArrayBson, s8 *fu
 void
 t_rpc_ver3_metadata_init(void)
 {
-	t_lock_reset(&_metadata_pv);
-	_mbuf_auto_free = NULL;
+	_t_rpc_ver3_init_mbuf();
 }
 
 void
 t_rpc_ver3_metadata_exit(void)
 {
-	_t_rpc_ver3_leave_mbuf();
+	_t_rpc_ver3_exit_mbuf();
 }
 
 void

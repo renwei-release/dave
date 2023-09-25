@@ -12,6 +12,7 @@
 #include "dave_tools.h"
 #include "dave_verno.h"
 #include "sync_server_remote_cfg.h"
+#include "sync_server_data.h"
 #include "remote_etcd_cfg.h"
 #include "sync_server_app_tx.h"
 #include "sync_log.h"
@@ -34,29 +35,23 @@ _sync_server_the_config_tell_all_client(dave_bool put_flag, s8 *key, s8 *value)
 {
 	CFGRemoteSyncUpdate update;
 	ub client_index;
+	SyncClient *pClient;
 
-	dave_memset(&update, 0x00, sizeof(update));
-
-	update.put_flag = put_flag;
-	update.cfg_mbuf_name = t_a2b_str_to_mbuf(key, 0);
-	update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
-	update.ttl = 0;
-
-	/*
-	 * Prevent MBUF from being released by this call:
-	 * sync_server_app_tx_all_client -> sync_server_tx_run_internal_msg_v2_req ->
-	 * t_rpc_zip
-	 */
 	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 	{
-		dave_mref(update.cfg_mbuf_name);
-		dave_mref(update.cfg_mbuf_value);
+		pClient = sync_server_client(client_index);
+		if(pClient == NULL)
+		{
+			break;
+		}
+
+		update.put_flag = put_flag;
+		update.cfg_mbuf_name = t_a2b_str_to_mbuf(key, 0);
+		update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
+		update.ttl = 0;
+
+		sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update);
 	}
-
-	sync_server_app_tx_all_client(MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update);
-
-	dave_mclean(update.cfg_mbuf_name);
-	dave_mclean(update.cfg_mbuf_value);
 }
 
 static void

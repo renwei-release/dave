@@ -17,37 +17,58 @@
 #define FASTCGI_STDIN_MAX (HTTP_RECV_BUF_MAX)
 #define FASTCGI_STDOUT_MAX (65535)
 
-static ub
-_http_fastcgi_parse_head(u8 *data, ub data_len, Fcgi *pFcgi)
+static dave_bool
+_http_fastcgi_parse_head(u8 *data_ptr, ub data_len, ub *head_len, Fcgi *pFcgi)
 {
 	ub data_index;
 
 	if(data_len < 8)
 	{
-		HTTPABNOR("invalid data_len:%d", data_len);
-		return 0;
+		HTTPABNOR("invalid data_len:%d pFcgi:%lx", data_len, pFcgi);
+		*head_len = data_len;
+		return dave_true;
 	}
 
 	data_index = 0;
 
-	pFcgi->head.version = (ub)(data[data_index ++]);
-	pFcgi->head.type = (FcgiType)(data[data_index ++]);
-	pFcgi->head.request_id = (((ub)(data[data_index])) << 8) + ((ub)(data[data_index + 1]));
+	pFcgi->head.version = (ub)(data_ptr[data_index ++]);
+	if(pFcgi->head.version != FCGI_VERSION_1)
+	{	
+		HTTPLOG("invalid version:%d %d/%d pFcgi:%lx", pFcgi->head.version, data_index, data_len, pFcgi);
+		*head_len = data_len;
+		return dave_true;
+	}
+	pFcgi->head.type = (FcgiType)(data_ptr[data_index ++]);
+	if((pFcgi->head.type < FCGI_BEGIN_REQUEST) || (pFcgi->head.type > FCGI_UNKNOWN_TYPE))
+	{	
+		HTTPLOG("invalid type:%d %d/%d pFcgi:%lx", pFcgi->head.type, data_index, data_len, pFcgi);
+		*head_len = data_len;
+		return dave_true;
+	}
+	pFcgi->head.request_id = (((ub)(data_ptr[data_index])) << 8) + ((ub)(data_ptr[data_index + 1]));
 	if(pFcgi->head.request_id != 1)
 	{
-		HTTPABNOR("found a request requence number[%ld] that is not 1!", pFcgi->head.request_id);
+		HTTPLOG("found a request requence number[%ld] that is not 1! version:%d type:%d %d/%d pFcgi:%lx",
+			pFcgi->head.request_id,
+			pFcgi->head.version,
+			pFcgi->head.type,
+			data_index, data_len,
+			pFcgi);
+		*head_len = data_len;
+		return dave_true;
 	}
 	data_index += 2;
-	pFcgi->head.content_length = (((ub)(data[data_index])) << 8) + ((ub)(data[data_index + 1]));
+	pFcgi->head.content_length = (((ub)(data_ptr[data_index])) << 8) + ((ub)(data_ptr[data_index + 1]));
 	data_index += 2;
-	pFcgi->head.padding_length = (ub)(data[data_index ++]);
-	pFcgi->head.reserved = (ub)(data[data_index ++]);
+	pFcgi->head.padding_length = (ub)(data_ptr[data_index ++]);
+	pFcgi->head.reserved = (ub)(data_ptr[data_index ++]);
 
-	return data_index;
+	*head_len = data_index;
+	return dave_false;
 }
 
 static ub
-_http_fastcgi_build_head(u8 *data, ub data_len, FcgiType type, ub request_id, ub content_length, ub padding_length)
+_http_fastcgi_build_head(u8 *data_ptr, ub data_len, FcgiType type, ub request_id, ub content_length, ub padding_length)
 {
 	ub data_index;
 
@@ -59,20 +80,20 @@ _http_fastcgi_build_head(u8 *data, ub data_len, FcgiType type, ub request_id, ub
 
 	data_index = 0;
 
-	data[data_index ++] = 0x01;
-	data[data_index ++] = (u8)type;
-	data[data_index ++] = (u8)(request_id >> 8);
-	data[data_index ++] = (u8)(request_id);
-	data[data_index ++] = (u8)(content_length >> 8);
-	data[data_index ++] = (u8)(content_length);
-	data[data_index ++] = (u8)(padding_length);
-	data[data_index ++] = 0x00;
+	data_ptr[data_index ++] = FCGI_VERSION_1;
+	data_ptr[data_index ++] = (u8)type;
+	data_ptr[data_index ++] = (u8)(request_id >> 8);
+	data_ptr[data_index ++] = (u8)(request_id);
+	data_ptr[data_index ++] = (u8)(content_length >> 8);
+	data_ptr[data_index ++] = (u8)(content_length);
+	data_ptr[data_index ++] = (u8)(padding_length);
+	data_ptr[data_index ++] = 0x00;
 
 	return data_index;
 }
 
 static void
-_http_fastcgi_parse_begin_request(u8 *data, ub data_len, Fcgi *pFcgi)
+_http_fastcgi_parse_begin_request(u8 *data_ptr, ub data_len, Fcgi *pFcgi)
 {
 	ub data_index;
 	FCGIBeginRequestBody *pBody = &(pFcgi->request);
@@ -84,9 +105,9 @@ _http_fastcgi_parse_begin_request(u8 *data, ub data_len, Fcgi *pFcgi)
 
 	data_index = 0;
 
-	pBody->role = (((ub)(data[data_index])) << 8) + ((ub)(data[data_index + 1]));
+	pBody->role = (((ub)(data_ptr[data_index])) << 8) + ((ub)(data_ptr[data_index + 1]));
 	data_index += 2;
-	pBody->flags = (FCGIFlags)(data[data_index ++]);
+	pBody->flags = (FCGIFlags)(data_ptr[data_index ++]);
 	data_index += 5;
 
 	if(pBody->role != FCGI_RESPONDER)
@@ -131,7 +152,7 @@ _http_fastcgi_malloc_param(ub name_length, ub value_length)
 }
 
 static ub
-_http_fastcgi_parse_param_(u8 *data, ub data_len, Fcgi *pFcgi)
+_http_fastcgi_parse_param_(u8 *data_ptr, ub data_len, Fcgi *pFcgi)
 {
 	ub data_index;
 	ub name_length, value_length;
@@ -146,23 +167,23 @@ _http_fastcgi_parse_param_(u8 *data, ub data_len, Fcgi *pFcgi)
 
 	data_index = 0;
 
-	if(data[data_index] & 0x80)
+	if(data_ptr[data_index] & 0x80)
 	{
-		name_length = (((ub)(data[data_index]&0x7f)) << 24) + (((ub)(data[data_index + 1])) << 16) + (((ub)(data[data_index + 2])) << 8) + (((ub)(data[data_index + 3])));
+		name_length = (((ub)(data_ptr[data_index]&0x7f)) << 24) + (((ub)(data_ptr[data_index + 1])) << 16) + (((ub)(data_ptr[data_index + 2])) << 8) + (((ub)(data_ptr[data_index + 3])));
 		data_index += 4;
 	}
 	else
 	{
-		name_length = (ub)data[data_index ++];
+		name_length = (ub)data_ptr[data_index ++];
 	}
-	if(data[data_index] & 0x80)
+	if(data_ptr[data_index] & 0x80)
 	{
-		value_length = (((ub)(data[data_index]&0x7f)) << 24) + (((ub)(data[data_index + 1])) << 16) + (((ub)(data[data_index + 2])) << 8) + (((ub)(data[data_index + 3])));
+		value_length = (((ub)(data_ptr[data_index]&0x7f)) << 24) + (((ub)(data_ptr[data_index + 1])) << 16) + (((ub)(data_ptr[data_index + 2])) << 8) + (((ub)(data_ptr[data_index + 3])));
 		data_index += 4;
 	}
 	else
 	{
-		value_length = (ub)data[data_index ++];
+		value_length = (ub)data_ptr[data_index ++];
 	}
 
 	if((data_index + name_length + value_length) > data_len)
@@ -174,9 +195,9 @@ _http_fastcgi_parse_param_(u8 *data, ub data_len, Fcgi *pFcgi)
 
 	param = _http_fastcgi_malloc_param(name_length, value_length);
 
-	dave_strcpy(param->name, &data[data_index], name_length + 1);
+	dave_strcpy(param->name, &data_ptr[data_index], name_length + 1);
 	data_index += name_length;
-	dave_strcpy(param->value, &data[data_index], value_length + 1);
+	dave_strcpy(param->value, &data_ptr[data_index], value_length + 1);
 	data_index += value_length;
 
 	if(pFcgi->params == NULL)
@@ -205,7 +226,7 @@ _http_fastcgi_parse_param_(u8 *data, ub data_len, Fcgi *pFcgi)
 }
 
 static void
-_http_fastcgi_parse_param(u8 *data, ub data_len, Fcgi *pFcgi)
+_http_fastcgi_parse_param(u8 *data_ptr, ub data_len, Fcgi *pFcgi)
 {
 	ub data_index, safe_counter;
 
@@ -219,60 +240,51 @@ _http_fastcgi_parse_param(u8 *data, ub data_len, Fcgi *pFcgi)
 
 	while((data_index < data_len) && ((++ safe_counter) < 4096))
 	{
-		data_index += _http_fastcgi_parse_param_(&data[data_index], data_len - data_index, pFcgi);
+		data_index += _http_fastcgi_parse_param_(&data_ptr[data_index], data_len - data_index, pFcgi);
 	}
 }
 
 static void
-_http_fastcgi_parse_stdin(u8 *data, ub data_len, Fcgi *pFcgi, dave_bool *parse_end)
+_http_fastcgi_parse_stdin(u8 *data_ptr, ub data_len, Fcgi *pFcgi)
 {
-	if(data_len == 0)
-	{
-		HTTPDEBUG("stdin data-len is zero, the stdin end!");
-
-		*parse_end = dave_true;
-
-		return;
-	}
-
-	if(pFcgi->content == NULL)
+	if(pFcgi->content_ptr == NULL)
 	{
 		pFcgi->content_length_max = FASTCGI_STDIN_MAX;
-		pFcgi->content = dave_malloc(pFcgi->content_length_max);
-		pFcgi->content_length_max -= 1;
+		pFcgi->content_ptr = dave_malloc(pFcgi->content_length_max);
 		pFcgi->content_length = 0;
 	}
 
-	if((pFcgi->content_length +  data_len) <= pFcgi->content_length_max)
+	if((pFcgi->content_length + data_len + 1) <= pFcgi->content_length_max)
 	{
-		HTTPDEBUG("content_length:%d data_len:%d %x/%x/%x/%x/%x/%x %x/%x/%x/%x/%x/%x",
-			pFcgi->content_length, data_len,
-			data[0], data[1], data[2], data[3], data[4], data[5],
-			data[data_len-6], data[data_len-5], data[data_len-4],
-			data[data_len-3], data[data_len-2], data[data_len-1]);
-
-		dave_memcpy(&(pFcgi->content[pFcgi->content_length]), data, data_len);
+		dave_memcpy(&(pFcgi->content_ptr[pFcgi->content_length]), data_ptr, data_len);
 		pFcgi->content_length += data_len;
-		pFcgi->content[pFcgi->content_length] = '\0';
+		pFcgi->content_ptr[pFcgi->content_length] = '\0';
 	}
 	else
 	{
-		HTTPABNOR("the http content too longer!");
+		HTTPABNOR("the http content too longer(%d)!", pFcgi->content_length + data_len);
 	}
 }
 
 static ub
-_http_fastcgi_parse(u8 *data, ub data_len, Fcgi *pFcgi, dave_bool *parse_end)
+_http_fastcgi_parse(u8 *data_ptr, ub data_len, Fcgi *pFcgi, dave_bool pre_parse, dave_bool *parse_end, dave_bool *parse_error)
 {
 	ub head_len, process_len;
 
 	*parse_end = dave_false;
+	*parse_error = dave_false;
 
-	head_len = _http_fastcgi_parse_head(data, data_len, pFcgi);
+	*parse_error = _http_fastcgi_parse_head(data_ptr, data_len, &head_len, pFcgi);
+	if(*parse_error == dave_true)
+	{
+		HTTPLOG("invalid head_len:%d data_len:%d pFcgi:%lx", head_len, data_len, pFcgi);
+		return data_len;
+	}
+
 	process_len = head_len + pFcgi->head.content_length + pFcgi->head.padding_length;
 	if(process_len > data_len)
 	{
-		HTTPDEBUG("invalid id:%lx process_len:%d head_len:%d content_len:%d padding_len:%d data_len:%d",
+		HTTPDEBUG("wait more data, id:%lx process_len:%d head_len:%d content_len:%d padding_len:%d data_len:%d",
 			pFcgi->head.request_id,
 			process_len, head_len,
 			pFcgi->head.content_length, pFcgi->head.padding_length,
@@ -288,13 +300,33 @@ _http_fastcgi_parse(u8 *data, ub data_len, Fcgi *pFcgi, dave_bool *parse_end)
 	switch(pFcgi->head.type)
 	{
 		case FCGI_BEGIN_REQUEST:
-				_http_fastcgi_parse_begin_request(&data[head_len], pFcgi->head.content_length, pFcgi);
+				_http_fastcgi_parse_begin_request(&data_ptr[head_len], pFcgi->head.content_length, pFcgi);
 			break;
 		case FCGI_PARAMS:
-				_http_fastcgi_parse_param(&data[head_len], pFcgi->head.content_length, pFcgi);
+				if(pre_parse == dave_false)
+				{
+					_http_fastcgi_parse_param(&data_ptr[head_len], pFcgi->head.content_length, pFcgi);
+				}
 			break;
 		case FCGI_STDIN:
-				_http_fastcgi_parse_stdin(&data[head_len], pFcgi->head.content_length, pFcgi, parse_end);
+				if(pre_parse == dave_false)
+				{
+					if(pFcgi->head.content_length == 0)
+					{
+						*parse_end = dave_true;
+					}
+					else
+					{
+						_http_fastcgi_parse_stdin(&data_ptr[head_len], pFcgi->head.content_length, pFcgi);
+					}
+				}
+				else
+				{
+					if(pFcgi->head.content_length == 0)
+					{
+						*parse_end = dave_true;
+					}
+				}
 			break;
 		default:
 				HTTPABNOR("can't process type:%d", pFcgi->head.type);
@@ -391,7 +423,7 @@ _http_fastcgi_add_head(ub *index, HttpKeyValue *pHead, s8 *key, s8 *value)
 static void
 _http_fastcgi_load_head(HTTPRecvReq *pReq, ub *index, FCGIParamsBody *pParam, ub *content_length)
 {
-	HTTPTRACE("Fcgi key:%s, value:%s", pParam->name, pParam->value);
+	HTTPDEBUG("Fcgi key:%s, value:%s", pParam->name, pParam->value);
 	
 	if(dave_strcmp(pParam->name, "REMOTE_ADDR") == dave_true)
 	{
@@ -481,30 +513,40 @@ _http_fastcgi_load_head(HTTPRecvReq *pReq, ub *index, FCGIParamsBody *pParam, ub
 // =====================================================================
 
 dave_bool
-http_fastcgi_parse(u8 *data, ub data_len, Fcgi *pFcgi)
+http_fastcgi_parse(u8 *data_ptr, ub data_len, Fcgi *pFcgi, dave_bool pre_parse)
 {
 	ub data_index, safe_counter, parse_len;
-	dave_bool parse_end = dave_false;
+	dave_bool parse_end, parse_error;
 
-	if((data == NULL) || (data_len == 0))
+	if((data_ptr == NULL) || (data_len == 0))
 	{
-		HTTPABNOR("invalid data:%x or data_len:%d", data, data_len);
+		HTTPABNOR("invalid data:%x or data_len:%d pFcgi:%lx", data_ptr, data_len, pFcgi);
 		return dave_false;
 	}
 
+	parse_end = parse_error = dave_false;
 	data_index = safe_counter = 0;
 
-	while((data_index < data_len) && ((++ safe_counter) < 4096))
+	while((parse_end == dave_false) && (data_index < data_len) && ((++ safe_counter) < 8192))
 	{
-		parse_len = _http_fastcgi_parse(&data[data_index], data_len-data_index, pFcgi, &parse_end);
-		if(parse_len == 0)
+		parse_len = _http_fastcgi_parse(&data_ptr[data_index], data_len-data_index, pFcgi, pre_parse, &parse_end, &parse_error);
+		if(parse_error == dave_true)
 		{
-			HTTPABNOR("parse zero!");
-			t_stdio_print_hex("hex", data, data_len);
-			break;
+			HTTPLOG("%d/%d parse error! pFcgi:%lx", data_index, data_len, pFcgi);
+			return dave_false;
 		}
 
 		data_index += parse_len;
+	}
+	if(safe_counter >= 8192)
+	{
+		HTTPABNOR("invalid safe_counter:%d", safe_counter);
+	}
+
+	if((parse_end == dave_true)
+		&& (data_index != data_len))
+	{
+		HTTPLOG("lost data:%d/%d", data_index, data_len)
 	}
 
 	return parse_end;
@@ -526,10 +568,10 @@ http_fastcgi_parse_release(Fcgi *pFcgi)
 
 	pFcgi->params = NULL;
 
-	if(pFcgi->content != NULL)
+	if(pFcgi->content_ptr != NULL)
 	{
-		dave_free(pFcgi->content);
-		pFcgi->content = NULL;
+		dave_free(pFcgi->content_ptr);
+		pFcgi->content_ptr = NULL;
 	}	
 }
 

@@ -28,9 +28,12 @@
 #include <unistd.h>
 #include <netinet/tcp.h>
 #include <sys/sysinfo.h>
+#include <sched.h>
 #include "dave_os.h"
 #include "dave_tools.h"
 #include "os_log.h"
+
+extern int sched_getcpu(void);
 
 static u8 _mac[DAVE_MAC_ADDR_LEN];
 static dave_bool _mac_flag = dave_false;
@@ -343,7 +346,7 @@ dave_os_load_host_name(s8 *hostname, ub hostname_len)
 ub
 dave_os_cpu_process_number(void)
 {
-	ub cpu_number = (ub)get_nprocs();
+	int cpu_number = get_nprocs();
 
 	if(cpu_number > 128)
 	{
@@ -351,7 +354,22 @@ dave_os_cpu_process_number(void)
 		cpu_number = 64;
 	}
 
-	return cpu_number;
+	return (ub)cpu_number;
+}
+
+ub
+dave_os_cpu_sched_number(void)
+{
+	int cpu_number = sched_getcpu();
+
+	if(cpu_number < 0)
+	{
+		OSABNOR("get invalid cpu_number:%d error:%d/%s",
+			cpu_number, errno, strerror(errno));
+		return 0;
+	}
+
+	return (ub)cpu_number;
 }
 
 ub

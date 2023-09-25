@@ -12,7 +12,7 @@
 // =====================================================================
 
 void
-t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len)
+t_stdio_print_hex(const char *msg, u8 *hex_ptr, ub hex_len)
 {
 	ub buf_len;
 	s8 *buf;
@@ -34,7 +34,7 @@ t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len)
 			buf_index += dave_snprintf(&buf[buf_index], buf_len-buf_index, "*");
 			break;
 		}
-		add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "0x%02x, ", hex[hex_index]);
+		add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "0x%02x, ", hex_ptr[hex_index]);
 		buf_index += add_len;
 		tab_counter += add_len;
 		if(tab_counter > 120)
@@ -52,7 +52,7 @@ t_stdio_print_hex(const char *msg, u8 *hex, ub hex_len)
 }
 
 void
-t_stdio_print_char(const char *msg, u8 *char_data, ub char_len)
+t_stdio_print_char(const char *msg, u8 *char_ptr, ub char_len)
 {
 	ub buf_len;
 	s8 *buf;
@@ -74,13 +74,13 @@ t_stdio_print_char(const char *msg, u8 *char_data, ub char_len)
 			buf_index += dave_snprintf(&buf[buf_index], buf_len-buf_index, "*");
 			break;
 		}
-		if(t_is_show_char(char_data[hex_index]) == dave_true)
+		if(t_is_show_char(char_ptr[hex_index]) == dave_true)
 		{
-			add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "%c", char_data[hex_index]);
+			add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "%c", char_ptr[hex_index]);
 		}
 		else
 		{
-			add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "[%02x]", char_data[hex_index]);
+			add_len = dave_snprintf(&buf[buf_index], buf_len-buf_index, "[%02x]", char_ptr[hex_index]);
 		}
 		buf_index += add_len;
 		tab_counter += add_len;

@@ -12,8 +12,140 @@
 #define HOW_MANY_CYCLES_DO_STATISTICS 500
 #define CONCURRENCY_TPS 5000
 
+#define S8_ECHO_VALUE -12
+#define U8_ECHO_VALUE 12
+#define S16_ECHO_VALUE -1234
+#define U16_ECHO_VALUE 1234
+#define S32_ECHO_VALUE -6462522
+#define U32_ECHO_VALUE 35554553
+#define S64_ECHO_VALUE -8376462522
+#define U64_ECHO_VALUE 83635554553
+#define FLOAT_ECHO_VALUE 12.340000
+#define DOUBLE_ECHO_VALUE 123.123000
+#define VOID_ECHO_VALUE (void *)739848572524
+#define STRING_ECHO_VALUE "string echo!"
+#define MBUF_ECHO_VALUE "mbuf echo!"
+
 static dave_bool _echo_working = dave_false;
 static ub _echo_req_counter = 0;
+
+static void
+_echo_rpc_reset(MsgIdEcho *pEcho)
+{
+	pEcho->s8_echo = S8_ECHO_VALUE;
+	pEcho->u8_echo = U8_ECHO_VALUE;
+	pEcho->s16_echo = S16_ECHO_VALUE;
+	pEcho->u16_echo = U16_ECHO_VALUE;	
+	pEcho->s32_echo = S32_ECHO_VALUE;
+	pEcho->u32_echo = U32_ECHO_VALUE;
+	pEcho->s64_echo = S64_ECHO_VALUE;
+	pEcho->u64_echo = U64_ECHO_VALUE;
+	pEcho->float_echo = FLOAT_ECHO_VALUE;
+	pEcho->double_echo = DOUBLE_ECHO_VALUE;
+	pEcho->void_echo = VOID_ECHO_VALUE;
+	dave_snprintf(pEcho->string_echo, sizeof(pEcho->string_echo), STRING_ECHO_VALUE);
+	pEcho->mbuf_echo = t_a2b_param_to_mbuf(MBUF_ECHO_VALUE);
+}
+
+static void
+_echo_rpc_copy(MsgIdEcho *pEchoDst, MsgIdEcho *pEchoSrc)
+{
+	pEchoDst->s8_echo = pEchoSrc->s8_echo;
+	pEchoDst->u8_echo = pEchoSrc->u8_echo;
+	pEchoDst->s16_echo = pEchoSrc->s16_echo;
+	pEchoDst->u16_echo = pEchoSrc->u16_echo;
+	pEchoDst->s32_echo = pEchoSrc->s32_echo;
+	pEchoDst->u32_echo = pEchoSrc->u32_echo;
+	pEchoDst->s64_echo = pEchoSrc->s64_echo;
+	pEchoDst->u64_echo = pEchoSrc->u64_echo;
+	pEchoDst->float_echo = pEchoSrc->float_echo;
+	pEchoDst->double_echo = pEchoSrc->double_echo;
+	pEchoDst->void_echo = pEchoSrc->void_echo;
+	dave_strcpy(pEchoDst->string_echo, pEchoSrc->string_echo, sizeof(pEchoDst->string_echo));
+	pEchoDst->mbuf_echo = dave_mclone(pEchoSrc->mbuf_echo);
+}
+
+static void
+_echo_rpc_verification(MsgIdEcho *pEcho)
+{
+	if(pEcho->s8_echo != S8_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid s8:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->s8_echo, S8_ECHO_VALUE);
+	}
+	if(pEcho->u8_echo != U8_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid u8:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->u8_echo, U8_ECHO_VALUE);
+	}
+	if(pEcho->s16_echo != S16_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid s16:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->s16_echo, S16_ECHO_VALUE);
+	}
+	if(pEcho->u16_echo != U16_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid u16:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->u16_echo, U16_ECHO_VALUE);
+	}
+	if(pEcho->s32_echo != S32_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid s32:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->s32_echo, S32_ECHO_VALUE);
+	}
+	if(pEcho->u32_echo != U32_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid u32:%d %d",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->u32_echo, U32_ECHO_VALUE);
+	}
+	if(pEcho->s64_echo != S64_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid s64:%ld %ld",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->s64_echo, S64_ECHO_VALUE);
+	}
+	if(pEcho->u64_echo != U64_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid u64:%ld %ld",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->u64_echo, U64_ECHO_VALUE);
+	}
+	if(pEcho->void_echo != VOID_ECHO_VALUE)
+	{
+		ECHOLOG("%s has invalid void:%ld %ld",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->void_echo, VOID_ECHO_VALUE);
+	}
+	if(dave_strcmp(pEcho->string_echo, STRING_ECHO_VALUE) == dave_false)
+	{
+		ECHOLOG("%s has invalid string:%s %s",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->string_echo, STRING_ECHO_VALUE);
+	}
+	if(dave_strcmp(ms8(pEcho->mbuf_echo), MBUF_ECHO_VALUE) == dave_false)
+	{
+		ECHOLOG("%s has invalid mbuf:%lx/%s %s",
+			t_auto_EchoType_str(pEcho->type),
+			pEcho->mbuf_echo, ms8(pEcho->mbuf_echo),
+			MBUF_ECHO_VALUE);
+	}
+}
+
+static void
+_echo_rpc_clean(MsgIdEcho *pEcho)
+{
+	if(pEcho->mbuf_echo != NULL)
+	{
+		dave_mfree(pEcho->mbuf_echo);
+		pEcho->mbuf_echo = NULL;
+	}
+}
 
 static void
 _echo_api_req_msg(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
@@ -101,13 +233,14 @@ _echo_snd_req(ThreadId src, ThreadId dst, EchoType type, MsgIdEcho *pGetEcho)
 	MsgIdEchoReq *pReq = thread_msg(pReq);
 
 	pReq->echo = *pGetEcho;
+	_echo_rpc_copy(&(pReq->echo), pGetEcho);
 
 	pReq->echo.type = type;
 	dave_strcpy(pReq->echo.gid, t_gp_globally_identifier(), sizeof(pReq->echo.gid));
 	dave_strcpy(pReq->echo.thread, thread_name(dst), sizeof(pReq->echo.thread));
 
 	pReq->echo.echo_req_time = dave_os_time_us();
-	pReq->echo.echo_req_time = 0;
+	pReq->echo.echo_rsp_time = 0;
 
 	pReq->ptr = pReq;
 
@@ -120,11 +253,13 @@ _echo_snd_rsp(ThreadId src, ThreadId dst, EchoType type, MsgIdEcho *pGetEcho, vo
 	MsgIdEchoRsp *pRsp = thread_msg(pRsp);
 
 	pRsp->echo = *pGetEcho;
+	_echo_rpc_copy(&(pRsp->echo), pGetEcho);
 
 	pRsp->echo.type = type;
 	dave_strcpy(pRsp->echo.gid, t_gp_globally_identifier(), sizeof(pRsp->echo.gid));
 	dave_strcpy(pRsp->echo.thread, thread_name(dst), sizeof(pRsp->echo.thread));
 
+	pRsp->echo.echo_req_time = pGetEcho->echo_req_time;
 	pRsp->echo.echo_rsp_time = dave_os_time_us();
 
 	pRsp->ptr = ptr;
@@ -218,7 +353,7 @@ _echo_start(ThreadId src, ThreadId dst, dave_bool concurrent_flag)
 	pReq->echo.concurrent_cycle_counter = 0;
 	pReq->echo.concurrent_total_counter = 0;
 
-	dave_snprintf(pReq->echo.msg, sizeof(pReq->echo.msg), "user start echo!");
+	_echo_rpc_reset(&(pReq->echo));
 
 	pReq->ptr = NULL;
 
@@ -250,7 +385,18 @@ _echo_single_req(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho, void *ptr)
 static void
 _echo_single_rsp(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 {
-	ub echo_consume_time = dave_os_time_us() - pGetEcho->echo_req_time;
+	ub echo_current_time = dave_os_time_us();
+	ub echo_consume_time;
+
+	if(echo_current_time > pGetEcho->echo_req_time)
+	{
+		echo_consume_time = echo_current_time - pGetEcho->echo_req_time;
+	}
+	else
+	{
+		ECHOLOG("find invalid time:%d/%d", echo_current_time, pGetEcho->echo_req_time);
+		echo_consume_time = 0;
+	}
 
 	pGetEcho->echo_total_counter ++;
 	pGetEcho->echo_total_time += echo_consume_time;
@@ -307,9 +453,11 @@ _echo_req(ThreadId src, ThreadId dst, MsgIdEchoReq *pReq)
 				_echo_stop(src, dst);
 			break;
 		case EchoType_single:
+				_echo_rpc_verification(pEcho);
 				_echo_single_req(src, dst, pEcho, pReq->ptr);
 			break;
 		case EchoType_random:
+				_echo_rpc_verification(pEcho);
 				_echo_random_req(src, dst, pEcho, pReq->ptr);
 			break;
 		default:
@@ -317,6 +465,8 @@ _echo_req(ThreadId src, ThreadId dst, MsgIdEchoReq *pReq)
 					thread_name(src), thread_name(dst), pEcho->type);
 			break;
 	}
+
+	_echo_rpc_clean(pEcho);
 }
 
 static void
@@ -337,6 +487,10 @@ _echo_rsp(ThreadId src, ThreadId dst, MsgIdEchoRsp *pRsp)
 					thread_name(src), thread_name(dst), pEcho->type);
 			break;
 	}
+
+	_echo_rpc_verification(pEcho);
+
+	_echo_rpc_clean(pEcho);
 }
 
 // =====================================================================

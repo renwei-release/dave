@@ -336,7 +336,19 @@ type MsgIdEcho struct {
 	Concurrent_tps_counter uint64
 	Concurrent_cycle_counter uint64
 	Concurrent_total_counter uint64
-	Msg [256] byte
+	S8_echo byte
+	U8_echo byte
+	S16_echo int16
+	U16_echo uint16
+	S32_echo int32
+	U32_echo uint32
+	S64_echo int64
+	U64_echo uint64
+	Float_echo float32
+	Double_echo float64
+	Void_echo unsafe.Pointer
+	String_echo [256] byte
+	Mbuf_echo *MBUF
 }
 
 type SocNetInfo struct {

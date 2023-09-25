@@ -2582,7 +2582,19 @@ t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data)
 	t_bson_add_object(pStructBson, "ub-concurrent_tps_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_tps_counter));
 	t_bson_add_object(pStructBson, "ub-concurrent_cycle_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_cycle_counter));
 	t_bson_add_object(pStructBson, "ub-concurrent_total_counter", t_rpc_ver3_zip_ub(zip_data->concurrent_total_counter));
-	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 256));
+	t_bson_add_object(pStructBson, "s8-s8_echo", t_rpc_ver3_zip_s8(zip_data->s8_echo));
+	t_bson_add_object(pStructBson, "u8-u8_echo", t_rpc_ver3_zip_u8(zip_data->u8_echo));
+	t_bson_add_object(pStructBson, "s16-s16_echo", t_rpc_ver3_zip_s16(zip_data->s16_echo));
+	t_bson_add_object(pStructBson, "u16-u16_echo", t_rpc_ver3_zip_u16(zip_data->u16_echo));
+	t_bson_add_object(pStructBson, "s32-s32_echo", t_rpc_ver3_zip_s32(zip_data->s32_echo));
+	t_bson_add_object(pStructBson, "u32-u32_echo", t_rpc_ver3_zip_u32(zip_data->u32_echo));
+	t_bson_add_object(pStructBson, "s64-s64_echo", t_rpc_ver3_zip_s64(zip_data->s64_echo));
+	t_bson_add_object(pStructBson, "u64-u64_echo", t_rpc_ver3_zip_u64(zip_data->u64_echo));
+	t_bson_add_object(pStructBson, "float-float_echo", t_rpc_ver3_zip_float(zip_data->float_echo));
+	t_bson_add_object(pStructBson, "double-double_echo", t_rpc_ver3_zip_double(zip_data->double_echo));
+	t_bson_add_object(pStructBson, "void-void_echo", t_rpc_ver3_zip_void_ptr(zip_data->void_echo));
+	t_bson_add_object(pStructBson, "s8-string_echo", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->string_echo), 1, 256));
+	t_bson_add_object(pStructBson, "MBUF-mbuf_echo", t_rpc_ver3_zip_MBUF_ptr(zip_data->mbuf_echo));
 
 	return pStructBson;
 }
@@ -2614,7 +2626,19 @@ t_rpc_ver3_unzip_MsgIdEcho(MsgIdEcho *unzip_data, void *pStructBson)
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_tps_counter), t_bson_inq_object(pStructBson, "ub-concurrent_tps_counter"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_cycle_counter), t_bson_inq_object(pStructBson, "ub-concurrent_cycle_counter"));
 		t_rpc_ver3_unzip_ub(&(unzip_data->concurrent_total_counter), t_bson_inq_object(pStructBson, "ub-concurrent_total_counter"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->msg), 1, 256, t_bson_inq_object(pStructBson, "s8-msg"));
+		t_rpc_ver3_unzip_s8(&(unzip_data->s8_echo), t_bson_inq_object(pStructBson, "s8-s8_echo"));
+		t_rpc_ver3_unzip_u8(&(unzip_data->u8_echo), t_bson_inq_object(pStructBson, "u8-u8_echo"));
+		t_rpc_ver3_unzip_s16(&(unzip_data->s16_echo), t_bson_inq_object(pStructBson, "s16-s16_echo"));
+		t_rpc_ver3_unzip_u16(&(unzip_data->u16_echo), t_bson_inq_object(pStructBson, "u16-u16_echo"));
+		t_rpc_ver3_unzip_s32(&(unzip_data->s32_echo), t_bson_inq_object(pStructBson, "s32-s32_echo"));
+		t_rpc_ver3_unzip_u32(&(unzip_data->u32_echo), t_bson_inq_object(pStructBson, "u32-u32_echo"));
+		t_rpc_ver3_unzip_s64(&(unzip_data->s64_echo), t_bson_inq_object(pStructBson, "s64-s64_echo"));
+		t_rpc_ver3_unzip_u64(&(unzip_data->u64_echo), t_bson_inq_object(pStructBson, "u64-u64_echo"));
+		t_rpc_ver3_unzip_float(&(unzip_data->float_echo), t_bson_inq_object(pStructBson, "float-float_echo"));
+		t_rpc_ver3_unzip_double(&(unzip_data->double_echo), t_bson_inq_object(pStructBson, "double-double_echo"));
+		t_rpc_ver3_unzip_void_ptr(&(unzip_data->void_echo), t_bson_inq_object(pStructBson, "void-void_echo"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(unzip_data->string_echo), 1, 256, t_bson_inq_object(pStructBson, "s8-string_echo"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(unzip_data->mbuf_echo), t_bson_inq_object(pStructBson, "MBUF-mbuf_echo"));
 		ret = dave_true;
 	}
 

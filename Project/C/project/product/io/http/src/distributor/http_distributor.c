@@ -266,8 +266,6 @@ _distributor_recv_req(MSGBODY *msg)
 	{
 		name_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
 
-		msg->mem_state = MsgMemState_captured;
-
 		t_lock_spin(&(pInfo->pv));
 		pInfo->receive_counter ++;
 		t_unlock_spin(&(pInfo->pv));
@@ -286,6 +284,10 @@ _distributor_recv_rsp(MSGBODY *msg)
 	if(snd_from_msg(_distributor_thread, _http_thread, msg->msg_id, msg->msg_len, msg->msg_body) == dave_true)
 	{
 		msg->mem_state = MsgMemState_captured;
+	}
+	else
+	{
+		HTTPABNOR("Failed to forward data:%s!", msgstr(msg->msg_id));
 	}
 }
 
@@ -436,7 +438,9 @@ http_distributor_init(void)
 {
 	ub thread_number = _distributor_thread_number();
 
-	_distributor_thread = base_thread_creat(DISTRIBUTOR_THREAD_NAME, thread_number, THREAD_THREAD_FLAG, _distributor_init, _distributor_main, _distributor_exit);
+	_distributor_thread = base_thread_creat(
+		DISTRIBUTOR_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_dCOROUTINE_FLAG,
+		_distributor_init, _distributor_main, _distributor_exit);
 	if(_distributor_thread == INVALID_THREAD_ID)
 		base_restart(DISTRIBUTOR_THREAD_NAME);
 }

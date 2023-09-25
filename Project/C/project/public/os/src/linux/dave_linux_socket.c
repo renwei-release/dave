@@ -792,7 +792,7 @@ dave_os_epoll(s32 socket)
 }
 
 dave_bool
-dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub *data_len)
+dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub *data_len)
 {
 	s32 recv_len;
 	struct sockaddr_in remote_addr;
@@ -800,7 +800,7 @@ dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub *data_len)
 
 	dave_memset(&remote_addr, 0x00, sizeof(remote_addr));
 
-	recv_len = recvfrom(socket, data, *data_len, 0, (struct sockaddr *)(&remote_addr), &remote_addrlen);
+	recv_len = recvfrom(socket, data_ptr, *data_len, 0, (struct sockaddr *)(&remote_addr), &remote_addrlen);
 
 	if(recv_len == 0)
 	{
@@ -855,7 +855,7 @@ dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub *data_len)
 }
 
 sb
-dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool urg)
+dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_bool urg)
 {
 	sb snd_len;
 	struct sockaddr_in addr;
@@ -878,7 +878,7 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 			flags = MSG_DONTWAIT;
 		}
 
-		snd_len = send(socket, data, data_len, flags);
+		snd_len = send(socket, data_ptr, data_len, flags);
 
 		OSDEBUG("socket:%d data_len:%d snd_len:%d", socket, data_len, snd_len);
 		
@@ -917,7 +917,7 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 			addr.sin_addr.s_addr = inet_addr((char *)ip_str);
 		}
 
-		snd_len = sendto(socket, data, data_len, 0, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
+		snd_len = sendto(socket, data_ptr, data_len, 0, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
 		if (snd_len >= 0)
 		{
 			return snd_len;

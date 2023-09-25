@@ -424,13 +424,14 @@ __thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line)
 dave_bool
 __thread_enable_coroutine__(ThreadStruct *pThread, ub msg_id, s8 *fun, ub line)
 {
-	if(!((pThread->thread_flag & THREAD_THREAD_FLAG)
-		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG)))
+	if((pThread->thread_flag & THREAD_THREAD_FLAG)
+		&& (pThread->thread_flag & THREAD_COROUTINE_FLAG)
+		&& ((pThread->thread_flag & THREAD_dCOROUTINE_FLAG) == 0x00))
 	{
-		return dave_false;
+		return dave_true;
 	}
 
-	return dave_true;
+	return dave_false;
 }
 
 ThreadMsg *

@@ -109,7 +109,19 @@ typedef struct {
 	ub concurrent_cycle_counter;
 	ub concurrent_total_counter;
 
-	s8 msg[256];
+	s8 s8_echo;
+	u8 u8_echo;
+	s16 s16_echo;
+	u16 u16_echo;
+	s32 s32_echo;
+	u32 u32_echo;
+	s64 s64_echo;
+	u64 u64_echo;
+	float float_echo;
+	double double_echo;
+	void *void_echo;
+	s8 string_echo[256];
+	MBUF *mbuf_echo;
 } MsgIdEcho;
 
 #endif

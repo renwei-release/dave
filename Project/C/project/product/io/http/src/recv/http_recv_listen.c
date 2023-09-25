@@ -220,7 +220,7 @@ _http_recv_listen_bind_req(ub port)
 
 	pReq = thread_reset_msg(pReq);
 
-	pReq->NetInfo.domain = DM_SOC_PF_INET;
+	pReq->NetInfo.domain = DM_SOC_PF_RAW_INET;
 	pReq->NetInfo.type = TYPE_SOCK_STREAM;
 	pReq->NetInfo.addr_type = NetAddrIPType;
 	pReq->NetInfo.addr.ip.ver = IPVER_IPV4;
@@ -264,7 +264,7 @@ _http_recv_listen_disconnect_req(s32 socket)
 
 	pReq->socket = socket;
 
-	id_event(thread_id(SOCKET_THREAD_NAME), SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP, _http_recv_listen_disconnect_rsp);
+	name_event(SOCKET_THREAD_NAME, SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP, _http_recv_listen_disconnect_rsp);
 }
 
 static void
@@ -287,7 +287,7 @@ _http_recv_listen_plugin(MSGBODY *msg)
 	{
 		if(pListen->cgi_listen_socket == pPlugin->father_socket)
 		{
-			http_recv_data_plugin(pPlugin->child_socket, pListen->nginx_port, msg->msg_build_serial);
+			http_recv_data_plugin(pPlugin->child_socket, pListen->nginx_port);
 		}
 		else
 		{

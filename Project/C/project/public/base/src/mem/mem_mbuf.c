@@ -174,6 +174,12 @@ __mbuf_mchain__(MBUF *cur_point, MBUF *cat_point, s8 *file, ub line)
 		return cur_point;
 	}
 
+	if(cur_point == cat_point)
+	{
+		MEMABNOR("The behavior of loop addition was found at <%s:%d>", file, line);
+		return cur_point;
+	}
+
 	for(p=cur_point; p->next!=NULL; p=p->next)
 	{
 		p->tot_len += cat_point->tot_len;

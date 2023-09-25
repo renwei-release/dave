@@ -31,7 +31,7 @@ typedef struct {
 	ub req_serial;
 
 	ub recv_buf_index;
-	u8 *recv_buf;
+	u8 *recv_buf_ptr;
 
 	ub last_plugin_time;
 	ub last_read_time;
@@ -152,22 +152,22 @@ _http_recv_data_reset(HTTPRecv *pRecv)
 	pRecv->fcgi.params = NULL;
 	pRecv->fcgi.content_length_max = 0;
 	pRecv->fcgi.content_length = 0;
-	pRecv->fcgi.content = NULL;
+	pRecv->fcgi.content_ptr = NULL;
 
 	pRecv->old_req_serial = pRecv->req_serial; 
 	pRecv->req_serial = HTTP_REQ_EMPTY_SERIAL;
 
 	pRecv->recv_buf_index = 0;
-	pRecv->recv_buf = NULL;
+	pRecv->recv_buf_ptr = NULL;
 }
 
 static void
 _http_recv_data_clean(HTTPRecv *pRecv)
 {
-	if(pRecv->recv_buf != NULL)
+	if(pRecv->recv_buf_ptr != NULL)
 	{
-		dave_free(pRecv->recv_buf);
-		pRecv->recv_buf = NULL;
+		dave_free(pRecv->recv_buf_ptr);
+		pRecv->recv_buf_ptr = NULL;
 	}
 
 	_http_recv_data_reset(pRecv);
@@ -216,9 +216,10 @@ _http_recv_get_content(Fcgi *pFcgi)
 		return dave_false;
 	}
 
-	if(pFcgi->content != NULL)
+	if(pFcgi->content_ptr != NULL)
 	{
-		dave_free(pFcgi->content);
+		dave_free(pFcgi->content_ptr);
+		pFcgi->content_ptr = NULL;
 	}
 
 	pFcgi->content_length = dave_strlen(pQueryParam->value);
@@ -227,11 +228,11 @@ _http_recv_get_content(Fcgi *pFcgi)
 		return dave_false;
 	}
 
-	pFcgi->content = dave_malloc(pFcgi->content_length + 1);
+	pFcgi->content_ptr = dave_malloc(pFcgi->content_length + 1);
 
-	pFcgi->content_length = http_copy_uri(pFcgi->content, pFcgi->content_length, pQueryParam->value, pFcgi->content_length);
+	pFcgi->content_length = http_copy_uri(pFcgi->content_ptr, pFcgi->content_length, pQueryParam->value, pFcgi->content_length);
 
-	pFcgi->content[pFcgi->content_length] = '\0';
+	pFcgi->content_ptr[pFcgi->content_length] = '\0';
 
 	return dave_true;
 }
@@ -296,7 +297,8 @@ static dave_bool
 _http_recv_get_cgi_data(
 	HTTPRecv *pRecv,
 	ub cgi_port,
-	u8 *data, ub data_len)
+	u8 *data_ptr, ub data_len,
+	dave_bool pre_parse)
 {
 	HTTPDEBUG("socket:%d cgi-port:%d data-len:%d", pRecv->socket, cgi_port, data_len);
 
@@ -313,7 +315,7 @@ _http_recv_get_cgi_data(
 
 	pRecv->cgi_port = cgi_port;
 
-	return http_fastcgi_parse(data, data_len, &(pRecv->fcgi));
+	return http_fastcgi_parse(data_ptr, data_len, &(pRecv->fcgi), pre_parse);
 }
 
 static ub
@@ -423,14 +425,14 @@ _http_recv_check_plugout_abnormal(HTTPRecv *pRecv)
 			HTTPDEBUG("http req timer out! socket:%d nginx_port:%d cgi_port:%d serial:%ld consumption-time:%dus content:%s",
 				pRecv->socket, pRecv->nginx_port, pRecv->cgi_port, pRecv->req_serial,
 				consumption_time,
-				pRecv->fcgi.content);
+				pRecv->fcgi.content_ptr);
 		}
 		else
 		{
 			HTTPABNOR("http req timer out! socket:%d nginx_port:%d cgi_port:%d serial:%ld consumption-time:%dus content:%s",
 				pRecv->socket, pRecv->nginx_port, pRecv->cgi_port, pRecv->req_serial,
 				consumption_time,
-				pRecv->fcgi.content);
+				pRecv->fcgi.content_ptr);
 		}
 	}
 
@@ -443,14 +445,14 @@ _http_recv_check_plugout_abnormal(HTTPRecv *pRecv)
 }
 
 static void
-_http_recv_data_plugin(HTTPRecv *pRecv, s32 socket, ub nginx_port, ub msg_serial)
+_http_recv_data_plugin(HTTPRecv *pRecv, s32 socket, ub nginx_port)
 {
-	HTTPDEBUG("socket:%d", socket);
+	HTTPDEBUG("socket:%d pFcgi:%lx", socket, &(pRecv->fcgi));
 
 	if(pRecv->socket != INVALID_SOCKET_ID)
 	{
-		HTTPLOG("repeat plugin socket:%d/%d cur-time:%ld msg-serial:%d",
-			socket, pRecv->socket, dave_os_time_us(), msg_serial);
+		HTTPLOG("repeat plugin socket:%d/%d cur-time:%ld",
+			socket, pRecv->socket, dave_os_time_us());
 	}
 	else
 	{
@@ -467,7 +469,7 @@ _http_recv_data_plugin(HTTPRecv *pRecv, s32 socket, ub nginx_port, ub msg_serial
 static void
 _http_recv_data_plugout(HTTPRecv *pRecv, s32 socket)
 {
-	HTTPDEBUG("socket:%d", pRecv->socket);
+	HTTPDEBUG("socket:%d pFcgi:%lx", pRecv->socket, &(pRecv->fcgi));
 
 	if(pRecv->socket != socket)
 	{
@@ -486,109 +488,49 @@ _http_recv_data_plugout(HTTPRecv *pRecv, s32 socket)
 }
 
 static dave_bool
-_http_recv_parse(HTTPRecv *pRecv, SocketRead *pRead)
+_http_recv_parse(HTTPRecv *pRecv, ub cgi_port, dave_bool pre_parse)
 {
-	dave_bool parse_end = dave_false;
+	HTTPDEBUG("recv data:%d recv_buf_ptr:%lx pFcgi:%lx",
+		pRecv->recv_buf_index,
+		pRecv->recv_buf_ptr, &(pRecv->fcgi));
 
-	HTTPDEBUG("recv data:%d+%d", pRecv->recv_buf_index, pRead->data_len);
-
-	if((pRecv->recv_buf_index == 0) || (pRecv->recv_buf == NULL))
-	{
-		parse_end = _http_recv_get_cgi_data(pRecv, pRead->IPInfo.dst_port, (u8 *)(pRead->data->payload), pRead->data_len);
-
-		if(parse_end == dave_false)
-		{
-			if(pRecv->recv_buf == NULL)
-			{
-				pRecv->recv_buf = dave_malloc(HTTP_RECV_BUF_MAX);
-	
-				pRecv->recv_buf_index = 0;
-			}
-
-			if((pRecv->recv_buf_index + pRead->data_len) <= HTTP_RECV_BUF_MAX)
-			{
-				dave_memcpy(&(pRecv->recv_buf[pRecv->recv_buf_index]), (u8 *)(pRead->data->payload), pRead->data_len);
-	
-				pRecv->recv_buf_index += pRead->data_len;
-			}
-			else
-			{
-				HTTPABNOR("recv data too longer:%d/%d!", pRecv->recv_buf_index, pRead->data_len);
-			}
-		}
-	}
-	else
-	{
-		if((pRecv->recv_buf_index + pRead->data_len) <= HTTP_RECV_BUF_MAX)
-		{
-			dave_memcpy(&(pRecv->recv_buf[pRecv->recv_buf_index]), (u8 *)(pRead->data->payload), pRead->data_len);
-
-			pRecv->recv_buf_index += pRead->data_len;
-
-			parse_end = _http_recv_get_cgi_data(pRecv, pRead->IPInfo.dst_port, (u8 *)(pRecv->recv_buf), pRecv->recv_buf_index);
-		}
-		else
-		{
-			HTTPABNOR("recv data too longer:%d/%d!", pRecv->recv_buf_index, pRead->data_len);
-		}
-	}
-
-	return parse_end;
+	return _http_recv_get_cgi_data(
+			pRecv,
+			cgi_port,
+			pRecv->recv_buf_ptr, pRecv->recv_buf_index,
+			pre_parse);
 }
 
 static void
-_http_recv_read(HTTPRecv *pRecv, SocketRead *pRead, ub msg_serial)
+_http_recv_read(HTTPRecv *pRecv, ub cgi_port)
 {
-	dave_bool parse_end = dave_false;
+	pRecv->last_read_time = dave_os_time_us();
 
-	HTTPDEBUG("socket:%d data_len:%d", pRead->socket, pRead->data_len);
-
-	if(pRecv->socket == INVALID_SOCKET_ID)
+	if(_http_recv_parse(pRecv, cgi_port, dave_true) == dave_false)
 	{
-		HTTPLOG("socket:%d plugin message delayed arrival! cur-time:%ld msg_serial:%d time:%ld/%ld/%ld %s->%s",
-			pRead->socket,
-			dave_os_time_us(),
-			msg_serial,
-			pRecv->last_plugin_time, pRecv->last_read_time, pRecv->last_plugout_time,
-			ipv4str(pRead->IPInfo.src_ip, pRead->IPInfo.src_port),
-			ipv4str2(pRead->IPInfo.dst_ip, pRead->IPInfo.dst_port));
-
-		_http_recv_data_plugin(pRecv, pRead->socket, http_recv_listen_port(pRead->IPInfo.dst_port), msg_serial);
-	}
-
-	if(pRecv->socket != pRead->socket)
-	{
-		HTTPABNOR("socket:%d/%d mismatch!",
-			pRecv->socket, pRead->socket);
-		http_recv_listen_release(pRead->socket);
+		HTTPDEBUG("not end!");
 		return;
 	}
 
-	pRecv->last_read_time = dave_os_time_us();
-
-	parse_end = _http_recv_parse(pRecv, pRead);
-
-	if(parse_end == dave_true)
+	if(_http_recv_parse(pRecv, cgi_port, dave_false) == dave_true)
 	{
-		HTTPDEBUG("parse end:%d/%d!", pRecv->recv_buf_index, pRead->data_len);
+		HTTPDEBUG("parse end:%d!", pRecv->recv_buf_index);
 
 		if(_http_recv_check_fcgi(pRecv) == dave_false)
 		{
-			HTTPABNOR("invalid fcgi! dst_port:%d", pRead->IPInfo.dst_port);
+			HTTPABNOR("invalid fcgi! cgi_port:%d", cgi_port);
 
-			_http_recv_write_error(pRecv, pRead->socket);
+			_http_recv_write_error(pRecv, pRecv->socket);
 		}
 
-		if(_http_recv_req(pRecv, pRead->socket) == dave_false)
+		if(_http_recv_req(pRecv, pRecv->socket) == dave_false)
 		{
-			_http_recv_write_error(pRecv, pRead->socket);
+			_http_recv_write_error(pRecv, pRecv->socket);
 		}
 	}
 	else
 	{
-		HTTPDEBUG("parse not end:%d/%d!", pRecv->recv_buf_index, pRead->data_len);
-
-		http_fastcgi_parse_release(&(pRecv->fcgi));
+		HTTPABNOR("parse not end:%d!", pRecv->recv_buf_index);
 	}
 }
 
@@ -634,7 +576,7 @@ _http_recv_req(HTTPRecv *pRecv, s32 socket)
 	if(content_length > 0)
 	{
 		pReq->content = dave_mmalloc(content_length);
-		dave_memcpy(pReq->content->payload, pRecv->fcgi.content, content_length);
+		dave_memcpy(pReq->content->payload, pRecv->fcgi.content_ptr, content_length);
 	}
 	else
 	{
@@ -718,18 +660,48 @@ _http_recv_rsp(HTTPRecv *pRecv, HTTPRecvRsp *pRsp)
 static void
 _http_recv_safe_read(MSGBODY *msg)
 {
-	SocketRead *pRead = (SocketRead *)(msg->msg_body);
+	SocketRawEvent *pEvent = (SocketRawEvent *)(msg->msg_body);
 	HTTPRecv *pRecv;
+	ub cgi_port = pEvent->NetInfo.src_port;
+	ub recv_len, safe_counter;
 
-	HTTPDEBUG("socket:%d data_len:%d", pRead->socket, pRead->data_len);
-
-	pRecv = &_http_recv[pRead->socket % HTTP_RECV_MAX];
-
+	pRecv = &_http_recv[pEvent->socket % HTTP_RECV_MAX];
 	pRecv->ptr = _http_recv_recv_to_ptr(pRecv);
 
-	SAFECODEv1(pRecv->opt_pv, _http_recv_read(pRecv, pRead,  msg->msg_build_serial); );
+	if(pRecv->socket != pEvent->socket)
+	{
+		HTTPABNOR("invalid socket:%d/%d", pRecv->socket, pEvent->socket);
+		return;
+	}
 
-	dave_mfree(pRead->data);
+	SAFECODEv1(pRecv->opt_pv, {
+		safe_counter = 0;
+
+		while((safe_counter ++) < 8196)
+		{
+			if(pRecv->recv_buf_ptr == NULL)
+			{
+				pRecv->recv_buf_ptr = dave_malloc(HTTP_RECV_BUF_MAX);
+				pRecv->recv_buf_index = 0;
+			}
+
+			recv_len = HTTP_RECV_BUF_MAX - pRecv->recv_buf_index;
+			if(recv_len < 128)
+			{
+				HTTPABNOR("recv_buf overflow!");
+				break;
+			}
+
+			if(dave_os_recv(pEvent->os_socket, &(pEvent->NetInfo), &pRecv->recv_buf_ptr[pRecv->recv_buf_index], &recv_len) == dave_false)
+				break;
+			if(recv_len == 0)
+				break;
+			pRecv->recv_buf_index += recv_len;
+
+			_http_recv_read(pRecv, cgi_port);
+		}
+
+	});
 }
 
 static void
@@ -769,19 +741,19 @@ http_recv_data_init(void)
 	t_lock_reset(&_http_req_serial_pv);
 	_http_req_serial = 0;
 
-	reg_msg(SOCKET_READ, _http_recv_safe_read);
+	reg_msg(SOCKET_RAW_EVENT, _http_recv_safe_read);
 	reg_msg(HTTPMSG_RECV_RSP, _http_recv_safe_rsp);
 }
 
 void
 http_recv_data_exit(void)
 {
-	unreg_msg(SOCKET_READ);
+	unreg_msg(SOCKET_RAW_EVENT);
 	unreg_msg(HTTPMSG_RECV_RSP);
 }
 
 void
-http_recv_data_plugin(s32 socket, ub nginx_port, ub msg_serial)
+http_recv_data_plugin(s32 socket, ub nginx_port)
 {
 	HTTPRecv *pRecv;
 
@@ -789,7 +761,7 @@ http_recv_data_plugin(s32 socket, ub nginx_port, ub msg_serial)
 
 	pRecv = &_http_recv[socket % HTTP_RECV_MAX];
 
-	SAFECODEv1(pRecv->opt_pv, _http_recv_data_plugin(pRecv, socket, nginx_port, msg_serial); );
+	SAFECODEv1(pRecv->opt_pv, _http_recv_data_plugin(pRecv, socket, nginx_port); );
 }
 
 void

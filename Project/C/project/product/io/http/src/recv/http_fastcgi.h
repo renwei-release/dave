@@ -8,6 +8,8 @@
 #ifndef __HTTP_FASTCGI_H__
 #define __HTTP_FASTCGI_H__
 
+#define FCGI_VERSION_1 1
+
 typedef enum {
 	FCGI_BEGIN_REQUEST     = 1,
 	FCGI_ABORT_REQUEST     = 2,
@@ -74,10 +76,10 @@ typedef struct {
 	FCGIParamsBody *params;
 	ub content_length_max;
 	ub content_length;
-	s8 *content;
+	s8 *content_ptr;
 } Fcgi;
 
-dave_bool http_fastcgi_parse(u8 *data, ub data_len, Fcgi *pFcgi);
+dave_bool http_fastcgi_parse(u8 *data_ptr, ub data_len, Fcgi *pFcgi, dave_bool pre_parse);
 
 void http_fastcgi_parse_release(Fcgi *pFcgi);
 
