@@ -15,3 +15,8 @@ SOURCES+=$(shell find `pwd`/../../project/public -name '*.c')
 SOURCES+=$(shell find `pwd`/../../project/public -name '*.cpp')
 SOURCES+=$(shell find `pwd`/../../project/public -name '*.cc')
 SOURCES+=$(shell find `pwd`/../../project/public -name '*.S')
+
+totalSOURCES=$(shell find `pwd`/../../project -name '*.c')
+totalSOURCES+=$(shell find `pwd`/../../project -name '*.cpp')
+totalSOURCES+=$(shell find `pwd`/../../project -name '*.cc')
+totalSOURCES+=$(shell find `pwd`/../../project -name '*.S')

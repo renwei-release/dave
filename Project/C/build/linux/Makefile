@@ -27,6 +27,10 @@ OBJS := $(patsubst %.c,%.o,$(SOURCES))
 OBJS := $(patsubst %.cpp,%.o,$(OBJS))
 OBJS := $(patsubst %.cc,%.o,$(OBJS))
 OBJS := $(patsubst %.S,%.o,$(OBJS))
+totalOBJS := $(patsubst %.c,%.o,$(totalSOURCES))
+totalOBJS := $(patsubst %.cpp,%.o,$(totalOBJS))
+totalOBJS := $(patsubst %.cc,%.o,$(totalOBJS))
+totalOBJS := $(patsubst %.S,%.o,$(totalOBJS))
 
 CC := gcc
 CPLUS := g++
@@ -73,6 +77,6 @@ end_build:
 	mv $(NAME_PRODUCT)-BIN ./$(shell echo $(NAME_PRODUCT) | tr A-Z a-z)/
 
 clean_build:
-	rm $(OBJS) $(NAME_PRODUCT).* -f
+	rm $(totalOBJS) $(NAME_PRODUCT).* -f
 	chmod a+x ../../../../Tools/auto_code/AUTOCLEAN
 	../../../../Tools/auto_code/AUTOCLEAN
