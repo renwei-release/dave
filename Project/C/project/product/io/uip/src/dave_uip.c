@@ -9,6 +9,7 @@
 #include "dave_tools.h"
 #include "dave_store.h"
 #include "dave_os.h"
+#include "dave_echo.h"
 #include "uip_server.h"
 #include "uip_client.h"
 #include "uip_channel.h"
@@ -53,6 +54,10 @@ _uip_main(MSGBODY *pMsg)
 			break;
 		case MSGID_RESTART_REQ:
 				_uip_restart((RESTARTREQMSG *)(pMsg->msg_body));
+			break;
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(pMsg->msg_src, pMsg->msg_dst, pMsg->msg_id, pMsg->msg_body);
 			break;
 		case MSGID_REMOTE_THREAD_READY:
 				_uip_thread_remote_ready((ThreadRemoteReadyMsg *)(pMsg->msg_body));

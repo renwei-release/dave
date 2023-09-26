@@ -16,8 +16,100 @@ import (
 var HOW_MANY_CYCLES_DO_STATISTICS = 500
 var CONCURRENCY_TPS = 5000
 
+var S8_ECHO_VALUE = -12
+var U8_ECHO_VALUE = 12
+var S16_ECHO_VALUE = -1234
+var U16_ECHO_VALUE = 1234
+var S32_ECHO_VALUE = -6462522
+var U32_ECHO_VALUE = 35554553
+var S64_ECHO_VALUE = -8376462522
+var U64_ECHO_VALUE = 83635554553
+var FLOAT_ECHO_VALUE = 12.340000
+var DOUBLE_ECHO_VALUE = 123.123000
+var VOID_ECHO_VALUE = 739848572524
+var STRING_ECHO_VALUE = "string echo!"
+var MBUF_ECHO_VALUE = "mbuf echo!"
+
 var _echo_working bool = false
 var _echo_req_counter uint64 = 0
+
+func _echo_rpc_reset(echo * auto.MsgIdEcho) {
+	echo.S8_echo = byte(S8_ECHO_VALUE)
+	echo.U8_echo = byte(U8_ECHO_VALUE)
+	echo.S16_echo = int16(S16_ECHO_VALUE)
+	echo.U16_echo = uint16(U16_ECHO_VALUE)
+	echo.S32_echo = int32(S32_ECHO_VALUE)
+	echo.U32_echo = uint32(U32_ECHO_VALUE)
+	echo.S64_echo = int64(S64_ECHO_VALUE)
+	echo.U64_echo = uint64(U64_ECHO_VALUE)
+	echo.Float_echo = float32(FLOAT_ECHO_VALUE)
+	echo.Double_echo = float64(DOUBLE_ECHO_VALUE)
+	echo.Void_echo = unsafe.Pointer(&VOID_ECHO_VALUE)
+	tools.T_cgo_gostring2gobyte(echo.String_echo[:], STRING_ECHO_VALUE)
+	echo.Mbuf_echo = base.T_gostring2mbuf(MBUF_ECHO_VALUE)
+}
+
+func _echo_rpc_copy(echodst * auto.MsgIdEcho, echosrc * auto.MsgIdEcho) {
+	echodst.S8_echo = echosrc.S8_echo
+	echodst.U8_echo = echosrc.U8_echo
+	echodst.S16_echo = echosrc.S16_echo
+	echodst.U16_echo = echosrc.U16_echo
+	echodst.S32_echo = echosrc.S32_echo
+	echodst.U32_echo = echosrc.U32_echo
+	echodst.S64_echo = echosrc.S64_echo
+	echodst.U64_echo = echosrc.U64_echo
+	echodst.Float_echo = echosrc.Float_echo
+	echodst.Double_echo = echosrc.Double_echo
+	echodst.Void_echo = echosrc.Void_echo
+	tools.T_cgo_gostring2gobyte(echodst.String_echo[:], tools.T_cgo_gobyte2gostring(echosrc.String_echo[:]))
+	echodst.Mbuf_echo = base.Dave_mclone(echosrc.Mbuf_echo)
+}
+
+func _echo_rpc_verification(echo * auto.MsgIdEcho) {
+	if echo.S8_echo != byte(S8_ECHO_VALUE) {
+		base.DAVELOG("echo.S8_echo != byte(S8_ECHO_VALUE)")
+	}
+	if echo.U8_echo != byte(U8_ECHO_VALUE) {
+		base.DAVELOG("echo.U8_echo != byte(U8_ECHO_VALUE)")
+	}
+	if echo.S16_echo != int16(S16_ECHO_VALUE) {
+		base.DAVELOG("echo.S16_echo != int16(S16_ECHO_VALUE)")
+	}
+	if echo.U16_echo != uint16(U16_ECHO_VALUE) {
+		base.DAVELOG("echo.U16_echo != uint16(U16_ECHO_VALUE)")
+	}
+	if echo.S32_echo != int32(S32_ECHO_VALUE) {
+		base.DAVELOG("echo.S32_echo != int32(S32_ECHO_VALUE)")
+	}
+	if echo.U32_echo != uint32(U32_ECHO_VALUE) {
+		base.DAVELOG("echo.U32_echo != uint32(U32_ECHO_VALUE)")
+	}
+	if echo.S64_echo != int64(S64_ECHO_VALUE) {
+		base.DAVELOG("echo.S64_echo != int64(S64_ECHO_VALUE)")
+	}
+	if echo.U64_echo != uint64(U64_ECHO_VALUE) {
+		base.DAVELOG("echo.U64_echo != uint64(U64_ECHO_VALUE)")
+	}
+	if echo.Float_echo != float32(FLOAT_ECHO_VALUE) {
+		base.DAVELOG("echo.Float_echo != float32(FLOAT_ECHO_VALUE)")
+	}
+	if echo.Double_echo != float64(DOUBLE_ECHO_VALUE) {
+		base.DAVELOG("echo.Double_echo != float64(DOUBLE_ECHO_VALUE)")
+	}
+	if echo.Void_echo != unsafe.Pointer(&VOID_ECHO_VALUE) {
+		base.DAVELOG("echo.Void_echo != unsafe.Pointer(&VOID_ECHO_VALUE)")
+	}
+	if tools.T_cgo_gobyte2gostring(echo.String_echo[:]) != STRING_ECHO_VALUE {
+		base.DAVELOG("tools.T_cgo_gobyte2gostring(echo.String_echo[:]) != STRING_ECHO_VALUE")
+	}
+	if base.T_mbuf2gostring(echo.Mbuf_echo) != MBUF_ECHO_VALUE {
+		base.DAVELOG("tools.T_cgo_gobyte2gostring(echo.Mbuf_echo.Payload[:]) != MBUF_ECHO_VALUE")
+	}
+}
+
+func _echo_rpc_clean(echo * auto.MsgIdEcho) {
+	base.Dave_mfree(echo.Mbuf_echo)
+}
 
 func _echo_api_req_co(gid string, thread string, req auto.MsgIdEchoReq) {
 	switch_rand := tools.T_rand_ub() % 4
@@ -67,6 +159,7 @@ func _echo_snd_req(gid string, thread string, echo_type int64, getecho auto.MsgI
 	req := auto.MsgIdEchoReq{}
 
 	req.Echo = getecho
+	_echo_rpc_reset(&(req.Echo))
 
 	req.Echo.Type = int32(echo_type)
 	tools.T_cgo_gostring2gobyte(req.Echo.Gid[:], base.Globally_identifier())
@@ -84,6 +177,7 @@ func _echo_snd_rsp(dst uint64, echo_type int64, getecho auto.MsgIdEcho, ptr uint
 	rsp := auto.MsgIdEchoRsp{}
 
 	rsp.Echo = getecho
+	_echo_rpc_copy(&(rsp.Echo), &getecho)
 
 	rsp.Echo.Type = int32(echo_type)
 	tools.T_cgo_gostring2gobyte(rsp.Echo.Gid[:], base.Globally_identifier())
@@ -169,7 +263,7 @@ func _echo_start(concurrent_flag int8) {
 	req.Echo.Concurrent_cycle_counter = 0
 	req.Echo.Concurrent_total_counter = 0
 
-	copy(req.Echo.Msg[:], "user start echo!")
+	_echo_rpc_reset(&(req.Echo))
 
 	req.Ptr = 0
 
@@ -246,16 +340,22 @@ func _echo_req(src uint64, msg_body unsafe.Pointer) {
 	} else if pReq.Echo.Type == int32(auto.EchoType_random) {
 		_echo_random_req(src, pReq.Echo, pReq.Ptr)
 	}
+
+	_echo_rpc_clean(&(pReq.Echo))
 }
 
 func _echo_rsp(src uint64, msg_body unsafe.Pointer) {
 	pRsp := (*auto.MsgIdEchoRsp)(msg_body)
 
 	if pRsp.Echo.Type == int32(auto.EchoType_single) {
+		_echo_rpc_verification(&(pRsp.Echo))
+
 		_echo_single_rsp(src, pRsp.Echo)
 	} else if pRsp.Echo.Type == int32(auto.EchoType_random) {
 		_echo_random_rsp(src, pRsp.Echo)
 	}
+
+	_echo_rpc_clean(&(pRsp.Echo))
 }
 
 func _echo(src uint64, msg_id uint64, msg_body unsafe.Pointer) {

@@ -20,6 +20,8 @@
 #define LOGDEBUG(a, ...)
 #endif
 
+#define LOGTRACE(a, ...) { TRACETENABLE { DAVETRACE("[LOG]<%s:%d>", __func__, __LINE__); DAVETRACE((const char*)a, ##__VA_ARGS__); DAVETRACE("\n"); } }
+
 #define LOGLTRACE(t,n,a,...) { TRACELENABLE(t,n) { DAVEDEBUG("[LOG]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); } }
 
 #define LOGABNOR(a, ...) { DAVEDEBUG("[LOG Abnormal]<%s:%d>", __func__, __LINE__); DAVEDEBUG((const char*)a, ##__VA_ARGS__); DAVEDEBUG("\n"); }

@@ -9,6 +9,7 @@
 #include "dave_tools.h"
 #include "dave_http.h"
 #include "dave_os.h"
+#include "dave_echo.h"
 #include "http_recv.h"
 #include "http_distributor.h"
 #include "distributor_info.h"
@@ -404,6 +405,10 @@ _distributor_main(MSGBODY *msg)
 			break;
 		case MSGID_RESTART_REQ:
 				_distributor_restart((RESTARTREQMSG *)(msg->msg_body));
+			break;
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				_distributor_listen_path(msg->msg_src, (HTTPListenReq *)(msg->msg_body));

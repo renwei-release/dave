@@ -145,6 +145,8 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 		log_len = frame_len - frame_index;
 	}
 
+	LOGTRACE("product:%s device:%s", product_name, device_info);
+
 	_log_server_log_save(product_name, device_info, level, (s8 *)(&frame[frame_index]), log_len);
 }
 
@@ -184,14 +186,19 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 
 	_log_server_trace(chain_name, device_info, (s8 *)(&frame[frame_index]), chain_len);
 
+	LOGTRACE("chain_name:%s device:%s service_verno:%s", chain_name, device_info, service_verno);
+
 	log_save_chain_file(chain_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
 }
 
 static void
 _log_server_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame)
 {
-	LOGDEBUG("order_id:%x ver_type:%d frame_len:%d",
-		order_id, ver_type, frame_len);
+	LOGDEBUG("order_id:%s ver_type:%s %s->%s frame_len:%d",
+		t_auto_ORDER_CODE_str(order_id), t_auto_FRAMETYPE_str(ver_type),
+		t_a2b_net_ipv4_to_str(pInfo->src_ip, pInfo->src_port),
+		t_a2b_net_ipv4_to_str_2(pInfo->dst_ip, pInfo->dst_port),
+		frame_len);
 
 	switch(order_id)
 	{
@@ -293,7 +300,7 @@ _log_server_init(MSGBODY *msg)
 
 static void
 _log_server_main(MSGBODY *msg)
-{	
+{
 	switch((ub)msg->msg_id)
 	{
 		case MSGID_DEBUG_REQ:

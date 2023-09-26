@@ -233,7 +233,7 @@ _echo_snd_req(ThreadId src, ThreadId dst, EchoType type, MsgIdEcho *pGetEcho)
 	MsgIdEchoReq *pReq = thread_msg(pReq);
 
 	pReq->echo = *pGetEcho;
-	_echo_rpc_copy(&(pReq->echo), pGetEcho);
+	_echo_rpc_reset(&(pReq->echo));
 
 	pReq->echo.type = type;
 	dave_strcpy(pReq->echo.gid, t_gp_globally_identifier(), sizeof(pReq->echo.gid));
@@ -453,11 +453,9 @@ _echo_req(ThreadId src, ThreadId dst, MsgIdEchoReq *pReq)
 				_echo_stop(src, dst);
 			break;
 		case EchoType_single:
-				_echo_rpc_verification(pEcho);
 				_echo_single_req(src, dst, pEcho, pReq->ptr);
 			break;
 		case EchoType_random:
-				_echo_rpc_verification(pEcho);
 				_echo_random_req(src, dst, pEcho, pReq->ptr);
 			break;
 		default:

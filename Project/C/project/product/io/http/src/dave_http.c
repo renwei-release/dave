@@ -9,6 +9,7 @@
 #include "dave_tools.h"
 #include "dave_http.h"
 #include "dave_os.h"
+#include "dave_echo.h"
 #include "dave_3rdparty.h"
 #include "http_recv.h"
 #include "http_distributor.h"
@@ -56,6 +57,10 @@ _http_main(MSGBODY *msg)
 	{
 		case MSGID_RESTART_REQ:
 				_http_restart((RESTARTREQMSG *)(msg->msg_body));
+			break;
+		case MSGID_ECHO_REQ:
+		case MSGID_ECHO_RSP:
+				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		case HTTPMSG_LISTEN_REQ:
 				http_recv_listen(msg->msg_src, (HTTPListenReq *)(msg->msg_body));

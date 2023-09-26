@@ -31,3 +31,9 @@ func Dave_mfree(ptr *auto.MBUF) {
 	}
 	C.dave_dll_mfree(unsafe.Pointer(ptr), nil, C.int(0))
 }
+
+func Dave_mclone(ptr *auto.MBUF) *auto.MBUF {
+	byte_data, _ := T_mbuf2gobyte(ptr)
+
+	return T_gobyte2mbuf(byte_data)
+}
