@@ -1010,6 +1010,7 @@ class StoreMysqlReq (Structure):
 class StoreMysqlRsp (Structure):
 	_fields_ = [
 		("ret", c_longlong),
+		("msg", c_char * 4096),
 		("data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]

@@ -20,12 +20,6 @@ extern void log_server_init(void);
 extern void log_server_exit(void);
 #endif
 
-typedef enum {
-	LOG_SERVER,
-	LOG_CLIENT,
-	LOG_MAX,
-} LOGType;
-
 // =====================================================================
 
 void

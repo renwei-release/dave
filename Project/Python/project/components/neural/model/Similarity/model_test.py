@@ -7,6 +7,7 @@
 # 运行容器环境cuda11
 #
 # ================================================================================
+import time
 
 
 similarity_texts = [
@@ -78,17 +79,28 @@ def _similarity_predict_total_test():
 
 
 def _encode_test():
-    from components.neural.model.Similarity.model_predict import predict as Similarity_predict
+    from components.neural.model.Similarity.Text2Vec.model_predict import predict as Similarity_predict
+
     model = Similarity_predict("/project/model/trained_model/AI-Test-GNC-GPU-1-cuda11-renwei-docker/GanymedeNil/text2vec-large-chinese_JegoTrip_20230619064028")
 
+    start = time.time()
     vector1 = model.encode("我是北京人")
+    print(f"encode time: {time.time() - start}")
+    start = time.time()
     vector2 = model.encode("我是湖南人")
+    print(f"encode time: {time.time() - start}")
+    start = time.time()
     vector3 = model.encode("吃饭")
+    print(f"encode time: {time.time() - start}")
 
     vector1 = [ vector1 ]
     vectors = [ vector2, vector3 ]
 
-    print(model.cosine(vector1, vectors))
+    start = time.time()
+    ret = model.cosine(vector1, vectors)
+    print(f"cosine time: {time.time() - start}")
+
+    print(ret)
     return
 
 

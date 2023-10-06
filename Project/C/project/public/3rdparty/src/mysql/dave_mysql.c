@@ -423,7 +423,7 @@ dave_mysql_query(void *pSql, s8 *sql)
 	if(pSql == NULL)
 	{
 		PARTYLOG("sql:%s has empty pSql!", sql);
-		ret.ret = RetCode_invalid_option;
+		ret.ret = RetCode_connect_error;
 		return ret;
 	}
 
@@ -454,6 +454,12 @@ dave_mysql_free_ret(SqlRet ret)
 	{
 		dave_free(ret.pJson);
 	}
+}
+
+s8 *
+dave_mysql_error(void *pSql)
+{
+	return (s8 *)so_mysql_error(pSql);
 }
 
 #endif

@@ -61,7 +61,7 @@ func STORESQL(format string, sql ...interface{}) (*tools.Json, error) {
 		(pRsp.Ret != auto.RetCode_empty_data) &&
 		(pRsp.Ret != auto.RetCode_table_exist) {
 
-		base.DAVELOG("ret:%s on sql:%s", auto.T_auto_RetCode_str(pRsp.Ret), sql_string)
+		base.DAVELOG("ret:%s/%s sql:%s", auto.T_auto_RetCode_str(pRsp.Ret), pRsp.Msg, sql_string)
 
 		base.Dave_mfree(pRsp.Data)
 

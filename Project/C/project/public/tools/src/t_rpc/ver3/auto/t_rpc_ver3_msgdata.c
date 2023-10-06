@@ -6810,6 +6810,7 @@ t_rpc_ver3_zip_StoreMysqlRsp(StoreMysqlRsp *zip_data, ub zip_len)
 	pStructBson = t_bson_malloc_object();
 
 	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 4096));
 	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
@@ -6835,6 +6836,7 @@ t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void *pStructBs
 		*unzip_len = sizeof(StoreMysqlRsp);
 
 		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 4096, t_bson_inq_object(pStructBson, "s8-msg"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}

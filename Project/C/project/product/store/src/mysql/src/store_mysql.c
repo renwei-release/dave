@@ -20,6 +20,12 @@
 #define CFG_MYSQL_DBNAME "MySqDBName"
 
 typedef struct {
+	s8 address[256];
+	ub port;
+	s8 user[256];
+	s8 pwd[256];
+	s8 db[256];
+
 	void *mysql_client;
 } StoreMysql;
 
@@ -53,6 +59,12 @@ _store_mysql_init(ub mysql_number, s8 *address, ub port, s8 *user, s8 *pwd, s8 *
 	for(mysql_index=0; mysql_index<_mysql_number; mysql_index++)
 	{
 		pMysql = &_pMysql[mysql_index];
+
+		dave_strcpy(pMysql->address, address, sizeof(pMysql->address));
+		pMysql->port = port;
+		dave_strcpy(pMysql->user, user, sizeof(pMysql->user));
+		dave_strcpy(pMysql->pwd, pwd, sizeof(pMysql->pwd));
+		dave_strcpy(pMysql->db, db, sizeof(pMysql->db));
 
 		pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, db);
 		if(pMysql->mysql_client == NULL)
@@ -91,9 +103,12 @@ _store_mysql_exit(void)
 }
 
 static RetCode
-_store_mysql_sql(MBUF **data, StoreMysql *pMysql, s8 *sql_ptr, ub sql_len)
+_store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *sql_ptr, ub sql_len)
 {
 	SqlRet ret;
+	ub safe_counter;
+
+	msg_ptr[0] = '\0';
 
 	if((sql_ptr == NULL) || (sql_len == 0))
 	{
@@ -101,7 +116,38 @@ _store_mysql_sql(MBUF **data, StoreMysql *pMysql, s8 *sql_ptr, ub sql_len)
 		return RetCode_Invalid_parameter;
 	}
 
-	ret = dave_mysql_query(pMysql->mysql_client, sql_ptr);
+	for(safe_counter=0; safe_counter<16; safe_counter++)
+	{
+		ret = dave_mysql_query(pMysql->mysql_client, sql_ptr);
+		if(ret.ret == RetCode_connect_error)
+		{
+			STLOG("safe_counter:%d disconnect address:%s port:%d user:%s pwd:%s db:%s",
+				safe_counter,
+				pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+
+			dave_mysql_free_ret(ret);
+		
+			dave_mysql_release_client(pMysql->mysql_client);
+
+			pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+
+			if(pMysql->mysql_client != NULL)
+			{
+				STLOG("safe_counter:%d connect to address:%s port:%d user:%s pwd:%s db:%s",
+					safe_counter,
+					pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+			}
+
+			continue;		
+		}
+
+		if(ret.ret != RetCode_OK)
+		{
+			dave_strcpy(msg_ptr, dave_mysql_error(pMysql->mysql_client), msg_len);
+		}
+
+		break;
+	}
 
 	*data = dave_json_to_mbuf(ret.pJson);
 
@@ -146,17 +192,18 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	StoreMysqlRsp *pRsp = thread_reset_msg(pRsp);
 	StoreMysql *pMysql = &_pMysql[thread_index];
 
-	pRsp->ret = _store_mysql_sql(&(pRsp->data), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
+	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
 	pRsp->ptr = pReq->ptr;
 
 	if((pRsp->ret != RetCode_OK)
 		&& (pRsp->ret != RetCode_table_exist)
 		&& (pRsp->ret != RetCode_empty_data))
 	{
-		STLOG("%s execute sql:%s ret:%s",
+		STLOG("%s execute sql:%s ret:%s msg:%s",
 			thread_name(src),
 			ms8(pReq->sql),
-			retstr(pRsp->ret));
+			retstr(pRsp->ret),
+			pRsp->msg);
 	}
 
 	id_msg(src, STORE_MYSQL_RSP, pRsp);

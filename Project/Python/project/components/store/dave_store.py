@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 from public import *
+from public.base.dave_log import DAVELOG
 
 
 STORE_THREAD_NAME=b"store"
@@ -22,12 +23,40 @@ def STORESQL(*sql: object):
     pReq.contents.ptr = None
 
     pRsp = write_co(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
+    if pRsp == None:
+        DAVELOG(f"pRsp is None / sql:{sql}")
+        return ERRCODE_ptr_null, None
+
     if (pRsp.ret != RetCode_OK) and (pRsp.ret != RetCode_empty_data) and (pRsp.ret != RetCode_table_exist):
-        DAVELOG(f"ret:{pRsp.ret}/{t_auto_RetCode_str(pRsp.ret)}, sql:{sql} rsp:{mbuf_to_dict(pRsp.data)}")
+        DAVELOG(f"ret:{t_auto_RetCode_str(pRsp.ret)}/{pRsp.msg}, sql:{sql}")
         return pRsp.ret, None
 
-    sql_ret = mbuf_to_dict(pRsp.data)
+    sql_array = mbuf_to_dict(pRsp.data)
 
     dave_mfree(pRsp.data)
 
-    return RetCode_OK, sql_ret
+    return RetCode_OK, sql_array
+
+
+def STORELOAD(sql_array, row, column):
+    if sql_array == None:
+        return None
+    if row >= len(sql_array):
+        DAVELOG(f"sql_array:{sql_array} row:{row} is None")
+        return None
+    if column >= len(sql_array[row]):
+        DAVELOG(f"sql_array:{sql_array} row:{row} column:{column} is None")
+        return None
+
+    return sql_array[row][column]
+
+
+def STORELOADStr(sql_array, column):
+    if sql_array == None:
+        return None
+
+    str_str = STORELOAD(sql_array, 0, column)
+    if str_str == None:
+        DAVELOG(f"sql_array:{sql_array} column:{column} is None")
+        return None
+    return str_str

@@ -14,5 +14,7 @@ void log_fifo_exit(void);
 
 void log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr);
 
+ub log_fifo_info(s8 *info_ptr, ub info_len);
+
 #endif
 

@@ -9,6 +9,8 @@
 PROJECT=${PWD##*/}
 DEPLOYPATH=../../../../Deploy/deploy/${PROJECT}
 
+./deploy
+
 cd ${DEPLOYPATH}
 
 if [ "$USER" == "root" ]; then

@@ -12,10 +12,12 @@ class t_print_progress_bar():
     self_total_process = 0
     self_current_process = 0
 
-    def __init__(self, total_process):
+    def __init__(self, total_process, message=None):
         self.self_percentage = 10000
         self.self_total_process = total_process
         self.self_current_process = 0
+        if message is not None:
+            print(message)
 
     def show(self):
         self.self_current_process += 1
@@ -27,9 +29,10 @@ class t_print_progress_bar():
             self.self_percentage = percentage
             for step in range(0, percentage + 1):
                 print('\r[%3d%%] %s' % (step, '>' * step), flush=True, end='')
-        if percentage >= 100:
-            # 进度条完成，换到下一行
+        if percentage == 100:
             print(f'')
+        if percentage > 100:
+            print(f'{self.self_current_process} bar overflow!')
 
 
 def t_print_class_member(class_struct):

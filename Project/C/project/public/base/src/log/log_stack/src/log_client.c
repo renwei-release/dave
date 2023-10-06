@@ -346,12 +346,16 @@ _log_client_plugout(SocketPlugOut *pPlugOut)
 }
 
 static void
-_log_client_debug(DebugReq *pReq)
+_log_client_debug(ThreadId src, DebugReq *pReq)
 {
-	if(pReq->msg[0] != '\0')
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
+
+	if(pReq->msg[0] == 'i')
 	{
-		LOGLOG("%s", pReq->msg);
+		log_fifo_info(pRsp->msg, sizeof(pRsp->msg));
 	}
+
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
 
 static void
@@ -410,7 +414,7 @@ _log_client_main(MSGBODY *msg)
 	switch((ub)msg->msg_id)
 	{
 		case MSGID_DEBUG_REQ:
-				_log_client_debug((DebugReq *)(msg->msg_body));
+				_log_client_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
 			break;
 		case MSGID_RESTART_REQ:
 		case MSGID_POWER_OFF:

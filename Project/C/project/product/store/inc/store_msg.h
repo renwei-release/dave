@@ -20,6 +20,7 @@ typedef struct {
 /* for STORE_MYSQL_RSP message */
 typedef struct {
 	RetCode ret;
+	s8 msg[4096];
 	MBUF *data;
 	void *ptr;
 } StoreMysqlRsp;

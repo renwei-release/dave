@@ -898,6 +898,7 @@ type StoreMysqlReq struct {
 /* for STORE_MYSQL_RSP message */
 type StoreMysqlRsp struct {
 	Ret int64
+	Msg [4096] byte
 	Data *MBUF
 	Ptr uint64
 }

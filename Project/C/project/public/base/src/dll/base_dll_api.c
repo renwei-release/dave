@@ -52,6 +52,18 @@ dave_dll_mfree(void *m, char *fun, int line)
 	return (int)__base_mfree__((MBUF *)m, (s8 *)fun, (ub)line);
 }
 
+void *
+dave_dll_mclone(void *m, char *fun, int line)
+{
+	if(fun == NULL)
+	{
+		fun = (char *)__func__;
+		line = __LINE__;
+	}
+
+	return __base_mclone__((MBUF *)m, (s8 *)fun, (ub)line);
+}
+
 int
 dave_dll_cfg_set(char *cfg_name, char *cfg_value)
 {

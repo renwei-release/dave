@@ -12,9 +12,64 @@ from public.tools import *
 HOW_MANY_CYCLES_DO_STATISTICS = 500
 CONCURRENCY_TPS = 5000
 
+S8_ECHO_VALUE = 12
+U8_ECHO_VALUE = 12
+S16_ECHO_VALUE = -1234
+U16_ECHO_VALUE = 1234
+S32_ECHO_VALUE = -6462522
+U32_ECHO_VALUE = 35554553
+S64_ECHO_VALUE = -8376462522
+U64_ECHO_VALUE = 83635554553
+FLOAT_ECHO_VALUE = 12.340000
+DOUBLE_ECHO_VALUE = 123.123000
+VOID_ECHO_VALUE = 739848572524
+STRING_ECHO_VALUE = "string echo!"
+MBUF_ECHO_VALUE = "mbuf echo!"
 
 _echo_working = False
 _echo_req_counter = 0
+
+
+def _echo_rpc_reset(echo):
+    echo.s8_echo = S8_ECHO_VALUE
+    echo.u8_echo = U8_ECHO_VALUE
+    echo.s16_echo = S16_ECHO_VALUE
+    echo.u16_echo = U16_ECHO_VALUE
+    echo.s32_echo = S32_ECHO_VALUE
+    echo.u32_echo = U32_ECHO_VALUE
+    echo.s64_echo = S64_ECHO_VALUE
+    echo.u64_echo = U64_ECHO_VALUE
+    echo.float_echo = FLOAT_ECHO_VALUE
+    echo.double_echo = DOUBLE_ECHO_VALUE
+    echo.string_echo = bytes(STRING_ECHO_VALUE, encoding='utf8')
+    echo.mbuf_echo = str_to_mbuf(MBUF_ECHO_VALUE)
+    return echo
+
+
+def _echo_rpc_copy(echodst, echosrc):
+    echodst.s8_echo = echosrc.s8_echo
+    echodst.u8_echo = echosrc.u8_echo
+    echodst.s16_echo = echosrc.s16_echo
+    echodst.u16_echo = echosrc.u16_echo
+    echodst.s32_echo = echosrc.s32_echo
+    echodst.u32_echo = echosrc.u32_echo
+    echodst.s64_echo = echosrc.s64_echo
+    echodst.u64_echo = echosrc.u64_echo
+    echodst.float_echo = echosrc.float_echo
+    echodst.double_echo = echosrc.double_echo
+    echodst.void_echo = echosrc.void_echo
+    echodst.string_echo = echosrc.string_echo
+    echodst.mbuf_echo = dave_mclone(echosrc.mbuf_echo)
+    return echodst
+
+
+def _echo_rpc_verification(echo):
+    return
+
+
+def _echo_rpc_clean(echo):
+    dave_mfree(echo.mbuf_echo)
+    return
 
 
 def _echo_api_req_co(gid, thread, pReq):
@@ -67,6 +122,7 @@ def _echo_snd_req(gid, thread, echo_type, getecho):
     pReq = thread_msg(MsgIdEchoReq)
 
     pReq.contents.echo = getecho
+    pReq.contents.echo = _echo_rpc_reset(pReq.contents.echo)
 
     pReq.contents.echo.type = echo_type
     pReq.contents.echo.gid = bytes(globally_identifier(), encoding='utf8')
@@ -85,6 +141,7 @@ def _echo_snd_rsp(dst, echo_type, getecho, ptr):
     pRsp = thread_msg(MsgIdEchoRsp)
 
     pRsp.contents.echo = getecho
+    pRsp.contents.echo = _echo_rpc_copy(pRsp.contents.echo, getecho)
 
     pRsp.contents.echo.type = echo_type
     pRsp.contents.echo.gid = bytes(globally_identifier(), encoding='utf8')
@@ -125,6 +182,7 @@ def _echo_concurrent(gid, thread, getecho):
                 getecho.concurrent_cycle_counter += random_send_times
                 getecho.concurrent_total_counter += random_send_times
 
+                _echo_random(gid, thread, getecho, random_send_times)
     return getecho
 
 
@@ -161,7 +219,7 @@ def _echo_start(concurrent_flag):
     pReq.contents.echo.concurrent_cycle_counter = 0
     pReq.contents.echo.concurrent_total_counter = 0
 
-    pReq.contents.echo.msg = bytes("user start echo!", encoding='utf8')
+    pReq.echo = _echo_rpc_reset(pReq.contents.echo)
 
     pReq.contents.ptr = None
 
@@ -235,6 +293,8 @@ def _echo_req(src, msg_len, msg_body):
         _echo_single_req(src, pReq.echo, pReq.ptr)
     elif pReq.echo.type == EchoType_random:
         _echo_random_req(src, pReq.echo, pReq.ptr)
+		
+    _echo_rpc_clean(pReq.echo)
     return
 
 
@@ -242,9 +302,13 @@ def _echo_rsp(src, msg_len, msg_body):
     pRsp = struct_copy(MsgIdEchoRsp, msg_body, msg_len)
 
     if pRsp.echo.type == EchoType_single:
+        _echo_rpc_verification(pRsp.echo)
+
         _echo_single_rsp(src, pRsp.echo)
     elif pRsp.echo.type == EchoType_random:
         _echo_random_rsp(src, pRsp.echo)
+		
+    _echo_rpc_clean(pRsp.echo)
     return
 
 

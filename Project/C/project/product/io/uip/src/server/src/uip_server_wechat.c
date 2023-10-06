@@ -392,6 +392,7 @@ uip_server_wechat(s8 *string_ptr, ub string_length)
 				pJson = _uip_server_wechat_form_decode(type, string_ptr, string_length-content_length, content_ptr, content_length);
 			break;
 		default:
+				UIPLOG("invalid form type:%d", type);
 				pJson = NULL;
 			break;
 	}

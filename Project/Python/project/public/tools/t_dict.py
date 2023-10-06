@@ -25,6 +25,7 @@ def t_dict_load(file_path):
     dict = {}
 
     if t_path_or_file_exists(file_path) == False:
+        print(f'load file:{file_path} not exists!')
         return dict
 
     try:
@@ -32,6 +33,7 @@ def t_dict_load(file_path):
             data = f.read()
             dict = json.loads(data)
     except Exception as e:
+        print(f'load file:{file_path} error:{e}')
         dict = {}
     return dict
 

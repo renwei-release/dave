@@ -22,7 +22,7 @@ def _kv_timerout(kv, key):
     if isinstance(key, str) == True:
         key = bytes(key, encoding='utf8')
 
-    DAVELOG(f"key:{key}")
+    DAVEDEBUG(f"key:{key}")
     davelib.dave_dll_kv_del(c_void_p(kv), c_char_p(key))
     return
 _c_kv_timerout = TIMEROUTFUNC(_kv_timerout)

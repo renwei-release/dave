@@ -225,3 +225,9 @@ log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr)
 	dave_os_thread_wakeup(_log_fifo_thread_body);
 }
 
+ub
+log_fifo_info(s8 *info_ptr, ub info_len)
+{
+	return log_save_info(info_ptr, info_len);
+}
+

@@ -46,6 +46,10 @@ _log_server_debug(ThreadId src, DebugReq *pReq)
 		dave_snprintf(pRsp->msg, sizeof(pRsp->msg), "disable log trace!");
 		_log_server_trace_enable = dave_false;
 	}
+	else if(dave_strcmp(pReq->msg, "i") == dave_true)
+	{
+		log_fifo_info(pRsp->msg, sizeof(pRsp->msg));
+	}
 
 	id_msg(src, MSGID_DEBUG_RSP, pRsp);
 }
@@ -65,10 +69,18 @@ _log_server_log_save(
 	TraceLevel level,
 	s8 *log_ptr, ub log_len)
 {
+	dave_bool json_ret, txt_ret;
+
 	_log_server_trace(project_name, device_info, log_ptr, log_len);
 
-	log_save_json_file(project_name, device_info, level, log_ptr, log_len);
-	log_save_txt_file(project_name, device_info, level, log_ptr, log_len);
+	json_ret = log_save_json_file(project_name, device_info, level, log_ptr, log_len);
+	txt_ret = log_save_txt_file(project_name, device_info, level, log_ptr, log_len);
+
+	LOGTRACE("project:%s device:%s level:%s len:%d ret:%d/%d",
+		project_name, device_info,
+		t_auto_TraceLevel_str(level),
+		log_len,
+		json_ret, txt_ret);
 }
 
 static inline void
@@ -144,8 +156,6 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 			log_len, frame_len, frame_index);
 		log_len = frame_len - frame_index;
 	}
-
-	LOGTRACE("product:%s device:%s", product_name, device_info);
 
 	_log_server_log_save(product_name, device_info, level, (s8 *)(&frame[frame_index]), log_len);
 }

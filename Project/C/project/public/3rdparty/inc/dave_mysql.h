@@ -27,5 +27,7 @@ SqlRet dave_mysql_query(void *pSql, s8 *sql);
 
 void dave_mysql_free_ret(SqlRet ret);
 
+s8 * dave_mysql_error(void *pSql);
+
 #endif
 

@@ -49,6 +49,7 @@ def uip_register(method, recv_req_function):
     dave_system_function_table_add(UIP_REGISTER_RSP, _uip_register_rsp)
     dave_system_function_table_add(UIP_DATA_RECV_REQ, _uip_recv_req)
 
+    DAVELOG(f"method:{method} register!")
     broadcast_msg(UIP_THREAD_NAME, UIP_REGISTER_REQ, pReq)
     return True
 
