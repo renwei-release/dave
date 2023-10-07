@@ -1,0 +1,33 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+PROJECTDIR=${homepath}/../..
+
+dos2unix_process_directory()
+{
+   for file in $(find $DIRECTORY -type f)
+      do
+	     dos2unix "$file"
+	  done
+}
+
+DIRECTORY="${PROJECTDIR}/Deploy"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/Project/C/build"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/Project/Go/build"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/Project/Python/build"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/Project/Solidity/build"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/ThirdParty"
+dos2unix_process_directory
+
+DIRECTORY="${PROJECTDIR}/Tools"
+dos2unix_process_directory
