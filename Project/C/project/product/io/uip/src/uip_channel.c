@@ -368,20 +368,28 @@ _uip_channel_inq(s8 *channel_name)
 }
 
 static UIPChannelTable *
-_uip_channel_new(s8 *channel_name)
+_uip_channel_new(s8 *channel_name, s8 *user_input_auth_key)
 {
-	s8 auth_key_str[DAVE_AUTH_KEY_STR_LEN];
+	s8 new_auth_key[DAVE_AUTH_KEY_STR_LEN];
 
-	if(uip_auth_key_build(auth_key_str, DB_NAME, channel_name) == NULL)
+	if(user_input_auth_key != NULL)
 	{
-		return NULL;
+		dave_strcpy(new_auth_key, user_input_auth_key, sizeof(new_auth_key));
+	}
+	else
+	{
+		if(uip_auth_key_build(new_auth_key, DB_NAME, channel_name) == NULL)
+		{
+			UIPLOG("channel:%s uip auth key build failed!", channel_name);
+			return NULL;
+		}
 	}
 
-	return _uip_channel_store_to_db(channel_name, auth_key_str, NULL);
+	return _uip_channel_store_to_db(channel_name, new_auth_key, NULL);
 }
 
 static s8 *
-_uip_channel_add(s8 *channel_name)
+_uip_channel_add(s8 *channel_name, s8 *user_input_auth_key)
 {
 	UIPChannelTable *pTable;
 
@@ -391,7 +399,12 @@ _uip_channel_add(s8 *channel_name)
 		return pTable->auth_key;
 	}
 
-	pTable = _uip_channel_new(channel_name);
+	if((user_input_auth_key != NULL) && (uip_auth_key_check(user_input_auth_key, channel_name) == dave_false))
+	{
+		user_input_auth_key = NULL;
+	}
+
+	pTable = _uip_channel_new(channel_name, user_input_auth_key);
 	if(pTable == NULL)
 	{
 		return NULL;
@@ -545,7 +558,7 @@ uip_channel_inq(s8 *channel_name)
 }
 
 s8 *
-uip_channel_add(s8 *channel_name)
+uip_channel_add(s8 *channel_name, s8 *user_input_auth_key)
 {
 	if((channel_name == NULL) || (channel_name[0] == '\0'))
 	{
@@ -553,7 +566,12 @@ uip_channel_add(s8 *channel_name)
 		return NULL;
 	}
 
-	return _uip_channel_add(channel_name);
+	if(dave_strlen(user_input_auth_key) < DAVE_AUTH_KEY_LEN)
+	{
+		user_input_auth_key = NULL;
+	}
+
+	return _uip_channel_add(channel_name, user_input_auth_key);
 }
 
 dave_bool

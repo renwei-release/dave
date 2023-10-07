@@ -13,14 +13,20 @@
 static RetCode
 _uip_dos_channel_add(s8 *cmd_ptr, ub cmd_len)
 {
-	s8 channel_name[256];
+	ub cmd_index;
+	s8 channel_name[DAVE_NORMAL_NAME_LEN];
+	s8 user_input_auth_key[DAVE_AUTH_KEY_STR_LEN];
 	s8 *auth_key;
 
-	dos_get_one_parameters(cmd_ptr, cmd_len, channel_name, sizeof(channel_name));
+	dave_memset(channel_name, 0x00, sizeof(channel_name));
+	dave_memset(user_input_auth_key, 0x00, sizeof(user_input_auth_key));
+
+	cmd_index = dos_get_one_parameters(cmd_ptr, cmd_len, channel_name, sizeof(channel_name));
 	if(channel_name[0] == '\0')
 	{
 		return RetCode_Invalid_parameter;
 	}
+	dos_get_one_parameters(&cmd_ptr[cmd_index], cmd_len-cmd_index, user_input_auth_key, sizeof(user_input_auth_key));
 
 	auth_key = uip_channel_inq(channel_name);
 	if(auth_key != NULL)
@@ -29,7 +35,7 @@ _uip_dos_channel_add(s8 *cmd_ptr, ub cmd_len)
 	}
 	else
 	{
-		auth_key = uip_channel_add(channel_name);
+		auth_key = uip_channel_add(channel_name, user_input_auth_key);
 		if(auth_key == NULL)
 		{
 			dos_print("creat channel:%s failed!", channel_name);	

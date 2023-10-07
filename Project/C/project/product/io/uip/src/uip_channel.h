@@ -20,7 +20,7 @@ RetCode uip_channel_verify(s8 *channel_name, s8 *auth_key, s8 *allow_method);
 
 s8 * uip_channel_inq(s8 *channel_name);
 
-s8 * uip_channel_add(s8 *channel_name);
+s8 * uip_channel_add(s8 *channel_name, s8 *user_input_auth_key);
 
 dave_bool uip_channel_del(s8 *channel_name);
 
