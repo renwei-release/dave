@@ -12,8 +12,8 @@ from public.tools import *
 HOW_MANY_CYCLES_DO_STATISTICS = 500
 CONCURRENCY_TPS = 5000
 
-S8_ECHO_VALUE = 12
-U8_ECHO_VALUE = 12
+S8_ECHO_VALUE = b'c'
+U8_ECHO_VALUE = b'c'
 S16_ECHO_VALUE = -1234
 U16_ECHO_VALUE = 1234
 S32_ECHO_VALUE = -6462522
@@ -64,6 +64,26 @@ def _echo_rpc_copy(echodst, echosrc):
 
 
 def _echo_rpc_verification(echo):
+    if echo.s8_echo != S8_ECHO_VALUE:
+        DAVELOG(f"echo.s8_echo = {echo.s8_echo} != {S8_ECHO_VALUE}")
+    if echo.u8_echo != U8_ECHO_VALUE:
+        DAVELOG(f"echo.u8_echo = {echo.u8_echo} != {U8_ECHO_VALUE}")
+    if echo.s16_echo != S16_ECHO_VALUE:
+        DAVELOG(f"echo.s16_echo = {echo.s16_echo} != {S16_ECHO_VALUE}")
+    if echo.u16_echo != U16_ECHO_VALUE:
+        DAVELOG(f"echo.u16_echo = {echo.u16_echo} != {U16_ECHO_VALUE}")
+    if echo.s32_echo != S32_ECHO_VALUE:
+        DAVELOG(f"echo.s32_echo = {echo.s32_echo} != {S32_ECHO_VALUE}")
+    if echo.u32_echo != U32_ECHO_VALUE:
+        DAVELOG(f"echo.u32_echo = {echo.u32_echo} != {U32_ECHO_VALUE}")
+    if echo.s64_echo != S64_ECHO_VALUE:
+        DAVELOG(f"echo.s64_echo = {echo.s64_echo} != {S64_ECHO_VALUE}")
+    if echo.u64_echo != U64_ECHO_VALUE:
+        DAVELOG(f"echo.u64_echo = {echo.u64_echo} != {U64_ECHO_VALUE}")
+    if echo.string_echo != bytes(STRING_ECHO_VALUE, encoding='utf8'):
+        DAVELOG(f"echo.string_echo = {echo.string_echo} != {STRING_ECHO_VALUE}")
+    if mbuf_to_str(echo.mbuf_echo) != (MBUF_ECHO_VALUE):
+        DAVELOG(f"echo.mbuf_echo = {mbuf_to_str(echo.mbuf_echo)} != {MBUF_ECHO_VALUE}")
     return
 
 
