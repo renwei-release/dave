@@ -14,7 +14,6 @@
 #ifndef __T_AUTO_ENUMSTR__
 #define __T_AUTO_ENUMSTR__
 #include "dave_base.h"
-#include "database_msg.h"
 #include "cv_param.h"
 #include "dave_enum.h"
 #include "dave_error_code.h"
@@ -22,6 +21,7 @@
 #include "nlp_param.h"
 #include "talk_param.h"
 #include "bbs_param.h"
+#include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "sip_param.h"

@@ -221,28 +221,52 @@ _mongoc_dll_init(void)
 
 	so_mongoc_init = dlsym(_bson_dll_handle, "mongoc_init");
 	if(so_mongoc_init == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_cleanup = dlsym(_bson_dll_handle, "mongoc_cleanup");
 	if(so_mongoc_cleanup == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_client_new = dlsym(_bson_dll_handle, "mongoc_client_new");
 	if(so_mongoc_client_new == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_client_destroy = dlsym(_bson_dll_handle, "mongoc_client_destroy");
 	if(so_mongoc_client_destroy == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_client_get_database = dlsym(_bson_dll_handle, "mongoc_client_get_database");
 	if(so_mongoc_client_get_database == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_database_destroy = dlsym(_bson_dll_handle, "mongoc_database_destroy");
 	if(so_mongoc_database_destroy == NULL)
+	{
+		PARTYABNOR("");	
 		return dave_false;
+	}
 	so_mongoc_collection_find_with_opts = dlsym(_bson_dll_handle, "mongoc_collection_find_with_opts");
 	if(so_mongoc_collection_find_with_opts == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_cursor_next = dlsym(_bson_dll_handle, "mongoc_cursor_next");
 	if(so_mongoc_cursor_next == NULL)
+	{
+		PARTYABNOR("");
 		return dave_false;
+	}
 	so_mongoc_cursor_destroy = dlsym(_bson_dll_handle, "mongoc_cursor_destroy");
 	if(so_mongoc_cursor_destroy == NULL)
 		return dave_false;
@@ -268,6 +292,7 @@ _mongoc_dll_init(void)
 	if(so_mongoc_collection_update == NULL)
 		return dave_false;
 
+	PARTYLOG("open mongoc dll success!");
 	return dave_true;
 }
 
@@ -719,8 +744,16 @@ _mongoc_exit_(dave_bool server_flag)
 dave_bool
 dave_mongoc_init(dave_bool server_flag, ub port, s8 *db_name, s8 *user, s8 *password)
 {
-	_bson_dll_init();
-	_mongoc_dll_init();
+	if(_bson_dll_init() == dave_false)
+	{
+		PARTYABNOR("bson dll init failed!");
+		return dave_false;
+	}
+	if(_mongoc_dll_init() == dave_false)
+	{
+		PARTYABNOR("mongoc dll init failed!");
+		return dave_false;
+	}
 
 	return _mongoc_init_(server_flag, port, db_name, user, password);
 }

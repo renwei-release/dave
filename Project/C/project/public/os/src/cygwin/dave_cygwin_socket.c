@@ -501,7 +501,7 @@ dave_os_socket_exit(void)
 }
 
 s32
-dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name)
+dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name, u16 fix_src_port)
 {
 	int cygwin_domain = _os_cygwin_domain(domain);
 	int cygwin_type = _os_cygwin_net_type(type);

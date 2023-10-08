@@ -7,6 +7,7 @@
 
 #ifndef __DAVE_MYSQL_H__
 #define __DAVE_MYSQL_H__
+#include "dave_define.h"
 
 void dave_mysql_init(void);
 
@@ -28,6 +29,18 @@ SqlRet dave_mysql_query(void *pSql, s8 *sql);
 void dave_mysql_free_ret(SqlRet ret);
 
 s8 * dave_mysql_error(void *pSql);
+
+ErrCode dave_mysql_connect(void *mysql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name);
+void * dave_mysql_malloc_result(void *mysql);
+void dave_mysql_free_result(void *res);
+ub dave_mysql_result_rows(void *res);
+ub dave_mysql_result_fields(void *res);
+s8 ** dave_mysql_fetch_row(void *res);
+void * dave_mysql_fetch_field(void *res);
+unsigned long * dave_mysql_fetch_length(void *res);
+ErrCode dave_mysql_ping(void *mysql);
+ErrCode dave_mysql_old_query(void *mysql, s8 *sql);
+void * dave_mysql_old_creat_client(void *ptr);
 
 #endif
 

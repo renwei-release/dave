@@ -462,5 +462,211 @@ dave_mysql_error(void *pSql)
 	return (s8 *)so_mysql_error(pSql);
 }
 
+ErrCode
+dave_mysql_connect(void *mysql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
+{
+	unsigned int errcode;
+	char value;
+
+	if(so_mysql_real_connect(mysql, (const char *)address,
+		(const char *)user, (const char *)pwd, (const char *)db_name,
+		(unsigned int)port, NULL, CLIENT_MULTI_STATEMENTS|CLIENT_MULTI_RESULTS) == NULL)
+	{
+		errcode = so_mysql_errno(mysql);
+
+		if(ER_BAD_DB_ERROR == errcode)
+		{
+			return ERRCODE_db_not_find;
+		}
+		else if(ER_ALREADY_CONNECTED == errcode)
+		{
+			PARTYLOG("mysql connect error:%s<%d> address:%s port:%d user:%s pwd:%s db_name:%s",
+				so_mysql_error(mysql), errcode, address, port, user, pwd, db_name);
+
+			return ERRCODE_OK;
+		}
+		else
+		{
+			PARTYABNOR("mysql connect error:%s<%d> address:%s port:%d user:%s pwd:%s db_name:%s",
+				so_mysql_error(mysql), errcode, address, port, user, pwd, db_name);
+
+			return ERRCODE_connect_error;
+		}
+	}
+	else
+	{
+		value = 1;
+		so_mysql_options(mysql, MYSQL_OPT_RECONNECT, &value);
+
+		// open auto commit!
+		so_mysql_autocommit(mysql, MYSQL_AUTO_COMMIT_ENABLE);
+		
+		if(so_mysql_set_character_set(mysql, "utf8") != 0)
+		{
+			PARTYABNOR("mysql set character:%s<%d>", so_mysql_error(mysql), so_mysql_errno(mysql));
+		}
+
+		return ERRCODE_OK;
+	}
+}
+
+void *
+dave_mysql_malloc_result(void *mysql)
+{
+	void *res;
+
+	res = so_mysql_store_result(mysql);
+
+	return res;
+}
+
+void
+dave_mysql_free_result(void *res)
+{
+	if(res != NULL)
+	{
+		so_mysql_free_result(res);
+	}
+}
+
+ub
+dave_mysql_result_rows(void *res)
+{
+	if(res != NULL)
+	{
+		return so_mysql_num_rows(res);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+ub
+dave_mysql_result_fields(void *res)
+{
+	if(res != NULL)
+	{
+		return so_mysql_num_fields(res);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+s8 **
+dave_mysql_fetch_row(void *res)
+{
+	if(res != NULL)
+	{
+		return (s8 **)so_mysql_fetch_row(res);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void *
+dave_mysql_fetch_field(void *res)
+{
+	if(res != NULL)
+	{
+		return (void *)so_mysql_fetch_field(res);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+unsigned long *
+dave_mysql_fetch_length(void *res)
+{
+	if(res != NULL)
+	{
+		return so_mysql_fetch_lengths(res);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+ErrCode
+dave_mysql_ping(void *mysql)
+{
+	int ret;
+
+	ret = so_mysql_ping(mysql);
+
+	if(ret == 0)
+		return ERRCODE_OK;
+	else if(ret == CR_SERVER_GONE_ERROR)
+		return ERRCODE_lost_link;
+	else
+		return ERRCODE_Send_failed;
+}
+
+ErrCode
+dave_mysql_old_query(void *mysql, s8 *sql)
+{
+	ub safe_counter;
+	MYSQL_RES *up_res;
+	unsigned int errcode;
+
+	safe_counter = 0;
+
+	while(((safe_counter ++) < 100000) && (so_mysql_next_result(mysql) != 0))
+	{
+		up_res = so_mysql_store_result(mysql);
+		so_mysql_free_result(up_res); 
+	}
+
+	if(so_mysql_query(mysql, (const char *)sql) != 0)
+	{
+		errcode = so_mysql_errno(mysql);
+
+		PARTYLOG("mysql query error<%d>:%s", errcode, so_mysql_error(mysql));
+
+		if(ER_TABLE_EXISTS_ERROR == errcode)
+			return ERRCODE_table_exist;
+		else if((CR_SERVER_LOST == errcode) || (CR_SERVER_GONE_ERROR == errcode))
+			return ERRCODE_connect_error;
+		else
+			return ERRCODE_db_sql_failed;
+	}
+	else
+	{
+		so_mysql_commit(mysql);
+
+		return ERRCODE_OK;
+	}
+}
+
+void *
+dave_mysql_old_creat_client(void *ptr)
+{
+	MYSQL *mysql;
+	char value;
+
+	mysql = so_mysql_init((MYSQL *)ptr);
+
+	if(mysql != NULL)
+	{
+		value = 6;		// seconds
+		so_mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &value);
+		value = 1;		// enable
+		so_mysql_options(mysql, MYSQL_OPT_RECONNECT, &value);
+		value =  15;	// seconds
+		so_mysql_options(mysql, MYSQL_OPT_READ_TIMEOUT, &value);
+		value =  15;	// seconds
+		so_mysql_options(mysql, MYSQL_OPT_WRITE_TIMEOUT, &value);
+	}
+
+	return mysql;
+}
+
 #endif
 

@@ -26,8 +26,11 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
 LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib -lyaml-cpp
 endif
-ifeq ($(words $(findstring $(VER_PRODUCT), VOIP)), 1)
-LIB += -luuid -L../../../ThirdParty/build/pjsip/setup/lib -lpjsip-linux -lasound
+ifeq ($(words $(findstring $(NAME_PRODUCT), VOIP)), 1)
+LIB += -L../../../../ThirdParty/build/pjsip/setup/lib -lpjsip-linux -lasound
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), DBA)), 1)
+LIB += -L../../../../ThirdParty/build/redis/setup/lib -lhiredis
 endif
 
 LIB += -Wl,-Bdynamic
@@ -40,6 +43,9 @@ LIB += -L/dave/tools/tensorflow/lib -ltensorflow_cc -ltensorflow_framework
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), SYNC)), 1)
 LIB += -L/dave/tools/etcd-cpp-apiv3/lib64 -letcd-cpp-api -lcpprest
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), DBA)), 1)
+LIB += -L/dave/tools/mongodb-c/lib64 -lmongoc-1.0 -lbson-1.0
 endif
 
 LIB += -lpthread -lrt -ldl -lm -lgomp -lstdc++ -lutil -lgcov

@@ -20,11 +20,11 @@
 
 #define NGINX_3RDPARTY
 
-#ifdef __DAVE_PRODUCT_STORE__
+#if defined(__DAVE_PRODUCT_STORE__) || defined(__DAVE_PRODUCT_DBA__)
 #define MONGO_3RDPARTY
 #endif
 
-#ifdef __DAVE_PRODUCT_STORE__
+#if defined(__DAVE_PRODUCT_STORE__) || defined(__DAVE_PRODUCT_DBA__)
 #define MYSQL_3RDPARTY
 #endif
 
@@ -50,6 +50,10 @@
 
 #ifdef __DAVE_PRODUCT_VOIP__
 // #define PJSIP_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_DBA__
+#define REDIS_3RDPARTY
 #endif
 
 #endif

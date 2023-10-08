@@ -15,7 +15,7 @@ dave_bool dave_os_socket_init(dave_socket_event_fun event_call_back);
 
 dave_bool dave_os_socket_exit(void);
 
-s32 dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name);
+s32 dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name, u16 fix_src_port);
 
 SOCCNTTYPE dave_os_connect(s32 socket, SocNetInfo *pNetInfo);
 

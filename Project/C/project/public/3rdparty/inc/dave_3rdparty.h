@@ -47,6 +47,9 @@ extern "C"{
 #ifdef PJSIP_3RDPARTY
 #include "dave_pjsip.h"
 #endif
+#ifdef REDIS_3RDPARTY
+#include "dave_redis.h"
+#endif
 
 #ifdef __cplusplus
 }

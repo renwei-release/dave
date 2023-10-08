@@ -14,11 +14,11 @@
 #ifndef _T_RPC_ENUMDATA_H__
 #define _T_RPC_ENUMDATA_H__
 #include "dave_base.h"
-#include "database_msg.h"
 #include "cv_param.h"
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
+#include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "base_enum.h"

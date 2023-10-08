@@ -300,6 +300,11 @@ _os_linux_socket_bind_fix_port(s32 socket, u16 port)
 {
 	struct sockaddr_in bind_port;
 
+	if(port == 0)
+	{
+		return dave_false;
+	}
+
 	bind_port.sin_family = AF_INET;
 	bind_port.sin_addr.s_addr = htonl(INADDR_ANY);
 	bind_port.sin_port = htons(port);
@@ -599,7 +604,7 @@ dave_os_socket_exit(void)
 }
 
 s32
-dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name)
+dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcard_name, u16 fix_src_port)
 {
 	int linux_domain = _os_linux_domain(domain);
 	int linux_type = _os_linux_net_type(type);
@@ -625,6 +630,7 @@ dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcar
 	socket_id = _os_linux_normal_setup_socket(linux_type, addr_type, socket_id);
 
 	_os_linux_bind_netcard(socket_id, netcard_name);
+	_os_linux_socket_bind_fix_port(socket_id, fix_src_port)
 
 	OSDEBUG("domain:%d type:%d addr_type:%d netcard_name:%s socket:%d",
 		domain, type, addr_type, netcard_name, socket_id);
@@ -640,19 +646,6 @@ dave_os_connect(s32 socket, SocNetInfo *pNetInfo)
     socklen_t guest_len = sizeof(guest);
 	s8 ip_str[20];
 	int ret;
-
-	if(pNetInfo->fixed_src_flag == FixedPort)
-	{
-		if(_os_linux_socket_bind_fix_port(socket, pNetInfo->src_port) == dave_false)
-		{
-			OSLOG("socket:%d bind fix port:%d failed!", socket, pNetInfo->src_port);
-			return SOC_CNT_FAIL;
-		}
-		else
-		{
-			OSDEBUG("socket:%d bind fix port:%d ok!", socket, pNetInfo->src_port);
-		}
-	}
 
 	ipstr(pNetInfo->addr.ip.ip_addr, 4, ip_str, 20);
 	dave_memset(&addr, 0x00, sizeof(struct sockaddr_in));

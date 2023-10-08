@@ -627,7 +627,10 @@ _socket_external_creat_service(ThreadId src, SocNetInfo *pNetInfo, void *user_pt
 	RetCode ret = RetCode_invalid_option;
 	SocketCore *pCore = NULL;
 
-	os_socket = dave_os_socket(pNetInfo->domain, pNetInfo->type, pNetInfo->addr_type, pNetInfo->netcard_bind_flag==NetCardBind_enable?pNetInfo->netcard_name:NULL);
+	os_socket = dave_os_socket(
+		pNetInfo->domain, pNetInfo->type, pNetInfo->addr_type,
+		pNetInfo->netcard_bind_flag == NetCardBind_enable ? pNetInfo->netcard_name : NULL,
+		0);
 	if(os_socket >= 0)
 	{
 		pCore = socket_core_malloc(src, SOCKET_TYPE_SERVER_FATHER, pNetInfo, user_ptr, os_socket);
@@ -673,7 +676,10 @@ _socket_external_connect_service(ThreadId src, SocNetInfo *pNetInfo, void *user_
 
 	*ConnectInfo = SOCKETINFO_CONNECT_FAIL;
 
-	os_socket = dave_os_socket(pNetInfo->domain, pNetInfo->type, pNetInfo->addr_type, pNetInfo->netcard_bind_flag==NetCardBind_enable?pNetInfo->netcard_name:NULL);
+	os_socket = dave_os_socket(
+		pNetInfo->domain, pNetInfo->type, pNetInfo->addr_type,
+		pNetInfo->netcard_bind_flag == NetCardBind_enable ? pNetInfo->netcard_name : NULL,
+		pNetInfo->fixed_src_flag == FixedPort ? pNetInfo->src_port : 0);
 	if(os_socket < 0)
 	{
 		SOCKETABNOR("%s creat socket failed!", thread_name(src));

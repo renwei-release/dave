@@ -13,6 +13,7 @@
 #include "ramkv_redis_struct.h"
 #include "ramkv_redis_opt.h"
 #include "ramkv_redis_api.h"
+#include "ramkv_redis_cfg.h"
 #include "ramkv_log.h"
 
 #define CFG_REDIS_ADDRESS "REDISADDRESS"
