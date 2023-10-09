@@ -219,76 +219,76 @@ _mongoc_dll_init(void)
 		return dave_false;
 	}
 
-	so_mongoc_init = dlsym(_bson_dll_handle, "mongoc_init");
+	so_mongoc_init = dlsym(_mongoc_dll_handle, "mongoc_init");
 	if(so_mongoc_init == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_cleanup = dlsym(_bson_dll_handle, "mongoc_cleanup");
+	so_mongoc_cleanup = dlsym(_mongoc_dll_handle, "mongoc_cleanup");
 	if(so_mongoc_cleanup == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_client_new = dlsym(_bson_dll_handle, "mongoc_client_new");
+	so_mongoc_client_new = dlsym(_mongoc_dll_handle, "mongoc_client_new");
 	if(so_mongoc_client_new == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_client_destroy = dlsym(_bson_dll_handle, "mongoc_client_destroy");
+	so_mongoc_client_destroy = dlsym(_mongoc_dll_handle, "mongoc_client_destroy");
 	if(so_mongoc_client_destroy == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_client_get_database = dlsym(_bson_dll_handle, "mongoc_client_get_database");
+	so_mongoc_client_get_database = dlsym(_mongoc_dll_handle, "mongoc_client_get_database");
 	if(so_mongoc_client_get_database == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_database_destroy = dlsym(_bson_dll_handle, "mongoc_database_destroy");
+	so_mongoc_database_destroy = dlsym(_mongoc_dll_handle, "mongoc_database_destroy");
 	if(so_mongoc_database_destroy == NULL)
 	{
 		PARTYABNOR("");	
 		return dave_false;
 	}
-	so_mongoc_collection_find_with_opts = dlsym(_bson_dll_handle, "mongoc_collection_find_with_opts");
+	so_mongoc_collection_find_with_opts = dlsym(_mongoc_dll_handle, "mongoc_collection_find_with_opts");
 	if(so_mongoc_collection_find_with_opts == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_cursor_next = dlsym(_bson_dll_handle, "mongoc_cursor_next");
+	so_mongoc_cursor_next = dlsym(_mongoc_dll_handle, "mongoc_cursor_next");
 	if(so_mongoc_cursor_next == NULL)
 	{
 		PARTYABNOR("");
 		return dave_false;
 	}
-	so_mongoc_cursor_destroy = dlsym(_bson_dll_handle, "mongoc_cursor_destroy");
+	so_mongoc_cursor_destroy = dlsym(_mongoc_dll_handle, "mongoc_cursor_destroy");
 	if(so_mongoc_cursor_destroy == NULL)
 		return dave_false;
-	so_mongoc_log_set_handler = dlsym(_bson_dll_handle, "mongoc_log_set_handler");
+	so_mongoc_log_set_handler = dlsym(_mongoc_dll_handle, "mongoc_log_set_handler");
 	if(so_mongoc_log_set_handler == NULL)
 		return dave_false;
-	so_mongoc_client_get_collection = dlsym(_bson_dll_handle, "mongoc_client_get_collection");
+	so_mongoc_client_get_collection = dlsym(_mongoc_dll_handle, "mongoc_client_get_collection");
 	if(so_mongoc_client_get_collection == NULL)
 		return dave_false;
-	so_mongoc_collection_destroy = dlsym(_bson_dll_handle, "mongoc_collection_destroy");
+	so_mongoc_collection_destroy = dlsym(_mongoc_dll_handle, "mongoc_collection_destroy");
 	if(so_mongoc_collection_destroy == NULL)
 		return dave_false;
-	so_mongoc_collection_insert = dlsym(_bson_dll_handle, "mongoc_collection_insert");
+	so_mongoc_collection_insert = dlsym(_mongoc_dll_handle, "mongoc_collection_insert");
 	if(so_mongoc_collection_insert == NULL)
 		return dave_false;
-	so_mongoc_collection_update_one = dlsym(_bson_dll_handle, "mongoc_collection_update_one");
+	so_mongoc_collection_update_one = dlsym(_mongoc_dll_handle, "mongoc_collection_update_one");
 	if(so_mongoc_collection_update_one == NULL)
 		return dave_false;
-	so_mongoc_collection_insert_one = dlsym(_bson_dll_handle, "mongoc_collection_insert_one");
+	so_mongoc_collection_insert_one = dlsym(_mongoc_dll_handle, "mongoc_collection_insert_one");
 	if(so_mongoc_collection_insert_one == NULL)
 		return dave_false;
-	so_mongoc_collection_update = dlsym(_bson_dll_handle, "mongoc_collection_update");
+	so_mongoc_collection_update = dlsym(_mongoc_dll_handle, "mongoc_collection_update");
 	if(so_mongoc_collection_update == NULL)
 		return dave_false;
 

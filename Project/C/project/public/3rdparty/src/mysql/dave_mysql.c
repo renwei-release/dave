@@ -282,7 +282,7 @@ _mysql_query(MYSQL *pSql, s8 *sql)
 	safe_counter = 0;
 	do {
 		so_mysql_free_result(so_mysql_store_result(pSql));
-	} while(((safe_counter ++) < 102400) && (so_mysql_next_result(pSql) == 0));
+	} while(((safe_counter ++) < 102400) && (so_mysql_next_result(pSql) > 0));
 	if(safe_counter >= 102400)
 	{
 		PARTYABNOR("safe_counter:%d sql:%s find error! mysql_next_result=%d",
@@ -388,6 +388,8 @@ dave_mysql_creat_client(s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
 	ret = _mysql_connect(pSql, address, port, user, pwd, db_name);
 	if(ret != RetCode_OK)
 	{
+		PARTYLOG("ret:%s address:%s port:%d user:%s pwd:%s db:%s", retstr(ret), address, port, user, pwd, db_name);
+
 		if(ret != RetCode_db_not_find)
 			PARTYABNOR("mysql connect error:%s<%d>",
 				so_mysql_error(pSql), so_mysql_errno(pSql));
@@ -452,7 +454,8 @@ dave_mysql_free_ret(SqlRet ret)
 {
 	if(ret.pJson != NULL)
 	{
-		dave_free(ret.pJson);
+		dave_json_free(ret.pJson);
+		ret.pJson = NULL;
 	}
 }
 
@@ -462,49 +465,48 @@ dave_mysql_error(void *pSql)
 	return (s8 *)so_mysql_error(pSql);
 }
 
-ErrCode
-dave_mysql_connect(void *mysql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db_name)
+void
+dave_mysql_ping(void *mysql)
 {
-	unsigned int errcode;
-	char value;
+	MYSQL *pSql = (MYSQL *)mysql;
 
-	if(so_mysql_real_connect(mysql, (const char *)address,
-		(const char *)user, (const char *)pwd, (const char *)db_name,
-		(unsigned int)port, NULL, CLIENT_MULTI_STATEMENTS|CLIENT_MULTI_RESULTS) == NULL)
+	so_mysql_ping(pSql);
+}
+
+ErrCode
+dave_mysql_raw_query(void *mysql, s8 *sql)
+{
+	MYSQL_RES *up_res;
+	unsigned int errcode;
+
+	while(so_mysql_next_result(mysql) > 0)
+	{
+		up_res = so_mysql_store_result(mysql);
+		if(up_res == NULL)
+			break;
+		so_mysql_free_result(up_res); 
+	}
+
+	if(so_mysql_query(mysql, (const char *)sql) != 0)
 	{
 		errcode = so_mysql_errno(mysql);
 
-		if(ER_BAD_DB_ERROR == errcode)
-		{
-			return ERRCODE_db_not_find;
-		}
-		else if(ER_ALREADY_CONNECTED == errcode)
-		{
-			PARTYLOG("mysql connect error:%s<%d> address:%s port:%d user:%s pwd:%s db_name:%s",
-				so_mysql_error(mysql), errcode, address, port, user, pwd, db_name);
+		PARTYLOG("mysql query error<%d>:%s! mysql:%lx result:%d sql:%s",
+			errcode, so_mysql_error(mysql), mysql, so_mysql_next_result(mysql),
+			sql);
 
-			return ERRCODE_OK;
-		}
-		else
-		{
-			PARTYABNOR("mysql connect error:%s<%d> address:%s port:%d user:%s pwd:%s db_name:%s",
-				so_mysql_error(mysql), errcode, address, port, user, pwd, db_name);
-
+		if(ER_TABLE_EXISTS_ERROR == errcode)
+			return ERRCODE_table_exist;
+		else if((CR_SERVER_LOST == errcode) || (CR_SERVER_GONE_ERROR == errcode))
 			return ERRCODE_connect_error;
-		}
+		else
+			return ERRCODE_db_sql_failed;
 	}
 	else
 	{
-		value = 1;
-		so_mysql_options(mysql, MYSQL_OPT_RECONNECT, &value);
-
-		// open auto commit!
-		so_mysql_autocommit(mysql, MYSQL_AUTO_COMMIT_ENABLE);
-		
-		if(so_mysql_set_character_set(mysql, "utf8") != 0)
-		{
-			PARTYABNOR("mysql set character:%s<%d>", so_mysql_error(mysql), so_mysql_errno(mysql));
-		}
+		PARTYDEBUG("mysql:%lx result:%d sql:%s",
+			mysql, so_mysql_next_result(mysql),
+			sql);
 
 		return ERRCODE_OK;
 	}
@@ -517,14 +519,18 @@ dave_mysql_malloc_result(void *mysql)
 
 	res = so_mysql_store_result(mysql);
 
+	PARTYDEBUG("mysql:%lx res:%lx result:%d", mysql, res, so_mysql_next_result(mysql));
+
 	return res;
 }
 
 void
-dave_mysql_free_result(void *res)
+dave_mysql_free_result(void *mysql, void *res)
 {
 	if(res != NULL)
 	{
+		PARTYDEBUG("mysql:%lx res:%lx result:%d", mysql, res, so_mysql_next_result(mysql));
+
 		so_mysql_free_result(res);
 	}
 }
@@ -592,80 +598,6 @@ dave_mysql_fetch_length(void *res)
 	{
 		return NULL;
 	}
-}
-
-ErrCode
-dave_mysql_ping(void *mysql)
-{
-	int ret;
-
-	ret = so_mysql_ping(mysql);
-
-	if(ret == 0)
-		return ERRCODE_OK;
-	else if(ret == CR_SERVER_GONE_ERROR)
-		return ERRCODE_lost_link;
-	else
-		return ERRCODE_Send_failed;
-}
-
-ErrCode
-dave_mysql_old_query(void *mysql, s8 *sql)
-{
-	ub safe_counter;
-	MYSQL_RES *up_res;
-	unsigned int errcode;
-
-	safe_counter = 0;
-
-	while(((safe_counter ++) < 100000) && (so_mysql_next_result(mysql) != 0))
-	{
-		up_res = so_mysql_store_result(mysql);
-		so_mysql_free_result(up_res); 
-	}
-
-	if(so_mysql_query(mysql, (const char *)sql) != 0)
-	{
-		errcode = so_mysql_errno(mysql);
-
-		PARTYLOG("mysql query error<%d>:%s", errcode, so_mysql_error(mysql));
-
-		if(ER_TABLE_EXISTS_ERROR == errcode)
-			return ERRCODE_table_exist;
-		else if((CR_SERVER_LOST == errcode) || (CR_SERVER_GONE_ERROR == errcode))
-			return ERRCODE_connect_error;
-		else
-			return ERRCODE_db_sql_failed;
-	}
-	else
-	{
-		so_mysql_commit(mysql);
-
-		return ERRCODE_OK;
-	}
-}
-
-void *
-dave_mysql_old_creat_client(void *ptr)
-{
-	MYSQL *mysql;
-	char value;
-
-	mysql = so_mysql_init((MYSQL *)ptr);
-
-	if(mysql != NULL)
-	{
-		value = 6;		// seconds
-		so_mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &value);
-		value = 1;		// enable
-		so_mysql_options(mysql, MYSQL_OPT_RECONNECT, &value);
-		value =  15;	// seconds
-		so_mysql_options(mysql, MYSQL_OPT_READ_TIMEOUT, &value);
-		value =  15;	// seconds
-		so_mysql_options(mysql, MYSQL_OPT_WRITE_TIMEOUT, &value);
-	}
-
-	return mysql;
 }
 
 #endif

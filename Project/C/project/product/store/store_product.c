@@ -15,6 +15,13 @@
 #include "store_msg.h"
 #include "store_mysql.h"
 
+/*
+ * Some databases cannot accept more connections, 
+ * and the current design is to have as many connections as there are threads, 
+ * so the number of threads needs to be limited.
+ */
+#define STORE_THREAD_MAX (16)
+
 extern void store_debug(ThreadId src, DebugReq *pReq);
 
 static ThreadId _store_thread = INVALID_THREAD_ID;
@@ -22,7 +29,15 @@ static ThreadId _store_thread = INVALID_THREAD_ID;
 static ub
 _store_thread_number(void)
 {
-	return dave_os_cpu_process_number();
+	ub thread_number;
+
+	thread_number = dave_os_cpu_process_number();
+	if(thread_number > STORE_THREAD_MAX)
+	{
+		thread_number = STORE_THREAD_MAX;
+	}
+
+	return thread_number;
 }
 
 static void

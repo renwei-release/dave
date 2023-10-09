@@ -19,7 +19,7 @@
 #include "coroutine_msg_site.h"
 #include "thread_log.h"
 
-#define COROUTINE_LIFE_TIMER 180
+#define COROUTINE_LIFE_TIMER 360
 #define COROUTINE_BASE_TIMER 30
 #define COROUTINE_LIFE_TIMES (COROUTINE_LIFE_TIMER / COROUTINE_BASE_TIMER)
 

@@ -72,7 +72,7 @@ _store_mysql_init(ub mysql_number, s8 *address, ub port, s8 *user, s8 *pwd, s8 *
 			pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, NULL);
 			if(pMysql->mysql_client == NULL)
 			{
-				STLOG("%s:%d %s/%s %s creat client failed!", address, port, user, pwd, db);
+				STABNOR("%s:%d %s/%s %s creat client failed!", address, port, user, pwd, db);
 				break;
 			}
 			else
@@ -85,6 +85,8 @@ _store_mysql_init(ub mysql_number, s8 *address, ub port, s8 *user, s8 *pwd, s8 *
 			dave_mysql_select_db(pMysql->mysql_client, db);
 		}
 	}
+
+	STLOG("%d/%d init success!", mysql_index, _mysql_number)
 }
 
 static void
@@ -95,6 +97,8 @@ _store_mysql_exit(void)
 	for(mysql_index=0; mysql_index<_mysql_number; mysql_index++)
 	{
 		dave_mysql_release_client(_pMysql[mysql_index].mysql_client);
+		_pMysql[mysql_index].mysql_client = NULL;
+		dave_memset(&_pMysql[mysql_index], 0x00, sizeof(StoreMysql));
 	}
 
 	dave_free(_pMysql);
@@ -189,6 +193,12 @@ store_mysql_exit(void)
 void
 store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 {
+	if(thread_index >= _mysql_number)
+	{
+		STABNOR("invalid thread_index:%d _mysql_number:%d", thread_index, _mysql_number);
+		return;
+	}
+
 	StoreMysqlRsp *pRsp = thread_reset_msg(pRsp);
 	StoreMysql *pMysql = &_pMysql[thread_index];
 
@@ -199,8 +209,9 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 		&& (pRsp->ret != RetCode_table_exist)
 		&& (pRsp->ret != RetCode_empty_data))
 	{
-		STLOG("%s execute sql:%s ret:%s msg:%s",
+		STLOG("%s execute index:%d/%d sql:%s ret:%s msg:%s",
 			thread_name(src),
+			thread_index, _mysql_number,
 			ms8(pReq->sql),
 			retstr(pRsp->ret),
 			pRsp->msg);

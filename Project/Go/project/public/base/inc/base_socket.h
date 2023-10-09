@@ -112,5 +112,30 @@ typedef struct {
 void base_socket_init(void);
 void base_socket_exit(void);
 
+#define SOCKETWriteMBUF(socket, mbuf_data) {\
+	SocketWrite *pWrite = thread_reset_msg(pWrite);\
+\
+	pWrite->socket = socket;\
+	pWrite->data_len = mlen(mbuf_data);\
+	pWrite->data = mbuf_data;\
+\
+	name_msg(SOCKET_THREAD_NAME, SOCKET_WRITE, pWrite);\
+}
+
+#define SOCKETWriteBIN(socket, bin_ptr, bin_len) {\
+	SOCKETWriteMBUF(socket, t_a2b_bin_to_mbuf(bin_ptr, bin_len));\
+}
+
+#define SOCKETWriteJson(socket, pJson) {\
+	ub json_string_len;\
+	s8 *json_string_ptr;\
+\
+	json_string_ptr = dave_json_to_string(pJson, &json_string_len);\
+	if((json_string_ptr != NULL) && (json_string_len > 0))\
+	{\
+		SOCKETWriteBIN(socket, (u8 *)json_string_ptr, json_string_len);\
+	}\
+}
+
 #endif
 
