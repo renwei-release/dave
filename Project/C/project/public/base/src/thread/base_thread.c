@@ -1436,6 +1436,29 @@ _thread_reupdate_thread_flag(ub thread_flag)
 	return thread_flag;
 }
 
+static inline ThreadStruct *
+_thread_my_thread(s8 *fun, ub line)
+{
+	ThreadId my_thread = self();
+	ub thread_index;
+
+	if(my_thread == INVALID_THREAD_ID)
+	{
+		return NULL;
+	}
+
+	thread_index = thread_find_busy_index(my_thread);
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADABNOR("%s<%d> can't find thread_index <%s:%d>",
+			_thread_get_name(my_thread), my_thread,
+			fun, line);
+		return NULL;
+	}
+
+	return &_thread[thread_index];
+}
+
 static inline void
 _thread_system_pv_init(void)
 {
@@ -1707,24 +1730,26 @@ base_thread_name_array(s8 thread_name[][64], ub thread_number)
 dave_bool
 __base_thread_trace_state__(s8 *fun, ub line)
 {
-	ThreadId my_thread = self();
-	ub thread_index;
+	ThreadStruct *pThread = _thread_my_thread(fun, line);
 
-	if(my_thread == INVALID_THREAD_ID)
-	{
+	if(pThread == NULL)
 		return dave_false;
-	}
 
-	thread_index = thread_find_busy_index(my_thread);
-	if(thread_index >= THREAD_MAX)
-	{
-		THREADABNOR("%s<%d> can't find thread_index <%s:%d>",
-			_thread_get_name(my_thread), my_thread,
-			fun, line);
+	return pThread->trace_on;
+}
+
+dave_bool
+__base_thread_on_coroutine__(s8 *fun, ub line)
+{
+	ThreadStruct *pThread = _thread_my_thread(fun, line);
+
+	if(pThread == NULL)
 		return dave_false;
-	}
 
-	return _thread[thread_index].trace_on;
+	if(pThread->thread_flag & THREAD_COROUTINE_FLAG)
+		return dave_true;
+
+	return dave_false;
 }
 
 RetCode

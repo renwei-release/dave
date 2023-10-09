@@ -21,7 +21,7 @@ func Base_case(t *refittesting.T) {
 	req.S16_debug = 12345
 	req.Mbuf_debug = nil
 
-	pRsp := (*auto.RPCDebugRsp)(base.Name_go("BASE", auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP))
+	pRsp := (*auto.RPCDebugRsp)(base.Write_co("BASE", auto.MSGID_RPC_DEBUG_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_RPC_DEBUG_RSP))
 	if pRsp != nil {
 		if pRsp.S16_debug == req.S16_debug {
 			t.Log("RPCDebugReq success")

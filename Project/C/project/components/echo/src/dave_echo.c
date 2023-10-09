@@ -179,7 +179,10 @@ _echo_api_req_msg(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
 static void
 _echo_api_req_co(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
 {
-	if(pReq->echo.type != EchoType_random)
+	MsgIdEchoRsp *pRsp;
+
+	if((pReq->echo.type != EchoType_random)
+		|| (base_thread_on_coroutine() == dave_false))
 	{
 		return _echo_api_req_msg(gid, thread, pReq);
 	}
@@ -187,26 +190,31 @@ _echo_api_req_co(s8 *gid, s8 *thread, MsgIdEchoReq *pReq)
 	switch(t_rand() % 6)
 	{
 		case 0:
-				id_co(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = id_co(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		case 1:
-				id_qco(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = id_qco(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		case 2:
-				name_co(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = name_co(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		case 3:
-				name_qco(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = name_qco(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		case 4:
-				gid_co(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = gid_co(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		case 5:
-				gid_qco(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = gid_qco(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
 		default:
-				id_co(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
+				pRsp = id_co(thread_id(thread), MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP);
 			break;
+	}
+
+	if(pRsp != NULL)
+	{
+		_echo_rpc_clean(&(pRsp->echo));
 	}
 }
 

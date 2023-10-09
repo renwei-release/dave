@@ -111,20 +111,6 @@ func _echo_rpc_clean(echo * auto.MsgIdEcho) {
 	base.Dave_mfree(echo.Mbuf_echo)
 }
 
-func _echo_api_req_co(gid string, thread string, req auto.MsgIdEchoReq) {
-	switch_rand := tools.T_rand_ub() % 4
-
-	if switch_rand == 0 {
-		base.Write_co(thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP)
-	} else if switch_rand == 1 {
-		base.Write_qco(thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP)
-	} else if switch_rand == 2 {
-		base.Gid_co(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP)
-	} else if switch_rand == 3 {
-		base.Gid_qco(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP)
-	}
-}
-
 func _echo_api_req_msg(gid string, thread string, req auto.MsgIdEchoReq) {
 	switch_rand := tools.T_rand_ub() % 4
 
@@ -136,6 +122,26 @@ func _echo_api_req_msg(gid string, thread string, req auto.MsgIdEchoReq) {
 		base.Gid_msg(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req))
 	} else if switch_rand == 3 {
 		base.Gid_qmsg(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req))
+	}
+}
+
+func _echo_api_req_co(gid string, thread string, req auto.MsgIdEchoReq) {
+	switch_rand := tools.T_rand_ub() % 4
+
+	pRsp := (*auto.MsgIdEchoRsp)(nil)
+
+	if switch_rand == 0 {
+		pRsp = (*auto.MsgIdEchoRsp)(base.Write_co(thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP))
+	} else if switch_rand == 1 {
+		pRsp = (*auto.MsgIdEchoRsp)(base.Write_qco(thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP))
+	} else if switch_rand == 2 {
+		pRsp = (*auto.MsgIdEchoRsp)(base.Gid_co(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP))
+	} else if switch_rand == 3 {
+		pRsp = (*auto.MsgIdEchoRsp)(base.Gid_qco(gid, thread, auto.MSGID_ECHO_REQ, int(unsafe.Sizeof(req)), unsafe.Pointer(&req), auto.MSGID_ECHO_RSP))
+	}
+
+	if pRsp != nil {
+		_echo_rpc_clean(&(pRsp.Echo))
 	}
 }
 

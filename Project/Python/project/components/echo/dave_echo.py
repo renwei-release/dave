@@ -96,13 +96,18 @@ def _echo_api_req_co(gid, thread, pReq):
     switch_rand = t_rand_ub() % 4
 
     if switch_rand == 0:
-        write_co(thread, MSGID_ECHO_REQ, pReq)
+        pRsp = write_co(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP, MsgIdEchoRsp)
     elif switch_rand == 1:
-        write_qco(thread, MSGID_ECHO_REQ, pReq)
+        pRsp = write_qco(thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP, MsgIdEchoRsp)
     elif switch_rand == 2:
-        gid_co(gid, thread, MSGID_ECHO_REQ, pReq)
+        pRsp = gid_co(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP, MsgIdEchoRsp)
     elif switch_rand == 3:
-        gid_qco(gid, thread, MSGID_ECHO_REQ, pReq)
+        pRsp = gid_qco(gid, thread, MSGID_ECHO_REQ, pReq, MSGID_ECHO_RSP, MsgIdEchoRsp)
+    else:
+        pRsp = None
+
+    if pRsp != None:
+        _echo_rpc_clean(pRsp.contents.echo)
     return
 
 
