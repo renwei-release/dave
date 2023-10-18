@@ -16,6 +16,8 @@
 #include "queue_server_map.h"
 #include "queue_log.h"
 
+#define QUEUE_SERVER_UPDATE_INTERVAL_TIME 1
+
 typedef struct {
 	s8 name[DAVE_THREAD_NAME_LEN];
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];
@@ -374,7 +376,7 @@ _queue_server_message_download(QueueDownloadMsgReq *pReq)
 }
 
 static inline void
-_queue_server_message_timerout(void *ramkv, s8 *key)
+_queue_server_message_update_timerout(void *ramkv, s8 *key)
 {
 	QueueMessage *pMessage = kv_inq_key_ptr(_message_kv, key);
 
@@ -404,7 +406,7 @@ _queue_server_message_recycle(void *ramkv, s8 *key)
 void
 queue_server_message_init(void)
 {
-	_message_kv = kv_malloc("queue-server-message", 5, _queue_server_message_timerout);
+	_message_kv = kv_malloc("queue-server-message", QUEUE_SERVER_UPDATE_INTERVAL_TIME, _queue_server_message_update_timerout);
 	t_lock_reset(&_message_pv);
 	_out_of_order_download = t_rand();
 }

@@ -592,7 +592,7 @@ _http_recv_req(HTTPRecv *pRecv, s32 socket)
 
 		pReq->local_creat_time = dave_os_time_us();
 
-		name_msg(listen_thread, HTTPMSG_RECV_REQ, pReq);
+		name_qmsg(listen_thread, HTTPMSG_RECV_REQ, pReq);
 
 		return dave_true;
 	}

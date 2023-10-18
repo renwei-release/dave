@@ -16,6 +16,10 @@ IMAGE="store_docker_image"
 TAG="latest"
 EXTEND="-v /dave/store:/dave/store"
 
+cd ../mysql
+./deploy.sh
+cd ${HOMEPATH}
+
 cd ../../
 chmod a+x *.sh
 ./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}

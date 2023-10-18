@@ -101,6 +101,7 @@ dave_bool base_thread_del(ThreadId thread_id);
 ThreadId base_thread_get_self(s8 *fun, ub line);
 ub base_thread_name_array(s8 thread_name[][64], ub thread_number);
 dave_bool __base_thread_trace_state__(s8 *fun, ub line);
+dave_bool __base_thread_on_coroutine__(s8 *fun, ub line);
 RetCode __base_thread_msg_register__(ThreadId thread_id, ub msg_id, base_thread_fun msg_fun, void *user_ptr, s8 *fun, ub line);
 #define base_thread_msg_register(thread_id, msg_id, msg_fun, user_ptr) __base_thread_msg_register__(thread_id, msg_id, msg_fun, user_ptr, (s8 *)__func__, (ub)__LINE__)
 void base_thread_msg_unregister(ThreadId thread_id, ub msg_id);
@@ -134,6 +135,7 @@ void * base_thread_sync_msg(ThreadId src_id, ThreadId dst_id, ub req_id, ub req_
 dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, ub msg_len, u8 *msg_body, s8 *fun, ub line);
 
 #define base_thread_trace_state() __base_thread_trace_state__((s8 *)__func__, (ub)__LINE__)
+#define base_thread_on_coroutine() __base_thread_on_coroutine__((s8 *)__func__, (ub)__LINE__)
 
 #define get_self() base_thread_get_self((s8 *)__func__, (ub)__LINE__)
 #define self() base_thread_get_self((s8 *)__func__, (ub)__LINE__)

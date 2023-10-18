@@ -17,12 +17,12 @@
 
 #define CHANNEL_NAME "channel"
 #define CHANNEL_DISC "(id int primary key auto_increment,"\
-	"channel_name varchar(512),"\
-	"auth_key varchar(512),"\
+	"channel_name VARCHAR(512) NOT NULL,"\
+	"auth_key VARCHAR(512) NOT NULL,"\
 	"allow_method TEXT,"\
-	"valid varchar(512),"\
+	"valid ENUM('Y', 'N') NOT NULL,"\
 	"updatetime timestamp default current_timestamp,"\
-	"constraint unique(channel_name));"
+	"INDEX (channel_name));"
 
 typedef struct {
 	s8 channel_name[DAVE_NORMAL_NAME_LEN];
@@ -239,14 +239,14 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	{
 		if(allow_method == NULL)
 		{
-			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", updatetime=now() WHERE channel_name = \"%s\";",
+			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", valid = \"Y\", updatetime=now() WHERE channel_name = \"%s\";",
 				DB_NAME, CHANNEL_NAME,
 				auth_key,
 				channel_name);
 		}
 		else
 		{
-			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", allow_method = \"%s\", updatetime=now() WHERE channel_name = \"%s\";",
+			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", allow_method = \"%s\", valid = \"Y\", updatetime=now() WHERE channel_name = \"%s\";",
 				DB_NAME, CHANNEL_NAME,
 				auth_key, allow_method,
 				channel_name);
@@ -256,13 +256,13 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	{
 		if(allow_method == NULL)
 		{
-			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key) VALUES (\"%s\", \"%s\");",
+			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key, valid) VALUES (\"%s\", \"%s\", \"Y\");",
 				DB_NAME, CHANNEL_NAME,
 				channel_name, auth_key);
 		}
 		else
 		{
-			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key, allow_method) VALUES (\"%s\", \"%s\", \"%s\");",
+			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key, allow_method, valid) VALUES (\"%s\", \"%s\", \"%s\", \"Y\");",
 				DB_NAME, CHANNEL_NAME,
 				channel_name, auth_key, allow_method);
 		}

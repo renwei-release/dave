@@ -278,6 +278,11 @@ queue_client_message_run_rsp(QueueRunMsgRsp *pRsp)
 	{
 		_queue_client_message_run_rsp(pMap, download_number_threshold);
 	}
+	else
+	{
+		QUEUELTRACE(60,1, "The number of thread:%s is too small. It is expected to increase the number:%d of threads in order to process more data:%d.",
+			pRsp->name, pRsp->thread_number, pRsp->msg_number)
+	}
 }
 
 #endif

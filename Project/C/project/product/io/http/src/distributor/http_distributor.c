@@ -265,7 +265,7 @@ _distributor_recv_req(MSGBODY *msg)
 	pInfo = _distributor_recv_info(msg);
 	if(pInfo != NULL)
 	{
-		name_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
+		name_qmsg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
 
 		t_lock_spin(&(pInfo->pv));
 		pInfo->receive_counter ++;

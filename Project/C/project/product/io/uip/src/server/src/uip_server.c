@@ -82,7 +82,7 @@ _uip_server_stack_req(UIPStack *pRecvStack)
 
 	pReq->ptr = uip_server_monitor_malloc(pRecvStack);
 
-	name_msg(pRecvStack->register_thread, UIP_DATA_RECV_REQ, pReq);
+	name_qmsg(pRecvStack->register_thread, UIP_DATA_RECV_REQ, pReq);
 
 	return RetCode_OK;
 }

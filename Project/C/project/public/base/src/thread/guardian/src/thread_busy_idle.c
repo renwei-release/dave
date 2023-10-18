@@ -16,7 +16,7 @@
 #include "thread_tools.h"
 #include "thread_log.h"
 
-#define HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED 30
+#define HOW_LONG_WILL_IT_TAKE_TO_CONTINUE_DETECTED 6
 #define MESSAGE_QUEUING_MULTIPLE 3
 
 static ThreadStruct *_thread_struct = NULL;
