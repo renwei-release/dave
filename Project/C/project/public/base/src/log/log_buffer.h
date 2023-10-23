@@ -10,8 +10,8 @@
 #define __LOG_BUFFER_H__
 
 // Equivalent to (LOG_BUFFER_MAX) logs per second
-#define LOG_BUFFER_MAX (1500)
-#define LOG_BUFFER_LENGTH (4096)
+#define LOG_BUFFER_MAX (512)
+#define LOG_BUFFER_LENGTH (16392)
 
 typedef struct {
 	TraceLevel level;

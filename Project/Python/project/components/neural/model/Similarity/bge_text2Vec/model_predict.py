@@ -29,12 +29,12 @@ class predict():
         vectors = self.sentence_model.encode(corpus, normalize_embeddings=True)
         similarity = cosine_similarity(vectors)
         return similarity[0][1]
-    
+
     def encode(self, text):
-        return self.sentence_model.encode(text, normalize_embeddings=True ) 
+        return self.sentence_model.encode(text, normalize_embeddings=True)
 
     def cosine(self, vector1, vector2):
-        return cosine_similarity(X=vector1, Y=vector2, dense_output=True).astype('float32')
+        return cosine_similarity(X=vector1, Y=vector2, dense_output=False).astype('float32')
 
     def version(self):
         return self.model_path

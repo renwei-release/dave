@@ -280,7 +280,14 @@ _coroutine_release(void *co)
 static inline void
 _coroutine_load_stack_size(void)
 {
+	ub stack_size_backup = _coroutine_stack_size;
+
 	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
+
+	if(stack_size_backup != _coroutine_stack_size)
+	{
+		THREADLOG("%s change:%d->%d", CFG_COROUTINE_STACK_SIZE, stack_size_backup, _coroutine_stack_size)
+	}
 }
 
 // =====================================================================
@@ -302,6 +309,15 @@ coroutine_core_exit(void)
 }
 
 void
+coroutine_core_reload_cfg(CFGUpdate *pUpdate)
+{
+	if(dave_strcmp(pUpdate->cfg_name, CFG_COROUTINE_STACK_SIZE) == dave_true)
+	{
+		_coroutine_load_stack_size();
+	}
+}
+
+void
 coroutine_core_creat(void)
 {
 	_coroutine_load_stack_size();
@@ -311,26 +327,6 @@ void
 coroutine_core_die(void)
 {
 
-}
-
-void
-coroutine_set_stack_size(ub size)
-{
-	_coroutine_stack_size = size;
-
-	if(_coroutine_stack_size >= 8 * 1024 * 1024)
-	{
-		THREADABNOR("Note that you may have set a stack size(%ld) that is too large.",
-			_coroutine_stack_size);
-	}
-
-	cfg_set_ub(CFG_COROUTINE_STACK_SIZE, _coroutine_stack_size);	
-}
-
-ub
-coroutine_get_stack_size(void)
-{
-	return _coroutine_stack_size;
 }
 
 void *

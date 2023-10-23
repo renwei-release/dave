@@ -24,6 +24,8 @@
 #include "uip_tools.h"
 #include "uip_log.h"
 
+static dave_bool _uip_server_start_flag = dave_false;
+
 static void _uip_server_http_rsp(ThreadId dst, RetCode ret, void *ptr, void *pJson);
 static void _uip_server_uip_rsp(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp);
 
@@ -268,13 +270,18 @@ _uip_server_unregister_req(ThreadId src, UIPUnregisterReq *pReq)
 static void
 _uip_server_http_start(void)
 {
-	uip_server_http_start(UIP_SERVER_HTTPs_PORT, ListenHttps, "/uips", _uip_server_uip_req);
-	uip_server_http_start(UIP_SERVER_H5_PORT, ListenHttps, "/h5", _uip_server_uip_req);
-	uip_server_http_start(UIP_SERVER_WeChat_PORT, ListenHttps, "/wechat", _uip_server_wechat_req);
+	if(_uip_server_start_flag == dave_false)
+	{
+		_uip_server_start_flag = dave_true;
 
-	uip_server_distributor_start("/uips", _uip_server_uip_req);
-	uip_server_distributor_start("/h5", _uip_server_uip_req);
-	uip_server_distributor_start("/wechat", _uip_server_wechat_req);
+		uip_server_http_start(UIP_SERVER_HTTPs_PORT, ListenHttps, "/uips", _uip_server_uip_req);
+		uip_server_http_start(UIP_SERVER_H5_PORT, ListenHttps, "/h5", _uip_server_uip_req);
+		uip_server_http_start(UIP_SERVER_WeChat_PORT, ListenHttps, "/wechat", _uip_server_wechat_req);
+
+		uip_server_distributor_start("/uips", _uip_server_uip_req);
+		uip_server_distributor_start("/h5", _uip_server_uip_req);
+		uip_server_distributor_start("/wechat", _uip_server_wechat_req);
+	}
 }
 
 static void
@@ -310,6 +317,8 @@ _uip_server_restart(RESTARTREQMSG *pRestart)
 void
 uip_server_init(MSGBODY *pMsg)
 {
+	_uip_server_start_flag = dave_false;
+
 	uip_server_monitor_init(_uip_server_http_rsp);
 
 	uip_server_http_init();

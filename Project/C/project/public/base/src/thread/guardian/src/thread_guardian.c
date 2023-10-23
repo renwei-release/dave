@@ -162,6 +162,7 @@ static void
 _thread_guardian_cfg_update(CFGUpdate *pUpdate)
 {
 	thread_chain_reload_cfg(pUpdate);
+	thread_coroutine_reload_cfg(pUpdate);
 }
 
 static void

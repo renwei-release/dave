@@ -47,46 +47,98 @@ _store_mysql_default_action(StoreMysql *pMysql, s8 *db)
 }
 
 static void
-_store_mysql_init(ub mysql_number, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db)
+_store_mysql_connect(StoreMysql *pMysql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db)
 {
-	ub mysql_index;
+	dave_strcpy(pMysql->address, address, sizeof(pMysql->address));
+	pMysql->port = port;
+	dave_strcpy(pMysql->user, user, sizeof(pMysql->user));
+	dave_strcpy(pMysql->pwd, pwd, sizeof(pMysql->pwd));
+	dave_strcpy(pMysql->db, db, sizeof(pMysql->db));
+
+	if(pMysql->mysql_client != NULL)
+	{
+		dave_mysql_release_client(pMysql->mysql_client);
+		pMysql->mysql_client = NULL;
+	}
+
+	pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+	if(pMysql->mysql_client == NULL)
+	{
+		pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, NULL);
+		if(pMysql->mysql_client == NULL)
+		{
+			STABNOR("%s:%d %s/%s %s creat client failed!", pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+		}
+		else
+		{
+			_store_mysql_default_action(pMysql, db);
+		}
+	}
+	else
+	{
+		dave_mysql_select_db(pMysql->mysql_client, db);
+	}
+}
+
+static dave_bool
+_store_mysql_booting(void)
+{
+	s8 address[128];
+	ub port;
+	s8 user[128];
+	s8 pwd[128];
+	s8 db[128];
+	ub mysql_index, boot_number;
 	StoreMysql *pMysql;
 
-	_mysql_number = mysql_number;
+	cfg_get_str(CFG_MYSQL_ADDRESS, address, sizeof(address), "127.0.0.1");
+	port = cfg_get_ub(CFG_MYSQL_PORT, 3306);
+	cfg_get_str(CFG_MYSQL_USER, user, sizeof(user), "root");
+	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "CWLtc14@#!");
+	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DAVEDB0007");
 
-	_pMysql = dave_ralloc(_mysql_number * sizeof(StoreMysql));
+	STLOG("address:%s port:%d user:%s pwd:%s db:%s", address, port, user, pwd, db);
+
+	boot_number = 0;
 
 	for(mysql_index=0; mysql_index<_mysql_number; mysql_index++)
 	{
 		pMysql = &_pMysql[mysql_index];
 
-		dave_strcpy(pMysql->address, address, sizeof(pMysql->address));
-		pMysql->port = port;
-		dave_strcpy(pMysql->user, user, sizeof(pMysql->user));
-		dave_strcpy(pMysql->pwd, pwd, sizeof(pMysql->pwd));
-		dave_strcpy(pMysql->db, db, sizeof(pMysql->db));
-
-		pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, db);
 		if(pMysql->mysql_client == NULL)
 		{
-			pMysql->mysql_client = dave_mysql_creat_client(address, port, user, pwd, NULL);
-			if(pMysql->mysql_client == NULL)
-			{
-				STABNOR("%s:%d %s/%s %s creat client failed!", address, port, user, pwd, db);
-				break;
-			}
-			else
-			{
-				_store_mysql_default_action(pMysql, db);
-			}
+			_store_mysql_connect(pMysql, address, port, user, pwd, db);
 		}
-		else
+
+		if(pMysql->mysql_client != NULL)
 		{
-			dave_mysql_select_db(pMysql->mysql_client, db);
+			boot_number ++;
 		}
 	}
 
-	STLOG("%d/%d init success!", mysql_index, _mysql_number)
+	STLOG("%d/%d init success!", boot_number, _mysql_number);
+
+	if(boot_number >= _mysql_number)
+		return dave_true;
+	else
+		return dave_false;
+}
+
+static void
+_store_mysql_boot_timer_out(TIMERID timer_id, ub thread_index)
+{
+	if(_store_mysql_booting() == dave_true)
+	{
+		base_timer_die(timer_id);
+	}
+}
+
+static void
+_store_mysql_init(ub mysql_number)
+{
+	_mysql_number = mysql_number;
+
+	_pMysql = dave_ralloc(_mysql_number * sizeof(StoreMysql));
 }
 
 static void
@@ -165,21 +217,14 @@ _store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *s
 void
 store_mysql_init(ub thread_number)
 {
-	s8 address[128];
-	ub port;
-	s8 user[128];
-	s8 pwd[128];
-	s8 db[128];
-
 	dave_mysql_init();
 
-	cfg_get_str(CFG_MYSQL_ADDRESS, address, sizeof(address), "127.0.0.1");
-	port = cfg_get_ub(CFG_MYSQL_PORT, 3306);
-	cfg_get_str(CFG_MYSQL_USER, user, sizeof(user), "root");
-	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "CWLtc14@#!");
-	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DAVEDB0007");
+	_store_mysql_init(thread_number);
 
-	_store_mysql_init(thread_number, address, port, user, pwd, db);
+	if(_store_mysql_booting() == dave_false)
+	{
+		base_timer_creat("smysqlboot", _store_mysql_boot_timer_out, 6*1000);
+	}
 }
 
 void

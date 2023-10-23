@@ -127,6 +127,7 @@ _distributor_listen_rsp(ThreadId dst, RetCode ret, s8 *path, void *ptr)
 	HTTPListenRsp *pRsp = thread_reset_msg(pRsp);
 
 	pRsp->ret = ret;
+	pRsp->listen_port = _distributor_port_list[0];
 	_distributor_copy_path(pRsp->path, path);
 	pRsp->ptr = ptr;
 

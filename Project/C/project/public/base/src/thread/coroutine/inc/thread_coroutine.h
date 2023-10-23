@@ -16,6 +16,8 @@ void thread_coroutine_init(void);
 
 void thread_coroutine_exit(void);
 
+void thread_coroutine_reload_cfg(CFGUpdate *pUpdate);
+
 void thread_coroutine_creat(ThreadStruct *pThread);
 
 void thread_coroutine_die(ThreadStruct *pThread);

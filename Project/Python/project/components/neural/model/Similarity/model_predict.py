@@ -27,6 +27,6 @@ class predict():
     
     def cosine(self, vector1, vector2):
         return self.model.cosine(vector1, vector2)
-    
+
     def version(self):
         return self.model.version()

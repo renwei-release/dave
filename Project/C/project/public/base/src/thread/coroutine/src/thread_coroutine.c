@@ -718,6 +718,12 @@ thread_coroutine_exit(void)
 }
 
 void
+thread_coroutine_reload_cfg(CFGUpdate *pUpdate)
+{
+	coroutine_core_reload_cfg(pUpdate);
+}
+
+void
 thread_coroutine_creat(ThreadStruct *pThread)
 {
 	pThread->coroutines_site_creat_counter = pThread->coroutines_site_release_counter = 0;
