@@ -49,7 +49,7 @@ rxtx_system_no_crc_tx(RXTX *pRxTx)
 		dave_mptr(data), data->len,
 		"%d/%s", pRxTx->port, thread_name(pRxTx->owner_thread));
 
-	rxtx_writes(pRxTx->socket, ORDER_CODE_SUPPORT_NO_CRC, data);
+	rxtx_write(pRxTx->socket, ORDER_CODE_SUPPORT_NO_CRC, data);
 }
 
 #endif

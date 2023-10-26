@@ -21,6 +21,7 @@ void base_cfg_exit(void);
 RetCode base_cfg_local_set(s8 *dir, s8 *name, u8 *value_ptr, ub value_len);
 dave_bool base_cfg_local_get(s8 *dir, s8 *name, u8 *value_ptr, ub value_len);
 void base_cfg_local_del(s8 *dir, s8 *name);
+MBUF * base_cfg_local_list(void);
 dave_bool base_cfg_local_reg(s8 *name, cfg_reg_fun reg_fun);
 s8 * base_cfg_local_get_by_default(s8 *dir, s8 *name, s8 *value_ptr, ub value_len, s8 *default_value);
 RetCode base_cfg_remote_set(s8 *name, s8 *value, sb ttl);
@@ -39,6 +40,7 @@ dave_bool base_cfg_get_bool(s8 *cfg_name, dave_bool default_value);
 
 #define base_cfg_set(name, value_ptr, value_len) base_cfg_local_set((s8 *)((void *)NULL), name, (u8 *)value_ptr, value_len)
 #define base_cfg_get(name, value_ptr, value_len) base_cfg_local_get((s8 *)((void *)NULL), name, (u8 *)value_ptr, value_len)
+#define base_cfg_list() base_cfg_local_list()
 #define base_cfg_del(name) base_cfg_local_del((s8 *)((void *)NULL), name)
 #define base_cfg_reg(name, reg_fun) base_cfg_local_reg(name, reg_fun)
 #define base_cfg_get_by_default(name, value_ptr, value_len, default_value) base_cfg_local_get_by_default((s8 *)((void *)NULL), name, value_ptr, value_len, default_value)

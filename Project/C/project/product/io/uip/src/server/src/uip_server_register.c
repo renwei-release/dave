@@ -118,7 +118,7 @@ uip_server_register_data(s8 *thread, s8 *method)
 	if(local_thread == NULL)
 	{
 		UIPLOG("method:%s not find!", method);
-		return RetCode_can_not_find_thread;
+		return RetCode_can_not_find_method;
 	}
 
 	dave_strcpy(thread, local_thread, DAVE_THREAD_NAME_LEN);

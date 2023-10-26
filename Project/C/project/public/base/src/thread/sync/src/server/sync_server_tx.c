@@ -43,7 +43,7 @@ _sync_server_tx(SyncClient *pClient, ORDER_CODE order_id, MBUF *data)
 	pClient->send_data_counter ++;
 	sync_unlock();
 
-	ret = rxtx_writes(pClient->client_socket, order_id, data);
+	ret = rxtx_write(pClient->client_socket, order_id, data);
 	if(ret == dave_false)
 	{
 		SYNCLOG("client_socket:%d verno:%s write_failed!", pClient->client_socket, pClient->verno);

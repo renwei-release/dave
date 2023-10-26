@@ -56,7 +56,7 @@ _sync_client_tx(SyncServer *pServer, ORDER_CODE order_id, MBUF *data)
 
 	SYNCDEBUG("server_socket:%d order_id:%x", pServer->server_socket, order_id);
 
-	ret = rxtx_writes(pServer->server_socket, order_id, data);
+	ret = rxtx_write(pServer->server_socket, order_id, data);
 	if(ret == dave_false)
 	{
 		SYNCLOG("server_socket:%d verno:%s write_failed!",

@@ -29,7 +29,7 @@ log_save_txt(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 	}
 
 	save_len = dave_os_file_save(file_id, (ub)file_len, content_len, (u8 *)content_ptr);
-	if(save_len < (sb)content_len)
+	if(save_len != (sb)content_len)
 	{
 		LOGLOG("save file failed:%d/%d", save_len, content_len);
 		return dave_false;

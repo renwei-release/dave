@@ -919,6 +919,7 @@ func T_auto_RetCode_str(enum_value int64) string {
 		case RetCode_Unauthorized_access: value_str = "'RetCode_Unauthorized_access--120'"
 		case RetCode_not_ready: value_str = "'RetCode_not_ready--121'"
 		case RetCode_Unauthorized: value_str = "'RetCode_Unauthorized--122'"
+		case RetCode_can_not_find_method: value_str = "'RetCode_can_not_find_method--123'"
 		case RetCode_max: value_str = "'RetCode_max-0x1fffffffffffffff'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}

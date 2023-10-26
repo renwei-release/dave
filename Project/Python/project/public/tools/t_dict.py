@@ -50,3 +50,7 @@ def t_dict_random(dict_data):
 
 def t_dict_hash(dict_data):
     return hash(str(dict_data))
+
+
+def t_dict_hash_str(dict_data):
+    return str(t_dict_hash(dict_data))

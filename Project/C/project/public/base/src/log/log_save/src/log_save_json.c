@@ -183,7 +183,7 @@ log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 	json_str = dave_json_to_string(pJson, &json_len);
 
 	save_len = dave_os_file_save(file_id, (ub)file_len, json_len, (u8 *)json_str);
-	if(save_len < (sb)json_len)
+	if(save_len != (sb)json_len)
 	{
 		LOGLOG("save file failed:%d/%d", save_len, json_len);
 		ret = dave_false;
@@ -193,7 +193,7 @@ log_save_json(sb file_id, TraceLevel level, s8 *content_ptr, ub content_len)
 		file_len += save_len;
 
 		save_len = dave_os_file_save(file_id, (ub)file_len, 1, (u8 *)"\n");
-		if(save_len < 1)
+		if(save_len != 1)
 		{
 			LOGLOG("save file failed:%d/%d", save_len, 1);
 			ret = dave_false;

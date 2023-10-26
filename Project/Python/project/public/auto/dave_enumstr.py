@@ -1477,6 +1477,8 @@ def t_auto_RetCode_str(enum_value):
 		value_str = "'RetCode_not_ready--121'"
 	elif enum_value == RetCode_Unauthorized:
 		value_str = "'RetCode_Unauthorized--122'"
+	elif enum_value == RetCode_can_not_find_method:
+		value_str = "'RetCode_can_not_find_method--123'"
 	elif enum_value == RetCode_max:
 		value_str = "'RetCode_max-0x1fffffffffffffff'"
 	else:

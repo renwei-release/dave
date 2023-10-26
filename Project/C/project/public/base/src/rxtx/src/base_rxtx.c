@@ -947,7 +947,7 @@ _base_rxtx_event_set(RXTX *pRxTx, u8 *permutation_ptr, ub permutation_len)
 }
 
 static inline RetCode
-_base_rxtx_event_process(RXTX *pRxTx)
+_base_rxtx_data_process(RXTX *pRxTx)
 {
 	ub process_len;
 	RetCode ret = RetCode_OK;
@@ -1058,6 +1058,27 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	return ret;
 }
 
+static inline void
+_base_rxtx_read_receive(RXTX *pRxTx, SocketRead *pRead)
+{
+	if((_rxtx_buffer_cfg_length - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
+	{
+		RTLTRACE(60,1,"rx_buffer too short:%d/%d on %s",
+			pRxTx->rx_buffer_len, _rxtx_buffer_cfg_length,
+			thread_name(pRxTx->owner_thread));
+	}
+
+	if((pRxTx->rx_buffer_len + mlen(pRead->data)) < _rxtx_buffer_cfg_length)
+	{
+		dave_memcpy(&pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len], ms8(pRead->data), mlen(pRead->data));
+		pRxTx->rx_buffer_len += mlen(pRead->data);
+	}
+	else
+	{
+		RTLOG("rx_buffer overflow! %d/%d", pRxTx->rx_buffer_len, mlen(pRead->data));
+	}
+}
+
 static inline RetCode
 _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_receive_fun receive_fun, void *param)
 {
@@ -1096,7 +1117,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 				if(pRxTx->rx_buffer_len > backup_rx_buf_len)
 				{
-					ret = _base_rxtx_event_process(pRxTx);
+					ret = _base_rxtx_data_process(pRxTx);
 					if(ret != RetCode_OK)
 					{
 						break;
@@ -1125,6 +1146,52 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 	}
 
 	dave_mfree(pEvent->data);
+
+	return ret;
+}
+
+static inline RetCode
+_base_rxtx_read_action(SocketRead *pRead, stack_receive_fun receive_fun, void *param)
+{
+	RXTX *pRxTx = NULL;
+	ub backup_rx_buf_len;
+	RetCode ret = RetCode_OK;
+
+	pRxTx = _base_rxtx_find_busy(pRead->socket);
+	if(pRxTx == NULL)
+	{
+		RTLOG("socket:%d close or not ready!", pRead->socket);
+		dave_mfree(pRead->data);
+		return RetCode_lost_link;
+	}
+	pRxTx->receive_fun = receive_fun;
+	pRxTx->param = param;
+
+	SAFECODEidlev1(pRxTx->opt_pv, {
+
+		_base_rxtx_buffer_malloc(pRxTx);
+
+		if((pRxTx->socket != INVALID_SOCKET_ID) && (pRxTx->socket >= 0))
+		{
+			backup_rx_buf_len = pRxTx->rx_buffer_len;
+
+			_base_rxtx_read_receive(pRxTx, pRead);
+
+			if(pRxTx->rx_buffer_len > backup_rx_buf_len)
+			{
+				ret = _base_rxtx_data_process(pRxTx);
+			}
+		}
+
+		_base_rxtx_buffer_free(pRxTx);
+
+	} );
+
+	RTDEBUG("socket:%d port:%d ret:%s rx_buffer_len:%d",
+		pRxTx->socket, pRxTx->port, retstr(ret),
+		pRxTx->rx_buffer_len);
+
+	dave_mfree(pRead->data);
 
 	return ret;
 }
@@ -1301,7 +1368,7 @@ __base_rxtx_clean__(s32 socket, s8 *file, ub line)
 }
 
 dave_bool
-base_rxtx_writes(s32 socket, ORDER_CODE order_id, MBUF *data)
+base_rxtx_write(s32 socket, ORDER_CODE order_id, MBUF *data)
 {
 	dave_bool ret;
 
@@ -1343,6 +1410,14 @@ base_rxtx_send(u8 dst_ip[4], u16 dst_port, s32 socket, ORDER_CODE order_id, MBUF
 	}
 
 	return ret;
+}
+
+RetCode
+base_rxtx_read(SocketRead *pRead, stack_receive_fun receive_fun, void *param)
+{
+	_base_rxtx_read_action(pRead, receive_fun, param);
+
+	return RetCode_OK;
 }
 
 RetCode

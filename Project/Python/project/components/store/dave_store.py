@@ -60,3 +60,12 @@ def STORELOADStr(sql_array, column):
         DAVELOG(f"sql_array:{sql_array} column:{column} is None")
         return None
     return str_str
+
+
+def STORESQLCLEANTABLE(db_name, table_name, table_disc):
+    _, data_array = STORESQL(f"SHOW TABLES IN {db_name} LIKE '{table_name}'")
+    if (data_array != None) and len(data_array) != 0:
+        STORESQL(f"DROP TABLE {db_name}.{table_name}")
+        DAVELOG(f"STORESQLCLEANTABLE: DROP TABLE {db_name}.{table_name}")
+    STORESQL(f"CREATE TABLE {db_name}.{table_name} {table_disc}")
+    return

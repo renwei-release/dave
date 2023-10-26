@@ -326,6 +326,9 @@ _log_server_main(MSGBODY *msg)
 		case SOCKET_PLUGOUT:
 				_log_server_plugout((SocketPlugOut *)msg->msg_body);
 			break;
+		case SOCKET_READ:
+				rxtx_read((SocketRead *)(msg->msg_body), _log_server_rx, NULL);
+			break;
 		case SOCKET_RAW_EVENT:
 				rxtx_event((SocketRawEvent *)(msg->msg_body), _log_server_rx, NULL);
 			break;

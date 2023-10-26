@@ -12,7 +12,7 @@
 #if defined(__DAVE_PRODUCT_QUEUE__)
 #define QUEUE_STACK_SERVER
 #endif
-#if ! defined(QUEUE_STACK_SERVER)
+#if ! (defined(QUEUE_STACK_SERVER) || defined(__DAVE_PRODUCT_LOG__))
 #define QUEUE_STACK_CLIENT
 #endif
 

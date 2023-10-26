@@ -60,7 +60,7 @@ _dos_cfg_get_one(s8 *cfg_name, s8 *print_ptr, ub print_len)
 }
 
 static ub
-_dos_cfg_get_all(s8 *print_ptr, ub print_len)
+_dos_cfg_get_json_all(s8 *print_ptr, ub print_len)
 {
 	void *pJson;
 	struct lh_entry *entry = NULL;
@@ -82,6 +82,36 @@ _dos_cfg_get_all(s8 *print_ptr, ub print_len)
 
 		dave_json_free(pJson);
 	}
+
+	return print_index;
+}
+
+static ub
+_dos_cfg_get_des_all(s8 *print_ptr, ub print_len)
+{
+	MBUF *list, *list_loop;
+	ub print_index;
+
+	print_index = 0;
+
+	list = list_loop = base_cfg_list();
+	while(list_loop != NULL)
+	{
+		print_index += _dos_cfg_get_one(ms8(list_loop), &print_ptr[print_index], print_len-print_index);
+		list_loop = list_loop->next;
+	}
+	dave_mfree(list);
+
+	return print_index;
+}
+
+static ub
+_dos_cfg_get_all(s8 *print_ptr, ub print_len)
+{
+	ub print_index = 0;
+
+	print_index = _dos_cfg_get_json_all(&print_ptr[print_index], print_len-print_index);
+	print_index += _dos_cfg_get_des_all(&print_ptr[print_index], print_len-print_index);
 
 	return print_index;
 }

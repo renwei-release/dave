@@ -19,8 +19,8 @@
 #include "log_save_auto_clean.h"
 #include "log_log.h"
 
-#define LOG_FILE_AUTO_CLOSE_TIME 3600
-#define LOG_FILE_AUTO_CLOSE_LIFE ((86400 * 2) / LOG_FILE_AUTO_CLOSE_TIME)
+#define LOG_FILE_AUTO_CLOSE_TIME 60
+#define LOG_FILE_AUTO_CLOSE_LIFE (720 / LOG_FILE_AUTO_CLOSE_TIME)
 
 typedef struct {
 	s8 file_name[256];
@@ -28,7 +28,7 @@ typedef struct {
 	ub file_len;
 	/*
 	 * 设置资源回收时间是没有任何行为动作的
-	 * LOG_FILE_AUTO_CLOSE_TIME时间后（目前为两天），
+	 * LOG_FILE_AUTO_CLOSE_TIME时间后，
 	 * 这个时候已经不会有日志写到这里。
 	 * 可以安全释放锁。
 	 */
@@ -90,7 +90,7 @@ _log_save_log_file_free(s8 *file_name)
 				dave_os_file_close(pLog->file_id);
 				pLog->file_id = -1;
 			}
-	
+
 			dave_free(pLog);
 		}
 
@@ -355,8 +355,8 @@ log_save_info(s8 *info_ptr, ub info_len)
 			break;
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" file:%s length:%ld life:%ld\n",
-			pLog->file_name, pLog->file_len, pLog->auto_close_life);
+			" file:%s/%ld length:%ld life:%ld\n",
+			pLog->file_name, pLog->file_id, pLog->file_len, pLog->auto_close_life);
 	}
 
 	return info_index;

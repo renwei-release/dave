@@ -16,7 +16,7 @@
 #include "http_tools.h"
 #include "http_log.h"
 
-static ub _distributor_port_list[] = { 443, 1823, 0 };
+static ub _distributor_port_list[] = { 443, 80, 1823, 0 };
 
 #define DISTRIBUTOR_THREAD_MAX 8
 #define DISTRIBUTOR_ROOT_PATH "/"
@@ -107,7 +107,10 @@ _distributor_http_listen_req(ub port)
 
 	pReq->listen_port = port;
 	pReq->rule = LocationMatch_CaseRegular;
-	pReq->type = ListenHttps;
+	if(port == 80)
+		pReq->type = ListenHttp;
+	else
+		pReq->type = ListenHttps;
 	if(dave_strlen(DISTRIBUTOR_ROOT_PATH) > 0)
 	{
 		dave_snprintf(pReq->path, sizeof(pReq->path), "%s", DISTRIBUTOR_ROOT_PATH);

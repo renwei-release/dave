@@ -180,6 +180,12 @@ base_cfg_local_del(s8 *dir, s8 *name)
 	base_json_cfg_dir_del(dir, name);
 }
 
+MBUF *
+base_cfg_local_list(void)
+{
+	return base_des_cfg_dir_name_list();
+}
+
 dave_bool
 base_cfg_local_reg(s8 *name, cfg_reg_fun reg_fun)
 {
