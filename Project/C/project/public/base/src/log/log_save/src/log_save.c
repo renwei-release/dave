@@ -20,12 +20,13 @@
 #include "log_log.h"
 
 #define LOG_FILE_AUTO_CLOSE_TIME 60
-#define LOG_FILE_AUTO_CLOSE_LIFE (720 / LOG_FILE_AUTO_CLOSE_TIME)
+#define LOG_FILE_AUTO_CLOSE_LIFE (360 / LOG_FILE_AUTO_CLOSE_TIME)
 
 typedef struct {
 	s8 file_name[256];
 	sb file_id;
-	ub file_len;
+	ub file_last_write_len;
+	ub file_current_write_len;
 	/*
 	 * 设置资源回收时间是没有任何行为动作的
 	 * LOG_FILE_AUTO_CLOSE_TIME时间后，
@@ -52,7 +53,8 @@ _log_save_log_file_malloc(s8 *file_name)
 		{
 			pLog = dave_ralloc(sizeof(LogFile));
 
-			pLog->file_len = 0;
+			pLog->file_last_write_len = 0;
+			pLog->file_current_write_len = 0;
 			pLog->auto_close_life = LOG_FILE_AUTO_CLOSE_LIFE;
 			t_lock_reset(&(pLog->pv));
 
@@ -60,6 +62,8 @@ _log_save_log_file_malloc(s8 *file_name)
 			pLog->file_id = dave_os_file_open(CREAT_READ_WRITE_FLAG, pLog->file_name);
 			if(pLog->file_id >= 0)
 			{
+				pLog->file_last_write_len = dave_os_file_len(READ_FLAG, NULL, pLog->file_id);
+			
 				kv_add_key_ptr(_log_file_kv, pLog->file_name, pLog);
 			}
 			else
@@ -169,7 +173,7 @@ _log_save_to_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub cont
 	SAFECODEv1(pLog->pv, {
 		ret = log_save_json(pLog->file_id, level, content_ptr, content_len);
 		if(ret == dave_true)
-			pLog->file_len += content_len;
+			pLog->file_current_write_len += content_len;
 	});
 
 	if(ret == dave_false)
@@ -197,7 +201,7 @@ _log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub conte
 	SAFECODEv1(pLog->pv, {
 		ret = log_save_txt(pLog->file_id, level, content_ptr, content_len);
 		if(ret == dave_true)
-			pLog->file_len += content_len;
+			pLog->file_current_write_len += content_len;
 	});
 
 	if(ret == dave_false)
@@ -224,7 +228,7 @@ _log_save_to_chain_file(s8 *file_name, s8 *device_info, s8 *service_verno, s8 *c
 
 	SAFECODEv1(pLog->pv, {
 		log_save_chain(pLog->file_id, device_info, service_verno, content_ptr, content_len);
-		pLog->file_len += content_len;
+		pLog->file_current_write_len += content_len;
 	});
 
 	return dave_true;
@@ -355,8 +359,10 @@ log_save_info(s8 *info_ptr, ub info_len)
 			break;
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" file:%s/%ld length:%ld life:%ld\n",
-			pLog->file_name, pLog->file_id, pLog->file_len, pLog->auto_close_life);
+			" file:%s/%ld length:%ld/%ld life:%ld\n",
+			pLog->file_name, pLog->file_id,
+			pLog->file_last_write_len, pLog->file_current_write_len,
+			pLog->auto_close_life);
 	}
 
 	return info_index;

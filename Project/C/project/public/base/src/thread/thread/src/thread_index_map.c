@@ -58,10 +58,14 @@ _thread_index_list_malloc(ThreadThread *pTThread)
 static void
 _thread_index_list_free(ThreadThreadList *pList)
 {
-	while(pList->pList != NULL)
+	__ThreadThreadList__ *pListData = pList->pList;
+	__ThreadThreadList__ *pListBackupNext;
+
+	while(pListData != NULL)
 	{
-		_thread_index_list_free__(pList->pList);
-		pList->pList = pList->pList->next;
+		pListBackupNext = pListData->next;
+		_thread_index_list_free__(pListData);
+		pListData = pListBackupNext;
 	}
 
 	dave_free(pList);
@@ -126,10 +130,13 @@ _thread_index_list_del(ThreadThread *pTThread)
 	if(pOldList != NULL)
 	{
 		pList = pOldList->pList;
-		
+
 		while(pList != NULL)
 		{
-			_thread_index_list_add(pList->pTThread);
+			if(pList->pTThread != pTThread)
+			{
+				_thread_index_list_add(pList->pTThread);
+			}
 			pList = pList->next;
 		}
 
