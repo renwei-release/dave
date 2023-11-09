@@ -30,7 +30,7 @@ static void *_log_fifo_thread_body = NULL;
 static dave_bool _log_trace_enable = dave_false;
 
 static inline LogFiFoChain *
-_log_fifo_malloc_chain(TraceLevel level, ub data_len, s8 *data_ptr)
+_log_fifo_malloc_chain(dave_bool fix_flag, TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	LogFiFoChain *pChain = dave_malloc(sizeof(LogFiFoChain));
 
@@ -44,7 +44,7 @@ _log_fifo_malloc_chain(TraceLevel level, ub data_len, s8 *data_ptr)
 	 * So, if the FIFO caches too much data,
 	 * it allocates its own memory to hold the data.
 	 */
-	if(_log_fifo_counter >= (LOG_BUFFER_MAX - 32))
+	if((fix_flag == dave_false) || (_log_fifo_counter >= (LOG_BUFFER_MAX - 32)))
 	{
 		pChain->data_from_mem = dave_true;
 		pChain->data_ptr = dave_malloc(pChain->data_len + 1);
@@ -70,6 +70,7 @@ _log_fifo_free_chain(LogFiFoChain *pChain)
 		{
 			if(pChain->data_ptr != NULL)
 				dave_free(pChain->data_ptr);
+			pChain->data_ptr = NULL;
 		}
 
 		dave_free(pChain);
@@ -132,9 +133,9 @@ _log_fifo_output_data(void)
 }
 
 static inline void
-_log_fifo_input_data(TraceLevel level, ub data_len, s8 *data_ptr)
+_log_fifo_input_data(dave_bool fix_flag, TraceLevel level, ub data_len, s8 *data_ptr)
 {
-	LogFiFoChain *pChain = _log_fifo_malloc_chain(level, data_len, data_ptr);
+	LogFiFoChain *pChain = _log_fifo_malloc_chain(fix_flag, level, data_len, data_ptr);
 
 	SAFECODEv1(_log_fifo_pv, {
 
@@ -209,7 +210,7 @@ log_fifo_exit(void)
 }
 
 void
-log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr)
+log_fifo(dave_bool trace_enable, dave_bool fix_flag, TraceLevel level, ub data_len, s8 *data_ptr)
 {
 	_log_trace_enable = trace_enable;
 
@@ -220,7 +221,7 @@ log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr)
 
 	_log_fifo_pre_init();
 
-	_log_fifo_input_data(level, data_len, data_ptr);
+	_log_fifo_input_data(fix_flag, level, data_len, data_ptr);
 
 	dave_os_thread_wakeup(_log_fifo_thread_body);
 }

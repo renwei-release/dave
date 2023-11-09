@@ -87,7 +87,7 @@ _recipient_log(BDataLogReq *pReq)
 		return RetCode_store_data_failed;
 	}
 
-	BDDEBUG("pNote:%lx file_name:%s sub_flag:%s version:%s <%s:%d>",
+	BDTRACE("pNote:%lx file_name:%s sub_flag:%s version:%s <%s:%d>",
 		pNote,
 		file_name, pReq->sub_flag,
 		pReq->version, pReq->fun, pReq->line);

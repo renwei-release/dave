@@ -548,6 +548,20 @@ class DosForward (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_GENERAL_REQ message *#
+class GeneralReq (Structure):
+	_fields_ = [
+		("general_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_GENERAL_RSP message *#
+class GeneralRsp (Structure):
+	_fields_ = [
+		("general_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
 #* for HTTPMSG_CLOSE_REQ message *#
 class HTTPCloseReq (Structure):
 	_fields_ = [

@@ -284,7 +284,7 @@ _coroutine_load_stack_size(void)
 
 	_coroutine_stack_size = cfg_get_ub(CFG_COROUTINE_STACK_SIZE, COROUTINE_CORE_STACK_DEFAULT_SIZE);
 
-	if(stack_size_backup != _coroutine_stack_size)
+	if((stack_size_backup != 0) && (stack_size_backup != _coroutine_stack_size))
 	{
 		THREADLOG("%s change:%d->%d", CFG_COROUTINE_STACK_SIZE, stack_size_backup, _coroutine_stack_size)
 	}

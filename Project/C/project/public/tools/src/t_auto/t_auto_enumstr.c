@@ -4874,6 +4874,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_SYSTEM_IDLE:
 				value_str = "'MSGID_SYSTEM_IDLE-50'";
 			break;
+		case MSGID_GENERAL_REQ:
+				value_str = "'MSGID_GENERAL_REQ-51'";
+			break;
+		case MSGID_GENERAL_RSP:
+				value_str = "'MSGID_GENERAL_RSP-52'";
+			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";
 			break;

@@ -9,7 +9,7 @@
 #define __BDATA_LOG_H__
 #include "dave_base.h"
 
-#ifdef __DAVE_ALPHA_VERSION__
+#ifdef LEVEL_PRODUCT_alpha
 // #define BDATA_DEBUG
 #endif
 

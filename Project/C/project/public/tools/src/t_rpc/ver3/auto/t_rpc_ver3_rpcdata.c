@@ -253,6 +253,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_ECHO_RSP:
 				pBson = t_rpc_ver3_zip_MsgIdEchoRsp((MsgIdEchoRsp *)msg_body, msg_len);
 			break;
+		case MSGID_GENERAL_REQ:
+				pBson = t_rpc_ver3_zip_GeneralReq((GeneralReq *)msg_body, msg_len);
+			break;
+		case MSGID_GENERAL_RSP:
+				pBson = t_rpc_ver3_zip_GeneralRsp((GeneralRsp *)msg_body, msg_len);
+			break;
 		case MSGID_INNER_LOOP:
 				pBson = t_rpc_ver3_zip_MsgInnerLoop((MsgInnerLoop *)msg_body, msg_len);
 			break;
@@ -739,6 +745,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_ECHO_RSP:
 				ret = t_rpc_ver3_unzip_MsgIdEchoRsp(msg_body, msg_len, pBson);
+			break;
+		case MSGID_GENERAL_REQ:
+				ret = t_rpc_ver3_unzip_GeneralReq(msg_body, msg_len, pBson);
+			break;
+		case MSGID_GENERAL_RSP:
+				ret = t_rpc_ver3_unzip_GeneralRsp(msg_body, msg_len, pBson);
 			break;
 		case MSGID_INNER_LOOP:
 				ret = t_rpc_ver3_unzip_MsgInnerLoop(msg_body, msg_len, pBson);
@@ -1227,6 +1239,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_ECHO_RSP:
 				ptr = t_rpc_ver3_ptr_MsgIdEchoRsp((MsgIdEchoRsp *)msg_body, new_ptr);
 			break;
+		case MSGID_GENERAL_REQ:
+				ptr = t_rpc_ver3_ptr_GeneralReq((GeneralReq *)msg_body, new_ptr);
+			break;
+		case MSGID_GENERAL_RSP:
+				ptr = t_rpc_ver3_ptr_GeneralRsp((GeneralRsp *)msg_body, new_ptr);
+			break;
 		case MSGID_INNER_LOOP:
 				ptr = t_rpc_ver3_ptr_MsgInnerLoop((MsgInnerLoop *)msg_body, new_ptr);
 			break;
@@ -1713,6 +1731,12 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_ECHO_RSP:
 				msg_len = t_rpc_ver3_sizeof_MsgIdEchoRsp();
+			break;
+		case MSGID_GENERAL_REQ:
+				msg_len = t_rpc_ver3_sizeof_GeneralReq();
+			break;
+		case MSGID_GENERAL_RSP:
+				msg_len = t_rpc_ver3_sizeof_GeneralRsp();
 			break;
 		case MSGID_INNER_LOOP:
 				msg_len = t_rpc_ver3_sizeof_MsgInnerLoop();

@@ -3742,6 +3742,124 @@ t_rpc_ver3_sizeof_DosForward(void)
 }
 
 void *
+t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(GeneralReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(GeneralReq) does not match(%d/%d), please contact the message settlers!", sizeof(GeneralReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_GeneralReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		GeneralReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(GeneralReq);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_GeneralReq(GeneralReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_GeneralReq(void)
+{
+	return sizeof(GeneralReq);
+}
+
+void *
+t_rpc_ver3_zip_GeneralRsp(GeneralRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(GeneralRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(GeneralRsp) does not match(%d/%d), please contact the message settlers!", sizeof(GeneralRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_GeneralRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		GeneralRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(GeneralRsp);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_GeneralRsp(GeneralRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_GeneralRsp(void)
+{
+	return sizeof(GeneralRsp);
+}
+
+void *
 t_rpc_ver3_zip_HTTPCloseReq(HTTPCloseReq *zip_data, ub zip_len)
 {
 	void *pStructBson;

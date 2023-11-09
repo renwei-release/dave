@@ -485,6 +485,18 @@ type DosForward struct {
 	Ptr uint64
 }
 
+/* for MSGID_GENERAL_REQ message */
+type GeneralReq struct {
+	General_data *MBUF
+	Ptr uint64
+}
+
+/* for MSGID_GENERAL_RSP message */
+type GeneralRsp struct {
+	General_data *MBUF
+	Ptr uint64
+}
+
 /* for HTTPMSG_CLOSE_REQ message */
 type HTTPCloseReq struct {
 	Listen_port uint64

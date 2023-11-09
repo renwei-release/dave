@@ -1731,6 +1731,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_SYSTEM_BUSY-49'"
 	elif enum_value == MSGID_SYSTEM_IDLE:
 		value_str = "'MSGID_SYSTEM_IDLE-50'"
+	elif enum_value == MSGID_GENERAL_REQ:
+		value_str = "'MSGID_GENERAL_REQ-51'"
+	elif enum_value == MSGID_GENERAL_RSP:
+		value_str = "'MSGID_GENERAL_RSP-52'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:

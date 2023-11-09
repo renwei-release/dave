@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -8,13 +8,26 @@
 #include "base_macro.h"
 #include "dave_tools.h"
 #include "dave_os.h"
+#include "dave_3rdparty.h"
 #include "log_buffer.h"
 #include "log_lock.h"
 #include "log_log.h"
 
+#if defined(PERFTOOLS_3RDPARTY)
+#define LOG_MALLOC dave_perftools_malloc
+#define LOG_FREE dave_perftools_free
+#elif defined(JEMALLOC_3RDPARTY)
+#define LOG_MALLOC dave_jemalloc
+#define LOG_FREE dave_jefree
+#else
+#define LOG_MALLOC malloc
+#define LOG_0FREE free
+#endif
+
 #define LOG_TID_MAX DAVE_SYS_THREAD_ID_MAX
-#define LOG_LIST_MAX (LOG_BUFFER_MAX * 2)
+#define LOG_LIST_MAX (LOG_BUFFER_MAX)
 #define INVALID_TID 0xffffffffffffffff
+#define LOG_HISTORY_BUFFER_MAX 8196
 
 static volatile dave_bool __system_startup__ = dave_false;
 static LogBuffer *_log_thread[LOG_TID_MAX];
@@ -29,13 +42,65 @@ static ub _log_list_r_index = 0;
 static ub _log_lost_counter = 0;
 static LogBuffer _log_lost_buffer;
 
+static ub _history_buffer_len = 0;
+static s8 _history_buffer_ptr[LOG_HISTORY_BUFFER_MAX + 32];
+
 static inline void
-_log_buffer_clean_(LogBuffer *pBuffer)
+_log_buffer_free(LogBuffer *pBuffer)
 {
 	pBuffer->level = TRACELEVEL_MAX;
-	pBuffer->history_length = pBuffer->buffer_length;
-	pBuffer->buffer_length = 0;
+
+	pBuffer->fix_buffer_ptr[0] = '\0';
+	pBuffer->fix_buffer_index = 0;
+
+	if(pBuffer->dynamic_buffer_ptr != NULL)
+	{
+		LOG_FREE(pBuffer->dynamic_buffer_ptr);
+		pBuffer->dynamic_buffer_ptr = NULL;
+	}
+	pBuffer->dynamic_buffer_len = 0;
+	pBuffer->dynamic_buffer_index = 0;
+
 	pBuffer->tid = INVALID_TID;
+}
+
+static inline void
+_log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
+{
+	if((pBuffer->dynamic_buffer_ptr == NULL) && (buffer_len >= LOG_FIX_BUFFER_LEN))
+	{
+		buffer_len += 1024;
+
+		pBuffer->dynamic_buffer_ptr = LOG_MALLOC(buffer_len);
+		pBuffer->dynamic_buffer_len = buffer_len;
+		pBuffer->dynamic_buffer_index = dave_memcpy(pBuffer->dynamic_buffer_ptr, pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
+	}
+}
+
+static inline LogBuffer *
+_log_buffer_malloc(ub buffer_len)
+{
+	LogBuffer *pBuffer;
+
+	log_lock();
+	pBuffer = &_log_buffer[_log_buffer_index % LOG_BUFFER_MAX];
+	if(pBuffer->level == TRACELEVEL_MAX)
+	{
+		_log_buffer_index ++;
+	}
+	else
+	{
+		pBuffer = NULL;
+	}
+	log_unlock();
+
+	if(pBuffer == NULL)
+	{
+		LOGLTRACE(60,1,"The log is generated too fast, please define a larger cache(%d)! lost:%d",
+			LOG_BUFFER_MAX, _log_lost_counter);
+	}
+
+	return pBuffer;
 }
 
 static inline void
@@ -43,7 +108,9 @@ _log_buffer_reset(LogBuffer *pBuffer)
 {
 	dave_memset(pBuffer, 0x00, sizeof(LogBuffer));
 
-	_log_buffer_clean_(pBuffer);
+	pBuffer->dynamic_buffer_ptr = NULL;
+
+	_log_buffer_free(pBuffer);
 }
 
 static inline void
@@ -70,6 +137,9 @@ _log_buffer_reset_all(void)
 
 	_log_lost_counter = 0;
 	_log_buffer_reset(&_log_lost_buffer);
+
+	_history_buffer_len = 0;
+	dave_memset(_history_buffer_ptr, 0x00, sizeof(_history_buffer_ptr));
 }
 
 static inline dave_bool
@@ -84,7 +154,7 @@ _log_buffer_list_set(LogBuffer *pBuffer)
 	}
 	else
 	{
-		_log_buffer_clean_(pBuffer);
+		_log_buffer_free(pBuffer);
 
 		ret = dave_false;
 	}
@@ -114,33 +184,7 @@ _log_buffer_list_get(void)
 }
 
 static inline LogBuffer *
-_log_buffer_new(void)
-{
-	LogBuffer *pBuffer;
-
-	log_lock();
-	pBuffer = &_log_buffer[_log_buffer_index % LOG_BUFFER_MAX];
-	if(pBuffer->level == TRACELEVEL_MAX)
-	{
-		_log_buffer_index ++;
-	}
-	else
-	{
-		pBuffer = NULL;
-	}
-	log_unlock();
-
-	if(pBuffer == NULL)
-	{
-		LOGLTRACE(60,1,"The log is generated too fast, please define a larger cache(%d)! lost:%d",
-			LOG_BUFFER_MAX, _log_lost_counter);
-	}
-
-	return pBuffer;
-}
-
-static inline LogBuffer *
-_log_buffer_thread_build(void)
+_log_buffer_thread_build(ub buffer_len)
 {
 	ub tid, tid_index;
 	LogBuffer *pBuffer;
@@ -150,7 +194,7 @@ _log_buffer_thread_build(void)
 
 	if(_log_thread[tid_index] == NULL)
 	{
-		pBuffer = _log_buffer_new();
+		pBuffer = _log_buffer_malloc(buffer_len);
 
 		if(pBuffer != NULL)
 		{
@@ -160,16 +204,18 @@ _log_buffer_thread_build(void)
 		}
 	}
 
-	if(_log_thread[tid_index] != NULL)
+	pBuffer = _log_thread[tid_index];
+
+	if(pBuffer != NULL)
 	{
-		if(tid != _log_thread[tid_index]->tid)
+		if(tid != pBuffer->tid)
 		{
 			LOGABNOR("overflow tid zone! tid:%d/%d",
-				tid, _log_thread[tid_index]->tid);
+				tid, pBuffer->tid);
 		}
 	}
 
-	return _log_thread[tid_index];
+	return pBuffer;
 }
 
 static inline void
@@ -185,49 +231,14 @@ _log_buffer_lost_msg(void)
 {
 	log_lock();
 	_log_lost_buffer.level = TRACELEVEL_LOG;
-	_log_lost_buffer.buffer_length += dave_snprintf(
-			&_log_lost_buffer.buffer_ptr[_log_lost_buffer.buffer_length],
-			sizeof(_log_lost_buffer.buffer_ptr) - _log_lost_buffer.buffer_length,
+	_log_lost_buffer.fix_buffer_index += dave_snprintf(
+			&_log_lost_buffer.fix_buffer_ptr[_log_lost_buffer.fix_buffer_index],
+			sizeof(_log_lost_buffer.fix_buffer_ptr) - _log_lost_buffer.fix_buffer_index,
 			"***** Please note that there is not enough log space and %d logs are lost! *****\n",
 			_log_lost_counter);
 
 	_log_lost_counter = 0;
 	log_unlock();
-}
-
-static inline void
-_log_buffer_clean(LogBuffer *pBuffer)
-{
-	if(pBuffer != NULL)
-	{
-		log_lock();
-		_log_buffer_clean_(pBuffer);
-		log_unlock();
-	}
-}
-
-static inline ub
-_log_buffer_history_index(ub log_len)
-{
-	ub history_index = _log_buffer_index - 1;
-	ub safe_counter, log_index;
-	LogBuffer *pBuffer;
-
-	safe_counter = log_index = 0;
-
-	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < log_len))
-	{
-		pBuffer = &_log_buffer[history_index % LOG_BUFFER_MAX];
-	
-		if(pBuffer->history_length == 0)
-			break;
-
-		log_index += pBuffer->history_length;
-
-		history_index --;
-	}
-
-	return history_index;
 }
 
 static inline void
@@ -281,29 +292,41 @@ _log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 
 	if(pBuffer != NULL)
 	{
-		if(log_len > pBuffer->buffer_length)
-			log_copy_len = pBuffer->buffer_length;
-		else
-			log_copy_len = log_len;
+		if(pBuffer->dynamic_buffer_ptr == NULL)
+		{
+			if(log_len > pBuffer->fix_buffer_index)
+				log_copy_len = pBuffer->fix_buffer_index;
+			else
+				log_copy_len = log_len;
 
-		dave_memcpy(log_ptr, pBuffer->buffer_ptr, log_copy_len);
+			dave_memcpy(log_ptr, pBuffer->fix_buffer_ptr, log_copy_len);
+		}
+		else
+		{
+			if(log_len > pBuffer->dynamic_buffer_index)
+				log_copy_len = pBuffer->dynamic_buffer_index;
+			else
+				log_copy_len = log_len;
+		
+			dave_memcpy(log_ptr, pBuffer->dynamic_buffer_ptr, log_copy_len);
+		}
 		*level = pBuffer->level;
 
-		_log_buffer_clean(pBuffer);
+		_log_buffer_free(pBuffer);
 	}
 	else if(_log_lost_buffer.level != TRACELEVEL_MAX)
 	{
 		log_lock();
-		if(log_len > _log_lost_buffer.buffer_length)
-			log_copy_len = _log_lost_buffer.buffer_length;
+		if(log_len > _log_lost_buffer.fix_buffer_index)
+			log_copy_len = _log_lost_buffer.fix_buffer_index;
 		else
 			log_copy_len = log_len;
 
-		dave_memcpy(log_ptr, _log_lost_buffer.buffer_ptr, log_copy_len);
+		dave_memcpy(log_ptr, _log_lost_buffer.fix_buffer_ptr, log_copy_len);
 		*level = _log_lost_buffer.level;
 
 		_log_lost_buffer.level = TRACELEVEL_MAX;
-		_log_lost_buffer.buffer_length = 0;
+		_log_lost_buffer.fix_buffer_index = 0;
 		log_unlock();
 	}
 	else
@@ -320,28 +343,60 @@ _log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return log_copy_len;
 }
 
-static inline ub
-_log_buffer_history(s8 *log_ptr, ub log_len)
+static inline void
+_log_buffer_set_history(s8 *log_ptr, ub log_len)
 {
-	ub history_start_index = _log_buffer_history_index(log_len);
-	ub safe_counter, log_index;
-	LogBuffer *pBuffer;
+	ub move_index, move_len;
 
-	safe_counter = log_index = 0;
-	while(((safe_counter ++) < LOG_BUFFER_MAX) && (log_index < (log_len - 1)))
+	if((_history_buffer_len + log_len) <= LOG_HISTORY_BUFFER_MAX)
 	{
-		pBuffer = &_log_buffer[(history_start_index ++) % LOG_BUFFER_MAX];
-		if((log_index + pBuffer->history_length) >= (log_len - 1))
+		_history_buffer_len += dave_memcpy(&_history_buffer_ptr[_history_buffer_len], log_ptr, log_len);
+	}
+	else
+	{
+		if(log_len >= LOG_HISTORY_BUFFER_MAX)
 		{
-			break;
+			_history_buffer_len = dave_memcpy(_history_buffer_ptr, log_ptr, LOG_HISTORY_BUFFER_MAX);
 		}
+		else
+		{
+			move_index = (_history_buffer_len + log_len) - LOG_HISTORY_BUFFER_MAX;
+			move_len = _history_buffer_len - move_index;
 
-		log_index += dave_memcpy(&log_ptr[log_index], pBuffer->buffer_ptr, pBuffer->history_length);
+			if(move_len <= LOG_HISTORY_BUFFER_MAX)
+			{
+				dave_memmove(_history_buffer_ptr, &_history_buffer_ptr[move_index], move_len);
+				if((move_len + log_len) <= LOG_HISTORY_BUFFER_MAX)
+				{
+					dave_memcpy(&_history_buffer_ptr[move_len], log_ptr, log_len);
+					_history_buffer_len = move_len + log_len;
+				}
+			}
+		}
+	}
+}
+
+static inline ub
+_log_buffer_get_history(s8 *log_ptr, ub log_len)
+{
+	ub start_index;
+
+	log_len -= 1;
+
+	if(log_len >= _history_buffer_len)
+	{
+		dave_memcpy(log_ptr, _history_buffer_ptr, _history_buffer_len);
+		log_len = _history_buffer_len;
+	}
+	else
+	{
+		start_index = _history_buffer_len - log_len;
+		dave_memcpy(log_ptr, &_history_buffer_ptr[start_index], log_len);
 	}
 
-	log_ptr[log_index] = '\0';
+	log_ptr[log_len] = '\0';
 
-	return log_index;
+	return log_len;
 }
 
 // =====================================================================
@@ -360,12 +415,18 @@ log_buffer_exit(void)
 }
 
 LogBuffer *
-log_buffer_thread(void)
+log_buffer_thread(ub buffer_len)
 {
 	if(__system_startup__ == dave_false)
 		return NULL;
 
-	return _log_buffer_thread_build();
+	return _log_buffer_thread_build(buffer_len);
+}
+
+void
+log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
+{
+	_log_buffer_transfer(pBuffer, buffer_len);
 }
 
 void
@@ -375,6 +436,11 @@ log_buffer_set(LogBuffer *pBuffer)
 		return;
 
 	_log_buffer_set(pBuffer);
+
+	if(pBuffer->dynamic_buffer_ptr != NULL)
+		_log_buffer_set_history(pBuffer->dynamic_buffer_ptr, pBuffer->dynamic_buffer_index);
+	else
+		_log_buffer_set_history(pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
 }
 
 ub
@@ -389,8 +455,11 @@ log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 dave_bool
 log_buffer_has_data(void)
 {
+	if(__system_startup__ == dave_false)
+		return dave_false;
+
 	if((_log_list_w_index > _log_list_r_index)
-		|| (_log_lost_buffer.buffer_length > 0))
+		|| (_log_lost_buffer.fix_buffer_index > 0))
 	{
 		return dave_true;
 	}
@@ -404,6 +473,6 @@ log_buffer_history(s8 *log_ptr, ub log_len)
 	if(__system_startup__ == dave_false)
 		return 0;
 
-	return _log_buffer_history(log_ptr, log_len);
+	return _log_buffer_get_history(log_ptr, log_len);
 }
 

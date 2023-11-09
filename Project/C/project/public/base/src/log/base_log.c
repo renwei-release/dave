@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2023 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -48,7 +48,7 @@ _log_buffer_log_head(LogBuffer *pBuffer, TraceLevel level)
 
 	pBuffer->level = level;
 
-	pBuffer->buffer_length = dave_snprintf(pBuffer->buffer_ptr, LOG_BUFFER_LENGTH,
+	pBuffer->fix_buffer_index = dave_snprintf(pBuffer->fix_buffer_ptr, LOG_FIX_BUFFER_LEN,
 		"(%s.%s.%s)<%04d.%02d.%02d %02d:%02d:%02d>{%lu}",
 		VERSION_MAIN, VERSION_SUB, VERSION_REV,
 		date.year, date.month, date.day, date.hour, date.minute, date.second,
@@ -85,62 +85,126 @@ ___log_trace___(ub *log_len, TraceLevel level, const char *fmt, va_list list_arg
 	}
 }
 
-static inline s8 *
-__log_trace__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+static inline dave_bool
+__log_trace__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
 {
-	s8 *log_buf;
-
 	log_lock();
-	log_buf = ___log_trace___(log_len, level, fmt, list_args);
+	*log_buf = ___log_trace___(log_len, level, fmt, list_args);
 	log_unlock();
 
-	return log_buf;
+	return dave_true;
 }
 
-static inline s8 *
-__log_buffer__(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+static inline dave_bool
+___log_buffer___(dave_bool *fix_flag, dave_bool *end_flag, LogBuffer *pBuffer, const char *fmt, va_list list_args)
+{
+	*end_flag = dave_false;
+
+	if(pBuffer->dynamic_buffer_ptr == NULL)
+	{
+		pBuffer->fix_buffer_index += (ub)vsnprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], LOG_FIX_BUFFER_LEN-pBuffer->fix_buffer_index, fmt, list_args);
+		if(pBuffer->fix_buffer_index < LOG_FIX_BUFFER_LEN)
+		{
+			pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index] = '\0';
+		}
+
+		/*
+		 * Maybe the fixed BUF is too small.
+		 */
+		if((pBuffer->fix_buffer_index + 32) >= LOG_FIX_BUFFER_LEN)
+			return dave_false;
+
+		if((pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index - 1] == '\n')
+			|| (pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index - 1] == '\r'))
+		{
+			*end_flag = dave_true;
+			log_buffer_set(pBuffer);
+		}
+
+		*fix_flag = dave_true;
+
+		return dave_true;
+	}
+	else
+	{
+		pBuffer->dynamic_buffer_index += (ub)vsnprintf(&pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index], pBuffer->dynamic_buffer_len-pBuffer->dynamic_buffer_index, fmt, list_args);
+		if(pBuffer->dynamic_buffer_index < pBuffer->dynamic_buffer_len)
+		{
+			pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index] = '\0';
+		}
+	
+		if((pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index - 1] == '\n')
+			|| (pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index - 1] == '\r')
+			|| ((pBuffer->dynamic_buffer_index + 32) >= pBuffer->dynamic_buffer_len))
+		{
+			*end_flag = dave_true;
+			log_buffer_set(pBuffer);
+		}
+
+		*fix_flag = dave_false;
+
+		return dave_true;
+	}
+}
+
+static inline dave_bool
+__log_buffer__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
 {
 	LogBuffer *pBuffer;
-	s8 *log_buf;
+	ub transfer_len;
+	dave_bool fix_flag, end_flag;
 
-	log_buf = NULL;
+	*log_buf = NULL;
 	*log_len = 0;
+	fix_flag = end_flag = dave_false;
 
-	pBuffer = log_buffer_thread();
+	pBuffer = log_buffer_thread(LOG_FIX_BUFFER_LEN);
 	if(pBuffer == NULL)
 	{
-		return NULL;
+		return dave_true;
 	}
 
-	if((pBuffer->buffer_length == 0) || (pBuffer->buffer_length >= LOG_BUFFER_LENGTH))
+	if((pBuffer->fix_buffer_index == 0) && (pBuffer->dynamic_buffer_index == 0))
 	{
 		_log_buffer_log_head(pBuffer, level);
 	}
 
-	pBuffer->buffer_length += (ub)vsnprintf(&pBuffer->buffer_ptr[pBuffer->buffer_length], LOG_BUFFER_LENGTH-pBuffer->buffer_length, fmt, list_args);
-	if(pBuffer->buffer_length < LOG_BUFFER_LENGTH)
+	transfer_len = pBuffer->fix_buffer_index;
+
+	if(___log_buffer___(&fix_flag, &end_flag, pBuffer, fmt, list_args) == dave_false)
 	{
-		pBuffer->buffer_ptr[pBuffer->buffer_length] = '\0';
+		if(pBuffer->dynamic_buffer_ptr == NULL)
+		{
+			pBuffer->fix_buffer_index = transfer_len;
+			log_buffer_transfer(pBuffer, LOG_DYNAMIC_BUFFER_LEN);
+
+			___log_buffer___(&fix_flag, &end_flag, pBuffer, fmt, list_args);
+		}
 	}
 
-	if((pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\n')
-		|| (pBuffer->buffer_ptr[pBuffer->buffer_length - 1] == '\r')
-		|| ((pBuffer->buffer_length + 32) >= LOG_BUFFER_LENGTH))
+	if(end_flag == dave_true)
 	{
-		log_buffer_set(pBuffer);
-
-		log_buf = pBuffer->buffer_ptr;
-		*log_len = pBuffer->buffer_length;
+		if(pBuffer->dynamic_buffer_ptr == NULL)
+		{
+			*log_buf = pBuffer->fix_buffer_ptr;
+			*log_len = pBuffer->fix_buffer_index;
+		}
+		else
+		{
+			*log_buf = pBuffer->dynamic_buffer_ptr;
+			*log_len = pBuffer->dynamic_buffer_index;
+		}
 	}
 
-	return log_buf;
+	return fix_flag;
 }
 
 static inline s8 *
 __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 {
-	s8 *log_buf;
-	ub log_len;
+	s8 *log_buf = NULL;
+	ub log_len = 0;
+	dave_bool fix_flag;
 
 	if(fmt == NULL)
 	{
@@ -149,14 +213,14 @@ __log_log__(TraceLevel level, const char *fmt, va_list list_args)
 
 	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ASSERT))
 	{
-		log_buf = __log_trace__(&log_len, level, fmt, list_args);
+		fix_flag = __log_trace__(&log_buf, &log_len, level, fmt, list_args);
 	}
 	else
 	{
-		log_buf = __log_buffer__(&log_len, level, fmt, list_args);
+		fix_flag = __log_buffer__(&log_buf, &log_len, level, fmt, list_args);
 	}
 
-	log_fifo(_log_trace_enable, level, log_len, log_buf);
+	log_fifo(_log_trace_enable, fix_flag, level, log_len, log_buf);
 
 	return log_buf;
 }

@@ -40,6 +40,7 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 
 	dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
 	log_len = stringdigital(log_len_str);
+
 	if(log_len < 4096)
 	{
 		log_len = 4096;
@@ -47,7 +48,7 @@ _dos_show_log(s8 *param_ptr, ub param_len)
 
 	log_ptr = dave_malloc(log_len);
 	base_log_history(log_ptr, log_len);
-	dos_write("=========================");
+	dos_write("============ %d ============", log_len);
 	dos_write(log_ptr);
 	dave_free(log_ptr);
 

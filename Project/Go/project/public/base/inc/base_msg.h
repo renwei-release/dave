@@ -384,5 +384,17 @@ typedef struct {
 	void *ptr;
 } SystemIdle;
 
+/* for MSGID_GENERAL_REQ message */
+typedef struct {
+	MBUF *general_data;
+	void *ptr;
+} GeneralReq;
+
+/* for MSGID_GENERAL_RSP message */
+typedef struct {
+	MBUF *general_data;
+	void *ptr;
+} GeneralRsp;
+
 #endif
 

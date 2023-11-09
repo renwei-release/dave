@@ -12,7 +12,7 @@ void log_fifo_init(void);
 
 void log_fifo_exit(void);
 
-void log_fifo(dave_bool trace_enable, TraceLevel level, ub data_len, s8 *data_ptr);
+void log_fifo(dave_bool trace_enable, dave_bool fix_flag, TraceLevel level, ub data_len, s8 *data_ptr);
 
 ub log_fifo_info(s8 *info_ptr, ub info_len);
 

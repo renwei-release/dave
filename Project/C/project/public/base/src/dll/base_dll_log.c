@@ -18,7 +18,7 @@
 void
 dave_dll_log(char *func, int line, char *log_msg)
 {
-	ub log_len = 4096;
+	ub log_len = 1024 * 128;
 	s8 *log_buffer = dave_malloc(log_len);
 
 	if(log_msg != NULL)

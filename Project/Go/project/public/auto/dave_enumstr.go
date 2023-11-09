@@ -1088,6 +1088,8 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_QUEUE_RUN_MESSAGE_RSP: value_str = "'MSGID_QUEUE_RUN_MESSAGE_RSP-48'"
 		case MSGID_SYSTEM_BUSY: value_str = "'MSGID_SYSTEM_BUSY-49'"
 		case MSGID_SYSTEM_IDLE: value_str = "'MSGID_SYSTEM_IDLE-50'"
+		case MSGID_GENERAL_REQ: value_str = "'MSGID_GENERAL_REQ-51'"
+		case MSGID_GENERAL_RSP: value_str = "'MSGID_GENERAL_RSP-52'"
 		case SOCKET_BIND_REQ: value_str = "'SOCKET_BIND_REQ-1000'"
 		case SOCKET_BIND_RSP: value_str = "'SOCKET_BIND_RSP-1001'"
 		case SOCKET_CONNECT_REQ: value_str = "'SOCKET_CONNECT_REQ-1002'"
