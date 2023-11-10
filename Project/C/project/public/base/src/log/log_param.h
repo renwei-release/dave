@@ -5,7 +5,6 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#include "base_macro.h"
 #ifndef __LOG_PARAM_H__
 #define __LOG_PARAM_H__
 

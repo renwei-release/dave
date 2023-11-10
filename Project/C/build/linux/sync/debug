@@ -9,11 +9,11 @@
 PROJECT=${PWD##*/}
 DEPLOYPATH=../../../../../Deploy/deploy/${PROJECT}
 
+./deploy
+
 cd ${DEPLOYPATH}
 
 PROJECTNAME=${PROJECT}-sync
-
-
 
 echo debug $PROJECTNAME
 chmod a+x *.sh

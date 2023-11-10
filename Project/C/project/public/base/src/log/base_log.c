@@ -20,6 +20,7 @@
 #undef vsnprintf
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #define TRACE_BUFFER_MAX 16
 #define TRACE_BUFFER_LEN 1024
@@ -55,6 +56,12 @@ _log_buffer_log_head(LogBuffer *pBuffer, TraceLevel level)
 		_log_buffer_counter());
 }
 
+static inline void
+_log_buffer_dynamic(void)
+{
+	log_buffer_transfer(LOG_DYNAMIC_BUFFER_LEN);
+}
+
 static inline s8 *
 ___log_trace___(ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
 {
@@ -86,11 +93,13 @@ ___log_trace___(ub *log_len, TraceLevel level, const char *fmt, va_list list_arg
 }
 
 static inline dave_bool
-__log_trace__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+__log_trace__(dave_bool *fix_flag, s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
 {
 	log_lock();
 	*log_buf = ___log_trace___(log_len, level, fmt, list_args);
 	log_unlock();
+
+	*fix_flag = dave_true;
 
 	return dave_true;
 }
@@ -102,17 +111,23 @@ ___log_buffer___(dave_bool *fix_flag, dave_bool *end_flag, LogBuffer *pBuffer, c
 
 	if(pBuffer->dynamic_buffer_ptr == NULL)
 	{
-		pBuffer->fix_buffer_index += (ub)vsnprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], LOG_FIX_BUFFER_LEN-pBuffer->fix_buffer_index, fmt, list_args);
+		size_t buffer_len = LOG_FIX_BUFFER_LEN - pBuffer->fix_buffer_index;
+		int vsnprintf_len;
+
+		vsnprintf_len = vsnprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], buffer_len, fmt, list_args);
+		/*
+		 * Maybe the fixed BUF is too small.
+		 */
+		if((vsnprintf_len + 8) >= buffer_len)
+		{
+			return dave_false;
+		}
+		pBuffer->fix_buffer_index += vsnprintf_len;
+
 		if(pBuffer->fix_buffer_index < LOG_FIX_BUFFER_LEN)
 		{
 			pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index] = '\0';
 		}
-
-		/*
-		 * Maybe the fixed BUF is too small.
-		 */
-		if((pBuffer->fix_buffer_index + 32) >= LOG_FIX_BUFFER_LEN)
-			return dave_false;
 
 		if((pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index - 1] == '\n')
 			|| (pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index - 1] == '\r'))
@@ -127,7 +142,16 @@ ___log_buffer___(dave_bool *fix_flag, dave_bool *end_flag, LogBuffer *pBuffer, c
 	}
 	else
 	{
-		pBuffer->dynamic_buffer_index += (ub)vsnprintf(&pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index], pBuffer->dynamic_buffer_len-pBuffer->dynamic_buffer_index, fmt, list_args);
+		size_t buffer_len = pBuffer->dynamic_buffer_len - pBuffer->dynamic_buffer_index;
+		int vsnprintf_len;
+
+		vsnprintf_len = (ub)vsnprintf(&pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index], buffer_len, fmt, list_args);
+		if((vsnprintf_len + 8) >= buffer_len)
+		{
+			return dave_false;
+		}		
+		pBuffer->dynamic_buffer_index += vsnprintf_len;
+
 		if(pBuffer->dynamic_buffer_index < pBuffer->dynamic_buffer_len)
 		{
 			pBuffer->dynamic_buffer_ptr[pBuffer->dynamic_buffer_index] = '\0';
@@ -148,17 +172,16 @@ ___log_buffer___(dave_bool *fix_flag, dave_bool *end_flag, LogBuffer *pBuffer, c
 }
 
 static inline dave_bool
-__log_buffer__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
+__log_buffer__(dave_bool *fix_flag, s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_list list_args)
 {
 	LogBuffer *pBuffer;
-	ub transfer_len;
-	dave_bool fix_flag, end_flag;
+	dave_bool end_flag;
 
 	*log_buf = NULL;
 	*log_len = 0;
-	fix_flag = end_flag = dave_false;
+	*fix_flag = end_flag = dave_false;
 
-	pBuffer = log_buffer_thread(LOG_FIX_BUFFER_LEN);
+	pBuffer = log_buffer_thread();
 	if(pBuffer == NULL)
 	{
 		return dave_true;
@@ -169,17 +192,9 @@ __log_buffer__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_
 		_log_buffer_log_head(pBuffer, level);
 	}
 
-	transfer_len = pBuffer->fix_buffer_index;
-
-	if(___log_buffer___(&fix_flag, &end_flag, pBuffer, fmt, list_args) == dave_false)
+	if(___log_buffer___(fix_flag, &end_flag, pBuffer, fmt, list_args) == dave_false)
 	{
-		if(pBuffer->dynamic_buffer_ptr == NULL)
-		{
-			pBuffer->fix_buffer_index = transfer_len;
-			log_buffer_transfer(pBuffer, LOG_DYNAMIC_BUFFER_LEN);
-
-			___log_buffer___(&fix_flag, &end_flag, pBuffer, fmt, list_args);
-		}
+		return dave_false;
 	}
 
 	if(end_flag == dave_true)
@@ -196,33 +211,37 @@ __log_buffer__(s8 **log_buf, ub *log_len, TraceLevel level, const char *fmt, va_
 		}
 	}
 
-	return fix_flag;
+	return dave_true;
 }
 
-static inline s8 *
-__log_log__(TraceLevel level, const char *fmt, va_list list_args)
+static inline dave_bool
+__log_log__(s8 **log_buf, TraceLevel level, const char *fmt, va_list list_args)
 {
-	s8 *log_buf = NULL;
 	ub log_len = 0;
-	dave_bool fix_flag;
+	dave_bool fix_flag, error_flag;
 
-	if(fmt == NULL)
-	{
-		return NULL;
-	}
+	*log_buf = NULL;
 
 	if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_ASSERT))
 	{
-		fix_flag = __log_trace__(&log_buf, &log_len, level, fmt, list_args);
+		error_flag = __log_trace__(&fix_flag, log_buf, &log_len, level, fmt, list_args);
 	}
 	else
 	{
-		fix_flag = __log_buffer__(&log_buf, &log_len, level, fmt, list_args);
+		error_flag = __log_buffer__(&fix_flag, log_buf, &log_len, level, fmt, list_args);
 	}
 
-	log_fifo(_log_trace_enable, fix_flag, level, log_len, log_buf);
+	if(error_flag == dave_false)
+	{
+		return dave_false;
+	}
 
-	return log_buf;
+	if(*log_buf != NULL)
+	{
+		log_fifo(_log_trace_enable, fix_flag, level, log_len, *log_buf);
+	}
+
+	return dave_true;
 }
 
 // =====================================================================
@@ -231,9 +250,20 @@ void
 __base_debug__(const char *args, ...)
 {
 	va_list list_args;
+	s8 *log_buf;
+
+	if(args == NULL)
+		return;
 
 	va_start(list_args, args);
-	__log_log__(TRACELEVEL_DEBUG, args, list_args);
+	if(__log_log__(&log_buf, TRACELEVEL_DEBUG, args, list_args) == dave_false)
+	{
+		_log_buffer_dynamic();
+
+		va_start(list_args, args);
+
+		__log_log__(&log_buf, TRACELEVEL_DEBUG, args, list_args);
+	}
 	va_end(list_args);
 }
 
@@ -241,9 +271,20 @@ void
 __base_catcher__(const char *args, ...)
 {
 	va_list list_args;
+	s8 *log_buf;
+
+	if(args == NULL)
+		return;
 
 	va_start(list_args, args);
-	__log_log__(TRACELEVEL_CATCHER, args, list_args);
+	if(__log_log__(&log_buf, TRACELEVEL_CATCHER, args, list_args) == dave_false)
+	{
+		_log_buffer_dynamic();
+
+		va_start(list_args, args);
+
+		__log_log__(&log_buf, TRACELEVEL_CATCHER, args, list_args);
+	}
 	va_end(list_args);
 }
 
@@ -251,9 +292,20 @@ void
 __base_trace__(const char *args, ...)
 {
 	va_list list_args;
+	s8 *log_buf;
+
+	if(args == NULL)
+		return;
 
 	va_start(list_args, args);
-	__log_log__(TRACELEVEL_TRACE, args, list_args);
+	if(__log_log__(&log_buf, TRACELEVEL_TRACE, args, list_args) == dave_false)
+	{
+		_log_buffer_dynamic();
+
+		va_start(list_args, args);
+
+		__log_log__(&log_buf, TRACELEVEL_TRACE, args, list_args);
+	}
 	va_end(list_args);
 }
 
@@ -261,9 +313,20 @@ void
 __base_log__(const char *args, ...)
 {
 	va_list list_args;
+	s8 *log_buf;
+
+	if(args == NULL)
+		return;
 
 	va_start(list_args, args);
-	__log_log__(TRACELEVEL_LOG, args, list_args);
+	if(__log_log__(&log_buf, TRACELEVEL_LOG, args, list_args) == dave_false)
+	{
+		_log_buffer_dynamic();
+
+		va_start(list_args, args);
+
+		__log_log__(&log_buf, TRACELEVEL_LOG, args, list_args);
+	}
 	va_end(list_args);
 }
 
@@ -271,9 +334,20 @@ void
 __base_abnormal__(const char *args, ...)
 {
 	va_list list_args;
+	s8 *log_buf;
+
+	if(args == NULL)
+		return;
 
 	va_start(list_args, args);
-	__log_log__(TRACELEVEL_ABNORMAL, args, list_args);
+	if(__log_log__(&log_buf, TRACELEVEL_ABNORMAL, args, list_args) == dave_false)
+	{
+		_log_buffer_dynamic();
+
+		va_start(list_args, args);
+
+		__log_log__(&log_buf, TRACELEVEL_ABNORMAL, args, list_args);
+	}
 	va_end(list_args);
 }
 
@@ -284,13 +358,13 @@ __base_assert__(int assert_flag, const char *fun, int line, const char *args, ..
 	{
 		s8 args_str[1024];
 		s8 poweroff_message[2048];
-		s8 *log_buf;
 		va_list list_args;
+		s8 *log_buf;
 
 		dave_snprintf(args_str, sizeof(args_str), "%s\n", args);
 
 		va_start(list_args, args);
-		log_buf = __log_log__(TRACELEVEL_ASSERT, args_str, list_args);
+		__log_log__(&log_buf, TRACELEVEL_ASSERT, args_str, list_args);
 		va_end(list_args);
 
 		dave_snprintf(poweroff_message, sizeof(poweroff_message), "%s:%d:%s", fun, line, log_buf);

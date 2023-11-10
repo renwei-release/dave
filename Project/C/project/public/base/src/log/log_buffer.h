@@ -32,9 +32,9 @@ void log_buffer_init(void);
 
 void log_buffer_exit(void);
 
-LogBuffer * log_buffer_thread(ub buffer_len);
+LogBuffer * log_buffer_thread(void);
 
-void log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len);
+LogBuffer * log_buffer_transfer(ub buffer_len);
 
 void log_buffer_set(LogBuffer *pBuffer);
 

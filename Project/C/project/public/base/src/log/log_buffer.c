@@ -78,7 +78,7 @@ _log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
 }
 
 static inline LogBuffer *
-_log_buffer_malloc(ub buffer_len)
+_log_buffer_malloc(void)
 {
 	LogBuffer *pBuffer;
 
@@ -184,7 +184,7 @@ _log_buffer_list_get(void)
 }
 
 static inline LogBuffer *
-_log_buffer_thread_build(ub buffer_len)
+_log_buffer_thread_build(void)
 {
 	ub tid, tid_index;
 	LogBuffer *pBuffer;
@@ -194,7 +194,7 @@ _log_buffer_thread_build(ub buffer_len)
 
 	if(_log_thread[tid_index] == NULL)
 	{
-		pBuffer = _log_buffer_malloc(buffer_len);
+		pBuffer = _log_buffer_malloc();
 
 		if(pBuffer != NULL)
 		{
@@ -415,18 +415,25 @@ log_buffer_exit(void)
 }
 
 LogBuffer *
-log_buffer_thread(ub buffer_len)
+log_buffer_thread(void)
 {
 	if(__system_startup__ == dave_false)
 		return NULL;
 
-	return _log_buffer_thread_build(buffer_len);
+	return _log_buffer_thread_build();
 }
 
-void
-log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
+LogBuffer *
+log_buffer_transfer(ub buffer_len)
 {
-	_log_buffer_transfer(pBuffer, buffer_len);
+	LogBuffer *pBuffer = log_buffer_thread();
+
+	if(pBuffer != NULL)
+	{
+		_log_buffer_transfer(pBuffer, buffer_len);
+	}
+
+	return pBuffer;
 }
 
 void
