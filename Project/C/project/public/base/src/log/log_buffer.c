@@ -25,7 +25,7 @@
 #endif
 
 #define LOG_TID_MAX DAVE_SYS_THREAD_ID_MAX
-#define LOG_LIST_MAX (LOG_BUFFER_MAX)
+#define LOG_LIST_MAX (LOG_BUFFER_MAX + 128)
 #define INVALID_TID 0xffffffffffffffff
 #define LOG_HISTORY_BUFFER_MAX 8196
 
