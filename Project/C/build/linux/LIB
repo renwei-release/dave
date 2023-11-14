@@ -29,9 +29,6 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), VOIP)), 1)
 LIB += -L../../../../ThirdParty/build/pjsip/setup/lib -lpjsip-linux -lasound
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), DBA)), 1)
-LIB += -L../../../../ThirdParty/build/redis/setup/lib -lhiredis
-endif
 
 LIB += -Wl,-Bdynamic
 

@@ -45,6 +45,7 @@ ramkv_add(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *f
 		KVLOG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
 		return dave_false;
 	}
+
 	if(value_ptr == NULL)
 	{
 		KVLOG("invalid value:%x/%d <%s:%d>", value_ptr, value_len, fun, line);
@@ -77,6 +78,12 @@ sb
 ramkv_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	sb ret;
+
+	if((key_ptr == NULL) || (key_len == 0))
+	{
+		KVLOG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
+		return -1;
+	}
 
 	if((value_ptr != NULL) && (value_len > 0))
 	{
@@ -112,6 +119,12 @@ ub
 ramkv_del(KV *pKV, u8 *key_ptr, ub key_len, void *value_ptr, ub value_len, s8 *fun, ub line)
 {
 	ub ret;
+
+	if((key_ptr == NULL) || (key_len == 0))
+	{
+		KVDEBUG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
+		return 0;
+	}
 
 	if(__ramkv_check__(pKV, fun, line) == dave_false)
 		return 0;
@@ -158,6 +171,9 @@ ramkv_top(KV *pKV, u8 *key_ptr, ub key_len)
 		case KvAttrib_ram:
 		case KvAttrib_list:
 				ret = ramkv_local_top(pKV, key_ptr, key_len);
+			break;
+		case KvAttrib_remote:
+				ret = dave_false;
 			break;
 		default:
 				KVLOG("unsupport attrib:%d", pKV->attrib);

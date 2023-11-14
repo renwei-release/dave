@@ -42,7 +42,8 @@ sb __base_ramkv_inq_key_value__(void *ramkv, s8 *key, s8 *value_ptr, ub value_le
 sb __base_ramkv_index_key_value__(void *ramkv, sb index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len, s8 *fun, ub line);
 dave_bool __base_ramkv_del_key_value__(void *ramkv, s8 *key, s8 *fun, ub line);
 
-#define base_ramkv_malloc(name, out_second, outback_fun) __base_ramkv_malloc__(dave_true, name, KvAttrib_list, out_second, outback_fun, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_malloc(name, out_second, outback_fun) __base_ramkv_malloc__(dave_true, (s8 *)name, KvAttrib_list, out_second, outback_fun, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_remote_malloc(name, out_second, outback_fun) __base_ramkv_malloc__(dave_true, (s8 *)name, KvAttrib_remote, out_second, outback_fun, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_free(ramkv, recycle_fun) __base_ramkv_free__(dave_true, ramkv, recycle_fun, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_add_key_ptr(ramkv, key, ptr) __base_ramkv_add_key_ptr__(ramkv, key, ptr, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_inq_key_ptr(ramkv, key) __base_ramkv_inq_key_ptr__(ramkv, key, (s8 *)__func__, (ub)__LINE__)
@@ -55,12 +56,13 @@ dave_bool __base_ramkv_del_key_value__(void *ramkv, s8 *key, s8 *fun, ub line);
 #define base_ramkv_inq_bin_ptr(ramkv, bin_data, bin_len) __base_ramkv_inq_bin_ptr__(ramkv, bin_data, bin_len, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_del_bin_ptr(ramkv, bin_data, bin_len) __base_ramkv_del_bin_ptr__(ramkv, bin_data, bin_len, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_inq_top_ptr(ramkv) __base_ramkv_inq_top_ptr__(ramkv, (s8 *)__func__, (ub)__LINE__)
-#define base_ramkv_add_key_value(ramkv, key, value) __base_ramkv_add_key_value__(ramkv, key, value, (s8 *)__func__, (ub)__LINE__)
-#define base_ramkv_inq_key_value(ramkv, key, value_ptr, value_len) __base_ramkv_inq_key_value__(ramkv, key, value_ptr, value_len, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_add_key_value(ramkv, key, value) __base_ramkv_add_key_value__(ramkv, (s8 *)key, (s8 *)value, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_inq_key_value(ramkv, key, value_ptr, value_len) __base_ramkv_inq_key_value__(ramkv, (s8 *)key, (s8 *)value_ptr, value_len, (s8 *)__func__, (ub)__LINE__)
 #define base_ramkv_index_key_value(ramkv, index, key_ptr, key_len, value_ptr, value_len) __base_ramkv_index_key_value__(ramkv, index, key_ptr, key_len, value_ptr, value_len, (s8 *)__func__, (ub)__LINE__)
-#define base_ramkv_del_key_value(ramkv, key) __base_ramkv_del_key_value__(ramkv, key, (s8 *)__func__, (ub)__LINE__)
+#define base_ramkv_del_key_value(ramkv, key) __base_ramkv_del_key_value__(ramkv, (s8 *)key, (s8 *)__func__, (ub)__LINE__)
 
 #define kv_malloc base_ramkv_malloc
+#define kv_remote_malloc base_ramkv_remote_malloc
 #define kv_free base_ramkv_free
 #define kv_add_key_ptr base_ramkv_add_key_ptr
 #define kv_inq_key_ptr base_ramkv_inq_key_ptr

@@ -11,8 +11,9 @@
 typedef struct {
 	s8 redis_address[DAVE_URL_LEN];
 	ub redis_port;
+	s8 redis_password[DAVE_PASSWORD_LEN];
 
-	s8 table_name[DAVE_NORMAL_NAME_LEN];
+	s8 table_name_ptr[DAVE_NORMAL_NAME_LEN];
 	ub table_name_len;
 
 	void *redis_context;

@@ -371,6 +371,38 @@ _ramkv_test_add_short_add_long_add_short(void)
 	kv_free(kv, NULL);
 }
 
+static void
+_ramkv_test_remote_init(void)
+{
+	void *kv;
+
+	kv = kv_remote_malloc("remote", 0, NULL);
+
+	kv_free(kv, NULL);
+}
+
+static void
+_ramkv_test_remote_opt(void)
+{
+	void *kv;
+	dave_bool ret;
+	s8 value_ptr[1024];
+
+	kv = kv_remote_malloc("remote", 0, NULL);
+
+	ret = kv_add_key_value(kv, "remote_test", "1234567890");
+	EXPECT_EQ(ret, dave_true);
+
+	kv_inq_key_value(kv, "remote_test", value_ptr, sizeof(value_ptr));
+	EXPECT_STREQ(value_ptr, "1234567890");
+
+	kv_del_key_value(kv, "remote_test");
+	kv_inq_key_value(kv, "remote_test", value_ptr, sizeof(value_ptr));
+	EXPECT_STREQ(value_ptr, "");
+
+	kv_free(kv, NULL);
+}
+
 // =====================================================================
 
 TEST(ramkv_case, ramkv_case_1) { _ramkv_test_loop(KvAttrib_ram, (s8 *)"1000"); }
@@ -383,5 +415,7 @@ TEST(ramkv_case, ramkv_case_7) { _ramkv_test_timer_inq((s8 *)"bbbbb"); }
 TEST(ramkv_case, ramkv_case_8) { _ramkv_test_timer_info(); }
 TEST(ramkv_case, ramkv_case_9) { _ramkv_test_add_del_free(KvAttrib_list, (s8 *)"1000"); }
 TEST(ramkv_case, ramkv_case_10) { _ramkv_test_add_short_add_long_add_short(); }
+TEST(ramkv_case, ramkv_case_11) { _ramkv_test_remote_init(); }
+TEST(ramkv_case, ramkv_case_12) { _ramkv_test_remote_opt(); }
 
 #endif

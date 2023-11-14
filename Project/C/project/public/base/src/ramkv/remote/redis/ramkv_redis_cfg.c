@@ -23,19 +23,9 @@
 static void
 _ramkv_redis_cfg(KVRedis *pKV)
 {
-	s8 redis_port[32];
-
-	if(cfg_get(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, DAVE_URL_LEN) == dave_false)
-	{
-		dave_snprintf(pKV->redis_address, sizeof(pKV->redis_address), "%s", t_gp_localhost());
-		cfg_set(CFG_REDIS_ADDRESS, (u8 *)pKV->redis_address, dave_strlen(pKV->redis_address));
-	}
-	if(cfg_get(CFG_REDIS_PORT, (u8 *)redis_port, 32) == dave_false)
-	{
-		dave_sprintf(redis_port, "6379");
-		cfg_set(CFG_REDIS_PORT, (u8 *)redis_port, dave_strlen(redis_port));
-	}
-	pKV->redis_port = stringdigital(redis_port);
+	cfg_get_str(CFG_REDIS_ADDRESS, pKV->redis_address, sizeof(pKV->redis_address), t_gp_localhost());
+	pKV->redis_port = cfg_get_ub(CFG_REDIS_PORT, 6379);
+	cfg_get_str(CFG_REDIS_PWD, pKV->redis_password, sizeof(pKV->redis_password), "CWLtc14@#!");
 }
 
 // ====================================================================

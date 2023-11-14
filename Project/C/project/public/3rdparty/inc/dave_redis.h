@@ -10,15 +10,12 @@
 #define __DAVE_REDIS_H__
 #include "dave_define.h"
 
-/* Synchronous API */
 void * dave_redis_connect(s8 *ip, ub port);
-
-void dave_redis_free_reply(void *reply);
-
 void dave_redis_disconnect(void *context);
 
-/* Redis command which returns integer value */
-ErrCode dave_redis_int_command(void * context, s8 * command, sb *ret_value);
+RetCode dave_redis_set(void *context, s8 *set_command);
+ub dave_redis_get(void *context, s8 *get_command, u8 *bin_ptr, ub bin_len);
+RetCode dave_redis_del(void *context, s8 *del_command);
 
 #endif
 

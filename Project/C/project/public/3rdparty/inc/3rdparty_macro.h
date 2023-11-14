@@ -52,9 +52,7 @@
 // #define PJSIP_3RDPARTY
 #endif
 
-#ifdef __DAVE_PRODUCT_DBA__
 #define REDIS_3RDPARTY
-#endif
 
 #endif
 

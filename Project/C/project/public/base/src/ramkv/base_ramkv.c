@@ -12,7 +12,6 @@
 #include "ramkv_param.h"
 #include "ramkv_struct.h"
 #include "ramkv_api.h"
-#include "ramkv_test.h"
 #include "ramkv_log.h"
 
 #define RECYCLE_LOOP_MAX 999999999
@@ -20,6 +19,12 @@
 static RetCode
 _base_ramkv_system_recycle(void *ramkv, s8 *key)
 {
+	if(key == NULL)
+	{
+		KVDEBUG("key is NULL!");
+		return RetCode_empty_data;
+	}
+
 	if(kv_del_key_ptr(ramkv, key) != NULL)
 		return RetCode_OK;
 	else

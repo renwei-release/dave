@@ -23,12 +23,18 @@ ramkv_malloc_redis(KVRedis *pKV, s8 *table_name)
 {
 	dave_memset(pKV, 0x00, sizeof(KVRedis));
 
-	ramkv_redis_cfg(pKV);
-
-	dave_strcpy(pKV->table_name, table_name, sizeof(pKV->table_name));
-	pKV->table_name_len = dave_strlen(pKV->table_name);
+	dave_strcpy(pKV->table_name_ptr, table_name, sizeof(pKV->table_name_ptr));
+	pKV->table_name_len = dave_strlen(pKV->table_name_ptr);
 
 	pKV->redis_context = ramkv_redis_connect(pKV);
+
+	if(pKV->redis_context == NULL)
+	{
+		KVABNOR("connect failed! %s:%d", pKV->redis_address, pKV->redis_port);
+		return dave_false;
+	}
+
+	KVDEBUG("connect success! %s:%d", pKV->redis_address, pKV->redis_port);
 
 	return dave_true;
 }
@@ -37,6 +43,8 @@ void
 ramkv_free_redis(KVRedis *pKV)
 {
 	ramkv_redis_disconnect(pKV);
+
+	KVDEBUG("disconnect success! %s:%d", pKV->redis_address, pKV->redis_port);
 
 	dave_memset(pKV, 0x00, sizeof(KVRedis));
 }
