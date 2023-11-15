@@ -20,6 +20,9 @@ extern "C"{
 #ifdef JSON_3RDPARTY
 #include "dave_json.h"
 #endif
+#ifdef GTEST_3RDPARTY
+#include "dave_gtest.h"
+#endif
 #ifdef NGINX_3RDPARTY
 #include "dave_nginx.h"
 #endif

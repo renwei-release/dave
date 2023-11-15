@@ -1029,6 +1029,22 @@ class StoreMysqlRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for STORE_REDIS_REQ message *#
+class StoreRedisReq (Structure):
+	_fields_ = [
+		("command", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_REDIS_RSP message *#
+class StoreRedisRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("msg", c_char * 4096),
+		("reply", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_SYSTEM_BUSY message *#
 class SystemBusy (Structure):
 	_fields_ = [

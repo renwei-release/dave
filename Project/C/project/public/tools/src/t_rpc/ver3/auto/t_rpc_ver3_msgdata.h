@@ -578,6 +578,16 @@ dave_bool t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void 
 void * t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_StoreMysqlRsp(void);
 
+void * t_rpc_ver3_zip_StoreRedisReq(StoreRedisReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreRedisReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreRedisReq(StoreRedisReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreRedisReq(void);
+
+void * t_rpc_ver3_zip_StoreRedisRsp(StoreRedisRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreRedisRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreRedisRsp(StoreRedisRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreRedisRsp(void);
+
 void * t_rpc_ver3_zip_SystemBusy(SystemBusy *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SystemBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SystemBusy(SystemBusy *struct_data, void *new_ptr);

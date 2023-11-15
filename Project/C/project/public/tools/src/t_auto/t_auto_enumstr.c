@@ -4976,6 +4976,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case STORE_MYSQL_RSP:
 				value_str = "'STORE_MYSQL_RSP-3002'";
 			break;
+		case STORE_REDIS_REQ:
+				value_str = "'STORE_REDIS_REQ-3003'";
+			break;
+		case STORE_REDIS_RSP:
+				value_str = "'STORE_REDIS_RSP-3004'";
+			break;
 		case DBMSG_SYS_INQ_IMAGE_REQ:
 				value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'";
 			break;

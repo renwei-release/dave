@@ -915,6 +915,20 @@ type StoreMysqlRsp struct {
 	Ptr uint64
 }
 
+/* for STORE_REDIS_REQ message */
+type StoreRedisReq struct {
+	Command *MBUF
+	Ptr uint64
+}
+
+/* for STORE_REDIS_RSP message */
+type StoreRedisRsp struct {
+	Ret int64
+	Msg [4096] byte
+	Reply *MBUF
+	Ptr uint64
+}
+
 /* for MSGID_SYSTEM_BUSY message */
 type SystemBusy struct {
 	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte

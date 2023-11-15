@@ -14,6 +14,7 @@
 #include "dave_echo.h"
 #include "store_msg.h"
 #include "store_mysql.h"
+#include "store_redis.h"
 
 /*
  * Some databases cannot accept more connections, 
@@ -44,6 +45,7 @@ static void
 _store_init(MSGBODY *msg)
 {
 	store_mysql_init(_store_thread_number());
+	store_redis_init(_store_thread_number());
 }
 
 static void
@@ -61,6 +63,9 @@ _store_main(MSGBODY *msg)
 		case STORE_MYSQL_REQ:
 				store_mysql_sql(msg->msg_src, msg->thread_wakeup_index, (StoreMysqlReq *)(msg->msg_body));
 			break;
+		case STORE_REDIS_REQ:
+				store_redis_command(msg->msg_src, msg->thread_wakeup_index, (StoreRedisReq *)(msg->msg_body));
+			break;
 		default:
 			break;
 	}
@@ -70,6 +75,7 @@ static void
 _store_exit(MSGBODY *msg)
 {
 	store_mysql_exit();
+	store_redis_exit();
 }
 
 // =====================================================================

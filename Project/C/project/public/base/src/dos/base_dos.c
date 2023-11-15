@@ -35,8 +35,8 @@ _base_dos_is_private(void)
 	}
 }
 
-static s8 *
-_base_dos_thread_name(s8 *thread_name, ub thread_len)
+static ub
+_base_dos_thread_name(s8 *thread_name, ub thread_len, ub thread_flag)
 {
 	s8 product_name[128];
 
@@ -45,13 +45,15 @@ _base_dos_thread_name(s8 *thread_name, ub thread_len)
 		dave_strcpy(product_name, dave_verno_my_product(), sizeof(product_name));
 		lower(product_name);
 		dave_snprintf(thread_name, thread_len, "%s_%s", DOS_THREAD_NAME, product_name);
+
+		thread_flag |= THREAD_COROUTINE_FLAG;
 	}
 	else
 	{
 		dave_snprintf(thread_name, thread_len, "%s", DOS_THREAD_NAME);
 	}
 
-	return thread_name;
+	return thread_flag;
 }
 
 static void
@@ -106,7 +108,7 @@ base_dos_init(void)
 	ub thread_flag = THREAD_THREAD_FLAG|_base_dos_is_private();
 	s8 thread_name[128];
 
-	_base_dos_thread_name(thread_name, sizeof(thread_name));
+	thread_flag = _base_dos_thread_name(thread_name, sizeof(thread_name), thread_flag);
 
 	dos_cmd_init();
 

@@ -403,6 +403,17 @@ _ramkv_test_remote_opt(void)
 	kv_free(kv, NULL);
 }
 
+static void
+_ramkv_test_remote_loop(void)
+{
+	ub loop;
+
+	for(loop=0; loop<64; loop++)
+	{
+		_ramkv_test_remote_opt();
+	}
+}
+
 // =====================================================================
 
 TEST(ramkv_case, ramkv_case_1) { _ramkv_test_loop(KvAttrib_ram, (s8 *)"1000"); }
@@ -417,5 +428,6 @@ TEST(ramkv_case, ramkv_case_9) { _ramkv_test_add_del_free(KvAttrib_list, (s8 *)"
 TEST(ramkv_case, ramkv_case_10) { _ramkv_test_add_short_add_long_add_short(); }
 TEST(ramkv_case, ramkv_case_11) { _ramkv_test_remote_init(); }
 TEST(ramkv_case, ramkv_case_12) { _ramkv_test_remote_opt(); }
+TEST(ramkv_case, ramkv_case_13) { _ramkv_test_remote_loop(); }
 
 #endif

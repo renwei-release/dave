@@ -25,5 +25,19 @@ typedef struct {
 	void *ptr;
 } StoreMysqlRsp;
 
+/* for STORE_REDIS_REQ message */
+typedef struct {
+	MBUF *command;
+	void *ptr;
+} StoreRedisReq;
+
+/* for STORE_REDIS_RSP message */
+typedef struct {
+	RetCode ret;
+	s8 msg[4096];
+	MBUF *reply;
+	void *ptr;
+} StoreRedisRsp;
+
 #endif
 

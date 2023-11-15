@@ -6978,6 +6978,128 @@ t_rpc_ver3_sizeof_StoreMysqlRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_StoreRedisReq(StoreRedisReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreRedisReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreRedisReq) does not match(%d/%d), please contact the message settlers!", sizeof(StoreRedisReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-command", t_rpc_ver3_zip_MBUF_ptr(zip_data->command));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreRedisReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreRedisReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreRedisReq);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->command), t_bson_inq_object(pStructBson, "MBUF-command"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreRedisReq(StoreRedisReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreRedisReq(void)
+{
+	return sizeof(StoreRedisReq);
+}
+
+void *
+t_rpc_ver3_zip_StoreRedisRsp(StoreRedisRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreRedisRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreRedisRsp) does not match(%d/%d), please contact the message settlers!", sizeof(StoreRedisRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 4096));
+	t_bson_add_object(pStructBson, "MBUF-reply", t_rpc_ver3_zip_MBUF_ptr(zip_data->reply));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreRedisRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreRedisRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreRedisRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 4096, t_bson_inq_object(pStructBson, "s8-msg"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->reply), t_bson_inq_object(pStructBson, "MBUF-reply"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreRedisRsp(StoreRedisRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreRedisRsp(void)
+{
+	return sizeof(StoreRedisRsp);
+}
+
+void *
 t_rpc_ver3_zip_SystemBusy(SystemBusy *zip_data, ub zip_len)
 {
 	void *pStructBson;

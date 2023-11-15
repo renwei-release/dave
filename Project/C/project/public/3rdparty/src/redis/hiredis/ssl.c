@@ -2,6 +2,9 @@
 #include "3rdparty_macro.h"
 #if defined(REDIS_3RDPARTY)
 
+
+#ifdef __undef_REDIS_3RDPARTY
+
 /*
  * Copyright (c) 2009-2011, Salvatore Sanfilippo <antirez at gmail dot com>
  * Copyright (c) 2010-2011, Pieter Noordhuis <pcnoordhuis at gmail dot com>
@@ -571,4 +574,5 @@ redisContextFuncs redisContextSSLFuncs = {
     .write = redisSSLWrite
 };
 
+#endif
 #endif

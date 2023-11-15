@@ -302,9 +302,9 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 		{
 			if(pSync->wait_len != wait_len)
 			{
-				THREADABNOR("wait_len:%d and wait_len:%d is mismatch! thread:%s/%s msg:%d",
+				THREADABNOR("wait_len:%d and sync wait_len:%d is mismatch! thread:%s/%s msg:%s",
 					wait_len, pSync->wait_len,
-					pDstThread->thread_name, thread_name(wait_thread), wait_msg);
+					pDstThread->thread_name, thread_name(wait_thread), msgstr(wait_msg));
 			}
 			if(pSync->wait_len > wait_len)
 			{
@@ -326,12 +326,12 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 			return dave_true;
 		}
 
-		THREADLOG("The wakeup_index:%d, thread:%s/%d/%d/%d should be a sync message:%lx/%x, but not captured by any thread! wait_thread:%lx/%lx wait_msg:%d/%d",
+		THREADLOG("The wakeup_index:%d, thread:%s/%d/%d/%d should be a sync message:%lx/%x, but not captured by any thread! wait_thread:%lx/%lx wait_msg:%d/%s",
 			wakeup_index,
 			pDstThread->thread_name, pDstThread->attrib, pDstThread->thread_id, _syncc_thread_id,
 			dst_id, pSync,
 			pSync!=NULL?pSync->wait_thread:0, wait_thread,
-			pSync!=NULL?pSync->wait_msg:0, wait_msg);
+			pSync!=NULL?pSync->wait_msg:0, msgstr(wait_msg));
 	}
 
 	return dave_false;

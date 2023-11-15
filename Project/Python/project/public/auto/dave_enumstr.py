@@ -1799,6 +1799,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'STORE_MYSQL_REQ-3001'"
 	elif enum_value == STORE_MYSQL_RSP:
 		value_str = "'STORE_MYSQL_RSP-3002'"
+	elif enum_value == STORE_REDIS_REQ:
+		value_str = "'STORE_REDIS_REQ-3003'"
+	elif enum_value == STORE_REDIS_RSP:
+		value_str = "'STORE_REDIS_RSP-3004'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_REQ:
 		value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_RSP:

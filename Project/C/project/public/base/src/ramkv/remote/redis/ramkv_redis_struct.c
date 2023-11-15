@@ -16,6 +16,8 @@
 #include "ramkv_redis_cfg.h"
 #include "ramkv_log.h"
 
+#define CFG_KV_ON_LOCAL_REDIS "KVOnLocalRedis"
+
 // ====================================================================
 
 dave_bool
@@ -23,12 +25,14 @@ ramkv_malloc_redis(KVRedis *pKV, s8 *table_name)
 {
 	dave_memset(pKV, 0x00, sizeof(KVRedis));
 
+	pKV->local_redis_flag = cfg_get_bool(CFG_KV_ON_LOCAL_REDIS, dave_true);
+
 	dave_strcpy(pKV->table_name_ptr, table_name, sizeof(pKV->table_name_ptr));
 	pKV->table_name_len = dave_strlen(pKV->table_name_ptr);
 
 	pKV->redis_context = ramkv_redis_connect(pKV);
 
-	if(pKV->redis_context == NULL)
+	if((pKV->local_redis_flag == dave_true) && (pKV->redis_context == NULL))
 	{
 		KVABNOR("connect failed! %s:%d", pKV->redis_address, pKV->redis_port);
 		return dave_false;

@@ -18,6 +18,60 @@
 
 #define REDIS_CONNECT_TIMEOUT_TIME 3
 
+static void *
+_redis_reply_string_to_json(redisReply *redis_reply)
+{
+	void *pJson = dave_json_malloc();
+
+	dave_json_add_str_len(pJson, "STRING", redis_reply->str, redis_reply->len);
+
+	return pJson;
+}
+
+static void *
+_redis_reply_integer_to_json(redisReply *redis_reply)
+{
+	void *pJson = dave_json_malloc();
+
+	dave_json_add_sb(pJson, "INTEGER", redis_reply->integer);
+
+	return pJson;
+}
+
+static void *
+_redis_reply_nil_to_json(redisReply *redis_reply)
+{
+	void *pJson = dave_json_malloc();
+
+	dave_json_add_str(pJson, "NIL", "NIL");
+
+	return pJson;
+}
+
+static void *
+_redis_reply_to_json(redisReply *redis_reply)
+{
+	void *pJson = NULL;
+
+	switch(redis_reply->type)
+	{
+		case REDIS_REPLY_STRING:
+				pJson = _redis_reply_string_to_json(redis_reply);
+			break;
+		case REDIS_REPLY_INTEGER:
+				pJson = _redis_reply_integer_to_json(redis_reply);
+			break;
+		case REDIS_REPLY_NIL:
+				pJson = _redis_reply_nil_to_json(redis_reply);
+			break;
+		default:
+				PARTYABNOR("unsupport type:%d", redis_reply->type);
+			break;
+	}
+
+	return pJson;
+}
+
 static void
 _redis_free_reply(void *reply)
 {
@@ -219,6 +273,31 @@ dave_redis_del(void *context, s8 *del_command)
 	_redis_free_reply(redis_reply);
 
 	return ret;
+}
+
+void *
+dave_redis_command(void *context, s8 *command)
+{
+	redisReply *redis_reply = NULL;
+	void *pJson;
+
+	if((context == NULL) || (command == NULL))
+	{
+		PARTYABNOR("redis input is null!");
+		return NULL;
+	}
+
+	redis_reply = (redisReply *)redisCommand((redisContext *)context, (const char *)command);
+
+	pJson = _redis_reply_to_json(redis_reply);
+	if(pJson == NULL)
+	{
+		PARTYLOG("empty data. command:%s type:%d", command, redis_reply->type);
+	}
+
+	_redis_free_reply(redis_reply);
+
+	return pJson;
 }
 
 #endif

@@ -9,14 +9,15 @@
 #define __RAMKV_REMOTE_PARAM_H__
 
 typedef struct {
+	dave_bool local_redis_flag;
+
 	s8 redis_address[DAVE_URL_LEN];
 	ub redis_port;
 	s8 redis_password[DAVE_PASSWORD_LEN];
+	void *redis_context;
 
 	s8 table_name_ptr[DAVE_NORMAL_NAME_LEN];
 	ub table_name_len;
-
-	void *redis_context;
 } KVRedis;
 
 typedef struct {
