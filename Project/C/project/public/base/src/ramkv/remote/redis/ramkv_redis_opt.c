@@ -19,25 +19,7 @@
 #include "ramkv_log.h"
 
 static void *
-_ramkv_redis_connect(s8 *ip, ub port)
-{
-#ifdef REDIS_3RDPARTY
-	return dave_redis_connect(ip, port);
-#else
-	return NULL;
-#endif
-}
-
-static void
-_ramkv_redis_disconnect(void *context)
-{
-#ifdef REDIS_3RDPARTY
-	dave_redis_disconnect(context);
-#endif
-}
-
-static void *
-_ramkv_redis_store_command(MBUF *command)
+_ramkv_redis_remote_command(MBUF *command)
 {
 	StoreRedisReq *pReq = thread_msg(pReq);
 	StoreRedisRsp *pRsp;
@@ -72,34 +54,79 @@ _ramkv_redis_store_command(MBUF *command)
 	return pJson;
 }
 
+static void *
+_ramkv_redis_local_command(KVRedis *pKV, MBUF *command)
+{
+	void *pJson;
+
+	if(pKV->redis_context == NULL)
+	{
+		KVLOG("redis_context is NULL! %s %s", pKV->table_name_ptr, ms8(command));
+		pJson = NULL;
+	}
+	else
+	{
+		pJson = dave_redis_command(pKV->redis_context, ms8(command));
+	}
+
+	dave_mfree(command);
+
+	return pJson;
+}
+
+static void *
+_ramkv_redis_connect(s8 *ip, ub port)
+{
+#ifdef REDIS_3RDPARTY
+	return dave_redis_connect(ip, port);
+#else
+	return NULL;
+#endif
+}
+
+static void
+_ramkv_redis_disconnect(void *context)
+{
+#ifdef REDIS_3RDPARTY
+	dave_redis_disconnect(context);
+#endif
+}
+
+static void *
+_ramkv_redis_command(KVRedis *pKV, MBUF *command)
+{
+	void *pJson;
+
+	if(pKV->local_redis_flag == dave_true)
+	{
+		pJson = _ramkv_redis_local_command(pKV, command);
+	}
+	else
+	{
+		pJson = _ramkv_redis_remote_command(command);
+	}
+
+	return pJson;
+}
+
 static RetCode
 _ramkv_redis_bin_add(KVRedis *pKV, MBUF *command)
 {
 	RetCode ret;
 	void *pJson;
+	sb command_ret;
 
-	if(pKV->redis_context != NULL)
-	{
-		ret = dave_redis_set(pKV->redis_context, ms8(command));
+	pJson = _ramkv_redis_command(pKV, command);
 
-		dave_mfree(command);
-	}
+	if(dave_json_get_sb(pJson, "INTEGER", &command_ret) == dave_false)
+		command_ret = -1;
+	
+	dave_json_free(pJson);
+	
+	if((command_ret == 0) || (command_ret == 1))
+		ret = RetCode_OK;
 	else
-	{
-		sb command_ret;
-
-		pJson = _ramkv_redis_store_command(command);
-
-		if(dave_json_get_sb(pJson, "INTEGER", &command_ret) == dave_false)
-			command_ret = -1;
-
-		dave_json_free(pJson);
-
-		if((command_ret == 0) || (command_ret == 1))
-			ret = RetCode_OK;
-		else
-			ret = RetCode_invalid_option;
-	}
+		ret = RetCode_invalid_option;
 
 	if(ret != RetCode_OK)
 	{
@@ -114,19 +141,11 @@ _ramkv_redis_bin_inq(KVRedis *pKV, MBUF *command, s8 *bin_ptr, ub bin_len)
 {
 	void *pJson;
 
-	if(pKV->redis_context != NULL)
-	{
-		bin_len = dave_redis_get(pKV->redis_context, ms8(command), (u8 *)bin_ptr, bin_len);
-		dave_mfree(command);
-	}
-	else
-	{
-		pJson = _ramkv_redis_store_command(command);
-	
-		bin_len = dave_json_get_str_v2(pJson, "STRING", bin_ptr, bin_len);
+	pJson = _ramkv_redis_command(pKV, command);
 
-		dave_json_free(pJson);	
-	}
+	bin_len = dave_json_get_str_v2(pJson, "STRING", bin_ptr, bin_len);
+	
+	dave_json_free(pJson);
 
 	return bin_len;
 }
@@ -136,29 +155,19 @@ _ramkv_redis_bin_del(KVRedis *pKV, MBUF *command)
 {
 	RetCode ret;
 	void *pJson;
+	sb command_ret;
 
-	if(pKV->redis_context != NULL)
-	{
-		ret = dave_redis_set(pKV->redis_context, ms8(command));
+	pJson = _ramkv_redis_command(pKV, command);
 
-		dave_mfree(command);
-	}
+	if(dave_json_get_sb(pJson, "INTEGER", &command_ret) == dave_false)
+		command_ret = -1;
+	
+	dave_json_free(pJson);
+	
+	if((command_ret == 0) || (command_ret == 1))
+		ret = RetCode_OK;
 	else
-	{
-		sb command_ret;
-
-		pJson = _ramkv_redis_store_command(command);
-
-		if(dave_json_get_sb(pJson, "INTEGER", &command_ret) == dave_false)
-			command_ret = -1;
-
-		dave_json_free(pJson);
-
-		if((command_ret == 0) || (command_ret == 1))
-			ret = RetCode_OK;
-		else
-			ret = RetCode_invalid_option;
-	}
+		ret = RetCode_invalid_option;
 
 	if(ret != RetCode_OK)
 	{

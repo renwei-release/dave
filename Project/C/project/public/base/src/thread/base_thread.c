@@ -1700,6 +1700,25 @@ base_thread_get_self(s8 *fun, ub line)
 }
 
 ub
+base_thread_get_flag(s8 *fun, ub line)
+{
+	ThreadId self_id = base_thread_get_self(fun, line);
+	ub thread_index;
+
+	if(self_id == INVALID_THREAD_ID)
+		return 0x00;
+
+	thread_index = self_id;
+	if(thread_index >= THREAD_MAX)
+	{
+		THREADDEBUG("thread_id:%d", thread_id);
+		return 0x00;
+	}
+
+	return _thread[thread_index].thread_flag;	
+}
+
+ub
 base_thread_name_array(s8 thread_name[][64], ub thread_number)
 {
 	ub thread_index, name_index, name_len;

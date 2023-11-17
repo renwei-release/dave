@@ -99,6 +99,7 @@ void base_thread_schedule(void);
 ThreadId base_thread_creat(char *name, ub level_number, ub thread_flag, base_thread_fun thread_init, base_thread_fun thread_main, base_thread_fun thread_exit);
 dave_bool base_thread_del(ThreadId thread_id);
 ThreadId base_thread_get_self(s8 *fun, ub line);
+ub base_thread_get_flag(s8 *fun, ub line);
 ub base_thread_name_array(s8 thread_name[][64], ub thread_number);
 dave_bool __base_thread_trace_state__(s8 *fun, ub line);
 dave_bool __base_thread_on_coroutine__(s8 *fun, ub line);
@@ -139,6 +140,7 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 
 #define get_self() base_thread_get_self((s8 *)__func__, (ub)__LINE__)
 #define self() base_thread_get_self((s8 *)__func__, (ub)__LINE__)
+#define get_thread_flag() base_thread_get_flag((s8 *)__func__, (ub)__LINE__)
 #define get_thread_id(name) base_thread_get_id((const s8 *)name, (s8 *)__func__, (ub)__LINE__)
 
 #define thread_id(name) base_thread_get_id((const s8 *)name, (s8 *)__func__, (ub)__LINE__)
