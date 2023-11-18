@@ -18,7 +18,6 @@
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
-#include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "base_enum.h"
@@ -93,9 +92,6 @@ dave_bool t_rpc_ver3_unzip_NetAddrType(NetAddrType *unzip_data, void *pArrayBson
 
 void * t_rpc_ver3_zip_PythonFun(PythonFun zip_data);
 dave_bool t_rpc_ver3_unzip_PythonFun(PythonFun *unzip_data, void *pArrayBson);
-
-void * t_rpc_ver3_zip_ReqType(ReqType zip_data);
-dave_bool t_rpc_ver3_unzip_ReqType(ReqType *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_RetCode(RetCode zip_data);
 dave_bool t_rpc_ver3_unzip_RetCode(RetCode *unzip_data, void *pArrayBson);

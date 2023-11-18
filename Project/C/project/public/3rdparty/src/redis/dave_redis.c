@@ -13,6 +13,7 @@
 #include <dlfcn.h>
 #include "hiredis.h"
 #include "dave_os.h"
+#include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "party_log.h"
 

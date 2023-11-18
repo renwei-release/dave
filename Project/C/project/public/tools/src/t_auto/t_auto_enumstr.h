@@ -19,7 +19,6 @@
 #include "dave_error_code.h"
 #include "dave_mcard.h"
 #include "nlp_param.h"
-#include "talk_param.h"
 #include "bbs_param.h"
 #include "dba_msg.h"
 #include "http_param.h"
@@ -83,7 +82,6 @@ s8 *t_auto_NetAddrType_str(NetAddrType enum_value);
 s8 *t_auto_ORDER_CODE_str(ORDER_CODE enum_value);
 s8 *t_auto_PythonFun_str(PythonFun enum_value);
 s8 *t_auto_ReferState_str(ReferState enum_value);
-s8 *t_auto_RegINAttrib_str(RegINAttrib enum_value);
 s8 *t_auto_ReqType_str(ReqType enum_value);
 s8 *t_auto_RetCode_str(RetCode enum_value);
 s8 *t_auto_SIPCallType_str(SIPCallType enum_value);

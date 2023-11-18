@@ -131,7 +131,7 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 	}
 
 	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
-		|| (dave_strcmp(pReady->remote_thread_name, "main_aib") == dave_true))
+		|| (dave_strcmp(pReady->remote_thread_name, "aib") == dave_true))
 	{
 		_base_thread_rpc_debug(pReady);
 	}

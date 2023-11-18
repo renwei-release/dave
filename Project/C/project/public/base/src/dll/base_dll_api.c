@@ -173,6 +173,12 @@ dave_dll_kv_malloc(char *name, int out_second, dll_kv_timerout_fun outback_fun)
 	return kv_malloc(name, out_second, (ramkv_time_callback)outback_fun);
 }
 
+void *
+dave_dll_kv_remote_malloc(char *name, int out_second, dll_kv_timerout_fun outback_fun)
+{
+	return kv_remote_malloc(name, out_second, (ramkv_time_callback)outback_fun);
+}
+
 void
 dave_dll_kv_free(void *kv)
 {

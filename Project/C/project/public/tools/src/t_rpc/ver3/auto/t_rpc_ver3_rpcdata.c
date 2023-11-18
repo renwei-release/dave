@@ -124,12 +124,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case DBMSG_NOSQL_ADD_TALK_RSP:
 				pBson = t_rpc_ver3_zip_DBNosqlAddTalkRsp((DBNosqlAddTalkRsp *)msg_body, msg_len);
 			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				pBson = t_rpc_ver3_zip_DBRedisDelTableReq((DBRedisDelTableReq *)msg_body, msg_len);
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				pBson = t_rpc_ver3_zip_DBRedisDelTableRsp((DBRedisDelTableRsp *)msg_body, msg_len);
-			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 				pBson = t_rpc_ver3_zip_DBSysAddImageFeatureReq((DBSysAddImageFeatureReq *)msg_body, msg_len);
 			break;
@@ -622,12 +616,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case DBMSG_NOSQL_ADD_TALK_RSP:
 				ret = t_rpc_ver3_unzip_DBNosqlAddTalkRsp(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				ret = t_rpc_ver3_unzip_DBRedisDelTableReq(msg_body, msg_len, pBson);
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				ret = t_rpc_ver3_unzip_DBRedisDelTableRsp(msg_body, msg_len, pBson);
 			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 				ret = t_rpc_ver3_unzip_DBSysAddImageFeatureReq(msg_body, msg_len, pBson);
@@ -1122,12 +1110,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case DBMSG_NOSQL_ADD_TALK_RSP:
 				ptr = t_rpc_ver3_ptr_DBNosqlAddTalkRsp((DBNosqlAddTalkRsp *)msg_body, new_ptr);
 			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				ptr = t_rpc_ver3_ptr_DBRedisDelTableReq((DBRedisDelTableReq *)msg_body, new_ptr);
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				ptr = t_rpc_ver3_ptr_DBRedisDelTableRsp((DBRedisDelTableRsp *)msg_body, new_ptr);
-			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 				ptr = t_rpc_ver3_ptr_DBSysAddImageFeatureReq((DBSysAddImageFeatureReq *)msg_body, new_ptr);
 			break;
@@ -1620,12 +1602,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case DBMSG_NOSQL_ADD_TALK_RSP:
 				msg_len = t_rpc_ver3_sizeof_DBNosqlAddTalkRsp();
-			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				msg_len = t_rpc_ver3_sizeof_DBRedisDelTableReq();
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				msg_len = t_rpc_ver3_sizeof_DBRedisDelTableRsp();
 			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 				msg_len = t_rpc_ver3_sizeof_DBSysAddImageFeatureReq();

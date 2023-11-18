@@ -218,16 +218,6 @@ dave_bool t_rpc_ver3_unzip_DBNosqlAddTalkRsp(void **unzip_data, ub *unzip_len, v
 void * t_rpc_ver3_ptr_DBNosqlAddTalkRsp(DBNosqlAddTalkRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_DBNosqlAddTalkRsp(void);
 
-void * t_rpc_ver3_zip_DBRedisDelTableReq(DBRedisDelTableReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DBRedisDelTableReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBRedisDelTableReq(DBRedisDelTableReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_DBRedisDelTableReq(void);
-
-void * t_rpc_ver3_zip_DBRedisDelTableRsp(DBRedisDelTableRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_DBRedisDelTableRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_DBRedisDelTableRsp(DBRedisDelTableRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_DBRedisDelTableRsp(void);
-
 void * t_rpc_ver3_zip_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DBSysAddImageFeatureReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_DBSysAddImageFeatureReq(DBSysAddImageFeatureReq *struct_data, void *new_ptr);

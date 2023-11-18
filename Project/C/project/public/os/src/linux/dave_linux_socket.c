@@ -37,7 +37,7 @@
 
 #define EPOLL_MANAGE_MAX (DAVE_SERVER_SUPPORT_SOCKET_MAX)
 #define EPOLL_EDGE_EVENTS (EPOLLIN|EPOLLPRI|EPOLLERR|EPOLLHUP|EPOLLET)	/* EPOLLET is Edge Triggered , not EPOLLET is Level Triggered mode, */
-#define EPOLL_LEVEL_EVENTS (EPOLLIN|EPOLLPRI|EPOLLERR|EPOLLHUP)	/* EPOLLET is Edge Triggered , not EPOLLET is Level Triggered mode, */
+#define EPOLL_LEVEL_EVENTS (EPOLLIN|EPOLLPRI|EPOLLERR|EPOLLHUP)			/* EPOLLET is Edge Triggered , not EPOLLET is Level Triggered mode, */
 #define EPOLL_EVENTS EPOLL_EDGE_EVENTS
 static void *_linux_socket_epoll_thread = NULL;
 static dave_socket_event_fun _epoll_event_notify_fun = NULL;
@@ -557,6 +557,10 @@ _os_linux_epoll_event_thread(void *arg)
 			{
 				_os_linux_epoll_event_notify(SOC_EVENT_REV, m_pEvent[event_index].data.fd);
 			}
+			else
+			{
+				OSLOG("unprocess events:%x", m_pEvent[event_index].events);
+			}
 		}
 	}
 
@@ -630,7 +634,7 @@ dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcar
 	socket_id = _os_linux_normal_setup_socket(linux_type, addr_type, socket_id);
 
 	_os_linux_bind_netcard(socket_id, netcard_name);
-	_os_linux_socket_bind_fix_port(socket_id, fix_src_port)
+	_os_linux_socket_bind_fix_port(socket_id, fix_src_port);
 
 	OSDEBUG("domain:%d type:%d addr_type:%d netcard_name:%s socket:%d",
 		domain, type, addr_type, netcard_name, socket_id);

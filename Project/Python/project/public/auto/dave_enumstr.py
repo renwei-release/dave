@@ -1220,14 +1220,6 @@ def t_auto_PythonFun_str(enum_value):
 	return value_str
 
 
-def t_auto_ReqType_str(enum_value):
-	if enum_value == REQ_TYPE_MAX:
-		value_str = "'REQ_TYPE_MAX-0x1fffffff'"
-	else:
-		value_str = f'{enum_value}'
-	return value_str
-
-
 def t_auto_RetCode_str(enum_value):
 	if enum_value == RetCode_begin_value:
 		value_str = "'RetCode_begin_value-1'"
@@ -1831,10 +1823,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'DBMSG_NOSQL_ADD_TALK_REQ-4175'"
 	elif enum_value == DBMSG_NOSQL_ADD_TALK_RSP:
 		value_str = "'DBMSG_NOSQL_ADD_TALK_RSP-4176'"
-	elif enum_value == DBMSG_REDIS_DEL_TABLE_REQ:
-		value_str = "'DBMSG_REDIS_DEL_TABLE_REQ-4131'"
-	elif enum_value == DBMSG_REDIS_DEL_TABLE_RSP:
-		value_str = "'DBMSG_REDIS_DEL_TABLE_RSP-4132'"
 	elif enum_value == DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 		value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_REQ-4190'"
 	elif enum_value == DBMSG_SYS_ADD_IMAGE_FEATURE_RSP:

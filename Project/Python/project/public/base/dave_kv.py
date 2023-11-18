@@ -36,6 +36,14 @@ def _kv_malloc(name, out_second):
     return kv
 
 
+def _kv_remote_malloc(name, out_second):
+    if isinstance(name, str) == True:
+        name = bytes(name, encoding='utf8')
+    davelib.dave_dll_kv_remote_malloc.restype = c_void_p
+    kv = davelib.dave_dll_kv_remote_malloc(c_char_p(name), c_int(out_second), _c_kv_timerout)
+    return kv
+
+
 def _kv_free(kv):
     davelib.dave_dll_kv_free(c_void_p(kv))
     return
@@ -60,6 +68,10 @@ def _kv_init(kv):
 
 def kv_malloc(name, out_second):
     return _kv_malloc(name, out_second)
+
+
+def kv_remote_malloc(name, out_second):
+    return _kv_remote_malloc(name, out_second)
 
 
 def kv_free(kv):

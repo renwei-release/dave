@@ -354,23 +354,6 @@ class DBNosqlAddTalkRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for DBMSG_REDIS_DEL_TABLE_REQ message *#
-class DBRedisDelTableReq (Structure):
-	_fields_ = [
-		("req_type", c_int),
-		("table_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("ptr", POINTER(c_char)),
-]
-
-#* for DBMSG_REDIS_DEL_TABLE_RSP message *#
-class DBRedisDelTableRsp (Structure):
-	_fields_ = [
-		("req_type", c_int),
-		("ret", c_longlong),
-		("table_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("ptr", POINTER(c_char)),
-]
-
 #* for DBMSG_SYS_ADD_IMAGE_FEATURE_REQ message *#
 class DBSysAddImageFeatureReq (Structure):
 	_fields_ = [

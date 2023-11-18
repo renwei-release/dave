@@ -312,21 +312,6 @@ type DBNosqlAddTalkRsp struct {
 	Ptr uint64
 }
 
-/* for DBMSG_REDIS_DEL_TABLE_REQ message */
-type DBRedisDelTableReq struct {
-	Req_type int32
-	Table_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr uint64
-}
-
-/* for DBMSG_REDIS_DEL_TABLE_RSP message */
-type DBRedisDelTableRsp struct {
-	Req_type int32
-	Ret int64
-	Table_name [DAVE_NORMAL_NAME_LEN] byte
-	Ptr uint64
-}
-
 /* for DBMSG_SYS_ADD_IMAGE_FEATURE_REQ message */
 type DBSysAddImageFeatureReq struct {
 	Table_name [DAVE_NORMAL_NAME_LEN] byte

@@ -882,7 +882,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 	{
 		if(pCore->NetInfo.type == TYPE_SOCK_STREAM)
 		{
-			SAFECODEv2W(pCore->opt_pv,
+			SAFECODEv2R(pCore->opt_pv,
 				if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 				{
 					_socket_external_accept(pCore);
@@ -910,7 +910,7 @@ _socket_external_recv_event(SocketCore *pCore, SocketRawEvent *pEvent)
 		|| (pCore->type == SOCKET_TYPE_CLIENT)
 		|| (pCore->type == SOCKET_TYPE_CLIENT_WAIT))
 	{
-		SAFECODEv2W(pCore->opt_pv,
+		SAFECODEv2R(pCore->opt_pv,
 			if((pCore->socket_external_index == pEvent->socket) && (pCore->os_socket == pEvent->os_socket))
 			{
 				_socket_external_recv(pCore, pEvent);

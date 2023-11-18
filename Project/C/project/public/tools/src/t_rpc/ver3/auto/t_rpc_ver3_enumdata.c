@@ -21,7 +21,6 @@
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
-#include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "base_enum.h"
@@ -477,25 +476,6 @@ t_rpc_ver3_unzip_PythonFun(PythonFun *unzip_data, void *pArrayBson)
 	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
 
 	*unzip_data = (PythonFun)sb_unzip_data;
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_zip_ReqType(ReqType zip_data)
-{
-	return _t_rpc_zip_enumdata((sb)zip_data);
-}
-
-dave_bool
-t_rpc_ver3_unzip_ReqType(ReqType *unzip_data, void *pArrayBson)
-{
-	sb sb_unzip_data;
-	dave_bool ret;
-
-	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
-
-	*unzip_data = (ReqType)sb_unzip_data;
 
 	return ret;
 }

@@ -616,10 +616,6 @@ const (
 )
 
 const (
-	REQ_TYPE_MAX = 0x1fffffff + iota
-)
-
-const (
 	RetCode_begin_value = 1 + iota
 	RetCode_OK = 0
 	RetCode_Memory_full = -1

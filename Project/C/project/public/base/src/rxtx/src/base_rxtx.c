@@ -1135,12 +1135,13 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 	} );
 
-	RTDEBUG("socket:%d port:%d ret:%s rx_buffer_len:%d safe_counter:%d",
+	RTDEBUG("thread:%s socket:%d port:%d ret:%s rx_buffer_len:%d safe_counter:%d",
+		thread_name(pRxTx->owner_thread),
 		pRxTx->socket, pRxTx->port, retstr(ret),
 		pRxTx->rx_buffer_len,
 		safe_counter);
 
-	if((safe_counter == 0) || (safe_counter >= (RECV_COUNTER_MAX / 2)))
+	if((pRxTx->rx_buffer_len != 0) || (safe_counter >= (RECV_COUNTER_MAX / 2)))
 	{
 		_base_rxtx_maybe_has_data(pRxTx, pEvent);
 	}

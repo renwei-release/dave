@@ -8,8 +8,6 @@
 #ifndef __T_LOCK_H__
 #define __T_LOCK_H__
 #include <pthread.h>
-#include "dave_base.h"
-#include "dave_tools.h"
 
 typedef struct {
 #ifdef LEVEL_PRODUCT_alpha

@@ -780,17 +780,6 @@ func T_auto_PythonFun_str(enum_value int64) string {
 	return value_str
 }
 
-func T_auto_ReqType_str(enum_value int64) string {
-	var value_str string
-
-	switch enum_value {
-		case REQ_TYPE_MAX: value_str = "'REQ_TYPE_MAX-0x1fffffff'"
-		default: value_str = fmt.Sprintf("'%v'", enum_value)
-	}
-
-	return value_str
-}
-
 func T_auto_RetCode_str(enum_value int64) string {
 	var value_str string
 
@@ -1138,8 +1127,6 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case DBMSG_SYS_INQ_PAINTER_PAGE_RSP: value_str = "'DBMSG_SYS_INQ_PAINTER_PAGE_RSP-4231'"
 		case DBMSG_NOSQL_ADD_TALK_REQ: value_str = "'DBMSG_NOSQL_ADD_TALK_REQ-4175'"
 		case DBMSG_NOSQL_ADD_TALK_RSP: value_str = "'DBMSG_NOSQL_ADD_TALK_RSP-4176'"
-		case DBMSG_REDIS_DEL_TABLE_REQ: value_str = "'DBMSG_REDIS_DEL_TABLE_REQ-4131'"
-		case DBMSG_REDIS_DEL_TABLE_RSP: value_str = "'DBMSG_REDIS_DEL_TABLE_RSP-4132'"
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ: value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_REQ-4190'"
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_RSP: value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_RSP-4191'"
 		case DBMSG_SYS_INQ_IMAGE_FEATURE_REQ: value_str = "'DBMSG_SYS_INQ_IMAGE_FEATURE_REQ-4192'"

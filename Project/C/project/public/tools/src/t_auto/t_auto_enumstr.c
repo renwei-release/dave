@@ -18,7 +18,6 @@
 #include "dave_error_code.h"
 #include "dave_mcard.h"
 #include "nlp_param.h"
-#include "talk_param.h"
 #include "bbs_param.h"
 #include "dba_msg.h"
 #include "http_param.h"
@@ -3707,30 +3706,6 @@ t_auto_ReferState_str(ReferState enum_value)
 }
 
 s8 *
-t_auto_RegINAttrib_str(RegINAttrib enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case RegINAttrib_FAQ:
-				value_str = "'RegINAttrib_FAQ'";
-			break;
-		case RegINAttrib_TASK:
-				value_str = "'RegINAttrib_TASK'";
-			break;
-		case RegINAttrib_max:
-				value_str = "'RegINAttrib_max'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
 t_auto_ReqType_str(ReqType enum_value)
 {
 	s8 *value_str = _string_buf;
@@ -5023,12 +4998,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case DBMSG_NOSQL_ADD_TALK_RSP:
 				value_str = "'DBMSG_NOSQL_ADD_TALK_RSP-4176'";
-			break;
-		case DBMSG_REDIS_DEL_TABLE_REQ:
-				value_str = "'DBMSG_REDIS_DEL_TABLE_REQ-4131'";
-			break;
-		case DBMSG_REDIS_DEL_TABLE_RSP:
-				value_str = "'DBMSG_REDIS_DEL_TABLE_RSP-4132'";
 			break;
 		case DBMSG_SYS_ADD_IMAGE_FEATURE_REQ:
 				value_str = "'DBMSG_SYS_ADD_IMAGE_FEATURE_REQ-4190'";

@@ -571,8 +571,6 @@ PythonFun_detection = PythonFun_refresh_recommend_cache + 1
 PythonFun_generator = PythonFun_detection + 1
 PythonFun_max = 0x1fffffffffffffff
 
-REQ_TYPE_MAX = 0x1fffffff
-
 RetCode_begin_value = 1
 RetCode_OK = 0
 RetCode_Memory_full = -1
