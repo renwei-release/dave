@@ -237,7 +237,7 @@ __log_log__(s8 **log_buf, TraceLevel level, const char *fmt, va_list list_args)
 	}
 
 	if(*log_buf != NULL)
-	{
+	{	
 		log_fifo(_log_trace_enable, fix_flag, level, log_len, *log_buf);
 	}
 

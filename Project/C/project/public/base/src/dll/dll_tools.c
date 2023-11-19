@@ -15,7 +15,7 @@
 static void
 _dll_remove_some_data(s8 *data_ptr, ub data_len)
 {
-	ub temp_len = 4096;
+	ub temp_len = 1024 + data_len;
 	s8 *temp_buffer = dave_malloc(temp_len);
 	ub temp_index;
 	ub data_index;

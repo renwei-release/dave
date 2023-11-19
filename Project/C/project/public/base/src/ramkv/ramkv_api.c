@@ -79,12 +79,6 @@ ramkv_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value_ptr, ub value_
 {
 	sb ret;
 
-	if((key_ptr == NULL) || (key_len == 0))
-	{
-		KVLOG("invalid key:%x/%d <%s:%d>", key_ptr, key_len, fun, line);
-		return -1;
-	}
-
 	if((value_ptr != NULL) && (value_len > 0))
 	{
 		((s8 *)value_ptr)[0] = '\0';

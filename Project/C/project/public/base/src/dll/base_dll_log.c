@@ -18,29 +18,29 @@
 void
 dave_dll_log(char *func, int line, char *log_msg)
 {
-	ub log_len = 1024 * 128;
-	s8 *log_buffer = dave_malloc(log_len);
+	ub log_len = 1024 + dave_strlen(log_msg);
+	s8 *log_ptr = dave_malloc(log_len);
 
 	if(log_msg != NULL)
 	{
-		log_len = dave_strcpy(log_buffer, log_msg, log_len);
+		log_len = dave_strcpy(log_ptr, log_msg, log_len);
 	}
 	else
 	{
-		log_buffer[0] = '\0';
+		log_ptr[0] = '\0';
 		log_len = 0;
 	}
 
-	dll_remove_some_data(log_buffer, log_len);
+	dll_remove_some_data(log_ptr, log_len);
 
 	if(func == NULL)
 	{
 		func = "NULL";
 	}
 
-	DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_buffer);
+	DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
 
-	dave_free(log_buffer);
+	dave_free(log_ptr);
 }
 
 #endif

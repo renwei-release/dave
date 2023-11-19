@@ -45,7 +45,7 @@ static TLock _keypad_pv;
 static dave_bool _is_on_backend_printf_disable = dave_false;
 
 static void
-_tty_trace(TraceLevel level, u16 buf_len, s8 *buf_ptr)
+_tty_trace_fprintf(TraceLevel level, u16 buf_len, s8 *buf_ptr)
 {
 	sb result;
 
@@ -75,6 +75,59 @@ _tty_trace(TraceLevel level, u16 buf_len, s8 *buf_ptr)
 		{
 			_is_on_backend_printf_disable = dave_true;
 		}
+	}
+}
+
+static void
+_tty_trace_fput(TraceLevel level, u16 buf_len, s8 *buf_ptr)
+{
+	int fput_len = 128 + buf_len;
+	char *fput_ptr = dave_malloc(fput_len);
+	sb result;
+
+	if(_is_on_backend_printf_disable == dave_false)
+	{
+		/*
+		 * For definitions of color
+		 * http://www.myjishu.com/?p=132
+		 */
+
+		if((level == TRACELEVEL_DEBUG) || (level == TRACELEVEL_CATCHER))
+			dave_snprintf(fput_ptr, fput_len, "\033[36m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_TRACE)
+			dave_snprintf(fput_ptr, fput_len, "\033[33m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_LOG)
+			dave_snprintf(fput_ptr, fput_len, "\033[38m%s\033[0m", (char *)buf_ptr);	
+		else if(level == TRACELEVEL_ABNORMAL)
+			dave_snprintf(fput_ptr, fput_len, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_ASSERT)
+			dave_snprintf(fput_ptr, fput_len, "\033[1m\033[35m%s\033[0m", (char *)buf_ptr);
+		else if(level == TRACELEVEL_UI)
+			dave_snprintf(fput_ptr, fput_len, "\033[34m%s\033[0m", (char *)buf_ptr);
+		else
+			dave_snprintf(fput_ptr, fput_len, "\033[28m%s\033[0m", (char *)buf_ptr);
+
+		result = fputs(fput_ptr, stdout);
+
+		if(result < 0)
+		{
+			_is_on_backend_printf_disable = dave_true;
+		}
+	}
+
+	dave_free(fput_ptr);
+}
+
+static void
+_tty_trace(TraceLevel level, u16 buf_len, s8 *buf_ptr)
+{
+	if(buf_len < 4095)
+	{
+		_tty_trace_fprintf(level, buf_len, buf_ptr);
+	}
+	else
+	{
+		_tty_trace_fput(level, buf_len, buf_ptr);
 	}
 }
 
