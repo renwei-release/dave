@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
+PROJECT=dave-${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)
 IMAGE="elasticsearch_docker_image"
 TAG="latest"

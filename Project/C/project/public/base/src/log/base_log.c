@@ -409,12 +409,6 @@ base_log_has_data(void)
 	return log_buffer_has_data();
 }
 
-ub
-base_log_history(s8 *log_ptr, ub log_len)
-{
-	return log_buffer_history(log_ptr, log_len);
-}
-
 void
 base_log_init(void)
 {

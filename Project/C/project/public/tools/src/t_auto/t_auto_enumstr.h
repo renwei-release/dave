@@ -23,8 +23,6 @@
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
-#include "sip_param.h"
-#include "voip_param.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -37,7 +35,6 @@
 #include "sync_type.h"
 
 s8 *t_auto_AIPlaceType_str(AIPlaceType enum_value);
-s8 *t_auto_ActionState_str(ActionState enum_value);
 s8 *t_auto_BaseMsgType_str(BaseMsgType enum_value);
 s8 *t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
@@ -49,7 +46,6 @@ s8 *t_auto_DaveDataType_str(DaveDataType enum_value);
 s8 *t_auto_EchoType_str(EchoType enum_value);
 s8 *t_auto_EnableKeepAliveFlag_str(EnableKeepAliveFlag enum_value);
 s8 *t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value);
-s8 *t_auto_EnvironmentFlag_str(EnvironmentFlag enum_value);
 s8 *t_auto_ErrCode_str(ErrCode enum_value);
 s8 *t_auto_FRAMETYPE_str(FRAMETYPE enum_value);
 s8 *t_auto_FRAME_TYPE_str(FRAME_TYPE enum_value);
@@ -81,13 +77,8 @@ s8 *t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value);
 s8 *t_auto_NetAddrType_str(NetAddrType enum_value);
 s8 *t_auto_ORDER_CODE_str(ORDER_CODE enum_value);
 s8 *t_auto_PythonFun_str(PythonFun enum_value);
-s8 *t_auto_ReferState_str(ReferState enum_value);
 s8 *t_auto_ReqType_str(ReqType enum_value);
 s8 *t_auto_RetCode_str(RetCode enum_value);
-s8 *t_auto_SIPCallType_str(SIPCallType enum_value);
-s8 *t_auto_SIPConfType_str(SIPConfType enum_value);
-s8 *t_auto_SIPMethod_str(SIPMethod enum_value);
-s8 *t_auto_SIPRegAction_str(SIPRegAction enum_value);
 s8 *t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value);
 s8 *t_auto_SOCDOMAIN_str(SOCDOMAIN enum_value);
 s8 *t_auto_SOCEVENT_str(SOCEVENT enum_value);
@@ -99,7 +90,6 @@ s8 *t_auto_SyncServerType_str(SyncServerType enum_value);
 s8 *t_auto_TaskAttribute_str(TaskAttribute enum_value);
 s8 *t_auto_TraceLevel_str(TraceLevel enum_value);
 s8 *t_auto_UIPType_str(UIPType enum_value);
-s8 *t_auto_VoipCallType_str(VoipCallType enum_value);
 s8 *t_auto_RPCMSG_str(RPCMSG enum_value);
 
 #endif

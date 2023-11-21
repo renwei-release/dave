@@ -32,30 +32,6 @@ _dos_trace_on_off(s8 *thread_name, dave_bool on)
 }
 
 static RetCode
-_dos_show_log(s8 *param_ptr, ub param_len)
-{
-	s8 log_len_str[64];
-	ub log_len;
-	s8 *log_ptr;
-
-	dos_get_one_parameters(param_ptr, param_len, log_len_str, sizeof(log_len_str));
-	log_len = stringdigital(log_len_str);
-
-	if(log_len < 512)
-	{
-		log_len = 512;
-	}
-
-	log_ptr = dave_malloc(log_len);
-	base_log_history(log_ptr, log_len);
-	dos_write("============ %d ============", log_len);
-	dos_write(log_ptr);
-	dave_free(log_ptr);
-
-	return ERRCODE_OK;
-}
-
-static RetCode
 _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 {
 	u8 mac[DAVE_MAC_ADDR_LEN];
@@ -113,7 +89,6 @@ _dos_trace_log(s8 *cmd_ptr, ub cmd_len)
 void
 dos_log_reset(void)
 {
-	dos_cmd_reg("log", _dos_show_log, NULL);
 	dos_cmd_reg("trace", _dos_trace_log, NULL);
 }
 

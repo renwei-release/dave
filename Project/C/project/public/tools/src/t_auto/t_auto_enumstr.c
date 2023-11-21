@@ -22,8 +22,6 @@
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
-#include "sip_param.h"
-#include "voip_param.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -318,42 +316,6 @@ t_auto_AIPlaceType_str(AIPlaceType enum_value)
 			break;
 		case AIPlaceType_max:
 				value_str = "'AIPlaceType_max-0x1fffffffffffffff'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_ActionState_str(ActionState enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case ActionState_null:
-				value_str = "'ActionState_null'";
-			break;
-		case ActionState_idle:
-				value_str = "'ActionState_idle'";
-			break;
-		case ActionState_invite:
-				value_str = "'ActionState_invite'";
-			break;
-		case ActionState_connected:
-				value_str = "'ActionState_connected'";
-			break;
-		case ActionState_snd_hold:
-				value_str = "'ActionState_snd_hold'";
-			break;
-		case ActionState_hold:
-				value_str = "'ActionState_hold'";
-			break;
-		case ActionState_snd_unhold:
-				value_str = "'ActionState_snd_unhold'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -1341,33 +1303,6 @@ t_auto_EnableNetCardBindFlag_str(EnableNetCardBindFlag enum_value)
 			break;
 		case NetCardBind_disable:
 				value_str = "'NetCardBind_disable-0x09abcdef'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_EnvironmentFlag_str(EnvironmentFlag enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case EnvironmentFlag_test:
-				value_str = "'EnvironmentFlag_test'";
-			break;
-		case EnvironmentFlag_STG:
-				value_str = "'EnvironmentFlag_STG'";
-			break;
-		case EnvironmentFlag_Product:
-				value_str = "'EnvironmentFlag_Product'";
-			break;
-		case EnvironmentFlag_max:
-				value_str = "'EnvironmentFlag_max-0x100000000'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -3679,33 +3614,6 @@ t_auto_PythonFun_str(PythonFun enum_value)
 }
 
 s8 *
-t_auto_ReferState_str(ReferState enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case ReferState_null:
-				value_str = "'ReferState_null'";
-			break;
-		case ReferState_idle:
-				value_str = "'ReferState_idle'";
-			break;
-		case ReferState_snd_refer:
-				value_str = "'ReferState_snd_refer'";
-			break;
-		case ReferState_refer:
-				value_str = "'ReferState_refer'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
 t_auto_ReqType_str(ReqType enum_value)
 {
 	s8 *value_str = _string_buf;
@@ -4107,135 +4015,6 @@ t_auto_RetCode_str(RetCode enum_value)
 			break;
 		case RetCode_max:
 				value_str = "'RetCode_max-0x1fffffffffffffff'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_SIPCallType_str(SIPCallType enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case SIPCallType_caller:
-				value_str = "'SIPCallType_caller'";
-			break;
-		case SIPCallType_called:
-				value_str = "'SIPCallType_called'";
-			break;
-		case SIPCallType_conf:
-				value_str = "'SIPCallType_conf'";
-			break;
-		case SIPCallType_message:
-				value_str = "'SIPCallType_message'";
-			break;
-		case SIPCallType_max:
-				value_str = "'SIPCallType_max'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_SIPConfType_str(SIPConfType enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case SIPConfType_direct_conf_room:
-				value_str = "'SIPConfType_direct_conf_room-0'";
-			break;
-		case SIPConfType_hold_call_conf_room_CSBA:
-				value_str = "'SIPConfType_hold_call_conf_room_CSBA'";
-			break;
-		case SIPConfType_hold_call_conf_room_CSBT:
-				value_str = "'SIPConfType_hold_call_conf_room_CSBT'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_SIPMethod_str(SIPMethod enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case SIPMethod_INVITE:
-				value_str = "'SIPMethod_INVITE'";
-			break;
-		case SIPMethod_CANCEL:
-				value_str = "'SIPMethod_CANCEL'";
-			break;
-		case SIPMethod_ACK:
-				value_str = "'SIPMethod_ACK'";
-			break;
-		case SIPMethod_BYE:
-				value_str = "'SIPMethod_BYE'";
-			break;
-		case SIPMethod_REGISTER:
-				value_str = "'SIPMethod_REGISTER'";
-			break;
-		case SIPMethod_OPTIONS:
-				value_str = "'SIPMethod_OPTIONS'";
-			break;
-		case SIPMethod_REFER:
-				value_str = "'SIPMethod_REFER'";
-			break;
-		case SIPMethod_UPDATE:
-				value_str = "'SIPMethod_UPDATE'";
-			break;
-		case SIPMethod_PRACK:
-				value_str = "'SIPMethod_PRACK'";
-			break;
-		case SIPMethod_NOTIFY:
-				value_str = "'SIPMethod_NOTIFY'";
-			break;
-		case SIPMethod_MESSAGE:
-				value_str = "'SIPMethod_MESSAGE'";
-			break;
-		case SIPMethod_max:
-				value_str = "'SIPMethod_max'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_SIPRegAction_str(SIPRegAction enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case SIPRegAction_idle:
-				value_str = "'SIPRegAction_idle-0'";
-			break;
-		case SIPRegAction_new_register:
-				value_str = "'SIPRegAction_new_register'";
-			break;
-		case SIPRegAction_user_auth:
-				value_str = "'SIPRegAction_user_auth'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -4659,30 +4438,6 @@ t_auto_UIPType_str(UIPType enum_value)
 			break;
 		case UIPType_wechat_form:
 				value_str = "'UIPType_wechat_form'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_VoipCallType_str(VoipCallType enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case VoipCallType_voip:
-				value_str = "'VoipCallType_voip'";
-			break;
-		case VoipCallType_cs:
-				value_str = "'VoipCallType_cs'";
-			break;
-		case VoipCallType_max:
-				value_str = "'VoipCallType_max'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);

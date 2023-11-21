@@ -27,7 +27,6 @@
 #define LOG_TID_MAX DAVE_SYS_THREAD_ID_MAX
 #define LOG_LIST_MAX (LOG_BUFFER_MAX + 128)
 #define INVALID_TID 0xffffffffffffffff
-#define LOG_HISTORY_BUFFER_MAX 2048
 
 static volatile dave_bool __system_startup__ = dave_false;
 static LogBuffer *_log_thread[LOG_TID_MAX];
@@ -41,9 +40,6 @@ static ub _log_list_r_index = 0;
 
 static ub _log_lost_counter = 0;
 static LogBuffer _log_lost_buffer;
-
-static ub _history_buffer_len = 0;
-static s8 _history_buffer_ptr[LOG_HISTORY_BUFFER_MAX + 32];
 
 static inline void
 _log_buffer_free(LogBuffer *pBuffer)
@@ -137,9 +133,6 @@ _log_buffer_reset_all(void)
 
 	_log_lost_counter = 0;
 	_log_buffer_reset(&_log_lost_buffer);
-
-	_history_buffer_len = 0;
-	dave_memset(_history_buffer_ptr, 0x00, sizeof(_history_buffer_ptr));
 }
 
 static inline dave_bool
@@ -343,62 +336,6 @@ _log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level)
 	return log_copy_len;
 }
 
-static inline void
-_log_buffer_set_history(s8 *log_ptr, ub log_len)
-{
-	ub move_index, move_len;
-
-	if((_history_buffer_len + log_len) <= LOG_HISTORY_BUFFER_MAX)
-	{
-		_history_buffer_len += dave_memcpy(&_history_buffer_ptr[_history_buffer_len], log_ptr, log_len);
-	}
-	else
-	{
-		if(log_len >= LOG_HISTORY_BUFFER_MAX)
-		{
-			_history_buffer_len = dave_memcpy(_history_buffer_ptr, log_ptr, LOG_HISTORY_BUFFER_MAX);
-		}
-		else
-		{
-			move_index = (_history_buffer_len + log_len) - LOG_HISTORY_BUFFER_MAX;
-			move_len = _history_buffer_len - move_index;
-
-			if(move_len <= LOG_HISTORY_BUFFER_MAX)
-			{
-				dave_memmove(_history_buffer_ptr, &_history_buffer_ptr[move_index], move_len);
-				if((move_len + log_len) <= LOG_HISTORY_BUFFER_MAX)
-				{
-					dave_memcpy(&_history_buffer_ptr[move_len], log_ptr, log_len);
-					_history_buffer_len = move_len + log_len;
-				}
-			}
-		}
-	}
-}
-
-static inline ub
-_log_buffer_get_history(s8 *log_ptr, ub log_len)
-{
-	ub start_index;
-
-	log_len -= 1;
-
-	if(log_len >= _history_buffer_len)
-	{
-		dave_memcpy(log_ptr, _history_buffer_ptr, _history_buffer_len);
-		log_len = _history_buffer_len;
-	}
-	else
-	{
-		start_index = _history_buffer_len - log_len;
-		dave_memcpy(log_ptr, &_history_buffer_ptr[start_index], log_len);
-	}
-
-	log_ptr[log_len] = '\0';
-
-	return log_len;
-}
-
 // =====================================================================
 
 void
@@ -443,11 +380,6 @@ log_buffer_set(LogBuffer *pBuffer)
 		return;
 
 	_log_buffer_set(pBuffer);
-
-	if(pBuffer->dynamic_buffer_ptr != NULL)
-		_log_buffer_set_history(pBuffer->dynamic_buffer_ptr, pBuffer->dynamic_buffer_index);
-	else
-		_log_buffer_set_history(pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
 }
 
 ub
@@ -472,14 +404,5 @@ log_buffer_has_data(void)
 	}
 
 	return dave_false;
-}
-
-ub
-log_buffer_history(s8 *log_ptr, ub log_len)
-{
-	if(__system_startup__ == dave_false)
-		return 0;
-
-	return _log_buffer_get_history(log_ptr, log_len);
 }
 

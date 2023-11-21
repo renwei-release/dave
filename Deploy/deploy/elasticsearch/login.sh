@@ -6,6 +6,6 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-CONTAINER=${PWD##*/}
+CONTAINER=dave-${PWD##*/}
 
 docker exec -it ${CONTAINER} bash

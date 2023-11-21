@@ -25,6 +25,23 @@ _memory_debug(void)
 	thread_msg_release(pRsp);
 }
 
+static void
+_remote_debug(void)
+{
+	void *kv = kv_remote_malloc("basedebug", 0, NULL);
+	s8 value[1024];
+
+	kv_inq_key_value(kv, "basekey", value, sizeof(value));
+	BASELOG("inq value:%s", value);
+
+	dave_snprintf(value, sizeof(value), "%ld", t_rand());
+	BASELOG("add value:%s", value);
+
+	kv_add_key_value(kv, "basekey", value);
+
+	kv_free(kv, NULL);
+}
+
 // =====================================================================
 
 void
@@ -36,6 +53,9 @@ base_debug(ThreadId src, DebugReq *pReq)
 	{
 		case 'm':
 				_memory_debug();
+			break;
+		case 'r':
+				_remote_debug();
 			break;
 		default:
 			break;
