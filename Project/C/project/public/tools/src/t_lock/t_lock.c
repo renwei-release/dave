@@ -104,7 +104,7 @@ _t_unlock_check(TLock *pLock, s8 *fun, ub line)
 }
 
 static inline dave_bool
-_t_lock_try_check(TLock *pLock, s8 *fun, ub line)
+_t_lock_uncontested_check(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
@@ -117,7 +117,7 @@ _t_lock_try_check(TLock *pLock, s8 *fun, ub line)
 }
 
 static inline dave_bool
-_t_unlock_try_check(TLock *pLock, s8 *fun, ub line)
+_t_unlock_uncontested_check(TLock *pLock, s8 *fun, ub line)
 {
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
@@ -225,10 +225,25 @@ __t_rlock_rw__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_check(pLock, fun, line) == dave_false)
+	if(_t_lock_uncontested_check(pLock, fun, line) == dave_false)
 		return dave_false;
 #endif
 	return dave_os_rw_rlock(pLock->rw_lock);
+}
+
+dave_bool
+__t_runlock_rw__(TLock *pLock, s8 *fun, ub line)
+{
+	if(pLock == NULL)
+	{
+		pLock = _t_booting_lock;
+	}
+
+#ifdef LEVEL_PRODUCT_alpha
+	if(_t_unlock_uncontested_check(pLock, fun, line) == dave_false)
+		return dave_false;
+#endif
+	return dave_os_rw_unlock(pLock->rw_lock);
 }
 
 dave_bool
@@ -348,14 +363,14 @@ __t_trylock_mutex__(TLock *pLock, s8 *fun, ub line)
 	}
 
 #ifdef LEVEL_PRODUCT_alpha
-	if(_t_lock_try_check(pLock, fun, line) == dave_true)
+	if(_t_lock_uncontested_check(pLock, fun, line) == dave_true)
 	{
 #endif
 		ret = dave_os_mutex_trylock(&(pLock->m_mutex_t));
 #ifdef LEVEL_PRODUCT_alpha
 		if(ret == dave_false)
 		{
-			_t_unlock_try_check(pLock, fun, line);
+			_t_unlock_uncontested_check(pLock, fun, line);
 		}
 	}
 	else

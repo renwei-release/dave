@@ -396,13 +396,13 @@ _echo_single_rsp(ThreadId src, ThreadId dst, MsgIdEcho *pGetEcho)
 	ub echo_current_time = dave_os_time_us();
 	ub echo_consume_time;
 
-	if(echo_current_time > pGetEcho->echo_req_time)
+	if(echo_current_time >= pGetEcho->echo_req_time)
 	{
 		echo_consume_time = echo_current_time - pGetEcho->echo_req_time;
 	}
 	else
 	{
-		ECHOLOG("find invalid time:%d/%d", echo_current_time, pGetEcho->echo_req_time);
+		ECHOLOG("find invalid current time:%ld/%ld", echo_current_time, pGetEcho->echo_req_time);
 		echo_consume_time = 0;
 	}
 
@@ -483,6 +483,8 @@ _echo_rsp(ThreadId src, ThreadId dst, MsgIdEchoRsp *pRsp)
 	switch(pEcho->type)
 	{
 		case EchoType_single:
+				_echo_rpc_verification(pEcho);
+
 				_echo_single_rsp(src, dst, pEcho);
 			break;
 		case EchoType_random:
@@ -493,8 +495,6 @@ _echo_rsp(ThreadId src, ThreadId dst, MsgIdEchoRsp *pRsp)
 					thread_name(src), thread_name(dst), pEcho->type);
 			break;
 	}
-
-	_echo_rpc_verification(pEcho);
 
 	_echo_rpc_clean(pEcho);
 }

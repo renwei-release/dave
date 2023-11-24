@@ -31,6 +31,7 @@ void t_lock_destroy(TLock *pLock);
 void __t_lock_spin__(TLock *pLock, s8 *fun, ub line);
 void __t_unlock_spin__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_rlock_rw__(TLock *pLock, s8 *fun, ub line);
+dave_bool __t_runlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_wlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_trlock_rw__(TLock *pLock, s8 *fun, ub line);
 dave_bool __t_twlock_rw__(TLock *pLock, s8 *fun, ub line);
@@ -42,6 +43,7 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 #define t_lock_spin(pLock) __t_lock_spin__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_unlock_spin(pLock) __t_unlock_spin__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_rlock_rw(pLock) __t_rlock_rw__(pLock, (s8 *)__func__, (ub)__LINE__)
+#define t_runlock_rw(pLock) __t_runlock_rw__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_wlock_rw(pLock) __t_wlock_rw__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_trlock_rw(pLock) __t_trlock_rw__(pLock, (s8 *)__func__, (ub)__LINE__)
 #define t_twlock_rw(pLock) __t_twlock_rw__(pLock, (s8 *)__func__, (ub)__LINE__)
@@ -69,7 +71,7 @@ void __t_unlock_mutex__(TLock *pLock, s8 *fun, ub line);
 #define SAFECODEv2R(pv, safe_zone) {\
 	if(t_rlock_rw(&pv) == dave_true) {\
 		{ safe_zone; }\
-		t_unlock_rw(&pv);\
+		t_runlock_rw(&pv);\
 	}\
 }
 

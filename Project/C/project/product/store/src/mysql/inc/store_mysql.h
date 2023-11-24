@@ -14,5 +14,7 @@ void store_mysql_exit(void);
 
 void store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq);
 
+ub store_mysql_info(s8 *info_ptr, ub info_len);
+
 #endif
 

@@ -20,13 +20,15 @@
 #define CFG_MYSQL_DBNAME "MySqDBName"
 
 typedef struct {
-	s8 address[256];
-	ub port;
-	s8 user[256];
-	s8 pwd[256];
-	s8 db[256];
+	s8 mysql_address[256];
+	ub mysql_port;
+	s8 mysql_user[256];
+	s8 mysql_pwd[256];
+	s8 mysql_db[256];
 
 	void *mysql_client;
+
+	ub work_times;
 } StoreMysql;
 
 static ub _mysql_number = 0;
@@ -49,11 +51,11 @@ _store_mysql_default_action(StoreMysql *pMysql, s8 *db)
 static void
 _store_mysql_connect(StoreMysql *pMysql, s8 *address, ub port, s8 *user, s8 *pwd, s8 *db)
 {
-	dave_strcpy(pMysql->address, address, sizeof(pMysql->address));
-	pMysql->port = port;
-	dave_strcpy(pMysql->user, user, sizeof(pMysql->user));
-	dave_strcpy(pMysql->pwd, pwd, sizeof(pMysql->pwd));
-	dave_strcpy(pMysql->db, db, sizeof(pMysql->db));
+	dave_strcpy(pMysql->mysql_address, address, sizeof(pMysql->mysql_address));
+	pMysql->mysql_port = port;
+	dave_strcpy(pMysql->mysql_user, user, sizeof(pMysql->mysql_user));
+	dave_strcpy(pMysql->mysql_pwd, pwd, sizeof(pMysql->mysql_pwd));
+	dave_strcpy(pMysql->mysql_db, db, sizeof(pMysql->mysql_db));
 
 	if(pMysql->mysql_client != NULL)
 	{
@@ -61,13 +63,13 @@ _store_mysql_connect(StoreMysql *pMysql, s8 *address, ub port, s8 *user, s8 *pwd
 		pMysql->mysql_client = NULL;
 	}
 
-	pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+	pMysql->mysql_client = dave_mysql_creat_client(pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
 	if(pMysql->mysql_client == NULL)
 	{
-		pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, NULL);
+		pMysql->mysql_client = dave_mysql_creat_client(pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, NULL);
 		if(pMysql->mysql_client == NULL)
 		{
-			STABNOR("%s:%d %s/%s %s creat client failed!", pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+			STABNOR("%s:%d %s/%s %s creat client failed!", pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
 		}
 		else
 		{
@@ -179,19 +181,19 @@ _store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *s
 		{
 			STLOG("safe_counter:%d disconnect address:%s port:%d user:%s pwd:%s db:%s",
 				safe_counter,
-				pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+				pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
 
 			dave_mysql_free_ret(ret);
 		
 			dave_mysql_release_client(pMysql->mysql_client);
 
-			pMysql->mysql_client = dave_mysql_creat_client(pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+			pMysql->mysql_client = dave_mysql_creat_client(pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
 
 			if(pMysql->mysql_client != NULL)
 			{
 				STLOG("safe_counter:%d connect to address:%s port:%d user:%s pwd:%s db:%s",
 					safe_counter,
-					pMysql->address, pMysql->port, pMysql->user, pMysql->pwd, pMysql->db);
+					pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
 			}
 
 			continue;		
@@ -247,6 +249,8 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	StoreMysqlRsp *pRsp = thread_reset_msg(pRsp);
 	StoreMysql *pMysql = &_pMysql[thread_index];
 
+	pMysql->work_times ++;
+
 	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
 	pRsp->ptr = pReq->ptr;
 
@@ -265,6 +269,28 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	id_msg(src, STORE_MYSQL_RSP, pRsp);
 
 	dave_mfree(pReq->sql);
+}
+
+ub
+store_mysql_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index, mysql_index;
+	StoreMysql *pMysql;
+
+	info_index = 0;
+
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "MYSQL INFO(%d):\n", _mysql_number);
+
+	for(mysql_index=0; mysql_index<_mysql_number; mysql_index++)
+	{
+		pMysql = &_pMysql[mysql_index];
+
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+			" %s:%d %s %ld\n",
+			pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_client==NULL?"disconnect":"connect", pMysql->work_times);
+	}
+
+	return info_index;
 }
 
 #endif

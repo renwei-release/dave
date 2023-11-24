@@ -26,7 +26,7 @@ typedef struct {
 	ub counter;
 } WaitMsgShow;
 
-static WaitMsgShow *
+static inline WaitMsgShow *
 _thread_wait_msg_get(WaitMsgShow *show_ptr, ub show_num, ub msg_id)
 {
 	ub empty_index, buffer_index;
