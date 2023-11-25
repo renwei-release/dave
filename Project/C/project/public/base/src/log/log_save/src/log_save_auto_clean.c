@@ -18,60 +18,84 @@
 
 static ub _log_reserved_days = 0;
 
-static void
-_log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *allowed_list)
+static dave_bool
+_log_save_auto_check_candidate_dir(s8 *candidate_dir)
 {
 	ub candidate_len = dave_strlen(candidate_dir);
-	dave_bool remove_flag = dave_true;
-	s8 dir_full[256];
+	DateStruct current_date;
+	ub current_data;
 
-	// the dir_path is a log dir:20XXXXXX
+	// the dir_path is a log dir:20231125
 	if(candidate_len != 8)
-		return;
+		return dave_false;
 	if(t_is_all_digit((u8 *)candidate_dir, candidate_len) == dave_false)
-		return;
-	if((candidate_dir[0] != '2') || (candidate_dir[1] != '0'))
-		return;
-	if(candidate_dir[4] > '1')
-		return;
-	if(candidate_dir[6] > '3')
+		return dave_false;
+
+	current_date = t_time_get_date(NULL);
+	current_data = current_date.year*10000 + current_date.month*100 + current_date.day;
+
+	/*
+	 * If the time of the candidate directory is greater than the current system time,
+	 * this candidate directory is retained.
+	 */
+	if(stringdigital(candidate_dir) > current_data)
+		return dave_false;
+
+	return dave_true;
+}
+
+static void
+_log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *reserve_list)
+{
+	dave_bool the_dir_must_be_reserve = dave_false;
+	s8 dir_full[256];
+	DateStruct current_date;
+
+	if(_log_save_auto_check_candidate_dir(candidate_dir) == dave_false)
 		return;
 
-	while(allowed_list != NULL)
+	while(reserve_list != NULL)
 	{
-		if(dave_strcmp(candidate_dir, ms8(allowed_list)) == dave_true)
+		LOGDEBUG("the subdir:%s candidate_dir:%s the reserve dir:%s", dir, candidate_dir, ms8(reserve_list));
+
+		if(dave_strcmp(candidate_dir, ms8(reserve_list)) == dave_true)
 		{
-			remove_flag = dave_false;
+			the_dir_must_be_reserve = dave_true;
 			break;
 		}
-		allowed_list = allowed_list->next;
+		reserve_list = reserve_list->next;
 	}
 
-	if(remove_flag == dave_false)
+	if(the_dir_must_be_reserve == dave_true)
 		return;
+
+	current_date = t_time_get_date(NULL);
 
 	dave_snprintf(dir_full, sizeof(dir_full), "%s/%s", dir, candidate_dir);
 
 	if(dave_os_file_remove_dir(dir_full) == dave_true)
 	{
-		LOGLOG("auto clean log dir %s", dir_full);
+		LOGLOG("auto clean log dir:%s date:%s", dir_full, datestr(&current_date));
 	}
 	else
 	{
-		LOGLOG("auto clean log dir %s failed!", dir_full);
+		LOGLOG("auto clean log dir:%s date:%s failed!", dir_full, datestr(&current_date));
 	}
 }
 
+/*
+ * Calculate the name of the log folder that needs to be retained
+ */
 static MBUF *
-_log_save_auto_clean_allowed_list(void)
+_log_save_auto_clean_reserve_list(void)
 {
-	MBUF *allowed_list = NULL, *allowed_date;
+	MBUF *reserve_list = NULL, *reserve_dir_name;
 	DateStruct current_date;
 	ub current_second;
 	ub progress_days;
 
 	if(_log_reserved_days == 0)
-		return allowed_list;
+		return reserve_list;
 
 	current_date = t_time_get_date(NULL);
 	current_second = t_time_struct_second(&current_date);
@@ -80,37 +104,38 @@ _log_save_auto_clean_allowed_list(void)
 	{
 		current_date = t_time_second_struct(current_second);
 
-		allowed_date = dave_mmalloc(128);
-		dave_snprintf(ms8(allowed_date), mlen(allowed_date), "%04d%02d%02d",
+		reserve_dir_name = dave_mmalloc(128);
+		dave_snprintf(ms8(reserve_dir_name), mlen(reserve_dir_name), "%04d%02d%02d",
 			current_date.year, current_date.month, current_date.day);
-		LOGDEBUG("allowed_date:%s", ms8(allowed_date));
-		allowed_list = dave_mchain(allowed_list, allowed_date);
+		LOGDEBUG("reserve_dir_name:%s", ms8(reserve_dir_name));
+		reserve_list = dave_mchain(reserve_list, reserve_dir_name);
 
+		// advance one day
 		current_second -= 86400;
 	}
 
-	return allowed_list;
+	return reserve_list;
 }
 
 static void
 _log_save_auto_clean_dir(s8 *dir)
 {
 	MBUF *subdir_list = dave_os_dir_subdir_list(dir);
-	MBUF *allowed_list = _log_save_auto_clean_allowed_list();
+	MBUF *reserve_list = _log_save_auto_clean_reserve_list();
 	MBUF *temp_list;
 
 	temp_list = subdir_list;
 	while(temp_list != NULL)
 	{
-		LOGDEBUG("subdir:%s", ms8(temp_list));
+		LOGDEBUG("the subdir:%s", ms8(temp_list));
 
-		_log_save_auto_clean_del_dir(dir, ms8(temp_list), allowed_list);
+		_log_save_auto_clean_del_dir(dir, ms8(temp_list), reserve_list);
 
 		temp_list = temp_list->next;
 	}
 
 	dave_mfree(subdir_list);
-	dave_mfree(allowed_list);
+	dave_mfree(reserve_list);
 }
 
 static void
