@@ -536,9 +536,10 @@ _thread_msg_buffer_timer_out(MsgBuffer *pBuffer)
 	pMsg->msg_len = pBuffer->msg_len;
 	pMsg->msg_body = &(((u8 *)pMsg)[sizeof(ProcessMsgTimerOutMsg)]);
 
-	THREADLOG("msg_id:%s(gid:%s dst_thread:%s uid:%s) timer out to:%s",
+	THREADLOG("msg_id:%s(gid:%s dst_thread:%s uid:%s) <%s:%d> timer out to:%s",
 		msgstr(pMsg->msg_id),
 		pBuffer->gid, pBuffer->dst_thread, pBuffer->uid,
+		pBuffer->fun, pBuffer->line,
 		thread_id_to_name(pBuffer->src_id));
 
 	id_msg(pBuffer->src_id, MSGID_PROCESS_MSG_TIMER_OUT, pMsg);
