@@ -50,7 +50,15 @@ _sync_server_the_config_tell_all_client(dave_bool put_flag, s8 *key, s8 *value)
 		update.cfg_mbuf_value = t_a2b_str_to_mbuf(value, 0);
 		update.ttl = 0;
 
-		sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update);
+		if(sync_server_app_tx_client(pClient, MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), &update) == dave_false)
+		{
+			SYNCLOG("%s/%s/%s remote update failed! client_socket:%d",
+				pClient->globally_identifier, pClient->verno, pClient->host_name,
+				pClient->client_socket);
+
+			dave_mfree(update.cfg_mbuf_name);
+			dave_mfree(update.cfg_mbuf_value);
+		}
 	}
 }
 
