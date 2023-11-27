@@ -54,6 +54,9 @@ _redis_reply_to_json(redisReply *redis_reply)
 {
 	void *pJson = NULL;
 
+	if(redis_reply == NULL)
+		return NULL;
+
 	switch(redis_reply->type)
 	{
 		case REDIS_REPLY_STRING:
@@ -145,11 +148,16 @@ dave_redis_command(void *context, s8 *command)
 
 	if((context == NULL) || (command == NULL))
 	{
-		PARTYABNOR("redis input is null!");
+		PARTYABNOR("redis input is null! command:%s", command);
 		return NULL;
 	}
 
 	redis_reply = (redisReply *)redisCommand((redisContext *)context, (const char *)command);
+	if(redis_reply == NULL)
+	{
+		PARTYLOG("get reply is NULL command:%s", command);
+		return NULL;
+	}
 
 	pJson = _redis_reply_to_json(redis_reply);
 	if(pJson == NULL)
