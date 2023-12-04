@@ -12,6 +12,7 @@ void base_remote_cfg_init(void);
 void base_remote_cfg_exit(void);
 
 dave_bool base_remote_cfg_internal_add(s8 *name, s8 *value);
+sb base_remote_cfg_internal_inq(s8 *name, s8 *value_ptr, ub value_len);
 dave_bool base_remote_cfg_internal_del(s8 *name);
 
 RetCode base_remote_cfg_set(s8 *name, s8 *value, sb ttl);

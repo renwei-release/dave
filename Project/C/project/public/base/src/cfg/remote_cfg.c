@@ -104,6 +104,12 @@ base_remote_cfg_internal_add(s8 *name, s8 *value)
 	return remote_cfg_file_set(name, value);
 }
 
+sb
+base_remote_cfg_internal_inq(s8 *name, s8 *value_ptr, ub value_len)
+{
+	return remote_cfg_file_get(name, value_ptr, value_len);
+}
+
 dave_bool
 base_remote_cfg_internal_del(s8 *name)
 {

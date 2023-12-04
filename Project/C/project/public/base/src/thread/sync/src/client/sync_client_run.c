@@ -224,7 +224,7 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 
 	if(pUpdate->put_flag == dave_true)
 	{
-		if(rcfg_get(ms8(pUpdate->cfg_mbuf_name), cfg_value, cfg_len) < 0)
+		if(base_remote_cfg_internal_inq(ms8(pUpdate->cfg_mbuf_name), cfg_value, cfg_len) < 0)
 		{
 			broadcast_flag = base_cfg_remote_internal_add(ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
 		}

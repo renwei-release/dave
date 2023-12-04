@@ -89,6 +89,9 @@ _thread_msg_call_del(ThreadId thread_id, ub msg_id)
 	s8 key[256];
 	MsgCallFun *pFun;
 
+	if(_msg_call_kv == NULL)
+		return;
+
 	pFun = base_ramkv_del_key_ptr(
 		_msg_call_kv,
 		_thread_msg_call_key(key, sizeof(key), thread_id, msg_id));
