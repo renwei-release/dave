@@ -8,11 +8,17 @@
 #ifndef __BASE_MAIN_H__
 #define __BASE_MAIN_H__
 
+extern volatile dave_bool _base_power_state;
+
 void base_init(void *main_thread_id, s8 *sync_domain);
 dave_bool base_running(dave_bool platform_schedule);
 void base_exit(void);
 void base_restart(const char *args, ...);
-dave_bool base_power_state(void);
+static inline dave_bool
+base_power_state(void)
+{
+	return _base_power_state;
+}
 void base_power_off(s8 *reason);
 
 #endif

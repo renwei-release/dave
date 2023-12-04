@@ -16,7 +16,7 @@
 #include "base_rxtx.h"
 
 static volatile dave_bool _base_running = dave_true;
-static volatile dave_bool _base_power_state = dave_true;
+volatile dave_bool _base_power_state = dave_true;
 static void *_main_thread_id = NULL;
 
 // =====================================================================
@@ -107,12 +107,6 @@ base_power_off(s8 *reason)
 	}
 
 	dave_os_power_off(reason);
-}
-
-dave_bool
-base_power_state(void)
-{
-	return _base_power_state;
 }
 
 #endif

@@ -14,9 +14,11 @@ fi
 cd lcov-${VERSION}
 make install
 
-sudo yum install -y perl-Time-HiRes perl-Capture-Tiny perl-Module-Load-Conditional perl-DateTime perl-CPAN
-sudo perl -MCPAN -e 'install JSON::XS'
-sudo perl -MCPAN -e 'install Cpanel::JSON::XS'
+apt update
+apt install -y perl-CPAN
+perl -MCPAN -e 'install JSON::XS'
+perl -MCPAN -e 'install Cpanel::JSON::XS'
+cpan DateTime Capture::Tiny
 
 cd ../
 rm -rf lcov-${VERSION}

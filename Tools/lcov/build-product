@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#
+# Check if lcov is installed
+#
+if [ $(type lcov) == "" ]; then
+   ./build-lcov
+fi
+
+#
+# Setup public parameters
+#
+homepath=$(cd `dirname $0`; pwd)
+product=$1
+if [ "$product" == "" ]; then
+   product="base"
+fi
+PRODUCTDIR=$homepath/../../Project/C/build/linux/$product
+LCOVFILEDIR=$homepath/lcov_file/$product
+File=$(basename $0)
+
+#
+echo
+echo ${File} Make target
+echo
+#
+cd ${PRODUCTDIR}
+./clean
+./build profiling
+
+#
+echo
+echo ${File} Build work directory
+echo
+#
+cd $homepath
+rm -rf ${LCOVFILEDIR}
+mkdir -p ${LCOVFILEDIR}
+cp ${PRODUCTDIR}/${product^^}-BIN ${LCOVFILEDIR}
+
+#
+echo
+echo ${File} Collect operation information
+echo
+#
+cd ${LCOVFILEDIR}
+GCNO=$(find $homepath/../../Project/C/project -name '*.gcno')
+mv $GCNO ./

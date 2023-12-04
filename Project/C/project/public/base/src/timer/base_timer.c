@@ -893,7 +893,7 @@ _timer_end(void)
 static RetCode
 _timer_die(ub *param_len, void **param_ptr, TIMERID timer_id, s8 *fun, ub line)
 {
-	ThreadId cur_msg_id;
+	ThreadId self_id;
 
 	if((timer_id >= BASE_TIMER_MAX) || (timer_id == INVALID_TIMER_ID))
 	{
@@ -901,15 +901,19 @@ _timer_die(ub *param_len, void **param_ptr, TIMERID timer_id, s8 *fun, ub line)
 		return RetCode_Invalid_parameter;
 	}
 
-	cur_msg_id = self();
-	if(_timer[timer_id].owner != cur_msg_id)
+	self_id = self();
+	if(_timer[timer_id].owner != self_id)
 	{
-		TIMEABNOR("%s die timer:%d/%s, owner:%s<%lx>, cur:%s<%lx> (%s:%d)",
-				thread_name(cur_msg_id),
-				timer_id, _timer[timer_id].timer_name_ptr,
-				thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
-				thread_name(cur_msg_id), cur_msg_id,
-				fun, line);
+		if(_timer[timer_id].owner != INVALID_THREAD_ID)
+		{
+			TIMEABNOR("%s die timer:%d/%s, owner:%s<%lx>, cur:%s<%lx> (%s:%d)",
+					thread_name(self_id),
+					timer_id, _timer[timer_id].timer_name_ptr,
+					thread_name(_timer[timer_id].owner), _timer[timer_id].owner,
+					thread_name(self_id), self_id,
+					fun, line);
+		}
+		return RetCode_Invalid_parameter;
 	}
 
 	TIMEDEBUG("timer_name:%s %dms id:%d",

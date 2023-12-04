@@ -82,9 +82,7 @@ dave_os_power_off(s8 *reason)
 {
 	OSLOG("system power off reason:%s", reason);
 
-	dave_os_sleep(6000);
-
-	exit(0);
+	dave_os_sleep(2000);
 }
 
 dave_bool

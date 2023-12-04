@@ -112,29 +112,18 @@ typedef struct {
 void base_socket_init(void);
 void base_socket_exit(void);
 
-#define SOCKETWriteMBUF(socket, mbuf_data) {\
-	SocketWrite *pWrite = thread_reset_msg(pWrite);\
-\
-	pWrite->socket = socket;\
-	pWrite->data_len = mlen(mbuf_data);\
-	pWrite->data = mbuf_data;\
-\
-	name_msg(SOCKET_THREAD_NAME, SOCKET_WRITE, pWrite);\
+static inline dave_bool
+SOCKETWriteMBUF(s32 socket, IPBaseInfo *pIPInfo, MBUF *mbuf_data) {
+	extern dave_bool socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, SOCKETINFO snd_flag);
+
+	return socket_external_send(INVALID_THREAD_ID, socket, pIPInfo, mbuf_data, SOCKETINFO_SND);
 }
 
-#define SOCKETWriteBIN(socket, bin_ptr, bin_len) {\
-	SOCKETWriteMBUF(socket, t_a2b_bin_to_mbuf(bin_ptr, bin_len));\
-}
+static inline void
+SOCKETNotify(SocketNotify *pNotify) {
+	extern void socket_external_notify(SocketNotify *pNotify);
 
-#define SOCKETWriteJson(socket, pJson) {\
-	ub json_string_len;\
-	s8 *json_string_ptr;\
-\
-	json_string_ptr = dave_json_to_string(pJson, &json_string_len);\
-	if((json_string_ptr != NULL) && (json_string_len > 0))\
-	{\
-		SOCKETWriteBIN(socket, (u8 *)json_string_ptr, json_string_len);\
-	}\
+	socket_external_notify(pNotify);
 }
 
 #endif

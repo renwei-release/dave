@@ -10,7 +10,7 @@
 
 void ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback outback_fun);
 
-void ramkv_timer_exit(KV *pKV);
+void ramkv_timer_exit(KV *pKV, s8 *fun, ub line);
 
 void ramkv_timer_add(KV *pKV, u8 *key_ptr, ub key_len);
 

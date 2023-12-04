@@ -12,15 +12,6 @@
 #include "thread_tools.h"
 #include "thread_log.h"
 
-#define LOCAL_ID_MASK 0xffff
-#define THREAD_INDEX_MASK 0xffff
-#define NET_INDEX_MASK 0xffff
-#define WAKEUP_INDEX_MASK 0xfff
-
-#define SYNC_FLAG 0x2000000000000000
-#define WAKEUP_FLAG 0x4000000000000000
-#define REMOTE_FLAG 0x8000000000000000
-
 #define SET_FLAG _thread_set_flag()
 
 typedef union {
@@ -71,23 +62,6 @@ _thread_set_flag(void)
 }
 
 // =====================================================================
-
-ThreadId
-thread_set_local(ThreadId thread_id, ThreadId local_id)
-{
-	return (thread_id & 0xffffffffffff0000) | (local_id & LOCAL_ID_MASK);
-}
-
-ThreadId
-thread_get_local(ThreadId thread_id)
-{
-	if(thread_id == INVALID_THREAD_ID)
-	{
-		return INVALID_THREAD_ID;
-	}
-
-	return (thread_id & LOCAL_ID_MASK);
-}
 
 ThreadId
 thread_set_thread(ThreadId thread_id, ub thread_index)

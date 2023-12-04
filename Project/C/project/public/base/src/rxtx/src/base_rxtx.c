@@ -30,7 +30,6 @@ typedef struct {
 	ub event_serial;
 } RXTXEvent;
 
-static ThreadId _socket_thread = INVALID_THREAD_ID;
 static TLock _opt_pv;
 static ub _rxtx_buffer_cfg_length = RX_TX_BUF_SETUP;
 static RXTX _rx_tx[RXTX_MAX];
@@ -419,7 +418,8 @@ _base_rxtx_buffer_clean(u8 *permutation_ptr)
 static inline dave_bool
 _base_rxtx_output(u8 ver_type, RXTX *pRxTx, u8 *dst_ip, u16 dst_port, ORDER_CODE order_id, MBUF *data)
 {
-	SocketWrite *pWrite;
+	IPBaseInfo ip_info;
+	MBUF *socket_data;
 	ub data_length = (data == NULL) ? 0 : data->tot_len;
 
 	if((pRxTx->socket == INVALID_SOCKET_ID) || (pRxTx->socket < 0))
@@ -431,43 +431,35 @@ _base_rxtx_output(u8 ver_type, RXTX *pRxTx, u8 *dst_ip, u16 dst_port, ORDER_CODE
 		return dave_false;
 	}
 
-	pWrite = thread_msg(pWrite);
-
-	pWrite->socket = pRxTx->socket;
-
 	if(pRxTx->type == TYPE_SOCK_STREAM)
 	{
-		pWrite->IPInfo.protocol = IPProtocol_TCP;
+		ip_info.protocol = IPProtocol_TCP;
 	}
 	else
 	{
-		pWrite->IPInfo.protocol = IPProtocol_UDP;
+		ip_info.protocol = IPProtocol_UDP;
 	}
-	pWrite->IPInfo.ver = IPVER_IPV4;
-	pWrite->IPInfo.src_port = 0;
+	ip_info.ver = IPVER_IPV4;
+	ip_info.src_port = 0;
 	if(dst_ip != NULL)
 	{
-		dave_memcpy(pWrite->IPInfo.dst_ip, dst_ip, 4);
+		dave_memcpy(ip_info.dst_ip, dst_ip, 4);
 	}
-	pWrite->IPInfo.dst_port = dst_port;
-	pWrite->IPInfo.netcard_name[0] = '\0';
-	pWrite->IPInfo.fixed_port_flag = NotFixedPort;
+	ip_info.dst_port = dst_port;
+	ip_info.netcard_name[0] = '\0';
+	ip_info.fixed_port_flag = NotFixedPort;
 
-	pWrite->data = dave_mmalloc(STACK_HEAD_LENver2);
+	socket_data = dave_mmalloc(STACK_HEAD_LENver2);
 
-	pWrite->data->tot_len = pWrite->data->len =
-		_base_rxtx_build_head((u8 *)(pWrite->data->payload), ver_type, order_id, data_length);
+	socket_data->tot_len = socket_data->len =
+		_base_rxtx_build_head((u8 *)(socket_data->payload), ver_type, order_id, data_length);
 
 	if(data != NULL)
 	{
-		pWrite->data = dave_mchain(pWrite->data, data);
+		socket_data = dave_mchain(socket_data, data);
 	}
 
-	pWrite->data_len = pWrite->data->tot_len;
-
-	pWrite->close_flag = SOCKETINFO_SND;
-
-	return snd_from_msg(pRxTx->owner_thread, _socket_thread, SOCKET_WRITE, sizeof(SocketWrite), pWrite);
+	return SOCKETWriteMBUF(pRxTx->socket, &ip_info, socket_data);
 }
 
 static inline void
@@ -1200,14 +1192,14 @@ _base_rxtx_read_action(SocketRead *pRead, stack_receive_fun receive_fun, void *p
 static inline void
 _base_rxtx_event_notify_recv_length(s32 socket, ub recv_total_length, void *ptr)
 {
-	SocketNotify *pNotify = thread_msg(pNotify);
+	SocketNotify notify;
 
-	pNotify->socket = socket;
-	pNotify->notify = SOCKETINFO_RAW_EVENT_RECV_LENGTH;
-	pNotify->data = recv_total_length;
-	pNotify->ptr = ptr;
+	notify.socket = socket;
+	notify.notify = SOCKETINFO_RAW_EVENT_RECV_LENGTH;
+	notify.data = recv_total_length;
+	notify.ptr = ptr;
 
-	id_msg(_socket_thread, SOCKET_NOTIFY, pNotify);
+	SOCKETNotify(&notify);
 }
 
 static inline void
@@ -1279,8 +1271,6 @@ base_rxtx_init(void)
 {
 	ub rxtx_index;
 
-	_socket_thread = thread_id(SOCKET_THREAD_NAME);
-
 	t_lock_reset(&_opt_pv);
 
 	_base_rxtx_update_buffer_length();
@@ -1310,8 +1300,6 @@ __base_rxtx_build__(SOCTYPE type, s32 socket, u16 port, s8 *file, ub line)
 {
 	RXTX *pRxTx;
 	dave_bool ret = dave_false;
-
-	_socket_thread = thread_id(SOCKET_THREAD_NAME);
 
 	SAFECODEv1(_opt_pv, {
 

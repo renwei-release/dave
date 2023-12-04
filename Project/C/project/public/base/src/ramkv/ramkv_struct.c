@@ -121,7 +121,7 @@ __ramkv_free__(dave_bool external_call, KV *pKV, s8 *fun, ub line)
 
 	if(pKV != NULL)
 	{
-		ramkv_timer_exit(pKV);
+		ramkv_timer_exit(pKV, fun, line);
 	}
 
 	if(external_call == dave_true)

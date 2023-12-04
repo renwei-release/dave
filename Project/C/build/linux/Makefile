@@ -11,6 +11,8 @@ LEVEL_PRODUCT=alpha	# profiling alpha beta
 FORM=BIN
 DEPLOYPATH=../../../../Deploy/deploy/$(name_PRODUCT)/file_system/project
 
+$(info makefile info NAME_PRODUCT=$(NAME_PRODUCT) LEVEL_PRODUCT=$(LEVEL_PRODUCT) FORM=$(FORM))
+
 ifeq ($(LEVEL_PRODUCT), profiling)
 	MAKE_LEVEL_PRODUCT=alpha
 else ifeq ($(LEVEL_PRODUCT), beta)

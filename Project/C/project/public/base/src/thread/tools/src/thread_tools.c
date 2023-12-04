@@ -710,22 +710,5 @@ thread_total_msg(ThreadStruct *pThread, ub msg_id)
 	return number;
 }
 
-ub
-thread_total_number(ThreadStruct *pThread)
-{
-	ub number;
-
-	if(pThread == NULL)
-	{
-		return 0;
-	}
-
-	number = thread_queue_total_number(pThread->msg_queue, THREAD_MSG_QUEUE_NUM);
-	number += thread_queue_total_number(pThread->seq_queue, THREAD_SEQ_QUEUE_NUM);
-	number += thread_queue_total_number(pThread->pre_queue, THREAD_PRE_QUEUE_NUM);
-
-	return number;
-}
-
 #endif
 

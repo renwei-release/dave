@@ -26,7 +26,7 @@
 
 static ThreadId _socket_thread = INVALID_THREAD_ID;
 
-static void
+static inline void
 _socket_external_raw_event(SOCEVENT event, s32 socket, s32 os_socket)
 {
 	SocketRawEvent *pEvent;
@@ -41,7 +41,7 @@ _socket_external_raw_event(SOCEVENT event, s32 socket, s32 os_socket)
 	snd_from_msg(_socket_thread, _socket_thread, SOCKET_RAW_EVENT, sizeof(SocketRawEvent), pEvent);
 }
 
-static void
+static inline void
 _socket_external_core_event(SOCEVENT event, SocketCore *pCore)
 {
 	if(event == SOC_EVENT_CLOSE)
@@ -1053,7 +1053,7 @@ socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, 
 		return dave_false;
 	}
 
-	if(thread_get_local(pCore->owner) != thread_get_local(src))
+	if((src != INVALID_THREAD_ID) && (thread_get_local(pCore->owner) != thread_get_local(src)))
 	{
 		SOCKETABNOR("%lx/%s write someone:%lx/%s socket:%d/%d/%d/%d",
 			src, thread_name(src), pCore->owner, thread_name(pCore->owner),

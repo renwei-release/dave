@@ -11,6 +11,7 @@
 #include "thread_struct.h"
 #include "thread_mem.h"
 #include "thread_log.h"
+#include "thread_queue_opt.h"
 
 static inline void
 _thread_queue_msg_clean(ThreadMsg *pMsg)
@@ -133,27 +134,9 @@ _thread_queue_sum_total(ub *unprocessed, ub *received, ub *processed, ThreadQueu
 }
 
 static inline ub
-_thread_queue_list_total(ThreadQueue *pQueue_ptr, ub queue_number)
-{
-	ub queue_index, list_total_counter;
-	ThreadQueue *pQueue;
-
-	list_total_counter = 0;
-
-	for(queue_index=0; queue_index<queue_number; queue_index++)
-	{
-		pQueue = &(pQueue_ptr[queue_index]);
-
-		list_total_counter += (pQueue->msg_number);
-	}
-
-	return list_total_counter;
-}
-
-static inline ub
 _thread_queue_num_msg_any(ThreadQueue *pQueue_ptr, ub queue_number)
 {
-	return _thread_queue_list_total(pQueue_ptr, queue_number);
+	return thread_queue_total_number(pQueue_ptr, queue_number);
 }
 
 static inline ub
@@ -373,12 +356,6 @@ void
 thread_queue_total_detail(ub *unprocessed, ub *received, ub *processed, ThreadQueue *pQueue_ptr, ub queue_number)
 {
 	_thread_queue_sum_total(unprocessed, received, processed, pQueue_ptr, queue_number);
-}
-
-ub
-thread_queue_total_number(ThreadQueue *pQueue_ptr, ub queue_number)
-{
-	return _thread_queue_list_total(pQueue_ptr, queue_number);
 }
 
 ub

@@ -122,8 +122,6 @@ _thread_function(void *arg)
 		pthread_setname_np(id->thr_id, (const char *)(id->thread_name));
 
 		id->fun(id->arg);
-
-		pthread_kill(id->thr_id, BREAK_SIG);
 	}
 
 	return NULL;

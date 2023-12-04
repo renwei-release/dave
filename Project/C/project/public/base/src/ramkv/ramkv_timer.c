@@ -679,11 +679,14 @@ _ramkv_timer_init(s8 *name, KV *pKV, ub out_second, ramkv_time_callback outback_
 }
 
 static inline void
-_ramkv_timer_exit(KVTimer *pKV)
+_ramkv_timer_exit(KVTimer *pKV, s8 *fun, ub line)
 {
 	if(pKV->timer_id != INVALID_TIMER_ID)
 	{
-		base_timer_die(pKV->timer_id);
+		if(__base_timer_die__(pKV->timer_id, fun, line) != RetCode_OK)
+		{
+			KVLOG("timer:%d die error! <%s:%d>", pKV->timer_id, fun, line);
+		}
 		pKV->timer_id = INVALID_TIMER_ID;
 	}
 
@@ -747,9 +750,9 @@ ramkv_timer_init(KV *pKV, ub out_second, ramkv_time_callback outback_fun)
 }
 
 void
-ramkv_timer_exit(KV *pKV)
+ramkv_timer_exit(KV *pKV, s8 *fun, ub line)
 {
-	SAFECODEv2W( pKV->ramkv_pv, _ramkv_timer_exit(&(pKV->ramkv_timer)); );
+	SAFECODEv2W( pKV->ramkv_pv, _ramkv_timer_exit(&(pKV->ramkv_timer), fun, line); );
 
 	dave_memset(&(pKV->ramkv_timer), 0x00, sizeof(KVTimer));
 }
