@@ -8,6 +8,7 @@
 import os
 import sys
 import time
+import datetime
 
 
 def t_time_current_str():
@@ -28,3 +29,19 @@ def t_time_current_us():
 
     microseconds_since_epoch = seconds_since_epoch * 1000000
     return int(microseconds_since_epoch)
+
+
+def t_time_start_action():
+    return datetime.datetime.now()
+
+
+def t_time_end_action(start_time, message=None):
+    run_time = datetime.datetime.now() - start_time 
+    run_time = run_time.seconds * 1000000 + run_time.microseconds
+
+    run_time_msg = f'{run_time/1000000}s'
+
+    if message != None:
+        return run_time_msg + f'-{message}'
+
+    return run_time_msg

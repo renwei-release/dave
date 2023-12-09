@@ -28,7 +28,7 @@ func _dave_go_log(log_string string) {
 	c_func := C.CString(__func__)
 	c_log_string := C.CString(log_string)
 
-	C.dave_dll_log(c_func, C.int(__LINE__), c_log_string)
+	C.dave_dll_log(c_func, C.int(__LINE__), c_log_string, C.int(2))
 
 	C.free(unsafe.Pointer(c_func))
 	C.free(unsafe.Pointer(c_log_string))

@@ -16,7 +16,7 @@
 // =====================================================================
 
 void
-dave_dll_log(char *func, int line, char *log_msg)
+dave_dll_log(char *func, int line, char *log_msg, int log_type)
 {
 	ub log_len = 1024 + dave_strlen(log_msg);
 	s8 *log_ptr = dave_malloc(log_len);
@@ -38,7 +38,24 @@ dave_dll_log(char *func, int line, char *log_msg)
 		func = "NULL";
 	}
 
-	DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
+	switch(log_type)
+	{
+		case 0:
+				DAVEDEBUG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
+			break;
+		case 1:
+				DAVETRACE("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
+			break;
+		case 2:
+				DAVELOG("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
+			break;
+		case 3:
+				DAVEABNORMAL("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);				
+			break;
+		default:
+				DAVETRACE("[%s]<%s:%d>%s\n", dave_verno_my_product(), func, line, log_ptr);
+			break;
+	}
 
 	dave_free(log_ptr);
 }

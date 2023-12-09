@@ -8,7 +8,7 @@
 #ifndef __BASE_DLL_LOG_H__
 #define __BASE_DLL_LOG_H__
 
-void dave_dll_log(char *func, int line, char *log_msg);
+void dave_dll_log(char *func, int line, char *log_msg, int log_type);
 
 #endif
 

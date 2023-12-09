@@ -286,7 +286,7 @@ _coroutine_load_stack_size(void)
 
 	if((stack_size_backup != 0) && (stack_size_backup != _coroutine_stack_size))
 	{
-		THREADLOG("%s change:%d->%d", CFG_COROUTINE_STACK_SIZE, stack_size_backup, _coroutine_stack_size)
+		THREADLOG("%s change:%ld->%ld", CFG_COROUTINE_STACK_SIZE, stack_size_backup, _coroutine_stack_size)
 	}
 }
 
