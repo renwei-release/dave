@@ -64,16 +64,25 @@ _dll_main_name(void)
 static ub
 _dll_main_number(ub thread_number)
 {
+	ub max_thread_number;
+
 	if(thread_number == 0)
 	{
 		thread_number = dave_os_cpu_process_number();
 	}
+
+	if(dave_os_cpu_process_number() > DLL_MAIN_THREAD_MAX_NUMBER)
+	{
+		max_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
+	}
 	else
 	{
-		if(thread_number > DLL_MAIN_THREAD_MAX_NUMBER)
-		{
-			thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
-		}
+		max_thread_number = dave_os_cpu_process_number();
+	}
+
+	if(thread_number > max_thread_number)
+	{
+		thread_number = max_thread_number;
 	}
 
 	return thread_number;

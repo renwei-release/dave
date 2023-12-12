@@ -24,7 +24,7 @@ class predict():
 
     def encode(self, text):
         return self.model.encode(text)
-    
+
     def cosine(self, vector1, vector2):
         return self.model.cosine(vector1, vector2)
 

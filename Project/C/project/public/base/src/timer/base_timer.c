@@ -426,7 +426,7 @@ _timer_msg(TIMERMSG *pTimerMsg)
 
 			pMsg->timer_id = timer_id;
 
-			id_pre(_timer[timer_id].owner, MSGID_TIMER, pMsg);
+			id_npre(_timer[timer_id].owner, MSGID_TIMER, pMsg, 3);
 		}
 	}
 }

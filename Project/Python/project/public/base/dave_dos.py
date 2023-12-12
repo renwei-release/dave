@@ -35,4 +35,4 @@ def dos_get_user_input(*give_user_msg: object):
     give_user_msg = str(give_user_msg[0]).encode("utf-8")
     davelib.dave_dll_dos_get_user_input.restype = c_char_p
     ret = davelib.dave_dll_dos_get_user_input(c_char_p(give_user_msg), c_int(wait_second))
-    return ret.decode("utf-8").replace(" ", "")
+    return ret.decode("utf-8").strip()
