@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-VERSION=1.10.25
+VERSION=1.13.5
 
 PROJECT=$1
 HOMEPATH=$2

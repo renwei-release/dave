@@ -7,7 +7,7 @@
 # */
 
 PROJECT=${PWD##*/}
-CONTAINER="golang19"
+CONTAINER="golang20"
 
 ../ENV ${CONTAINER}
 

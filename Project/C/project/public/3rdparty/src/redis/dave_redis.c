@@ -90,10 +90,34 @@ _redis_free_reply(void *reply)
 	return;
 }
 
+static dave_bool
+_redis_auth(redisContext *context, s8 *pwd)
+{
+	dave_bool ret;
+
+	if((pwd == NULL) || (pwd[0] == '\0'))
+		return dave_true;
+
+	redisReply *reply = redisCommand(context, "AUTH %s", pwd);
+
+	if(reply->type == REDIS_REPLY_ERROR)
+	{
+		ret = dave_false;		
+	}
+	else
+	{
+		ret = dave_true;
+	}
+
+	freeReplyObject(reply);
+
+	return ret;
+}
+
 // =====================================================================
 
 void *
-dave_redis_connect(s8 *ip, ub port)
+dave_redis_connect(s8 *ip, ub port, s8 *pwd)
 {
 	redisContext* context = NULL;
 	struct timeval tv;
@@ -113,6 +137,13 @@ dave_redis_connect(s8 *ip, ub port)
 	        PARTYABNOR("Can't allocate redis context");
 		}
 
+		return NULL;
+	}
+
+	if(_redis_auth(context, pwd) == dave_false)
+	{
+		PARTYABNOR("ip:%s port:%d pwd:%s auth failed!", ip, port, pwd);
+		dave_redis_disconnect(context);
 		return NULL;
 	}
 

@@ -8,39 +8,32 @@
 #include "base_macro.h"
 #include "thread_parameter.h"
 #if defined(__DAVE_BASE__) && defined(ENABLE_THREAD_COROUTINE)
+#include "dave_os.h"
+#include "dave_tools.h"
 #include "thread_log.h"
-
-typedef struct {
-	void *pSite;
-} MsgSite;
 
 // =====================================================================
 
 ub
 coroutine_msg_site_malloc(void *pSite)
 {
-	MsgSite *pMsgSite = dave_malloc(sizeof(MsgSite));
+	ub current_time = dave_os_time_ms();
+	ub msg_site = (current_time << 48) + ((ub)pSite & 0xffffffffffff);
 
-	pMsgSite->pSite = pSite;
+	THREADDEBUG("msg_site:%lx time:%lx pSite:%lx", msg_site, current_time, pSite);
 
-	return (ub)(pMsgSite);
+	return msg_site;
 }
 
 ub
 coroutine_msg_site_free(ub msg_site, void *pSite)
 {
-	MsgSite *pMsgSite = (MsgSite *)msg_site;
+	if((msg_site & 0xffffffffffff) != ((ub)pSite & 0xffffffffffff))
+	{
+		THREADABNOR("Arithmetic error:%lx/%lx", msg_site, pSite);
+	}
 
-	if(pMsgSite->pSite != pSite)
-	{
-		THREADABNOR("invalid free:%lx/%lx", pMsgSite->pSite, pSite);
-		return msg_site;
-	}
-	else
-	{
-		dave_free(pMsgSite);
-		return 0;
-	}
+	return 0;
 }
 
 #endif

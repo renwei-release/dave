@@ -31,9 +31,29 @@ class predict():
             self.ltp.to("cuda")
         return
 
-    def predict(self, text):
-        output = self.ltp.pipeline([text], tasks=["cws", "pos", "ner", "srl", "dep", "sdp"])
+    def predict(self, text, tasks=None):
+        if tasks == None:
+            tasks = ["cws", "pos", "ner", "srl", "dep", "sdp"]
 
-        total_result = []
-        total_result.append([ {'cws': output.cws}, {'pos': output.pos}, {'ner': output.ner}, {'srl': output.srl}, {'dep': output.dep}, {'sdp': output.sdp} ])
+        if 'cws' not in tasks:
+            tasks.append('cws')
+
+        output = self.ltp.pipeline([text], tasks=tasks)
+
+        total_result = {}
+
+        for task in tasks:
+            if task == "cws":
+                total_result[task] = output.cws[0]
+            elif task == "pos":
+                total_result[task] = output.pos[0]
+            elif task == "ner":
+                total_result[task] = output.ner[0]
+            elif task == "srl":
+                total_result[task] = output.srl[0]
+            elif task == "dep":
+                total_result[task] = output.dep[0]
+            elif task == "sdp":
+                total_result[task] = output.sdp[0]
+
         return total_result

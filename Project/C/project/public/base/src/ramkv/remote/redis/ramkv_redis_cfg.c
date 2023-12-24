@@ -25,7 +25,7 @@ _ramkv_redis_cfg(KVRedis *pKV)
 {
 	cfg_get_str(CFG_REDIS_ADDRESS, pKV->redis_address, sizeof(pKV->redis_address), t_gp_localhost());
 	pKV->redis_port = cfg_get_ub(CFG_REDIS_PORT, 6379);
-	cfg_get_str(CFG_REDIS_PWD, pKV->redis_password, sizeof(pKV->redis_password), "CWLtc14@#!");
+	cfg_get_str(CFG_REDIS_PWD, pKV->redis_password, sizeof(pKV->redis_password), "");
 }
 
 // ====================================================================

@@ -20,7 +20,7 @@
 #include "log_log.h"
 
 #define LOG_FILE_AUTO_CLOSE_TIME 60
-#define LOG_FILE_AUTO_CLOSE_LIFE (360 / LOG_FILE_AUTO_CLOSE_TIME)
+#define LOG_FILE_AUTO_CLOSE_LIFE (172800 / LOG_FILE_AUTO_CLOSE_TIME)
 
 typedef struct {
 	s8 file_name[256];
@@ -171,9 +171,12 @@ _log_save_to_json_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub cont
 	}
 
 	SAFECODEv1(pLog->pv, {
+
 		ret = log_save_json(pLog->file_id, level, content_ptr, content_len);
+
 		if(ret == dave_true)
 			pLog->file_current_write_len += content_len;
+
 	});
 
 	if(ret == dave_false)
@@ -199,9 +202,12 @@ _log_save_to_txt_file(s8 *file_name, TraceLevel level, s8 *content_ptr, ub conte
 	}
 
 	SAFECODEv1(pLog->pv, {
+
 		ret = log_save_txt(pLog->file_id, level, content_ptr, content_len);
+
 		if(ret == dave_true)
 			pLog->file_current_write_len += content_len;
+
 	});
 
 	if(ret == dave_false)

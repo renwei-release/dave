@@ -83,13 +83,27 @@ _log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *reserve_list)
 	}
 }
 
+static MBUF *
+_log_save_auto_add_reserve_list(MBUF *reserve_list, DateStruct current_date)
+{
+	MBUF *reserve_dir_name;
+
+	reserve_dir_name = dave_mmalloc(128);
+	dave_snprintf(ms8(reserve_dir_name), mlen(reserve_dir_name), "%04d%02d%02d",
+		current_date.year, current_date.month, current_date.day);
+	reserve_list = dave_mchain(reserve_list, reserve_dir_name);
+
+	return reserve_list;
+}
+
+
 /*
  * Calculate the name of the log folder that needs to be retained
  */
 static MBUF *
 _log_save_auto_clean_reserve_list(void)
 {
-	MBUF *reserve_list = NULL, *reserve_dir_name;
+	MBUF *reserve_list = NULL;
 	DateStruct current_date;
 	ub current_second;
 	ub progress_days;
@@ -97,18 +111,21 @@ _log_save_auto_clean_reserve_list(void)
 	if(_log_reserved_days == 0)
 		return reserve_list;
 
-	current_date = t_time_get_date(NULL);
+	current_date = t_time_get_date(NULL);	
+
+	/*
+	 * The t_time_struct_second function is calculated based on the 0 time zone and does not match the current system time. 
+	 * In order to prevent accidental deletion of logs at the current time, 
+	 * first add the current log folder to the reserve_list.
+	 */
+	reserve_list = _log_save_auto_add_reserve_list(reserve_list, current_date);
 	current_second = t_time_struct_second(&current_date);
 
 	for(progress_days=0; progress_days<_log_reserved_days; progress_days++)
 	{
 		current_date = t_time_second_struct(current_second);
 
-		reserve_dir_name = dave_mmalloc(128);
-		dave_snprintf(ms8(reserve_dir_name), mlen(reserve_dir_name), "%04d%02d%02d",
-			current_date.year, current_date.month, current_date.day);
-		LOGDEBUG("reserve_dir_name:%s", ms8(reserve_dir_name));
-		reserve_list = dave_mchain(reserve_list, reserve_dir_name);
+		reserve_list = _log_save_auto_add_reserve_list(reserve_list, current_date);
 
 		// advance one day
 		current_second -= 86400;

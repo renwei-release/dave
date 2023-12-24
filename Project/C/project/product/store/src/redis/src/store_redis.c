@@ -24,6 +24,7 @@ typedef struct {
 
 	void *redis_context;
 
+	DateStruct connect_date;
 	ub work_times;
 } StoreRedis;
 
@@ -43,7 +44,7 @@ _store_redis_connect(StoreRedis *pRedis, s8 *address, ub port, s8 *pwd)
 		pRedis->redis_context = NULL;
 	}
 
-	pRedis->redis_context = dave_redis_connect(pRedis->redis_address, pRedis->redis_port);
+	pRedis->redis_context = dave_redis_connect(pRedis->redis_address, pRedis->redis_port, pRedis->redis_password);
 }
 
 static dave_bool
@@ -57,7 +58,7 @@ _store_redis_booting(void)
 
 	cfg_get_str(CFG_REDIS_ADDRESS, address, sizeof(address), t_gp_localhost());
 	port = cfg_get_ub(CFG_REDIS_PORT, 6379);
-	cfg_get_str(CFG_REDIS_PWD, pwd, sizeof(pwd), "CWLtc14@#!");
+	cfg_get_str(CFG_REDIS_PWD, pwd, sizeof(pwd), "");
 
 	STLOG("address:%s port:%d pwd:%s", address, port, pwd);
 
@@ -74,6 +75,7 @@ _store_redis_booting(void)
 
 		if(pRedis->redis_context != NULL)
 		{
+			pRedis->connect_date = t_time_get_date(NULL);
 			boot_number ++;
 		}
 	}
@@ -231,8 +233,11 @@ store_redis_info(s8 *info_ptr, ub info_len)
 		pRedis = &_pRedis[redis_index];
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s:%d %s %ld\n",
-			pRedis->redis_address, pRedis->redis_port, pRedis->redis_context==NULL?"disconnect":"connect", pRedis->work_times);
+			" %s:%d %s %ld (%s)\n",
+			pRedis->redis_address, pRedis->redis_port,
+			pRedis->redis_context==NULL?"disconnect":"connect",
+			pRedis->work_times,
+			t_a2b_date_str(&(pRedis->connect_date)));
 	}
 
 	return info_index;

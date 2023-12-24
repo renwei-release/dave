@@ -219,16 +219,12 @@ _thread_coroutine_pop_msg_list(CoroutineSite *pSite)
 static inline ub
 _thread_coroutine_msg_site_malloc(CoroutineSite *pSite)
 {
-	if(pSite->msg_site == 0)
-	{
-		pSite->msg_site = coroutine_msg_site_malloc(pSite);
-	}
-	else
+	if(pSite->msg_site != 0)
 	{
 		THREADABNOR("invalid malloc:%lx", pSite->msg_site);
 	}
 
-	return pSite->msg_site;
+	return coroutine_msg_site_malloc(pSite);
 }
 
 static inline void

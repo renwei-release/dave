@@ -143,7 +143,8 @@ _sync_server_sync_thread_booting(SyncClient *pClient)
 
 	if(pClient->sync_thread_index != 0)
 	{
-		SYNCLOG("the %s last sync<%d> was not completed!", pClient->verno, pClient->sync_thread_index);
+		SYNCLOG("the %s last sync<%d> was not completed, restart sync!",
+			pClient->verno, pClient->sync_thread_index);
 		pClient->sync_thread_index = 0;
 	}
 

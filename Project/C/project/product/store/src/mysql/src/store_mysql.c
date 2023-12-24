@@ -28,6 +28,7 @@ typedef struct {
 
 	void *mysql_client;
 
+	DateStruct connect_date;
 	ub work_times;
 } StoreMysql;
 
@@ -73,11 +74,13 @@ _store_mysql_connect(StoreMysql *pMysql, s8 *address, ub port, s8 *user, s8 *pwd
 		}
 		else
 		{
+			pMysql->connect_date = t_time_get_date(NULL);
 			_store_mysql_default_action(pMysql, db);
 		}
 	}
 	else
 	{
+		pMysql->connect_date = t_time_get_date(NULL);
 		dave_mysql_select_db(pMysql->mysql_client, db);
 	}
 }
@@ -96,7 +99,7 @@ _store_mysql_booting(void)
 	cfg_get_str(CFG_MYSQL_ADDRESS, address, sizeof(address), "127.0.0.1");
 	port = cfg_get_ub(CFG_MYSQL_PORT, 3306);
 	cfg_get_str(CFG_MYSQL_USER, user, sizeof(user), "root");
-	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "CWLtc14@#!");
+	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "");
 	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DAVEDB0007");
 
 	STLOG("address:%s port:%d user:%s pwd:%s db:%s", address, port, user, pwd, db);
@@ -286,8 +289,11 @@ store_mysql_info(s8 *info_ptr, ub info_len)
 		pMysql = &_pMysql[mysql_index];
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s:%d %s %ld\n",
-			pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_client==NULL?"disconnect":"connect", pMysql->work_times);
+			" %s:%d %s %ld (%s)\n",
+			pMysql->mysql_address, pMysql->mysql_port,
+			pMysql->mysql_client==NULL?"disconnect":"connect",
+			pMysql->work_times,
+			t_a2b_date_str(&(pMysql->connect_date)));
 	}
 
 	return info_index;

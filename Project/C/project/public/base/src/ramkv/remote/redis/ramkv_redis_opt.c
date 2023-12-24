@@ -75,10 +75,10 @@ _ramkv_redis_local_command(KVRedis *pKV, MBUF *command)
 }
 
 static void *
-_ramkv_redis_connect(s8 *ip, ub port)
+_ramkv_redis_connect(s8 *ip, ub port, s8 *pwd)
 {
 #ifdef REDIS_3RDPARTY
-	return dave_redis_connect(ip, port);
+	return dave_redis_connect(ip, port, pwd);
 #else
 	return NULL;
 #endif
@@ -186,7 +186,7 @@ ramkv_redis_connect(KVRedis *pKV)
 	{
 		ramkv_redis_cfg(pKV);
 
-		return _ramkv_redis_connect(pKV->redis_address, pKV->redis_port);
+		return _ramkv_redis_connect(pKV->redis_address, pKV->redis_port, pKV->redis_password);
 	}
 	else
 	{

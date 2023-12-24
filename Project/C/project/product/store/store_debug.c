@@ -31,7 +31,7 @@ _store_mysql_debug(s8 *rsp_ptr, ub rsp_len)
 	s8 *address = "192.168.220.130";
 	ub port = 3306;
 	s8 *user = "root";
-	s8 *pwd = "CWLtc14@#!";
+	s8 *pwd = "";
 	s8 *db_name = "mysql";
 	void *pSql;
 	SqlRet ret;
