@@ -48,7 +48,7 @@ static void
 _log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *reserve_list)
 {
 	dave_bool the_dir_must_be_reserve = dave_false;
-	s8 dir_full[256];
+	s8 current_data_str[128], dir_full[256];
 	DateStruct current_date;
 
 	if(_log_save_auto_check_candidate_dir(candidate_dir) == dave_false)
@@ -70,6 +70,13 @@ _log_save_auto_clean_del_dir(s8 *dir, s8 *candidate_dir, MBUF *reserve_list)
 		return;
 
 	current_date = t_time_get_date(NULL);
+	dave_snprintf(current_data_str, sizeof(current_data_str), "%04d%02d%02d",
+		current_date.year, current_date.month, current_date.day);
+	if(dave_strcmp(current_data_str, candidate_dir) == dave_true)
+	{
+		LOGLOG("Protection measures, do not delete the log of the day:%s!", candidate_dir);
+		return;
+	}
 
 	dave_snprintf(dir_full, sizeof(dir_full), "%s/%s", dir, candidate_dir);
 
