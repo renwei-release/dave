@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2023 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
@@ -31,12 +31,22 @@ def t_dict_load(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = f.read()
-            dict_data = json.loads(data)
+            if len(data) > 0:
+                dict_data = json.loads(data)
     except Exception as e:
         print(f'load file:{file_path} error:{e}')
         dict_data = {}
 
     return dict_data
+
+
+def t_dict_merge(dict1, dict2):
+    for key, value in dict2.items():
+        if key in dict1:
+            dict1[key] += value
+        else:
+            dict1[key] = value
+    return dict1
 
 
 def t_dict_random(dict_data):
