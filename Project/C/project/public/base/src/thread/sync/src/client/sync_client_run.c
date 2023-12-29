@@ -273,21 +273,27 @@ _sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
 static void
 _sync_client_server_busy(SyncServer *pServer)
 {
-	SYNCTRACE("%s/%s %s->busy",
-		pServer->globally_identifier, pServer->verno,
-		pServer->server_busy==dave_true?"busy":"idle");
+	if(pServer->server_app_busy == dave_false)
+	{
+		SYNCLOG("%s/%s %s->busy",
+			pServer->globally_identifier, pServer->verno,
+			pServer->server_app_busy==dave_true?"busy":"idle");
+	}
 
-	pServer->server_busy = dave_true;
+	pServer->server_app_busy = dave_true;
 }
 
 static void
 _sync_client_server_idle(SyncServer *pServer)
 {
-	SYNCTRACE("%s/%s %s->idle",
-		pServer->globally_identifier, pServer->verno,
-		pServer->server_busy==dave_true?"busy":"idle");
+	if(pServer->server_app_busy == dave_true)
+	{
+		SYNCLOG("%s/%s %s->idle",
+			pServer->globally_identifier, pServer->verno,
+			pServer->server_app_busy==dave_true?"busy":"idle");
+	}
 
-	pServer->server_busy = dave_false;
+	pServer->server_app_busy = dave_false;
 }
 
 static void
@@ -298,18 +304,6 @@ _sync_client_thread_busy(SyncServer *pServer, ThreadBusy *pBusy)
 
 static void
 _sync_client_thread_idle(SyncServer *pServer, ThreadIdle *pIdle)
-{
-	_sync_client_server_idle(pServer);
-}
-
-static void
-_sync_client_client_busy(SyncServer *pServer, ClientBusy *pBusy)
-{
-	_sync_client_server_busy(pServer);
-}
-
-static void
-_sync_client_client_idle(SyncServer *pServer, ClientIdle *pIdle)
 {
 	_sync_client_server_idle(pServer);
 }
@@ -346,12 +340,6 @@ _sync_client_run_internal(
 			break;
 		case MSGID_THREAD_IDLE:
 				_sync_client_thread_idle(pServer, (ThreadIdle *)(msg_body));
-			break;
-		case MSGID_CLIENT_BUSY:
-				_sync_client_client_busy(pServer, (ClientBusy *)(msg_body));
-			break;
-		case MSGID_CLIENT_IDLE:
-				_sync_client_client_idle(pServer, (ClientIdle *)(msg_body));
 			break;
 		case MSGID_SYSTEM_BUSY:
 				_sync_client_system_busy(pServer, (SystemBusy *)(msg_body));

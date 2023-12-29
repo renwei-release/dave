@@ -19,7 +19,7 @@ void sync_server_msg_buffer_push(
 	ub frame_len, u8 *frame,
 	sync_server_run_thread_fun fun);
 
-ub sync_server_msg_buffer_info(s8 *info, ub info_len);
+ub sync_server_msg_buffer_info(s8 *info_ptr, ub info_len);
 
 #endif
 

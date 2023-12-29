@@ -14,10 +14,6 @@ dave_bool sync_server_are_they_brothers(SyncClient *pClientA, SyncClient *pClien
 
 dave_bool sync_server_still_have_ready_brothers(SyncClient *pClient);
 
-dave_bool sync_server_still_have_blocks_brothers(SyncClient *pClient);
-
-dave_bool sync_server_default_blocks_flag(SyncClient *pClient);
-
 dave_bool sync_server_client_on_work(SyncClient *pClient);
 
 #endif

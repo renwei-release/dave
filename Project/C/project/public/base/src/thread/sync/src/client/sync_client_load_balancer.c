@@ -26,6 +26,7 @@ static inline SyncServer *
 _sync_client_load_balancer_(LinkThread *pThread)
 {
 	SyncServer *pServer = NULL;
+	SyncServer *pAPPBusyServer = NULL;
 	ub server_index;
 	ub safe_counter;
 
@@ -43,16 +44,35 @@ _sync_client_load_balancer_(LinkThread *pThread)
 			&& (pThread->pServer[server_index]->server_socket != INVALID_SOCKET_ID)
 			&& (pThread->pServer[server_index]->server_ready == dave_true))
 		{
-			pServer = pThread->pServer[server_index];
+			if(pThread->pServer[server_index]->server_app_busy == dave_false)
+			{
+				pServer = pThread->pServer[server_index];
 
-			pThread->chose_server_index = ++ server_index;
-			break;
+				pThread->chose_server_index = ++ server_index;
+				break;
+			}
+			else
+			{
+				pAPPBusyServer = pThread->pServer[server_index];
+			}
 		}
 
 		server_index ++;
 	}
 
-	return pServer;
+	if(pServer != NULL)
+	{
+		return pServer;
+	}
+
+	if(pAPPBusyServer != NULL)
+	{
+		SYNCLTRACE(60,1, "thread:%s a busy service is selected, the final message will go to the QUEUE service.",
+			pThread->thread_name);
+		return pAPPBusyServer;
+	}
+
+	return NULL;
 }
 
 static inline SyncServer *

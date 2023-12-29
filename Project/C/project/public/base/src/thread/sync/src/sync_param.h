@@ -77,12 +77,8 @@ typedef struct {
 	dave_bool sync_thread_flag;
 	dave_bool send_down_and_up_flag[SYNC_CLIENT_MAX];
 
-	dave_bool ready_flag;	// 每个客户端上的线程名都同步到服务端后，标记置为True。
-	dave_bool blocks_flag;	// 标记客户端是被挂载还是脱钩状态，如果被挂载才能对外提供服务，但不管挂载还是脱钩，都可请求外界服务。
-	dave_bool client_flag;	// 由客户端提供，其是否能对外提供服务的标记。
-
-	ub notify_blocks_flag;
-	ub release_quantity;
+	dave_bool ready_flag;
+	dave_bool client_app_busy;
 
 	ub client_index;
 } SyncClient;
@@ -97,7 +93,7 @@ typedef struct {
 	dave_bool server_cnt;
 	dave_bool server_booting;
 	dave_bool server_ready;
-	dave_bool server_busy;
+	dave_bool server_app_busy;
 
 	sb left_timer;
 	sb reconnect_times;

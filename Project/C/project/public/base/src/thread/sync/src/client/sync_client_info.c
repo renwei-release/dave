@@ -46,7 +46,7 @@ _sync_client_info_show_server(SyncServer *pServer, s8 *info_ptr, ub info_len)
 		" %x %s s:%04x %d%d%d%d%d %s l:%02d/%02d i:%02x T:%s s-%lu:%lu/r-%lu:%lu\n %s/%s/%s %s\n",
 		pServer,
 		sync_client_type_to_str(pServer->server_type), pServer->server_socket,
-		pServer->server_connecting, pServer->server_cnt, pServer->server_booting, pServer->server_ready, pServer->server_busy,
+		pServer->server_connecting, pServer->server_cnt, pServer->server_booting, pServer->server_ready, pServer->server_app_busy,
 		service_statement_str,
 		pServer->left_timer, pServer->reconnect_times,
 		pServer->server_index,

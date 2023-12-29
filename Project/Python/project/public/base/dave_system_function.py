@@ -32,8 +32,6 @@ system_function_table = {
     MSGID_INTERNAL_EVENTS: fun_None,
     MSGID_THREAD_BUSY: fun_None,
     MSGID_THREAD_IDLE: fun_None,
-    MSGID_CLIENT_BUSY: fun_None,
-    MSGID_CLIENT_IDLE: fun_None,
     MSGID_LOCAL_THREAD_READY: fun_None,
     MSGID_LOCAL_THREAD_REMOVE: fun_None,
     MSGID_SYSTEM_MOUNT: fun_None,

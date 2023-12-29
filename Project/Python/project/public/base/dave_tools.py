@@ -60,6 +60,8 @@ def str_to_mbuf(str_data):
 
 
 def dict_to_mbuf(dict_object):
+    if dict_object == None:
+        return None
     json_str = json.dumps(dict_object, indent=4)
     return byte_to_mbuf(json_str)
 

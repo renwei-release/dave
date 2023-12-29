@@ -371,42 +371,6 @@ t_auto_BaseMsgType_str(BaseMsgType enum_value)
 }
 
 s8 *
-t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case BuildingBlocksOpt_none:
-				value_str = "'BuildingBlocksOpt_none'";
-			break;
-		case BuildingBlocksOpt_inq:
-				value_str = "'BuildingBlocksOpt_inq'";
-			break;
-		case BuildingBlocksOpt_mount:
-				value_str = "'BuildingBlocksOpt_mount'";
-			break;
-		case BuildingBlocksOpt_decoupling:
-				value_str = "'BuildingBlocksOpt_decoupling'";
-			break;
-		case BuildingBlocksOpt_State_exchange:
-				value_str = "'BuildingBlocksOpt_State_exchange'";
-			break;
-		case BuildingBlocksOpt_valve:
-				value_str = "'BuildingBlocksOpt_valve'";
-			break;
-		case BuildingBlocksOpt_max:
-				value_str = "'BuildingBlocksOpt_max'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
 t_auto_CVSearchOpt_str(CVSearchOpt enum_value)
 {
 	s8 *value_str = _string_buf;
@@ -4520,12 +4484,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_THREAD_IDLE:
 				value_str = "'MSGID_THREAD_IDLE-22'";
 			break;
-		case MSGID_CLIENT_BUSY:
-				value_str = "'MSGID_CLIENT_BUSY-23'";
-			break;
-		case MSGID_CLIENT_IDLE:
-				value_str = "'MSGID_CLIENT_IDLE-24'";
-			break;
 		case MSGID_REMOTE_THREAD_ID_READY:
 				value_str = "'MSGID_REMOTE_THREAD_ID_READY-25'";
 			break;
@@ -4543,12 +4501,6 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_CFG_UPDATE:
 				value_str = "'MSGID_CFG_UPDATE-30'";
-			break;
-		case MSGID_BLOCKS_REQ:
-				value_str = "'MSGID_BLOCKS_REQ-31'";
-			break;
-		case MSGID_BLOCKS_RSP:
-				value_str = "'MSGID_BLOCKS_RSP-32'";
 			break;
 		case MSGID_OS_NOTIFY:
 				value_str = "'MSGID_OS_NOTIFY-33'";
@@ -4609,6 +4561,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MSGID_GENERAL_RSP:
 				value_str = "'MSGID_GENERAL_RSP-52'";
+			break;
+		case MSGID_APPLICATION_BUSY:
+				value_str = "'MSGID_APPLICATION_BUSY-53'";
+			break;
+		case MSGID_APPLICATION_IDLE:
+				value_str = "'MSGID_APPLICATION_IDLE-54'";
 			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2023 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
@@ -21,31 +21,10 @@ def _myline(depth):
     return __func__, __LINE__
 
 
-def __dave_debug__(*log_msg: object):
+def __dave_log__(*log_msg: object, log_type):
     __func__, __LINE__ = _myline(3)
     log_msg = str(log_msg[0][0]).encode("utf-8")
-    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(0))
-    return
-
-
-def __dave_trace__(*log_msg: object):
-    __func__, __LINE__ = _myline(3)
-    log_msg = str(log_msg[0][0]).encode("utf-8")
-    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(1))
-    return
-
-
-def __dave_log__(*log_msg: object):
-    __func__, __LINE__ = _myline(3)
-    log_msg = str(log_msg[0][0]).encode("utf-8")
-    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(2))
-    return
-
-
-def __dave_abnormal__(*log_msg: object):
-    __func__, __LINE__ = _myline(3)
-    log_msg = str(log_msg[0][0]).encode("utf-8")
-    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(3))
+    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(log_type))
     return
 
 
@@ -53,20 +32,20 @@ def __dave_abnormal__(*log_msg: object):
 
 
 def DAVEDEBUG(*log_msg: object):
-    # __dave_debug__(log_msg)
+    # __dave_log__(log_msg, log_type=0)
     return
 
 
 def DAVETRACE(*log_msg: object):
-    __dave_trace__(log_msg)
+    __dave_log__(log_msg, log_type=1)
     return
 
 
 def DAVELOG(*log_msg: object):
-    __dave_log__(log_msg)
+    __dave_log__(log_msg, log_type=2)
     return
 
 
 def DAVEABNORMAL(*log_msg: object):
-    __dave_abnormal__(log_msg)
+    __dave_log__(log_msg, log_type=3)
     return

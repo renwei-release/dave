@@ -136,18 +136,6 @@ typedef struct {
 	s8 thread_name[DAVE_THREAD_NAME_LEN];
 } ThreadIdle;
 
-/* for MSGID_CLIENT_BUSY message */
-typedef struct {
-	s8 verno[DAVE_VERNO_STR_LEN];
-	void *ptr;
-} ClientBusy;
-
-/* for MSGID_CLIENT_IDLE message */
-typedef struct {
-	s8 verno[DAVE_VERNO_STR_LEN];
-	void *ptr;
-} ClientIdle;
-
 /* for MSGID_REMOTE_THREAD_ID_READY message */
 typedef struct {
 	ThreadId remote_thread_id;
@@ -187,22 +175,6 @@ typedef struct {
 	ub cfg_length;
 	u8 cfg_value[8196];
 } CFGUpdate;
-
-/* for MSGID_BLOCKS_REQ message */
-typedef struct {
-	BuildingBlocksOpt opt;
-	ub blocks_id_1;
-	ub blocks_id_2;
-	void *ptr;
-} MsgBlocksReq;
-
-/* for MSGID_BLOCKS_RSP message */
-typedef struct {
-	RetCode ret;
-	BuildingBlocksOpt opt;
-	BuildingBlocks blocks[DAVE_BUILDING_BLOCKS_MAX];
-	void *ptr;
-} MsgBlocksRsp;
 
 /* for MSGID_OS_NOTIFY message */
 typedef struct {
@@ -386,15 +358,27 @@ typedef struct {
 
 /* for MSGID_GENERAL_REQ message */
 typedef struct {
+	s8 general_type[256];
 	MBUF *general_data;
 	void *ptr;
 } GeneralReq;
 
 /* for MSGID_GENERAL_RSP message */
 typedef struct {
+	s8 general_type[256];
 	MBUF *general_data;
 	void *ptr;
 } GeneralRsp;
+
+/* for MSGID_APPLICATION_BUSY message */
+typedef struct {
+	void *ptr;
+} ApplicationBusy;
+
+/* for MSGID_APPLICATION_IDLE message */
+typedef struct {
+	void *ptr;
+} ApplicationIdle;
 
 #endif
 

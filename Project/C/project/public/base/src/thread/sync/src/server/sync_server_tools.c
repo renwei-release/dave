@@ -101,29 +101,6 @@ _sync_server_still_have_ready_brothers(SyncClient *pClient)
 	return dave_false;
 }
 
-static dave_bool
-_sync_server_still_have_blocks_brothers(SyncClient *pClient)
-{
-	ub client_index;
-
-	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
-	{
-		if((pClient != NULL)
-			&& (pClient->client_socket != INVALID_SOCKET_ID)
-			&& (sync_server_client(client_index) != pClient)
-			&& (sync_server_client(client_index)->client_socket != INVALID_SOCKET_ID)
-			&& (sync_server_client(client_index)->blocks_flag == dave_true))
-		{
-			if(_sync_server_are_they_brothers(sync_server_client(client_index), pClient) == dave_true)
-			{
-				return dave_true;
-			}
-		}
-	}
-
-	return dave_false;
-}
-
 // =====================================================================
 
 dave_bool
@@ -145,27 +122,14 @@ sync_server_still_have_ready_brothers(SyncClient *pClient)
 }
 
 dave_bool
-sync_server_still_have_blocks_brothers(SyncClient *pClient)
-{
-	return _sync_server_still_have_blocks_brothers(pClient);
-}
-
-dave_bool
 sync_server_client_on_work(SyncClient *pClient)
 {
 	if(pClient != NULL)
 	{
-		if(pClient->ready_flag == dave_true)
+		if((pClient->ready_flag == dave_true)
+			&& (pClient->client_app_busy == dave_false))
 		{
-			if((pClient->blocks_flag == dave_true) && (pClient->client_flag == dave_true))
-			{
-				return dave_true;
-			}
-
-			if(pClient->release_quantity > 0)
-			{
-				return dave_true;
-			}
+			return dave_true;
 		}
 	}
 

@@ -17,7 +17,7 @@
 #define THREAD_THREAD_QUEUE_NUM (1)
 #define THREAD_PRE_QUEUE_NUM (1)
 // 对于某个服务，这个参数决定了系统最大支持的服务的数量
-#define THREAD_CLIENT_MAX (128)
+#define THREAD_CLIENT_MAX (32)
 
 #define THREAD_WAKEUP_INTERVAL 1
 

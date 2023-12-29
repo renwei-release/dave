@@ -56,7 +56,7 @@ _sync_client_data_reset_server_(SyncServer *pServer)
 	pServer->server_cnt = dave_false;
 	pServer->server_booting = dave_false;
 	pServer->server_ready = dave_false;
-	pServer->server_busy = dave_false;
+	pServer->server_app_busy = dave_false;
 
 	pServer->left_timer = SYNC_SERVER_LEFT_MAX;
 	pServer->reconnect_times = SYNC_RECONNECT_TIMES;

@@ -118,13 +118,16 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 static void
 _thread_guardian_restart(RESTARTREQMSG *pReq)
 {
-	if(pReq->times == 4)
+	if(pReq->times == 1)
+	{
+		thread_busy_idle_exit();
+	}
+	else if(pReq->times == 4)
 	{
 		thread_statistics_exit();
 		thread_orchestration_exit();
 		thread_sync_exit();
 		thread_queue_exit();
-		thread_busy_idle_exit();
 		thread_gid_table_exit();
 		thread_remote_id_table_exit();
 		thread_msg_buffer_exit();
@@ -227,6 +230,12 @@ _thread_guardian_main(MSGBODY *msg)
 		case MSGID_LOCAL_THREAD_READY:
 				_thread_guardian_local_thread_ready((ThreadLocalReadyMsg *)(msg->msg_body));
 			break;
+		case MSGID_APPLICATION_BUSY:
+				thread_busy_idle_app_busy();
+			break;
+		case MSGID_APPLICATION_IDLE:
+				thread_busy_idle_app_idle();
+			break;
 		default:
 			break;
 	}
@@ -238,12 +247,12 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_msg_buffer_init();
 	thread_remote_id_table_init();
 	thread_gid_table_init();
-	thread_busy_idle_init(_thread);
 	thread_sync_init(_sync_domain);
 	thread_orchestration_init();
 	thread_statistics_init();
 	thread_cfg_init();
 	thread_queue_init();
+	thread_busy_idle_init(_thread);
 }
 
 static void

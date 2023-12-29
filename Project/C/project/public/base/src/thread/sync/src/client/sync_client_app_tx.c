@@ -30,11 +30,6 @@ _sync_client_app_tx_server(SyncServer *pServer, ub msg_id, ub msg_len, void *msg
 	{
 		return dave_false;
 	}
-	if(pServer->server_type == SyncServerType_sync_client)
-	{
-		SYNCTRACE("There is no need to send a message to SYNC for the time being.");
-		return dave_true;
-	}
 
 	return sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body, dave_false);
 }
@@ -99,12 +94,6 @@ dave_bool
 sync_client_tx_system_state(SyncServer *pServer)
 {
 	dave_bool busy_flag = sync_client_data_get_busy();
-
-	if((pServer != NULL) && (pServer->server_type == SyncServerType_sync_client))
-	{
-		SYNCTRACE("There is no need to send a message to SYNC for the time being.");
-		return dave_true;
-	}
 
 	SYNCTRACE("====== system on %s, remind %s ======",
 		busy_flag == dave_true ? "busy" : "idle",

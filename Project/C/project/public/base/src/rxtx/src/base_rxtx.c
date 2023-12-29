@@ -31,7 +31,7 @@ typedef struct {
 } RXTXEvent;
 
 static TLock _opt_pv;
-static ub _rxtx_buffer_cfg_length = RX_TX_BUF_SETUP;
+static ub _rxtx_buffer_cfg_length = RX_TX_BUF_MIN;
 static RXTX _rx_tx[RXTX_MAX];
 
 static inline void
@@ -43,6 +43,7 @@ _base_rxtx_reset(RXTX *pRxTx)
 	dave_memset(&(pRxTx->IPInfo), 0x00, sizeof(IPBaseInfo));
 	pRxTx->rx_buffer_ptr = NULL;
 	pRxTx->rx_buffer_len = 0;
+	pRxTx->rx_buffer_malloc_len = _rxtx_buffer_cfg_length;
 	pRxTx->receive_fun = NULL;
 	pRxTx->param = NULL;
 	pRxTx->owner_thread = INVALID_THREAD_ID;
@@ -325,23 +326,34 @@ _base_rxtx_build_head(u8 *head_data, u8 ver_type, ORDER_CODE order_id, ub data_l
 }
 
 static inline void
-_base_rxtx_buffer_malloc(RXTX *pRxTx)
+_base_rxtx_buffer_reset(RXTX *pRxTx)
 {
+	u8 *new_rx_buffer_ptr;
+	ub new_rx_buffer_len;
+
 	if(pRxTx->rx_buffer_ptr == NULL)
 	{
 		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
 		pRxTx->rx_buffer_len = 0;
+		pRxTx->rx_buffer_malloc_len = _rxtx_buffer_cfg_length;
 	}
-}
-
-static inline void
-_base_rxtx_buffer_free(RXTX *pRxTx)
-{
-	if((pRxTx->rx_buffer_ptr != NULL) && (pRxTx->rx_buffer_len == 0))
+	else
 	{
+		if((pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
+		{
+			RTLOG("accept that the buffer(%d/%d/%d) is too small, now start to increase the buffer!",
+				pRxTx->rx_buffer_malloc_len, pRxTx->rx_buffer_len, RX_TX_BUF_WARRING);
+			pRxTx->rx_buffer_malloc_len += RX_TX_BUF_WARRING;
+		}
+
+		new_rx_buffer_ptr = dave_malloc(pRxTx->rx_buffer_malloc_len);
+		new_rx_buffer_len = pRxTx->rx_buffer_len;
+		dave_memcpy(new_rx_buffer_ptr, pRxTx->rx_buffer_ptr, new_rx_buffer_len);
+
 		dave_free(pRxTx->rx_buffer_ptr);
-		pRxTx->rx_buffer_ptr = NULL;
-		pRxTx->rx_buffer_len = 0;
+
+		pRxTx->rx_buffer_ptr = new_rx_buffer_ptr;
+		pRxTx->rx_buffer_len = new_rx_buffer_len;
 	}
 }
 
@@ -365,7 +377,7 @@ _base_rxtx_buffer_tidy(RXTX *pRxTx, ub process_len)
 
 		dave_memmove(pRxTx->rx_buffer_ptr, &(pRxTx->rx_buffer_ptr[process_len]), pRxTx->rx_buffer_len);
 
-		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
+		if(pRxTx->rx_buffer_len < pRxTx->rx_buffer_malloc_len)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 		}
@@ -393,18 +405,18 @@ _base_rxtx_buffer_permutation(u8 **permutation_ptr, ub *permutation_len, RXTX *p
 
 	if(last_data_len > 0)
 	{
-		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
+		pRxTx->rx_buffer_ptr = dave_malloc(pRxTx->rx_buffer_malloc_len);
 		pRxTx->rx_buffer_len = last_data_len;
 		dave_memcpy(pRxTx->rx_buffer_ptr, last_data_ptr, last_data_len);
 
-		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
+		if(pRxTx->rx_buffer_len < pRxTx->rx_buffer_malloc_len)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 		}
 	}
 	else
 	{
-		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
+		pRxTx->rx_buffer_ptr = dave_malloc(pRxTx->rx_buffer_malloc_len);
 		pRxTx->rx_buffer_len = 0;
 	}
 }
@@ -977,10 +989,10 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	ub rx_buffer_len;
 	RetCode ret = RetCode_OK;
 
-	rx_buffer_len = _rxtx_buffer_cfg_length - pRxTx->rx_buffer_len;
+	rx_buffer_len = pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len;
 	if(rx_buffer_len < RX_TX_BUF_WARRING)
 	{
-		RTLTRACE(60,1,"rx_buffer too short:%d/%d on %s",
+		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s",
 			rx_buffer_len, pRxTx->rx_buffer_len,
 			thread_name(pRxTx->owner_thread));
 	}
@@ -1041,7 +1053,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	{
 		*recv_total_length += rx_buffer_len;
 		pRxTx->rx_buffer_len += rx_buffer_len;
-		if(pRxTx->rx_buffer_len < _rxtx_buffer_cfg_length)
+		if(pRxTx->rx_buffer_len < pRxTx->rx_buffer_malloc_len)
 		{
 			pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len] = '\0';
 		}
@@ -1053,14 +1065,14 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 static inline void
 _base_rxtx_read_receive(RXTX *pRxTx, SocketRead *pRead)
 {
-	if((_rxtx_buffer_cfg_length - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
+	if((pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
 	{
-		RTLTRACE(60,1,"rx_buffer too short:%d/%d on %s",
-			pRxTx->rx_buffer_len, _rxtx_buffer_cfg_length,
+		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s",
+			pRxTx->rx_buffer_len, pRxTx->rx_buffer_malloc_len,
 			thread_name(pRxTx->owner_thread));
 	}
 
-	if((pRxTx->rx_buffer_len + mlen(pRead->data)) < _rxtx_buffer_cfg_length)
+	if((pRxTx->rx_buffer_len + mlen(pRead->data)) < pRxTx->rx_buffer_malloc_len)
 	{
 		dave_memcpy(&pRxTx->rx_buffer_ptr[pRxTx->rx_buffer_len], ms8(pRead->data), mlen(pRead->data));
 		pRxTx->rx_buffer_len += mlen(pRead->data);
@@ -1093,7 +1105,7 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 
 	SAFECODEidlev1(pRxTx->opt_pv, {
 
-		_base_rxtx_buffer_malloc(pRxTx);
+		_base_rxtx_buffer_reset(pRxTx);
 
 		if((pRxTx->socket != INVALID_SOCKET_ID) && (pRxTx->socket >= 0))
 		{
@@ -1122,8 +1134,6 @@ _base_rxtx_event_action(ub *recv_total_length, SocketRawEvent *pEvent, stack_rec
 				}
 			}
 		}
-
-		_base_rxtx_buffer_free(pRxTx);
 
 	} );
 
@@ -1162,7 +1172,7 @@ _base_rxtx_read_action(SocketRead *pRead, stack_receive_fun receive_fun, void *p
 
 	SAFECODEidlev1(pRxTx->opt_pv, {
 
-		_base_rxtx_buffer_malloc(pRxTx);
+		_base_rxtx_buffer_reset(pRxTx);
 
 		if((pRxTx->socket != INVALID_SOCKET_ID) && (pRxTx->socket >= 0))
 		{
@@ -1175,8 +1185,6 @@ _base_rxtx_read_action(SocketRead *pRead, stack_receive_fun receive_fun, void *p
 				ret = _base_rxtx_data_process(pRxTx);
 			}
 		}
-
-		_base_rxtx_buffer_free(pRxTx);
 
 	} );
 
@@ -1257,7 +1265,7 @@ _base_rxtx_show(void)
 static void
 _base_rxtx_update_buffer_length(void)
 {
-	_rxtx_buffer_cfg_length = cfg_get_ub(RXTX_BUFFER_CFG_NAME, RX_TX_BUF_SETUP);
+	_rxtx_buffer_cfg_length = cfg_get_ub(RXTX_BUFFER_CFG_NAME, RX_TX_BUF_MIN);
 	if(_rxtx_buffer_cfg_length < RX_TX_BUF_MIN)
 	{
 		_rxtx_buffer_cfg_length = RX_TX_BUF_MIN;

@@ -14,5 +14,8 @@ void thread_busy_idle_exit(void);
 
 void thread_busy_idle_check(void);
 
+void thread_busy_idle_app_busy(void);
+void thread_busy_idle_app_idle(void);
+
 #endif
 

@@ -106,14 +106,6 @@ AIPlaceType_veterinary_care = AIPlaceType_university + 1
 AIPlaceType_zoo = AIPlaceType_veterinary_care + 1
 AIPlaceType_max = 0x1fffffffffffffff
 
-BuildingBlocksOpt_none = 0
-BuildingBlocksOpt_inq = BuildingBlocksOpt_none + 1
-BuildingBlocksOpt_mount = BuildingBlocksOpt_inq + 1
-BuildingBlocksOpt_decoupling = BuildingBlocksOpt_mount + 1
-BuildingBlocksOpt_State_exchange = BuildingBlocksOpt_decoupling + 1
-BuildingBlocksOpt_valve = BuildingBlocksOpt_State_exchange + 1
-BuildingBlocksOpt_max = BuildingBlocksOpt_valve + 1
-
 CVSearchOpt_0 = 0
 CVSearchOpt_1 = CVSearchOpt_0 + 1
 CVSearchOpt_2 = CVSearchOpt_1 + 1

@@ -27,9 +27,6 @@
 void * t_rpc_ver3_zip_AIPlaceType(AIPlaceType zip_data);
 dave_bool t_rpc_ver3_unzip_AIPlaceType(AIPlaceType *unzip_data, void *pArrayBson);
 
-void * t_rpc_ver3_zip_BuildingBlocksOpt(BuildingBlocksOpt zip_data);
-dave_bool t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBson);
-
 void * t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data);
 dave_bool t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson);
 

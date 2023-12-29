@@ -117,23 +117,6 @@ func T_auto_AIPlaceType_str(enum_value int64) string {
 	return value_str
 }
 
-func T_auto_BuildingBlocksOpt_str(enum_value int64) string {
-	var value_str string
-
-	switch enum_value {
-		case BuildingBlocksOpt_none: value_str = "'BuildingBlocksOpt_none'"
-		case BuildingBlocksOpt_inq: value_str = "'BuildingBlocksOpt_inq'"
-		case BuildingBlocksOpt_mount: value_str = "'BuildingBlocksOpt_mount'"
-		case BuildingBlocksOpt_decoupling: value_str = "'BuildingBlocksOpt_decoupling'"
-		case BuildingBlocksOpt_State_exchange: value_str = "'BuildingBlocksOpt_State_exchange'"
-		case BuildingBlocksOpt_valve: value_str = "'BuildingBlocksOpt_valve'"
-		case BuildingBlocksOpt_max: value_str = "'BuildingBlocksOpt_max'"
-		default: value_str = fmt.Sprintf("'%v'", enum_value)
-	}
-
-	return value_str
-}
-
 func T_auto_CVSearchOpt_str(enum_value int64) string {
 	var value_str string
 
@@ -1049,16 +1032,12 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_INTERNAL_EVENTS: value_str = "'MSGID_INTERNAL_EVENTS-20'"
 		case MSGID_THREAD_BUSY: value_str = "'MSGID_THREAD_BUSY-21'"
 		case MSGID_THREAD_IDLE: value_str = "'MSGID_THREAD_IDLE-22'"
-		case MSGID_CLIENT_BUSY: value_str = "'MSGID_CLIENT_BUSY-23'"
-		case MSGID_CLIENT_IDLE: value_str = "'MSGID_CLIENT_IDLE-24'"
 		case MSGID_REMOTE_THREAD_ID_READY: value_str = "'MSGID_REMOTE_THREAD_ID_READY-25'"
 		case MSGID_REMOTE_THREAD_ID_REMOVE: value_str = "'MSGID_REMOTE_THREAD_ID_REMOVE-26'"
 		case MSGID_LOCAL_THREAD_READY: value_str = "'MSGID_LOCAL_THREAD_READY-27'"
 		case MSGID_LOCAL_THREAD_REMOVE: value_str = "'MSGID_LOCAL_THREAD_REMOVE-28'"
 		case MSGID_INNER_LOOP: value_str = "'MSGID_INNER_LOOP-29'"
 		case MSGID_CFG_UPDATE: value_str = "'MSGID_CFG_UPDATE-30'"
-		case MSGID_BLOCKS_REQ: value_str = "'MSGID_BLOCKS_REQ-31'"
-		case MSGID_BLOCKS_RSP: value_str = "'MSGID_BLOCKS_RSP-32'"
 		case MSGID_OS_NOTIFY: value_str = "'MSGID_OS_NOTIFY-33'"
 		case MSGID_INTERNAL_LOOP: value_str = "'MSGID_INTERNAL_LOOP-34'"
 		case MSGID_COROUTINE_WAKEUP: value_str = "'MSGID_COROUTINE_WAKEUP-35'"
@@ -1079,6 +1058,8 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case MSGID_SYSTEM_IDLE: value_str = "'MSGID_SYSTEM_IDLE-50'"
 		case MSGID_GENERAL_REQ: value_str = "'MSGID_GENERAL_REQ-51'"
 		case MSGID_GENERAL_RSP: value_str = "'MSGID_GENERAL_RSP-52'"
+		case MSGID_APPLICATION_BUSY: value_str = "'MSGID_APPLICATION_BUSY-53'"
+		case MSGID_APPLICATION_IDLE: value_str = "'MSGID_APPLICATION_IDLE-54'"
 		case SOCKET_BIND_REQ: value_str = "'SOCKET_BIND_REQ-1000'"
 		case SOCKET_BIND_RSP: value_str = "'SOCKET_BIND_RSP-1001'"
 		case SOCKET_CONNECT_REQ: value_str = "'SOCKET_CONNECT_REQ-1002'"

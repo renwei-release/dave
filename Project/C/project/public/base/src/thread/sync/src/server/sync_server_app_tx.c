@@ -62,5 +62,20 @@ sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_
 	return _sync_server_app_tx_client(pClient, msg_id, msg_len, msg_body);
 }
 
+dave_bool
+sync_server_app_mount_tx(SyncClient *pClient)
+{
+	// The old methods that need to be removed renwei
+	SystemMount mount;
+
+	dave_memset(&mount, 0x00, sizeof(mount));
+
+	mount.socket = pClient->client_socket;
+	dave_strcpy(mount.verno, pClient->verno, DAVE_VERNO_STR_LEN);
+	mount.NetInfo = pClient->NetInfo;
+
+	return sync_server_app_tx_client(pClient, MSGID_SYSTEM_MOUNT, sizeof(mount), &mount);
+}
+
 #endif
 

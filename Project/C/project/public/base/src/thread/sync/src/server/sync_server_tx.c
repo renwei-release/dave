@@ -53,27 +53,6 @@ _sync_server_tx(SyncClient *pClient, ORDER_CODE order_id, MBUF *data)
 }
 
 static dave_bool
-_sync_server_tx_run_internal_msg_req(
-	SyncClient *pClient,
-	ub msg_id, ub msg_len, void *msg_body)
-{
-	ub snd_max = SYNC_STACK_HEAD_MAX_LEN + msg_len;
-	MBUF *snd_buffer;
-
-	SYNCDEBUG("msg_id:%d msg_len:%d", msg_id, msg_len);
-
-	snd_buffer = dave_mmalloc(snd_max);
-
-	snd_buffer->tot_len = snd_buffer->len = sync_msg_packet(
-		dave_mptr(snd_buffer), snd_max,
-		INVALID_THREAD_ID, INVALID_THREAD_ID, (s8 *)SYNC_SERVER_THREAD_NAME, (s8 *)SYNC_CLIENT_THREAD_NAME, msg_id,
-		BaseMsgType_Unicast, LOCAL_TASK_ATTRIB, LOCAL_TASK_ATTRIB,
-		msg_len, msg_body);
-
-	return _sync_server_tx(pClient, ORDER_CODE_RUN_INTERNAL_MSG_REQ, snd_buffer);
-}
-
-static dave_bool
 _sync_server_tx_run_internal_msg_v2_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body)
@@ -133,50 +112,6 @@ _sync_server_tx_run_thread_msg_req(
 	return _sync_server_tx(pClient, ORDER_CODE_RUN_THREAD_MSG_REQ, snd_buffer);
 }
 
-static void
-_sync_server_tx_blocks_state(SyncClient *pClient)
-{
-	if(pClient == NULL)
-	{
-		SYNCLOG("pClient is NULL!");
-		return;
-	}
-
-	if(pClient->notify_blocks_flag == (ub)(pClient->blocks_flag))
-	{
-		return;
-	}
-
-	SYNCTRACE("verno:%s blocks_flag:%d", pClient->verno, pClient->blocks_flag);
-
-	if(pClient->blocks_flag == dave_true)
-	{
-		SystemMount mount;
-
-		dave_memset(&mount, 0x00, sizeof(mount));
-
-		mount.socket = pClient->client_socket;
-		dave_strcpy(mount.verno, pClient->verno, DAVE_VERNO_STR_LEN);
-		mount.NetInfo = pClient->NetInfo;
-
-		sync_server_tx_run_internal_msg_req(pClient, MSGID_SYSTEM_MOUNT, sizeof(mount), &mount);
-	}
-	else
-	{
-		SystemDecoupling decoupling;
-
-		dave_memset(&decoupling, 0x00, sizeof(decoupling));
-
-		decoupling.socket = pClient->client_socket;
-		dave_strcpy(decoupling.verno, pClient->verno, DAVE_VERNO_STR_LEN);
-		decoupling.NetInfo = pClient->NetInfo;
-
-		sync_server_tx_run_internal_msg_req(pClient, MSGID_SYSTEM_DECOUPLING, sizeof(decoupling), &decoupling);
-	}
-
-	pClient->notify_blocks_flag = (ub)(pClient->blocks_flag);
-}
-
 // =====================================================================
 
 void
@@ -219,11 +154,11 @@ sync_server_tx_run_thread_msg_req(
 	route_src = thread_set_remote(route_src, src_thread_index, pSrcClient->client_index);
 	route_dst = thread_set_remote(route_dst, dst_thread_index, pDstClient->client_index);
 
-	SYNCDEBUG("%s/%lx->%s/%lx msg_id:%d msg_type:%d msg_len:%d client:%d/%d/%s->%d/%d/%s",
+	SYNCTRACE("%s/%lx->%s/%lx msg_id:%s msg_type:%s msg_len:%d client:%d/%d/%s/%s->%d/%d/%s/%s",
 		src, route_src, dst, route_dst,
-		msg_id, msg_type, msg_len,
-		src_thread_index, pSrcClient->client_index, pSrcClient->verno,
-		dst_thread_index, pDstClient->client_index, pDstClient->verno);
+		msgstr(msg_id), t_auto_BaseMsgType_str(msg_type), msg_len,
+		src_thread_index, pSrcClient->client_index, pSrcClient->client_app_busy==dave_true?"busy":"idle", pSrcClient->verno,
+		dst_thread_index, pDstClient->client_index, pDstClient->client_app_busy==dave_true?"busy":"idle", pDstClient->verno);
 
 	if((route_src != INVALID_THREAD_ID) && (route_dst != INVALID_THREAD_ID))
 	{
@@ -259,18 +194,6 @@ sync_server_tx_run_thread_msg_req(
 	}
 
 	return ret;
-}
-
-dave_bool
-sync_server_tx_run_internal_msg_req(
-	SyncClient *pClient,
-	ub msg_id, ub msg_len, void *msg_body)
-{
-	sync_lock();
-	pClient->send_msg_counter ++;
-	sync_unlock();
-
-	return _sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
 }
 
 dave_bool
@@ -400,12 +323,6 @@ sync_server_tx_del_remote_thread_req(SyncClient *pClient, s8 *thread_name, sb th
 	snd_buffer = sync_thread_name_packet(pClient->verno, pClient->globally_identifier, thread_name, thread_index);
 
 	return _sync_server_tx(pClient, ORDER_CODE_DEL_REMOTE_THREAD_REQ, snd_buffer);
-}
-
-void
-sync_server_tx_blocks_state(SyncClient *pClient)
-{
-	_sync_server_tx_blocks_state(pClient);
 }
 
 dave_bool

@@ -140,16 +140,6 @@ typedef enum {
 } TraceLevel;
 
 typedef enum {
-	BuildingBlocksOpt_none,
-	BuildingBlocksOpt_inq,
-	BuildingBlocksOpt_mount,
-	BuildingBlocksOpt_decoupling,
-	BuildingBlocksOpt_State_exchange,
-	BuildingBlocksOpt_valve,
-	BuildingBlocksOpt_max
-} BuildingBlocksOpt;
-
-typedef enum {
 	EchoType_start,
 	EchoType_stop,
 	EchoType_single,
