@@ -140,11 +140,30 @@ _dll_main_run_msg(MSGBODY *msg)
 }
 
 static void
+_dll_main_protector_reg(void)
+{
+	ProtectorReg *pReg = thread_reset_msg(pReg);
+
+	name_msg(GUARDIAN_THREAD_NAME, MSGID_PROTECTOR_REG, pReg);
+}
+
+static void
+_dll_main_protector_unreg(void)
+{
+	ProtectorUnreg *pUnreg = thread_reset_msg(pUnreg);
+
+	name_msg(GUARDIAN_THREAD_NAME, MSGID_PROTECTOR_UNREG, pUnreg);
+}
+
+static void
 _dll_main_init(MSGBODY *msg)
 {
 	if(_dll_init_fun != NULL)
 	{
 		_dll_init_fun(NULL);
+		_dll_init_fun = NULL;
+
+		_dll_main_protector_reg();
 	}
 }
 
@@ -167,6 +186,8 @@ _dll_main_exit(MSGBODY *msg)
 {
 	if(_dll_exit_fun != NULL)
 	{
+		_dll_main_protector_unreg();
+
 		_dll_exit_fun(NULL);
 		_dll_exit_fun = NULL;
 	}

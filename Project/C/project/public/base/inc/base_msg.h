@@ -380,5 +380,20 @@ typedef struct {
 	void *ptr;
 } ApplicationIdle;
 
+/* for MSGID_PROTECTOR_REG message */
+typedef struct {
+	void *ptr;
+} ProtectorReg;
+
+/* for MSGID_PROTECTOR_UNREG message */
+typedef struct {
+	void *ptr;
+} ProtectorUnreg;
+
+/* for MSGID_PROTECTOR_WAKEUP message */
+typedef struct {
+	void *ptr;
+} ProtectorWakeup;
+
 #endif
 

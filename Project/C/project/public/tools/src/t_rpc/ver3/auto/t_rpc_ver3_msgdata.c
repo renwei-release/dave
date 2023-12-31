@@ -4962,6 +4962,177 @@ t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg(void)
 }
 
 void *
+t_rpc_ver3_zip_ProtectorReg(ProtectorReg *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(ProtectorReg) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(ProtectorReg) does not match(%d/%d), please contact the message settlers!", sizeof(ProtectorReg), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_ProtectorReg(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		ProtectorReg *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(ProtectorReg);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_ProtectorReg(ProtectorReg *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_ProtectorReg(void)
+{
+	return sizeof(ProtectorReg);
+}
+
+void *
+t_rpc_ver3_zip_ProtectorUnreg(ProtectorUnreg *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(ProtectorUnreg) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(ProtectorUnreg) does not match(%d/%d), please contact the message settlers!", sizeof(ProtectorUnreg), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_ProtectorUnreg(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		ProtectorUnreg *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(ProtectorUnreg);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_ProtectorUnreg(ProtectorUnreg *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_ProtectorUnreg(void)
+{
+	return sizeof(ProtectorUnreg);
+}
+
+void *
+t_rpc_ver3_zip_ProtectorWakeup(ProtectorWakeup *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(ProtectorWakeup) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(ProtectorWakeup) does not match(%d/%d), please contact the message settlers!", sizeof(ProtectorWakeup), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_ProtectorWakeup(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		ProtectorWakeup *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(ProtectorWakeup);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_ProtectorWakeup(ProtectorWakeup *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_ProtectorWakeup(void)
+{
+	return sizeof(ProtectorWakeup);
+}
+
+void *
 t_rpc_ver3_zip_QueueDownloadMsgReq(QueueDownloadMsgReq *zip_data, ub zip_len)
 {
 	void *pStructBson;

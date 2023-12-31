@@ -30,6 +30,7 @@
 #include "thread_running.h"
 #include "thread_orchestration.h"
 #include "thread_coroutine.h"
+#include "thread_protector.h"
 #include "thread_cfg.h"
 #include "thread_log.h"
 
@@ -235,6 +236,12 @@ _thread_guardian_main(MSGBODY *msg)
 			break;
 		case MSGID_APPLICATION_IDLE:
 				thread_busy_idle_app_idle();
+			break;
+		case MSGID_PROTECTOR_REG:
+				thread_protector_reg(msg->msg_src);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				thread_protector_unreg(msg->msg_src);
 			break;
 		default:
 			break;

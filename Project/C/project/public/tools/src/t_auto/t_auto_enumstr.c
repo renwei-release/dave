@@ -4568,6 +4568,15 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_APPLICATION_IDLE:
 				value_str = "'MSGID_APPLICATION_IDLE-54'";
 			break;
+		case MSGID_PROTECTOR_REG:
+				value_str = "'MSGID_PROTECTOR_REG-55'";
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				value_str = "'MSGID_PROTECTOR_UNREG-56'";
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				value_str = "'MSGID_PROTECTOR_WAKEUP-57'";
+			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";
 			break;

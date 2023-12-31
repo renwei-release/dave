@@ -630,6 +630,21 @@ type ProcessMsgTimerOutMsg struct {
 	Msg_body unsafe.Pointer
 }
 
+/* for MSGID_PROTECTOR_REG message */
+type ProtectorReg struct {
+	Ptr uint64
+}
+
+/* for MSGID_PROTECTOR_UNREG message */
+type ProtectorUnreg struct {
+	Ptr uint64
+}
+
+/* for MSGID_PROTECTOR_WAKEUP message */
+type ProtectorWakeup struct {
+	Ptr uint64
+}
+
 /* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message */
 type QueueDownloadMsgReq struct {
 	Name [DAVE_THREAD_NAME_LEN] byte

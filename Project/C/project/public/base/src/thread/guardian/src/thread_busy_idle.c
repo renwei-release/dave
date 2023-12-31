@@ -161,20 +161,28 @@ _thread_busy_idle_check(void)
 static void
 _thread_busy_idle_app_busy(void)
 {
+	if(_app_busy_flag == dave_true)
+	{
+		THREADLOG("application is busy, did nothing!");
+		return;
+	}
+
 	THREADLOG("application is %s, set busy now!", _app_busy_flag==dave_true?"busy":"idle");
 	_app_busy_flag = _notify_busy_flag = dave_true;
 	_thread_busy_idle_system_notify(_app_busy_flag);
-
-	thread_cfg_system_startup_flag_set(dave_false);
 }
 
 static void
 _thread_busy_idle_app_idle(void)
 {
+	if(_app_busy_flag == dave_false)
+	{
+		THREADLOG("application is idle, did nothing!");
+		return;
+	}
+
 	THREADLOG("application is %s, wait _notify_busy_flag change to idle!", _app_busy_flag==dave_true?"busy":"idle");
 	_app_busy_flag = dave_false;
-
-	thread_cfg_system_startup_flag_set(dave_true);
 }
 
 // =====================================================================
@@ -186,6 +194,7 @@ thread_busy_idle_init(ThreadStruct *thread_struct)
 	_notify_last_time = dave_os_time_s();
 	_notify_busy_flag = dave_false;
 	_app_busy_flag = dave_false;
+
 	#ifndef __DAVE_PRODUCT_SYNC__
 	if(thread_cfg_system_startup_flag_get() == dave_false)
 	{
@@ -222,12 +231,16 @@ void
 thread_busy_idle_app_busy(void)
 {
 	_thread_busy_idle_app_busy();
+
+	thread_cfg_system_startup_flag_set(dave_false);
 }
 
 void
 thread_busy_idle_app_idle(void)
 {
 	_thread_busy_idle_app_idle();
+
+	thread_cfg_system_startup_flag_set(dave_true);
 }
 
 #endif

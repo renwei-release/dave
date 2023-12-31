@@ -271,6 +271,15 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
 			break;
+		case MSGID_PROTECTOR_REG:
+				pBson = t_rpc_ver3_zip_ProtectorReg((ProtectorReg *)msg_body, msg_len);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				pBson = t_rpc_ver3_zip_ProtectorUnreg((ProtectorUnreg *)msg_body, msg_len);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				pBson = t_rpc_ver3_zip_ProtectorWakeup((ProtectorWakeup *)msg_body, msg_len);
+			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				pBson = t_rpc_ver3_zip_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, msg_len);
 			break;
@@ -685,6 +694,15 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_REG:
+				ret = t_rpc_ver3_unzip_ProtectorReg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				ret = t_rpc_ver3_unzip_ProtectorUnreg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				ret = t_rpc_ver3_unzip_ProtectorWakeup(msg_body, msg_len, pBson);
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				ret = t_rpc_ver3_unzip_QueueDownloadMsgReq(msg_body, msg_len, pBson);
@@ -1101,6 +1119,15 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ptr = t_rpc_ver3_ptr_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, new_ptr);
 			break;
+		case MSGID_PROTECTOR_REG:
+				ptr = t_rpc_ver3_ptr_ProtectorReg((ProtectorReg *)msg_body, new_ptr);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				ptr = t_rpc_ver3_ptr_ProtectorUnreg((ProtectorUnreg *)msg_body, new_ptr);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				ptr = t_rpc_ver3_ptr_ProtectorWakeup((ProtectorWakeup *)msg_body, new_ptr);
+			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				ptr = t_rpc_ver3_ptr_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, new_ptr);
 			break;
@@ -1515,6 +1542,15 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				msg_len = t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg();
+			break;
+		case MSGID_PROTECTOR_REG:
+				msg_len = t_rpc_ver3_sizeof_ProtectorReg();
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				msg_len = t_rpc_ver3_sizeof_ProtectorUnreg();
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				msg_len = t_rpc_ver3_sizeof_ProtectorWakeup();
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				msg_len = t_rpc_ver3_sizeof_QueueDownloadMsgReq();

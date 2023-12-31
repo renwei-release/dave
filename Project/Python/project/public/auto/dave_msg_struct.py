@@ -713,6 +713,24 @@ class ProcessMsgTimerOutMsg (Structure):
 		("msg_body", POINTER(c_char)),
 ]
 
+#* for MSGID_PROTECTOR_REG message *#
+class ProtectorReg (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_PROTECTOR_UNREG message *#
+class ProtectorUnreg (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_PROTECTOR_WAKEUP message *#
+class ProtectorWakeup (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message *#
 class QueueDownloadMsgReq (Structure):
 	_fields_ = [

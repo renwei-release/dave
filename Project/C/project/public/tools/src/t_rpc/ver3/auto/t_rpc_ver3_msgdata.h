@@ -422,6 +422,21 @@ dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_le
 void * t_rpc_ver3_ptr_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg(void);
 
+void * t_rpc_ver3_zip_ProtectorReg(ProtectorReg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorReg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorReg(ProtectorReg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorReg(void);
+
+void * t_rpc_ver3_zip_ProtectorUnreg(ProtectorUnreg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorUnreg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorUnreg(ProtectorUnreg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorUnreg(void);
+
+void * t_rpc_ver3_zip_ProtectorWakeup(ProtectorWakeup *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorWakeup(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorWakeup(ProtectorWakeup *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorWakeup(void);
+
 void * t_rpc_ver3_zip_QueueDownloadMsgReq(QueueDownloadMsgReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_QueueDownloadMsgReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_QueueDownloadMsgReq(QueueDownloadMsgReq *struct_data, void *new_ptr);
