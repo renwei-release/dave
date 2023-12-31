@@ -167,7 +167,10 @@ _thread_busy_idle_app_busy(void)
 		return;
 	}
 
-	THREADLOG("application is %s, set busy now!", _app_busy_flag==dave_true?"busy":"idle");
+	THREADLOG("application is %s/%s, set busy now!",
+		_app_busy_flag == dave_true ? "busy" : "idle",
+		_notify_busy_flag == dave_true ? "busy" : "idle");
+
 	_app_busy_flag = _notify_busy_flag = dave_true;
 	_thread_busy_idle_system_notify(_app_busy_flag);
 }
@@ -181,8 +184,12 @@ _thread_busy_idle_app_idle(void)
 		return;
 	}
 
-	THREADLOG("application is %s, wait _notify_busy_flag change to idle!", _app_busy_flag==dave_true?"busy":"idle");
-	_app_busy_flag = dave_false;
+	THREADLOG("application is %s/%s, set idle now!",
+		_app_busy_flag == dave_true ? "busy" : "idle",
+		_notify_busy_flag == dave_true ? "busy" : "idle");
+
+	_app_busy_flag = _notify_busy_flag = dave_false;
+	_thread_busy_idle_system_notify(_app_busy_flag);
 }
 
 // =====================================================================

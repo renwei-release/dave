@@ -73,7 +73,7 @@ _thread_protector_function(void *arg)
 
 	_thread_protector_setup_name(pProtector);
 
-	THREADLOG("The protector of %s is already online", pProtector->thread_name);
+	THREADLOG("The protector of %s ready", pProtector->thread_name);
 
 	while(base_power_state() == dave_true)
 	{
@@ -89,7 +89,7 @@ _thread_protector_function(void *arg)
 		}
 	}
 
-	THREADLOG("The protector of %s is offline", pProtector->thread_name);
+	THREADLOG("The protector of %s exit", pProtector->thread_name);
 
 	dave_free(pProtector);
 
