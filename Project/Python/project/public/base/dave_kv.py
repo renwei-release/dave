@@ -45,13 +45,13 @@ def _kv_remote_malloc(name, out_second):
 
 
 def _kv_free(kv):
+    if kv == None:
+        return
     davelib.dave_dll_kv_free(c_void_p(kv))
     return
 
 
 _default_kv = None
-
-
 def _kv_init(kv):
     global _default_kv
 
@@ -61,6 +61,18 @@ def _kv_init(kv):
     if _default_kv == None:
         _default_kv = _kv_malloc("pydefault", 3600)
     return _default_kv
+
+
+def _kv_exit(kv):
+    global _default_kv
+
+    if kv == None:
+        kv = _default_kv
+
+    if kv == _default_kv:
+        _default_kv = None
+    _kv_free(kv)
+    return
 
 
 # =====================================================================

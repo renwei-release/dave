@@ -115,6 +115,20 @@ class AppMsgTalkMCardRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for MSGID_APPLICATION_BUSY message *#
+class ApplicationBusy (Structure):
+	_fields_ = [
+		("cfg_flag", c_char),
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_APPLICATION_IDLE message *#
+class ApplicationIdle (Structure):
+	_fields_ = [
+		("cfg_flag", c_char),
+		("ptr", POINTER(c_char)),
+]
+
 #* for BBSMSG_ADD_COMMENT_REQ message *#
 class BBSMsgAddCommentReq (Structure):
 	_fields_ = [
@@ -267,20 +281,6 @@ class CVMsgSculpturesSearchRsp (Structure):
 	_fields_ = [
 		("ret", c_longlong),
 		("cv_result", CVResult),
-		("ptr", POINTER(c_char)),
-]
-
-#* for MSGID_CLIENT_BUSY message *#
-class ClientBusy (Structure):
-	_fields_ = [
-		("verno", c_char * DAVE_VERNO_STR_LEN),
-		("ptr", POINTER(c_char)),
-]
-
-#* for MSGID_CLIENT_IDLE message *#
-class ClientIdle (Structure):
-	_fields_ = [
-		("verno", c_char * DAVE_VERNO_STR_LEN),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -534,6 +534,7 @@ class DosForward (Structure):
 #* for MSGID_GENERAL_REQ message *#
 class GeneralReq (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
 		("general_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
@@ -541,6 +542,7 @@ class GeneralReq (Structure):
 #* for MSGID_GENERAL_RSP message *#
 class GeneralRsp (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
 		("general_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
@@ -673,24 +675,6 @@ class MainMsgPythonRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for MSGID_BLOCKS_REQ message *#
-class MsgBlocksReq (Structure):
-	_fields_ = [
-		("opt", c_int),
-		("blocks_id_1", c_ulonglong),
-		("blocks_id_2", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for MSGID_BLOCKS_RSP message *#
-class MsgBlocksRsp (Structure):
-	_fields_ = [
-		("ret", c_longlong),
-		("opt", c_int),
-		("blocks", BuildingBlocks * DAVE_BUILDING_BLOCKS_MAX),
-		("ptr", POINTER(c_char)),
-]
-
 #* for MSGID_ECHO_REQ message *#
 class MsgIdEchoReq (Structure):
 	_fields_ = [
@@ -729,6 +713,24 @@ class ProcessMsgTimerOutMsg (Structure):
 		("msg_id", c_ulonglong),
 		("msg_len", c_ulonglong),
 		("msg_body", POINTER(c_char)),
+]
+
+#* for MSGID_PROTECTOR_REG message *#
+class ProtectorReg (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_PROTECTOR_UNREG message *#
+class ProtectorUnreg (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for MSGID_PROTECTOR_WAKEUP message *#
+class ProtectorWakeup (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
 ]
 
 #* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message *#

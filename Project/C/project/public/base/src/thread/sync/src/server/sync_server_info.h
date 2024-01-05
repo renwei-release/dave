@@ -8,7 +8,7 @@
 #ifndef __SYNC_SERVER_INFO_H__
 #define __SYNC_SERVER_INFO_H__
 
-ub sync_server_info(s8 *info, ub info_len);
+ub sync_server_info(s8 *info_ptr, ub info_len);
 
 #endif
 

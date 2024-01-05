@@ -16,5 +16,9 @@ ub thread_cfg_system_memory_max_use_percentage(void);
 
 ub thread_cfg_multiple_coroutine_on_thread(void);
 
+dave_bool thread_cfg_system_startup_flag_get(void);
+
+void thread_cfg_system_startup_flag_set(dave_bool online);
+
 #endif
 

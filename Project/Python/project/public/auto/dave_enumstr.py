@@ -202,26 +202,6 @@ def t_auto_AIPlaceType_str(enum_value):
 	return value_str
 
 
-def t_auto_BuildingBlocksOpt_str(enum_value):
-	if enum_value == BuildingBlocksOpt_none:
-		value_str = "'BuildingBlocksOpt_none'"
-	elif enum_value == BuildingBlocksOpt_inq:
-		value_str = "'BuildingBlocksOpt_inq'"
-	elif enum_value == BuildingBlocksOpt_mount:
-		value_str = "'BuildingBlocksOpt_mount'"
-	elif enum_value == BuildingBlocksOpt_decoupling:
-		value_str = "'BuildingBlocksOpt_decoupling'"
-	elif enum_value == BuildingBlocksOpt_State_exchange:
-		value_str = "'BuildingBlocksOpt_State_exchange'"
-	elif enum_value == BuildingBlocksOpt_valve:
-		value_str = "'BuildingBlocksOpt_valve'"
-	elif enum_value == BuildingBlocksOpt_max:
-		value_str = "'BuildingBlocksOpt_max'"
-	else:
-		value_str = f'{enum_value}'
-	return value_str
-
-
 def t_auto_CVSearchOpt_str(enum_value):
 	if enum_value == CVSearchOpt_0:
 		value_str = "'CVSearchOpt_0'"
@@ -1667,10 +1647,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_THREAD_BUSY-21'"
 	elif enum_value == MSGID_THREAD_IDLE:
 		value_str = "'MSGID_THREAD_IDLE-22'"
-	elif enum_value == MSGID_CLIENT_BUSY:
-		value_str = "'MSGID_CLIENT_BUSY-23'"
-	elif enum_value == MSGID_CLIENT_IDLE:
-		value_str = "'MSGID_CLIENT_IDLE-24'"
 	elif enum_value == MSGID_REMOTE_THREAD_ID_READY:
 		value_str = "'MSGID_REMOTE_THREAD_ID_READY-25'"
 	elif enum_value == MSGID_REMOTE_THREAD_ID_REMOVE:
@@ -1683,10 +1659,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_INNER_LOOP-29'"
 	elif enum_value == MSGID_CFG_UPDATE:
 		value_str = "'MSGID_CFG_UPDATE-30'"
-	elif enum_value == MSGID_BLOCKS_REQ:
-		value_str = "'MSGID_BLOCKS_REQ-31'"
-	elif enum_value == MSGID_BLOCKS_RSP:
-		value_str = "'MSGID_BLOCKS_RSP-32'"
 	elif enum_value == MSGID_OS_NOTIFY:
 		value_str = "'MSGID_OS_NOTIFY-33'"
 	elif enum_value == MSGID_INTERNAL_LOOP:
@@ -1727,6 +1699,16 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_GENERAL_REQ-51'"
 	elif enum_value == MSGID_GENERAL_RSP:
 		value_str = "'MSGID_GENERAL_RSP-52'"
+	elif enum_value == MSGID_APPLICATION_BUSY:
+		value_str = "'MSGID_APPLICATION_BUSY-53'"
+	elif enum_value == MSGID_APPLICATION_IDLE:
+		value_str = "'MSGID_APPLICATION_IDLE-54'"
+	elif enum_value == MSGID_PROTECTOR_REG:
+		value_str = "'MSGID_PROTECTOR_REG-55'"
+	elif enum_value == MSGID_PROTECTOR_UNREG:
+		value_str = "'MSGID_PROTECTOR_UNREG-56'"
+	elif enum_value == MSGID_PROTECTOR_WAKEUP:
+		value_str = "'MSGID_PROTECTOR_WAKEUP-57'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:

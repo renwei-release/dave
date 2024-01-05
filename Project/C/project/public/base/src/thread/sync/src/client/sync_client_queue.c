@@ -110,7 +110,7 @@ sync_client_queue_enable(SyncServer *pServer, ThreadId src, ThreadId dst, ub msg
 		return msg_type;
 	}
 
-	if(pServer->server_busy == dave_false)
+	if(pServer->server_app_busy == dave_false)
 	{
 		/*
 		 * When not busy,

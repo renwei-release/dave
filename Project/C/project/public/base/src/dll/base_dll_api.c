@@ -273,5 +273,25 @@ dave_dll_dos_get_user_input(char *give_user_msg, int wait_second)
 	return user_input;
 }
 
+void
+dave_dll_system_online(void)
+{
+	ApplicationIdle *pIdle = thread_reset_msg(pIdle);
+
+	pIdle->cfg_flag = dave_false;
+	
+	name_msg(GUARDIAN_THREAD_NAME, MSGID_APPLICATION_IDLE, pIdle);
+}
+
+void
+dave_dll_system_offline(void)
+{
+	ApplicationBusy *pBusy = thread_reset_msg(pBusy);
+
+	pBusy->cfg_flag = dave_false;
+
+	name_msg(GUARDIAN_THREAD_NAME, MSGID_APPLICATION_BUSY, pBusy);
+}
+
 #endif
 

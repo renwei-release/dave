@@ -25,7 +25,6 @@
 #include "sync_server_sync.h"
 #include "sync_server_run.h"
 #include "sync_server_msg_buffer.h"
-#include "sync_server_flag.h"
 #include "sync_lock.h"
 #include "sync_test.h"
 #include "sync_log.h"
@@ -65,14 +64,12 @@ _sync_server_rx_show_thread_client(SyncThread *pThread)
 	
 		if(pClient != NULL)
 		{
-			SYNCTRACE("verno:%s msg:%d/%d ready:%d blocks:%d client:%d release_quantity:%d",
-				pClient->verno,
+			SYNCTRACE("server:%s/%s msg:%d/%d ready:%d client_app_busy:%d",
+				pClient->globally_identifier, pClient->verno,
 				pClient->recv_data_counter,
 				pClient->send_data_counter,
 				pClient->ready_flag,
-				pClient->blocks_flag,
-				pClient->client_flag,
-				pClient->release_quantity);
+				pClient->client_app_busy);
 
 			client_number ++;
 		}
@@ -127,7 +124,7 @@ _sync_server_rx_find_thread_and_client_from_route_dst(
 			*ppDstClient = sync_server_client(client_index);
 			if((*ppDstClient)->client_socket == INVALID_SOCKET_ID)
 			{
-				SYNCLTRACE(60,10,"%s<%lx>->%s<%lx>:%d the client(%d) lost!",
+				SYNCLTRACE(60,1, "%s<%lx>->%s<%lx>:%d the client(%d) lost!",
 					src, route_src,
 					dst, route_dst,
 					msg_id,
@@ -138,9 +135,16 @@ _sync_server_rx_find_thread_and_client_from_route_dst(
 			{
 				if(sync_server_client_on_thread(*ppDstThread, *ppDstClient) == dave_false)
 				{
-					SYNCLTRACE(60,10,"%s's client:%s mismatch! %s->%s:%d",
+					SYNCLTRACE(60,1, "%s's client:%s mismatch! %s->%s:%s",
 						(*ppDstThread)->thread_name, (*ppDstClient)->verno,
-						src, dst, msg_id);
+						src, dst, msgstr(msg_id));
+					ret = dave_false;
+				}
+				if((*ppDstClient)->client_app_busy == dave_true)
+				{
+					SYNCLTRACE(60,1, "%s's client:%s is busy! %s->%s:%s",
+						(*ppDstThread)->thread_name, (*ppDstClient)->verno,
+						src, dst, msgstr(msg_id));		
 					ret = dave_false;
 				}
 			}
@@ -170,7 +174,6 @@ _sync_server_rx_select_client(SyncThread *pThread)
 			if(sync_server_client_on_work(pThread->pClient[client_index]) == dave_true)
 			{
 				pClient = pThread->pClient[client_index];
-
 				pThread->chose_client_index = ++ client_index;
 				break;
 			}
@@ -185,11 +188,13 @@ _sync_server_rx_select_client(SyncThread *pThread)
 static inline SyncClient *
 _sync_server_rx_safe_select_client(SyncThread *pThread)
 {
-	SyncClient *pClient;
+	SyncClient *pClient = NULL;
 
-	t_lock_spin(&(pThread->chose_client_pv));
-	pClient = _sync_server_rx_select_client(pThread);
-	t_unlock_spin(&(pThread->chose_client_pv));
+	SAFECODEv1(pThread->chose_client_pv, {
+
+		pClient = _sync_server_rx_select_client(pThread);
+
+	});
 
 	return pClient;
 }
@@ -204,15 +209,6 @@ _sync_server_rx_select_cycle_client_on_thread(SyncThread *pThread)
 		SYNCTRACE("thread:%s can't find pClient!", pThread->thread_name);
 
 		_sync_server_rx_show_thread_client(pThread);
-	}
-	else
-	{
-		sync_lock();
-		if(pClient->release_quantity > 0)
-		{
-			pClient->release_quantity --;
-		}
-		sync_unlock();
 	}
 
 	return pClient;
@@ -285,7 +281,7 @@ _sync_server_rx_run_alone_thread_msg(
 
 	if(_sync_server_rx_build_run_req_param(route_src, src, route_dst, dst, msg_id, &pDstThread, &pDstClient) == dave_false)
 	{
-		SYNCLTRACE(60,10,"lllegal routing of messages, maybe the service receiving this message has been disconnected! %s(%lx)->%s(%lx):%d",
+		SYNCLTRACE(60,1, "lllegal routing of messages, maybe the service receiving this message has been disconnected! %s(%lx)->%s(%lx):%d",
 			src, route_src, dst, route_dst, msg_id);
 		return RetCode_OK;
 	}
@@ -532,10 +528,10 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame_
 		&msg_type, &src_attrib, &dst_attrib,
 		&msg_len, &msg_body);
 
-	SYNCDEBUG("%s/%d/%d->%s/%d/%d msg_id:%d msg_type:%d msg_len:%d",
+	SYNCDEBUG("%s/%d/%d->%s/%d/%d msg_id:%s msg_type:%s msg_len:%d",
 		src, thread_get_thread(route_src), thread_get_net(route_src),
 		dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-		msg_id, msg_type, msg_len);
+		msgstr(msg_id), t_auto_BaseMsgType_str(msg_type), msg_len);
 
 	if((src[0] != '\0') && (dst[0] != '\0') && (msg_id != MSGID_RESERVED) && (msg_len > 0))
 	{
@@ -566,11 +562,11 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame_
 
 		if(ret != RetCode_OK)
 		{
-			SYNCDEBUG("%s %s/%x/%lx/%d/%d->%s/%x/%lx/%d/%d id:%d len:%d ret:%s",
+			SYNCTRACE("%s %s/%x/%lx/%d/%d->%s/%x/%lx/%d/%d id:%s type:%s len:%d ret:%s",
 				buffer_pop == dave_false ? "push buffer" : "pop buffer",
 				src, src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 				dst, dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-				msg_id, msg_len,
+				msgstr(msg_id), t_auto_BaseMsgType_str(msg_type), msg_len,
 				retstr(ret));
 
 			if(buffer_pop == dave_false)
@@ -582,10 +578,10 @@ _sync_server_rx_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *frame_
 				}
 				else
 				{
-					SYNCLTRACE(60,1,"can't push message! %s/%x/%lx/%d/%d->%s/%x/%lx/%d/%d id:%d len:%d ret:%s",
+					SYNCLTRACE(60,1,"can't push message! %s/%x/%lx/%d/%d->%s/%x/%lx/%d/%d id:%s len:%d ret:%s",
 						src, src, route_src, thread_get_thread(route_src), thread_get_net(route_src),
 						dst, dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
-						msg_id, msg_len,
+						msgstr(msg_id), msg_len,
 						retstr(ret));
 				}
 			}
@@ -977,22 +973,20 @@ _sync_server_rx_version_process(void *ptr)
 	SyncClient *pClient = (SyncClient *)ptr;
 	SyncClient *pConflictClient;
 
-	sync_server_setup_flag(pClient);
-
 	sync_server_my_verno_to_all_client(pClient);
 
 	pConflictClient = sync_server_check_globally_identifier_conflict(pClient);
 	if(pConflictClient != NULL)
 	{
-		SYNCABNOR("The client has conflict identifier, try disconnect! pClient:(%x %d/%s %s/%s %d%d%d) pConflictClient:(%x %d/%s %s/%s %d%d%d)",
+		SYNCABNOR("The client has conflict identifier, try disconnect! pClient:(%x %d/%s %s/%s %d%d) pConflictClient:(%x %d/%s %s/%s %d%d)",
 			pClient,
 			pClient->client_socket, ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 			pClient->globally_identifier, pClient->verno,
-			pClient->ready_flag, pClient->blocks_flag, pClient->client_flag,
+			pClient->ready_flag, pClient->client_app_busy,
 			pConflictClient,
 			pConflictClient->client_socket, ipv4str2(pConflictClient->NetInfo.addr.ip.ip_addr, pConflictClient->NetInfo.port),
 			pConflictClient->globally_identifier, pConflictClient->verno,
-			pConflictClient->ready_flag, pConflictClient->blocks_flag, pConflictClient->client_flag);
+			pConflictClient->ready_flag, pConflictClient->client_app_busy);
 
 		_sync_server_rx_disconnect(pConflictClient->client_socket);
 	}

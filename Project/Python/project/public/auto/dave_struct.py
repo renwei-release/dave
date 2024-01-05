@@ -375,19 +375,6 @@ class HttpKeyValue (Structure):
 ]
 
 #* for None message *#
-class BuildingBlocks (Structure):
-	_fields_ = [
-		("blocks_id", c_ulonglong),
-		("verno", c_char * DAVE_VERNO_STR_LEN),
-		("ip_addr", c_char * 16),
-		("port", c_ushort),
-		("ready_flag", c_char),
-		("blocks_flag", c_char),
-		("client_flag", c_char),
-		("release_quantity", c_ulonglong),
-]
-
-#* for None message *#
 class MsgIdEcho (Structure):
 	_fields_ = [
 		("type", c_int),

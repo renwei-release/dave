@@ -14,5 +14,8 @@ void thread_busy_idle_exit(void);
 
 void thread_busy_idle_check(void);
 
+void thread_busy_idle_app_busy(dave_bool cfg_flag);
+void thread_busy_idle_app_idle(dave_bool cfg_flag);
+
 #endif
 

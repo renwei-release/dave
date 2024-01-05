@@ -107,16 +107,6 @@ const (
 )
 
 const (
-	BuildingBlocksOpt_none int64 = iota
-	BuildingBlocksOpt_inq
-	BuildingBlocksOpt_mount
-	BuildingBlocksOpt_decoupling
-	BuildingBlocksOpt_State_exchange
-	BuildingBlocksOpt_valve
-	BuildingBlocksOpt_max
-)
-
-const (
 	CVSearchOpt_0 int64 = iota
 	CVSearchOpt_1
 	CVSearchOpt_2

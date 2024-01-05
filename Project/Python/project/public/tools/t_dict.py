@@ -43,7 +43,7 @@ def t_dict_load(file_path):
 def t_dict_merge(dict1, dict2):
     for key, value in dict2.items():
         if key in dict1:
-            dict1[key] += value
+            dict1[key] = dict1[key] + value
         else:
             dict1[key] = value
     return dict1

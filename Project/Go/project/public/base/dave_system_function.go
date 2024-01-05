@@ -44,8 +44,6 @@ var (
         auto.MSGID_INTERNAL_EVENTS:            fun_None,
         auto.MSGID_THREAD_BUSY:                fun_None,
         auto.MSGID_THREAD_IDLE:                fun_None,
-        auto.MSGID_CLIENT_BUSY:                fun_None,
-        auto.MSGID_CLIENT_IDLE:                fun_None,
         auto.MSGID_REMOTE_THREAD_ID_READY:     fun_None,
         auto.MSGID_REMOTE_THREAD_ID_REMOVE:    fun_None,
         auto.MSGID_LOCAL_THREAD_READY:         fun_None,

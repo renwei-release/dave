@@ -87,6 +87,16 @@ dave_bool t_rpc_ver3_unzip_AppMsgTalkMCardRsp(void **unzip_data, ub *unzip_len, 
 void * t_rpc_ver3_ptr_AppMsgTalkMCardRsp(AppMsgTalkMCardRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_AppMsgTalkMCardRsp(void);
 
+void * t_rpc_ver3_zip_ApplicationBusy(ApplicationBusy *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ApplicationBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ApplicationBusy(ApplicationBusy *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ApplicationBusy(void);
+
+void * t_rpc_ver3_zip_ApplicationIdle(ApplicationIdle *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ApplicationIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ApplicationIdle(ApplicationIdle *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ApplicationIdle(void);
+
 void * t_rpc_ver3_zip_BBSMsgAddCommentReq(BBSMsgAddCommentReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BBSMsgAddCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data, void *new_ptr);
@@ -171,16 +181,6 @@ void * t_rpc_ver3_zip_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *zip_dat
 dave_bool t_rpc_ver3_unzip_CVMsgSculpturesSearchRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_CVMsgSculpturesSearchRsp(CVMsgSculpturesSearchRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_CVMsgSculpturesSearchRsp(void);
-
-void * t_rpc_ver3_zip_ClientBusy(ClientBusy *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ClientBusy(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ClientBusy(ClientBusy *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_ClientBusy(void);
-
-void * t_rpc_ver3_zip_ClientIdle(ClientIdle *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_ClientIdle(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_ClientIdle(ClientIdle *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_ClientIdle(void);
 
 void * t_rpc_ver3_zip_CoroutineWakeup(CoroutineWakeup *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CoroutineWakeup(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -392,16 +392,6 @@ dave_bool t_rpc_ver3_unzip_MainMsgPythonRsp(void **unzip_data, ub *unzip_len, vo
 void * t_rpc_ver3_ptr_MainMsgPythonRsp(MainMsgPythonRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_MainMsgPythonRsp(void);
 
-void * t_rpc_ver3_zip_MsgBlocksReq(MsgBlocksReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgBlocksReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgBlocksReq(MsgBlocksReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_MsgBlocksReq(void);
-
-void * t_rpc_ver3_zip_MsgBlocksRsp(MsgBlocksRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_MsgBlocksRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_MsgBlocksRsp(MsgBlocksRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_MsgBlocksRsp(void);
-
 void * t_rpc_ver3_zip_MsgIdEchoReq(MsgIdEchoReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_MsgIdEchoReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_MsgIdEchoReq(MsgIdEchoReq *struct_data, void *new_ptr);
@@ -431,6 +421,21 @@ void * t_rpc_ver3_zip_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *zip_data, ub 
 dave_bool t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_ProcessMsgTimerOutMsg(ProcessMsgTimerOutMsg *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg(void);
+
+void * t_rpc_ver3_zip_ProtectorReg(ProtectorReg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorReg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorReg(ProtectorReg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorReg(void);
+
+void * t_rpc_ver3_zip_ProtectorUnreg(ProtectorUnreg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorUnreg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorUnreg(ProtectorUnreg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorUnreg(void);
+
+void * t_rpc_ver3_zip_ProtectorWakeup(ProtectorWakeup *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_ProtectorWakeup(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_ProtectorWakeup(ProtectorWakeup *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_ProtectorWakeup(void);
 
 void * t_rpc_ver3_zip_QueueDownloadMsgReq(QueueDownloadMsgReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_QueueDownloadMsgReq(void **unzip_data, ub *unzip_len, void *pStructBson);

@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "store_msg.h"
+#include "mysql_statistics.h"
 #include "store_log.h"
 
 #define CFG_MYSQL_ADDRESS "MySqlAddress"
@@ -30,6 +31,8 @@ typedef struct {
 
 	DateStruct connect_date;
 	ub work_times;
+
+	MysqlStatistics statistics;
 } StoreMysql;
 
 static ub _mysql_number = 0;
@@ -83,6 +86,8 @@ _store_mysql_connect(StoreMysql *pMysql, s8 *address, ub port, s8 *user, s8 *pwd
 		pMysql->connect_date = t_time_get_date(NULL);
 		dave_mysql_select_db(pMysql->mysql_client, db);
 	}
+
+	mysql_statistics_reset(&(pMysql->statistics));
 }
 
 static dave_bool
@@ -254,7 +259,10 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 
 	pMysql->work_times ++;
 
+	ub start_time = dave_os_time_us();
 	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
+	mysql_statistics(&(pMysql->statistics), dave_os_time_us() - start_time);
+
 	pRsp->ptr = pReq->ptr;
 
 	if((pRsp->ret != RetCode_OK)
@@ -279,6 +287,7 @@ store_mysql_info(s8 *info_ptr, ub info_len)
 {
 	ub info_index, mysql_index;
 	StoreMysql *pMysql;
+	s8 statistics_str[256];
 
 	info_index = 0;
 
@@ -288,12 +297,15 @@ store_mysql_info(s8 *info_ptr, ub info_len)
 	{
 		pMysql = &_pMysql[mysql_index];
 
+		mysql_statistics_info(statistics_str, sizeof(statistics_str), &(pMysql->statistics));
+
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s:%d %s %ld (%s)\n",
+			" %s:%d %s %ld (%s) (%s)\n",
 			pMysql->mysql_address, pMysql->mysql_port,
-			pMysql->mysql_client==NULL?"disconnect":"connect",
+			pMysql->mysql_client == NULL ? "disconnect" : "connect",
 			pMysql->work_times,
-			t_a2b_date_str(&(pMysql->connect_date)));
+			t_a2b_date_str(&(pMysql->connect_date)),
+			statistics_str);
 	}
 
 	return info_index;

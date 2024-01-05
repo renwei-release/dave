@@ -22,10 +22,6 @@ RetCode sync_server_tx_run_thread_msg_req(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len);
 
-dave_bool sync_server_tx_run_internal_msg_req(
-	SyncClient *pClient,
-	ub msg_id, ub msg_len, void *msg_body);
-
 dave_bool sync_server_tx_run_internal_msg_v2_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body);
@@ -50,8 +46,6 @@ void sync_server_tx_sync_thread_name_rsp(SyncClient *pClient, s8 *thread_name, s
 dave_bool sync_server_tx_add_remote_thread_req(SyncClient *pClient, s8 *thread_name, sb thread_index);
 
 dave_bool sync_server_tx_del_remote_thread_req(SyncClient *pClient, s8 *thread_name, sb thread_index);
-
-void sync_server_tx_blocks_state(SyncClient *pClient);
 
 dave_bool sync_server_tx_link_up_req(SyncClient *pClient, s8 *verno, s8 *globally_identifier, u8 *link_ip, u16 link_port);
 

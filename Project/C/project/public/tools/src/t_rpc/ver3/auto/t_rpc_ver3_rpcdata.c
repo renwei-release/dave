@@ -208,11 +208,11 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MAINMSG_PYTHON_RSP:
 				pBson = t_rpc_ver3_zip_MainMsgPythonRsp((MainMsgPythonRsp *)msg_body, msg_len);
 			break;
-		case MSGID_BLOCKS_REQ:
-				pBson = t_rpc_ver3_zip_MsgBlocksReq((MsgBlocksReq *)msg_body, msg_len);
+		case MSGID_APPLICATION_BUSY:
+				pBson = t_rpc_ver3_zip_ApplicationBusy((ApplicationBusy *)msg_body, msg_len);
 			break;
-		case MSGID_BLOCKS_RSP:
-				pBson = t_rpc_ver3_zip_MsgBlocksRsp((MsgBlocksRsp *)msg_body, msg_len);
+		case MSGID_APPLICATION_IDLE:
+				pBson = t_rpc_ver3_zip_ApplicationIdle((ApplicationIdle *)msg_body, msg_len);
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				pBson = t_rpc_ver3_zip_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, msg_len);
@@ -222,12 +222,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_CFG_UPDATE:
 				pBson = t_rpc_ver3_zip_CFGUpdate((CFGUpdate *)msg_body, msg_len);
-			break;
-		case MSGID_CLIENT_BUSY:
-				pBson = t_rpc_ver3_zip_ClientBusy((ClientBusy *)msg_body, msg_len);
-			break;
-		case MSGID_CLIENT_IDLE:
-				pBson = t_rpc_ver3_zip_ClientIdle((ClientIdle *)msg_body, msg_len);
 			break;
 		case MSGID_COROUTINE_WAKEUP:
 				pBson = t_rpc_ver3_zip_CoroutineWakeup((CoroutineWakeup *)msg_body, msg_len);
@@ -276,6 +270,15 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				pBson = t_rpc_ver3_zip_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, msg_len);
+			break;
+		case MSGID_PROTECTOR_REG:
+				pBson = t_rpc_ver3_zip_ProtectorReg((ProtectorReg *)msg_body, msg_len);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				pBson = t_rpc_ver3_zip_ProtectorUnreg((ProtectorUnreg *)msg_body, msg_len);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				pBson = t_rpc_ver3_zip_ProtectorWakeup((ProtectorWakeup *)msg_body, msg_len);
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				pBson = t_rpc_ver3_zip_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, msg_len);
@@ -629,11 +632,11 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MAINMSG_PYTHON_RSP:
 				ret = t_rpc_ver3_unzip_MainMsgPythonRsp(msg_body, msg_len, pBson);
 			break;
-		case MSGID_BLOCKS_REQ:
-				ret = t_rpc_ver3_unzip_MsgBlocksReq(msg_body, msg_len, pBson);
+		case MSGID_APPLICATION_BUSY:
+				ret = t_rpc_ver3_unzip_ApplicationBusy(msg_body, msg_len, pBson);
 			break;
-		case MSGID_BLOCKS_RSP:
-				ret = t_rpc_ver3_unzip_MsgBlocksRsp(msg_body, msg_len, pBson);
+		case MSGID_APPLICATION_IDLE:
+				ret = t_rpc_ver3_unzip_ApplicationIdle(msg_body, msg_len, pBson);
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				ret = t_rpc_ver3_unzip_CFGRemoteSyncUpdate(msg_body, msg_len, pBson);
@@ -643,12 +646,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_CFG_UPDATE:
 				ret = t_rpc_ver3_unzip_CFGUpdate(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CLIENT_BUSY:
-				ret = t_rpc_ver3_unzip_ClientBusy(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CLIENT_IDLE:
-				ret = t_rpc_ver3_unzip_ClientIdle(msg_body, msg_len, pBson);
 			break;
 		case MSGID_COROUTINE_WAKEUP:
 				ret = t_rpc_ver3_unzip_CoroutineWakeup(msg_body, msg_len, pBson);
@@ -697,6 +694,15 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ret = t_rpc_ver3_unzip_ProcessMsgTimerOutMsg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_REG:
+				ret = t_rpc_ver3_unzip_ProtectorReg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				ret = t_rpc_ver3_unzip_ProtectorUnreg(msg_body, msg_len, pBson);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				ret = t_rpc_ver3_unzip_ProtectorWakeup(msg_body, msg_len, pBson);
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				ret = t_rpc_ver3_unzip_QueueDownloadMsgReq(msg_body, msg_len, pBson);
@@ -1050,11 +1056,11 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MAINMSG_PYTHON_RSP:
 				ptr = t_rpc_ver3_ptr_MainMsgPythonRsp((MainMsgPythonRsp *)msg_body, new_ptr);
 			break;
-		case MSGID_BLOCKS_REQ:
-				ptr = t_rpc_ver3_ptr_MsgBlocksReq((MsgBlocksReq *)msg_body, new_ptr);
+		case MSGID_APPLICATION_BUSY:
+				ptr = t_rpc_ver3_ptr_ApplicationBusy((ApplicationBusy *)msg_body, new_ptr);
 			break;
-		case MSGID_BLOCKS_RSP:
-				ptr = t_rpc_ver3_ptr_MsgBlocksRsp((MsgBlocksRsp *)msg_body, new_ptr);
+		case MSGID_APPLICATION_IDLE:
+				ptr = t_rpc_ver3_ptr_ApplicationIdle((ApplicationIdle *)msg_body, new_ptr);
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				ptr = t_rpc_ver3_ptr_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, new_ptr);
@@ -1064,12 +1070,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case MSGID_CFG_UPDATE:
 				ptr = t_rpc_ver3_ptr_CFGUpdate((CFGUpdate *)msg_body, new_ptr);
-			break;
-		case MSGID_CLIENT_BUSY:
-				ptr = t_rpc_ver3_ptr_ClientBusy((ClientBusy *)msg_body, new_ptr);
-			break;
-		case MSGID_CLIENT_IDLE:
-				ptr = t_rpc_ver3_ptr_ClientIdle((ClientIdle *)msg_body, new_ptr);
 			break;
 		case MSGID_COROUTINE_WAKEUP:
 				ptr = t_rpc_ver3_ptr_CoroutineWakeup((CoroutineWakeup *)msg_body, new_ptr);
@@ -1118,6 +1118,15 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				ptr = t_rpc_ver3_ptr_ProcessMsgTimerOutMsg((ProcessMsgTimerOutMsg *)msg_body, new_ptr);
+			break;
+		case MSGID_PROTECTOR_REG:
+				ptr = t_rpc_ver3_ptr_ProtectorReg((ProtectorReg *)msg_body, new_ptr);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				ptr = t_rpc_ver3_ptr_ProtectorUnreg((ProtectorUnreg *)msg_body, new_ptr);
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				ptr = t_rpc_ver3_ptr_ProtectorWakeup((ProtectorWakeup *)msg_body, new_ptr);
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				ptr = t_rpc_ver3_ptr_QueueDownloadMsgReq((QueueDownloadMsgReq *)msg_body, new_ptr);
@@ -1471,11 +1480,11 @@ _t_rpc_sizeof(ub msg_id)
 		case MAINMSG_PYTHON_RSP:
 				msg_len = t_rpc_ver3_sizeof_MainMsgPythonRsp();
 			break;
-		case MSGID_BLOCKS_REQ:
-				msg_len = t_rpc_ver3_sizeof_MsgBlocksReq();
+		case MSGID_APPLICATION_BUSY:
+				msg_len = t_rpc_ver3_sizeof_ApplicationBusy();
 			break;
-		case MSGID_BLOCKS_RSP:
-				msg_len = t_rpc_ver3_sizeof_MsgBlocksRsp();
+		case MSGID_APPLICATION_IDLE:
+				msg_len = t_rpc_ver3_sizeof_ApplicationIdle();
 			break;
 		case MSGID_CFG_REMOTE_SYNC_UPDATE:
 				msg_len = t_rpc_ver3_sizeof_CFGRemoteSyncUpdate();
@@ -1485,12 +1494,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_CFG_UPDATE:
 				msg_len = t_rpc_ver3_sizeof_CFGUpdate();
-			break;
-		case MSGID_CLIENT_BUSY:
-				msg_len = t_rpc_ver3_sizeof_ClientBusy();
-			break;
-		case MSGID_CLIENT_IDLE:
-				msg_len = t_rpc_ver3_sizeof_ClientIdle();
 			break;
 		case MSGID_COROUTINE_WAKEUP:
 				msg_len = t_rpc_ver3_sizeof_CoroutineWakeup();
@@ -1539,6 +1542,15 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_PROCESS_MSG_TIMER_OUT:
 				msg_len = t_rpc_ver3_sizeof_ProcessMsgTimerOutMsg();
+			break;
+		case MSGID_PROTECTOR_REG:
+				msg_len = t_rpc_ver3_sizeof_ProtectorReg();
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				msg_len = t_rpc_ver3_sizeof_ProtectorUnreg();
+			break;
+		case MSGID_PROTECTOR_WAKEUP:
+				msg_len = t_rpc_ver3_sizeof_ProtectorWakeup();
 			break;
 		case MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ:
 				msg_len = t_rpc_ver3_sizeof_QueueDownloadMsgReq();

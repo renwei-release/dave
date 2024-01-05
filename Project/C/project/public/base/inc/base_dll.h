@@ -122,6 +122,10 @@ API void dave_dll_dos_print(char *msg);
 
 API char * dave_dll_dos_get_user_input(char *give_user_msg, int wait_second);
 
+API void dave_dll_system_online(void);
+
+API void dave_dll_system_offline(void);
+
 #ifdef __cplusplus
 }
 #endif

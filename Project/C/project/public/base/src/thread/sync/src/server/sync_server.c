@@ -22,7 +22,6 @@
 #include "sync_server_tx.h"
 #include "sync_server_rx.h"
 #include "sync_server_data.h"
-#include "sync_server_blocks.h"
 #include "sync_server_tools.h"
 #include "sync_server_sync.h"
 #include "sync_server_run.h"
@@ -115,26 +114,6 @@ _sync_server_events(InternalEvents *pEvents)
 				SYNCLOG("invalid event_id:%d", pEvents->event_id);
 			break;
 	}
-}
-
-static void
-_sync_server_client_busy(ClientBusy *pBusy)
-{
-	SyncClient *pClient = (SyncClient *)(pBusy->ptr);
-
-	sync_server_client_state(pClient, dave_false);
-
-	SYNCLOG("%s on busy! %s", pBusy->verno, ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port));
-}
-
-static void
-_sync_server_client_idle(ClientIdle *pIdle)
-{
-	SyncClient *pClient = (SyncClient *)(pIdle->ptr);
-
-	sync_server_client_state(pClient, dave_true);
-
-	SYNCLOG("%s on idle! %s", pIdle->verno, ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port));
 }
 
 static void
@@ -284,18 +263,6 @@ _sync_server_safe_events(InternalEvents *pEvents)
 }
 
 static void
-_sync_server_safe_client_busy(ClientBusy *pBusy)
-{
-	SAFECODEv2W(_sync_server_system_lock, _sync_server_client_busy(pBusy););
-}
-
-static void
-_sync_server_safe_client_idle(ClientIdle *pIdle)
-{
-	SAFECODEv2W(_sync_server_system_lock, _sync_server_client_idle(pIdle););
-}
-
-static void
 _sync_server_safe_plugin(SocketPlugIn *pPlugIn)
 {
 	SAFECODEv2W(_sync_server_system_lock, _sync_server_plugin(pPlugIn););
@@ -311,12 +278,6 @@ static void
 _sync_server_safe_bind_rsp(SocketBindRsp *pRsp)
 {
 	SAFECODEv2W(_sync_server_system_lock, _sync_server_bind_rsp(pRsp););
-}
-
-static void
-_sync_server_safe_blocks_command(ThreadId src, MsgBlocksReq *pReq)
-{
-	SAFECODEv2W(_sync_server_system_lock, sync_server_blocks_command(src, pReq););
 }
 
 static void
@@ -378,12 +339,6 @@ _sync_server_main(MSGBODY *msg)
 		case MSGID_INTERNAL_EVENTS:
 				_sync_server_safe_events((InternalEvents *)(msg->msg_body));
 			break;
-		case MSGID_CLIENT_BUSY:
-				_sync_server_safe_client_busy((ClientBusy *)(msg->msg_body));
-			break;
-		case MSGID_CLIENT_IDLE:
-				_sync_server_safe_client_idle((ClientIdle *)(msg->msg_body));
-			break;
 		case SOCKET_PLUGIN:
 				_sync_server_safe_plugin((SocketPlugIn *)msg->msg_body);
 			break;
@@ -392,9 +347,6 @@ _sync_server_main(MSGBODY *msg)
 			break;
 		case SOCKET_BIND_RSP:
 				_sync_server_safe_bind_rsp((SocketBindRsp *)msg->msg_body);
-			break;
-		case MSGID_BLOCKS_REQ:
-				_sync_server_safe_blocks_command(msg->msg_src, (MsgBlocksReq *)msg->msg_body);
 			break;
 		case SOCKET_RAW_EVENT:
 				_sync_server_safe_rx_event((SocketRawEvent *)(msg->msg_body));
@@ -410,17 +362,25 @@ _sync_server_exit(MSGBODY *msg)
 	sync_server_tx_exit();
 }
 
+static ub
+_sync_server_thread_number(void)
+{
+	ub thread_number = dave_os_cpu_process_number();
+
+	if(thread_number > 8)
+	{
+		thread_number = 8;
+	}
+
+	return thread_number;
+}
+
 // =====================================================================
 
 void
 sync_server_init(void)
 {
-	/*
-	 * There are too many competition issues to consider,
-	 * and SYNC doesn't care about performance,
-	 * so single threading.
-	 */
-	ub thread_number = 1;
+	ub thread_number = _sync_server_thread_number();
 
 	_sync_server_thread = base_thread_creat(SYNC_SERVER_THREAD_NAME, thread_number, THREAD_THREAD_FLAG|THREAD_PRIVATE_FLAG|THREAD_CORE_FLAG, _sync_server_init, _sync_server_main, _sync_server_exit);
 	if(_sync_server_thread == INVALID_THREAD_ID)

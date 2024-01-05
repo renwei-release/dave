@@ -269,9 +269,9 @@ sync_server_msg_buffer_push(
 }
 
 ub
-sync_server_msg_buffer_info(s8 *info, ub info_len)
+sync_server_msg_buffer_info(s8 *info_ptr, ub info_len)
 {
-	return dave_snprintf(info, info_len,
+	return dave_snprintf(info_ptr, info_len,
 		"MESSAGE BUFFER NUMBER:%d/%d\n",
 		_sync_server_msg_buffer_number,
 		SYNC_SERVER_MSG_BUFFER_MAX);

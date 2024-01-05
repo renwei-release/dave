@@ -15,6 +15,8 @@
 #define default_CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE 100
 #define CFG_MULTIPLE_COROUTINE_ON_THREAD "MultipleCoroutineOnThread"
 #define default_CFG_MULTIPLE_COROUTINE_ON_THREAD 1000
+#define CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG "SysStartupOnOffLineFlag"
+#define default_CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG "online"
 
 static ub _sys_mem_max_use_percentage = 0;
 static ub _multiple_coroutine_on_thread = 0;
@@ -71,6 +73,44 @@ _thread_cfg_update_multiple_coroutine_on_thread(void)
 	}
 }
 
+static dave_bool
+_thread_cfg_update_system_startup_on_off_line_flag_get(void)
+{
+	s8 startup_flag[64];
+
+	cfg_get_str(CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG, startup_flag, sizeof(startup_flag), default_CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG);
+	if(dave_strcmp(startup_flag, "online") == dave_true)
+	{
+		return dave_true;
+	}
+	if(dave_strcmp(startup_flag, "offline") == dave_true)
+	{
+		return dave_false;
+	}
+
+	cfg_set_str(CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG, default_CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG);
+
+	if(dave_strcmp(startup_flag, "online") == dave_true)
+	{
+		return dave_true;
+	}
+	if(dave_strcmp(startup_flag, "offline") == dave_true)
+	{
+		return dave_false;
+	}
+
+	return dave_true;
+}
+
+static void
+_thread_cfg_update_system_startup_on_off_line_flag_set(dave_bool online)
+{
+	if(online == dave_true)
+		cfg_set_str(CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG, "online");
+	else
+		cfg_set_str(CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG, "offline");
+}
+
 static void
 _thread_cfg_update(s8 *name_ptr, ub name_len, s8 *value_ptr, ub value_len)
 {
@@ -81,6 +121,10 @@ _thread_cfg_update(s8 *name_ptr, ub name_len, s8 *value_ptr, ub value_len)
 	else if(dave_strcmp(name_ptr, CFG_MULTIPLE_COROUTINE_ON_THREAD) == dave_true)
 	{
 		_thread_cfg_update_multiple_coroutine_on_thread();
+	}
+	else if(dave_strcmp(name_ptr, CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG) == dave_true)
+	{
+		_thread_cfg_update_system_startup_on_off_line_flag_get();
 	}
 }
 
@@ -94,6 +138,7 @@ thread_cfg_init(void)
 
 	cfg_reg(CFG_SYSTEM_MEMORY_MAX_USE_PERCENTAGE, _thread_cfg_update);
 	cfg_reg(CFG_MULTIPLE_COROUTINE_ON_THREAD, _thread_cfg_update);
+	cfg_reg(CFG_SYSTEM_STARTUP_ON_OFF_LINE_FLAG, _thread_cfg_update);
 }
 
 void
@@ -112,6 +157,18 @@ ub
 thread_cfg_multiple_coroutine_on_thread(void)
 {
 	return _multiple_coroutine_on_thread;
+}
+
+dave_bool
+thread_cfg_system_startup_flag_get(void)
+{
+	return _thread_cfg_update_system_startup_on_off_line_flag_get();
+}
+
+void
+thread_cfg_system_startup_flag_set(dave_bool online)
+{
+	_thread_cfg_update_system_startup_on_off_line_flag_set(online);
 }
 
 #endif

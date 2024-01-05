@@ -78,17 +78,6 @@ typedef struct {
 } IPBaseInfo;
 
 typedef struct {
-	ub blocks_id;
-	s8 verno[DAVE_VERNO_STR_LEN];
-	u8 ip_addr[16];
-	u16 port;
-	dave_bool ready_flag;
-	dave_bool blocks_flag;
-	dave_bool client_flag;
-	ub release_quantity;
-} BuildingBlocks;
-
-typedef struct {
 	EchoType type;
 
 	s8 gid[DAVE_GLOBALLY_IDENTIFIER_LEN];

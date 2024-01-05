@@ -310,17 +310,6 @@ type HttpKeyValue struct {
 	Value [DAVE_HTTP_VALUE_LEN] byte
 }
 
-type BuildingBlocks struct {
-	Blocks_id uint64
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ip_addr [16] byte
-	Port uint16
-	Ready_flag int8
-	Blocks_flag int8
-	Client_flag int8
-	Release_quantity uint64
-}
-
 type MsgIdEcho struct {
 	Type int32
 	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte

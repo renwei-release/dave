@@ -74,11 +74,7 @@ _sync_server_reset_client(SyncClient *pClient)
 	}
 
 	pClient->ready_flag = dave_false;
-	pClient->blocks_flag = dave_false;
-	pClient->client_flag = dave_false;
-
-	pClient->notify_blocks_flag = 1234567;
-	pClient->release_quantity = 0;
+	pClient->client_app_busy = dave_false;
 }
 
 static void
@@ -613,26 +609,26 @@ _sync_server_check_globally_identifier_conflict(SyncClient *pClient)
 			{
 				SYNCLOG("The same service on the same machine initiates two connections, \
 which is usually the reason for the delayed message processing.\
-%s/%s/%s(%d%d%d) %s/%s/%s(%d%d%d)",
+%s/%s/%s(%d) %s/%s/%s(%d)",
 					pCheckClient->verno, pCheckClient->globally_identifier,
 					ipv4str(pCheckClient->NetInfo.addr.ip.ip_addr, pCheckClient->NetInfo.port),
-					pCheckClient->ready_flag, pCheckClient->blocks_flag, pCheckClient->client_flag,
+					pCheckClient->ready_flag,
 					pClient->verno, pClient->globally_identifier,
 					ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
-					pClient->ready_flag, pClient->blocks_flag, pClient->client_flag);
+					pClient->ready_flag);
 				return pClient;
 			}
 			else
 			{
 				SYNCABNOR("This is a serious system conflict! You can use command: \
 set GLOBALLYIDENTIFIER [16Byte] to modify one of the globally identifier. \
-%s/%s/%s(%d%d%d) %s/%s/%s(%d%d%d)",
+%s/%s/%s(%d) %s/%s/%s(%d)",
 					pCheckClient->verno, pCheckClient->globally_identifier,
 					ipv4str(pCheckClient->NetInfo.addr.ip.ip_addr, pCheckClient->NetInfo.port),
-					pCheckClient->ready_flag, pCheckClient->blocks_flag, pCheckClient->client_flag,
+					pCheckClient->ready_flag,
 					pClient->verno, pClient->globally_identifier,
 					ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
-					pClient->ready_flag, pClient->blocks_flag, pClient->client_flag);
+					pClient->ready_flag);
 
 				return pCheckClient;
 			}
@@ -698,21 +694,16 @@ _sync_server_run_test(SyncClient *pClient,
 }
 
 static void
-_sync_server_client_state(SyncClient *pClient, dave_bool idle)
+_sync_server_client_state(SyncClient *pClient, dave_bool busy)
 {
-	dave_bool state_change = dave_false;
-
-	if(pClient->client_flag != idle)
+	if(pClient->client_app_busy != busy)
 	{
-		state_change = dave_true;
+		SYNCLOG("client:%s/%s state change:%s->%s",
+			pClient->globally_identifier, pClient->verno,
+			pClient->client_app_busy == dave_true ? "busy" : "idle",
+			busy == dave_true ? "busy" : "idle");
 	}
-
-	pClient->client_flag = idle;
-
-	if(state_change == dave_true)
-	{
-		sync_server_sync_auto_link(pClient);
-	}
+	pClient->client_app_busy = busy;
 }
 
 // =====================================================================
@@ -857,9 +848,9 @@ sync_server_run_test(SyncClient *pClient,
 }
 
 void
-sync_server_client_state(SyncClient *pClient, dave_bool idle)
+sync_server_client_state(SyncClient *pClient, dave_bool busy)
 {
-	SAFECODEv1(pClient->opt_pv, _sync_server_client_state(pClient, idle););
+	SAFECODEv1(pClient->opt_pv, _sync_server_client_state(pClient, busy););
 }
 
 SyncClient *

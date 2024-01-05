@@ -23,6 +23,9 @@ ltp_test_sentences = [
     '需要人工客服',
     '转人工',
     '多谢',
+    '我要去美国，用什么流量包合适',
+    '你去过中国吗？台湾呢？香港去过吗？拉斯维加斯呢？这个杯子不错，是海明威的杯子吗',
+    '3天越南岘港流量',
 ]
 
 # =====================================================================
@@ -31,7 +34,7 @@ ltp_test_sentences = [
 def test():
     ltp = ltp_predict()
     for ltp_test_sentence in ltp_test_sentences:
-        json_data = json.dumps(ltp.predict(ltp_test_sentence, ["srl"]), ensure_ascii=False, indent=4)    
+        json_data = json.dumps(ltp.predict(ltp_test_sentence, ['ner']), ensure_ascii=False, indent=4)    
         print(f'{json_data}')
     return
 

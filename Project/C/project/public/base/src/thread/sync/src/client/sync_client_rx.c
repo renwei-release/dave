@@ -121,7 +121,7 @@ _sync_client_rx_verno(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 			pServer->globally_identifier, pServer->verno, pServer->host_name,
 			pServer->server_connecting, pServer->server_cnt,
 			pServer->server_booting, pServer->server_ready,
-			pServer->server_busy);
+			pServer->server_app_busy);
 
 		sync_client_gid_add(pServer->globally_identifier, pServer);
 

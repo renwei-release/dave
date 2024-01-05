@@ -200,12 +200,6 @@ dave_bool t_rpc_ver3_unzip_HttpKeyValue(HttpKeyValue *unzip_data, void *pStructB
 void * t_rpc_ver3_zip_HttpKeyValue_d(HttpKeyValue *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_HttpKeyValue_d(HttpKeyValue *unzip_data, ub unzip_len, void *pArrayBson);
 
-void * t_rpc_ver3_zip_BuildingBlocks(BuildingBlocks *zip_data);
-dave_bool t_rpc_ver3_unzip_BuildingBlocks(BuildingBlocks *unzip_data, void *pStructBson);
-
-void * t_rpc_ver3_zip_BuildingBlocks_d(BuildingBlocks *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BuildingBlocks_d(BuildingBlocks *unzip_data, ub unzip_len, void *pArrayBson);
-
 void * t_rpc_ver3_zip_MsgIdEcho(MsgIdEcho *zip_data);
 dave_bool t_rpc_ver3_unzip_MsgIdEcho(MsgIdEcho *unzip_data, void *pStructBson);
 

@@ -12,5 +12,7 @@ dave_bool sync_server_app_tx_all_client(ub msg_id, ub msg_len, void *msg_body);
 
 dave_bool sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_body);
 
+dave_bool sync_server_app_mount_tx(SyncClient *pClient);
+
 #endif
 

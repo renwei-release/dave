@@ -822,8 +822,6 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_REMOTE_THREAD_REMOVE:
 		case MSGID_THREAD_BUSY:
 		case MSGID_THREAD_IDLE:
-		case MSGID_CLIENT_BUSY:
-		case MSGID_CLIENT_IDLE:
 			break;
 		default:
 				_sync_client_route(msg);

@@ -30,6 +30,7 @@
 #include "thread_running.h"
 #include "thread_orchestration.h"
 #include "thread_coroutine.h"
+#include "thread_protector.h"
 #include "thread_cfg.h"
 #include "thread_log.h"
 
@@ -107,6 +108,10 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 	{
 		thread_coroutine_info(pRsp->msg, sizeof(pRsp->msg));
 	}
+	else if(dave_strcmp(pReq->msg, "b") == dave_true)
+	{
+		thread_protector_behavior();
+	}
 	else
 	{
 		thread_show_all_info(_thread, &_system_work_start_date, pRsp->msg, sizeof(pRsp->msg), dave_true);
@@ -118,13 +123,16 @@ _thread_guardian_debug(ThreadId src, DebugReq *pReq)
 static void
 _thread_guardian_restart(RESTARTREQMSG *pReq)
 {
-	if(pReq->times == 4)
+	if(pReq->times == 1)
+	{
+		thread_busy_idle_exit();
+	}
+	else if(pReq->times == 4)
 	{
 		thread_statistics_exit();
 		thread_orchestration_exit();
 		thread_sync_exit();
 		thread_queue_exit();
-		thread_busy_idle_exit();
 		thread_gid_table_exit();
 		thread_remote_id_table_exit();
 		thread_msg_buffer_exit();
@@ -227,6 +235,18 @@ _thread_guardian_main(MSGBODY *msg)
 		case MSGID_LOCAL_THREAD_READY:
 				_thread_guardian_local_thread_ready((ThreadLocalReadyMsg *)(msg->msg_body));
 			break;
+		case MSGID_APPLICATION_BUSY:
+				thread_busy_idle_app_busy(((ApplicationBusy *)(msg->msg_body))->cfg_flag);
+			break;
+		case MSGID_APPLICATION_IDLE:
+				thread_busy_idle_app_idle(((ApplicationIdle *)(msg->msg_body))->cfg_flag);
+			break;
+		case MSGID_PROTECTOR_REG:
+				thread_protector_reg(msg->msg_src);
+			break;
+		case MSGID_PROTECTOR_UNREG:
+				thread_protector_unreg(msg->msg_src);
+			break;
 		default:
 			break;
 	}
@@ -238,12 +258,12 @@ _thread_guardian_init(MSGBODY *msg)
 	thread_msg_buffer_init();
 	thread_remote_id_table_init();
 	thread_gid_table_init();
-	thread_busy_idle_init(_thread);
 	thread_sync_init(_sync_domain);
 	thread_orchestration_init();
 	thread_statistics_init();
 	thread_cfg_init();
 	thread_queue_init();
+	thread_busy_idle_init(_thread);
 }
 
 static void

@@ -559,7 +559,7 @@ _http_recv_req(HTTPRecv *pRecv, s32 socket)
 			&& (pReq->method != HttpMethod_delete))
 		|| (pReq->method >= HttpMethod_max))
 	{
-		HTTPLOG("invalid req, content_length:%d method:%s",
+		HTTPLTRACE(60,1, "invalid req, content_length:%d method:%s",
 			pRecv->fcgi.content_length, t_auto_HttpMethod_str(pReq->method));
 		thread_msg_release(pReq);
 		return dave_false;

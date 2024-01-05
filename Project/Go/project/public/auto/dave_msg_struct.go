@@ -99,6 +99,18 @@ type AppMsgTalkMCardRsp struct {
 	Ptr uint64
 }
 
+/* for MSGID_APPLICATION_BUSY message */
+type ApplicationBusy struct {
+	Cfg_flag int8
+	Ptr uint64
+}
+
+/* for MSGID_APPLICATION_IDLE message */
+type ApplicationIdle struct {
+	Cfg_flag int8
+	Ptr uint64
+}
+
 /* for BBSMSG_ADD_COMMENT_REQ message */
 type BBSMsgAddCommentReq struct {
 	Product_name [DAVE_NORMAL_NAME_LEN] byte
@@ -234,18 +246,6 @@ type CVMsgSculpturesSearchReq struct {
 type CVMsgSculpturesSearchRsp struct {
 	Ret int64
 	Cv_result CVResult
-	Ptr uint64
-}
-
-/* for MSGID_CLIENT_BUSY message */
-type ClientBusy struct {
-	Verno [DAVE_VERNO_STR_LEN] byte
-	Ptr uint64
-}
-
-/* for MSGID_CLIENT_IDLE message */
-type ClientIdle struct {
-	Verno [DAVE_VERNO_STR_LEN] byte
 	Ptr uint64
 }
 
@@ -472,12 +472,14 @@ type DosForward struct {
 
 /* for MSGID_GENERAL_REQ message */
 type GeneralReq struct {
+	General_type [256] byte
 	General_data *MBUF
 	Ptr uint64
 }
 
 /* for MSGID_GENERAL_RSP message */
 type GeneralRsp struct {
+	General_type [256] byte
 	General_data *MBUF
 	Ptr uint64
 }
@@ -596,22 +598,6 @@ type MainMsgPythonRsp struct {
 	Ptr uint64
 }
 
-/* for MSGID_BLOCKS_REQ message */
-type MsgBlocksReq struct {
-	Opt int32
-	Blocks_id_1 uint64
-	Blocks_id_2 uint64
-	Ptr uint64
-}
-
-/* for MSGID_BLOCKS_RSP message */
-type MsgBlocksRsp struct {
-	Ret int64
-	Opt int32
-	Blocks [DAVE_BUILDING_BLOCKS_MAX] BuildingBlocks
-	Ptr uint64
-}
-
 /* for MSGID_ECHO_REQ message */
 type MsgIdEchoReq struct {
 	Echo MsgIdEcho
@@ -644,6 +630,21 @@ type ProcessMsgTimerOutMsg struct {
 	Msg_id uint64
 	Msg_len uint64
 	Msg_body unsafe.Pointer
+}
+
+/* for MSGID_PROTECTOR_REG message */
+type ProtectorReg struct {
+	Ptr uint64
+}
+
+/* for MSGID_PROTECTOR_UNREG message */
+type ProtectorUnreg struct {
+	Ptr uint64
+}
+
+/* for MSGID_PROTECTOR_WAKEUP message */
+type ProtectorWakeup struct {
+	Ptr uint64
 }
 
 /* for MSGID_QUEUE_DOWNLOAD_MESSAGE_REQ message */

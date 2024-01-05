@@ -22,6 +22,7 @@
 #include "sync_server_remote_cfg.h"
 #include "sync_server_local_cfg.h"
 #include "sync_server_sync.h"
+#include "sync_server_app_tx.h"
 #include "sync_server_link_mode.h"
 #include "sync_lock.h"
 #include "sync_test.h"
@@ -51,12 +52,10 @@ _sync_server_sync_client_ready_follow_up(SyncClient *pClient)
 		ipv4str(pClient->NetInfo.addr.ip.ip_addr, pClient->NetInfo.port),
 		pClient->sync_thread_index);
 
-	sync_server_tx_blocks_state(pClient);
-
 	pClient->sync_resynchronization_counter = 0;
 	pClient->sync_thread_index = 0;
-	
-	sync_server_sync_auto_link(pClient);
+
+	sync_server_app_mount_tx(pClient);
 
 	sync_server_remote_cfg_tell_client(pClient);
 
@@ -159,19 +158,16 @@ _sync_server_sync_link_to(SyncClient *pDstClient, SyncClient *pSrcClient)
 	dave_bool ret;
 	ub dst_client_index = pDstClient->client_index;
 
-	SYNCTRACE("verno:%s->%s(%s) link_port:%d link_up_flag:%d ready_flag:%d blocks_flag:%d client_flag:%d",
+	SYNCTRACE("verno:%s->%s(%s) link_port:%d link_up_flag:%d ready_flag:%d client_app_busy:%d",
 		pSrcClient->verno, pDstClient->verno, pSrcClient->send_down_and_up_flag[dst_client_index]==dave_true?"up":"down",
 		pSrcClient->link_port,
 		pSrcClient->link_up_flag,
 		pSrcClient->ready_flag,
-		pSrcClient->blocks_flag,
-		pSrcClient->client_flag);
+		pSrcClient->client_app_busy);
 
 	if((pSrcClient->link_port != 0)
 		&& (pSrcClient->link_up_flag == dave_true)
-		&& (pSrcClient->ready_flag == dave_true)
-		&& (pSrcClient->blocks_flag == dave_true)
-		&& (pSrcClient->client_flag == dave_true))
+		&& (pSrcClient->ready_flag == dave_true))
 	{
 		if(pSrcClient->send_down_and_up_flag[dst_client_index] == dave_false)
 		{
@@ -277,7 +273,7 @@ __sync_server_sync_link__(SyncClient *pClient, dave_bool up_flag, s8 *fun, ub li
 {
 	SYNCTRACE("verno:%s client:%s %s <%s:%d>",
 		pClient->verno,
-		pClient->client_flag==dave_true?"idle":"busy",
+		pClient->client_app_busy==dave_true?"busy":"idle",
 		up_flag==dave_true?"up":"down",
 		fun, line);
 
@@ -292,12 +288,6 @@ __sync_server_sync_link__(SyncClient *pClient, dave_bool up_flag, s8 *fun, ub li
 		_sync_server_sync_link_to_me(pClient);
 		_sync_server_sync_link_to_other(pClient);
 	}
-}
-
-void
-sync_server_sync_auto_link(SyncClient *pClient)
-{
-	sync_server_sync_link(pClient, pClient->link_up_flag);
 }
 
 #endif

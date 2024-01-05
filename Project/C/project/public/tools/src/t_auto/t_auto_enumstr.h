@@ -36,7 +36,6 @@
 
 s8 *t_auto_AIPlaceType_str(AIPlaceType enum_value);
 s8 *t_auto_BaseMsgType_str(BaseMsgType enum_value);
-s8 *t_auto_BuildingBlocksOpt_str(BuildingBlocksOpt enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
 s8 *t_auto_ChainType_str(ChainType enum_value);
 s8 *t_auto_CommentAttributes_str(CommentAttributes enum_value);

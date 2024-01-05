@@ -40,7 +40,7 @@ void sync_server_run_test(SyncClient *pClient,
 	TaskAttribute src_attrib, TaskAttribute dst_attrib,
 	ub msg_len, u8 *msg_body);
 
-void sync_server_client_state(SyncClient *pClient, dave_bool idle);
+void sync_server_client_state(SyncClient *pClient, dave_bool busy);
 
 SyncClient * sync_server_client(ub client_index);
 

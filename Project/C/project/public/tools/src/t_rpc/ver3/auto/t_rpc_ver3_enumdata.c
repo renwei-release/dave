@@ -63,25 +63,6 @@ t_rpc_ver3_unzip_AIPlaceType(AIPlaceType *unzip_data, void *pArrayBson)
 }
 
 void *
-t_rpc_ver3_zip_BuildingBlocksOpt(BuildingBlocksOpt zip_data)
-{
-	return _t_rpc_zip_enumdata((sb)zip_data);
-}
-
-dave_bool
-t_rpc_ver3_unzip_BuildingBlocksOpt(BuildingBlocksOpt *unzip_data, void *pArrayBson)
-{
-	sb sb_unzip_data;
-	dave_bool ret;
-
-	ret = _t_rpc_unzip_enumdata(&sb_unzip_data, pArrayBson);
-
-	*unzip_data = (BuildingBlocksOpt)sb_unzip_data;
-
-	return ret;
-}
-
-void *
 t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data)
 {
 	return _t_rpc_zip_enumdata((sb)zip_data);

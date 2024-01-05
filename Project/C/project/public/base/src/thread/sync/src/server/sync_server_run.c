@@ -13,6 +13,7 @@
 #include "dave_tools.h"
 #include "sync_base_package.h"
 #include "sync_param.h"
+#include "sync_server_data.h"
 #include "sync_server_msg_buffer.h"
 #include "sync_server_remote_cfg.h"
 #include "sync_test.h"
@@ -40,6 +41,18 @@ _sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteSyncUpdate *pUp
 	dave_mfree(pUpdate->cfg_mbuf_value);
 }
 
+static void
+_sync_server_run_client_busy(SyncClient *pClient, SystemBusy *pBusy)
+{
+	sync_server_client_state(pClient, dave_true);
+}
+
+static void
+_sync_server_run_client_idle(SyncClient *pClient, SystemIdle *pIdle)
+{
+	sync_server_client_state(pClient, dave_false);
+}
+
 static dave_bool
 _sync_server_run_special_internal(
 	SyncClient *pClient,
@@ -51,11 +64,11 @@ _sync_server_run_special_internal(
 
 	switch(msg_id)
 	{
-		case MSGID_CLIENT_BUSY:
-				((ClientBusy *)(msg_body))->ptr = pClient;
+		case MSGID_SYSTEM_BUSY:
+				((SystemBusy *)(msg_body))->ptr = pClient;
 			break;
-		case MSGID_CLIENT_IDLE:
-				((ClientIdle *)(msg_body))->ptr = pClient;
+		case MSGID_SYSTEM_IDLE:
+				((SystemIdle *)(msg_body))->ptr = pClient;
 			break;
 		default:
 				ret = dave_false;
@@ -81,10 +94,12 @@ _sync_server_run_internal(
 			break;
 		case MSGID_THREAD_BUSY:
 		case MSGID_THREAD_IDLE:
-		case MSGID_CLIENT_BUSY:
-		case MSGID_CLIENT_IDLE:
+			break;
 		case MSGID_SYSTEM_BUSY:
+				_sync_server_run_client_busy(pClient, (SystemBusy *)(msg_body));
+			break;
 		case MSGID_SYSTEM_IDLE:
+				_sync_server_run_client_idle(pClient, (SystemIdle *)(msg_body));
 			break;
 		default:
 				process_flag = dave_false;
