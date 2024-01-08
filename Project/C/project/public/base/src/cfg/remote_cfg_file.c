@@ -16,6 +16,8 @@
 
 #define REMOTE_FILE_NAME "REMOTE.json"
 
+static TLock _remote_cfg_file_pv;
+
 static s8 *
 _remote_cfg_file_name(s8 *path_ptr, ub path_len)
 {
@@ -86,24 +88,32 @@ _remote_cfg_file_index(void *json, ub index)
 void
 remote_cfg_file_init(void)
 {
-	_remote_cfg_file_clean();
+	t_lock_reset(&_remote_cfg_file_pv);
+
+	SAFECODEv2W(_remote_cfg_file_pv, {
+		_remote_cfg_file_clean();
+	} );
 }
 
 void
 remote_cfg_file_exit(void)
 {
-	_remote_cfg_file_clean();
+	SAFECODEv2W(_remote_cfg_file_pv, {
+		_remote_cfg_file_clean();
+	} );
 }
 
 dave_bool
 remote_cfg_file_set(s8 *name, s8 *value)
 {
 	void *json;
-	dave_bool ret;
+	dave_bool ret = dave_false;
 
-	json = _remote_cfg_file_read();
-	ret = dave_json_add_str(json, name, value);
-	_remote_cfg_file_write(json);
+	SAFECODEv2W(_remote_cfg_file_pv, {
+		json = _remote_cfg_file_read();
+		ret = dave_json_add_str(json, name, value);
+		_remote_cfg_file_write(json);
+	} );
 
 	return ret;
 }
@@ -113,10 +123,12 @@ remote_cfg_file_del(s8 *name)
 {
 	void *json;
 
-	json = _remote_cfg_file_read();
-	CFGDEBUG("%s / %s", name, dave_json_to_string(json, NULL));
-	dave_json_del_object(json, name);
-	_remote_cfg_file_write(json);
+	SAFECODEv2W(_remote_cfg_file_pv, {
+		json = _remote_cfg_file_read();
+		CFGDEBUG("%s / %s", name, dave_json_to_string(json, NULL));
+		dave_json_del_object(json, name);
+		_remote_cfg_file_write(json);
+	} );
 
 	return dave_true;
 }
@@ -126,10 +138,12 @@ remote_cfg_file_get(s8 *name, s8 *value_ptr, ub value_len)
 {
 	void *json;
 
-	json = _remote_cfg_file_read();
-	CFGDEBUG("%s / %s", name, dave_json_to_string(json, NULL));
-	value_len = dave_json_get_str_v2(json, name, value_ptr, value_len);
-	dave_json_free(json);
+	SAFECODEv2R(_remote_cfg_file_pv, {
+		json = _remote_cfg_file_read();
+		CFGDEBUG("%s / %s", name, dave_json_to_string(json, NULL));
+		value_len = dave_json_get_str_v2(json, name, value_ptr, value_len);
+		dave_json_free(json);
+	} );
 
 	return (sb)value_len;
 }
@@ -141,26 +155,28 @@ remote_cfg_file_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value
 	struct lh_entry *entry = NULL;
 	char *key = NULL;
 	struct json_object* val = NULL;
-	sb copy_len;
+	sb copy_len = -1;
 
-	json = _remote_cfg_file_read();
-	CFGDEBUG("%d / %s", index, dave_json_to_string(json, NULL));
+	SAFECODEv2R(_remote_cfg_file_pv, {
+		json = _remote_cfg_file_read();
+		CFGDEBUG("%d / %s", index, dave_json_to_string(json, NULL));
 
-	entry = _remote_cfg_file_index(json, index);
-	if(entry != NULL)
-	{
-		key = (char *)entry->k;
-		val = (struct json_object *)entry->v;
+		entry = _remote_cfg_file_index(json, index);
+		if(entry != NULL)
+		{
+			key = (char *)entry->k;
+			val = (struct json_object *)entry->v;
 
-		dave_strcpy(key_ptr, key, key_len);
-		copy_len = dave_strcpy(value_ptr, json_object_get_string(val), value_len);
-	}
-	else
-	{
-		copy_len = -1;
-	}
+			dave_strcpy(key_ptr, key, key_len);
+			copy_len = dave_strcpy(value_ptr, json_object_get_string(val), value_len);
+		}
+		else
+		{
+			copy_len = -1;
+		}
 
-	dave_json_free(json);
+		dave_json_free(json);
+	} );
 
 	return copy_len;
 }
