@@ -16,6 +16,8 @@
 #include "remote_cfg_file.h"
 #include "cfg_log.h"
 
+// #define ENABLE_CFG_FILE_RECORED
+
 #define MIN_REMOTE_CFG_TTL 60
 #define REFRESH_LEAD_TIME 10
 
@@ -87,14 +89,18 @@ _base_remote_reflash_del(s8 *name)
 void
 base_remote_cfg_init(void)
 {
+#ifdef ENABLE_CFG_FILE_RECORED
 	remote_cfg_file_init();
+#endif
 	remote_cfg_kv_init();
 }
 
 void
 base_remote_cfg_exit(void)
 {
+#ifdef ENABLE_CFG_FILE_RECORED
 	remote_cfg_file_exit();
+#endif
 	remote_cfg_kv_exit();
 }
 
@@ -102,20 +108,30 @@ dave_bool
 base_remote_cfg_internal_add(s8 *name, s8 *value)
 {
 	CFGDEBUG("%s : %s", name, value);
+#ifdef ENABLE_CFG_FILE_RECORED
 	return remote_cfg_file_set(name, value);
+#else
+	return remote_cfg_kv_set(name, value);
+#endif
 }
 
 sb
 base_remote_cfg_internal_inq(s8 *name, s8 *value_ptr, ub value_len)
 {
+#ifdef ENABLE_CFG_FILE_RECORED
 	return remote_cfg_file_get(name, value_ptr, value_len);
+#else
+	return remote_cfg_kv_get(name, value_ptr, value_len);
+#endif
 }
 
 dave_bool
 base_remote_cfg_internal_del(s8 *name)
 {
 	CFGDEBUG("%s", name);
+#ifdef ENABLE_CFG_FILE_RECORED
 	remote_cfg_file_del(name);
+#endif
 	remote_cfg_kv_del(name);
 	return dave_true;
 }
@@ -151,7 +167,7 @@ base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 	if(get_len < 0)
 	{
 		CFGDEBUG("%s:%d/%s", name, get_len, value_ptr);
-
+#ifdef ENABLE_CFG_FILE_RECORED
 		get_len = remote_cfg_file_get(name, value_ptr, value_len);
 		if(get_len >= 0)
 		{
@@ -159,6 +175,7 @@ base_remote_cfg_get(s8 *name, s8 *value_ptr, ub value_len)
 
 			remote_cfg_kv_set(name, value_ptr);
 		}
+#endif
 	}
 
 	return get_len;
@@ -181,7 +198,11 @@ base_remote_cfg_del(s8 *name)
 sb
 base_remote_cfg_index(ub index, s8 *key_ptr, ub key_len, s8 *value_ptr, ub value_len)
 {
+#ifdef ENABLE_CFG_FILE_RECORED
 	return remote_cfg_file_index(index, key_ptr, key_len, value_ptr, value_len);
+#else
+	return remote_cfg_kv_index(index, key_ptr, key_len, value_ptr, value_len);
+#endif
 }
 
 #endif
