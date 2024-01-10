@@ -268,9 +268,9 @@ sync_client_link_info(s8 *info, ub info_len)
 
 	info_index += dave_snprintf(&info[info_index], info_len-info_index,
 		"Link:%s%s%s (1.cfg:%d.%d.%d.%d 2.detect:%d.%d.%d.%d 3.sys:%d.%d.%d.%d->link:%s)\n",
-		_link_online_flag == dave_true ? "" : "***",
-		_link_online_flag == dave_true ? "Online" : "Offline",
-		_link_online_flag == dave_true ? "" : "***",
+		sync_client_data_get_busy() == dave_false ? "" : "***",
+		sync_client_data_get_busy() == dave_false ? "Online" : "Offline",
+		sync_client_data_get_busy() == dave_false ? "" : "***",
 		ip_cfg[0], ip_cfg[1], ip_cfg[2], ip_cfg[3],
 		ip_detect[0], ip_detect[1], ip_detect[2], ip_detect[3],
 		ip_sys[0], ip_sys[1], ip_sys[2], ip_sys[3],

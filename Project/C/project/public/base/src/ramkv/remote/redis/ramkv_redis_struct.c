@@ -9,6 +9,8 @@
 #if defined(__DAVE_BASE__)
 #include "dave_os.h"
 #include "dave_tools.h"
+#include "dave_base.h"
+#include "dave_store.h"
 #include "ramkv_param.h"
 #include "ramkv_redis_struct.h"
 #include "ramkv_redis_api.h"
@@ -23,20 +25,18 @@
 dave_bool
 ramkv_malloc_redis(KVRedis *pKV, s8 *table_name)
 {
-	ub thread_flag = get_thread_flag();
-
 	dave_memset(pKV, 0x00, sizeof(KVRedis));
 
 	pKV->local_redis_flag = cfg_get_bool(CFG_KV_ON_LOCAL_REDIS, dave_false);
-	if((pKV->local_redis_flag == dave_false)
-		&& ((thread_flag & THREAD_PRIVATE_FLAG) || ((thread_flag & THREAD_COROUTINE_FLAG) == 0x00)))
-	{
-		KVLOG("This %s does not have the coroutine capability enabled and cannot use remote REDIS.", thread_name(self()));
-		pKV->local_redis_flag = dave_true;
-	}
 
 	dave_strcpy(pKV->table_name_ptr, table_name, sizeof(pKV->table_name_ptr));
 	pKV->table_name_len = dave_strlen(pKV->table_name_ptr);
+
+	pKV->store_thread = INVALID_THREAD_ID;
+	if(get_thread_flag() & THREAD_COROUTINE_FLAG)
+		pKV->has_coroutine = dave_true;
+	else
+		pKV->has_coroutine = dave_false;
 
 	pKV->redis_context = ramkv_redis_connect(pKV);
 

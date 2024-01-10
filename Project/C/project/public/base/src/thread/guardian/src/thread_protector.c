@@ -24,7 +24,9 @@
 int pthread_setname_np(pthread_t thread, const char *name);
 extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
-#define PROTECTOR_LIFE_MAX 12
+#define PROTECTOR_MAX_TIME 120
+#define PROTECTOR_BASE_TIME 5
+#define PROTECTOR_LIFE_MAX (PROTECTOR_MAX_TIME / PROTECTOR_BASE_TIME)
 
 typedef struct {
 	sb life;
@@ -47,7 +49,14 @@ _thread_protector_write_wakeup(ThreadProtector *pProtector)
 {
 	ProtectorWakeup *pWakeup = thread_msg(pWakeup);
 
-	snd_from_msg(pProtector->thread_id, pProtector->thread_id, MSGID_PROTECTOR_WAKEUP, sizeof(ProtectorWakeup), pWakeup);
+	base_thread_id_msg(
+		NULL, NULL,
+		NULL, NULL,
+		pProtector->thread_id, pProtector->thread_id,
+		BaseMsgType_pre_msg,
+		(ub)MSGID_PROTECTOR_WAKEUP, sizeof(ProtectorWakeup), (u8 *)(pWakeup),
+		0,
+		(s8 *)__func__, (ub)__LINE__);
 }
 
 static void
@@ -79,9 +88,11 @@ _thread_protector_pstack(void)
 
 	snprintf(system_comand, sizeof(system_comand), "pstack %d", getpid());
 
+	fprintf(stdout, "system_comand:%s start\n", system_comand);
+
 	result = system(system_comand);
 
-	fprintf(stdout, "system_comand:%s result:%d\n", system_comand, result);
+	fprintf(stdout, "system_comand:%s end result:%d\n", system_comand, result);
 }
 
 static void
@@ -91,7 +102,7 @@ _thread_protector_info(void)
 
 	base_thread_info(msg_ptr, sizeof(msg_ptr));
 
-	fprintf(stdout, "dave system info:\n%s\n", msg_ptr);
+	fprintf(stdout, "\n\ndave system info:\n%s\n\n", msg_ptr);
 }
 
 static void
@@ -136,7 +147,7 @@ _thread_protector_function(void *arg)
 
 		_thread_protector_write_wakeup(pProtector);
 
-		dave_os_sleep(6000);
+		dave_os_sleep(PROTECTOR_BASE_TIME * 1000);
 
 		if(pProtector->life <= 0)
 		{

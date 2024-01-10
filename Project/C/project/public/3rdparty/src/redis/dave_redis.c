@@ -50,7 +50,19 @@ _redis_reply_nil_to_json(redisReply *redis_reply)
 }
 
 static void *
-_redis_reply_to_json(redisReply *redis_reply)
+_redis_reply_error_to_json(s8 *command, redisReply *redis_reply)
+{
+	void *pJson = dave_json_malloc();
+
+	dave_json_add_str(pJson, "ERROR", redis_reply->str);
+
+	PARTYABNOR("command:%s error:%s", command, redis_reply->str);
+
+	return pJson;
+}
+
+static void *
+_redis_reply_to_json(s8 *command, redisReply *redis_reply)
 {
 	void *pJson = NULL;
 
@@ -67,6 +79,9 @@ _redis_reply_to_json(redisReply *redis_reply)
 			break;
 		case REDIS_REPLY_NIL:
 				pJson = _redis_reply_nil_to_json(redis_reply);
+			break;
+		case REDIS_REPLY_ERROR:
+				pJson = _redis_reply_error_to_json(command, redis_reply);
 			break;
 		default:
 				PARTYABNOR("unsupport type:%d", redis_reply->type);
@@ -106,6 +121,7 @@ _redis_auth(redisContext *context, s8 *pwd)
 	}
 	else
 	{
+		PARTYLOG("redis auth success!");
 		ret = dave_true;
 	}
 
@@ -126,7 +142,7 @@ dave_redis_connect(s8 *ip, ub port, s8 *pwd)
 	tv.tv_usec = 0;
 	context = redisConnectWithTimeout((const char *)ip, (int)port, tv);
 
-	if(context == NULL || context->err) 
+	if((context == NULL) || (context->err)) 
 	{
 	    if(context)
 		{
@@ -190,7 +206,7 @@ dave_redis_command(void *context, s8 *command)
 		return NULL;
 	}
 
-	pJson = _redis_reply_to_json(redis_reply);
+	pJson = _redis_reply_to_json(command, redis_reply);
 	if(pJson == NULL)
 	{
 		PARTYLOG("empty data. command:%s type:%d", command, redis_reply->type);

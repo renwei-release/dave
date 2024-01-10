@@ -12,17 +12,31 @@ from public.base.dave_log import DAVELOG
 STORE_THREAD_NAME=b"store"
 
 
+def _store_sql_co(sql):
+    pReq = thread_msg(StoreMysqlReq)
+    pReq.contents.sql = str_to_mbuf(sql)
+    pReq.contents.ptr = None
+
+    pRsp = write_co(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
+    return pRsp 
+
+
+def _store_sql_sync(sql):
+    pReq = thread_msg(StoreMysqlReq)
+    pReq.contents.sql = str_to_mbuf(sql)
+    pReq.contents.ptr = None
+
+    pRsp = sync_msg(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
+    return pRsp
+
+
 # =====================================================================
 
 
 def STORESQL(*sql: object):
     sql = str(sql[0])
 
-    pReq = thread_msg(StoreMysqlReq)
-    pReq.contents.sql = str_to_mbuf(sql)
-    pReq.contents.ptr = None
-
-    pRsp = write_co(STORE_THREAD_NAME, STORE_MYSQL_REQ, pReq, STORE_MYSQL_RSP, StoreMysqlRsp)
+    pRsp = _store_sql_sync(sql)
     if pRsp == None:
         DAVELOG(f"pRsp is None / sql:{sql}")
         return ERRCODE_ptr_null, None

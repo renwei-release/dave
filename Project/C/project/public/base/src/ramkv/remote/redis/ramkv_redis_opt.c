@@ -19,18 +19,35 @@
 #include "ramkv_log.h"
 
 static void *
-_ramkv_redis_remote_command(MBUF *command)
+_ramkv_redis_remote_command(KVRedis *pKV, MBUF *command)
 {
 	StoreRedisReq *pReq = thread_msg(pReq);
+	StoreRedisRsp sync_rsp;
 	StoreRedisRsp *pRsp;
 	void *pJson;
 	
 	pReq->command = command;
 	pReq->ptr = NULL;
-	
-	pRsp = name_co(STORE_THREAD_NAME, STORE_REDIS_REQ, pReq, STORE_REDIS_RSP);
+
+	if(pKV->store_thread == INVALID_THREAD_ID)
+	{
+		pKV->store_thread = thread_id(STORE_THREAD_NAME);
+	}
+
+	if(pKV->has_coroutine == dave_true)
+	{
+		pRsp = id_co(pKV->store_thread, STORE_REDIS_REQ, pReq, STORE_REDIS_RSP);
+	}
+	else
+	{
+		if(sync_msg(pKV->store_thread, STORE_REDIS_REQ, pReq, STORE_REDIS_RSP, &sync_rsp) == NULL)
+			pRsp = NULL;
+		else
+			pRsp = &sync_rsp;
+	}
 	if(pRsp == NULL)
 	{
+		pKV->store_thread = thread_id(STORE_THREAD_NAME);
 		KVLOG("timer out!");
 		return NULL;
 	}
@@ -103,7 +120,7 @@ _ramkv_redis_command(KVRedis *pKV, MBUF *command)
 	}
 	else
 	{
-		pJson = _ramkv_redis_remote_command(command);
+		pJson = _ramkv_redis_remote_command(pKV, command);
 	}
 
 	return pJson;

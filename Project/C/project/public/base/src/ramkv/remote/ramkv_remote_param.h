@@ -18,6 +18,9 @@ typedef struct {
 
 	s8 table_name_ptr[DAVE_NORMAL_NAME_LEN];
 	ub table_name_len;
+
+	ThreadId store_thread;
+	dave_bool has_coroutine;
 } KVRedis;
 
 typedef struct {
