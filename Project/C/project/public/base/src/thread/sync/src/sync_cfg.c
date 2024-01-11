@@ -130,7 +130,7 @@ sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 
 	if(real_cfg == dave_false)
 	{
-		dave_os_load_ip(ip, NULL);
+		dave_memset(ip, 0x00, DAVE_IP_V4_ADDR_LEN);
 	}
 
 	return real_cfg;

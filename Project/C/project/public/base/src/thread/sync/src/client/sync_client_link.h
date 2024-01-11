@@ -24,9 +24,9 @@ SyncServer * sync_client_link_plugin(SocketPlugIn *pPlugIn);
 
 SyncServer * sync_client_link_plugout(SocketPlugOut *pPlugOut);
 
-ub sync_client_link_info(s8 *info, ub info_len);
-
 void sync_client_link_tell_sync_server(u8 *detect_my_ip);
+
+ub sync_client_link_info(s8 *info_ptr, ub info_len);
 
 #endif
 

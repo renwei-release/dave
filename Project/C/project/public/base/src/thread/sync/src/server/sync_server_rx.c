@@ -625,52 +625,8 @@ _sync_server_rx_test_run_thread_msg_req(SyncClient *pClient, ub frame_len, u8 *f
 		msg_len, msg_body);
 }
 
-static void
-_sync_server_rx_run_internal_msg_req(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
-{
-	ThreadId route_src, route_dst;
-	s8 src[SYNC_THREAD_NAME_LEN];
-	s8 dst[SYNC_THREAD_NAME_LEN];
-	ub msg_id;
-	BaseMsgType msg_type;
-	TaskAttribute src_attrib, dst_attrib;
-	u8 *packet_ptr = NULL;
-	ub packet_len = 0;
-	void *msg_body = NULL;
-	ub msg_len = 0;
-
-	sync_lock();
-	pClient->recv_msg_counter ++;
-	sync_unlock();
-
-	sync_msg_unpacket(
-		frame_ptr, frame_len,
-		&route_src, &route_dst, src, dst, &msg_id,
-		&msg_type, &src_attrib, &dst_attrib,
-		&packet_len, &packet_ptr);
-
-	msg_len = packet_len;
-	if(msg_len > 0)
-	{
-		msg_body = base_thread_msg_creat(msg_len, dave_false, (s8 *)__func__, (ub)__LINE__);
-		dave_memcpy(msg_body, packet_ptr, msg_len);
-	}
-
-	if((src[0] != '\0') && (dst[0] != '\0') && (msg_id != MSGID_RESERVED) && (msg_len > 0))
-	{
-		sync_server_run_internal(pClient, src, dst, msg_id, msg_len, msg_body);
-	}
-	else
-	{
-		SYNCABNOR("find invalid parameter, src:%s dst:%s msg_id:%d msg_len:%d",
-			src, dst, msg_id, msg_len);
-
-		thread_msg_release(msg_body);
-	}
-}
-
 static inline void
-_sync_server_rx_run_internal_msg_v2_req(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
+_sync_server_rx_run_internal_msg_req(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
 {
 	ThreadId route_src, route_dst;
 	s8 src[SYNC_THREAD_NAME_LEN];
@@ -889,11 +845,6 @@ _sync_server_rx(SyncClient *pClient, ORDER_CODE order_id, ub frame_len, u8 *fram
 			break;
 		case ORDER_CODE_RUN_INTERNAL_MSG_REQ:
 				_sync_server_rx_run_internal_msg_req(pClient, frame_len, frame_ptr);
-			break;
-		case ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ:
-				_sync_server_rx_run_internal_msg_v2_req(pClient, frame_len, frame_ptr);
-			break;
-		case ORDER_CODE_RUN_INTERNAL_MSG_RSP:
 			break;
 		case ORDER_CODE_LINK_UP_REQ:
 				_sync_server_rx_link_up_req(pClient, frame_len, frame_ptr);

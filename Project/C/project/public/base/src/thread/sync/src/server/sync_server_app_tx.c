@@ -31,7 +31,7 @@ _sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg
 		return dave_false;
 	}
 
-	return sync_server_tx_run_internal_msg_v2_req(pClient, msg_id, msg_len, msg_body);
+	return sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
 }
 
 // =====================================================================

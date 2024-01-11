@@ -25,7 +25,7 @@
 #endif
 
 #define LOG_TID_MAX DAVE_SYS_THREAD_ID_MAX
-#define LOG_LIST_MAX (LOG_BUFFER_MAX + 128)
+#define LOG_LIST_MAX (LOG_BUFFER_MAX - 8)
 #define INVALID_TID 0xffffffffffffffff
 
 static volatile dave_bool __system_startup__ = dave_false;
@@ -203,8 +203,9 @@ _log_buffer_thread_build(void)
 	{
 		if(tid != pBuffer->tid)
 		{
-			LOGABNOR("overflow tid zone! tid:%d/%d",
+			LOGABNOR("overflow tid zone! tid:%ld/%ld",
 				tid, pBuffer->tid);
+			pBuffer = NULL;
 		}
 	}
 

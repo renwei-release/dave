@@ -48,48 +48,6 @@ static void _sync_client_reconnect_syncs_action(void);
 static void _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_index);
 
 static void
-_sync_client_system_mount(ThreadId src, SystemMount *pMount)
-{
-	SystemMount *pmount;
-
-	if(src == _sync_client_thread)
-	{
-		/*
-		 * 收到SYNC服务的内部挂载消息，
-		 * 把这个消息广播给本地除自己外的其他线程。
-		 */
-		pmount = thread_msg(pmount);
-
-		dave_memcpy(pmount, pMount, sizeof(SystemMount));
-
-		SYNCTRACE("socker:%d verno:%s", pmount->socket, pmount->verno);
-
-		broadcast_local_no_me(MSGID_SYSTEM_MOUNT, pmount);
-	}
-
-	sync_client_link_start();
-}
-
-static void
-_sync_client_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
-{
-	SystemDecoupling *pdecoupling;
-
-	sync_client_link_stop();
-
-	if(src == _sync_client_thread)
-	{
-		pdecoupling = thread_msg(pdecoupling);
-
-		dave_memcpy(pdecoupling, pDecoupling, sizeof(SystemDecoupling));
-
-		SYNCTRACE("socker:%d verno:%s", pdecoupling->socket, pdecoupling->verno);
-
-		broadcast_local_no_me(MSGID_SYSTEM_DECOUPLING, pdecoupling);
-	}
-}
-
-static void
 _sync_client_disconnect_rsp(SocketDisconnectRsp *pRsp)
 {
 	SyncServer *pServer = (SyncServer *)(pRsp->ptr);
@@ -644,18 +602,6 @@ _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_in
 }
 
 static void
-_sync_client_safe_system_mount(ThreadId src, SystemMount *pMount)
-{
-	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_mount(src, pMount); } );
-}
-
-static void
-_sync_client_safe_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
-{
-	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_decoupling(src, pDecoupling); } );
-}
-
-static void
 _sync_client_safe_connect_rsp(SocketConnectRsp *pRsp)
 {
 	SAFECODEv2W(_sync_client_system_lock, { _sync_client_connect_rsp(pRsp); } );
@@ -779,12 +725,6 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
 			break;
-		case MSGID_SYSTEM_MOUNT:
-				_sync_client_safe_system_mount(msg->msg_src, (SystemMount *)(msg->msg_body));
-			break;
-		case MSGID_SYSTEM_DECOUPLING:
-				_sync_client_safe_system_decoupling(msg->msg_src, (SystemDecoupling *)(msg->msg_body));
-			break;
 		case MSGID_SYSTEM_BUSY:
 				_sync_client_system_busy((SystemBusy *)(msg->msg_body));
 			break;
@@ -813,6 +753,8 @@ _sync_client_main(MSGBODY *msg)
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
 			break;
 		case MSGID_WAKEUP:
+		case MSGID_SYSTEM_MOUNT:
+		case MSGID_SYSTEM_DECOUPLING:
 		case MSGID_LOCAL_THREAD_READY:
 		case MSGID_LOCAL_THREAD_REMOVE:
 		case MSGID_CFG_REMOTE_UPDATE:

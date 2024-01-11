@@ -89,7 +89,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 
 			if(pThread[thread_index].thread_flag & THREAD_COROUTINE_FLAG)
 			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu %sco%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu %sco%s:%lu/%lu:%lu f:%s d:%s\n",
 					printf_len >= 24 ? "" : "\t",
 					printf_len < 16 ? "\t" : "",
 					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
@@ -113,12 +113,11 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 					co_received_counter, co_processed_counter,
 					co_unprocessed_counter,
 					thread_name(pThread[thread_index].father),
-					pThread[thread_index].trace_on==dave_true ? "on" : "off",
-					pThread[thread_index].message_idle_time, pThread[thread_index].message_idle_total, pThread[thread_index].message_wakeup_counter);
+					pThread[thread_index].trace_on==dave_true ? "on" : "off");
 			}
 			else if(pThread[thread_index].thread_flag & THREAD_THREAD_FLAG)
 			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu %st%s:%lu/%lu:%lu f:%s d:%s\n",
 					printf_len >= 24 ? "" : "\t",
 					printf_len < 16 ? "\t" : "",
 					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
@@ -138,12 +137,11 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 					trd_received_counter, trd_processed_counter,
 					trd_unprocessed_counter,
 					thread_name(pThread[thread_index].father),
-					pThread[thread_index].trace_on==dave_true ? "on" : "off",
-					pThread[thread_index].message_idle_time, pThread[thread_index].message_idle_total, pThread[thread_index].message_wakeup_counter);
+					pThread[thread_index].trace_on==dave_true ? "on" : "off");
 			}
 			else
 			{
-				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu f:%s d:%s i:%lx/%lu/%lu\n",
+				msg_index += dave_snprintf(&msg_ptr[msg_index], msg_len-msg_index, "\t%s%s%sm%s:%lu/%lu:%lu %ss%s:%lu/%lu:%lu %sp%s:%lu/%lu:%lu f:%s d:%s\n",
 					printf_len >= 24 ? "" : "\t",
 					printf_len < 16 ? "\t" : "",
 					(msg_unprocessed_counter) >= NOTIFY_MSG_MIN ? "\033[31m" : "",
@@ -159,8 +157,7 @@ _thread_info(ThreadStruct *pThread, s8 *msg_ptr, ub msg_len)
 					pre_received_counter, pre_processed_counter,
 					pre_unprocessed_counter,
 					thread_name(pThread[thread_index].father),
-					pThread[thread_index].trace_on==dave_true ? "on" : "off",
-					pThread[thread_index].message_idle_time, pThread[thread_index].message_idle_total, pThread[thread_index].message_wakeup_counter);
+					pThread[thread_index].trace_on==dave_true ? "on" : "off");
 			}
 		}
 	}

@@ -53,7 +53,7 @@ _sync_server_tx(SyncClient *pClient, ORDER_CODE order_id, MBUF *data)
 }
 
 static dave_bool
-_sync_server_tx_run_internal_msg_v2_req(
+_sync_server_tx_run_internal_msg_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body)
 {
@@ -80,7 +80,7 @@ _sync_server_tx_run_internal_msg_v2_req(
 
 	dave_mchain(snd_buffer, zip_body);
 
-	return _sync_server_tx(pClient, ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ, snd_buffer);
+	return _sync_server_tx(pClient, ORDER_CODE_RUN_INTERNAL_MSG_REQ, snd_buffer);
 }
 
 static dave_bool
@@ -197,7 +197,7 @@ sync_server_tx_run_thread_msg_req(
 }
 
 dave_bool
-sync_server_tx_run_internal_msg_v2_req(
+sync_server_tx_run_internal_msg_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body)
 {
@@ -205,7 +205,7 @@ sync_server_tx_run_internal_msg_v2_req(
 	pClient->send_msg_counter ++;
 	sync_unlock();
 
-	return _sync_server_tx_run_internal_msg_v2_req(pClient, msg_id, msg_len, msg_body);
+	return _sync_server_tx_run_internal_msg_req(pClient, msg_id, msg_len, msg_body);
 }
 
 dave_bool

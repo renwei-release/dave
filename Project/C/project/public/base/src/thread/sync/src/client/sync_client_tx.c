@@ -78,7 +78,7 @@ _sync_client_qtx(
 }
 
 static dave_bool
-_sync_client_tx_run_internal_msg_v2_req(
+_sync_client_tx_run_internal_msg_req(
 	SyncServer *pServer,
 	ub msg_id, ub msg_len, void *msg_body)
 {
@@ -105,7 +105,7 @@ _sync_client_tx_run_internal_msg_v2_req(
 
 	dave_mchain(snd_buffer, zip_body);
 
-	return _sync_client_tx(pServer, ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ, snd_buffer);
+	return _sync_client_tx(pServer, ORDER_CODE_RUN_INTERNAL_MSG_REQ, snd_buffer);
 }
 
 // =====================================================================
@@ -140,7 +140,7 @@ sync_client_tx_run_internal_msg_req(
 
 	if(pServer->server_cnt == dave_true)
 	{
-		ret = _sync_client_tx_run_internal_msg_v2_req(pServer, msg_id, msg_len, msg_body);
+		ret = _sync_client_tx_run_internal_msg_req(pServer, msg_id, msg_len, msg_body);
 	}
 	else
 	{

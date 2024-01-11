@@ -84,45 +84,7 @@ _log_server_log_save(
 }
 
 static inline void
-_log_server_log_record(ub frame_len, u8 *frame)
-{
-	ub frame_index;
-	s8 product_name[256];
-	u16 product_name_len;
-	s8 device_info[256];
-	u16 device_info_len;
-	u16 log_len;
-
-	frame_index = 0;
-
-	dave_byte_16(product_name_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(product_name, &frame[frame_index], product_name_len);
-	if(product_name_len < sizeof(product_name))
-	{
-		product_name[product_name_len] = '\0';
-	}
-
-	dave_byte_16(device_info_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(device_info, &frame[frame_index], device_info_len);
-	if(device_info_len < sizeof(device_info))
-	{
-		device_info[device_info_len] = '\0';
-	}
-
-	dave_byte_16(log_len, frame[frame_index++], frame[frame_index++]);
-
-	if(log_len > (frame_len - frame_index))
-	{
-		LOGABNOR("invalid content_len:%d frame_len:%d frame_index:%d",
-			log_len, frame_len, frame_index);
-		log_len = frame_len - frame_index;
-	}
-
-	_log_server_log_save(product_name, device_info, TRACELEVEL_LOG, (s8 *)(&frame[frame_index]), log_len);
-}
-
-static inline void
-_log_server_log_record_v2(ub frame_len, u8 *frame)
+_log_server_log_record(ub frame_len, u8 *frame_ptr)
 {
 	ub frame_index;
 	s8 product_name[256];
@@ -134,21 +96,21 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 
 	frame_index = 0;
 
-	dave_byte_16(product_name_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(product_name, &frame[frame_index], product_name_len);
+	dave_byte_16(product_name_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	frame_index += dave_memcpy(product_name, &frame_ptr[frame_index], product_name_len);
 	if(product_name_len < sizeof(product_name))
 	{
 		product_name[product_name_len] = '\0';
 	}
-	dave_byte_16(device_info_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(device_info, &frame[frame_index], device_info_len);
+	dave_byte_16(device_info_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	frame_index += dave_memcpy(device_info, &frame_ptr[frame_index], device_info_len);
 	if(device_info_len < sizeof(device_info))
 	{
 		device_info[device_info_len] = '\0';
 	}
 
-	dave_byte_16(level, frame[frame_index++], frame[frame_index++]);
-	dave_byte_16(log_len, frame[frame_index++], frame[frame_index++]);
+	dave_byte_16(level, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	dave_byte_16(log_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
 
 	if(log_len > (frame_len - frame_index))
 	{
@@ -157,11 +119,11 @@ _log_server_log_record_v2(ub frame_len, u8 *frame)
 		log_len = frame_len - frame_index;
 	}
 
-	_log_server_log_save(product_name, device_info, level, (s8 *)(&frame[frame_index]), log_len);
+	_log_server_log_save(product_name, device_info, level, (s8 *)(&frame_ptr[frame_index]), log_len);
 }
 
 static inline void
-_log_server_log_chain(ub frame_len, u8 *frame)
+_log_server_log_chain(ub frame_len, u8 *frame_ptr)
 {
 	ub frame_index;
 	s8 chain_name[256];
@@ -174,35 +136,35 @@ _log_server_log_chain(ub frame_len, u8 *frame)
 
 	frame_index = 0;
 
-	dave_byte_16(chain_name_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(chain_name, &frame[frame_index], chain_name_len);
+	dave_byte_16(chain_name_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	frame_index += dave_memcpy(chain_name, &frame_ptr[frame_index], chain_name_len);
 	if(chain_name_len < sizeof(chain_name))
 	{
 		chain_name[chain_name_len] = '\0';
 	}
-	dave_byte_16(device_info_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(device_info, &frame[frame_index], device_info_len);
+	dave_byte_16(device_info_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	frame_index += dave_memcpy(device_info, &frame_ptr[frame_index], device_info_len);
 	if(device_info_len < sizeof(device_info))
 	{
 		device_info[device_info_len] = '\0';
 	}
-	dave_byte_16(service_verno_len, frame[frame_index++], frame[frame_index++]);
-	frame_index += dave_memcpy(service_verno, &frame[frame_index], service_verno_len);
+	dave_byte_16(service_verno_len, frame_ptr[frame_index++], frame_ptr[frame_index++]);
+	frame_index += dave_memcpy(service_verno, &frame_ptr[frame_index], service_verno_len);
 	if(service_verno_len < sizeof(service_verno))
 	{
 		service_verno[service_verno_len] = '\0';
 	}
-	dave_byte_8_32(chain_len, frame[frame_index++], frame[frame_index++], frame[frame_index++], frame[frame_index++]);
+	dave_byte_8_32(chain_len, frame_ptr[frame_index++], frame_ptr[frame_index++], frame_ptr[frame_index++], frame_ptr[frame_index++]);
 
-	_log_server_trace(chain_name, device_info, (s8 *)(&frame[frame_index]), chain_len);
+	_log_server_trace(chain_name, device_info, (s8 *)(&frame_ptr[frame_index]), chain_len);
 
 	LOGTRACE("chain_name:%s device:%s service_verno:%s", chain_name, device_info, service_verno);
 
-	log_save_chain_file(chain_name, device_info, service_verno, (s8 *)(&frame[frame_index]), chain_len);
+	log_save_chain_file(chain_name, device_info, service_verno, (s8 *)(&frame_ptr[frame_index]), chain_len);
 }
 
 static void
-_log_server_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame)
+_log_server_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, ORDER_CODE order_id, ub frame_len, u8 *frame_ptr)
 {
 	LOGDEBUG("order_id:%s ver_type:%s %s->%s frame_len:%d",
 		t_auto_ORDER_CODE_str(order_id), t_auto_FRAMETYPE_str(ver_type),
@@ -213,15 +175,13 @@ _log_server_rx(void *param, s32 socket, IPBaseInfo *pInfo, FRAMETYPE ver_type, O
 	switch(order_id)
 	{
 		case ORDER_CODE_LOG_RECORD:
-				_log_server_log_record(frame_len, frame);
-			break;
-		case ORDER_CODE_LOG_RECORD_V2:
-				_log_server_log_record_v2(frame_len, frame);
+				_log_server_log_record(frame_len, frame_ptr);
 			break;
 		case ORDER_CODE_LOG_CHAIN:
-				_log_server_log_chain(frame_len, frame);
+				_log_server_log_chain(frame_len, frame_ptr);
 			break;
 		default:
+				LOGLOG("unsupport order_id:%ld", order_id);
 			break;
 	}
 }

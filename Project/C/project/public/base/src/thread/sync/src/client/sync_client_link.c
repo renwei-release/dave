@@ -25,13 +25,13 @@
 
 static void _sync_client_link_server_bind_req(void);
 
-static ThreadId _socket_thread = INVALID_THREAD_ID;
 static s32 _link_server_socket = INVALID_SOCKET_ID;
 static u8 _link_server_cfg_my_ip[DAVE_IP_V6_ADDR_LEN];
-static dave_bool _link_server_real_cfg_my_ip = dave_false;
+static dave_bool _link_server_cfg_my_ip_flag = dave_false;
 static u8 _link_server_detect_my_ip[DAVE_IP_V6_ADDR_LEN];
+static dave_bool _link_server_detect_my_ip_flag = dave_false;
+static u8 _link_server_sys_my_ip[DAVE_IP_V6_ADDR_LEN];
 static u16 _link_server_port = SYNC_LINK_PORT;
-static dave_bool _link_online_flag = dave_false;
 
 static u16
 _sync_client_link_port_generator(void)
@@ -42,23 +42,24 @@ _sync_client_link_port_generator(void)
 static u8 *
 _sync_client_link_my_ip(void)
 {
-	if(_link_server_real_cfg_my_ip == dave_true)
+	SYNCTRACE("cfg:%d.%d.%d.%d detect:%d.%d.%d.%d sys:%d.%d.%d.%d",
+		_link_server_cfg_my_ip[0], _link_server_cfg_my_ip[1], _link_server_cfg_my_ip[2], _link_server_cfg_my_ip[3],
+		_link_server_detect_my_ip[0], _link_server_detect_my_ip[1], _link_server_detect_my_ip[2], _link_server_detect_my_ip[3],
+		_link_server_sys_my_ip[0], _link_server_sys_my_ip[1], _link_server_sys_my_ip[2], _link_server_sys_my_ip[3]);
+
+	if(_link_server_cfg_my_ip_flag == dave_true)
 	{
 		return _link_server_cfg_my_ip;
 	}
 	else
 	{
-		if(((_link_server_detect_my_ip[0] == 0)
-				&& (_link_server_detect_my_ip[1] == 0)
-				&& (_link_server_detect_my_ip[2] == 0)
-				&& (_link_server_detect_my_ip[3] == 0))
-			|| (_link_server_detect_my_ip[0] == 127))
+		if(_link_server_detect_my_ip_flag == dave_true)
 		{
-			return _link_server_cfg_my_ip;
+			return _link_server_detect_my_ip;
 		}
 		else
 		{
-			return _link_server_detect_my_ip;
+			return _link_server_sys_my_ip;
 		}
 	}
 }
@@ -68,12 +69,16 @@ _sync_client_link_tell_sync_server(void)
 {
 	if(_link_server_socket == INVALID_SOCKET_ID)
 	{
-		sync_client_tx_link_down_req(NULL, _sync_client_link_my_ip(), _link_server_port);
+		sync_client_link_start();
+		return;
 	}
-	else
+
+	if(_link_server_detect_my_ip_flag == dave_false)
 	{
-		sync_client_tx_link_up_req(NULL, _sync_client_link_my_ip(), _link_server_port);
+		return;
 	}
+
+	sync_client_tx_link_up_req(NULL, _sync_client_link_my_ip(), _link_server_port);
 }
 
 static void
@@ -105,7 +110,6 @@ _sync_client_link_server_bind_req(void)
 	SocketBindReq *pReq;
 
 	if((base_power_state() == dave_false)
-		|| (_link_online_flag == dave_false)
 		|| (_link_server_socket != INVALID_SOCKET_ID))
 	{
 		return;
@@ -131,7 +135,7 @@ _sync_client_link_server_bind_req(void)
 	pReq->NetInfo.enable_keepalive_flag = KeepAlive_disable;
 	pReq->NetInfo.netcard_bind_flag = NetCardBind_disable;
 
-	id_event(_socket_thread, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _sync_client_link_server_bind_rsp);
+	name_event(SOCKET_THREAD_NAME, SOCKET_BIND_REQ, pReq, SOCKET_BIND_RSP, _sync_client_link_server_bind_rsp);
 }
 
 static void
@@ -151,7 +155,7 @@ _sync_client_link_server_ubind_req(void)
 	pReq->socket = _link_server_socket;
 	pReq->ptr = NULL;
 
-	id_msg(_socket_thread, SOCKET_DISCONNECT_REQ, pReq);
+	name_msg(SOCKET_THREAD_NAME, SOCKET_DISCONNECT_REQ, pReq);
 }
 
 // =====================================================================
@@ -159,36 +163,34 @@ _sync_client_link_server_ubind_req(void)
 void
 sync_client_link_init(void)
 {
-	_socket_thread = thread_id(SOCKET_THREAD_NAME);
-
 	_link_server_socket = INVALID_SOCKET_ID;
 
-	_link_server_port = _sync_client_link_port_generator();
-	_link_server_real_cfg_my_ip = sync_cfg_get_local_ip(_link_server_cfg_my_ip);
+	dave_memset(_link_server_cfg_my_ip_flag, 0x00, sizeof(_link_server_cfg_my_ip_flag));
+	_link_server_cfg_my_ip_flag = sync_cfg_get_local_ip(_link_server_cfg_my_ip);
 	dave_memset(_link_server_detect_my_ip, 0x00, sizeof(_link_server_detect_my_ip));
+	_link_server_detect_my_ip_flag = dave_false;
+	dave_memset(_link_server_sys_my_ip, 0x00, sizeof(_link_server_sys_my_ip));
+	dave_os_load_ip(_link_server_sys_my_ip, NULL);
+	_link_server_port = _sync_client_link_port_generator();
 
-	_link_online_flag = dave_false;
+	sync_client_link_start();
 }
 
 void
 sync_client_link_exit(void)
 {
-
+	sync_client_link_stop();
 }
 
 void
 sync_client_link_start(void)
 {
-	_link_online_flag = dave_true;
-
 	_sync_client_link_server_bind_req();
 }
 
 void
 sync_client_link_stop(void)
 {
-	_link_online_flag = dave_false;
-
 	_sync_client_link_server_ubind_req();
 }
 
@@ -236,11 +238,11 @@ sync_client_link_plugout(SocketPlugOut *pPlugOut)
 
 	if(_link_server_socket == pPlugOut->socket)
 	{
-		sync_client_tx_link_down_req(NULL, _sync_client_link_my_ip(), _link_server_port);
+		sync_client_link_stop();
 
 		_link_server_socket = INVALID_SOCKET_ID;
 
-		_sync_client_link_server_bind_req();
+		sync_client_link_start();
 	}
 	else
 	{
@@ -250,23 +252,29 @@ sync_client_link_plugout(SocketPlugOut *pPlugOut)
 	return NULL;
 }
 
-ub
-sync_client_link_info(s8 *info, ub info_len)
+void
+sync_client_link_tell_sync_server(u8 *detect_my_ip)
 {
-	u8 ip_cfg[16];
-	u8 *ip_detect = _link_server_detect_my_ip;
-	u8 ip_sys[DAVE_IP_V4_ADDR_LEN];
+	dave_memcpy(_link_server_detect_my_ip, detect_my_ip, sizeof(_link_server_detect_my_ip));
+	_link_server_detect_my_ip_flag = dave_true;
+
+	_sync_client_link_tell_sync_server();
+}
+
+ub
+sync_client_link_info(s8 *info_ptr, ub info_len)
+{
+	u8 *ip_cfg;
+	u8 *ip_detect;
+	u8 *ip_sys;
 	u8 *ip_link = _sync_client_link_my_ip();
 	ub info_index = 0;
 
-	if(_link_server_real_cfg_my_ip == dave_true)
-		dave_memcpy(ip_cfg, _link_server_cfg_my_ip, 16);
-	else
-		dave_memset(ip_cfg, 0x00, sizeof(ip_cfg));
+	ip_cfg = _link_server_cfg_my_ip;
+	ip_detect = _link_server_detect_my_ip;
+	ip_sys = _link_server_sys_my_ip;
 
-	dave_os_load_ip(ip_sys, NULL);
-
-	info_index += dave_snprintf(&info[info_index], info_len-info_index,
+	info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
 		"Link:%s%s%s (1.cfg:%d.%d.%d.%d 2.detect:%d.%d.%d.%d 3.sys:%d.%d.%d.%d->link:%s)\n",
 		sync_client_data_get_busy() == dave_false ? "" : "***",
 		sync_client_data_get_busy() == dave_false ? "Online" : "Offline",
@@ -277,20 +285,6 @@ sync_client_link_info(s8 *info, ub info_len)
 		ipv4str(ip_link, _link_server_port));
 
 	return info_index;
-}
-
-void
-sync_client_link_tell_sync_server(u8 *detect_my_ip)
-{
-	if((_link_server_detect_my_ip[0] == 0)
-		&& (_link_server_detect_my_ip[1] == 0)
-		&& (_link_server_detect_my_ip[2] == 0)
-		&& (_link_server_detect_my_ip[3] == 0))
-	{
-		dave_memcpy(_link_server_detect_my_ip, detect_my_ip, sizeof(_link_server_detect_my_ip));
-	}
-
-	_sync_client_link_tell_sync_server();
 }
 
 #endif

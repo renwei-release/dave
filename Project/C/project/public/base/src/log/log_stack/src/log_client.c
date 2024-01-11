@@ -127,7 +127,7 @@ _log_client_record_log(void)
 
 		data->len = data->tot_len = index + log_len;
 
-		if(rxtx_write(_log_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_false)
+		if(rxtx_write(_log_client_socket, ORDER_CODE_LOG_RECORD, data) == dave_false)
 			break;
 	}
 }
@@ -219,7 +219,7 @@ _log_client_booting_message(void)
 
 	data->len = data->tot_len = index;
 
-	if(rxtx_write(_log_client_socket, ORDER_CODE_LOG_RECORD_V2, data) == dave_true)
+	if(rxtx_write(_log_client_socket, ORDER_CODE_LOG_RECORD, data) == dave_true)
 	{
 		_log_client_snd_booting_message_flag = dave_true;
 	}

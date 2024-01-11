@@ -3411,25 +3411,16 @@ t_auto_ORDER_CODE_str(ORDER_CODE enum_value)
 				value_str = "'ORDER_CODE_BEGIN-0x0100'";
 			break;
 		case ORDER_CODE_LOG_RECORD:
-				value_str = "'ORDER_CODE_LOG_RECORD-0x0102'";
-			break;
-		case ORDER_CODE_LOG_RECORD_V2:
-				value_str = "'ORDER_CODE_LOG_RECORD_V2-0x0103'";
+				value_str = "'ORDER_CODE_LOG_RECORD-0x0103'";
 			break;
 		case ORDER_CODE_LOG_CHAIN:
 				value_str = "'ORDER_CODE_LOG_CHAIN-0x0104'";
 			break;
 		case ORDER_CODE_RUN_INTERNAL_MSG_REQ:
-				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_REQ-0x0114'";
+				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_REQ-0x0116'";
 			break;
 		case ORDER_CODE_RUN_INTERNAL_MSG_RSP:
-				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_RSP-0x0115'";
-			break;
-		case ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ:
-				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_V2_REQ-0x0116'";
-			break;
-		case ORDER_CODE_RUN_INTERNAL_MSG_V2_RSP:
-				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_V2_RSP-0x0117'";
+				value_str = "'ORDER_CODE_RUN_INTERNAL_MSG_RSP-0x0117'";
 			break;
 		case ORDER_CODE_MY_VERNO:
 				value_str = "'ORDER_CODE_MY_VERNO-0x0201'";

@@ -22,7 +22,7 @@ RetCode sync_server_tx_run_thread_msg_req(
 	BaseMsgType msg_type,
 	u8 *msg_body, ub msg_len);
 
-dave_bool sync_server_tx_run_internal_msg_v2_req(
+dave_bool sync_server_tx_run_internal_msg_req(
 	SyncClient *pClient,
 	ub msg_id, ub msg_len, void *msg_body);
 
