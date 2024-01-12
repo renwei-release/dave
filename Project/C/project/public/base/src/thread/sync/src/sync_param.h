@@ -75,7 +75,6 @@ typedef struct {
 
 	dave_bool receive_thread_done;
 	dave_bool sync_thread_flag;
-	dave_bool send_down_and_up_flag[SYNC_CLIENT_MAX];
 
 	dave_bool ready_flag;
 	dave_bool client_app_busy;

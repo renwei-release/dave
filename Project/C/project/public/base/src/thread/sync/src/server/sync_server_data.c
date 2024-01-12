@@ -42,8 +42,6 @@ static ub _sync_server_del_thread(SyncThread *pThread, SyncClient *pClient);
 static void
 _sync_server_reset_client(SyncClient *pClient)
 {
-	ub index;
-
 	pClient->client_socket = INVALID_SOCKET_ID;
 
 	pClient->left_timer = SYNC_CLIENT_LEFT_MAX;
@@ -68,10 +66,6 @@ _sync_server_reset_client(SyncClient *pClient)
 
 	pClient->receive_thread_done = dave_false;
 	pClient->sync_thread_flag = dave_false;
-	for(index=0; index<SYNC_CLIENT_MAX; index++)
-	{
-		pClient->send_down_and_up_flag[index] = dave_false;
-	}
 
 	pClient->ready_flag = dave_false;
 	pClient->client_app_busy = dave_false;
@@ -283,17 +277,6 @@ _sync_server_clean_client_all_thread(SyncClient *pClient)
 	}
 }
 
-static void
-_sync_server_clean_the_client_to_down_flag(SyncClient *pClient)
-{
-	ub client_index;
-
-	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
-	{
-		_sync_client[client_index].send_down_and_up_flag[pClient->client_index] = dave_false;
-	}
-}
-
 static SyncClient *
 _sync_server_add_client(s32 socket, SocNetInfo *pNetInfo)
 {
@@ -339,7 +322,6 @@ _sync_server_del_client(SyncClient *pClient)
 {
 	SAFECODEv1(pClient->opt_pv, {
 		_sync_server_clean_client_all_thread(pClient);
-		_sync_server_clean_the_client_to_down_flag(pClient);
 		clean_rxtx(pClient->client_socket);
 		_sync_server_reset_client(pClient);
 	} );

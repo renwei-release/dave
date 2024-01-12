@@ -11,7 +11,7 @@
 void sync_server_link_mode_init(void);
 void sync_server_link_mode_exit(void);
 
-dave_bool sync_server_link_mode(void *ptr_a, void *ptr_b);
+dave_bool sync_server_link_mode(s8 *ptr_a, s8 *ptr_b);
 
 #endif
 

@@ -65,7 +65,6 @@ sync_server_app_tx_client(SyncClient *pClient, ub msg_id, ub msg_len, void *msg_
 dave_bool
 sync_server_app_mount_tx(SyncClient *pClient)
 {
-	// The old methods that need to be removed renwei
 	SystemMount mount;
 
 	dave_memset(&mount, 0x00, sizeof(mount));

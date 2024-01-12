@@ -48,6 +48,18 @@ static void _sync_client_reconnect_syncs_action(void);
 static void _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_index);
 
 static void
+_sync_client_system_mount(ThreadId src, SystemMount *pMount)
+{
+	sync_client_link_start();
+}
+
+static void
+_sync_client_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
+{
+	sync_client_link_stop();
+}
+
+static void
 _sync_client_disconnect_rsp(SocketDisconnectRsp *pRsp)
 {
 	SyncServer *pServer = (SyncServer *)(pRsp->ptr);
@@ -602,6 +614,18 @@ _sync_client_safe_reconnect_syncs_logic_timer_out(TIMERID timer_id, ub thread_in
 }
 
 static void
+_sync_client_safe_system_mount(ThreadId src, SystemMount *pMount)
+{
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_mount(src, pMount); } );
+}
+
+static void
+_sync_client_safe_system_decoupling(ThreadId src, SystemDecoupling *pDecoupling)
+{
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_system_decoupling(src, pDecoupling); } );
+}
+
+static void
 _sync_client_safe_connect_rsp(SocketConnectRsp *pRsp)
 {
 	SAFECODEv2W(_sync_client_system_lock, { _sync_client_connect_rsp(pRsp); } );
@@ -725,6 +749,12 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
 			break;
+		case MSGID_SYSTEM_MOUNT:
+				_sync_client_safe_system_mount(msg->msg_src, (SystemMount *)(msg->msg_body));
+			break;
+		case MSGID_SYSTEM_DECOUPLING:
+				_sync_client_safe_system_decoupling(msg->msg_src, (SystemDecoupling *)(msg->msg_body));
+			break;
 		case MSGID_SYSTEM_BUSY:
 				_sync_client_system_busy((SystemBusy *)(msg->msg_body));
 			break;
@@ -753,8 +783,6 @@ _sync_client_main(MSGBODY *msg)
 				_sync_client_safe_rx_event((SocketRawEvent *)(msg->msg_body));
 			break;
 		case MSGID_WAKEUP:
-		case MSGID_SYSTEM_MOUNT:
-		case MSGID_SYSTEM_DECOUPLING:
 		case MSGID_LOCAL_THREAD_READY:
 		case MSGID_LOCAL_THREAD_REMOVE:
 		case MSGID_CFG_REMOTE_UPDATE:

@@ -156,46 +156,22 @@ static dave_bool
 _sync_server_sync_link_to(SyncClient *pDstClient, SyncClient *pSrcClient)
 {
 	dave_bool ret;
-	ub dst_client_index = pDstClient->client_index;
 
-	SYNCTRACE("verno:%s->%s(%s) link_port:%d link_up_flag:%d ready_flag:%d client_app_busy:%d",
-		pSrcClient->verno, pDstClient->verno, pSrcClient->send_down_and_up_flag[dst_client_index]==dave_true?"up":"down",
+	SYNCTRACE("verno:%s->%s link_port:%d link_up_flag:%d ready_flag:%d client_app_busy:%d",
+		pSrcClient->verno, pDstClient->verno,
 		pSrcClient->link_port,
 		pSrcClient->link_up_flag,
 		pSrcClient->ready_flag,
 		pSrcClient->client_app_busy);
 
 	if((pSrcClient->link_port != 0)
-		&& (pSrcClient->link_up_flag == dave_true)
-		&& (pSrcClient->ready_flag == dave_true))
+		&& (pSrcClient->link_up_flag == dave_true))
 	{
-		if(pSrcClient->send_down_and_up_flag[dst_client_index] == dave_false)
-		{
-			ret = sync_server_tx_link_up_req(pDstClient, pSrcClient->verno, pSrcClient->globally_identifier, pSrcClient->link_ip, pSrcClient->link_port);
-			if(ret == dave_true)
-			{
-				pSrcClient->send_down_and_up_flag[dst_client_index] = dave_true;
-			}
-		}
-		else
-		{
-			ret = dave_true;
-		}
+		ret = sync_server_tx_link_up_req(pDstClient, pSrcClient->verno, pSrcClient->globally_identifier, pSrcClient->link_ip, pSrcClient->link_port);
 	}
 	else
 	{
-		if(pSrcClient->send_down_and_up_flag[dst_client_index] == dave_true)
-		{
-			ret = sync_server_tx_link_down_req(pDstClient, pSrcClient->verno, pSrcClient->link_ip, pSrcClient->link_port);
-			if(ret == dave_true)
-			{
-				pSrcClient->send_down_and_up_flag[dst_client_index] = dave_false;
-			}
-		}
-		else
-		{
-			ret = dave_true;
-		}
+		ret = sync_server_tx_link_down_req(pDstClient, pSrcClient->verno, pSrcClient->link_ip, pSrcClient->link_port);
 	}
 
 	if(ret == dave_false)
@@ -207,7 +183,7 @@ _sync_server_sync_link_to(SyncClient *pDstClient, SyncClient *pSrcClient)
 }
 
 static void
-_sync_server_sync_link_to_me(SyncClient *pClient)
+_sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 {
 	ub client_index;
 	SyncClient *pOtherClient;
@@ -221,16 +197,20 @@ _sync_server_sync_link_to_me(SyncClient *pClient)
 		if((pOtherClient != pClient)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			if(sync_server_link_mode(pClient, pOtherClient) == dave_true)
+			if((pClient->link_up_flag == dave_false)
+				|| (sync_server_link_mode(pClient->globally_identifier, pOtherClient->globally_identifier) == dave_true))
 			{
-				_sync_server_sync_link_to(pClient, pOtherClient);
+				if(_sync_server_sync_link_to(pClient, pOtherClient) == dave_true)
+				{
+					link_event[pOtherClient->client_index] = dave_true;
+				}
 			}
 		}
 	}
 }
 
 static void
-_sync_server_sync_link_to_other(SyncClient *pClient)
+_sync_server_sync_link_to_other(SyncClient *pClient, dave_bool *link_event)
 {
 	ub client_index;
 	SyncClient *pOtherClient;
@@ -244,8 +224,50 @@ _sync_server_sync_link_to_other(SyncClient *pClient)
 		if((pOtherClient != pClient)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			if(sync_server_link_mode(pOtherClient, pClient) == dave_true)
+			if((pClient->link_up_flag == dave_false)
+				|| (sync_server_link_mode(pOtherClient->globally_identifier, pClient->globally_identifier) == dave_true))
 			{
+				if(_sync_server_sync_link_to(pOtherClient, pClient) == dave_true)
+				{
+					link_event[pOtherClient->client_index] = dave_true;
+				}
+			}
+		}
+	}
+}
+
+static void
+_sync_server_link_event_reset(dave_bool link_event[SYNC_CLIENT_MAX])
+{
+	ub client_index;
+
+	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
+	{
+		link_event[client_index] = dave_false;
+	}
+}
+
+static void
+_sync_server_link_event_patrol(SyncClient *pClient, dave_bool *link_event)
+{
+	ub client_index;
+	SyncClient *pOtherClient;
+
+	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
+	{
+		pOtherClient = sync_server_client(client_index);
+
+		if((pOtherClient != pClient)
+			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
+		{
+			if(link_event[pOtherClient->client_index] == dave_false)
+			{
+				SYNCLOG("%s/%s/%s patrol %s/%s/%s",
+					pClient->globally_identifier, pClient->verno,
+					pClient->link_up_flag == dave_true ? "up" : "down",
+					pOtherClient->globally_identifier, pOtherClient->verno,
+					pOtherClient->link_up_flag == dave_true ? "up" : "down");
+
 				_sync_server_sync_link_to(pOtherClient, pClient);
 			}
 		}
@@ -269,24 +291,30 @@ sync_server_sync_thread_booting(SyncClient *pClient)
 }
 
 void
-__sync_server_sync_link__(SyncClient *pClient, dave_bool up_flag, s8 *fun, ub line)
+sync_server_sync_link(SyncClient *pClient, dave_bool up_flag)
 {
-	SYNCTRACE("verno:%s client:%s %s <%s:%d>",
+	dave_bool link_event[SYNC_CLIENT_MAX];
+
+	SYNCTRACE("verno:%s client:%s %s %s",
 		pClient->verno,
 		pClient->client_app_busy==dave_true?"busy":"idle",
 		up_flag==dave_true?"up":"down",
-		fun, line);
+		ipv4str(pClient->link_ip, pClient->link_port));
+
+	_sync_server_link_event_reset(link_event);
 
 	pClient->link_up_flag = up_flag;
 
 	if(pClient->link_up_flag == dave_false)
 	{
-		_sync_server_sync_link_to_other(pClient);
+		_sync_server_sync_link_to_other(pClient, link_event);
 	}
 	else
 	{
-		_sync_server_sync_link_to_me(pClient);
-		_sync_server_sync_link_to_other(pClient);
+		_sync_server_sync_link_to_me(pClient, link_event);
+		_sync_server_sync_link_to_other(pClient, link_event);
+
+		_sync_server_link_event_patrol(pClient, link_event);
 	}
 }
 

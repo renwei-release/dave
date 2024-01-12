@@ -53,7 +53,7 @@ _sync_client_link_my_ip(void)
 	}
 	else
 	{
-		if(_link_server_detect_my_ip_flag == dave_true)
+		if((_link_server_detect_my_ip_flag == dave_true) && (_link_server_detect_my_ip[0] != 127))
 		{
 			return _link_server_detect_my_ip;
 		}
@@ -69,7 +69,6 @@ _sync_client_link_tell_sync_server(void)
 {
 	if(_link_server_socket == INVALID_SOCKET_ID)
 	{
-		sync_client_link_start();
 		return;
 	}
 
@@ -172,8 +171,6 @@ sync_client_link_init(void)
 	dave_memset(_link_server_sys_my_ip, 0x00, sizeof(_link_server_sys_my_ip));
 	dave_os_load_ip(_link_server_sys_my_ip, NULL);
 	_link_server_port = _sync_client_link_port_generator();
-
-	sync_client_link_start();
 }
 
 void

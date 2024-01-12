@@ -17,26 +17,6 @@
 
 static void *_link_mode_kv = NULL;
 
-static ub
-_sync_server_link_mode_inq(s8 *ptr_stra, s8 *ptr_strb)
-{
-	void *ptr;
-
-	ptr = kv_inq_key_ptr(_link_mode_kv, ptr_stra);
-	if(ptr != NULL)
-	{
-		return (ub)ptr;
-	}
-
-	ptr = kv_inq_key_ptr(_link_mode_kv, ptr_strb);
-	if(ptr != NULL)
-	{
-		return (ub)ptr;
-	}
-
-	return (ub)NULL;
-}
-
 static void
 _sync_server_link_mode_add(dave_bool model, s8 *ptr_stra, s8 *ptr_strb)
 {
@@ -62,6 +42,25 @@ _sync_server_link_mode_arbitration(s8 *ptr_stra, s8 *ptr_strb)
 	return model;
 }
 
+static ub
+_sync_server_link_mode_inq(s8 *ptr_stra, s8 *ptr_strb)
+{
+	void *ptr_stra_value, *ptr_strb_value;
+
+	ptr_stra_value = kv_inq_key_ptr(_link_mode_kv, ptr_stra);
+	if(ptr_stra_value == NULL)
+		return NULL_MODEL;
+
+	ptr_strb_value = kv_inq_key_ptr(_link_mode_kv, ptr_strb);
+	if(ptr_strb_value == NULL)
+		return NULL_MODEL;
+
+	if(ptr_stra_value == ptr_strb_value)
+		return NULL_MODEL;
+
+	return (ub)ptr_stra_value;
+}
+
 // =====================================================================
 
 void
@@ -77,14 +76,14 @@ sync_server_link_mode_exit(void)
 }
 
 dave_bool
-sync_server_link_mode(void *ptr_a, void *ptr_b)
+sync_server_link_mode(s8 *ptr_a, s8 *ptr_b)
 {
-	s8 ptr_string_a[DAVE_GLOBALLY_IDENTIFIER_LEN * 2];
-	s8 ptr_string_b[DAVE_GLOBALLY_IDENTIFIER_LEN * 2];
+	s8 ptr_string_a[128];
+	s8 ptr_string_b[128];
 	dave_bool ret;
 
-	dave_snprintf(ptr_string_a, sizeof(ptr_string_a), "%lx-%lx", ptr_a, ptr_b);
-	dave_snprintf(ptr_string_b, sizeof(ptr_string_b), "%lx-%lx", ptr_b, ptr_a);
+	dave_snprintf(ptr_string_a, sizeof(ptr_string_a), "%s-%s", ptr_a, ptr_b);
+	dave_snprintf(ptr_string_b, sizeof(ptr_string_b), "%s-%s", ptr_b, ptr_a);
 
 	switch(_sync_server_link_mode_inq(ptr_string_a, ptr_string_b))
 	{

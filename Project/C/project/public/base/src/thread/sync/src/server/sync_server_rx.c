@@ -140,13 +140,6 @@ _sync_server_rx_find_thread_and_client_from_route_dst(
 						src, dst, msgstr(msg_id));
 					ret = dave_false;
 				}
-				if((*ppDstClient)->client_app_busy == dave_true)
-				{
-					SYNCLTRACE(60,1, "%s's client:%s is busy! %s->%s:%s",
-						(*ppDstThread)->thread_name, (*ppDstClient)->verno,
-						src, dst, msgstr(msg_id));		
-					ret = dave_false;
-				}
 			}
 		}
 	}
@@ -281,8 +274,8 @@ _sync_server_rx_run_alone_thread_msg(
 
 	if(_sync_server_rx_build_run_req_param(route_src, src, route_dst, dst, msg_id, &pDstThread, &pDstClient) == dave_false)
 	{
-		SYNCLTRACE(60,1, "lllegal routing of messages, maybe the service receiving this message has been disconnected! %s(%lx)->%s(%lx):%d",
-			src, route_src, dst, route_dst, msg_id);
+		SYNCLTRACE(60,1, "lllegal routing of messages, maybe the service receiving this message has been disconnected! %s(%lx)->%s(%lx):%s",
+			src, route_src, dst, route_dst, msgstr(msg_id));
 		return RetCode_OK;
 	}
 
