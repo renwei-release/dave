@@ -160,7 +160,7 @@ _base_rxtx_maybe_has_data(RXTX *pRxTx, SocketRawEvent *pUpEvent)
 	pEvent->data = NULL;
 	pEvent->ptr = pUpEvent->ptr;
 
-	id_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 128);
+	id_nmsg(pRxTx->owner_thread, SOCKET_RAW_EVENT, pEvent, 3);
 }
 
 static inline FRAMETYPE

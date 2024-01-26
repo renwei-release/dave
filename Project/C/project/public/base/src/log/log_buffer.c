@@ -21,7 +21,7 @@
 #define LOG_FREE dave_jefree
 #else
 #define LOG_MALLOC malloc
-#define LOG_0FREE free
+#define LOG_FREE free
 #endif
 
 #define LOG_TID_MAX DAVE_SYS_THREAD_ID_MAX
@@ -44,8 +44,6 @@ static LogBuffer _log_lost_buffer;
 static inline void
 _log_buffer_free(LogBuffer *pBuffer)
 {
-	pBuffer->level = TRACELEVEL_MAX;
-
 	pBuffer->fix_buffer_ptr[0] = '\0';
 	pBuffer->fix_buffer_index = 0;
 
@@ -58,19 +56,8 @@ _log_buffer_free(LogBuffer *pBuffer)
 	pBuffer->dynamic_buffer_index = 0;
 
 	pBuffer->tid = INVALID_TID;
-}
 
-static inline void
-_log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
-{
-	if((pBuffer->dynamic_buffer_ptr == NULL) && (buffer_len >= LOG_FIX_BUFFER_LEN))
-	{
-		buffer_len += 1024;
-
-		pBuffer->dynamic_buffer_ptr = LOG_MALLOC(buffer_len);
-		pBuffer->dynamic_buffer_len = buffer_len;
-		pBuffer->dynamic_buffer_index = dave_memcpy(pBuffer->dynamic_buffer_ptr, pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
-	}
+	pBuffer->level = TRACELEVEL_MAX;
 }
 
 static inline LogBuffer *
@@ -97,6 +84,19 @@ _log_buffer_malloc(void)
 	}
 
 	return pBuffer;
+}
+
+static inline void
+_log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
+{
+	if((pBuffer->dynamic_buffer_ptr == NULL) && (buffer_len >= LOG_FIX_BUFFER_LEN))
+	{
+		buffer_len += 1024;
+
+		pBuffer->dynamic_buffer_ptr = LOG_MALLOC(buffer_len);
+		pBuffer->dynamic_buffer_len = buffer_len;
+		pBuffer->dynamic_buffer_index = dave_memcpy(pBuffer->dynamic_buffer_ptr, pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
+	}
 }
 
 static inline void

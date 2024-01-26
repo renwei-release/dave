@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "recorder_file.h"
+#include "recorder_aliyun.h"
 #include "bdata_msg.h"
 #include "bdata_log.h"
 
@@ -51,7 +52,7 @@ _recipient_log_data(void *pNote, BDataLogReq *pReq)
 	recorder_file_str(pNote, "ipv4", ipv4_str, ipv4_len);
 	recorder_file_str(pNote, "ipv6", ipv6_str, ipv6_len);
 
-	recorder_file_str(pNote, "log", dave_mptr(pReq->log_data), dave_mlen(pReq->log_data));
+	recorder_file_obj(pNote, "log", ms8(pReq->log_data), mlen(pReq->log_data));
 }
 
 static inline s8 *
@@ -70,6 +71,19 @@ _recipient_log_file(s8 *file_ptr, ub file_len, BDataLogReq *pReq)
 	}
 
 	return file_ptr;
+}
+
+static inline void
+_recipient_log_aliyun(s8 *log_file, void *pNote)
+{
+	void *pJson;
+
+	pJson = recorder_file_json(pNote);
+
+	if(aliyun_log_json(log_file, pJson) == dave_false)
+	{
+		BDLOG("log_file save failed!", log_file);
+	}
 }
 
 static inline RetCode
@@ -93,6 +107,8 @@ _recipient_log(BDataLogReq *pReq)
 		pReq->version, pReq->fun, pReq->line);
 
 	_recipient_log_data(pNote, pReq);
+
+	_recipient_log_aliyun(pReq->sub_flag, pNote);
 
 	recorder_file_close(pNote);
 

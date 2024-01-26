@@ -15,7 +15,7 @@
 
 #define THE_MY_MAGIC_DATA 0x9988aaeee
 #define CFG_UIP_SERVER_MONITOR_TIMER (s8 *)"UIPServerMonitorTimer"
-#define MONITOR_KV_DEFAULT_TIME (360)
+#define MONITOR_KV_DEFAULT_TIME (DAVE_PUBLIC_TIMER_OUT * 2)
 #define MONITOR_KV_MIN_TIME (30)
 #define MONITOR_CHECK_DEFAULT_CONSUMING_TIME (9 * 1000 * 1000)
 
@@ -135,21 +135,14 @@ _uip_server_monitor_recycle(void *kv, s8 *key)
 static ub
 _uip_server_monitor_kv_timer(void)
 {
-	u8 kv_timer_str[128];
 	ub kv_timer;
 
-	if(cfg_get(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, sizeof(kv_timer_str)) == dave_false)
-	{
-		digitalstring((s8 *)kv_timer_str, sizeof(kv_timer_str), MONITOR_KV_DEFAULT_TIME);
-		cfg_set(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer_str, dave_strlen(kv_timer_str));
-		return MONITOR_KV_DEFAULT_TIME;
-	}
-
-	kv_timer = stringdigital((s8 *)kv_timer_str);
+	kv_timer = cfg_get_ub(CFG_UIP_SERVER_MONITOR_TIMER, MONITOR_KV_DEFAULT_TIME);
 	if(kv_timer < MONITOR_KV_MIN_TIME)
 	{
 		UIPLOG("invalid kv_timer:%d recovery time to %ds", kv_timer, MONITOR_KV_MIN_TIME);
 		kv_timer = MONITOR_KV_MIN_TIME;
+		cfg_set_ub(CFG_UIP_SERVER_MONITOR_TIMER, kv_timer);
 	}
 
 	return kv_timer;

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+chmod a+x build-log
+
+./build-log
+
+if [ -d setup ]
+then
+   rm -rf setup
+fi
+mkdir setup
+
+cp -r /dave/tools/aliyun/* setup/

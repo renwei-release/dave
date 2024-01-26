@@ -38,6 +38,7 @@
 #include "party_log.h"
 
 #define NGINX_CONF_MAX (32768)
+#define NGINX_TIMER_OUT_MAX DAVE_PUBLIC_TIMER_OUT
 #define NGINX_SERVER_CONF_FLAG (s8 *)"#########"
 
 static dave_bool
@@ -122,8 +123,8 @@ _nginx_conf_head(s8 *conf, ub conf_len, ub work_process)
 	conf_index += dave_sprintf(&conf[conf_index], "    default_type  application/octet-stream;\n");
 	conf_index += dave_sprintf(&conf[conf_index], "    sendfile        on;\n");
 	conf_index += dave_sprintf(&conf[conf_index], "    keepalive_timeout  %d;\n", 240);
-	conf_index += dave_sprintf(&conf[conf_index], "    client_header_timeout  %d;\n", 60);
-	conf_index += dave_sprintf(&conf[conf_index], "    client_body_timeout   %d;\n", 60);
+	conf_index += dave_sprintf(&conf[conf_index], "    client_header_timeout  %d;\n", NGINX_TIMER_OUT_MAX);
+	conf_index += dave_sprintf(&conf[conf_index], "    client_body_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
 
 	conf_index += dave_sprintf(&conf[conf_index], "    client_header_buffer_size   %dk;\n", 64);
 	conf_index += dave_sprintf(&conf[conf_index], "    large_client_header_buffers  %d %dk;\n", 4, 64);
@@ -137,13 +138,13 @@ _nginx_conf_head(s8 *conf, ub conf_len, ub work_process)
 	conf_index += dave_sprintf(&conf[conf_index], "    proxy_buffers  %d %dk;\n", 4, 128);
 	conf_index += dave_sprintf(&conf[conf_index], "    proxy_busy_buffers_size   %dk;\n", 256);
 	
-	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_connect_timeout   %d;\n", 60);
-	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_send_timeout   %d;\n", 60);
-	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_read_timeout   %d;\n", 60);
+	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_connect_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
+	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_send_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
+	conf_index += dave_sprintf(&conf[conf_index], "    fastcgi_read_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
 	
-	conf_index += dave_sprintf(&conf[conf_index], "    proxy_connect_timeout   %ds;\n", 60);
-	conf_index += dave_sprintf(&conf[conf_index], "    proxy_send_timeout   %d;\n", 60);
-	conf_index += dave_sprintf(&conf[conf_index], "    proxy_read_timeout   %d;\n", 60);
+	conf_index += dave_sprintf(&conf[conf_index], "    proxy_connect_timeout   %ds;\n", NGINX_TIMER_OUT_MAX);
+	conf_index += dave_sprintf(&conf[conf_index], "    proxy_send_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
+	conf_index += dave_sprintf(&conf[conf_index], "    proxy_read_timeout   %d;\n", NGINX_TIMER_OUT_MAX);
 
 	return conf_index;
 }

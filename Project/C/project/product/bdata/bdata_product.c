@@ -14,14 +14,33 @@
 #include "dave_echo.h"
 #include "bdata_msg.h"
 #include "recipient_log.h"
-#include "recorder_file.h"
+#include "recorder_api.h"
 
 static ThreadId _bdata_thread = INVALID_THREAD_ID;
 
 static void
+_bdata_debug(ThreadId src, DebugReq *pReq)
+{
+	DebugRsp *pRsp = thread_reset_msg(pRsp);
+
+	switch(pReq->msg[0])
+	{
+		case 'i':
+				recorder_api_info(pRsp->msg, sizeof(pRsp->msg));
+			break;
+		default:
+				dave_strcpy(pRsp->msg, pReq->msg, sizeof(pRsp->msg));
+			break;
+	}
+	pRsp->ptr = pReq->ptr;
+
+	id_msg(src, MSGID_DEBUG_RSP, pRsp);
+}
+
+static void
 _bdata_init(MSGBODY *msg)
 {
-	recorder_file_init();
+	recorder_api_init();
 }
 
 static void
@@ -29,6 +48,9 @@ _bdata_main(MSGBODY *msg)
 {
 	switch(msg->msg_id)
 	{
+		case MSGID_DEBUG_REQ:
+				_bdata_debug(msg->msg_src, (DebugReq *)(msg->msg_body));
+			break;
 		case MSGID_ECHO_REQ:
 		case MSGID_ECHO_RSP:
 				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
@@ -44,7 +66,7 @@ _bdata_main(MSGBODY *msg)
 static void
 _bdata_exit(MSGBODY *msg)
 {
-	recorder_file_exit();
+	recorder_api_exit();
 }
 
 // =====================================================================

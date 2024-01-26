@@ -15,7 +15,6 @@
 #define FILE_HOME_DIR (s8 *)"RECORDER"
 #define FILE_NAME_MAX (256)
 #define KEY_NAME_MAX (64)
-#define RECORDER_FILE_MAX (4096)
 #define RECORDER_FILE_MAGIC_DATA (0xcdbf1867)
 #define FILE_NOTE_MAGIC_DATA (0xcdbf1234)
 #define RECORDER_FILE_BUF_MAX (1024 * 32)
@@ -60,8 +59,8 @@ typedef struct {
 	void *pJson;	
 } FileNote;
 
-static TLock _file_open_pv;
-static FileStore _recorder_file[RECORDER_FILE_MAX];
+static TLock _file_pv;
+static void *_file_kv = NULL;
 
 static void
 _recorder_file_reset(FileStore *pStore)
@@ -78,21 +77,8 @@ _recorder_file_reset(FileStore *pStore)
 	pStore->statistics_file_id = -1;
 	pStore->statistics.data.version = FILE_TOTAL_VERSION;
 	pStore->statistics.data.total_store_serial = 0;
-}
 
-static void
-_recorder_file_all_reset(void)
-{
-	ub store_index;
-
-	for(store_index=0; store_index<RECORDER_FILE_MAX; store_index++)
-	{
-		dave_memset(&_recorder_file[store_index], 0x00, sizeof(FileStore));
-
-		_recorder_file_reset(&_recorder_file[store_index]);
-
-		t_lock_reset(&_recorder_file[store_index].opt_pv);
-	}
+	t_lock_reset(&(pStore->opt_pv));
 }
 
 static void
@@ -178,52 +164,26 @@ _recorder_file_close_statistics(FileStore *pStore)
 	}
 }
 
-static FileStore *
+static inline FileStore *
 _recorder_file_find(s8 *file_dir)
 {
-	ub store_index, name_index, safe_counter;
+	FileStore *pStore;
 
-	store_index = 0;
-
-	for(name_index=0; name_index<FILE_NAME_MAX; name_index++)
+	pStore = kv_inq_key_ptr(_file_kv, file_dir);
+	if(pStore == NULL)
 	{
-		if(file_dir[name_index] == '\0')
-			break;
+		pStore = dave_ralloc(sizeof(FileStore));
 
-		store_index += (store_index * 255) + ((ub)(file_dir[name_index]));
+		kv_add_key_ptr(_file_kv, file_dir, pStore);
+
+		_recorder_file_reset(pStore);
+
+		dave_strcpy(pStore->file_dir, file_dir, FILE_NAME_MAX);
+
+		_recorder_file_open_statistics(pStore);
 	}
 
-	store_index = store_index % RECORDER_FILE_MAX;
-
-	for(safe_counter=0; safe_counter<RECORDER_FILE_MAX; safe_counter++)
-	{
-		if(store_index >= RECORDER_FILE_MAX)
-			store_index = 0;
-
-		if((_recorder_file[store_index].file_dir[0] == '\0')
-			|| (dave_strcmp(_recorder_file[store_index].file_dir, file_dir) == dave_true))
-		{
-			if(safe_counter >= DAVE_SEARCH_INDEX_MAX)
-			{
-				BDLOG("Search for too long:%d", safe_counter);
-			}
-
-			if(_recorder_file[store_index].file_dir[0] == '\0')
-			{
-				_recorder_file_reset(&_recorder_file[store_index]);
-
-				dave_strcpy(_recorder_file[store_index].file_dir, file_dir, FILE_NAME_MAX);
-
-				_recorder_file_open_statistics(&_recorder_file[store_index]);
-			}
-
-			return &_recorder_file[store_index];
-		}
-
-		store_index ++;
-	}
-
-	return NULL;
+	return pStore;
 }
 
 static dave_bool
@@ -328,7 +288,7 @@ _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 		
 		pStore->file_index = 0;
 	}
-	
+
 	if(pStore->file_id >= 0)
 	{
 		head_len = _recorder_file_head_format(head_buffer, sizeof(head_buffer), pStore);
@@ -363,6 +323,19 @@ _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 	{
 		BDABNOR("file<%s><%s> id is empty!", pStore->file_dir, pStore->file_name);
 	}
+}
+
+static s8 *
+_recorder_file_string_(FileNote *pNote, ub *string_len)
+{
+	ub string_len_temp;
+
+	if(string_len == NULL)
+	{
+		string_len = &string_len_temp;
+	}
+
+	return (s8 *)json_object_to_json_string_length((struct json_object *)(pNote->pJson), JSON_C_TO_STRING_PLAIN, string_len);
 }
 
 static FileNote *
@@ -402,7 +375,7 @@ _recorder_file_close_(FileNote *pNote)
 	{
 		if(pNote->pJson != NULL)
 		{
-			string_ptr = (s8 *)json_object_to_json_string_length((struct json_object *)(pNote->pJson), JSON_C_TO_STRING_PLAIN, &string_len);
+			string_ptr = _recorder_file_string_(pNote, &string_len);
 			
 			SAFECODEv1(pStore->opt_pv, {
 
@@ -444,22 +417,26 @@ _recorder_file_str_(FileNote *pNote, char *key_name, s8 *str_data, ub str_len)
 	return dave_json_add_str_len(pNote->pJson, key_name, str_data, str_len);
 }
 
-static void
-_recorder_file_safe_close_all(void)
+static RetCode
+_recorder_file_recycle(void *ramkv, s8 *key)
 {
-	ub store_index;
+	FileStore *pStore = kv_del_key_ptr(_file_kv, key);
 
-	for(store_index=0; store_index<RECORDER_FILE_MAX; store_index++)
-	{
-		SAFECODEv1(_recorder_file[store_index].opt_pv, {
-			if(_recorder_file[store_index].file_id >= 0)
-			{
-				dave_os_file_close(_recorder_file[store_index].file_id);
-			}
-		} );
+	if(pStore == NULL)
+		return RetCode_empty_data;
 
-		_recorder_file_close_statistics(&_recorder_file[store_index]);
-	}
+	SAFECODEv1(pStore->opt_pv, {
+		if(pStore->file_id >= 0)
+		{
+			dave_os_file_close(pStore->file_id);
+		}
+	} );
+	
+	_recorder_file_close_statistics(pStore);
+
+	dave_free(pStore);
+
+	return RetCode_OK;
 }
 
 // ====================================================================
@@ -467,15 +444,17 @@ _recorder_file_safe_close_all(void)
 void
 recorder_file_init(void)
 {
-	t_lock_reset(&_file_open_pv);
+	t_lock_reset(&_file_pv);
 
-	_recorder_file_all_reset();
+	_file_kv = kv_malloc("recorder-file", 0, NULL);
 }
 
 void
 recorder_file_exit(void)
 {
-	SAFECODEv1(_file_open_pv, _recorder_file_safe_close_all(); );
+	SAFECODEv1(_file_pv, {
+		kv_free(_file_kv, _recorder_file_recycle);
+	} );
 }
 
 void *
@@ -495,7 +474,7 @@ recorder_file_open(s8 *file_dir)
 		return NULL;
 	}
 
-	SAFECODEv1(_file_open_pv, { pStore = _recorder_file_find(file_dir); } );
+	SAFECODEv1(_file_pv, { pStore = _recorder_file_find(file_dir); } );
 
 	if(pStore == NULL)
 	{
@@ -518,6 +497,14 @@ recorder_file_close(void *ptr)
 	}
 
 	_recorder_file_close_(pNote);
+}
+
+void *
+recorder_file_json(void *ptr)
+{
+	FileNote *pNote = (FileNote *)ptr;
+
+	return pNote->pJson;
 }
 
 dave_bool
@@ -563,6 +550,50 @@ recorder_file_bin(void *ptr, char *key_name, u8 *bin_data, ub bin_len)
 	dave_free(bin_str_buffer);
 
 	return ret;
+}
+
+dave_bool
+recorder_file_obj(void *ptr, char *key_name, s8 *str_data, ub str_len)
+{
+	if((str_len > 2) && (str_data[0] == '{') && (str_data[str_len - 1] == '}'))
+	{
+		void *obj_json = dave_string_to_json(str_data, str_len);
+		FileNote *pNote = (FileNote *)ptr;
+
+		if(obj_json != NULL)
+		{
+			return dave_json_add_object(pNote->pJson, key_name, obj_json);
+		}
+	}
+
+	return recorder_file_str(ptr, key_name, str_data, str_len);
+}
+
+ub
+recorder_file_info(s8 *info_ptr, ub info_len)
+{
+	ub info_index, index;
+	FileStore *pStore;
+
+	info_index = dave_snprintf(info_ptr, info_len, "RECORDER FILE INFO:\n");
+
+	for(index=0; index<102400; index++)
+	{
+		pStore = kv_index_key_ptr(_file_kv, index);
+		if(pStore == NULL)
+			break;
+
+		if(index > 0)
+		{
+			info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index, "\n");
+		}
+
+		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
+			" name:%s len:%ld serial:%ld date:%s",
+			pStore->file_name, pStore->file_index, pStore->file_current_store_serial, datestr(&(pStore->the_file_date)));
+	}
+
+	return info_index;
 }
 
 #endif

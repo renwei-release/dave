@@ -1,2 +1,3 @@
 INCLUDE = -I/usr/local/cuda/include
+INCLUDE += -I/usr/include/apr-1/
 INCLUDE += $(shell find `pwd`/../../project -type d | awk '!/\.svn/ {print " -I "$$0}')

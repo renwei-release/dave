@@ -1,0 +1,24 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+PATH=$PATH:/dave/tools/apr/bin:/dave/tools/libcurl/bin
+
+export PATH
+
+if [ ! -f v0.1.2.tar.gz ]; then
+  wget https://github.com/aliyun/aliyun-log-c-sdk/archive/v0.1.2.tar.gz
+fi
+
+tar -xzf v0.1.2.tar.gz
+
+cp aos_log.c ./aliyun-log-c-sdk-0.1.2/src
+cd aliyun-log-c-sdk-0.1.2
+
+cmake . -DAPR_INCLUDE_DIR=/dave/tools/apr/include/apr-1 -DAPR_LIBRARY=/dave/tools/apr/lib/libapr-1.a -DAPR_UTIL_INCLUDE_DIR=/dave/tools/apr/include/apr-1 -DAPR_UTIL_LIBRARY=/dave/tools/apr/lib/libaprutil-1.a -DCMAKE_INSTALL_PREFIX=/dave/tools/aliyun/log
+
+make && make install
+
+cd $homepath
+
+rm -rf aliyun-log-c-sdk-0.1.2
