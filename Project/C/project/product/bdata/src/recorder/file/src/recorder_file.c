@@ -81,7 +81,7 @@ _recorder_file_reset(FileStore *pStore)
 	t_lock_reset(&(pStore->opt_pv));
 }
 
-static void
+static inline void
 _recorder_file_write_statistics(FileStore *pStore)
 {
 	if(pStore->statistics_file_id >= 0)
@@ -95,7 +95,7 @@ _recorder_file_write_statistics(FileStore *pStore)
 	}
 }
 
-static void
+static inline void
 _recorder_file_read_statistics(FileStore *pStore)
 {
 	if(pStore->statistics_file_id >= 0)
@@ -121,7 +121,7 @@ _recorder_file_read_statistics(FileStore *pStore)
 	}
 }
 
-static ub
+static inline ub
 _recorder_file_add_total_serial(FileStore *pStore)
 {
 	ub total_serial;
@@ -133,7 +133,7 @@ _recorder_file_add_total_serial(FileStore *pStore)
 	return total_serial;
 }
 
-static sb
+static inline sb
 _recorder_file_open_statistics(FileStore *pStore)
 {
 	s8 file_name[256];
@@ -153,7 +153,7 @@ _recorder_file_open_statistics(FileStore *pStore)
 	return file_id;
 }
 
-static void
+static inline void
 _recorder_file_close_statistics(FileStore *pStore)
 {
 	if(pStore->statistics_file_id >= 0)
@@ -186,7 +186,7 @@ _recorder_file_find(s8 *file_dir)
 	return pStore;
 }
 
-static dave_bool
+static inline dave_bool
 _recorder_file_change_file_name(FileStore *pStore)
 {
 	DateStruct date;
@@ -223,20 +223,44 @@ _recorder_file_change_file_name(FileStore *pStore)
 	return ret;
 }
 
-static void
+static inline dave_bool
+_recorder_file_is_valid(FileStore *pStore)
+{
+	if((pStore->file_name[0] != '\0')
+		&& (pStore->file_id >= 0)
+		&& (dave_os_file_valid(pStore->file_name) == dave_false))
+	{
+		BDABNOR("can't find the file:%s/%ld index:%ld serial:%ld",
+			pStore->file_name, pStore->file_id,
+			pStore->file_index, pStore->file_current_store_serial);
+		return dave_false;
+	}
+
+	return dave_true;
+}
+
+static inline void
 _recorder_file_new_file_name(FileStore *pStore)
 {
 	t_time_get_date(&(pStore->the_file_date));
 
-	dave_sprintf(pStore->file_name, "%s/%s/%04d/%02d/%02d/%02d%02d%02d.bdata",
+	dave_sprintf(pStore->file_name, "%s/%s/%s/%04d/%02d/%02d/%02d%02d%02d.bdata",
+		dave_os_file_home_dir(),
 		FILE_HOME_DIR, pStore->file_dir,
 		pStore->the_file_date.year, pStore->the_file_date.month, pStore->the_file_date.day,
 		pStore->the_file_date.hour, pStore->the_file_date.minute, pStore->the_file_date.second);
 
-	BDTRACE("file_name:%s", pStore->file_name);
+	if(pStore->file_id >= 0)
+	{
+		BDLOG("update new file_name:%s", pStore->file_name);
+	}
+	else
+	{
+		BDLOG("creat new file_name:%s", pStore->file_name);
+	}
 }
 
-static void
+static inline void
 _recorder_file_json_start(FileNote *pNote)
 {
 	pNote->pJson = dave_json_malloc();
@@ -247,7 +271,7 @@ _recorder_file_json_start(FileNote *pNote)
 	}
 }
 
-static ub
+static inline ub
 _recorder_file_head_format(s8 *head_buffer, ub head_len, FileStore *pStore)
 {
 	ub head_index;
@@ -267,14 +291,15 @@ _recorder_file_head_format(s8 *head_buffer, ub head_len, FileStore *pStore)
 	return head_index;
 }
 
-static void
+static inline void
 _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 {
 	s8 head_buffer[1024];
 	ub head_len;
 	dave_bool flag;
 
-	if(_recorder_file_change_file_name(pStore) == dave_true)
+	if((_recorder_file_change_file_name(pStore) == dave_true)
+		|| _recorder_file_is_valid(pStore) == dave_false)
 	{
 		_recorder_file_new_file_name(pStore);
 
@@ -284,7 +309,7 @@ _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 			pStore->file_id = -1;
 		}
 
-		pStore->file_id = dave_os_file_open(CREAT_WRITE_FLAG, pStore->file_name);
+		pStore->file_id = dave_os_file_open(DIRECT_FLAG|CREAT_WRITE_FLAG, pStore->file_name);
 		
 		pStore->file_index = 0;
 	}
@@ -311,7 +336,19 @@ _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 
 					flag = dave_true;
 				}
+				else
+				{
+					BDLOG("file:%s/%s file end write failed!", pStore->file_dir, pStore->file_name);
+				}
 			}
+			else
+			{
+				BDLOG("file:%s/%s file_len:%ld write failed!", pStore->file_dir, pStore->file_name, file_len);
+			}
+		}
+		else
+		{
+			BDLOG("file:%s/%s head_len:%ld write failed!", pStore->file_dir, pStore->file_name, head_len);
 		}
 
 		if(flag == dave_false)
@@ -325,7 +362,7 @@ _recorder_file_recorder_file(FileStore *pStore, s8 *file_buffer, ub file_len)
 	}
 }
 
-static s8 *
+static inline s8 *
 _recorder_file_string_(FileNote *pNote, ub *string_len)
 {
 	ub string_len_temp;
@@ -338,7 +375,7 @@ _recorder_file_string_(FileNote *pNote, ub *string_len)
 	return (s8 *)json_object_to_json_string_length((struct json_object *)(pNote->pJson), JSON_C_TO_STRING_PLAIN, string_len);
 }
 
-static FileNote *
+static inline FileNote *
 _recorder_file_open_(FileStore *pStore)
 {
 	FileNote *pNote;
@@ -356,7 +393,7 @@ _recorder_file_open_(FileStore *pStore)
 	return pNote;
 }
 
-static void
+static inline void
 _recorder_file_close_(FileNote *pNote)
 {
 	FileStore *pStore;
@@ -400,7 +437,7 @@ _recorder_file_close_(FileNote *pNote)
 	dave_free(pNote);
 }
 
-static dave_bool
+static inline dave_bool
 _recorder_file_str_(FileNote *pNote, char *key_name, s8 *str_data, ub str_len)
 {
 	if(str_data == NULL)
@@ -557,12 +594,19 @@ recorder_file_obj(void *ptr, char *key_name, s8 *str_data, ub str_len)
 {
 	if((str_len > 2) && (str_data[0] == '{') && (str_data[str_len - 1] == '}'))
 	{
-		void *obj_json = dave_string_to_json(str_data, str_len);
 		FileNote *pNote = (FileNote *)ptr;
+		void *obj_json = dave_string_to_json(str_data, str_len);
 
 		if(obj_json != NULL)
 		{
+
 			return dave_json_add_object(pNote->pJson, key_name, obj_json);
+		}
+		else
+		{
+			BDLOG("file:%s key:%s is not json data, write to string:%ld/%s",
+				pNote->pStore->file_name, key_name,
+				str_len, str_data);
 		}
 	}
 
@@ -589,8 +633,9 @@ recorder_file_info(s8 *info_ptr, ub info_len)
 		}
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" name:%s len:%ld serial:%ld date:%s",
-			pStore->file_name, pStore->file_index, pStore->file_current_store_serial, datestr(&(pStore->the_file_date)));
+			" name:%s/%ld len:%ld serial:%ld date:%s",
+			pStore->file_name, pStore->file_id, pStore->file_index,
+			pStore->file_current_store_serial, datestr(&(pStore->the_file_date)));
 	}
 
 	return info_index;

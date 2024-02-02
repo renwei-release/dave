@@ -23,7 +23,7 @@
 
 #define NUM_LOG_ONCE_SEND (LOG_BUFFER_MAX)
 #define NUM_CHAIN_ONCE_SEND (4096)
-#define LOG_ONCE_SEND_BYTE_MAX (1024 * 128)
+#define LOG_ONCE_SEND_BYTE_MAX (LOG_DYNAMIC_BUFFER_LEN)
 #define LOG_SEND_INTVL (1000)
 
 static void _log_client_reconnect(TIMERID timer_id, ub thread_index);

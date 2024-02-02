@@ -296,6 +296,9 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 	{
 		pSync = _thread_sync_call_load_sync(pDstThread, wakeup_index);
 
+		/*
+		 * The key to ensuring that requests and responses correspond one to one
+		 */
 		if((pSync != NULL)
 			&& ((thread_get_local(pSync->wait_thread) == thread_get_local(wait_thread)) || (thread_id(pSync->wait_name) == thread_get_local(wait_thread)))
 			&& (pSync->wait_msg == wait_msg))

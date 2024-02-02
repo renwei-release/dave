@@ -20,6 +20,7 @@ typedef struct {
 
 	s8 fix_buffer_ptr[LOG_FIX_BUFFER_LEN];
 	ub fix_buffer_index;
+	ub fix_buffer_history_len;
 
 	s8 *dynamic_buffer_ptr;
 	ub dynamic_buffer_len;
@@ -41,6 +42,8 @@ void log_buffer_set(LogBuffer *pBuffer);
 ub log_buffer_get(s8 *log_ptr, ub log_len, TraceLevel *level);
 
 dave_bool log_buffer_has_data(void);
+
+ub log_buffer_history(s8 *history_ptr, ub history_len);
 
 #endif
 

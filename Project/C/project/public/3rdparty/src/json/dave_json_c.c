@@ -988,7 +988,7 @@ dave_json_c_to_mbuf(void *pJson)
 		return NULL;
 	}
 
-	str_ptr = (s8 *)json_object_to_json_string_length((struct json_object *)pJson, JSON_C_TO_STRING_PLAIN, &str_len);
+	str_ptr = (s8 *)json_object_to_json_string_length((struct json_object *)pJson, JSON_C_TO_STRING_PRETTY|JSON_C_TO_STRING_NOSLASHESCAPE, &str_len);
 
 	if(str_ptr == NULL)
 	{

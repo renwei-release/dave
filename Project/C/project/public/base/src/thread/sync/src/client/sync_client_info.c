@@ -252,7 +252,7 @@ _sync_client_info_thread(s8 *info, ub info_len)
 	for(thread_index=0; thread_index<SYNC_THREAD_MAX; thread_index++)
 	{
 		pThread = sync_client_thread(thread_index);
-		if(pThread->thread_name[0] != '\0')
+		if((pThread->thread_name[0] != '\0') && (dave_strcmp(pThread->thread_name, QUEUE_CLIENT_THREAD_NAME) == dave_false))
 		{
 			info_index += dave_snprintf(&info[info_index], info_len-info_index,
 				" %x/%03x s-%06ld/r-%06ld",

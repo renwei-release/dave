@@ -174,6 +174,9 @@ _store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *s
 	SqlRet ret;
 	ub safe_counter;
 
+	*data = NULL;
+	msg_ptr[0] = '\0';
+
 	msg_ptr[0] = '\0';
 
 	if((sql_ptr == NULL) || (sql_len == 0))
@@ -260,7 +263,7 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	pMysql->work_times ++;
 
 	ub start_time = dave_os_time_us();
-	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, dave_mptr(pReq->sql), dave_mlen(pReq->sql));
+	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, ms8(pReq->sql), mlen(pReq->sql));
 	mysql_statistics(&(pMysql->statistics), dave_os_time_us() - start_time);
 
 	pRsp->ptr = pReq->ptr;
