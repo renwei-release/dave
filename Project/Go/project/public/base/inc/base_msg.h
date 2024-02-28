@@ -360,6 +360,7 @@ typedef struct {
 typedef struct {
 	s8 general_type[256];
 	MBUF *general_data;
+	ub send_req_us_time;
 	void *ptr;
 } GeneralReq;
 
@@ -367,6 +368,9 @@ typedef struct {
 typedef struct {
 	s8 general_type[256];
 	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } GeneralRsp;
 

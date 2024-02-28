@@ -474,6 +474,7 @@ type DosForward struct {
 type GeneralReq struct {
 	General_type [256] byte
 	General_data *MBUF
+	Send_req_us_time uint64
 	Ptr uint64
 }
 
@@ -481,6 +482,9 @@ type GeneralReq struct {
 type GeneralRsp struct {
 	General_type [256] byte
 	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 

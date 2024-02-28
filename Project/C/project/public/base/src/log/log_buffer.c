@@ -64,21 +64,22 @@ static inline LogBuffer *
 _log_buffer_malloc(void)
 {
 	LogBuffer *pBuffer;
+	dave_bool overflow = dave_false;
 
 	log_lock();
-	pBuffer = &_log_buffer_ptr[_log_buffer_index % LOG_BUFFER_MAX];
-	if(pBuffer->level == TRACELEVEL_MAX)
+	pBuffer = &_log_buffer_ptr[_log_buffer_index++ % LOG_BUFFER_MAX];
+	if(pBuffer->level != TRACELEVEL_MAX)
 	{
-		pBuffer->fix_buffer_history_len = 0;
-		_log_buffer_index ++;
+		overflow = dave_true;
 	}
-	else
-	{
-		pBuffer = NULL;
-	}
+	pBuffer->level = TRACELEVEL_MAX;
+	pBuffer->fix_buffer_index = 0;
+	pBuffer->fix_buffer_history_len = 0;
+
+	pBuffer->dynamic_buffer_index = 0;
 	log_unlock();
 
-	if(pBuffer == NULL)
+	if(overflow == dave_true)
 	{
 		LOGLTRACE(60,1,"The log is generated too fast, please define a larger cache(%d)! lost:%d",
 			LOG_BUFFER_MAX, _log_lost_counter);

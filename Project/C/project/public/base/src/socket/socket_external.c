@@ -872,6 +872,12 @@ _socket_external_send_event(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, 
 		}
 	} );
 
+	if(ret == dave_false)
+	{
+		SOCKETLOG("send failed! %s snd_flag:%d use_flag:%d wait_close:%d",
+			thread_name(pCore->owner), snd_flag, pCore->use_flag, pCore->wait_close);
+	}
+
 	return ret;
 }
 
@@ -1039,7 +1045,7 @@ socket_external_send(ThreadId src, s32 socket, IPBaseInfo *pIPInfo, MBUF *data, 
 	pCore = socket_core_find(socket);
 	if(pCore == NULL)
 	{
-		SOCKETTRACE("%s socket:%d send:%d failed!",
+		SOCKETLOG("%s socket:%d send:%d failed!",
 			thread_name(src), socket, data->tot_len);
 		return dave_false;
 	}

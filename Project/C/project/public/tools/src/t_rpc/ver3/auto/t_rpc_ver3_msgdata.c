@@ -3631,6 +3631,7 @@ t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "s8-general_type", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->general_type), 1, 256));
 	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "ub-send_req_us_time", t_rpc_ver3_zip_ub(zip_data->send_req_us_time));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -3656,6 +3657,7 @@ t_rpc_ver3_unzip_GeneralReq(void **unzip_data, ub *unzip_len, void *pStructBson)
 
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->general_type), 1, 256, t_bson_inq_object(pStructBson, "s8-general_type"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_req_us_time), t_bson_inq_object(pStructBson, "ub-send_req_us_time"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -3692,6 +3694,9 @@ t_rpc_ver3_zip_GeneralRsp(GeneralRsp *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "s8-general_type", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->general_type), 1, 256));
 	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "ub-send_req_us_time", t_rpc_ver3_zip_ub(zip_data->send_req_us_time));
+	t_bson_add_object(pStructBson, "ub-recv_req_us_time", t_rpc_ver3_zip_ub(zip_data->recv_req_us_time));
+	t_bson_add_object(pStructBson, "ub-send_rsp_us_time", t_rpc_ver3_zip_ub(zip_data->send_rsp_us_time));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -3717,6 +3722,9 @@ t_rpc_ver3_unzip_GeneralRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
 
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->general_type), 1, 256, t_bson_inq_object(pStructBson, "s8-general_type"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_req_us_time), t_bson_inq_object(pStructBson, "ub-send_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->recv_req_us_time), t_bson_inq_object(pStructBson, "ub-recv_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_rsp_us_time), t_bson_inq_object(pStructBson, "ub-send_rsp_us_time"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

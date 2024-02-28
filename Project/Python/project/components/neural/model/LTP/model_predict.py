@@ -18,6 +18,9 @@ import torch
 from ltp import LTP
 
 
+LIMIT_THE_USE_OF_CPU = True
+
+
 # =====================================================================
 
 
@@ -27,8 +30,13 @@ class predict():
         self.ltp = LTP("LTP/Base")   # "base|small|tiny"
         if user_dict != None:
             self.ltp.init_dict(path=user_dict, max_window=4)
-        if torch.cuda.is_available():
-            self.ltp.to("cuda")
+        if LIMIT_THE_USE_OF_CPU == True:
+            self.ltp.to("cpu")
+        else:
+            if torch.cuda.is_available():
+                self.ltp.to("cuda")
+            else:
+                self.ltp.to("cpu")
         return
 
     def predict(self, text, tasks=None):

@@ -536,6 +536,7 @@ class GeneralReq (Structure):
 	_fields_ = [
 		("general_type", c_char * 256),
 		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -544,6 +545,9 @@ class GeneralRsp (Structure):
 	_fields_ = [
 		("general_type", c_char * 256),
 		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
