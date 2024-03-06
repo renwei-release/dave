@@ -133,7 +133,7 @@ def _creat_rpcdata_zip_file(file_id):
 
 
 def _creat_rpcdata_unzip_file(file_id):
-    file_id.write("dave_bool\nt_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
+    file_id.write("dave_bool\nt_rpc_ver3_unzip(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)\n")
     file_id.write("{\r\tvoid *pBson;\n")
     file_id.write("\tdave_bool ret = dave_false;\n")
     file_id.write("\n")
@@ -148,7 +148,7 @@ def _creat_rpcdata_unzip_file(file_id):
     file_id.write("\n\tif(t_bson_inq_int64(pBson, \"rpc_time\", (u64 *)(&rpc_time)) == true) {")
     file_id.write("\n\t\trpc_time = (s64)dave_os_time_us() - rpc_time;")
     file_id.write("\n\t\tif(rpc_time > 3000000)")
-    file_id.write("\n\t\t\tTOOLSLTRACE(60,1,\"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.\", msgstr(msg_id), rpc_time);")
+    file_id.write("\n\t\t\tTOOLSLTRACE(60,1,\"from:%s msg_id:%s took too much time:%lds in transit or the time of the transmission parties is out of sync.\", data_from, msgstr(msg_id), rpc_time/1000000);")
     file_id.write("\n\t}")
     file_id.write("\n\t#endif\n")
     file_id.write("\n\tret = _t_rpc_unzip(msg_body, msg_len, msg_id, pBson);\n")
@@ -202,7 +202,7 @@ def _creat_rpcdata_inc_file(file_name):
         copyright_message(file_id)
         file_id.write(_rpcdata_inc_head)
         file_id.write("void * t_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg_len);\n")
-        file_id.write("dave_bool t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
+        file_id.write("dave_bool t_rpc_ver3_unzip(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len);\n")
         file_id.write("void * t_rpc_ver3_ptr(ub msg_id, void *msg_body, void *new_ptr);\n")
         file_id.write("ub t_rpc_ver3_sizeof(ub msg_id);\n\n")
         file_id.write(_rpcdata_inc_end)

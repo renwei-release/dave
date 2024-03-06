@@ -20,7 +20,7 @@ fi
 #
 # 删除僵尸容器
 #
-zombie_container=`docker ps -a | grep -w "${PROJECTNAME}" | grep "Exited"`
+zombie_container=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | grep "Exited" | head -n 1`
 if [ "$zombie_container" ]; then
    echo "*** Found zombie container. remove it!"
    docker stop ${PROJECTNAME}
@@ -30,7 +30,7 @@ fi
 #
 # 检测是否容器对应的镜像版本有变化，如果有变化，则删除容器。
 #
-container_image_name=`docker ps -a | grep -w "${PROJECTNAME}" | awk '{print $2}'`
+container_image_name=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | awk '{print $2}' | head -n 1`
 if [ "$container_image_name" != "" ]; then
    current_image_name=${IMAGE}:${TAG}
    if [ $container_image_name != $current_image_name ]; then

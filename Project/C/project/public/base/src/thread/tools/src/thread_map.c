@@ -46,7 +46,7 @@ _thread_map_name_all_reset(void)
 	}
 }
 
-static NameThreadMap *
+static inline NameThreadMap *
 _thread_map_name_find(s8 *thread_name, ThreadStruct *pThread, dave_bool find_new)
 {
 	ub map_index, name_index, safe_counter;

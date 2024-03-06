@@ -415,7 +415,7 @@ _sync_client_run_thread_frame(SyncServer *pServer, ub frame_len, u8 *frame_ptr)
 		dst, route_dst, thread_get_thread(route_dst), thread_get_net(route_dst),
 		t_auto_BaseMsgType_str(msg_type), msgstr(msg_id), package_len);
 
-	if(t_rpc_unzip(&pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
+	if(t_rpc_unzip(pServer->globally_identifier, &pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)package_ptr, package_len) == dave_false)
 	{
 		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%s msg_id:%s packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),

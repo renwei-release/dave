@@ -242,7 +242,11 @@ _recorder_file_is_valid(FileStore *pStore)
 static inline void
 _recorder_file_new_file_name(FileStore *pStore)
 {
+	s8 old_file_name[FILE_NAME_MAX];
+
 	t_time_get_date(&(pStore->the_file_date));
+
+	dave_strcpy(old_file_name, pStore->file_name, sizeof(pStore->file_name));
 
 	dave_sprintf(pStore->file_name, "%s/%s/%s/%04d/%02d/%02d/%02d%02d%02d.bdata",
 		dave_os_file_home_dir(),
@@ -252,11 +256,11 @@ _recorder_file_new_file_name(FileStore *pStore)
 
 	if(pStore->file_id >= 0)
 	{
-		BDLOG("update new file_name:%s", pStore->file_name);
+		BDLOG("update new file_name:%s->%s", old_file_name, pStore->file_name);
 	}
 	else
 	{
-		BDLOG("creat new file_name:%s", pStore->file_name);
+		BDLOG("creat new file_name:%s->%s", old_file_name, pStore->file_name);
 	}
 }
 

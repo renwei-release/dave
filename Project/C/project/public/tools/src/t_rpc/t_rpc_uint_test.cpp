@@ -28,7 +28,7 @@ _t_rpc_test_cases_1(void)
 
 	req_mbuf = t_rpc_zip(NULL, NULL, MSGID_ECHO_REQ, &req, sizeof(req));
 
-	t_rpc_unzip(&pChainBson, &pRouterBson, (void **)(&rsp), &msg_len, MSGID_ECHO_REQ, ms8(req_mbuf), mlen(req_mbuf));
+	t_rpc_unzip((s8 *)"test cases", &pChainBson, &pRouterBson, (void **)(&rsp), &msg_len, MSGID_ECHO_REQ, ms8(req_mbuf), mlen(req_mbuf));
 
 	EXPECT_STREQ(rsp->echo.thread, "1234567890");
 

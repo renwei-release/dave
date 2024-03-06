@@ -1746,7 +1746,7 @@ t_rpc_ver3_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, u
 }
 
 dave_bool
-t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+t_rpc_ver3_unzip(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {	void *pBson;
 	dave_bool ret = dave_false;
 
@@ -1762,7 +1762,7 @@ t_rpc_ver3_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *m
 	if(t_bson_inq_int64(pBson, "rpc_time", (u64 *)(&rpc_time)) == true) {
 		rpc_time = (s64)dave_os_time_us() - rpc_time;
 		if(rpc_time > 3000000)
-			TOOLSLTRACE(60,1,"msg_id:%s took too much time:%ld in transit or the time of the transmission parties is out of sync.", msgstr(msg_id), rpc_time);
+			TOOLSLTRACE(60,1,"from:%s msg_id:%s took too much time:%lds in transit or the time of the transmission parties is out of sync.", data_from, msgstr(msg_id), rpc_time/1000000);
 	}
 	#endif
 

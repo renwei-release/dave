@@ -639,7 +639,7 @@ _sync_server_rx_run_internal_msg_req(SyncClient *pClient, ub frame_len, u8 *fram
 		&msg_type, &src_attrib, &dst_attrib,
 		&packet_len, &packet_ptr);
 
-	if(t_rpc_unzip(&pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)packet_ptr, packet_len) == dave_false)
+	if(t_rpc_unzip(pClient->globally_identifier, &pChainBson, &pRouterBson, &msg_body, &msg_len, msg_id, (s8 *)packet_ptr, packet_len) == dave_false)
 	{
 		SYNCLTRACE(60,1,"%s/%lx/%d/%d->%s/%lx/%d/%d msg_type:%d msg_id:%s packet_len:%d",
 			src, route_src, thread_get_thread(route_src), thread_get_net(route_src),

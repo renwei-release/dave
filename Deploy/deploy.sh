@@ -102,7 +102,7 @@ fi
 # 调用update.sh更新工程文件
 #
 
-exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}"`
+exit_project_contains=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | awk '{print $2}' | head -n 1`
 
 if [ "$exit_project_contains" == "" ]; then
    if [ "$GPU" == '"NULL"' ]; then

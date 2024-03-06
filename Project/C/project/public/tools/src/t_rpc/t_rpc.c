@@ -31,9 +31,9 @@ _t_rpc_zip_ver3(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, 
 }
 
 static inline  dave_bool
-_t_rpc_unzip_ver3(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+_t_rpc_unzip_ver3(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {
-	return t_rpc_ver3_unzip(ppChainBson, ppRouterBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
+	return t_rpc_ver3_unzip(data_from, ppChainBson, ppRouterBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
 }
 
 // =====================================================================
@@ -57,9 +57,9 @@ t_rpc_zip(void *pChainBson, void *pRouterBson, ub msg_id, void *msg_body, ub msg
 }
 
 dave_bool
-t_rpc_unzip(void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
+t_rpc_unzip(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **msg_body, ub *msg_len, ub msg_id, s8 *packet_ptr, ub packet_len)
 {
-	return _t_rpc_unzip_ver3(ppChainBson, ppRouterBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
+	return _t_rpc_unzip_ver3(data_from, ppChainBson, ppRouterBson, msg_body, msg_len, msg_id, packet_ptr, packet_len);
 }
 
 void *

@@ -9,7 +9,7 @@
 PROJECTNAME=$1
 File=$(basename $0)
 
-exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}"`
+exit_project_contains=`docker ps -a | grep -w "${PROJECTNAME}" | awk '{print $2}' | head -n 1`
 
 # 如果容器存在且处于停机状态时就启动它，
 # 如果容器不存在就不理会，
