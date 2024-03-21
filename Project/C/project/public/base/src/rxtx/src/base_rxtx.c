@@ -531,9 +531,10 @@ _base_rxtx_output_data(RXTX *pRxTx, u8 *dst_ip, u16 dst_port, u8 type, ORDER_COD
 	ret = _base_rxtx_output(type, pRxTx, dst_ip, dst_port, order_id, data);
 	if(ret == dave_false)
 	{
-		RTLTRACE(60,1,"socket:%d owner:%s output error!",
+		RTLTRACE(60,1,"socket:%d owner:%s output:%s error!",
 				pRxTx->socket,
-				thread_name(pRxTx->owner_thread));
+				thread_name(pRxTx->owner_thread),
+				t_auto_ORDER_CODE_str(order_id));
 
 		dave_mfree(data);
 	}

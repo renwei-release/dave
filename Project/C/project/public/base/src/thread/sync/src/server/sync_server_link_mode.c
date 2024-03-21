@@ -10,10 +10,7 @@
 #if defined(SYNC_STACK_SERVER)
 #include "dave_base.h"
 #include "dave_tools.h"
-
-#define NULL_MODEL (ub)(NULL)
-#define MAIN_MODEL (ub)(0x0000001)
-#define SUB_MODEL (ub)(0x0000002)
+#include "sync_server_link_mode.h"
 
 static void *_link_mode_kv = NULL;
 
@@ -33,9 +30,26 @@ _sync_server_link_mode_add(dave_bool model, s8 *ptr_stra, s8 *ptr_strb)
 }
 
 static dave_bool
-_sync_server_link_mode_arbitration(s8 *ptr_stra, s8 *ptr_strb)
+_sync_server_link_mode_arbitration(s8 *ptr_stra, s8 *ptr_strb, ub expected_mode)
 {
-	dave_bool model = ((t_rand() % 2) == 0) ? dave_true : dave_false;
+	dave_bool model;
+
+	if(expected_mode == NULL_MODEL)
+	{
+		model = ((t_rand() % 2) == 0) ? dave_true : dave_false;
+	}
+	else if(expected_mode == MAIN_MODEL)
+	{
+		model = dave_true;
+	}
+	else if(expected_mode == SUB_MODEL)
+	{
+		model = dave_false;
+	}
+	else
+	{
+		model = ((t_rand() % 2) == 0) ? dave_true : dave_false;
+	}
 
 	_sync_server_link_mode_add(model, ptr_stra, ptr_strb);
 
@@ -76,7 +90,7 @@ sync_server_link_mode_exit(void)
 }
 
 dave_bool
-sync_server_link_mode(s8 *ptr_a, s8 *ptr_b)
+sync_server_link_mode(s8 *ptr_a, s8 *ptr_b, ub expected_mode)
 {
 	s8 ptr_string_a[128];
 	s8 ptr_string_b[128];
@@ -94,7 +108,7 @@ sync_server_link_mode(s8 *ptr_a, s8 *ptr_b)
 				ret = dave_false;
 			break;
 		default:
-				ret = _sync_server_link_mode_arbitration(ptr_string_a, ptr_string_b);
+				ret = _sync_server_link_mode_arbitration(ptr_string_a, ptr_string_b, expected_mode);
 			break;
 	}
 

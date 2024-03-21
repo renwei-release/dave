@@ -148,6 +148,7 @@ type BBSMsgInqCommentRsp struct {
 
 /* for BDATA_LOG_REQ message */
 type BDataLogReq struct {
+	Level int64
 	Version [DAVE_VERNO_STR_LEN] byte
 	Sub_flag [DAVE_NORMAL_STR_LEN] byte
 	Local_date DateStruct

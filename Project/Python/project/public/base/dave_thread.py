@@ -16,6 +16,14 @@ from ..tools import *
 davelib = dave_dll()
 
 
+def thread_id(thread_name):
+    if isinstance(thread_name, str) == True:
+        thread_name = bytes(thread_name, encoding='utf8')
+
+    davelib.dave_dll_thread_id.restype = c_int
+    return davelib.dave_dll_thread_id(c_char_p(thread_name))
+
+
 def thread_self():
     __func__, __LINE__ = t_sys_myline(2)
 

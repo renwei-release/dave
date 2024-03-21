@@ -171,6 +171,7 @@ class BBSMsgInqCommentRsp (Structure):
 #* for BDATA_LOG_REQ message *#
 class BDataLogReq (Structure):
 	_fields_ = [
+		("level", c_longlong),
 		("version", c_char * DAVE_VERNO_STR_LEN),
 		("sub_flag", c_char * DAVE_NORMAL_STR_LEN),
 		("local_date", DateStruct),

@@ -106,6 +106,10 @@ AIPlaceType_veterinary_care = AIPlaceType_university + 1
 AIPlaceType_zoo = AIPlaceType_veterinary_care + 1
 AIPlaceType_max = 0x1fffffffffffffff
 
+BDataLogLevel_normal = 0
+BDataLogLevel_report = BDataLogLevel_normal + 1
+BDataLogLevel_max = 0x1fffffffffffffff
+
 CVSearchOpt_0 = 0
 CVSearchOpt_1 = CVSearchOpt_0 + 1
 CVSearchOpt_2 = CVSearchOpt_1 + 1
@@ -115,6 +119,7 @@ EchoType_start = 0
 EchoType_stop = EchoType_start + 1
 EchoType_single = EchoType_stop + 1
 EchoType_random = EchoType_single + 1
+EchoType_max = 0x1fffffffffffffff
 
 KeepAlive_enable = 0x01234567
 KeepAlive_disable = 0x09abcdef

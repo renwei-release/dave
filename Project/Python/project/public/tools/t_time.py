@@ -35,13 +35,24 @@ def t_time_start_action():
     return datetime.datetime.now()
 
 
-def t_time_end_action(start_time, message=None):
+def t_time_end_action(start_time, time_flag=None, time_name=None, time_msg=None):
     run_time = datetime.datetime.now() - start_time 
     run_time = run_time.seconds * 1000000 + run_time.microseconds
 
-    run_time_msg = f'{run_time/1000000}s'
+    if run_time <= 0:
+        run_time_msg = f'0s'
+    elif run_time < 1000:
+        run_time_msg = f'{run_time}us'
+    else:
+        run_time_msg = f'{run_time/1000000}s'
 
-    if message != None:
-        return run_time_msg + f'-{message}'
+    if time_msg != None:
+        run_time_msg = run_time_msg + '-' + time_msg
+
+    if (time_flag != None) and (time_name != None):
+        if time_name in time_flag:
+            time_flag[time_name] = time_flag[time_name] + '/' + run_time_msg
+        else:
+            time_flag[time_name] = run_time_msg
 
     return run_time_msg

@@ -53,6 +53,9 @@ extern "C"{
 #ifdef REDIS_3RDPARTY
 #include "dave_redis.h"
 #endif
+#ifdef CURL_3RDPARTY
+#include "dave_curl.h"
+#endif
 
 #ifdef __cplusplus
 }

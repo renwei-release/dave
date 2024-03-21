@@ -640,19 +640,12 @@ _sync_client_safe_disconnect_rsp(SocketDisconnectRsp *pRsp)
 static void
 _sync_client_safe_plugin(SocketPlugIn *pPlugIn)
 {
-	SyncServer *pServer = NULL;
-
 	if(base_power_state() == dave_false)
 	{
 		return;
 	}
 
-	SAFECODEv2W(_sync_client_system_lock, { pServer = _sync_client_plugin(pPlugIn); });
-
-	if(pServer != NULL)
-	{
-		sync_client_tx_heartbeat(pServer, dave_true);
-	}
+	SAFECODEv2W(_sync_client_system_lock, { _sync_client_plugin(pPlugIn); });
 }
 
 static void

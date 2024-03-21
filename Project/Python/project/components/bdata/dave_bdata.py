@@ -59,6 +59,19 @@ def BDATALOG(sub, *msg: object):
     msg = str(msg[0])
 
     pReq = thread_msg(BDataLogReq)
+    pReq.contents.level = BDataLogLevel_normal
+    __BDATABASE__(sub, pReq)
+    pReq.contents.log_data = str_to_mbuf(msg)
+
+    write_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq)
+    return True
+
+
+def BDATARPT(sub, *msg: object):
+    msg = str(msg[0])
+
+    pReq = thread_msg(BDataLogReq)
+    pReq.contents.level = BDataLogLevel_report
     __BDATABASE__(sub, pReq)
     pReq.contents.log_data = str_to_mbuf(msg)
 

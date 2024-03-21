@@ -1,0 +1,30 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+
+VERSION=8_6_0
+
+if [ ! -f ./curl-${VERSION}.tar.gz ]; then
+  wget https://github.com/curl/curl/archive/refs/tags/curl-${VERSION}.tar.gz
+fi
+
+if [ ! -d ./curl-curl-${VERSION} ]; then
+  tar -xzvf curl-${VERSION}.tar.gz
+fi
+
+if [ -d ./setup ]; then
+  rm -rf setup
+fi
+mkdir setup
+
+cd curl-curl-${VERSION}
+
+autoreconf -fi
+
+./configure --prefix=${homepath}/setup --enable-shared=no --enable-static=yes --disable-ldap --disable-ldaps --with-openssl --without-libpsl
+
+make && make install
+
+cd ${homepath}
+
+rm -rf curl-curl-${VERSION}

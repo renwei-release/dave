@@ -187,8 +187,26 @@ _sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 {
 	ub client_index;
 	SyncClient *pOtherClient;
+	ub expected_mode;
 
 	SYNCTRACE("%s", pClient->verno);
+
+	if((pClient->link_state != SyncConnectDetected_unobstructed) && (pClient->link_state != SyncConnectDetected_hinder))
+	{
+		if(t_net_detected_ip_port((u8 *)(pClient->link_ip), pClient->link_port) == dave_true)
+			pClient->link_state = SyncConnectDetected_unobstructed;
+		else
+			pClient->link_state = SyncConnectDetected_hinder;
+	}
+
+	if(pClient->link_state == SyncConnectDetected_unobstructed)
+	{
+		expected_mode = NULL_MODEL;	
+	}
+	else
+	{
+		expected_mode = MAIN_MODEL;
+	}
 
 	for(client_index=0; client_index<SYNC_CLIENT_MAX; client_index++)
 	{
@@ -198,7 +216,8 @@ _sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
 			if((pClient->link_up_flag == dave_false)
-				|| (sync_server_link_mode(pClient->globally_identifier, pOtherClient->globally_identifier) == dave_true))
+				|| (pClient->link_state == SyncConnectDetected_hinder)
+				|| (sync_server_link_mode(pClient->globally_identifier, pOtherClient->globally_identifier, expected_mode) == dave_true))
 			{
 				if(_sync_server_sync_link_to(pClient, pOtherClient) == dave_true)
 				{
@@ -225,7 +244,7 @@ _sync_server_sync_link_to_other(SyncClient *pClient, dave_bool *link_event)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
 			if((pClient->link_up_flag == dave_false)
-				|| (sync_server_link_mode(pOtherClient->globally_identifier, pClient->globally_identifier) == dave_true))
+				|| (sync_server_link_mode(pOtherClient->globally_identifier, pClient->globally_identifier, NULL_MODEL) == dave_true))
 			{
 				if(_sync_server_sync_link_to(pOtherClient, pClient) == dave_true)
 				{

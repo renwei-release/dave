@@ -202,6 +202,18 @@ def t_auto_AIPlaceType_str(enum_value):
 	return value_str
 
 
+def t_auto_BDataLogLevel_str(enum_value):
+	if enum_value == BDataLogLevel_normal:
+		value_str = "'BDataLogLevel_normal-0'"
+	elif enum_value == BDataLogLevel_report:
+		value_str = "'BDataLogLevel_report'"
+	elif enum_value == BDataLogLevel_max:
+		value_str = "'BDataLogLevel_max-0x1fffffffffffffff'"
+	else:
+		value_str = f'{enum_value}'
+	return value_str
+
+
 def t_auto_CVSearchOpt_str(enum_value):
 	if enum_value == CVSearchOpt_0:
 		value_str = "'CVSearchOpt_0'"
@@ -225,6 +237,8 @@ def t_auto_EchoType_str(enum_value):
 		value_str = "'EchoType_single'"
 	elif enum_value == EchoType_random:
 		value_str = "'EchoType_random'"
+	elif enum_value == EchoType_max:
+		value_str = "'EchoType_max-0x1fffffffffffffff'"
 	else:
 		value_str = f'{enum_value}'
 	return value_str

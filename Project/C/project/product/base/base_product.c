@@ -160,7 +160,7 @@ _base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
 static void
 _base_thread_init(MSGBODY *msg)
 {
-	BDATALOG("INIT", "%s booting!", dave_verno());
+	BDATARPT("INIT", "%s booting!", dave_verno());
 }
 
 static void

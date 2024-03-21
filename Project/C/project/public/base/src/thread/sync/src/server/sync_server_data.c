@@ -63,6 +63,7 @@ _sync_server_reset_client(SyncClient *pClient)
 	pClient->link_up_flag = dave_false;
 	dave_memset(pClient->link_ip, 0x00, sizeof(pClient->link_ip));
 	pClient->link_port = 0;
+	pClient->link_state = SyncConnectDetected_null;
 
 	pClient->receive_thread_done = dave_false;
 	pClient->sync_thread_flag = dave_false;

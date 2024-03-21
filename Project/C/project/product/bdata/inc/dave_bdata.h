@@ -38,6 +38,8 @@
 #define BDATALOG(sub, log, ...) {\
 	BDataLogReq *pReq = thread_msg(pReq);\
 \
+	pReq->level = BDataLogLevel_normal;\
+\
 	__BDATABASE__(sub, pReq)\
 	pReq->log_data = dave_mmalloc(1024 * 32);\
 	pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
@@ -50,11 +52,12 @@
  * BDATAJSON("my log flag xxxx", json);
  */
 #define BDATAJSON(sub, json) {\
-	BDataLogReq *pReq;\
 \
 	if(json != NULL)\
 	{\
-		pReq = thread_msg(pReq);\
+		BDataLogReq *pReq = thread_msg(pReq);\
+\
+		pReq->level = BDataLogLevel_normal;\
 \
 		__BDATABASE__(sub, pReq)\
 		pReq->log_data = dave_json_to_mbuf(json);\
@@ -63,6 +66,22 @@
 \
 		dave_json_free(json);\
 	}\
+}
+
+/*
+ * Call example:
+ * BDATARPT("my log flag xxxx", "%s", str_data);
+ */
+#define BDATARPT(sub, log, ...) {\
+	BDataLogReq *pReq = thread_msg(pReq);\
+\
+	pReq->level = BDataLogLevel_report;\
+\
+	__BDATABASE__(sub, pReq)\
+	pReq->log_data = dave_mmalloc(1024 * 32);\
+	pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
+\
+	name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
 }
 
 #endif

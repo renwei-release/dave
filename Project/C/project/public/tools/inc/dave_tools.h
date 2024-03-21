@@ -24,6 +24,7 @@ extern "C"{
 #include "t_is.h"
 #include "t_time.h"
 #include "t_auto.h"
+#include "t_net.h"
 
 #ifdef __cplusplus
 } //extern "C"

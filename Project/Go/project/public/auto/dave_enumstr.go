@@ -117,6 +117,19 @@ func T_auto_AIPlaceType_str(enum_value int64) string {
 	return value_str
 }
 
+func T_auto_BDataLogLevel_str(enum_value int64) string {
+	var value_str string
+
+	switch enum_value {
+		case BDataLogLevel_normal: value_str = "'BDataLogLevel_normal-0'"
+		case BDataLogLevel_report: value_str = "'BDataLogLevel_report'"
+		case BDataLogLevel_max: value_str = "'BDataLogLevel_max-0x1fffffffffffffff'"
+		default: value_str = fmt.Sprintf("'%v'", enum_value)
+	}
+
+	return value_str
+}
+
 func T_auto_CVSearchOpt_str(enum_value int64) string {
 	var value_str string
 
@@ -139,6 +152,7 @@ func T_auto_EchoType_str(enum_value int64) string {
 		case EchoType_stop: value_str = "'EchoType_stop'"
 		case EchoType_single: value_str = "'EchoType_single'"
 		case EchoType_random: value_str = "'EchoType_random'"
+		case EchoType_max: value_str = "'EchoType_max-0x1fffffffffffffff'"
 		default: value_str = fmt.Sprintf("'%v'", enum_value)
 	}
 

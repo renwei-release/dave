@@ -40,6 +40,8 @@ _recipient_log_data(void *pNote, BDataLogReq *pReq)
 
 	line_len = dave_snprintf(line_str, sizeof(line_str), "%d", pReq->line);
 
+	recorder_file_str(pNote, "level", t_auto_BDataLogLevel_str(pReq->level), dave_strlen(t_auto_BDataLogLevel_str(pReq->level)));
+
 	recorder_file_str(pNote, "version", pReq->version, dave_strlen(pReq->version));
 	recorder_file_str(pNote, "sub_flag", pReq->sub_flag, dave_strlen(pReq->sub_flag));
 	recorder_file_str(pNote, "local_date", date_str, date_len);

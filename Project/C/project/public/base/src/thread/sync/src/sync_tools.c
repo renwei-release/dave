@@ -23,9 +23,9 @@ sync_work_start_second_str(ub work_start_second, s8 *str_ptr, ub str_len)
 	else if(work_start_second < 3600)
 		dave_snprintf(str_ptr, str_len, "%02dm", work_start_second/60);
 	else if(work_start_second < (3600 * 24))
-		dave_snprintf(str_ptr, str_len, "%03dh", work_start_second/3600);
+		dave_snprintf(str_ptr, str_len, "%02dh", work_start_second/3600);
 	else
-		dave_snprintf(str_ptr, str_len, "%03dd", work_start_second/(3600 * 24));
+		dave_snprintf(str_ptr, str_len, "%02dd", work_start_second/(3600 * 24));
 
 	return str_ptr;
 }

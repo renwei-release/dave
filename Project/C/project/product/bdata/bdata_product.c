@@ -15,6 +15,7 @@
 #include "bdata_msg.h"
 #include "recipient_log.h"
 #include "recorder_api.h"
+#include "reporter.h"
 
 static ThreadId _bdata_thread = INVALID_THREAD_ID;
 
@@ -57,6 +58,7 @@ _bdata_main(MSGBODY *msg)
 			break;
 		case BDATA_LOG_REQ:
 				recipient_log(msg->msg_src, (BDataLogReq *)(msg->msg_body));
+				reporter(msg->msg_src, (BDataLogReq *)(msg->msg_body));
 			break;
 		default:
 			break;

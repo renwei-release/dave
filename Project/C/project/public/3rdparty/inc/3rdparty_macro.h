@@ -52,6 +52,10 @@
 // #define PJSIP_3RDPARTY
 #endif
 
+#ifdef __DAVE_PRODUCT_BDATA__
+#define CURL_3RDPARTY
+#endif
+
 #define REDIS_3RDPARTY
 
 #endif

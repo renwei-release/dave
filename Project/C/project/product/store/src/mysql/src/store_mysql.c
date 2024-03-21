@@ -30,7 +30,6 @@ typedef struct {
 	void *mysql_client;
 
 	DateStruct connect_date;
-	ub work_times;
 
 	MysqlStatistics statistics;
 } StoreMysql;
@@ -260,8 +259,6 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 	StoreMysqlRsp *pRsp = thread_reset_msg(pRsp);
 	StoreMysql *pMysql = &_pMysql[thread_index];
 
-	pMysql->work_times ++;
-
 	ub start_time = dave_os_time_us();
 	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, ms8(pReq->sql), mlen(pReq->sql));
 	mysql_statistics(&(pMysql->statistics), dave_os_time_us() - start_time);
@@ -303,10 +300,9 @@ store_mysql_info(s8 *info_ptr, ub info_len)
 		mysql_statistics_info(statistics_str, sizeof(statistics_str), &(pMysql->statistics));
 
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s:%d %s %ld (%s) (%s)\n",
+			" %s:%d %s (%s) (%s)\n",
 			pMysql->mysql_address, pMysql->mysql_port,
 			pMysql->mysql_client == NULL ? "disconnect" : "connect",
-			pMysql->work_times,
 			t_a2b_date_str(&(pMysql->connect_date)),
 			statistics_str);
 	}

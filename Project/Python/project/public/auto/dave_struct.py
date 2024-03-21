@@ -377,7 +377,7 @@ class HttpKeyValue (Structure):
 #* for None message *#
 class MsgIdEcho (Structure):
 	_fields_ = [
-		("type", c_int),
+		("type", c_longlong),
 		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 		("thread", c_char * DAVE_THREAD_NAME_LEN),
 		("echo_total_counter", c_ulonglong),

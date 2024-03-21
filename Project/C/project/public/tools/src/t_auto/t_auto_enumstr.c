@@ -19,6 +19,7 @@
 #include "dave_mcard.h"
 #include "nlp_param.h"
 #include "bbs_param.h"
+#include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
@@ -316,6 +317,30 @@ t_auto_AIPlaceType_str(AIPlaceType enum_value)
 			break;
 		case AIPlaceType_max:
 				value_str = "'AIPlaceType_max-0x1fffffffffffffff'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_BDataLogLevel_str(BDataLogLevel enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case BDataLogLevel_normal:
+				value_str = "'BDataLogLevel_normal-0'";
+			break;
+		case BDataLogLevel_report:
+				value_str = "'BDataLogLevel_report'";
+			break;
+		case BDataLogLevel_max:
+				value_str = "'BDataLogLevel_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -1225,6 +1250,9 @@ t_auto_EchoType_str(EchoType enum_value)
 			break;
 		case EchoType_random:
 				value_str = "'EchoType_random'";
+			break;
+		case EchoType_max:
+				value_str = "'EchoType_max-0x1fffffffffffffff'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -4270,6 +4298,30 @@ t_auto_SYNCType_str(SYNCType enum_value)
 			break;
 		case SYNC_MAX:
 				value_str = "'SYNC_MAX'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_SyncConnectDetected_str(SyncConnectDetected enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case SyncConnectDetected_null:
+				value_str = "'SyncConnectDetected_null-0'";
+			break;
+		case SyncConnectDetected_unobstructed:
+				value_str = "'SyncConnectDetected_unobstructed'";
+			break;
+		case SyncConnectDetected_hinder:
+				value_str = "'SyncConnectDetected_hinder'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);

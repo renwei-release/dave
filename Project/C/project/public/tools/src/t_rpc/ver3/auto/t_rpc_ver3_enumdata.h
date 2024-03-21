@@ -18,6 +18,7 @@
 #include "dave_enum.h"
 #include "dave_error_code.h"
 #include "dave_mcard.h"
+#include "bdata_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
 #include "base_enum.h"
@@ -26,6 +27,9 @@
 
 void * t_rpc_ver3_zip_AIPlaceType(AIPlaceType zip_data);
 dave_bool t_rpc_ver3_unzip_AIPlaceType(AIPlaceType *unzip_data, void *pArrayBson);
+
+void * t_rpc_ver3_zip_BDataLogLevel(BDataLogLevel zip_data);
+dave_bool t_rpc_ver3_unzip_BDataLogLevel(BDataLogLevel *unzip_data, void *pArrayBson);
 
 void * t_rpc_ver3_zip_CVSearchOpt(CVSearchOpt zip_data);
 dave_bool t_rpc_ver3_unzip_CVSearchOpt(CVSearchOpt *unzip_data, void *pArrayBson);

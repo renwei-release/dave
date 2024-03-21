@@ -107,6 +107,12 @@ const (
 )
 
 const (
+	BDataLogLevel_normal = 0 + iota
+	BDataLogLevel_report
+	BDataLogLevel_max = 0x1fffffffffffffff
+)
+
+const (
 	CVSearchOpt_0 int64 = iota
 	CVSearchOpt_1
 	CVSearchOpt_2
@@ -118,6 +124,7 @@ const (
 	EchoType_stop
 	EchoType_single
 	EchoType_random
+	EchoType_max = 0x1fffffffffffffff
 )
 
 const (

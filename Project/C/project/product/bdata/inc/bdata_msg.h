@@ -11,8 +11,16 @@
 
 #define BDATA_THREAD_NAME "bdata"
 
+typedef enum {
+	BDataLogLevel_normal = 0,
+	BDataLogLevel_report,
+	BDataLogLevel_max = 0x1fffffffffffffff
+} BDataLogLevel;
+
 /* for BDATA_LOG_REQ message */
 typedef struct {
+	BDataLogLevel level;
+
 	s8 version[DAVE_VERNO_STR_LEN];
 	s8 sub_flag[DAVE_NORMAL_STR_LEN];
 	DateStruct local_date;

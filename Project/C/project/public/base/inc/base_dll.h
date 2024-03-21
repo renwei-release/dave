@@ -46,6 +46,8 @@ API int dave_dll_mfree(void *m, char *fun, int line);
 
 API void * dave_dll_mclone(void *m, char *fun, int line);
 
+API int dave_dll_thread_id(char *thread_name);
+
 API char * dave_dll_self(void);
 
 API void * dave_dll_thread_msg(int msg_len, char *fun, int line);

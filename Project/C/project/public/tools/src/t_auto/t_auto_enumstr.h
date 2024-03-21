@@ -20,6 +20,7 @@
 #include "dave_mcard.h"
 #include "nlp_param.h"
 #include "bbs_param.h"
+#include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
@@ -35,6 +36,7 @@
 #include "sync_type.h"
 
 s8 *t_auto_AIPlaceType_str(AIPlaceType enum_value);
+s8 *t_auto_BDataLogLevel_str(BDataLogLevel enum_value);
 s8 *t_auto_BaseMsgType_str(BaseMsgType enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
 s8 *t_auto_ChainType_str(ChainType enum_value);
@@ -85,6 +87,7 @@ s8 *t_auto_SOCKETINFO_str(SOCKETINFO enum_value);
 s8 *t_auto_SOCKETTYPE_str(SOCKETTYPE enum_value);
 s8 *t_auto_SOCTYPE_str(SOCTYPE enum_value);
 s8 *t_auto_SYNCType_str(SYNCType enum_value);
+s8 *t_auto_SyncConnectDetected_str(SyncConnectDetected enum_value);
 s8 *t_auto_SyncServerType_str(SyncServerType enum_value);
 s8 *t_auto_TaskAttribute_str(TaskAttribute enum_value);
 s8 *t_auto_TraceLevel_str(TraceLevel enum_value);

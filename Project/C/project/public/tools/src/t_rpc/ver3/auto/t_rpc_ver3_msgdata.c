@@ -1157,6 +1157,7 @@ t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len)
 
 	pStructBson = t_bson_malloc_object();
 
+	t_bson_add_object(pStructBson, "BDataLogLevel-level", t_rpc_ver3_zip_BDataLogLevel(zip_data->level));
 	t_bson_add_object(pStructBson, "s8-version", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->version), 1, DAVE_VERNO_STR_LEN));
 	t_bson_add_object(pStructBson, "s8-sub_flag", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->sub_flag), 1, DAVE_NORMAL_STR_LEN));
 	t_bson_add_object(pStructBson, "DateStruct-local_date", t_rpc_ver3_zip_DateStruct(&(zip_data->local_date)));
@@ -1190,6 +1191,7 @@ t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		*unzip_data = pUnzip;
 		*unzip_len = sizeof(BDataLogReq);
 
+		t_rpc_ver3_unzip_BDataLogLevel(&(pUnzip->level), t_bson_inq_object(pStructBson, "BDataLogLevel-level"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->version), 1, DAVE_VERNO_STR_LEN, t_bson_inq_object(pStructBson, "s8-version"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->sub_flag), 1, DAVE_NORMAL_STR_LEN, t_bson_inq_object(pStructBson, "s8-sub_flag"));
 		t_rpc_ver3_unzip_DateStruct(&(pUnzip->local_date), t_bson_inq_object(pStructBson, "DateStruct-local_date"));

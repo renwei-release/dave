@@ -47,6 +47,12 @@ typedef enum {
 	SyncServerType_max
 } SyncServerType;
 
+typedef enum {
+	SyncConnectDetected_null = 0,
+	SyncConnectDetected_unobstructed,
+	SyncConnectDetected_hinder,
+} SyncConnectDetected;
+
 typedef struct {
 	s32 client_socket;
 
@@ -72,6 +78,7 @@ typedef struct {
 	dave_bool link_up_flag;
 	u8 link_ip[16];
 	u16 link_port;
+	SyncConnectDetected link_state;
 
 	dave_bool receive_thread_done;
 	dave_bool sync_thread_flag;

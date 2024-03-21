@@ -144,6 +144,7 @@ typedef enum {
 	EchoType_stop,
 	EchoType_single,
 	EchoType_random,
+	EchoType_max = 0x1fffffffffffffff
 } EchoType;
 
 #endif

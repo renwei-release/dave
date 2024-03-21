@@ -50,5 +50,8 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
 LIB += -L/user/lib64 -laprutil-1 -lapr-1 -lcurl
 endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
+LIB += -lcurl -lssl -lcrypto
+endif
 
 LIB += -lpthread -lrt -ldl -lm -lgomp -lstdc++ -lutil -lgcov

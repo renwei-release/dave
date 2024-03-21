@@ -311,7 +311,7 @@ type HttpKeyValue struct {
 }
 
 type MsgIdEcho struct {
-	Type int32
+	Type int64
 	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 	Thread [DAVE_THREAD_NAME_LEN] byte
 	Echo_total_counter uint64

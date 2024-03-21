@@ -11,6 +11,7 @@
 #include "dave_verno.h"
 #include "dave_base.h"
 #include "store_msg.h"
+#include "redis_statistics.h"
 #include "store_log.h"
 
 #define CFG_REDIS_ADDRESS "REDISADDRESS"
@@ -25,7 +26,8 @@ typedef struct {
 	void *redis_context;
 
 	DateStruct connect_date;
-	ub work_times;
+
+	RedisStatistics statistics;
 } StoreRedis;
 
 static ub _redis_number = 0;
@@ -45,6 +47,8 @@ _store_redis_connect(StoreRedis *pRedis, s8 *address, ub port, s8 *pwd)
 	}
 
 	pRedis->redis_context = dave_redis_connect(pRedis->redis_address, pRedis->redis_port, pRedis->redis_password);
+
+	redis_statistics_reset(&(pRedis->statistics));
 }
 
 static dave_bool
@@ -198,9 +202,10 @@ store_redis_command(ThreadId src, ub thread_index, StoreRedisReq *pReq)
 	StoreRedisRsp *pRsp = thread_reset_msg(pRsp);
 	StoreRedis *pRedis = &_pRedis[thread_index];
 
-	pRedis->work_times ++;
-
+	ub start_time = dave_os_time_us();
 	pRsp->ret = _store_redis_command(&(pRsp->reply), pRsp->msg, sizeof(pRsp->msg), pRedis, ms8(pReq->command));
+	redis_statistics(&(pRedis->statistics), dave_os_time_us() - start_time);
+
 	pRsp->ptr = pReq->ptr;
 
 	if(pRsp->ret != RetCode_OK)
@@ -223,6 +228,7 @@ store_redis_info(s8 *info_ptr, ub info_len)
 {
 	ub info_index, redis_index;
 	StoreRedis *pRedis;
+	s8 statistics_str[256];
 
 	info_index = 0;
 
@@ -232,12 +238,14 @@ store_redis_info(s8 *info_ptr, ub info_len)
 	{
 		pRedis = &_pRedis[redis_index];
 
+		redis_statistics_info(statistics_str, sizeof(statistics_str), &(pRedis->statistics));
+
 		info_index += dave_snprintf(&info_ptr[info_index], info_len-info_index,
-			" %s:%d %s %ld (%s)\n",
+			" %s:%d %s (%s) (%s)\n",
 			pRedis->redis_address, pRedis->redis_port,
 			pRedis->redis_context==NULL?"disconnect":"connect",
-			pRedis->work_times,
-			t_a2b_date_str(&(pRedis->connect_date)));
+			t_a2b_date_str(&(pRedis->connect_date)),
+			statistics_str);
 	}
 
 	return info_index;
