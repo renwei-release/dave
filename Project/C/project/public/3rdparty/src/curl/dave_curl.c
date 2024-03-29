@@ -75,8 +75,15 @@ dave_curl_email(s8 *username, s8 *password, s8 *smtp_url, s8 *from_email, s8 *to
 
 		recipients = curl_slist_append(recipients, to_email);
 
-		curl_easy_setopt(curl, CURLOPT_USERNAME, username);
-		curl_easy_setopt(curl, CURLOPT_PASSWORD, password);
+		if(dave_strlen(password) != 0)
+		{
+			curl_easy_setopt(curl, CURLOPT_USERNAME, username);
+			curl_easy_setopt(curl, CURLOPT_PASSWORD, password);
+		}
+		else
+		{
+			curl_easy_setopt(curl, CURLOPT_USERPWD, username);
+		}
 
 		curl_easy_setopt(curl, CURLOPT_URL, smtp_url);
 		curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from_email);
@@ -85,8 +92,8 @@ dave_curl_email(s8 *username, s8 *password, s8 *smtp_url, s8 *from_email, s8 *to
 		smtp_send->smtp_snd_len = dave_strlen(subject) + dave_strlen(body) + 1024;
 		smtp_send->smtp_snd_ptr = dave_malloc(smtp_send->smtp_snd_len);
 		smtp_send->smtp_snd_len = dave_snprintf(smtp_send->smtp_snd_ptr, smtp_send->smtp_snd_len,
-			"Subject: %s\r\n\r\n%s\r\n",
-			subject, body);
+			"From: \"%s\"\r\nTo: \"%s\"\r\nSubject: %s\r\n\r\n%s\r\n",
+			from_email, to_email, subject, body);
 		smtp_send->smtp_snd_index = 0;
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)smtp_send);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _curl_smtp_write_func);

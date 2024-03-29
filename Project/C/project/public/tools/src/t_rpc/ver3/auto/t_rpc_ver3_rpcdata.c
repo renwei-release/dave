@@ -172,6 +172,12 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case DBMSG_SYS_INQ_WEICHAT_RSP:
 				pBson = t_rpc_ver3_zip_DBSysInqWeiChatRsp((DBSysInqWeiChatRsp *)msg_body, msg_len);
 			break;
+		case EMAIL_SEND_REQ:
+				pBson = t_rpc_ver3_zip_EmailSendReq((EmailSendReq *)msg_body, msg_len);
+			break;
+		case EMAIL_SEND_RSP:
+				pBson = t_rpc_ver3_zip_EmailSendRsp((EmailSendRsp *)msg_body, msg_len);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
@@ -595,6 +601,12 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case DBMSG_SYS_INQ_WEICHAT_RSP:
 				ret = t_rpc_ver3_unzip_DBSysInqWeiChatRsp(msg_body, msg_len, pBson);
+			break;
+		case EMAIL_SEND_REQ:
+				ret = t_rpc_ver3_unzip_EmailSendReq(msg_body, msg_len, pBson);
+			break;
+		case EMAIL_SEND_RSP:
+				ret = t_rpc_ver3_unzip_EmailSendRsp(msg_body, msg_len, pBson);
 			break;
 		case HTTPMSG_CLOSE_REQ:
 				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
@@ -1020,6 +1032,12 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case DBMSG_SYS_INQ_WEICHAT_RSP:
 				ptr = t_rpc_ver3_ptr_DBSysInqWeiChatRsp((DBSysInqWeiChatRsp *)msg_body, new_ptr);
 			break;
+		case EMAIL_SEND_REQ:
+				ptr = t_rpc_ver3_ptr_EmailSendReq((EmailSendReq *)msg_body, new_ptr);
+			break;
+		case EMAIL_SEND_RSP:
+				ptr = t_rpc_ver3_ptr_EmailSendRsp((EmailSendRsp *)msg_body, new_ptr);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ptr = t_rpc_ver3_ptr_HTTPCloseReq((HTTPCloseReq *)msg_body, new_ptr);
 			break;
@@ -1444,6 +1462,12 @@ _t_rpc_sizeof(ub msg_id)
 		case DBMSG_SYS_INQ_WEICHAT_RSP:
 				msg_len = t_rpc_ver3_sizeof_DBSysInqWeiChatRsp();
 			break;
+		case EMAIL_SEND_REQ:
+				msg_len = t_rpc_ver3_sizeof_EmailSendReq();
+			break;
+		case EMAIL_SEND_RSP:
+				msg_len = t_rpc_ver3_sizeof_EmailSendRsp();
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				msg_len = t_rpc_ver3_sizeof_HTTPCloseReq();
 			break;
@@ -1761,7 +1785,7 @@ t_rpc_ver3_unzip(s8 *data_from, void **ppChainBson, void **ppRouterBson, void **
 	s64 rpc_time;
 	if(t_bson_inq_int64(pBson, "rpc_time", (u64 *)(&rpc_time)) == true) {
 		rpc_time = (s64)dave_os_time_us() - rpc_time;
-		if(rpc_time > 3000000)
+		if(rpc_time > 30*1000000)
 			TOOLSLTRACE(60,1,"from:%s msg_id:%s took too much time:%lds in transit or the time of the transmission parties is out of sync.", data_from, msgstr(msg_id), rpc_time/1000000);
 	}
 	#endif

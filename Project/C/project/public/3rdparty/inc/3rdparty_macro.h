@@ -52,7 +52,7 @@
 // #define PJSIP_3RDPARTY
 #endif
 
-#ifdef __DAVE_PRODUCT_BDATA__
+#ifdef __DAVE_PRODUCT_IO__
 #define CURL_3RDPARTY
 #endif
 

@@ -9,6 +9,7 @@
 #if defined(__DAVE_BASE__)
 #include "dave_tools.h"
 #include "dave_verno.h"
+#include "dave_os.h"
 #include "dos_show.h"
 #include "dos_welcome.h"
 
@@ -24,6 +25,8 @@ void
 dos_welcome_screen(void)
 {
 	static dave_bool show_declaration = dave_false;
+	s8 hostname[128];
+	u8 mac[DAVE_MAC_ADDR_LEN];
 
 	if(show_declaration == dave_false)
 	{
@@ -31,9 +34,13 @@ dos_welcome_screen(void)
 		dos_print(_welcome_word);
 	}
 
-	dos_print("Hi, I'm %s\nBUILD INFORMATION: BUILDER=%s HOST=%s MAC=%s!",
+	dave_os_load_host_name(hostname, sizeof(hostname));
+	dave_os_load_mac(mac);
+
+	dos_print("Hi, I'm %s\nBUILD INFORMATION: BUILDER=%s HOST=%s MAC=%s!\nRUNNER INFORMATION: HOST=%s MAC=%s",
 		dave_verno(),
-		__BUILD_USERNAME__, __BUILD_HOSTNAME__, __BUILD_MAC_ADDRESS__);
+		__BUILD_USERNAME__, __BUILD_HOSTNAME__, __BUILD_MAC_ADDRESS__,
+		hostname, macstr(mac));
 }
 
 #endif

@@ -4662,6 +4662,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case BDATA_LOG_RSP:
 				value_str = "'BDATA_LOG_RSP-2002'";
 			break;
+		case EMAIL_SEND_REQ:
+				value_str = "'EMAIL_SEND_REQ-2003'";
+			break;
+		case EMAIL_SEND_RSP:
+				value_str = "'EMAIL_SEND_RSP-2004'";
+			break;
 		case APPMSG_MCARD_REQ:
 				value_str = "'APPMSG_MCARD_REQ-2053'";
 			break;

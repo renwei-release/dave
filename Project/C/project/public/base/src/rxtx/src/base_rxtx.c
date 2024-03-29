@@ -993,7 +993,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	rx_buffer_len = pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len;
 	if(rx_buffer_len < RX_TX_BUF_WARRING)
 	{
-		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s",
+		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s, wait _base_rxtx_buffer_reset auto increase the buffer!",
 			rx_buffer_len, pRxTx->rx_buffer_len,
 			thread_name(pRxTx->owner_thread));
 	}

@@ -26,6 +26,7 @@
 #include "bbs_msg.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
+#include "email_msg.h"
 #include "http_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
@@ -3616,6 +3617,126 @@ ub
 t_rpc_ver3_sizeof_DosForward(void)
 {
 	return sizeof(DosForward);
+}
+
+void *
+t_rpc_ver3_zip_EmailSendReq(EmailSendReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(EmailSendReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(EmailSendReq) does not match(%d/%d), please contact the message settlers!", sizeof(EmailSendReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-subject", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->subject), 1, 1024));
+	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_EmailSendReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		EmailSendReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(EmailSendReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->subject), 1, 1024, t_bson_inq_object(pStructBson, "s8-subject"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_EmailSendReq(EmailSendReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_EmailSendReq(void)
+{
+	return sizeof(EmailSendReq);
+}
+
+void *
+t_rpc_ver3_zip_EmailSendRsp(EmailSendRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(EmailSendRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(EmailSendRsp) does not match(%d/%d), please contact the message settlers!", sizeof(EmailSendRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_EmailSendRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		EmailSendRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(EmailSendRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_EmailSendRsp(EmailSendRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_EmailSendRsp(void)
+{
+	return sizeof(EmailSendRsp);
 }
 
 void *

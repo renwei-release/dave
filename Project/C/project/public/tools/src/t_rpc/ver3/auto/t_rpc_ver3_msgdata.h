@@ -21,6 +21,7 @@
 #include "bbs_msg.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
+#include "email_msg.h"
 #include "http_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
@@ -311,6 +312,16 @@ void * t_rpc_ver3_zip_DosForward(DosForward *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_DosForward(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_DosForward(DosForward *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_DosForward(void);
+
+void * t_rpc_ver3_zip_EmailSendReq(EmailSendReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_EmailSendReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_EmailSendReq(EmailSendReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_EmailSendReq(void);
+
+void * t_rpc_ver3_zip_EmailSendRsp(EmailSendRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_EmailSendRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_EmailSendRsp(EmailSendRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_EmailSendRsp(void);
 
 void * t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_GeneralReq(void **unzip_data, ub *unzip_len, void *pStructBson);

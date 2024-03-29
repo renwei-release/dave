@@ -1751,6 +1751,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'BDATA_LOG_REQ-2001'"
 	elif enum_value == BDATA_LOG_RSP:
 		value_str = "'BDATA_LOG_RSP-2002'"
+	elif enum_value == EMAIL_SEND_REQ:
+		value_str = "'EMAIL_SEND_REQ-2003'"
+	elif enum_value == EMAIL_SEND_RSP:
+		value_str = "'EMAIL_SEND_RSP-2004'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:

@@ -471,6 +471,19 @@ type DosForward struct {
 	Ptr uint64
 }
 
+/* for EMAIL_SEND_REQ message */
+type EmailSendReq struct {
+	Subject [1024] byte
+	Content *MBUF
+	Ptr uint64
+}
+
+/* for EMAIL_SEND_RSP message */
+type EmailSendRsp struct {
+	Ret int64
+	Ptr uint64
+}
+
 /* for MSGID_GENERAL_REQ message */
 type GeneralReq struct {
 	General_type [256] byte

@@ -22,7 +22,8 @@ from components.neural.third_party.pillow import *
 def _load_model(model_file, gpu_ids):
     clip.available_models()
     model, preprocess = clip.load(model_file)
-    model.cuda("cuda:"+str(gpu_ids)).eval()
+    if torch.cuda.is_available():
+        model.cuda("cuda:"+str(gpu_ids)).eval()
     return model, preprocess
 
 
@@ -36,7 +37,10 @@ def _load_picture(picture, preprocess):
 
 
 def _feature_normalization(images, model, gpu_ids):
-    image_input = torch.tensor(np.stack(images)).cuda("cuda:"+str(gpu_ids))
+    if torch.cuda.is_available():
+        image_input = torch.tensor(np.stack(images)).cuda("cuda:"+str(gpu_ids))
+    else:
+        image_input = torch.tensor(np.stack(images))
     with torch.no_grad():
         image_features = model.encode_image(image_input).float()
     image_features /= image_features.norm(dim=-1, keepdim=True)
@@ -45,7 +49,10 @@ def _feature_normalization(images, model, gpu_ids):
 
 def _load_label(ccll,gpu_ids):
     text_descriptions = [f"This is a photo of a {label}" for label in ccll]
-    text_tokens = clip.tokenize(text_descriptions).cuda("cuda:"+str(gpu_ids))
+    if torch.cuda.is_available():
+        text_tokens = clip.tokenize(text_descriptions).cuda("cuda:"+str(gpu_ids))
+    else:
+        text_tokens = clip.tokenize(text_descriptions)
     return text_tokens, ccll
 
 

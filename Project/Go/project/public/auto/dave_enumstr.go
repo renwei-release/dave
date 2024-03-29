@@ -1091,6 +1091,8 @@ func T_auto_RPCMSG_str(enum_value int64) string {
 		case SOCKET_RAW_EVENT: value_str = "'SOCKET_RAW_EVENT-1011'"
 		case BDATA_LOG_REQ: value_str = "'BDATA_LOG_REQ-2001'"
 		case BDATA_LOG_RSP: value_str = "'BDATA_LOG_RSP-2002'"
+		case EMAIL_SEND_REQ: value_str = "'EMAIL_SEND_REQ-2003'"
+		case EMAIL_SEND_RSP: value_str = "'EMAIL_SEND_RSP-2004'"
 		case APPMSG_MCARD_REQ: value_str = "'APPMSG_MCARD_REQ-2053'"
 		case APPMSG_MCARD_RSP: value_str = "'APPMSG_MCARD_RSP-2054'"
 		case APPMSG_TALK_MCARD_REQ: value_str = "'APPMSG_TALK_MCARD_REQ-2085'"

@@ -532,6 +532,21 @@ class DosForward (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for EMAIL_SEND_REQ message *#
+class EmailSendReq (Structure):
+	_fields_ = [
+		("subject", c_char * 1024),
+		("content", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for EMAIL_SEND_RSP message *#
+class EmailSendRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_GENERAL_REQ message *#
 class GeneralReq (Structure):
 	_fields_ = [
