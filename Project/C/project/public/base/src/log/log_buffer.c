@@ -95,9 +95,18 @@ _log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
 	{
 		buffer_len += 1024;
 
+		if(pBuffer->dynamic_buffer_ptr != NULL)
+		{
+			LOG_FREE(pBuffer->dynamic_buffer_ptr);
+			pBuffer->dynamic_buffer_ptr = NULL;
+		}
+
 		pBuffer->dynamic_buffer_ptr = LOG_MALLOC(buffer_len);
 		pBuffer->dynamic_buffer_len = buffer_len;
 		pBuffer->dynamic_buffer_index = dave_memcpy(pBuffer->dynamic_buffer_ptr, pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
+
+		// Mark data has been transferred.
+		pBuffer->fix_buffer_index += dave_snprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], LOG_FIX_BUFFER_LEN-pBuffer->fix_buffer_index, "...");
 	}
 }
 
@@ -445,7 +454,7 @@ log_buffer_history(s8 *history_ptr, ub history_len)
 
 		if((history_index + pBuffer->fix_buffer_history_len) > history_len)
 			break;
-		
+
 		history_index += dave_memcpy(&history_ptr[history_index], pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_history_len);
 	}
 

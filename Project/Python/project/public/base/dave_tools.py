@@ -75,7 +75,13 @@ def mbuf_to_dict(mbuf_data):
         return None
 
     str_data = mbuf_to_str(mbuf_data)
-    return json.loads(str_data, strict=False)
+    json_dict = json.loads(str_data, strict=False)
+    if json_dict == None:
+        return None
+    if isinstance(json_dict, str) == True:
+        DAVELOG(f"json.loads error:{json_dict} / {str_data}")
+        return {}
+    return json_dict
 
 
 def obj_to_obj(dst_obj, src_obj):
