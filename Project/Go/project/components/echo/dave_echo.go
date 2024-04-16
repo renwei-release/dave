@@ -148,7 +148,7 @@ func _echo_api_req_co(gid string, thread string, req auto.MsgIdEchoReq) {
 func _echo_api_req(gid string, thread string, req auto.MsgIdEchoReq) {
 	_echo_req_counter += 1
 
-	if ((req.Echo.Type == int32(auto.EchoType_random)) && 
+	if ((req.Echo.Type == int64(auto.EchoType_random)) && 
 		(_echo_req_counter % 256 == 0) && 
 		((tools.T_rand_ub() % 16) == 0)) {
 		_echo_api_req_msg(gid, thread, req)
@@ -167,7 +167,7 @@ func _echo_snd_req(gid string, thread string, echo_type int64, getecho auto.MsgI
 	req.Echo = getecho
 	_echo_rpc_reset(&(req.Echo))
 
-	req.Echo.Type = int32(echo_type)
+	req.Echo.Type = int64(echo_type)
 	tools.T_cgo_gostring2gobyte(req.Echo.Gid[:], base.Globally_identifier())
 	tools.T_cgo_gostring2gobyte(req.Echo.Thread[:], base.Thread_self())
 
@@ -185,7 +185,7 @@ func _echo_snd_rsp(dst uint64, echo_type int64, getecho auto.MsgIdEcho, ptr uint
 	rsp.Echo = getecho
 	_echo_rpc_copy(&(rsp.Echo), &getecho)
 
-	rsp.Echo.Type = int32(echo_type)
+	rsp.Echo.Type = int64(echo_type)
 	tools.T_cgo_gostring2gobyte(rsp.Echo.Gid[:], base.Globally_identifier())
 	tools.T_cgo_gostring2gobyte(rsp.Echo.Thread[:], base.Thread_self())
 
@@ -249,7 +249,7 @@ func _echo_start(concurrent_flag int8) {
 
 	req := auto.MsgIdEchoReq{}
 
-	req.Echo.Type = int32(auto.EchoType_single)
+	req.Echo.Type = int64(auto.EchoType_single)
 
 	tools.T_cgo_gostring2gobyte(req.Echo.Gid[:], base.Globally_identifier())
 	tools.T_cgo_gostring2gobyte(req.Echo.Thread[:], base.Thread_self())
@@ -337,13 +337,13 @@ func _echo_random_rsp(src uint64, getecho auto.MsgIdEcho) {
 func _echo_req(src uint64, msg_body unsafe.Pointer) {
 	pReq := (*auto.MsgIdEchoReq)(msg_body)
 
-	if pReq.Echo.Type == int32(auto.EchoType_start) {
+	if pReq.Echo.Type == int64(auto.EchoType_start) {
 		_echo_start(pReq.Echo.Concurrent_flag)
-	} else if pReq.Echo.Type == int32(auto.EchoType_stop) {
+	} else if pReq.Echo.Type == int64(auto.EchoType_stop) {
 		_echo_stop()
-	} else if pReq.Echo.Type == int32(auto.EchoType_single) {
+	} else if pReq.Echo.Type == int64(auto.EchoType_single) {
 		_echo_single_req(src, pReq.Echo, pReq.Ptr)
-	} else if pReq.Echo.Type == int32(auto.EchoType_random) {
+	} else if pReq.Echo.Type == int64(auto.EchoType_random) {
 		_echo_random_req(src, pReq.Echo, pReq.Ptr)
 	}
 
@@ -353,11 +353,11 @@ func _echo_req(src uint64, msg_body unsafe.Pointer) {
 func _echo_rsp(src uint64, msg_body unsafe.Pointer) {
 	pRsp := (*auto.MsgIdEchoRsp)(msg_body)
 
-	if pRsp.Echo.Type == int32(auto.EchoType_single) {
+	if pRsp.Echo.Type == int64(auto.EchoType_single) {
 		_echo_rpc_verification(&(pRsp.Echo))
 
 		_echo_single_rsp(src, pRsp.Echo)
-	} else if pRsp.Echo.Type == int32(auto.EchoType_random) {
+	} else if pRsp.Echo.Type == int64(auto.EchoType_random) {
 		_echo_random_rsp(src, pRsp.Echo)
 	}
 

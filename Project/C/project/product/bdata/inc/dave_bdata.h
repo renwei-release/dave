@@ -36,7 +36,7 @@
  * BDATALOG("my log flag xxxx", "%s", str_data);
  */
 #define BDATALOG(sub, log, ...) {\
-	BDataLogReq *pReq = thread_msg(pReq);\
+	BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
 	pReq->level = BDataLogLevel_normal;\
 \
@@ -55,7 +55,7 @@
 \
 	if(json != NULL)\
 	{\
-		BDataLogReq *pReq = thread_msg(pReq);\
+		BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
 		pReq->level = BDataLogLevel_normal;\
 \
@@ -73,7 +73,7 @@
  * BDATARPT("my log flag xxxx", "%s", str_data);
  */
 #define BDATARPT(sub, log, ...) {\
-	BDataLogReq *pReq = thread_msg(pReq);\
+	BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
 	pReq->level = BDataLogLevel_report;\
 \

@@ -14,6 +14,7 @@
 typedef struct {
 	s8 subject[1024];
 	MBUF *content;
+	MBUF *attachment;
 	void *ptr;
 } EmailSendReq;
 

@@ -45,6 +45,16 @@ s8 * t_a2b_date_str_4(DateStruct *pDate);
 s8 * t_a2b_date_str_5(DateStruct *pDate);
 s8 * t_a2b_date_str_6(DateStruct *pDate);
 
+typedef struct {
+	s8 filename[256];
+	s8 mimetype[128];
+	s8 *binbody;
+	ub binlen;
+} EmailJsonAttachment;
+
+EmailJsonAttachment * t_a2b_email_json_build_attachment(void *pJson);
+void t_a2b_email_json_release_attachment(EmailJsonAttachment *pAttachment);
+
 #define ipv4str t_a2b_net_ipv4_to_str
 #define ipv4str2 t_a2b_net_ipv4_to_str_2
 #define datestr t_a2b_date_str

@@ -253,7 +253,7 @@ dave_os_file_delete(FileOptFlag flag, s8 *file_name)
 }
 
 sb
-dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data)
+dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data_ptr)
 {
     off_t offset;
     ssize_t read_len;
@@ -265,7 +265,7 @@ dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data)
 		return 0;
     }
 
-    read_len = read((int)file_id, data, data_len);
+    read_len = read((int)file_id, data_ptr, data_len);
     if(read_len < 0)
     {
 		OSABNOR("read file fail,error(%d):%s", errno, strerror(errno));
@@ -275,7 +275,7 @@ dave_os_file_load(sb file_id, ub pos, ub data_len, u8 *data)
 }
 
 sb
-dave_os_file_save(sb file_id, ub pos, ub data_len, u8 *data)
+dave_os_file_save(sb file_id, ub pos, ub data_len, u8 *data_ptr)
 {
     off_t offset;
     ssize_t write_len;
@@ -287,7 +287,7 @@ dave_os_file_save(sb file_id, ub pos, ub data_len, u8 *data)
         return (sb)offset;
     }
     
-    write_len = write((int)file_id, data, data_len);
+    write_len = write((int)file_id, data_ptr, data_len);
     
     return (sb)write_len;
 }
@@ -316,7 +316,7 @@ dave_os_file_valid(s8 *file_name)
 }
 
 ub
-dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data)
+dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data_ptr)
 {
 	sb file_id, read_len;
 
@@ -326,7 +326,7 @@ dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u
 		return 0;
 	}
 
-	read_len = dave_os_file_load(file_id, file_index, data_len, data);
+	read_len = dave_os_file_load(file_id, file_index, data_len, data_ptr);
 
 	dave_os_file_close(file_id);
 
@@ -334,7 +334,7 @@ dave_os_file_read(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u
 }
 
 dave_bool
-dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data)
+dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, u8 *data_ptr)
 {
 	sb file_id, write_len;
 
@@ -345,7 +345,7 @@ dave_os_file_write(FileOptFlag flag, s8 *file_name, ub file_index, ub data_len, 
 		return dave_false;
 	}
 
-	write_len = dave_os_file_save(file_id, file_index, data_len, data);
+	write_len = dave_os_file_save(file_id, file_index, data_len, data_ptr);
 
 	dave_os_file_close(file_id);
 

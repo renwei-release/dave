@@ -19,6 +19,7 @@ typedef int (* dll_checkback_fun)(int);
 typedef void (* dll_kv_timerout_fun)(void *kv, void *key);
 typedef void (* dll_cfg_reg_fun)(void *name_ptr, int name_len, void *value_ptr, int value_len);
 typedef int (* dll_dos_cmd_fun)(char *param_ptr, int param_len);
+typedef void (* dll_timer_fun)(unsigned long long timer_id, unsigned long long thread_index);
 
 API void dave_dll_init(
 	char *my_verno, char *work_mode,
@@ -127,6 +128,10 @@ API char * dave_dll_dos_get_user_input(char *give_user_msg, int wait_second);
 API void dave_dll_system_online(void);
 
 API void dave_dll_system_offline(void);
+
+API int dave_dll_timer_creat(const char *name, int alarm_second, dll_timer_fun timer_fun);
+
+API void dave_dll_timer_kill(const char *name);
 
 #ifdef __cplusplus
 }

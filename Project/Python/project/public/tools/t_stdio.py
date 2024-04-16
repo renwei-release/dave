@@ -5,6 +5,7 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+import string
 
 
 # =====================================================================
@@ -21,3 +22,8 @@ def t_stdio_string_split(want_split_string, split_flag):
         has_split_flag = True
 
     return want_split_string, has_split_flag
+
+
+def t_stdio_string_remove_punctuation(input_string):
+    translator = str.maketrans('', '', string.punctuation)
+    return input_string.translate(translator)

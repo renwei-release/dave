@@ -56,6 +56,9 @@ extern "C"{
 #ifdef CURL_3RDPARTY
 #include "dave_curl.h"
 #endif
+#ifdef QUICKMAIL_3RDPARTY
+#include "dave_quickmail.h"
+#endif
 
 #ifdef __cplusplus
 }

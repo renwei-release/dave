@@ -1169,6 +1169,7 @@ t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "u8-host_ipv4", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_ipv4), DAVE_IP_V4_ADDR_LEN));
 	t_bson_add_object(pStructBson, "u8-host_ipv6", t_rpc_ver3_zip_u8_d((u8 *)(zip_data->host_ipv6), DAVE_IP_V6_ADDR_LEN));
 	t_bson_add_object(pStructBson, "MBUF-log_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->log_data));
+	t_bson_add_object(pStructBson, "MBUF-log_file", t_rpc_ver3_zip_MBUF_ptr(zip_data->log_file));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -1203,6 +1204,7 @@ t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson
 		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_ipv4), DAVE_IP_V4_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_ipv4"));
 		t_rpc_ver3_unzip_u8_d((u8 *)(pUnzip->host_ipv6), DAVE_IP_V6_ADDR_LEN, t_bson_inq_object(pStructBson, "u8-host_ipv6"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->log_data), t_bson_inq_object(pStructBson, "MBUF-log_data"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->log_file), t_bson_inq_object(pStructBson, "MBUF-log_file"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -3634,6 +3636,7 @@ t_rpc_ver3_zip_EmailSendReq(EmailSendReq *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "s8-subject", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->subject), 1, 1024));
 	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "MBUF-attachment", t_rpc_ver3_zip_MBUF_ptr(zip_data->attachment));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -3659,6 +3662,7 @@ t_rpc_ver3_unzip_EmailSendReq(void **unzip_data, ub *unzip_len, void *pStructBso
 
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->subject), 1, 1024, t_bson_inq_object(pStructBson, "s8-subject"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->attachment), t_bson_inq_object(pStructBson, "MBUF-attachment"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -4886,6 +4890,7 @@ t_rpc_ver3_zip_MsgInnerLoop(MsgInnerLoop *zip_data, ub zip_len)
 
 	pStructBson = t_bson_malloc_object();
 
+	t_bson_add_object(pStructBson, "MBUF-param", t_rpc_ver3_zip_MBUF_ptr(zip_data->param));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -4909,6 +4914,7 @@ t_rpc_ver3_unzip_MsgInnerLoop(void **unzip_data, ub *unzip_len, void *pStructBso
 		*unzip_data = pUnzip;
 		*unzip_len = sizeof(MsgInnerLoop);
 
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->param), t_bson_inq_object(pStructBson, "MBUF-param"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

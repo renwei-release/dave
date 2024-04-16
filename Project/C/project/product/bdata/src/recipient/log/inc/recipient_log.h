@@ -9,7 +9,7 @@
 #define __RECIPIENT_LOG_H__
 #include "dave_base.h"
 
-void recipient_log(ThreadId src, BDataLogReq *pReq);
+RetCode recipient_log(ThreadId src, BDataLogReq *pReq);
 
 #endif
 

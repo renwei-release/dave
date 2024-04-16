@@ -106,7 +106,7 @@ _log_buffer_transfer(LogBuffer *pBuffer, ub buffer_len)
 		pBuffer->dynamic_buffer_index = dave_memcpy(pBuffer->dynamic_buffer_ptr, pBuffer->fix_buffer_ptr, pBuffer->fix_buffer_index);
 
 		// Mark data has been transferred.
-		pBuffer->fix_buffer_index += dave_snprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], LOG_FIX_BUFFER_LEN-pBuffer->fix_buffer_index, "...");
+		pBuffer->fix_buffer_index += dave_snprintf(&pBuffer->fix_buffer_ptr[pBuffer->fix_buffer_index], LOG_FIX_BUFFER_LEN-pBuffer->fix_buffer_index, " ...\n");
 	}
 }
 

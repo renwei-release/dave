@@ -35,7 +35,8 @@ static RetCode
 _email_send(
 	s8 *smtp_url, s8 *userpwd,
 	s8 *from_email, s8 *to_email,
-	s8 *subject, s8 *context)
+	s8 *subject, s8 *context,
+	s8 *attachment)
 {
 	void *pToEmailArray;
 	sb array_length, array_index;
@@ -53,7 +54,7 @@ _email_send(
 	array_length = dave_json_get_array_length(pToEmailArray);
 	for(array_index=0; array_index<array_length; array_index++)
 	{
-		ret = dave_curl_email(userpwd, "", smtp_url, from_email, dave_json_array_get_str(pToEmailArray, array_index, NULL), subject, context);
+		ret = dave_quickmail_email(userpwd, "", smtp_url, from_email, dave_json_array_get_str(pToEmailArray, array_index, NULL), subject, context, attachment);
 		if(ret == dave_false)
 		{
 			EMAILLOG("send failed! smtp:%s userpwd:%s from:%s to:%s",
@@ -76,7 +77,7 @@ _email_send(
 // =====================================================================
 
 RetCode
-email_send(s8 *subject, s8 *context)
+email_send(s8 *subject, s8 *context, s8 *attachment)
 {
 	s8 smtp_url[128];
 	s8 userpwd[128];
@@ -94,6 +95,6 @@ email_send(s8 *subject, s8 *context)
 		return RetCode_invalid_account;
 	}
 
-	return _email_send(smtp_url, userpwd, from_email, to_email, subject, context);
+	return _email_send(smtp_url, userpwd, from_email, to_email, subject, context, attachment);
 }
 

@@ -10,9 +10,9 @@
 #include "dave_tools.h"
 #include "dave_base.h"
 #include "dave_3rdparty.h"
+#include "bdata_tools.h"
 #include "bdata_log.h"
 
-#define FILE_HOME_DIR (s8 *)"RECORDER"
 #define FILE_NAME_MAX (256)
 #define KEY_NAME_MAX (64)
 #define RECORDER_FILE_MAGIC_DATA (0xcdbf1867)
@@ -139,7 +139,7 @@ _recorder_file_open_statistics(FileStore *pStore)
 	s8 file_name[256];
 	sb file_id;
 
-	dave_snprintf(file_name, sizeof(file_name), "%s/%s/.statistics", FILE_HOME_DIR, pStore->file_dir);
+	dave_snprintf(file_name, sizeof(file_name), "%s/%s/.statistics", log_file_home_name(), pStore->file_dir);
 
 	file_id = dave_os_file_open(CREAT_WRITE_FLAG, file_name);
 
@@ -242,15 +242,14 @@ _recorder_file_is_valid(FileStore *pStore)
 static inline void
 _recorder_file_new_file_name(FileStore *pStore)
 {
-	s8 old_file_name[FILE_NAME_MAX];
+	s8 old_file_name[FILE_NAME_MAX], full_path[128];
 
 	t_time_get_date(&(pStore->the_file_date));
 
 	dave_strcpy(old_file_name, pStore->file_name, sizeof(pStore->file_name));
 
-	dave_sprintf(pStore->file_name, "%s/%s/%s/%04d/%02d/%02d/%02d%02d%02d.bdata",
-		dave_os_file_home_dir(),
-		FILE_HOME_DIR, pStore->file_dir,
+	dave_sprintf(pStore->file_name, "%s/%04d/%02d/%02d/%02d%02d%02d.bdata",
+		log_file_full_path(full_path, sizeof(full_path), pStore->file_dir),
 		pStore->the_file_date.year, pStore->the_file_date.month, pStore->the_file_date.day,
 		pStore->the_file_date.hour, pStore->the_file_date.minute, pStore->the_file_date.second);
 

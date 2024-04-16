@@ -12,6 +12,7 @@
 #include "dave_base.h"
 #include "recorder_file.h"
 #include "recorder_aliyun.h"
+#include "bdata_tools.h"
 #include "bdata_msg.h"
 #include "bdata_log.h"
 
@@ -57,24 +58,6 @@ _recipient_log_data(void *pNote, BDataLogReq *pReq)
 	recorder_file_obj(pNote, "log", ms8(pReq->log_data), mlen(pReq->log_data));
 }
 
-static inline s8 *
-_recipient_log_file(s8 *file_ptr, ub file_len, BDataLogReq *pReq)
-{
-	s8 product[DAVE_VERNO_STR_LEN];
-
-	if(pReq->sub_flag[0] == '\0')
-	{
-		dave_product(pReq->version, file_ptr, file_len);
-	}
-	else
-	{
-		dave_product(pReq->version, product, sizeof(product));
-		dave_snprintf(file_ptr, file_len, "%s/%s", product, pReq->sub_flag);
-	}
-
-	return file_ptr;
-}
-
 static inline void
 _recipient_log_aliyun(s8 *log_file, void *pNote)
 {
@@ -94,7 +77,9 @@ _recipient_log(BDataLogReq *pReq)
 	s8 file_name[1024];
 	void *pNote;
 
-	pNote = recorder_file_open(_recipient_log_file(file_name, sizeof(file_name), pReq));
+	log_req_to_log_file(file_name, sizeof(file_name), pReq);
+
+	pNote = recorder_file_open(file_name);
 	if(pNote == NULL)
 	{
 		BDLOG("version:%s <%s:%d> store %s failed!",
@@ -119,17 +104,10 @@ _recipient_log(BDataLogReq *pReq)
 
 // =====================================================================
 
-void
+RetCode
 recipient_log(ThreadId src, BDataLogReq *pReq)
 {
-	BDataLogRsp *pRsp = thread_msg(pRsp);
-
-	pRsp->ret = _recipient_log(pReq);
-	pRsp->ptr = pReq->ptr;
-
-	id_msg(src, BDATA_LOG_RSP, pRsp);
-
-	dave_mfree(pReq->log_data);
+	return _recipient_log(pReq);
 }
 
 #endif

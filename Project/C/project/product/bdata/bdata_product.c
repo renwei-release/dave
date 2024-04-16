@@ -39,6 +39,22 @@ _bdata_debug(ThreadId src, DebugReq *pReq)
 }
 
 static void
+_bdata_log(ThreadId src, BDataLogReq *pReq)
+{
+	BDataLogRsp *pRsp = thread_msg(pRsp);
+
+	reporter(src, pReq);
+
+	pRsp->ret = recipient_log(src, pReq);
+	pRsp->ptr = pReq->ptr;
+
+	id_msg(src, BDATA_LOG_RSP, pRsp);
+
+	dave_mfree(pReq->log_data);
+	dave_mfree(pReq->log_file);
+}
+
+static void
 _bdata_init(MSGBODY *msg)
 {
 	recorder_api_init();
@@ -57,8 +73,7 @@ _bdata_main(MSGBODY *msg)
 				dave_echo(msg->msg_src, msg->msg_dst, msg->msg_id, msg->msg_body);
 			break;
 		case BDATA_LOG_REQ:
-				recipient_log(msg->msg_src, (BDataLogReq *)(msg->msg_body));
-				reporter(msg->msg_src, (BDataLogReq *)(msg->msg_body));
+				_bdata_log(msg->msg_src, (BDataLogReq *)(msg->msg_body));
 			break;
 		default:
 			break;

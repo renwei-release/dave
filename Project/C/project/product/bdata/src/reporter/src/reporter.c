@@ -13,6 +13,8 @@
 #include "dave_verno.h"
 #include "dave_email.h"
 #include "bdata_msg.h"
+#include "bdata_tools.h"
+#include "reporter_save_file.h"
 #include "bdata_log.h"
 
 static void
@@ -66,13 +68,13 @@ _reporter_body(
 
 	return dave_snprintf(body_ptr, body_len,
 "\r\n%s\r\n"\
-"\r\n\r\n%s -> %s\r\n"\
+"\r\n\r\n\r\n\r\n%s -> %s\r\n"\
 "level:%s\r\n"\
 "version:%s\r\n"\
 "sub_flag:%s\r\n"\
 "local_date:%s\r\n"\
 "\r\n===================================\r\n"\
-"FROM:%s\r\n\r\n",
+"From:%s\r\n\r\n",
 
 		ms8(pReq->log_data),
 
@@ -87,12 +89,13 @@ _reporter_body(
 }
 
 static void
-_reporter_email(s8 *subject, MBUF *body)
+_reporter_email(s8 *subject, MBUF *body, MBUF *log_file)
 {
-	EmailSendReq *pReq = thread_msg(pReq);
+	EmailSendReq *pReq = thread_reset_msg(pReq);
 
 	dave_strcpy(pReq->subject, subject, sizeof(pReq->subject));
 	pReq->content = body;
+	pReq->attachment = log_file;
 	pReq->ptr = body;
 
 	name_msg(EMAIL_THREAD_NAME, EMAIL_SEND_REQ, pReq);
@@ -102,14 +105,29 @@ static void
 _reporter(ThreadId src, BDataLogReq *pReq)
 {
 	s8 subject[128];
-	ub body_len = 1024 * 8;
+	ub body_len = 4096 + pReq->log_data->tot_len;
 	MBUF *body_ptr = dave_mmalloc(body_len);
 
 	_reporter_subject(subject, sizeof(subject), src);
 
 	body_ptr->tot_len = body_ptr->len = _reporter_body(ms8(body_ptr), body_len, pReq);
 
-	_reporter_email(subject, body_ptr);
+	_reporter_email(subject, body_ptr, dave_mclone(pReq->log_file));
+}
+
+static void
+_reporter_file_save(MBUF *log_file, BDataLogReq *pReq)
+{
+	s8 file_path[256];
+
+	if(log_file == NULL)
+	{
+		return;
+	}
+
+	log_req_to_full_path(file_path, sizeof(file_path), pReq);
+
+	reporter_save_file(file_path, ms8(log_file));
 }
 
 // =====================================================================
@@ -120,9 +138,13 @@ reporter(ThreadId src, BDataLogReq *pReq)
 	if(pReq->level != BDataLogLevel_report)
 		return;
 
-	BDLOG("%s %s %s", thread_name(src), pReq->version, pReq->sub_flag);
+	BDLOG("thread:%s version:%s sub:%s log_data:%lx log_file:%lx",
+		thread_name(src), pReq->version, pReq->sub_flag,
+		pReq->log_data, pReq->log_file);
 
 	_reporter(src, pReq);
+
+	_reporter_file_save(pReq->log_file, pReq);
 }
 
 #endif

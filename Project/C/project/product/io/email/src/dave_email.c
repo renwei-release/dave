@@ -36,12 +36,13 @@ _email_send(ThreadId src, EmailSendReq *pReq)
 {
 	EmailSendRsp *pRsp = thread_msg(pRsp);
 
-	pRsp->ret = email_send(pReq->subject, ms8(pReq->content));
+	pRsp->ret = email_send(pReq->subject, ms8(pReq->content), ms8(pReq->attachment));
 	pRsp->ptr = pReq->ptr;
 
 	id_msg(src, EMAIL_SEND_RSP, pRsp);
 
 	dave_mfree(pReq->content);
+	dave_mfree(pReq->attachment);
 }
 
 static void

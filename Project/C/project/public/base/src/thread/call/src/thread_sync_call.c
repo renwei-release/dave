@@ -19,7 +19,7 @@
 #include "thread_log.h"
 
 #define SYNC_FOR_CHECK_MAX (THREAD_MAX + THREAD_THREAD_MAX)
-#define SYNC_WAIT_MAX_TIME 90	// second
+#define SYNC_WAIT_MAX_TIME 180	// second
 
 static TLock _sync_data_for_check_pv;
 static ThreadSync * _sync_data_for_check[SYNC_FOR_CHECK_MAX];

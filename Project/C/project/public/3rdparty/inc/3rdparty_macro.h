@@ -56,6 +56,10 @@
 #define CURL_3RDPARTY
 #endif
 
+#ifdef __DAVE_PRODUCT_IO__
+#define QUICKMAIL_3RDPARTY
+#endif
+
 #define REDIS_3RDPARTY
 
 #endif

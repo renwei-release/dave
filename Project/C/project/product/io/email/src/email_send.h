@@ -10,7 +10,7 @@
 #include "http_param.h"
 #include "http_msg.h"
 
-RetCode email_send(s8 *subject, s8 *context);
+RetCode email_send(s8 *subject, s8 *context, s8 *attachment);
 
 #endif
 

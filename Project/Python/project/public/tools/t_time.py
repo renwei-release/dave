@@ -11,6 +11,16 @@ import time
 import datetime
 
 
+def t_time_year_month_day():
+    time_tuple = time.localtime(time.time())
+
+    year = time_tuple[0]
+    month = time_tuple[1]
+    day = time_tuple[2]
+
+    return year, month, day
+
+
 def t_time_current_str():
     time_tuple = time.localtime(time.time())
 

@@ -11,15 +11,15 @@ import (
 	"dave/public/tools"
 )
 
-var VERSION_PRODUCT = "BASE"
+var VERSION_PRODUCT = "DSTORE"
 var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), ".", "-", -1)
 var VERSION_MAIN = "4"
 var VERSION_SUB = "16"
-var VERSION_REV = "12"
-var VERSION_DATE_TIME = "20240401174411"
+var VERSION_REV = "13"
+var VERSION_DATE_TIME = "20240416195734"
 var VERSION_LEVEL = "Alpha"
 var __BUILD_MAC_ADDRESS__ = "000C29960DBF"
-var __BUILD_HOSTNAME__ = "fedora-renwei-gcc9-docker"
+var __BUILD_HOSTNAME__ = "fedora-renwei-golang19-docker"
 var __BUILD_USERNAME__ = "root"
 
 // =====================================================================

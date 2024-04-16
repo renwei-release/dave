@@ -182,6 +182,7 @@ class BDataLogReq (Structure):
 		("host_ipv4", c_char * DAVE_IP_V4_ADDR_LEN),
 		("host_ipv6", c_char * DAVE_IP_V6_ADDR_LEN),
 		("log_data", POINTER(MBUF)),
+		("log_file", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -537,6 +538,7 @@ class EmailSendReq (Structure):
 	_fields_ = [
 		("subject", c_char * 1024),
 		("content", POINTER(MBUF)),
+		("attachment", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -712,6 +714,7 @@ class MsgIdEchoRsp (Structure):
 #* for MSGID_INNER_LOOP message *#
 class MsgInnerLoop (Structure):
 	_fields_ = [
+		("param", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
 

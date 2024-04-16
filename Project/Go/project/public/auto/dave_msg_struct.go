@@ -159,6 +159,7 @@ type BDataLogReq struct {
 	Host_ipv4 [DAVE_IP_V4_ADDR_LEN] byte
 	Host_ipv6 [DAVE_IP_V6_ADDR_LEN] byte
 	Log_data *MBUF
+	Log_file *MBUF
 	Ptr uint64
 }
 
@@ -475,6 +476,7 @@ type DosForward struct {
 type EmailSendReq struct {
 	Subject [1024] byte
 	Content *MBUF
+	Attachment *MBUF
 	Ptr uint64
 }
 
@@ -630,6 +632,7 @@ type MsgIdEchoRsp struct {
 
 /* for MSGID_INNER_LOOP message */
 type MsgInnerLoop struct {
+	Param *MBUF
 	Ptr uint64
 }
 

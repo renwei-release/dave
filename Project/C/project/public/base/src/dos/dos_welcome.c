@@ -37,9 +37,9 @@ dos_welcome_screen(void)
 	dave_os_load_host_name(hostname, sizeof(hostname));
 	dave_os_load_mac(mac);
 
-	dos_print("Hi, I'm %s\nBUILD INFORMATION: BUILDER=%s HOST=%s MAC=%s!\nRUNNER INFORMATION: HOST=%s MAC=%s",
+	dos_print("Hi, I'm %s\nBUILD  INFORMATION: HOST=%s MAC=%s BUILDER=%s\nRUNNER INFORMATION: HOST=%s MAC=%s",
 		dave_verno(),
-		__BUILD_USERNAME__, __BUILD_HOSTNAME__, __BUILD_MAC_ADDRESS__,
+		__BUILD_HOSTNAME__, __BUILD_MAC_ADDRESS__, __BUILD_USERNAME__,
 		hostname, macstr(mac));
 }
 

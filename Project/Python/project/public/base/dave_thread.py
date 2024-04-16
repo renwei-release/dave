@@ -10,6 +10,7 @@ from .dave_dll import dave_dll
 from .dave_log import *
 from .dave_tools import *
 from .dave_verno import *
+from .dave_system_function import *
 from ..tools import *
 
 
@@ -157,4 +158,14 @@ def broadcast_msg(thread_name, msg_id, class_instance):
     if isinstance(thread_name, str) == True:
         thread_name = bytes(thread_name, encoding='utf8')
     davelib.dave_dll_thread_broadcast_msg(c_char_p(thread_name), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
+    return
+
+
+def inner_loop(fun, param):
+    dave_system_function_table_add(MSGID_INNER_LOOP, fun)
+
+    pLoop = thread_msg(MsgInnerLoop)
+    pLoop.contents.param = param
+    pLoop.contents.ptr = None
+    write_msg(thread_self(), MSGID_INNER_LOOP, pLoop)
     return

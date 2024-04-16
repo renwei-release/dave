@@ -166,6 +166,7 @@ typedef struct {
 
 /* for MSGID_INNER_LOOP message */
 typedef struct {
+	MBUF *param;
 	void *ptr;
 } MsgInnerLoop;
 

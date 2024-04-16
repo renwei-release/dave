@@ -293,5 +293,20 @@ dave_dll_system_offline(void)
 	name_msg(GUARDIAN_THREAD_NAME, MSGID_APPLICATION_BUSY, pBusy);
 }
 
+int
+dave_dll_timer_creat(const char *name, int alarm_second, dll_timer_fun timer_fun)
+{
+	if(base_timer_creat((char *)name, (base_timer_fun)timer_fun, alarm_second * 1000) != INVALID_TIMER_ID)
+		return -1;
+	else
+		return 0;
+}
+
+void
+dave_dll_timer_kill(const char *name)
+{
+	base_timer_kill((char *)name);
+}
+
 #endif
 

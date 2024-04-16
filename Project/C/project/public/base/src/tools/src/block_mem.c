@@ -645,7 +645,7 @@ block_malloc(BlockMem *pBlock, ub len, s8 *file, ub line)
 	if(user_ptr == NULL)
 	{
 		fprintf(stdout, "****************************** SPECIAL-WARNING ******************************\n");
-		fprintf(stdout, "****** It is possible that the system cannot allocate memory at all, ******\n");
+		fprintf(stdout, "****** It is possible that the system cannot allocate memory(%lx) at all, ******\n", len);
 		fprintf(stdout, "****** and basic system functions cannot be executed. ******\n");
 		fprintf(stdout, "****** such as the ability to generate coredump files. ******\n");
 		fprintf(stdout, "****** This emergency printing is done in the hope that this print alarm will be issued. ******\n");

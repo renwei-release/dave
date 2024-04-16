@@ -86,6 +86,10 @@ def _t_train_path_to_model_path_get_train_name(train_path, train_name):
 def _t_path_file_list(file_path, suffix, recursive):
     file_number = 0
     file_list = []
+
+    if os.path.exists(file_path) == False:
+        return file_list, file_number
+
     for full_name in os.listdir(file_path):
         full_path = os.path.join(file_path, full_name)
         if os.path.isfile(full_path):
@@ -150,6 +154,9 @@ def t_creat_path(path:str):
 
 
 def t_path_child_list(father_path):
+    if os.path.exists(father_path) == False:
+        return []
+
     child_list = [os.path.join(father_path, name) for name in os.listdir(father_path)
         if os.path.isdir(os.path.join(father_path, name))]
     return child_list

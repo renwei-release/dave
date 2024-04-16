@@ -10,9 +10,9 @@
 #define __LOG_BUFFER_H__
 
 // Equivalent to (LOG_BUFFER_MAX) logs per second
-#define LOG_BUFFER_MAX (4096)
+#define LOG_BUFFER_MAX (2048)
 
-#define LOG_FIX_BUFFER_LEN (1024)
+#define LOG_FIX_BUFFER_LEN (2048)
 #define LOG_DYNAMIC_BUFFER_LEN (1024 * 128)
 
 typedef struct {

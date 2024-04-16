@@ -34,6 +34,8 @@ typedef struct {
 	u8 host_ipv6[DAVE_IP_V6_ADDR_LEN];
 
 	MBUF *log_data;
+	MBUF *log_file;
+
 	void *ptr;
 } BDataLogReq;
 
