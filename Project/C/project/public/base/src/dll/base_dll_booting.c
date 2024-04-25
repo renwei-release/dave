@@ -36,6 +36,7 @@
 static void *_dave_main_thread_id = NULL;
 static void *_dave_inner_loop_id = NULL;
 static dave_bool _wait_main_thread_ready = dave_false;
+static s8 _dll_product_name[128] = { '\0' };
 static int _dll_thread_number = 0;
 static dll_callback_fun _dll_init_fun = NULL;
 static dll_callback_fun _dll_main_fun = NULL;
@@ -182,6 +183,19 @@ _dave_dll_signal_thread(void)
 }
 
 static void
+_dave_dll_copy_product_name(char *product_name)
+{
+	if(product_name != NULL)
+	{
+		dave_strcpy(_dll_product_name, product_name, sizeof(_dll_product_name));
+	}
+	if(t_is_all_show_char((u8 *)_dll_product_name, dave_strlen(_dll_product_name)) == dave_false)
+	{
+		dave_memset(_dll_product_name, 0x00, sizeof(_dll_product_name));
+	}
+}
+
+static void
 _dave_dll_copy_sync_domain(char *sync_domain)
 {
 	if(sync_domain != NULL)
@@ -200,6 +214,7 @@ _dave_dll_main_thread(void *arg)
 	base_init(_dave_main_thread_id, _dll_sync_domain);
 
 	dave_dll_main_init(
+		_dll_product_name,
 		_base_dll_running_mode,
 		_dll_thread_number,
 		_dll_init_fun, _dll_main_fun, _dll_exit_fun);
@@ -234,11 +249,13 @@ _dave_dll_wait_main_thread_ready(void)
 
 static void
 _dave_dll_init(
+	char *product_name,
 	char *my_verno, char *work_mode,
 	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
+	_dave_dll_copy_product_name(product_name);
 	_dll_thread_number = thread_number;
 	_dll_init_fun = init_fun;
 	_dll_main_fun = main_fun;
@@ -285,12 +302,14 @@ _dave_dll_exit(void)
 
 void
 dave_dll_init(
+	char *product_name,
 	char *my_verno, char *work_mode,
 	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,
 	char *sync_domain)
 {
 	_dave_dll_init(
+		product_name,
 		my_verno, work_mode,
 		thread_number,
 		init_fun, main_fun, exit_fun,

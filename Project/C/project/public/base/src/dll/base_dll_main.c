@@ -56,9 +56,16 @@ static dll_callback_fun _dll_main_fun = NULL;
 static dll_callback_fun _dll_exit_fun = NULL;
 
 static s8 *
-_dll_main_name(void)
+_dll_main_name(s8 *product_name)
 {
-	return t_gp_product_name();
+	if((product_name != NULL) && (dave_strlen(product_name) > 0))
+	{
+		return product_name;
+	}
+	else
+	{
+		return t_gp_product_name();
+	}
 }
 
 static ub
@@ -197,6 +204,7 @@ _dll_main_exit(MSGBODY *msg)
 
 void
 dave_dll_main_init(
+	s8 *product_name,
 	BaseDllRunningMode mode,
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun)
@@ -212,9 +220,9 @@ dave_dll_main_init(
 		cfg_set_ub(CFG_COROUTINE_STACK_SIZE, 512 * 1024);
 	}
 
-	_main_thread = base_thread_creat(_dll_main_name(), _dll_main_number(thread_number), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
+	_main_thread = base_thread_creat(_dll_main_name(product_name), _dll_main_number(thread_number), thread_flag, _dll_main_init, _dll_main_main, _dll_main_exit);
 	if(_main_thread == INVALID_THREAD_ID)
-		base_restart(_dll_main_name());
+		base_restart(_dll_main_name(product_name));
 }
 
 void

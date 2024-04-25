@@ -261,7 +261,7 @@ store_mysql_sql(ThreadId src, ub thread_index, StoreMysqlReq *pReq)
 
 	ub start_time = dave_os_time_us();
 	pRsp->ret = _store_mysql_sql(&(pRsp->data), pRsp->msg, sizeof(pRsp->msg), pMysql, ms8(pReq->sql), mlen(pReq->sql));
-	mysql_statistics(&(pMysql->statistics), dave_os_time_us() - start_time);
+	mysql_statistics(&(pMysql->statistics), dave_os_time_us() - start_time, src, ms8(pReq->sql));
 
 	pRsp->ptr = pReq->ptr;
 

@@ -38,37 +38,19 @@ _email_send(
 	s8 *subject, s8 *context,
 	s8 *attachment)
 {
-	void *pToEmailArray;
-	sb array_length, array_index;
-	dave_bool find_error, ret;
+	dave_bool ret;
 
-	pToEmailArray = dave_string_to_json(to_email, dave_strlen(to_email));
-	if(pToEmailArray == NULL)
+	ret = dave_quickmail(userpwd, "", smtp_url, from_email, to_email, subject, context, attachment);
+	if(ret == dave_false)
 	{
-		EMAILLOG("invalid data to_email:%s", to_email);
-		return RetCode_Invalid_data;
+		EMAILLOG("send failed! smtp:%s userpwd:%s from:%s to:%s subject:%s", smtp_url, userpwd, from_email, to_email, subject);
+	}
+	else
+	{
+		EMAILLOG("from:%s to:%s subject:%s send success!", from_email, to_email, subject);
 	}
 
-	find_error = dave_false;
-
-	array_length = dave_json_get_array_length(pToEmailArray);
-	for(array_index=0; array_index<array_length; array_index++)
-	{
-		ret = dave_quickmail_email(userpwd, "", smtp_url, from_email, dave_json_array_get_str(pToEmailArray, array_index, NULL), subject, context, attachment);
-		if(ret == dave_false)
-		{
-			EMAILLOG("send failed! smtp:%s userpwd:%s from:%s to:%s",
-				smtp_url, userpwd, from_email, dave_json_array_get_str(pToEmailArray, array_index, NULL));
-
-			find_error = dave_true;
-		}
-		else
-		{
-			EMAILLOG("%s send success!", dave_json_array_get_str(pToEmailArray, array_index, NULL));
-		}
-	}
-
-	if(find_error == dave_true)
+	if(ret == dave_true)
 		return RetCode_OK;
 	else
 		return RetCode_Send_failed;

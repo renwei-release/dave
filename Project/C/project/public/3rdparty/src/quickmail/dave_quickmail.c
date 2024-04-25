@@ -13,7 +13,7 @@
 #include "quickmail.h"
 
 static void
-__quickmail_email_add_attachment(quickmail mailobj, void *pJson)
+__quickmail_add_attachment(quickmail mailobj, void *pJson)
 {
 	EmailJsonAttachment *pAttachment;
 
@@ -35,7 +35,7 @@ __quickmail_email_add_attachment(quickmail mailobj, void *pJson)
 }
 
 static void
-_quickmail_email_add_attachment(quickmail mailobj, s8 *attachment)
+_quickmail_add_attachment(quickmail mailobj, s8 *attachment)
 {
 	if(attachment == NULL)
 		return;
@@ -53,17 +53,43 @@ _quickmail_email_add_attachment(quickmail mailobj, s8 *attachment)
 
 		if(pJson != NULL)
 		{
-			__quickmail_email_add_attachment(mailobj, pJson);
+			__quickmail_add_attachment(mailobj, pJson);
 		}
 	}
 
 	dave_json_free(pArray);
 }
 
+static void
+_quickmail_add_to(quickmail mailobj, s8 *to_email)
+{
+	void *pToEmailArray;
+	sb array_length, array_index;
+	s8 *to_user_email;
+
+	pToEmailArray = dave_string_to_json(to_email, dave_strlen(to_email));
+	if(pToEmailArray == NULL)
+	{
+		quickmail_add_to(mailobj, to_email);
+	}
+	else
+	{
+		array_length = dave_json_get_array_length(pToEmailArray);
+		for(array_index=0; array_index<array_length; array_index++)
+		{
+			to_user_email = dave_json_array_get_str(pToEmailArray, array_index, NULL);
+
+			quickmail_add_to(mailobj, to_user_email);
+		}
+
+		dave_json_free(pToEmailArray);
+	}
+}
+
 // =====================================================================
 
 dave_bool
-dave_quickmail_email(s8 *username, s8 *password, s8 *smtp_url, s8 *from_email, s8 *to_email, s8 *subject, s8 *body, s8 *attachment)
+dave_quickmail(s8 *username, s8 *password, s8 *smtp_url, s8 *from_email, s8 *to_email, s8 *subject, s8 *body, s8 *attachment)
 {
 	const char* errmsg;
 	dave_bool ret;
@@ -72,9 +98,9 @@ dave_quickmail_email(s8 *username, s8 *password, s8 *smtp_url, s8 *from_email, s
 
 	quickmail mailobj = quickmail_create(from_email, subject);
 
-	quickmail_add_to(mailobj, to_email);
+	_quickmail_add_to(mailobj, to_email);
 	quickmail_set_body(mailobj, body);
-	_quickmail_email_add_attachment(mailobj, attachment);
+	_quickmail_add_attachment(mailobj, attachment);
 
 	errmsg = quickmail_send(mailobj, smtp_url, 0, username, password);
 	if(errmsg != NULL)

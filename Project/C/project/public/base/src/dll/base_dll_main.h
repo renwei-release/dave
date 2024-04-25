@@ -18,6 +18,7 @@ typedef enum {
 } BaseDllRunningMode;
 
 void dave_dll_main_init(
+	s8 *product_name,
 	BaseDllRunningMode mode,
 	int thread_number,
 	dll_callback_fun dll_init_fun, dll_callback_fun dll_main_fun, dll_callback_fun dll_exit_fun);

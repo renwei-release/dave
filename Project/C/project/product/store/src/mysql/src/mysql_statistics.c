@@ -10,6 +10,7 @@
 #include "dave_3rdparty.h"
 #include "dave_verno.h"
 #include "dave_base.h"
+#include "dave_bdata.h"
 #include "store_msg.h"
 #include "mysql_statistics.h"
 #include "store_log.h"
@@ -29,7 +30,7 @@ mysql_statistics_reset(MysqlStatistics *pStatistics)
 }
 
 void
-mysql_statistics(MysqlStatistics *pStatistics, ub consume_time)
+mysql_statistics(MysqlStatistics *pStatistics, ub consume_time, ThreadId src, s8 *sql)
 {
 	pStatistics->total_sql_time += consume_time;
 	pStatistics->total_sql_times ++;
@@ -39,6 +40,12 @@ mysql_statistics(MysqlStatistics *pStatistics, ub consume_time)
 		pStatistics->max_sql_time = consume_time;
 	if(consume_time < pStatistics->min_sql_time)
 		pStatistics->min_sql_time = consume_time;
+
+	if(consume_time > 1000000)
+	{
+		BDATALOG("MYSQL-SLOW-OPT", "thread:%s sql:%s consumed:%ldus",
+			thread_name(src), sql, consume_time);
+	}
 }
 
 ub

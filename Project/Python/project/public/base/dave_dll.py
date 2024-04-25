@@ -77,9 +77,14 @@ def _product_cfg():
       cfg = None
 
    if cfg != None:
-      return cfg.dave_product_cfg()
+      thread_number, work_mode, product_name = cfg.dave_product_cfg()
    else:
-      return 1, b"Outer Loop"
+      thread_number, work_mode, product_name = 1, b"Outer Loop", b''
+
+   if (product_name != None) and (type(product_name) != bytes):
+      product_name = product_name.encode()
+
+   return thread_number, work_mode, product_name
 
 
 CHECKFUNC=CFUNCTYPE(c_int, c_int)
@@ -103,11 +108,12 @@ def _python_self_check():
 
 
 def dave_python_init():
+   thread_number, work_mode, product_name = _product_cfg()
    my_verno = dave_verno()
-   thread_number, work_mode = _product_cfg()
    sync_domain = b""
 
    davelib.dave_dll_init(
+      c_char_p(product_name),
       c_char_p(my_verno), c_char_p(work_mode),
       c_int(thread_number),
       _c_python_init, _c_python_main, _c_python_exit,

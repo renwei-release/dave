@@ -22,6 +22,7 @@ typedef int (* dll_dos_cmd_fun)(char *param_ptr, int param_len);
 typedef void (* dll_timer_fun)(unsigned long long timer_id, unsigned long long thread_index);
 
 API void dave_dll_init(
+	char *product_name,
 	char *my_verno, char *work_mode,
 	int thread_number,
 	dll_callback_fun init_fun, dll_callback_fun main_fun, dll_callback_fun exit_fun,

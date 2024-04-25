@@ -78,6 +78,7 @@ func Dave_go_init(product_verno string, work_mode string, sync_domain string, in
 	_product_init_fun = init_fun
 	_product_exit_fun = exit_fun
 
+	c_my_product := C.CString("")
 	c_my_verno := C.CString(Dave_verno())
 	if product_verno != "" {
 		c_my_verno = C.CString(product_verno)
@@ -87,11 +88,13 @@ func Dave_go_init(product_verno string, work_mode string, sync_domain string, in
 	thread_number := 0
 
 	C.dave_dll_init(
+		c_my_product,
 		c_my_verno, c_work_mode,
 		C.int(thread_number),
 		C.dll_callback_fun(C._go_init), C.dll_callback_fun(C._go_main), C.dll_callback_fun(C._go_exit),
 		c_sync_domain)
 
+	C.free(unsafe.Pointer(c_my_product))
 	C.free(unsafe.Pointer(c_my_verno))
 	C.free(unsafe.Pointer(c_work_mode))
 	C.free(unsafe.Pointer(c_sync_domain))

@@ -10,6 +10,7 @@
 #include "dave_3rdparty.h"
 #include "dave_verno.h"
 #include "dave_base.h"
+#include "dave_bdata.h"
 #include "store_msg.h"
 #include "redis_statistics.h"
 #include "store_log.h"
@@ -29,7 +30,7 @@ redis_statistics_reset(RedisStatistics *pStatistics)
 }
 
 void
-redis_statistics(RedisStatistics *pStatistics, ub consume_time)
+redis_statistics(RedisStatistics *pStatistics, ub consume_time, ThreadId src, s8 *command)
 {
 	pStatistics->total_redis_time += consume_time;
 	pStatistics->total_redis_times ++;
@@ -39,6 +40,12 @@ redis_statistics(RedisStatistics *pStatistics, ub consume_time)
 		pStatistics->max_redis_time = consume_time;
 	if(consume_time < pStatistics->min_redis_time)
 		pStatistics->min_redis_time = consume_time;
+
+	if(consume_time > 1000000)
+	{
+		BDATALOG("REDIS-SLOW-OPT", "thread:%s command:%s consumed:%ldus",
+			thread_name(src), command, consume_time);
+	}
 }
 
 ub

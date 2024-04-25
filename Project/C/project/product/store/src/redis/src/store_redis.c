@@ -204,7 +204,7 @@ store_redis_command(ThreadId src, ub thread_index, StoreRedisReq *pReq)
 
 	ub start_time = dave_os_time_us();
 	pRsp->ret = _store_redis_command(&(pRsp->reply), pRsp->msg, sizeof(pRsp->msg), pRedis, ms8(pReq->command));
-	redis_statistics(&(pRedis->statistics), dave_os_time_us() - start_time);
+	redis_statistics(&(pRedis->statistics), dave_os_time_us() - start_time, src, ms8(pReq->command));
 
 	pRsp->ptr = pReq->ptr;
 

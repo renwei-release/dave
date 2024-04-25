@@ -18,7 +18,7 @@ typedef struct {
 
 void mysql_statistics_reset(MysqlStatistics *pStatistics);
 
-void mysql_statistics(MysqlStatistics *pStatistics, ub consume_time);
+void mysql_statistics(MysqlStatistics *pStatistics, ub consume_time, ThreadId src, s8 *sql);
 
 ub mysql_statistics_info(s8 *msg_ptr, ub msg_len, MysqlStatistics *pStatistics);
 

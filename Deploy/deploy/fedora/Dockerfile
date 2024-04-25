@@ -29,6 +29,8 @@ RUN yum install -y bzip2
 RUN yum install -y libicu.x86_64
 RUN yum install -y apr-devel apr-util libcurl libcurl-devel
 RUN ln -s /usr/lib64/libaprutil-1.so.0 /usr/lib64/libaprutil-1.so
+RUN yum install -y xz
+RUN yum install -y meson
 
 RUN mkdir -p /project/DAVE
 

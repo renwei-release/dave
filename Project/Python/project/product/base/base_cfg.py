@@ -11,4 +11,4 @@
 
 
 def dave_product_cfg():
-    return 1, b"Coroutine Outer Loop"
+    return 1, b"Coroutine Outer Loop", None

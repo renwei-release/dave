@@ -278,7 +278,7 @@ _distributor_recv_req(MSGBODY *msg)
 	else
 	{
 		_distributor_recv_error_rsp(RetCode_Can_not_find_path, pReq->ptr);
-	
+
 		dave_mfree(pReq->content);
 	}
 }

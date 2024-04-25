@@ -18,7 +18,7 @@ typedef struct {
 
 void redis_statistics_reset(RedisStatistics *pStatistics);
 
-void redis_statistics(RedisStatistics *pStatistics, ub consume_time);
+void redis_statistics(RedisStatistics *pStatistics, ub consume_time, ThreadId src, s8 *command);
 
 ub redis_statistics_info(s8 *msg_ptr, ub msg_len, RedisStatistics *pStatistics);
 
