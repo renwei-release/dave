@@ -36,6 +36,8 @@
 #include "dave_base.h"
 #include "os_log.h"
 
+static ub _call_poweroff_times = 0;
+
 // =====================================================================
 
 void *
@@ -80,9 +82,14 @@ dave_os_restart(s8 *reason)
 void
 dave_os_power_off(s8 *reason)
 {
-	OSLOG("system power off reason:%s", reason);
+	OSLOG("system power off reason:%ld/%s", _call_poweroff_times, reason);
 
 	dave_os_sleep(2000);
+
+	if((_call_poweroff_times ++) >= 6)
+	{
+		exit(0);
+	}
 }
 
 dave_bool

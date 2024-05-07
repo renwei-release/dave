@@ -21,6 +21,14 @@ def t_time_year_month_day():
     return year, month, day
 
 
+def t_time_week():
+    now = datetime.datetime.now()
+
+    week = now.isocalendar()[1]
+    weekday = now.weekday() + 1
+    return week, weekday
+
+
 def t_time_current_str():
     time_tuple = time.localtime(time.time())
 
@@ -46,14 +54,21 @@ def t_time_start_action():
 
 
 def t_time_end_action(start_time, time_flag=None, time_name=None, time_msg=None):
-    run_time = datetime.datetime.now() - start_time 
+    stop_time = datetime.datetime.now()
+
+    run_time = stop_time - start_time 
     run_time = run_time.seconds * 1000000 + run_time.microseconds
 
     if run_time <= 0:
         run_time_msg = f'0s'
     elif run_time < 1000:
         run_time_msg = f'{run_time}us'
+    elif run_time < 1000000:
+        run_time_msg = f'{run_time/1000}ms'
     else:
+        # detected bug
+        if run_time > 1000000 * 1000:
+            print(f'run_time:{run_time} is too long start_time:{start_time} stop_time:{stop_time}')
         run_time_msg = f'{run_time/1000000}s'
 
     if time_msg != None:
