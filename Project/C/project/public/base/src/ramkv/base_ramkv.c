@@ -259,6 +259,24 @@ __base_ramkv_del_bin_ptr__(void *ramkv, u8 *bin_data, ub bin_len, s8 *fun, ub li
 	}
 }
 
+dave_bool
+__base_ramkv_add_key_bin__(void *ramkv, s8 *key, u8 *bin_data, ub bin_len, s8 *fun, ub line)
+{
+	return ramkv_add((KV *)ramkv, (u8 *)key, dave_strlen(key), bin_data, bin_len, fun, line);
+}
+
+ub
+__base_ramkv_inq_key_bin__(void *ramkv, s8 *key, u8 *bin_data, ub bin_len, s8 *fun, ub line)
+{
+	return ramkv_inq((KV *)ramkv, -1, (u8 *)key, dave_strlen(key), bin_data, bin_len, fun, line);
+}
+
+void
+__base_ramkv_del_key_bin__(void *ramkv, s8 *key, s8 *fun, ub line)
+{
+	ramkv_del((KV *)ramkv, (u8 *)key, dave_strlen(key), NULL, 0, fun, line);
+}
+
 void *
 __base_ramkv_inq_top_ptr__(void *ramkv, s8 *fun, ub line)
 {
