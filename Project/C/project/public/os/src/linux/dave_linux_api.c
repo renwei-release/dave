@@ -88,6 +88,10 @@ dave_os_power_off(s8 *reason)
 
 	if((_call_poweroff_times ++) >= 6)
 	{
+		OSLOG("force quit !!!!!!");
+
+		dave_os_sleep(2000);
+
 		exit(0);
 	}
 }

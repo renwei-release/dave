@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import string
+import unicodedata
 
 
 # =====================================================================
@@ -27,3 +28,7 @@ def t_stdio_string_split(want_split_string, split_flag):
 def t_stdio_string_remove_punctuation(input_string):
     translator = str.maketrans('', '', string.punctuation)
     return input_string.translate(translator)
+
+
+def t_stdio_fullwidth_to_halfwidth(input_string):
+    return input_string.replace('¡£','. ').replace('£¡','! ').replace('£¿','? ').replace('£¨','(').replace('£©',')')

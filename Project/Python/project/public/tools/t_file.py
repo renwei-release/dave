@@ -109,7 +109,7 @@ def _t_path_file_list(file_path, suffix, recursive):
     return file_list, file_number
 
 
-def _t_picture_file_array_list_num(file_path_array, suffix, recursive):
+def _t_path_file_array_list_num(file_path_array, suffix, recursive):
     file_list = []
     total_num = 0
     for file_path in file_path_array:
@@ -119,14 +119,14 @@ def _t_picture_file_array_list_num(file_path_array, suffix, recursive):
     return file_list, total_num
 
 
-def _t_picture_file_list_num(file_path, suffix, recursive):
+def _t_path_file_list_num(file_path, suffix, recursive):
     file_list = None
     total_num = None
 
     if type(file_path) == str:
         file_list, total_num = _t_path_file_list(file_path, suffix, recursive)
     elif type(file_path) == list:
-        file_list, total_num = _t_picture_file_array_list_num(file_path, suffix, recursive)
+        file_list, total_num = _t_path_file_array_list_num(file_path, suffix, recursive)
 
     return file_list, total_num
 
@@ -168,7 +168,7 @@ def t_path_child_number(father_path):
 
 
 def t_path_file_list(file_path=None, suffix='jpg', recursive=True):
-    return _t_picture_file_list_num(file_path, suffix, recursive)
+    return _t_path_file_list_num(file_path, suffix, recursive)
 
 
 def t_path_file_number(path):

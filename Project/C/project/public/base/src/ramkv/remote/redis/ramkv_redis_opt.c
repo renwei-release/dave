@@ -147,7 +147,10 @@ _ramkv_redis_bin_add(KVRedis *pKV, MBUF *command)
 
 	if(ret != RetCode_OK)
 	{
-		KVLOG("ret:%s", retstr(ret));
+		KVLOG("ret:%s/%d location:%s command:%s",
+			retstr(ret), command_ret,
+			pKV->local_redis_flag == dave_true ? "local" : "remote",
+			ms8(command));
 	}
 
 	return ret;
