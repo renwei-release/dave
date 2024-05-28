@@ -1,0 +1,41 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2024 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+HOMEPATH=$(cd `dirname $0`; pwd)
+
+VERSION=2.24.2
+
+if [ ! -d ./wormhole ]; then
+   git clone https://github.com/wormhole-foundation/wormhole.git
+   cd wormhole
+   git checkout tags/v${VERSION}
+   cd ..
+
+   #
+   # Fix go.mod
+   #
+   echo "====== Fix go.mod ======"
+   cd wormhole/node
+   sed -i '/github.com\/algorand\/go-codec\/codec v1.1.8/d' go.sum
+   sed -i '/github.com\/google\/flatbuffers v1.12.0 h1/d' go.sum
+   go clean -modcache
+   export GONOSUMDB="*" && go mod tidy
+   export GONOSUMDB="*" && go get github.com/dgraph-io/badger/v3/table@v3.2103.1
+   cd ../../
+   #
+
+   git config --global --add safe.directory $HOMEPATH/wormhole
+fi
+
+cd wormhole
+
+export GONOSUMDB="*" && make node
+
+cd ../
+
+cp wormhole/build/bin/guardiand ./guardiand

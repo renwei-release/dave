@@ -31,4 +31,4 @@ def t_stdio_string_remove_punctuation(input_string):
 
 
 def t_stdio_fullwidth_to_halfwidth(input_string):
-    return input_string.replace('°£','. ').replace('£°','! ').replace('£ø','? ').replace('£®','(').replace('£©',')')
+    return input_string.replace('„ÄÇ','. ').replace('ÔºÅ','! ').replace('Ôºü','? ').replace('Ôºà','(').replace('Ôºâ',')')

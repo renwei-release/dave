@@ -1,0 +1,27 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2024 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+if ! command -v rustc &> /dev/null; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    source $HOME/.cargo/env
+fi
+
+if [ ! -d ./wasmvm ]; then
+    git clone https://github.com/CosmWasm/wasmvm.git
+fi
+
+cd wasmvm
+
+make build
+
+cd ../
+
+cp ./wasmvm/internal/api/libwasmvm.x86_64.so /usr/lib/libwasmvm.x86_64.so
+cp ./wasmvm/internal/api/libwasmvm.x86_64.so ./libwasmvm.x86_64.so
+
+rm -rf ./wasmvm

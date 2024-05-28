@@ -49,6 +49,9 @@ def STORESQL(*sql: object):
 
     dave_mfree(pRsp.data)
 
+    if sql_array == None:
+        return RetCode_empty_data, None
+
     return RetCode_OK, sql_array
 
 
@@ -77,10 +80,13 @@ def STORELOADStr(sql_array, column):
 
 
 def STORESQLCREATETABLE(db_name, table_name, table_disc):
+    _, data_array = STORESQL(f"SHOW DATABASES LIKE '{db_name}'")
+    if (data_array == None) or (len(data_array) == 0):
+        STORESQL(f"CREATE DATABASE {db_name}")
+
     _, data_array = STORESQL(f"SHOW TABLES IN {db_name} LIKE '{table_name}'")
-    if (data_array != None) and len(data_array) != 0:
-        return
-    STORESQL(f"CREATE TABLE {db_name}.{table_name} {table_disc}")
+    if (data_array == None) or len(data_array) == 0:
+        STORESQL(f"CREATE TABLE {db_name}.{table_name} {table_disc}")
     return
 
 
@@ -89,5 +95,6 @@ def STORESQLCLEANTABLE(db_name, table_name, table_disc):
     if (data_array != None) and len(data_array) != 0:
         STORESQL(f"DROP TABLE {db_name}.{table_name}")
         DAVELOG(f"STORESQLCLEANTABLE: DROP TABLE {db_name}.{table_name}")
+
     STORESQL(f"CREATE TABLE {db_name}.{table_name} {table_disc}")
     return
