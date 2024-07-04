@@ -161,11 +161,11 @@ def broadcast_msg(thread_name, msg_id, class_instance):
     return
 
 
-def inner_loop(fun, param):
-    dave_system_function_table_add(MSGID_INNER_LOOP, fun)
+def inner_loop(fun, param, msg_id=MSGID_INNER_LOOP):
+    dave_system_function_table_add(msg_id, fun)
 
     pLoop = thread_msg(MsgInnerLoop)
     pLoop.contents.param = param
     pLoop.contents.ptr = None
-    write_msg(thread_self(), MSGID_INNER_LOOP, pLoop)
+    write_msg(thread_self(), msg_id, pLoop)
     return

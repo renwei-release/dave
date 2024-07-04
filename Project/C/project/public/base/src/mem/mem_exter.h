@@ -21,8 +21,6 @@ ub __exter_len__(void *ptr, s8 *file, ub line);
 
 dave_bool __exter_memory__(void *ptr, s8 *file, ub line);
 
-ub __exter_len__(void *ptr, s8 *file, ub line);
-
 ub __exter_memory_info__(s8 *info, ub info_len, dave_bool base_flag);
 
 #endif

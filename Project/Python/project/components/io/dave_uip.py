@@ -8,7 +8,7 @@
 from public import *
 
 
-UIP_THREAD_NAME=b'uip'
+UIP_THREAD_NAME = b'uip'
 
 register_recv_req_function = {}
 

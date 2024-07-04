@@ -20,11 +20,11 @@ if [ "$exit_program" == "" ]; then
    sudo systemctl enable docker
 fi
 
-exit_program=$(type docker-compose)
-if [ "$exit_program" == "" ]; then
-   echo environment.sh setup docker-compose ...
-   sudo ${INSTALL} -y install docker-compose
-fi
+#exit_program=$(type docker-compose)
+#if [ "$exit_program" == "" ]; then
+#   echo environment.sh setup docker-compose ...
+#   sudo ${INSTALL} -y install docker-compose
+#fi
 
 exit_program=$(type bzip2)
 if [ "$exit_program" == "" ]; then

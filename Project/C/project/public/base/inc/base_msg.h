@@ -402,5 +402,30 @@ typedef struct {
 	void *ptr;
 } ProtectorWakeup;
 
+/* for FREE_MESSAGE_AREA_1 message */
+typedef struct {
+	void *ptr;
+} FreeMessageArea1;
+
+/* for FREE_MESSAGE_AREA_2 message */
+typedef struct {
+	void *ptr;
+} FreeMessageArea2;
+
+/* for FREE_MESSAGE_AREA_3 message */
+typedef struct {
+	void *ptr;
+} FreeMessageArea3;
+
+/* for FREE_MESSAGE_AREA_4 message */
+typedef struct {
+	void *ptr;
+} FreeMessageArea4;
+
+/* for FREE_MESSAGE_AREA_5 message */
+typedef struct {
+	void *ptr;
+} FreeMessageArea5;
+
 #endif
 

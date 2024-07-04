@@ -23,6 +23,7 @@
 #include "dba_msg.h"
 #include "email_msg.h"
 #include "http_msg.h"
+#include "rtc_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
 #include "base_msg.h"
@@ -323,6 +324,31 @@ dave_bool t_rpc_ver3_unzip_EmailSendRsp(void **unzip_data, ub *unzip_len, void *
 void * t_rpc_ver3_ptr_EmailSendRsp(EmailSendRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_EmailSendRsp(void);
 
+void * t_rpc_ver3_zip_FreeMessageArea1(FreeMessageArea1 *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_FreeMessageArea1(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_FreeMessageArea1(FreeMessageArea1 *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_FreeMessageArea1(void);
+
+void * t_rpc_ver3_zip_FreeMessageArea2(FreeMessageArea2 *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_FreeMessageArea2(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_FreeMessageArea2(FreeMessageArea2 *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_FreeMessageArea2(void);
+
+void * t_rpc_ver3_zip_FreeMessageArea3(FreeMessageArea3 *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_FreeMessageArea3(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_FreeMessageArea3(FreeMessageArea3 *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_FreeMessageArea3(void);
+
+void * t_rpc_ver3_zip_FreeMessageArea4(FreeMessageArea4 *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_FreeMessageArea4(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_FreeMessageArea4(FreeMessageArea4 *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_FreeMessageArea4(void);
+
+void * t_rpc_ver3_zip_FreeMessageArea5(FreeMessageArea5 *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_FreeMessageArea5(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_FreeMessageArea5(FreeMessageArea5 *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_FreeMessageArea5(void);
+
 void * t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_GeneralReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_GeneralReq(GeneralReq *struct_data, void *new_ptr);
@@ -507,6 +533,36 @@ void * t_rpc_ver3_zip_RPCDebugRsp(RPCDebugRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_RPCDebugRsp(RPCDebugRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_RPCDebugRsp(void);
+
+void * t_rpc_ver3_zip_RTCRegReq(RTCRegReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCRegReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCRegReq(RTCRegReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCRegReq(void);
+
+void * t_rpc_ver3_zip_RTCRegRsp(RTCRegRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCRegRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCRegRsp(RTCRegRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCRegRsp(void);
+
+void * t_rpc_ver3_zip_RTCReq(RTCReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCReq(RTCReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCReq(void);
+
+void * t_rpc_ver3_zip_RTCRsp(RTCRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCRsp(RTCRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCRsp(void);
+
+void * t_rpc_ver3_zip_RTCUnregReq(RTCUnregReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCUnregReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCUnregReq(RTCUnregReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCUnregReq(void);
+
+void * t_rpc_ver3_zip_RTCUnregRsp(RTCUnregRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCUnregRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCUnregRsp(RTCUnregRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCUnregRsp(void);
 
 void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);

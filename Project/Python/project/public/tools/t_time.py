@@ -49,6 +49,19 @@ def t_time_current_us():
     return int(microseconds_since_epoch)
 
 
+def t_time_current_ms():
+    seconds_since_epoch = time.time()
+
+    milliseconds_since_epoch = seconds_since_epoch * 1000
+    return int(milliseconds_since_epoch)
+
+
+def t_time_current_s():
+    seconds_since_epoch = time.time()
+
+    return int(seconds_since_epoch)
+
+
 def t_time_start_action():
     return datetime.datetime.now()
 
@@ -66,7 +79,7 @@ def t_time_end_action(start_time, time_flag=None, time_name=None, time_msg=None)
     elif run_time < 1000000:
         run_time_msg = f'{run_time/1000}ms'
     else:
-        # detected bug
+        # detected bug, maybe date updated.
         if run_time > 1000000 * 1000:
             print(f'run_time:{run_time} is too long start_time:{start_time} stop_time:{stop_time}')
         run_time_msg = f'{run_time/1000000}s'

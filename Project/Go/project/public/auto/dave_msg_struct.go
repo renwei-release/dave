@@ -486,6 +486,31 @@ type EmailSendRsp struct {
 	Ptr uint64
 }
 
+/* for FREE_MESSAGE_AREA_1 message */
+type FreeMessageArea1 struct {
+	Ptr uint64
+}
+
+/* for FREE_MESSAGE_AREA_2 message */
+type FreeMessageArea2 struct {
+	Ptr uint64
+}
+
+/* for FREE_MESSAGE_AREA_3 message */
+type FreeMessageArea3 struct {
+	Ptr uint64
+}
+
+/* for FREE_MESSAGE_AREA_4 message */
+type FreeMessageArea4 struct {
+	Ptr uint64
+}
+
+/* for FREE_MESSAGE_AREA_5 message */
+type FreeMessageArea5 struct {
+	Ptr uint64
+}
+
 /* for MSGID_GENERAL_REQ message */
 type GeneralReq struct {
 	General_type [256] byte
@@ -799,6 +824,51 @@ type RPCDebugRsp struct {
 	Mbuf_debug *MBUF
 	Req_time uint64
 	Rsp_time uint64
+	Ptr uint64
+}
+
+/* for RTC_REG_REQ message */
+type RTCRegReq struct {
+	Id [128] byte
+	Ptr uint64
+}
+
+/* for RTC_REG_RSP message */
+type RTCRegRsp struct {
+	Id [128] byte
+	Token [512] byte
+	Ptr uint64
+}
+
+/* for RTC_REQ message */
+type RTCReq struct {
+	Token [512] byte
+	Src [128] byte
+	Dst [128] byte
+	Content *MBUF
+	Ptr uint64
+}
+
+/* for RTC_RSP message */
+type RTCRsp struct {
+	Token [512] byte
+	Src [128] byte
+	Dst [128] byte
+	Content *MBUF
+	Ptr uint64
+}
+
+/* for RTC_UNREG_REQ message */
+type RTCUnregReq struct {
+	Id [128] byte
+	Token [512] byte
+	Ptr uint64
+}
+
+/* for RTC_UNREG_RSP message */
+type RTCUnregRsp struct {
+	Id [128] byte
+	Token [512] byte
 	Ptr uint64
 }
 

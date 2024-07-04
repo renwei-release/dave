@@ -7,7 +7,7 @@
 # */
 from ctypes import *
 from .dave_dll import dave_dll
-import string
+import json
 
 
 davelib = dave_dll()
@@ -39,6 +39,27 @@ def cfg_get(key, default_value=None):
 def cfg_del(key):
     byte_key = bytes(key, encoding="utf8")
     davelib.dave_dll_cfg_del(c_char_p(byte_key))
+    return
+
+
+def cfg_set_dict(key, value_dict):
+    value_str = json.dumps(value_dict)
+    cfg_set(key, value_str)
+    return
+
+
+def cfg_get_dict(key, default_value=None):
+    value_str = cfg_get(key, json.dumps(default_value))
+    try:
+        value_dict = json.loads(value_str)
+    except Exception as e:
+        value_dict = default_value
+        cfg_set_dict(key, value_dict)
+    return value_dict
+
+
+def cfg_del_dict(key):
+    cfg_del(key)
     return
 
 

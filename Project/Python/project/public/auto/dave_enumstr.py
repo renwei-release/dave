@@ -1723,6 +1723,16 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_PROTECTOR_UNREG-56'"
 	elif enum_value == MSGID_PROTECTOR_WAKEUP:
 		value_str = "'MSGID_PROTECTOR_WAKEUP-57'"
+	elif enum_value == FREE_MESSAGE_AREA_1:
+		value_str = "'FREE_MESSAGE_AREA_1-100'"
+	elif enum_value == FREE_MESSAGE_AREA_2:
+		value_str = "'FREE_MESSAGE_AREA_2-101'"
+	elif enum_value == FREE_MESSAGE_AREA_3:
+		value_str = "'FREE_MESSAGE_AREA_3-102'"
+	elif enum_value == FREE_MESSAGE_AREA_4:
+		value_str = "'FREE_MESSAGE_AREA_4-103'"
+	elif enum_value == FREE_MESSAGE_AREA_5:
+		value_str = "'FREE_MESSAGE_AREA_5-104'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:
@@ -1755,6 +1765,18 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'EMAIL_SEND_REQ-2003'"
 	elif enum_value == EMAIL_SEND_RSP:
 		value_str = "'EMAIL_SEND_RSP-2004'"
+	elif enum_value == RTC_REQ:
+		value_str = "'RTC_REQ-2005'"
+	elif enum_value == RTC_RSP:
+		value_str = "'RTC_RSP-2006'"
+	elif enum_value == RTC_REG_REQ:
+		value_str = "'RTC_REG_REQ-2007'"
+	elif enum_value == RTC_REG_RSP:
+		value_str = "'RTC_REG_RSP-2008'"
+	elif enum_value == RTC_UNREG_REQ:
+		value_str = "'RTC_UNREG_REQ-2009'"
+	elif enum_value == RTC_UNREG_RSP:
+		value_str = "'RTC_UNREG_RSP-2010'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:
@@ -1949,54 +1971,6 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'BBSMSG_INQ_COMMENT_REQ-15003'"
 	elif enum_value == BBSMSG_INQ_COMMENT_RSP:
 		value_str = "'BBSMSG_INQ_COMMENT_RSP-15004'"
-	elif enum_value == VOIPMSG_MAKE_CALL_REQ:
-		value_str = "'VOIPMSG_MAKE_CALL_REQ-15005'"
-	elif enum_value == VOIPMSG_MAKE_CALL_RSP:
-		value_str = "'VOIPMSG_MAKE_CALL_RSP-15006'"
-	elif enum_value == VOIPMSG_ANSWER_CALL_REQ:
-		value_str = "'VOIPMSG_ANSWER_CALL_REQ-15007'"
-	elif enum_value == VOIPMSG_ANSWER_CALL_RSP:
-		value_str = "'VOIPMSG_ANSWER_CALL_RSP-15008'"
-	elif enum_value == VOIPMSG_ADD_CALL_REQ:
-		value_str = "'VOIPMSG_ADD_CALL_REQ-15009'"
-	elif enum_value == VOIPMSG_ADD_CALL_RSP:
-		value_str = "'VOIPMSG_ADD_CALL_RSP-15010'"
-	elif enum_value == VOIPMSG_HOLD_CALL_REQ:
-		value_str = "'VOIPMSG_HOLD_CALL_REQ-15011'"
-	elif enum_value == VOIPMSG_HOLD_CALL_RSP:
-		value_str = "'VOIPMSG_HOLD_CALL_RSP-15012'"
-	elif enum_value == VOIPMSG_HANGUP_CALL_REQ:
-		value_str = "'VOIPMSG_HANGUP_CALL_REQ-15013'"
-	elif enum_value == VOIPMSG_HANGUP_CALL_RSP:
-		value_str = "'VOIPMSG_HANGUP_CALL_RSP-15014'"
-	elif enum_value == VOIPMSG_PUSH_TOKEN_SETUP_REQ:
-		value_str = "'VOIPMSG_PUSH_TOKEN_SETUP_REQ-15015'"
-	elif enum_value == VOIPMSG_PUSH_TOKEN_SETUP_RSP:
-		value_str = "'VOIPMSG_PUSH_TOKEN_SETUP_RSP-15016'"
-	elif enum_value == VOIPMSG_LOGIN_STATUS_REQ:
-		value_str = "'VOIPMSG_LOGIN_STATUS_REQ-15017'"
-	elif enum_value == VOIPMSG_LOGIN_STATUS_RSP:
-		value_str = "'VOIPMSG_LOGIN_STATUS_RSP-15018'"
-	elif enum_value == VOIPMSG_MUTE_MODE_REQ:
-		value_str = "'VOIPMSG_MUTE_MODE_REQ-15019'"
-	elif enum_value == VOIPMSG_MUTE_MODE_RSP:
-		value_str = "'VOIPMSG_MUTE_MODE_RSP-15020'"
-	elif enum_value == VOIPMSG_SEND_IM_REQ:
-		value_str = "'VOIPMSG_SEND_IM_REQ-15021'"
-	elif enum_value == VOIPMSG_SEND_IM_RSP:
-		value_str = "'VOIPMSG_SEND_IM_RSP-15022'"
-	elif enum_value == VOIPMSG_LOGIN_REQ:
-		value_str = "'VOIPMSG_LOGIN_REQ-15023'"
-	elif enum_value == VOIPMSG_LOGIN_RSP:
-		value_str = "'VOIPMSG_LOGIN_RSP-15024'"
-	elif enum_value == VOIPMSG_CFG_SET_REQ:
-		value_str = "'VOIPMSG_CFG_SET_REQ-15025'"
-	elif enum_value == VOIPMSG_CFG_SET_RSP:
-		value_str = "'VOIPMSG_CFG_SET_RSP-15026'"
-	elif enum_value == VOIPMSG_CFG_GET_REQ:
-		value_str = "'VOIPMSG_CFG_GET_REQ-15027'"
-	elif enum_value == VOIPMSG_CFG_GET_RSP:
-		value_str = "'VOIPMSG_CFG_GET_RSP-15028'"
 	elif enum_value == MSGID_INVALID:
 		value_str = "'MSGID_INVALID-0x1fffffffffffffff'"
 	else:

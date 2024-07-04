@@ -91,6 +91,10 @@ def STORESQLCREATETABLE(db_name, table_name, table_disc):
 
 
 def STORESQLCLEANTABLE(db_name, table_name, table_disc):
+    _, data_array = STORESQL(f"SHOW DATABASES LIKE '{db_name}'")
+    if (data_array == None) or (len(data_array) == 0):
+        STORESQL(f"CREATE DATABASE {db_name}")
+
     _, data_array = STORESQL(f"SHOW TABLES IN {db_name} LIKE '{table_name}'")
     if (data_array != None) and len(data_array) != 0:
         STORESQL(f"DROP TABLE {db_name}.{table_name}")

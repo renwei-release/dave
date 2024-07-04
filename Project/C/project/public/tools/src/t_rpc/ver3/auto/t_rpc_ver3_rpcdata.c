@@ -178,6 +178,21 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case EMAIL_SEND_RSP:
 				pBson = t_rpc_ver3_zip_EmailSendRsp((EmailSendRsp *)msg_body, msg_len);
 			break;
+		case FREE_MESSAGE_AREA_1:
+				pBson = t_rpc_ver3_zip_FreeMessageArea1((FreeMessageArea1 *)msg_body, msg_len);
+			break;
+		case FREE_MESSAGE_AREA_2:
+				pBson = t_rpc_ver3_zip_FreeMessageArea2((FreeMessageArea2 *)msg_body, msg_len);
+			break;
+		case FREE_MESSAGE_AREA_3:
+				pBson = t_rpc_ver3_zip_FreeMessageArea3((FreeMessageArea3 *)msg_body, msg_len);
+			break;
+		case FREE_MESSAGE_AREA_4:
+				pBson = t_rpc_ver3_zip_FreeMessageArea4((FreeMessageArea4 *)msg_body, msg_len);
+			break;
+		case FREE_MESSAGE_AREA_5:
+				pBson = t_rpc_ver3_zip_FreeMessageArea5((FreeMessageArea5 *)msg_body, msg_len);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
@@ -369,6 +384,24 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_WAKEUP:
 				pBson = t_rpc_ver3_zip_WAKEUPMSG((WAKEUPMSG *)msg_body, msg_len);
+			break;
+		case RTC_REG_REQ:
+				pBson = t_rpc_ver3_zip_RTCRegReq((RTCRegReq *)msg_body, msg_len);
+			break;
+		case RTC_REG_RSP:
+				pBson = t_rpc_ver3_zip_RTCRegRsp((RTCRegRsp *)msg_body, msg_len);
+			break;
+		case RTC_REQ:
+				pBson = t_rpc_ver3_zip_RTCReq((RTCReq *)msg_body, msg_len);
+			break;
+		case RTC_RSP:
+				pBson = t_rpc_ver3_zip_RTCRsp((RTCRsp *)msg_body, msg_len);
+			break;
+		case RTC_UNREG_REQ:
+				pBson = t_rpc_ver3_zip_RTCUnregReq((RTCUnregReq *)msg_body, msg_len);
+			break;
+		case RTC_UNREG_RSP:
+				pBson = t_rpc_ver3_zip_RTCUnregRsp((RTCUnregRsp *)msg_body, msg_len);
 			break;
 		case SOCKET_BIND_REQ:
 				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
@@ -608,6 +641,21 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case EMAIL_SEND_RSP:
 				ret = t_rpc_ver3_unzip_EmailSendRsp(msg_body, msg_len, pBson);
 			break;
+		case FREE_MESSAGE_AREA_1:
+				ret = t_rpc_ver3_unzip_FreeMessageArea1(msg_body, msg_len, pBson);
+			break;
+		case FREE_MESSAGE_AREA_2:
+				ret = t_rpc_ver3_unzip_FreeMessageArea2(msg_body, msg_len, pBson);
+			break;
+		case FREE_MESSAGE_AREA_3:
+				ret = t_rpc_ver3_unzip_FreeMessageArea3(msg_body, msg_len, pBson);
+			break;
+		case FREE_MESSAGE_AREA_4:
+				ret = t_rpc_ver3_unzip_FreeMessageArea4(msg_body, msg_len, pBson);
+			break;
+		case FREE_MESSAGE_AREA_5:
+				ret = t_rpc_ver3_unzip_FreeMessageArea5(msg_body, msg_len, pBson);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
 			break;
@@ -799,6 +847,24 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_WAKEUP:
 				ret = t_rpc_ver3_unzip_WAKEUPMSG(msg_body, msg_len, pBson);
+			break;
+		case RTC_REG_REQ:
+				ret = t_rpc_ver3_unzip_RTCRegReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_REG_RSP:
+				ret = t_rpc_ver3_unzip_RTCRegRsp(msg_body, msg_len, pBson);
+			break;
+		case RTC_REQ:
+				ret = t_rpc_ver3_unzip_RTCReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_RSP:
+				ret = t_rpc_ver3_unzip_RTCRsp(msg_body, msg_len, pBson);
+			break;
+		case RTC_UNREG_REQ:
+				ret = t_rpc_ver3_unzip_RTCUnregReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_UNREG_RSP:
+				ret = t_rpc_ver3_unzip_RTCUnregRsp(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_BIND_REQ:
 				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
@@ -1038,6 +1104,21 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case EMAIL_SEND_RSP:
 				ptr = t_rpc_ver3_ptr_EmailSendRsp((EmailSendRsp *)msg_body, new_ptr);
 			break;
+		case FREE_MESSAGE_AREA_1:
+				ptr = t_rpc_ver3_ptr_FreeMessageArea1((FreeMessageArea1 *)msg_body, new_ptr);
+			break;
+		case FREE_MESSAGE_AREA_2:
+				ptr = t_rpc_ver3_ptr_FreeMessageArea2((FreeMessageArea2 *)msg_body, new_ptr);
+			break;
+		case FREE_MESSAGE_AREA_3:
+				ptr = t_rpc_ver3_ptr_FreeMessageArea3((FreeMessageArea3 *)msg_body, new_ptr);
+			break;
+		case FREE_MESSAGE_AREA_4:
+				ptr = t_rpc_ver3_ptr_FreeMessageArea4((FreeMessageArea4 *)msg_body, new_ptr);
+			break;
+		case FREE_MESSAGE_AREA_5:
+				ptr = t_rpc_ver3_ptr_FreeMessageArea5((FreeMessageArea5 *)msg_body, new_ptr);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ptr = t_rpc_ver3_ptr_HTTPCloseReq((HTTPCloseReq *)msg_body, new_ptr);
 			break;
@@ -1229,6 +1310,24 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case MSGID_WAKEUP:
 				ptr = t_rpc_ver3_ptr_WAKEUPMSG((WAKEUPMSG *)msg_body, new_ptr);
+			break;
+		case RTC_REG_REQ:
+				ptr = t_rpc_ver3_ptr_RTCRegReq((RTCRegReq *)msg_body, new_ptr);
+			break;
+		case RTC_REG_RSP:
+				ptr = t_rpc_ver3_ptr_RTCRegRsp((RTCRegRsp *)msg_body, new_ptr);
+			break;
+		case RTC_REQ:
+				ptr = t_rpc_ver3_ptr_RTCReq((RTCReq *)msg_body, new_ptr);
+			break;
+		case RTC_RSP:
+				ptr = t_rpc_ver3_ptr_RTCRsp((RTCRsp *)msg_body, new_ptr);
+			break;
+		case RTC_UNREG_REQ:
+				ptr = t_rpc_ver3_ptr_RTCUnregReq((RTCUnregReq *)msg_body, new_ptr);
+			break;
+		case RTC_UNREG_RSP:
+				ptr = t_rpc_ver3_ptr_RTCUnregRsp((RTCUnregRsp *)msg_body, new_ptr);
 			break;
 		case SOCKET_BIND_REQ:
 				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body, new_ptr);
@@ -1468,6 +1567,21 @@ _t_rpc_sizeof(ub msg_id)
 		case EMAIL_SEND_RSP:
 				msg_len = t_rpc_ver3_sizeof_EmailSendRsp();
 			break;
+		case FREE_MESSAGE_AREA_1:
+				msg_len = t_rpc_ver3_sizeof_FreeMessageArea1();
+			break;
+		case FREE_MESSAGE_AREA_2:
+				msg_len = t_rpc_ver3_sizeof_FreeMessageArea2();
+			break;
+		case FREE_MESSAGE_AREA_3:
+				msg_len = t_rpc_ver3_sizeof_FreeMessageArea3();
+			break;
+		case FREE_MESSAGE_AREA_4:
+				msg_len = t_rpc_ver3_sizeof_FreeMessageArea4();
+			break;
+		case FREE_MESSAGE_AREA_5:
+				msg_len = t_rpc_ver3_sizeof_FreeMessageArea5();
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				msg_len = t_rpc_ver3_sizeof_HTTPCloseReq();
 			break;
@@ -1659,6 +1773,24 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_WAKEUP:
 				msg_len = t_rpc_ver3_sizeof_WAKEUPMSG();
+			break;
+		case RTC_REG_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCRegReq();
+			break;
+		case RTC_REG_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCRegRsp();
+			break;
+		case RTC_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCReq();
+			break;
+		case RTC_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCRsp();
+			break;
+		case RTC_UNREG_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCUnregReq();
+			break;
+		case RTC_UNREG_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCUnregRsp();
 			break;
 		case SOCKET_BIND_REQ:
 				msg_len = t_rpc_ver3_sizeof_SocketBindReq();

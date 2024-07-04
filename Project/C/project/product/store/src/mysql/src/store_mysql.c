@@ -104,7 +104,7 @@ _store_mysql_booting(void)
 	port = cfg_get_ub(CFG_MYSQL_PORT, 3306);
 	cfg_get_str(CFG_MYSQL_USER, user, sizeof(user), "root");
 	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "");
-	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "DAVEDB0007");
+	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "mysql");
 
 	STLOG("address:%s port:%d user:%s pwd:%s db:%s", address, port, user, pwd, db);
 

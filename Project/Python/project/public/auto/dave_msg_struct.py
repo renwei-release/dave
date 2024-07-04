@@ -549,6 +549,36 @@ class EmailSendRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for FREE_MESSAGE_AREA_1 message *#
+class FreeMessageArea1 (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for FREE_MESSAGE_AREA_2 message *#
+class FreeMessageArea2 (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for FREE_MESSAGE_AREA_3 message *#
+class FreeMessageArea3 (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for FREE_MESSAGE_AREA_4 message *#
+class FreeMessageArea4 (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
+#* for FREE_MESSAGE_AREA_5 message *#
+class FreeMessageArea5 (Structure):
+	_fields_ = [
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_GENERAL_REQ message *#
 class GeneralReq (Structure):
 	_fields_ = [
@@ -899,6 +929,57 @@ class RPCDebugRsp (Structure):
 		("mbuf_debug", POINTER(MBUF)),
 		("req_time", c_ulonglong),
 		("rsp_time", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_REG_REQ message *#
+class RTCRegReq (Structure):
+	_fields_ = [
+		("id", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_REG_RSP message *#
+class RTCRegRsp (Structure):
+	_fields_ = [
+		("id", c_char * 128),
+		("token", c_char * 512),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_REQ message *#
+class RTCReq (Structure):
+	_fields_ = [
+		("token", c_char * 512),
+		("src", c_char * 128),
+		("dst", c_char * 128),
+		("content", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_RSP message *#
+class RTCRsp (Structure):
+	_fields_ = [
+		("token", c_char * 512),
+		("src", c_char * 128),
+		("dst", c_char * 128),
+		("content", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_UNREG_REQ message *#
+class RTCUnregReq (Structure):
+	_fields_ = [
+		("id", c_char * 128),
+		("token", c_char * 512),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_UNREG_RSP message *#
+class RTCUnregRsp (Structure):
+	_fields_ = [
+		("id", c_char * 128),
+		("token", c_char * 512),
 		("ptr", POINTER(c_char)),
 ]
 

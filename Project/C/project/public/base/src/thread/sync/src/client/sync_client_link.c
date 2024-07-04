@@ -164,7 +164,7 @@ sync_client_link_init(void)
 {
 	_link_server_socket = INVALID_SOCKET_ID;
 
-	dave_memset(_link_server_cfg_my_ip_flag, 0x00, sizeof(_link_server_cfg_my_ip_flag));
+	dave_memset(_link_server_cfg_my_ip, 0x00, sizeof(_link_server_cfg_my_ip));
 	_link_server_cfg_my_ip_flag = sync_cfg_get_local_ip(_link_server_cfg_my_ip);
 	dave_memset(_link_server_detect_my_ip, 0x00, sizeof(_link_server_detect_my_ip));
 	_link_server_detect_my_ip_flag = dave_false;

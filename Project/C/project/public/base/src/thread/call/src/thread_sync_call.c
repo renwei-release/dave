@@ -328,13 +328,6 @@ thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadI
 
 			return dave_true;
 		}
-
-		THREADLOG("The wakeup_index:%d, thread:%s/%d/%d/%d should be a sync message:%lx/%x, but not captured by any thread! wait_thread:%lx/%lx wait_msg:%d/%s",
-			wakeup_index,
-			pDstThread->thread_name, pDstThread->attrib, pDstThread->thread_id, _syncc_thread_id,
-			dst_id, pSync,
-			pSync!=NULL?pSync->wait_thread:0, wait_thread,
-			pSync!=NULL?pSync->wait_msg:0, msgstr(wait_msg));
 	}
 
 	return dave_false;

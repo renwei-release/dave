@@ -118,6 +118,12 @@ _base_msg_timer_out(ProcessMsgTimerOutMsg *pTimerOut)
 }
 
 static void
+_base_inner_loop(MSGBODY *msg)
+{
+	BASELOG("");
+}
+
+static void
 _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 {
 	BASEDEBUG("%lx/%s/%s/%s",
@@ -137,14 +143,18 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 	{
 		_base_thread_rpc_debug(pReady);
 	}
+
+	id_inner_loop(FREE_MESSAGE_AREA_1, _base_inner_loop);
 }
 
 static void
 _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 {
-	BASEDEBUG("%lx/%s/%s",
+	BASELOG("%lx/%s/%s",
 		pReady->remote_thread_id,
 		pReady->remote_thread_name, pReady->globally_identifier);
+
+	id_inner_loop(FREE_MESSAGE_AREA_1, _base_inner_loop);
 }
 
 static void

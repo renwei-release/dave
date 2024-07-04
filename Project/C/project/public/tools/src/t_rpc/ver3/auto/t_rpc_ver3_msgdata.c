@@ -28,6 +28,7 @@
 #include "dba_msg.h"
 #include "email_msg.h"
 #include "http_msg.h"
+#include "rtc_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
 #include "base_msg.h"
@@ -3744,6 +3745,291 @@ t_rpc_ver3_sizeof_EmailSendRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_FreeMessageArea1(FreeMessageArea1 *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(FreeMessageArea1) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(FreeMessageArea1) does not match(%d/%d), please contact the message settlers!", sizeof(FreeMessageArea1), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_FreeMessageArea1(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		FreeMessageArea1 *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(FreeMessageArea1);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_FreeMessageArea1(FreeMessageArea1 *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_FreeMessageArea1(void)
+{
+	return sizeof(FreeMessageArea1);
+}
+
+void *
+t_rpc_ver3_zip_FreeMessageArea2(FreeMessageArea2 *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(FreeMessageArea2) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(FreeMessageArea2) does not match(%d/%d), please contact the message settlers!", sizeof(FreeMessageArea2), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_FreeMessageArea2(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		FreeMessageArea2 *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(FreeMessageArea2);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_FreeMessageArea2(FreeMessageArea2 *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_FreeMessageArea2(void)
+{
+	return sizeof(FreeMessageArea2);
+}
+
+void *
+t_rpc_ver3_zip_FreeMessageArea3(FreeMessageArea3 *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(FreeMessageArea3) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(FreeMessageArea3) does not match(%d/%d), please contact the message settlers!", sizeof(FreeMessageArea3), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_FreeMessageArea3(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		FreeMessageArea3 *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(FreeMessageArea3);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_FreeMessageArea3(FreeMessageArea3 *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_FreeMessageArea3(void)
+{
+	return sizeof(FreeMessageArea3);
+}
+
+void *
+t_rpc_ver3_zip_FreeMessageArea4(FreeMessageArea4 *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(FreeMessageArea4) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(FreeMessageArea4) does not match(%d/%d), please contact the message settlers!", sizeof(FreeMessageArea4), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_FreeMessageArea4(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		FreeMessageArea4 *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(FreeMessageArea4);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_FreeMessageArea4(FreeMessageArea4 *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_FreeMessageArea4(void)
+{
+	return sizeof(FreeMessageArea4);
+}
+
+void *
+t_rpc_ver3_zip_FreeMessageArea5(FreeMessageArea5 *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(FreeMessageArea5) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(FreeMessageArea5) does not match(%d/%d), please contact the message settlers!", sizeof(FreeMessageArea5), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_FreeMessageArea5(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		FreeMessageArea5 *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(FreeMessageArea5);
+
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_FreeMessageArea5(FreeMessageArea5 *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_FreeMessageArea5(void)
+{
+	return sizeof(FreeMessageArea5);
+}
+
+void *
 t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -6097,6 +6383,378 @@ ub
 t_rpc_ver3_sizeof_RPCDebugRsp(void)
 {
 	return sizeof(RPCDebugRsp);
+}
+
+void *
+t_rpc_ver3_zip_RTCRegReq(RTCRegReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCRegReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCRegReq) does not match(%d/%d), please contact the message settlers!", sizeof(RTCRegReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->id), 1, 128));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCRegReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCRegReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCRegReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->id), 1, 128, t_bson_inq_object(pStructBson, "s8-id"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCRegReq(RTCRegReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCRegReq(void)
+{
+	return sizeof(RTCRegReq);
+}
+
+void *
+t_rpc_ver3_zip_RTCRegRsp(RTCRegRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCRegRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCRegRsp) does not match(%d/%d), please contact the message settlers!", sizeof(RTCRegRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->id), 1, 128));
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, 512));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCRegRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCRegRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCRegRsp);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->id), 1, 128, t_bson_inq_object(pStructBson, "s8-id"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, 512, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCRegRsp(RTCRegRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCRegRsp(void)
+{
+	return sizeof(RTCRegRsp);
+}
+
+void *
+t_rpc_ver3_zip_RTCReq(RTCReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCReq) does not match(%d/%d), please contact the message settlers!", sizeof(RTCReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, 512));
+	t_bson_add_object(pStructBson, "s8-src", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src), 1, 128));
+	t_bson_add_object(pStructBson, "s8-dst", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst), 1, 128));
+	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, 512, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src), 1, 128, t_bson_inq_object(pStructBson, "s8-src"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst), 1, 128, t_bson_inq_object(pStructBson, "s8-dst"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCReq(RTCReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCReq(void)
+{
+	return sizeof(RTCReq);
+}
+
+void *
+t_rpc_ver3_zip_RTCRsp(RTCRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCRsp) does not match(%d/%d), please contact the message settlers!", sizeof(RTCRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, 512));
+	t_bson_add_object(pStructBson, "s8-src", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src), 1, 128));
+	t_bson_add_object(pStructBson, "s8-dst", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst), 1, 128));
+	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCRsp);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, 512, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src), 1, 128, t_bson_inq_object(pStructBson, "s8-src"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst), 1, 128, t_bson_inq_object(pStructBson, "s8-dst"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCRsp(RTCRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCRsp(void)
+{
+	return sizeof(RTCRsp);
+}
+
+void *
+t_rpc_ver3_zip_RTCUnregReq(RTCUnregReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCUnregReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCUnregReq) does not match(%d/%d), please contact the message settlers!", sizeof(RTCUnregReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->id), 1, 128));
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, 512));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCUnregReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCUnregReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCUnregReq);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->id), 1, 128, t_bson_inq_object(pStructBson, "s8-id"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, 512, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCUnregReq(RTCUnregReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCUnregReq(void)
+{
+	return sizeof(RTCUnregReq);
+}
+
+void *
+t_rpc_ver3_zip_RTCUnregRsp(RTCUnregRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(RTCUnregRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(RTCUnregRsp) does not match(%d/%d), please contact the message settlers!", sizeof(RTCUnregRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->id), 1, 128));
+	t_bson_add_object(pStructBson, "s8-token", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->token), 1, 512));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_RTCUnregRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		RTCUnregRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(RTCUnregRsp);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->id), 1, 128, t_bson_inq_object(pStructBson, "s8-id"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->token), 1, 512, t_bson_inq_object(pStructBson, "s8-token"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_RTCUnregRsp(RTCUnregRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_RTCUnregRsp(void)
+{
+	return sizeof(RTCUnregRsp);
 }
 
 void *

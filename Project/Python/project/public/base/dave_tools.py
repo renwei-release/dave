@@ -6,8 +6,8 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import json
-import traceback
 from ctypes import *
+from ctypes import POINTER, c_void_p, cast
 from string import *
 from .dave_log import *
 from .dave_memory import *
@@ -25,34 +25,48 @@ def struct_copy(class_struct, msg_body, msg_len=0):
 
 
 def mbuf_to_byte(mbuf_data):
-    if mbuf_data == None:
-        return None
-    try:
-        hasattr(mbuf_data, "contents")
-    except:
-        traceback.print_exc()
+    if (mbuf_data is None) or (cast(mbuf_data, c_void_p).value == None):
         return None
 
-    ByteArr = c_char * mbuf_data.contents.len
-    byte_arr = ByteArr(*mbuf_data.contents.payload[:mbuf_data.contents.len])
-    return byte_arr.raw
+    try:
+        ByteArr = c_char * mbuf_data.contents.len
+        byte_arr = ByteArr(*mbuf_data.contents.payload[:mbuf_data.contents.len])
+        return byte_arr.raw
+    except:
+        return None
+
+    return None
 
 
 def byte_to_mbuf(byte_data):
-    if byte_data == None:
+    if (byte_data == None) or (len(byte_data) == 0):
         return None
 
-    if isinstance(byte_data, str):
+    # Convert list of integers to bytes
+    if isinstance(byte_data, list):
+        byte_data = bytes(byte_data)
+    # Convert string to bytes
+    elif isinstance(byte_data, str):
         byte_data = byte_data.encode("utf-8")
+    # For bytes or bytearray, no conversion is needed
+    elif isinstance(byte_data, (bytes, bytearray)):
+        pass
+    else:
+        raise ValueError("byte_data must be a list, str, bytes, or bytearray")
+
     mbuf_data = dave_mmalloc(len(byte_data))
     memmove(mbuf_data.contents.payload, byte_data, len(byte_data))
     return mbuf_data
 
 
 def mbuf_to_str(mbuf_data):
-    if mbuf_data == None:
+    if (mbuf_data is None) or (cast(mbuf_data, c_void_p).value == None):
         return None
-    return mbuf_to_byte(mbuf_data).decode()
+
+    byte_data = mbuf_to_byte(mbuf_data)
+    if byte_data is None:
+        return None
+    return byte_data.decode()
 
 
 def str_to_mbuf(str_data):
