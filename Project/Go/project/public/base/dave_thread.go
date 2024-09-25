@@ -211,7 +211,7 @@ func Gid_qco(gid string, thread_name string, req_id int, req_len int, req_ptr un
 func Sync_msg(dst string, req_id int, req_len int, req_ptr unsafe.Pointer, rsp_id int, rsp_len int, rsp_ptr unsafe.Pointer) bool {
 	c_dst := C.CString(dst)
 
-	ret := C.dave_dll_thread_sync_msg(c_dst, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), C.int(rsp_len), rsp_ptr, nil, C.int(0))
+	ret := C.dave_dll_thread_name_sync_msg(c_dst, C.int(req_id), C.int(req_len), req_ptr, C.int(rsp_id), C.int(rsp_len), rsp_ptr, nil, C.int(0))
 
 	C.free(unsafe.Pointer(c_dst))
 

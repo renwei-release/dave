@@ -16,7 +16,7 @@ cd yaml-cpp-yaml-cpp-${VERSION}
 
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DBUILD_SHARED_LIBS="ON" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" ../
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DBUILD_SHARED_LIBS="ON" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC -std=c++11" ../
 make && make install
 
 cd ../
@@ -24,7 +24,7 @@ rm -rf build
 
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" ../
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC -std=c++11" ../
 make && make install
 
 cd ${homepath}

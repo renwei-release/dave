@@ -23,7 +23,7 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
 LIB += -L../../../../ThirdParty/build/opentracing-cpp/setup/lib -lopentracing
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), LOG)), 1)
+ifeq ($(words $(findstring $(NAME_PRODUCT), LOG, PRIVACY)), 1)
 LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib -lyaml-cpp
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), VOIP)), 1)
@@ -32,11 +32,14 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
 LIB += -L../../../../ThirdParty/build/Aliyun/setup/log/lib -llog_c_sdk_static
 endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), PRIVACY)), 1)
+LIB += -L../../../../ThirdParty/build/libfacedetection/setup/lib -lfacedetection
+endif
 
 LIB += -Wl,-Bdynamic
 
-ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
-LIB += -L/dave/tools/opencv/lib64 -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn -lopencv_dpm -lopencv_fuzzy -lopencv_line_descriptor -lopencv_optflow -lopencv_plot -lopencv_reg -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_rgbd -lopencv_surface_matching -lopencv_tracking -lopencv_datasets -lopencv_text -lopencv_face -lopencv_xfeatures2d -lopencv_shape -lopencv_video -lopencv_ximgproc -lopencv_calib3d -lopencv_features2d -lopencv_flann -lopencv_xobjdetect -lopencv_objdetect -lopencv_ml -lopencv_xphoto -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_photo -lopencv_imgproc -lopencv_core
+ifeq ($(words $(findstring $(NAME_PRODUCT), AIX, PRIVACY)), 1)
+LIB += -L/dave/tools/opencv/lib -lopencv_stitching -lopencv_superres -lopencv_videostab -lopencv_aruco -lopencv_bgsegm -lopencv_bioinspired -lopencv_ccalib -lopencv_dnn -lopencv_dpm -lopencv_fuzzy -lopencv_line_descriptor -lopencv_optflow -lopencv_plot -lopencv_reg -lopencv_saliency -lopencv_stereo -lopencv_structured_light -lopencv_rgbd -lopencv_surface_matching -lopencv_tracking -lopencv_datasets -lopencv_text -lopencv_face -lopencv_xfeatures2d -lopencv_shape -lopencv_video -lopencv_ximgproc -lopencv_calib3d -lopencv_features2d -lopencv_flann -lopencv_xobjdetect -lopencv_objdetect -lopencv_ml -lopencv_xphoto -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_photo -lopencv_imgproc -lopencv_core
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L/dave/tools/tensorflow/lib -ltensorflow_cc -ltensorflow_framework
@@ -52,6 +55,12 @@ LIB += -L/user/lib64 -laprutil-1 -lapr-1 -lcurl
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), IO)), 1)
 LIB += -lcurl -lssl -lcrypto
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), PRIVACY)), 1)
+LIB += -L/dave/tools/openvino/runtime/lib/intel64 -lopenvino
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), PRIVACY)), 1)
+LIB += -L/dave/tools/openvino/runtime/3rdparty/tbb/lib -ltbb
 endif
 
 LIB += -lpthread -lrt -ldl -lm -lgomp -lstdc++ -lutil -lgcov

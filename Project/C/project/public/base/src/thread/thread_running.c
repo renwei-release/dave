@@ -17,6 +17,19 @@
 #include "thread_queue_end.h"
 #include "thread_log.h"
 
+static inline sb
+_thread_running_cfg_life(void)
+{
+	static sb life = -1;
+
+	if(life < 0)
+	{
+		life = cfg_get_ub("ThreadRunningLife", DAVE_PUBLIC_TIMER_OUT);
+	}
+
+	return life;
+}
+
 static inline void
 _thread_running_queue_end(ThreadStruct *pThread, MSGBODY *msg)
 {
@@ -152,6 +165,12 @@ thread_running(
 	{
 		_thread_running_pop_stack(ppCurrentMsgStack, pStack);
 	}
+}
+
+sb
+thread_running_cfg_life(void)
+{
+	return _thread_running_cfg_life();
 }
 
 #endif

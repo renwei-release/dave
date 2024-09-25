@@ -16,14 +16,20 @@
 #include "thread_thread.h"
 #include "thread_sync.h"
 #include "thread_call.h"
+#include "thread_running.h"
 #include "thread_log.h"
 
 #define SYNC_FOR_CHECK_MAX (THREAD_MAX + THREAD_THREAD_MAX)
-#define SYNC_WAIT_MAX_TIME 180	// second
 
 static TLock _sync_data_for_check_pv;
 static ThreadSync * _sync_data_for_check[SYNC_FOR_CHECK_MAX];
 static ThreadId _syncc_thread_id = INVALID_THREAD_ID;
+
+static inline ub
+_thread_sync_wait_max_time(void)
+{
+	return thread_running_cfg_life();
+}
 
 static inline void
 _thread_sync_call_check_reset(ub check_index)
@@ -89,7 +95,7 @@ _thread_sync_call_check(void)
 		pSync = _sync_data_for_check[check_index];
 		if((pSync != NULL) && (pSync->wait_thread != INVALID_THREAD_ID))
 		{
-			if((current_second - pSync->wait_time) > SYNC_WAIT_MAX_TIME)
+			if((current_second - pSync->wait_time) > _thread_sync_wait_max_time())
 			{
 				THREADLOG("wait_name:%s wait_thread:%s/%lx wait_msg:%d wait_time:%d->%d",
 					pSync->wait_name,
@@ -235,7 +241,7 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 	dave_bool wait_timerout = dave_false;
 	ub wait_start_time;
 
-	wait_start_time = dave_os_time_us();
+	wait_start_time = dave_os_time_s();
 
 #ifdef LEVEL_PRODUCT_alpha
 	/*
@@ -248,10 +254,10 @@ thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread,
 
 		if(pSync->wait_thread != INVALID_THREAD_ID)
 		{
-			THREADABNOR("%s wait %s gave msg %d time out(%d) current wait:%s/%lx",
+			THREADABNOR("%s wait %s gave msg:%s time out(%d) current wait:%s/%lx",
 				pSrcThread->thread_name, pDstThread->thread_name,
-				pSync->wait_msg,
-				dave_os_time_us() - wait_start_time,
+				msgstr(pSync->wait_msg),
+				dave_os_time_s() - wait_start_time,
 				thread_name(pSync->wait_thread), pSync->wait_thread);
 
 			dave_memset(pSync->wait_body, 0x00, pSync->wait_len);

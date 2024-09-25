@@ -30,5 +30,16 @@ def t_stdio_string_remove_punctuation(input_string):
     return input_string.translate(translator)
 
 
-def t_stdio_fullwidth_to_halfwidth(input_string):
-    return input_string.replace('。','. ').replace('！','! ').replace('？','? ').replace('（','(').replace('）',')')
+def t_stdio_fullwidth_to_halfwidth(ustring):
+    rstring = ""
+    for uchar in ustring:
+        inside_code = ord(uchar)
+        if inside_code == 0x3000:
+            inside_code = 0x0020
+        else:
+            inside_code -= 0xfee0
+        if inside_code < 0x0020 or inside_code > 0x7e:
+            rstring += uchar
+        else:
+            rstring += chr(inside_code)
+    return rstring

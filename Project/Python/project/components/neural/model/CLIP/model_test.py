@@ -17,12 +17,13 @@ from components.neural.model.CLIP.model_predict import predict as clip_predict
 
 
 def test(
-        test_path='/project/dataset/Private/PhotographicAesthetics/test',
+        test_path='/project/dataset/Private/CETC/class',
     ):
-    label = ['human', 'under water', 'animal']
+
+    label = ['sunshine', 'animal', 'culvert bridge', 'ramp', 'cone', 'anticrush bucket', 'bollard sleeve', 'water barrier', 'barrier stone', 'sweep bump', 'dustbin', 'barrier bar', 'warning triangle']
     clip = clip_predict(label)
 
-    file_list, file_number = t_path_file_list(test_path)
+    file_list, _ = t_path_file_list(test_path)
 
     for file_name in file_list:
         label, score = clip.predict(image_info=file_name)

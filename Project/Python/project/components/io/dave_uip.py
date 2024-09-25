@@ -33,6 +33,9 @@ def _uip_recv_req(src_name, src_id, msg_len, msg_body):
         uip_recv_rsp(src_id, RetCode_OK, pReq.method, "", pReq.ptr)
         return
     req_function(src_name, src_id, msg_len, msg_body)
+
+    dave_mfree(pReq.customer_body)
+    dave_mfree(pReq.data)
     return
 
 

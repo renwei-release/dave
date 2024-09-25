@@ -512,6 +512,55 @@ dave_os_dir_subdir_list(s8 *dir_path)
 	return pList;
 }
 
+MBUF *
+dave_os_dir_subfile_list(s8 *dir_path)
+{
+	LinuxDir *pLinuxDir;
+	ub safe_counter = 0;
+	struct dirent *rent;
+	struct stat f_ftime;
+	s8 file_name[1024];
+	MBUF *pList = NULL, *pSubFileName;
+	ub d_name_len;
+
+	if(dave_os_dir_valid(dir_path) == dave_false)
+		return pList;
+
+	pLinuxDir = dave_os_dir_open(dir_path, NULL);
+
+	while((++ safe_counter) < 102400)
+	{
+		rent = readdir(pLinuxDir->pDir);
+		if(rent != NULL)
+		{
+			if((dave_strcmp(rent->d_name, ".") == dave_true)
+				|| (dave_strcmp(rent->d_name, "..") == dave_true))
+			{
+				continue;
+			}
+
+			dave_snprintf(file_name, sizeof(file_name), "%s/%s", pLinuxDir->path, rent->d_name);
+
+			if(stat((const char *)file_name, &f_ftime) != 0)
+			{
+				break;
+			}
+
+			if(!S_ISDIR(f_ftime.st_mode))
+			{
+				d_name_len = dave_strlen(dir_path) + dave_strlen(rent->d_name) + 64;
+				pSubFileName = dave_mmalloc(d_name_len);
+				dave_strcpy(dave_mptr(pSubFileName), rent->d_name, d_name_len);
+				pList = dave_mchain(pList, pSubFileName);
+			}
+		}
+	}
+
+	dave_os_dir_close(pLinuxDir);
+
+	return pList;
+}
+
 s8 *
 dave_os_file_home_dir(void)
 {

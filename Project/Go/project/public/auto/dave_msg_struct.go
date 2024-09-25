@@ -488,26 +488,51 @@ type EmailSendRsp struct {
 
 /* for FREE_MESSAGE_AREA_1 message */
 type FreeMessageArea1 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 
 /* for FREE_MESSAGE_AREA_2 message */
 type FreeMessageArea2 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 
 /* for FREE_MESSAGE_AREA_3 message */
 type FreeMessageArea3 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 
 /* for FREE_MESSAGE_AREA_4 message */
 type FreeMessageArea4 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 
 /* for FREE_MESSAGE_AREA_5 message */
 type FreeMessageArea5 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
 	Ptr uint64
 }
 

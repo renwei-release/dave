@@ -8,8 +8,8 @@
 # Clip模型代码来源于以下链接：
 # copy from https://github.com/openai/CLIP
 #
-# 运行容器环境cuda11
-#
+# 运行容器环境cuda12
+# pip install git+https://github.com/openai/CLIP.git
 # ================================================================================
 #
 import io
@@ -48,7 +48,7 @@ def _feature_normalization(images, model, gpu_ids):
 
 
 def _load_label(ccll,gpu_ids):
-    text_descriptions = [f"This is a photo of a {label}" for label in ccll]
+    text_descriptions = [f"has {label}" for label in ccll]
     if torch.cuda.is_available():
         text_tokens = clip.tokenize(text_descriptions).cuda("cuda:"+str(gpu_ids))
     else:
@@ -83,7 +83,7 @@ class predict():
     def __init__(self, label = None,model_file = None, gpu_ids = 0):
 
         if model_file == None:
-            model_file = "/project/model/pretrained_model/Clip/ViT-B-32.pt"
+            model_file = "ViT-B/32"
         self.model, self.preprocess = _load_model(model_file, gpu_ids)
         self.gpu_ids = gpu_ids
         self.text_tokens, self.ccll = self.load_label(label)
@@ -108,7 +108,7 @@ class predict():
                      'ancient trees', 'famous_trees', 'flowers', 'sunrise', 'snow', 'light',
                      'mirages', 'ruins', 'ancient_tombs', 'buildings', 'gardens', 'grottoes', 'stone_carvings', 'halls',
                      'theatres', 'museums', 'folk houses', 'music', 'dance', 'murals', 'sculptures', 'streets']
-        return _load_label(label,self.gpu_ids)
+        return _load_label(label, self.gpu_ids)
 
     def predict(self, image_info=None, top=3, text_tokens = None, ccll = None):
         self.images = _load_picture(image_info, self.preprocess)

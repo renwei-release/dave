@@ -23,6 +23,8 @@
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
+#include "ov_common.h"
+#include "ov_prepostprocess.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -4445,6 +4447,228 @@ t_auto_UIPType_str(UIPType enum_value)
 			break;
 		case UIPType_wechat_form:
 				value_str = "'UIPType_wechat_form'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ov_color_format_e_str(ov_color_format_e enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case NV12_SINGLE_PLANE:
+				value_str = "'NV12_SINGLE_PLANE'";
+			break;
+		case NV12_TWO_PLANES:
+				value_str = "'NV12_TWO_PLANES'";
+			break;
+		case I420_SINGLE_PLANE:
+				value_str = "'I420_SINGLE_PLANE'";
+			break;
+		case I420_THREE_PLANES:
+				value_str = "'I420_THREE_PLANES'";
+			break;
+		case RGB:
+				value_str = "'RGB'";
+			break;
+		case BGR:
+				value_str = "'BGR'";
+			break;
+		case GRAY:
+				value_str = "'GRAY'";
+			break;
+		case RGBX:
+				value_str = "'RGBX'";
+			break;
+		case BGRX:
+				value_str = "'BGRX'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ov_element_type_e_str(ov_element_type_e enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case DYNAMIC:
+				value_str = "'DYNAMIC'";
+			break;
+		case BOOLEAN:
+				value_str = "'BOOLEAN'";
+			break;
+		case BF16:
+				value_str = "'BF16'";
+			break;
+		case F16:
+				value_str = "'F16'";
+			break;
+		case F32:
+				value_str = "'F32'";
+			break;
+		case F64:
+				value_str = "'F64'";
+			break;
+		case I4:
+				value_str = "'I4'";
+			break;
+		case I8:
+				value_str = "'I8'";
+			break;
+		case I16:
+				value_str = "'I16'";
+			break;
+		case I32:
+				value_str = "'I32'";
+			break;
+		case I64:
+				value_str = "'I64'";
+			break;
+		case U1:
+				value_str = "'U1'";
+			break;
+		case U2:
+				value_str = "'U2'";
+			break;
+		case U3:
+				value_str = "'U3'";
+			break;
+		case U4:
+				value_str = "'U4'";
+			break;
+		case U6:
+				value_str = "'U6'";
+			break;
+		case U8:
+				value_str = "'U8'";
+			break;
+		case U16:
+				value_str = "'U16'";
+			break;
+		case U32:
+				value_str = "'U32'";
+			break;
+		case U64:
+				value_str = "'U64'";
+			break;
+		case NF4:
+				value_str = "'NF4'";
+			break;
+		case F8E4M3:
+				value_str = "'F8E4M3'";
+			break;
+		case F8E5M3:
+				value_str = "'F8E5M3'";
+			break;
+		case STRING:
+				value_str = "'STRING'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ov_preprocess_resize_algorithm_e_str(ov_preprocess_resize_algorithm_e enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case RESIZE_LINEAR:
+				value_str = "'RESIZE_LINEAR'";
+			break;
+		case RESIZE_CUBIC:
+				value_str = "'RESIZE_CUBIC'";
+			break;
+		case RESIZE_NEAREST:
+				value_str = "'RESIZE_NEAREST'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
+t_auto_ov_status_e_str(ov_status_e enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case OK:
+				value_str = "'OK-0'";
+			break;
+		case GENERAL_ERROR:
+				value_str = "'GENERAL_ERROR--1'";
+			break;
+		case NOT_IMPLEMENTED:
+				value_str = "'NOT_IMPLEMENTED--2'";
+			break;
+		case NETWORK_NOT_LOADED:
+				value_str = "'NETWORK_NOT_LOADED--3'";
+			break;
+		case PARAMETER_MISMATCH:
+				value_str = "'PARAMETER_MISMATCH--4'";
+			break;
+		case NOT_FOUND:
+				value_str = "'NOT_FOUND--5'";
+			break;
+		case OUT_OF_BOUNDS:
+				value_str = "'OUT_OF_BOUNDS--6'";
+			break;
+		case UNEXPECTED:
+				value_str = "'UNEXPECTED--7'";
+			break;
+		case REQUEST_BUSY:
+				value_str = "'REQUEST_BUSY--8'";
+			break;
+		case RESULT_NOT_READY:
+				value_str = "'RESULT_NOT_READY--9'";
+			break;
+		case NOT_ALLOCATED:
+				value_str = "'NOT_ALLOCATED--10'";
+			break;
+		case INFER_NOT_STARTED:
+				value_str = "'INFER_NOT_STARTED--11'";
+			break;
+		case NETWORK_NOT_READ:
+				value_str = "'NETWORK_NOT_READ--12'";
+			break;
+		case INFER_CANCELLED:
+				value_str = "'INFER_CANCELLED--13'";
+			break;
+		case INVALID_C_PARAM:
+				value_str = "'INVALID_C_PARAM--14'";
+			break;
+		case UNKNOWN_C_ERROR:
+				value_str = "'UNKNOWN_C_ERROR--15'";
+			break;
+		case NOT_IMPLEMENT_C_METHOD:
+				value_str = "'NOT_IMPLEMENT_C_METHOD--16'";
+			break;
+		case UNKNOW_EXCEPTION:
+				value_str = "'UNKNOW_EXCEPTION--17'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);

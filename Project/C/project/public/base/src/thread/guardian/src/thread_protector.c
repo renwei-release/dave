@@ -24,7 +24,7 @@
 int pthread_setname_np(pthread_t thread, const char *name);
 extern ub base_thread_info(s8 *msg_ptr, ub msg_len);
 
-#define PROTECTOR_MAX_TIME 120
+#define PROTECTOR_MAX_TIME 720
 #define PROTECTOR_BASE_TIME 5
 #define PROTECTOR_LIFE_MAX (PROTECTOR_MAX_TIME / PROTECTOR_BASE_TIME)
 

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2024 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import os
 import sys
-import re
+import subprocess
 import getpass
 
 
@@ -63,3 +63,39 @@ def t_sys_myline(depth):
     __func__ = sys._getframe(depth).f_code.co_name.encode("utf-8")
     __LINE__ = sys._getframe(depth).f_lineno
     return __func__, __LINE__
+
+
+def t_sys_gpu_name():
+    try:
+        result = subprocess.run(['nvidia-smi', '--query-gpu=name', '--format=csv,noheader'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode != 0:
+            raise RuntimeError(f"nvidia-smi command failed with error: {result.stderr}")
+
+        gpu_models = result.stdout.strip().split('\n')
+        return gpu_models[0]
+    except FileNotFoundError:
+        raise RuntimeError("nvidia-smi command not found. Ensure that NVIDIA drivers are installed and nvidia-smi is in your PATH.")
+
+
+def t_sys_pyInstaller_temp_dir():
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        temp_dir = sys._MEIPASS
+    elif len(sys.argv) >= 3:
+        # Fallback to the current directory if not running as a PyInstaller bundle
+        # command = [main_program, auto_argument, sys._MEIPASS] + sys.argv[1:]
+        temp_dir = sys.argv[2]
+    else:
+        # Fallback to the current directory if not running as a PyInstaller bundle
+        temp_dir = '/project'
+
+    if not os.path.isdir(temp_dir):
+        return '/project'
+
+    return temp_dir
+
+
+def t_sys_attributes():
+    attributes = dir(sys)
+    return attributes

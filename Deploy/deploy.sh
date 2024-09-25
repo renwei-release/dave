@@ -102,6 +102,8 @@ fi
 # 调用update.sh更新工程文件
 #
 
+echo EXTEND:${EXTEND} HOSTNAME:${HOSTNAME} GPU:${GPU}
+
 exit_project_contains=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | awk '{print $2}' | head -n 1`
 
 if [ "$exit_project_contains" == "" ]; then

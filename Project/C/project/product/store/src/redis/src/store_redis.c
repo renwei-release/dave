@@ -62,7 +62,7 @@ _store_redis_booting(void)
 
 	cfg_get_str(CFG_REDIS_ADDRESS, address, sizeof(address), t_gp_localhost());
 	port = cfg_get_ub(CFG_REDIS_PORT, 6379);
-	cfg_get_str(CFG_REDIS_PWD, pwd, sizeof(pwd), "");
+	cfg_get_str(CFG_REDIS_PWD, pwd, sizeof(pwd), "123456");
 
 	STLOG("address:%s port:%d pwd:%s", address, port, pwd);
 

@@ -57,6 +57,10 @@ _uip_server_stack_rsp(ThreadId src, UIPDataRecvRsp *pRsp)
 
 	if(pRecvStack != NULL)
 	{
+		UIPTRACE("channel:%s method:%s thread:%s monitor:%lx",
+			pRecvStack->head.channel, pRecvStack->head.method, pRecvStack->register_thread,
+			pRsp->ptr);
+
 		_uip_server_uip_rsp(pRecvStack, pRsp);
 	}
 	else
@@ -83,6 +87,10 @@ _uip_server_stack_req(UIPStack *pRecvStack)
 	pReq->data = dave_json_to_mbuf(pRecvStack->body.pJson);
 
 	pReq->ptr = uip_server_monitor_malloc(pRecvStack);
+
+	UIPTRACE("channel:%s method:%s thread:%s monitor:%lx",
+		pRecvStack->head.channel, pRecvStack->head.method, pRecvStack->register_thread,
+		pReq->ptr);
 
 	name_qmsg(pRecvStack->register_thread, UIP_DATA_RECV_REQ, pReq);
 

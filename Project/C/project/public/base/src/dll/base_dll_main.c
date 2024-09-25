@@ -33,6 +33,8 @@
 #include "base_dll_main.h"
 #include "dll_log.h"
 
+// #define ENABLE_PROTECTOR
+
 #define DLL_MAIN_THREAD_MAX_NUMBER 32
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
@@ -146,6 +148,8 @@ _dll_main_run_msg(MSGBODY *msg)
 	dave_free(pBody);
 }
 
+#ifdef ENABLE_PROTECTOR
+
 static void
 _dll_main_protector_reg(void)
 {
@@ -162,6 +166,8 @@ _dll_main_protector_unreg(void)
 	name_msg(GUARDIAN_THREAD_NAME, MSGID_PROTECTOR_UNREG, pUnreg);
 }
 
+#endif
+
 static void
 _dll_main_init(MSGBODY *msg)
 {
@@ -170,7 +176,9 @@ _dll_main_init(MSGBODY *msg)
 		_dll_init_fun(NULL);
 		_dll_init_fun = NULL;
 
+#ifdef ENABLE_PROTECTOR
 		_dll_main_protector_reg();
+#endif
 	}
 }
 
@@ -193,7 +201,9 @@ _dll_main_exit(MSGBODY *msg)
 {
 	if(_dll_exit_fun != NULL)
 	{
+#ifdef ENABLE_PROTECTOR
 		_dll_main_protector_unreg();
+#endif
 
 		_dll_exit_fun(NULL);
 		_dll_exit_fun = NULL;

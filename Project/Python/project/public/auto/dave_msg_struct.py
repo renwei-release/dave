@@ -552,30 +552,55 @@ class EmailSendRsp (Structure):
 #* for FREE_MESSAGE_AREA_1 message *#
 class FreeMessageArea1 (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for FREE_MESSAGE_AREA_2 message *#
 class FreeMessageArea2 (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for FREE_MESSAGE_AREA_3 message *#
 class FreeMessageArea3 (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for FREE_MESSAGE_AREA_4 message *#
 class FreeMessageArea4 (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for FREE_MESSAGE_AREA_5 message *#
 class FreeMessageArea5 (Structure):
 	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
 		("ptr", POINTER(c_char)),
 ]
 

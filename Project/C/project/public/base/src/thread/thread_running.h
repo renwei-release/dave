@@ -13,5 +13,7 @@
 
 void thread_running(ThreadStack **ppCurrentMsgStack, base_thread_fun thread_fun, ThreadStruct *pThread, MSGBODY *msg, dave_bool enable_stack);
 
+sb thread_running_cfg_life(void);
+
 #endif
 

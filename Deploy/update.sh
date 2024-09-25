@@ -107,7 +107,7 @@ __copy_sh_file__()
          if [ -f ${HOMEPRJDIR}/dave_main.py ]; then
             sed -i "${SHCMDLINE}c python3 ./dave_main.py ${PROJECT}" $SHFILE
          else
-            sed -i "${SHCMDLINE}c ./${PROJECT^^}-BIN" $SHFILE
+            sed -i "${SHCMDLINE}c ./${PROJECT^^}-BIN ${PROJECT}" $SHFILE
          fi
 
          docker cp $SHFILE ${PROJECTNAME}:/project

@@ -16,6 +16,9 @@ davelib = dave_dll()
 
 
 def _myline(depth):
+    current_depth = len(inspect.stack())
+    if depth >= current_depth:
+        return 'NULL'.encode("utf-8"), 0
     __func__ = sys._getframe(depth).f_code.co_name.encode("utf-8")
     __LINE__ = sys._getframe(depth).f_lineno
     return __func__, __LINE__

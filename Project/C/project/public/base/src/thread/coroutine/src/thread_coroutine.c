@@ -15,13 +15,12 @@
 #include "thread_thread.h"
 #include "thread_tools.h"
 #include "thread_coroutine.h"
+#include "thread_running.h"
 #include "coroutine_core.h"
 #include "coroutine_msg_site.h"
 #include "thread_log.h"
 
-#define COROUTINE_LIFE_TIMER DAVE_PUBLIC_TIMER_OUT
 #define COROUTINE_BASE_TIMER 30
-#define COROUTINE_LIFE_TIMES (COROUTINE_LIFE_TIMER / COROUTINE_BASE_TIMER)
 
 typedef enum {
 	wakeupevent_get_msg,
@@ -67,6 +66,14 @@ static inline void _thread_coroutine_wakeup_me(void *msg_chain, void *msg_router
 
 static void *_coroutine_msg_kv = NULL;
 static void *_coroutine_site_kv = NULL;
+
+static inline sb
+_thread_coroutine_cfg_life(void)
+{
+	sb life = thread_running_cfg_life();
+
+	return life / COROUTINE_BASE_TIMER;
+}
 
 static inline ThreadId
 _thread_coroutine_set_index(ThreadId thread_id, ub *wakeup_index)
@@ -251,7 +258,7 @@ _thread_coroutine_site_malloc(ThreadStruct *pThread, coroutine_thread_fun corout
 	msg->mem_state = MsgMemState_captured;
 	pSite->co = NULL;
 
-	pSite->site_life = COROUTINE_LIFE_TIMES;
+	pSite->site_life = _thread_coroutine_cfg_life();
 
 	pSite->src_thread = pSite->dst_thread = INVALID_THREAD_ID;
 	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
@@ -447,7 +454,7 @@ _thread_coroutine_running_step_3(
 		return NULL;
 	}
 
-	pSite->site_life = COROUTINE_LIFE_TIMES;
+	pSite->site_life = _thread_coroutine_cfg_life();
 
 	pSite->src_thread = *src_id;
 	pSite->dst_thread = dst_id;

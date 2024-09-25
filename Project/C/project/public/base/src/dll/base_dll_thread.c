@@ -382,7 +382,7 @@ dave_dll_thread_uid_qco(char *uid, int req_id, int req_len, void *req_body, int 
 }
 
 void *
-dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line)
+dave_dll_thread_name_sync_msg(char *dst_thread, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line)
 {
 	ThreadId src_id, dst_id;
 
@@ -402,6 +402,26 @@ dave_dll_thread_sync_msg(char *dst_thread, int req_id, int req_len, void *req_bo
 
 	return base_thread_sync_msg(
 		src_id, dst_id,
+		(ub)req_id, (ub)req_len, (u8 *)req_body,
+		(ub)rsp_id, (ub)rsp_len, (u8 *)rsp_body,
+		(s8 *)fun, (ub)line);
+}
+
+void *
+dave_dll_thread_id_sync_msg(unsigned long long dst_id, int req_id, int req_len, void *req_body, int rsp_id, int rsp_len, void *rsp_body, char *fun, int line)
+{
+	ThreadId src_id;
+
+	if(fun == NULL)
+	{
+		fun = (char *)__func__;
+		line = __LINE__;
+	}
+
+	src_id = _dll_thread_src_id(INVALID_THREAD_ID);
+
+	return base_thread_sync_msg(
+		src_id, (ThreadId)dst_id,
 		(ub)req_id, (ub)req_len, (u8 *)req_body,
 		(ub)rsp_id, (ub)rsp_len, (u8 *)rsp_body,
 		(s8 *)fun, (ub)line);

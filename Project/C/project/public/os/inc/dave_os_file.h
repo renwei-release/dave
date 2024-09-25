@@ -36,6 +36,8 @@ void dave_os_dir_close(void *pDir);
 
 MBUF * dave_os_dir_subdir_list(s8 *dir_path);
 
+MBUF * dave_os_dir_subfile_list(s8 *dir_path);
+
 s8 * dave_os_file_home_dir(void);
 
 void dave_os_file_creat_dir(s8 *dir);

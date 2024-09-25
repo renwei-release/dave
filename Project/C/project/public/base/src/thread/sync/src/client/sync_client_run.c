@@ -275,7 +275,7 @@ _sync_client_server_busy(SyncServer *pServer)
 {
 	if(pServer->server_app_busy == dave_false)
 	{
-		SYNCLOG("%s/%s %s->busy",
+		SYNCTRACE("%s/%s %s->busy",
 			pServer->globally_identifier, pServer->verno,
 			pServer->server_app_busy==dave_true?"busy":"idle");
 	}
@@ -288,7 +288,7 @@ _sync_client_server_idle(SyncServer *pServer)
 {
 	if(pServer->server_app_busy == dave_true)
 	{
-		SYNCLOG("%s/%s %s->idle",
+		SYNCTRACE("%s/%s %s->idle",
 			pServer->globally_identifier, pServer->verno,
 			pServer->server_app_busy==dave_true?"busy":"idle");
 	}

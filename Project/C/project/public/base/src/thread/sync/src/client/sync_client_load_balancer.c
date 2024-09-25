@@ -67,7 +67,7 @@ _sync_client_load_balancer_(LinkThread *pThread)
 
 	if(pAPPBusyServer != NULL)
 	{
-		SYNCLTRACE(60,1, "thread:%s a busy service is selected, the final message will go to the QUEUE service.",
+		SYNCTRACE("thread:%s a busy service is selected, the final message will go to the QUEUE service.",
 			pThread->thread_name);
 		return pAPPBusyServer;
 	}

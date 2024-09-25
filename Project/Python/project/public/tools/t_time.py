@@ -5,8 +5,6 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
-import os
-import sys
 import time
 import datetime
 
@@ -81,7 +79,7 @@ def t_time_end_action(start_time, time_flag=None, time_name=None, time_msg=None)
     else:
         # detected bug, maybe date updated.
         if run_time > 1000000 * 1000:
-            print(f'run_time:{run_time} is too long start_time:{start_time} stop_time:{stop_time}')
+            print(f't_time_end_action run_time:{run_time} is too long start_time:{start_time} stop_time:{stop_time}')
         run_time_msg = f'{run_time/1000000}s'
 
     if time_msg != None:

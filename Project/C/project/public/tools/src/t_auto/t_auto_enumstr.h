@@ -24,6 +24,8 @@
 #include "dba_msg.h"
 #include "http_param.h"
 #include "uip_msg.h"
+#include "ov_common.h"
+#include "ov_prepostprocess.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -92,6 +94,10 @@ s8 *t_auto_SyncServerType_str(SyncServerType enum_value);
 s8 *t_auto_TaskAttribute_str(TaskAttribute enum_value);
 s8 *t_auto_TraceLevel_str(TraceLevel enum_value);
 s8 *t_auto_UIPType_str(UIPType enum_value);
+s8 *t_auto_ov_color_format_e_str(ov_color_format_e enum_value);
+s8 *t_auto_ov_element_type_e_str(ov_element_type_e enum_value);
+s8 *t_auto_ov_preprocess_resize_algorithm_e_str(ov_preprocess_resize_algorithm_e enum_value);
+s8 *t_auto_ov_status_e_str(ov_status_e enum_value);
 s8 *t_auto_RPCMSG_str(RPCMSG enum_value);
 
 #endif

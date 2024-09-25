@@ -404,26 +404,51 @@ typedef struct {
 
 /* for FREE_MESSAGE_AREA_1 message */
 typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea1;
 
 /* for FREE_MESSAGE_AREA_2 message */
 typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea2;
 
 /* for FREE_MESSAGE_AREA_3 message */
 typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea3;
 
 /* for FREE_MESSAGE_AREA_4 message */
 typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea4;
 
 /* for FREE_MESSAGE_AREA_5 message */
 typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea5;
 
