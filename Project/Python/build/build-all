@@ -1,0 +1,22 @@
+#!/bin/bash
+
+homepath=$(cd `dirname $0`; pwd)
+OUTPUTFILE=${homepath}/build-all-`date +%Y-%m-%d-%H-%M-%S`.txt
+
+build()
+{
+   echo `date`
+   echo -e "build project on : \033[36m${LEVEL}\033[0m"
+
+   for project_name in $(ls ./)
+      do
+         [ -f $project_name/build ] && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && chmod +x build && ./build >> ${OUTPUTFILE} && cd ../
+      done
+
+   echo `date`
+   echo -e "done!"
+}
+
+build
+
+rm -rf $OUTPUTFILE

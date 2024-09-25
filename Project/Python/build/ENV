@@ -1,0 +1,25 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2024 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+homepath=$(cd `dirname $0`; pwd)/../../../../
+
+CONTAINER=$1
+
+cd ${homepath}
+
+if [ ! "$CONTAINER" == "" ]; then
+   exit_container=`docker ps | grep ${CONTAINER}`
+   if [ "$exit_container" == "" ]; then
+      echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
+      cd ./Deploy/deploy/${CONTAINER}
+      chmod a+x deploy.sh
+      ./deploy.sh
+      cd ${homepath}
+   fi
+fi
+
