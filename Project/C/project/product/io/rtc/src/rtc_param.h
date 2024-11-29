@@ -12,7 +12,7 @@
 
 #define RTC_CLIENT_MAX DAVE_SERVER_SUPPORT_SOCKET_MAX
 #define TLV_BUFFER_LENGTH_MAX 1 * 1024 * 1024
-#define TOKEN_APP_DATA_BUFFER_MAX 30 * 1024
+#define TOKEN_APP_DATA_BUFFER_MAX 512 * 1024
 
 typedef struct {
 	s32 socket;
@@ -37,6 +37,7 @@ typedef struct {
 
 	ub app_data_length;
 	s8 app_data_buffer[TOKEN_APP_DATA_BUFFER_MAX];
+	s8 app_format[64];
 
 	RTCClient *pClient;
 } RTCToken;

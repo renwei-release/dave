@@ -68,7 +68,7 @@ rtc_recv(RTCReq *pReq)
 	else
 	{
 		RTCDEBUG("%d %s", mlen(pReq->content), pReq->token);
-		data = tlv_parse_set_app_data(pReq->token, ms8(pReq->content), mlen(pReq->content));
+		data = tlv_parse_set_app_data(pReq->token, ms8(pReq->content), mlen(pReq->content), pReq->format, dave_strlen(pReq->format));
 	}
 
 	_rtc_recv_socket_send(pClient, data);	

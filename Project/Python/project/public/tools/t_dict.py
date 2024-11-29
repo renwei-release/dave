@@ -64,3 +64,21 @@ def t_dict_hash(dict_data):
 
 def t_dict_hash_str(dict_data):
     return str(t_dict_hash(dict_data))
+
+
+def t_dict_surround(dict_data):
+    dict_key_ls = list(dict_data.keys())
+    dict_value_ls = list(dict_data.values())
+
+    head_data = {}
+
+    new_dict = {}
+    for i in range(len(dict_key_ls)):
+        if i == 0:
+            head_data = {dict_key_ls[0]: dict_value_ls[0]}
+        elif i == len(dict_key_ls) - 1:
+            new_dict.update(head_data)
+        else:
+            new_dict[dict_key_ls[i]] = dict_value_ls[i]
+
+    return new_dict

@@ -9,6 +9,20 @@ import subprocess
 import sys
 import os
 
+
+def _env_check():
+    try:
+        import cryptocode
+    except ImportError:
+        os.system('pip3 install cryptocode')
+
+
+# =====================================================================
+
+
+_env_check()
+
+
 auto_argument = "___FLAG_FOR_PRODUCT___"
 print(f"auto_argument:{auto_argument}")
 

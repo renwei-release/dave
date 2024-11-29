@@ -30,11 +30,22 @@ _rtc_send(RTCToken *pToken)
 		RTCDEBUG("%d %s", pToken->app_data_length, pToken->token);
 		pReq->content = t_a2b_bin_to_mbuf(pToken->app_data_buffer, pToken->app_data_length);
 	}
+	dave_strcpy(pReq->format, pToken->app_format, sizeof(pReq->format));
 	pReq->ptr = pToken;
+
+	RTCLOG("dst:%lx/%s data:%ld", pToken->src_id, thread_name(pToken->src_id), pToken->app_data_length);
+
+	rsp.content = NULL;
 
 	sync_msg(pToken->src_id, RTC_REQ, pReq, RTC_RSP, &rsp);
 
+	if(rsp.content != NULL)
+	{
+		dave_mfree(rsp.content);
+	}
+
 	pToken->app_data_length = 0;
+	pToken->app_format[0] = '\0';
 }
 
 static void
@@ -79,6 +90,30 @@ _rtc_app_data_to_buffer(s8 *token, s8 *value_ptr, ub value_len)
 	}
 }
 
+static void
+_rtc_app_format_to_buffer(s8 *token, s8 *value_ptr, ub value_len)
+{
+	RTCToken *pToken = rtc_token_inq(token);
+
+	if(pToken == NULL)
+	{
+		RTCLOG("can't find token data:%s", token);
+		return;
+	}
+
+	if(pToken->app_format[0] == '\0')
+	{
+		if(value_len > (sizeof(pToken->app_format) - 1))
+		{
+			value_len = sizeof(pToken->app_format) - 1;
+		}
+	
+		dave_memcpy(pToken->app_format, value_ptr, value_len);
+
+		pToken->app_format[value_len] = '\0';
+	}
+}
+
 // =====================================================================
 
 ub
@@ -96,6 +131,11 @@ rtc_send(RTCClient *pClient)
 	if(tlv_parse_get_app_data(&value_ptr, &value_len, pClient->tlv_buffer_ptr, pClient->tlv_buffer_r_index) == dave_true)
 	{
 		_rtc_app_data_to_buffer(pClient->token, value_ptr, value_len);
+	}
+
+	if(tlv_parse_get_app_format(&value_ptr, &value_len, pClient->tlv_buffer_ptr, pClient->tlv_buffer_r_index) == dave_true)
+	{
+		_rtc_app_format_to_buffer(pClient->token, value_ptr, value_len);
 	}
 
 	return pClient->tlv_buffer_r_index;

@@ -42,7 +42,7 @@ def opencv_open(image_info=None, BGRFLAG=0):
         # 数组数据
         image_pic = image_info
     elif isinstance(image_info, str):
-        #判断字符串是否为base64格式数据
+        # 判断字符串是否为base64格式数据
         if bool(re.match(base64_code, image_info)):
             
             image_pic = _opencv_base64_open(image_info)

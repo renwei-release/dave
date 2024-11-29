@@ -871,6 +871,7 @@ type RTCReq struct {
 	Src [128] byte
 	Dst [128] byte
 	Content *MBUF
+	Format [64] byte
 	Ptr uint64
 }
 
@@ -880,6 +881,7 @@ type RTCRsp struct {
 	Src [128] byte
 	Dst [128] byte
 	Content *MBUF
+	Format [64] byte
 	Ptr uint64
 }
 

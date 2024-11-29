@@ -32,7 +32,7 @@ def _uip_recv_req(src_name, src_id, msg_len, msg_body):
         DAVELOG(f"method:{pReq.method} not register")
         uip_recv_rsp(src_id, RetCode_OK, pReq.method, "", pReq.ptr)
         return
-    req_function(src_name, src_id, msg_len, msg_body)
+    req_function(src_name, src_id, msg_len, msg_body, method)
 
     dave_mfree(pReq.customer_body)
     dave_mfree(pReq.data)
@@ -42,18 +42,24 @@ def _uip_recv_req(src_name, src_id, msg_len, msg_body):
 # =====================================================================
 
 
-def uip_register(method, recv_req_function):
-    pReq = thread_msg(UIPRegisterReq)
-    t_copy_str_to_array(pReq.contents.method[0], method)
-    pReq.contents.ptr = None
-
+def uip_register(method, recv_req_function, uip_id=None):
     register_recv_req_function[method] = recv_req_function
 
     dave_system_function_table_add(UIP_REGISTER_RSP, _uip_register_rsp)
     dave_system_function_table_add(UIP_DATA_RECV_REQ, _uip_recv_req)
 
     DAVELOG(f"method:{method} register!")
+
+    pReq = thread_msg(UIPRegisterReq)
+    t_copy_str_to_array(pReq.contents.method[0], method)
+    pReq.contents.ptr = None
     broadcast_msg(UIP_THREAD_NAME, UIP_REGISTER_REQ, pReq)
+
+    if uip_id is not None:
+        pReq = thread_msg(UIPRegisterReq)
+        t_copy_str_to_array(pReq.contents.method[0], method)
+        pReq.contents.ptr = None
+        write_msg(uip_id, UIP_REGISTER_REQ, pReq)
     return True
 
 

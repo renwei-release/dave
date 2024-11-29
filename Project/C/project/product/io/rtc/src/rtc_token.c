@@ -36,7 +36,7 @@ _rtc_token_build(s8 *token_ptr, ub token_len)
 static RTCToken *
 _rtc_token_malloc(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name)
 {
-	RTCToken *pToken = dave_malloc(sizeof(RTCToken));
+	RTCToken *pToken = dave_ralloc(sizeof(RTCToken));
 
 	_rtc_token_build(pToken->token, sizeof(pToken->token));
 	dave_strcpy(pToken->id, id, sizeof(pToken->id));
@@ -46,6 +46,7 @@ _rtc_token_malloc(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name)
 	dave_strcpy(pToken->src_name, src_name, sizeof(pToken->src_name));
 
 	pToken->app_data_length = 0;
+	pToken->app_format[0] = '\0';
 
 	pToken->pClient = NULL;
 

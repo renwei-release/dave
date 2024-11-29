@@ -14,6 +14,7 @@
 #define TLV_TAG_ID 0x00000003
 
 #define TLV_TAG_APP_DATA 0x00010000
+#define TLV_TAG_APP_FORMAT 0x00020000
 
 #endif
 

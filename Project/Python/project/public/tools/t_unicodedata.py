@@ -49,6 +49,14 @@ def _t_unicodedata_check_language(block):
         return 'Hebrew'
     elif 'GREEK' == block:
         return 'Greek'
+    elif 'DEVANAGARI' == block:
+        return 'Hindi'
+    elif 'THAI' == block:
+        return 'Thai'
+    elif 'MALAY' == block:
+        return 'Malay'
+    elif 'INDONESIAN' == block:
+        return 'Indonesian'
     else:
         return None
 

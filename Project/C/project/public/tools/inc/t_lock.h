@@ -81,8 +81,9 @@ _t_lock_check(TLock *pLock, s8 *fun, ub line)
 
 	if(pLock->magic_data_1 != pLock->magic_data_2)
 	{
-		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx]!",
-			fun, line, (ub)pLock);
+		TOOLSERROR("Found an invalid lock[%s:%ld, pLock:%lx magic:%lx,%lx]!",
+			fun, line, (ub)pLock,
+			pLock->magic_data_1, pLock->magic_data_2);
 		return dave_false;
 	}
 

@@ -979,6 +979,7 @@ class RTCReq (Structure):
 		("src", c_char * 128),
 		("dst", c_char * 128),
 		("content", POINTER(MBUF)),
+		("format", c_char * 64),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -989,6 +990,7 @@ class RTCRsp (Structure):
 		("src", c_char * 128),
 		("dst", c_char * 128),
 		("content", POINTER(MBUF)),
+		("format", c_char * 64),
 		("ptr", POINTER(c_char)),
 ]
 

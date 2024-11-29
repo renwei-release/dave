@@ -16,6 +16,7 @@ typedef struct {
 	s8 src[128];
 	s8 dst[128];
 	MBUF *content;
+	s8 format[64];
 	void *ptr;
 } RTCReq;
 
@@ -25,6 +26,7 @@ typedef struct {
 	s8 src[128];
 	s8 dst[128];
 	MBUF *content;
+	s8 format[64];
 	void *ptr;
 } RTCRsp;
 

@@ -6572,6 +6572,7 @@ t_rpc_ver3_zip_RTCReq(RTCReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-src", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src), 1, 128));
 	t_bson_add_object(pStructBson, "s8-dst", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst), 1, 128));
 	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "s8-format", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->format), 1, 64));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -6599,6 +6600,7 @@ t_rpc_ver3_unzip_RTCReq(void **unzip_data, ub *unzip_len, void *pStructBson)
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src), 1, 128, t_bson_inq_object(pStructBson, "s8-src"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst), 1, 128, t_bson_inq_object(pStructBson, "s8-dst"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->format), 1, 64, t_bson_inq_object(pStructBson, "s8-format"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -6637,6 +6639,7 @@ t_rpc_ver3_zip_RTCRsp(RTCRsp *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-src", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->src), 1, 128));
 	t_bson_add_object(pStructBson, "s8-dst", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->dst), 1, 128));
 	t_bson_add_object(pStructBson, "MBUF-content", t_rpc_ver3_zip_MBUF_ptr(zip_data->content));
+	t_bson_add_object(pStructBson, "s8-format", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->format), 1, 64));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -6664,6 +6667,7 @@ t_rpc_ver3_unzip_RTCRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->src), 1, 128, t_bson_inq_object(pStructBson, "s8-src"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->dst), 1, 128, t_bson_inq_object(pStructBson, "s8-dst"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->content), t_bson_inq_object(pStructBson, "MBUF-content"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->format), 1, 64, t_bson_inq_object(pStructBson, "s8-format"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 

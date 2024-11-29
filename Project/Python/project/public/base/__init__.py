@@ -1,5 +1,6 @@
 import ctypes
 import struct
+from .dave_call import *
 from .dave_tools import *
 from .dave_log import *
 from .dave_dll import *

@@ -99,3 +99,43 @@ def t_sys_pyInstaller_temp_dir():
 def t_sys_attributes():
     attributes = dir(sys)
     return attributes
+
+
+def t_sys_memory_used_ratio():
+    mem = os.popen('free')
+    mem = mem.readlines()
+
+    mem = mem[1].split()
+
+    memory_ratio = int(mem[2]) / int(mem[1])
+    return memory_ratio
+
+
+def t_sys_memory_free_ratio():
+    mem = os.popen('free')
+    mem = mem.readlines()
+
+    mem = mem[1].split()
+
+    memory_ratio = int(mem[3]) / int(mem[1])
+    return memory_ratio
+
+
+def t_sys_memory_free_volume():
+    mem = os.popen('free')
+    mem = mem.readlines()
+
+    mem = mem[1].split()
+
+    memory_volume = int(mem[3]) / (1024 * 1024)
+    return memory_volume
+
+
+def t_sys_memory_cache_ratio():
+    mem = os.popen('free')
+    mem = mem.readlines()
+
+    mem = mem[1].split()
+
+    memory_ratio = int(mem[6]) / int(mem[1])
+    return memory_ratio

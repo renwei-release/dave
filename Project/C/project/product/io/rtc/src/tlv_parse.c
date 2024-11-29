@@ -146,8 +146,14 @@ tlv_parse_get_app_data(s8 **value_ptr, ub *value_len, s8 *tlv_ptr, ub tlv_len)
 	return _tlv_parse_get_tag(TLV_TAG_APP_DATA, value_ptr, value_len, tlv_ptr, tlv_len);
 }
 
+dave_bool
+tlv_parse_get_app_format(s8 **value_ptr, ub *value_len, s8 *tlv_ptr, ub tlv_len)
+{
+	return _tlv_parse_get_tag(TLV_TAG_APP_FORMAT, value_ptr, value_len, tlv_ptr, tlv_len);
+}
+
 MBUF *
-tlv_parse_set_app_data(s8 *token, s8 *data_ptr, ub data_len)
+tlv_parse_set_app_data(s8 *token, s8 *data_ptr, ub data_len, s8 *format_ptr, ub format_len)
 {
 	MBUF *data = dave_mmalloc(1024 + data_len);
 	ub tlv_index;
@@ -158,6 +164,7 @@ tlv_parse_set_app_data(s8 *token, s8 *data_ptr, ub data_len)
 
 	tlv_index += _tlv_parse_set_tlv(&tlv_ptr[tlv_index], tlv_len-tlv_index, TLV_TAG_TOKEN, dave_strlen(token), (unsigned char *)token);
 	tlv_index += _tlv_parse_set_tlv(&tlv_ptr[tlv_index], tlv_len-tlv_index, TLV_TAG_APP_DATA, data_len, (unsigned char *)data_ptr);
+	tlv_index += _tlv_parse_set_tlv(&tlv_ptr[tlv_index], tlv_len-tlv_index, TLV_TAG_APP_FORMAT, format_len, (unsigned char *)format_ptr);
 	tlv_index += _tlv_parse_set_tlv(&tlv_ptr[tlv_index], tlv_len-tlv_index, TLV_TAG_END, 3, (unsigned char *)"END");
 
 	data->tot_len = data->len = tlv_index;

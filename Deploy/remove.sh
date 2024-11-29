@@ -22,9 +22,8 @@ fi
 #
 zombie_container=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | grep "Exited" | head -n 1`
 if [ "$zombie_container" ]; then
-   echo "*** Found zombie container. remove it!"
-   docker stop ${PROJECTNAME}
-   docker rm ${PROJECTNAME}
+   echo "*** Found zombie container. start it!"
+   docker start ${PROJECTNAME}
 fi
 
 #
