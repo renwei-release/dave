@@ -26,9 +26,6 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), LOG, PRIVACY)), 1)
 LIB += -L../../../../ThirdParty/build/yaml-cpp/setup/lib -lyaml-cpp
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), VOIP)), 1)
-LIB += -L../../../../ThirdParty/build/pjsip/setup/lib -lpjsip-linux -lasound
-endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
 LIB += -L../../../../ThirdParty/build/Aliyun/setup/log/lib -llog_c_sdk_static
 endif

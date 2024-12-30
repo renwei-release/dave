@@ -277,7 +277,7 @@ _os_linux_keepalive_setup_socket(s32 socket, sb keepalive_times)
 	return socket;
 }
 
-static void
+static dave_bool
 _os_linux_bind_netcard(s32 socket, s8 *netcard_name)
 {
 	struct ifreq nif;
@@ -291,8 +291,11 @@ _os_linux_bind_netcard(s32 socket, s8 *netcard_name)
 		if(setsockopt(socket, SOL_SOCKET, SO_BINDTODEVICE, (char *)&nif, sizeof(nif)) < 0)
 		{
 			OSABNOR("setup SOL_SOCKET failed! [%d/%s]", socket, nif.ifr_name);
+			return dave_false;
 		}
 	}
+
+	return dave_true;
 }
 
 static dave_bool
@@ -300,9 +303,11 @@ _os_linux_socket_bind_fix_port(s32 socket, u16 port)
 {
 	struct sockaddr_in bind_port;
 
+	OSDEBUG("socket:%d port:%d", socket, port);
+
 	if(port == 0)
 	{
-		return dave_false;
+		return dave_true;
 	}
 
 	bind_port.sin_family = AF_INET;
@@ -633,8 +638,18 @@ dave_os_socket(SOCDOMAIN domain, SOCTYPE type, NetAddrType addr_type, s8 *netcar
 
 	socket_id = _os_linux_normal_setup_socket(linux_type, addr_type, socket_id);
 
-	_os_linux_bind_netcard(socket_id, netcard_name);
-	_os_linux_socket_bind_fix_port(socket_id, fix_src_port);
+	if(_os_linux_bind_netcard(socket_id, netcard_name) == dave_false)
+	{
+		OSLOG("netcard:%s bind failed!", netcard_name);
+		close(socket_id);
+		return -1;
+	}
+	if(_os_linux_socket_bind_fix_port(socket_id, fix_src_port) == dave_false)
+	{
+		OSLOG("port:%d bind failed!", fix_src_port);
+		close(socket_id);
+		return -1;	
+	}
 
 	OSDEBUG("domain:%d type:%d addr_type:%d netcard_name:%s socket:%d",
 		domain, type, addr_type, netcard_name, socket_id);
@@ -915,6 +930,9 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_b
 		}
 
 		snd_len = sendto(socket, data_ptr, data_len, 0, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
+
+		OSDEBUG("socket:%d data_len:%d %s:%d->%d", socket, data_len, ip_str, pNetInfo->port, snd_len);
+
 		if (snd_len >= 0)
 		{
 			return snd_len;

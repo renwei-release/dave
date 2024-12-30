@@ -1777,6 +1777,22 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'RTC_UNREG_REQ-2009'"
 	elif enum_value == RTC_UNREG_RSP:
 		value_str = "'RTC_UNREG_RSP-2010'"
+	elif enum_value == RTP_START_REQ:
+		value_str = "'RTP_START_REQ-2011'"
+	elif enum_value == RTP_START_RSP:
+		value_str = "'RTP_START_RSP-2012'"
+	elif enum_value == RTP_STOP_REQ:
+		value_str = "'RTP_STOP_REQ-2013'"
+	elif enum_value == RTP_STOP_RSP:
+		value_str = "'RTP_STOP_RSP-2014'"
+	elif enum_value == RTP_RESET_REQ:
+		value_str = "'RTP_RESET_REQ-2015'"
+	elif enum_value == RTP_RESET_RSP:
+		value_str = "'RTP_RESET_RSP-2016'"
+	elif enum_value == RTP_DATA_REQ:
+		value_str = "'RTP_DATA_REQ-2017'"
+	elif enum_value == RTP_DATA_RSP:
+		value_str = "'RTP_DATA_RSP-2018'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:

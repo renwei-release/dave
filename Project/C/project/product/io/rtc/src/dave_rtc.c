@@ -41,6 +41,7 @@ _rtc_main(MSGBODY *pMsg)
 		case MSGID_REMOTE_THREAD_ID_READY:
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 		case SOCKET_DISCONNECT_RSP:
+		case MSGID_CFG_UPDATE:
 			break;
 		default:
 				RTCLOG("unprocess msg-id:%s", msgstr(pMsg->msg_id));

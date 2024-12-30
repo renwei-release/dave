@@ -14,4 +14,3 @@ void dave_rtc_init(void);
 void dave_rtc_exit(void);
 
 #endif
-

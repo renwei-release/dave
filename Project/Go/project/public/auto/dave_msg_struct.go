@@ -899,6 +899,80 @@ type RTCUnregRsp struct {
 	Ptr uint64
 }
 
+/* for RTP_DATA_REQ message */
+type RTPDataReq struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Payload_type byte
+	Sequence_number uint16
+	Timestamp uint32
+	Ssrc uint32
+	Payload_data *MBUF
+	Ptr uint64
+}
+
+/* for RTP_DATA_RSP message */
+type RTPDataRsp struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Payload_type byte
+	Sequence_number uint16
+	Timestamp uint32
+	Ssrc uint32
+	Payload_data *MBUF
+	Ptr uint64
+}
+
+/* for RTP_RESET_REQ message */
+type RTPResetReq struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for RTP_RESET_RSP message */
+type RTPResetRsp struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for RTP_START_REQ message */
+type RTPStartReq struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for RTP_START_RSP message */
+type RTPStartRsp struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for RTP_STOP_REQ message */
+type RTPStopReq struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for RTP_STOP_RSP message */
+type RTPStopRsp struct {
+	Call_id [512] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
 /* for MSGID_RUN_FUNCTION message */
 type RUNFUNCTIONMSG struct {
 	Thread_fun unsafe.Pointer

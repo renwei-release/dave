@@ -403,6 +403,30 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case RTC_UNREG_RSP:
 				pBson = t_rpc_ver3_zip_RTCUnregRsp((RTCUnregRsp *)msg_body, msg_len);
 			break;
+		case RTP_DATA_REQ:
+				pBson = t_rpc_ver3_zip_RTPDataReq((RTPDataReq *)msg_body, msg_len);
+			break;
+		case RTP_DATA_RSP:
+				pBson = t_rpc_ver3_zip_RTPDataRsp((RTPDataRsp *)msg_body, msg_len);
+			break;
+		case RTP_RESET_REQ:
+				pBson = t_rpc_ver3_zip_RTPResetReq((RTPResetReq *)msg_body, msg_len);
+			break;
+		case RTP_RESET_RSP:
+				pBson = t_rpc_ver3_zip_RTPResetRsp((RTPResetRsp *)msg_body, msg_len);
+			break;
+		case RTP_START_REQ:
+				pBson = t_rpc_ver3_zip_RTPStartReq((RTPStartReq *)msg_body, msg_len);
+			break;
+		case RTP_START_RSP:
+				pBson = t_rpc_ver3_zip_RTPStartRsp((RTPStartRsp *)msg_body, msg_len);
+			break;
+		case RTP_STOP_REQ:
+				pBson = t_rpc_ver3_zip_RTPStopReq((RTPStopReq *)msg_body, msg_len);
+			break;
+		case RTP_STOP_RSP:
+				pBson = t_rpc_ver3_zip_RTPStopRsp((RTPStopRsp *)msg_body, msg_len);
+			break;
 		case SOCKET_BIND_REQ:
 				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
 			break;
@@ -865,6 +889,30 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case RTC_UNREG_RSP:
 				ret = t_rpc_ver3_unzip_RTCUnregRsp(msg_body, msg_len, pBson);
+			break;
+		case RTP_DATA_REQ:
+				ret = t_rpc_ver3_unzip_RTPDataReq(msg_body, msg_len, pBson);
+			break;
+		case RTP_DATA_RSP:
+				ret = t_rpc_ver3_unzip_RTPDataRsp(msg_body, msg_len, pBson);
+			break;
+		case RTP_RESET_REQ:
+				ret = t_rpc_ver3_unzip_RTPResetReq(msg_body, msg_len, pBson);
+			break;
+		case RTP_RESET_RSP:
+				ret = t_rpc_ver3_unzip_RTPResetRsp(msg_body, msg_len, pBson);
+			break;
+		case RTP_START_REQ:
+				ret = t_rpc_ver3_unzip_RTPStartReq(msg_body, msg_len, pBson);
+			break;
+		case RTP_START_RSP:
+				ret = t_rpc_ver3_unzip_RTPStartRsp(msg_body, msg_len, pBson);
+			break;
+		case RTP_STOP_REQ:
+				ret = t_rpc_ver3_unzip_RTPStopReq(msg_body, msg_len, pBson);
+			break;
+		case RTP_STOP_RSP:
+				ret = t_rpc_ver3_unzip_RTPStopRsp(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_BIND_REQ:
 				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
@@ -1329,6 +1377,30 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case RTC_UNREG_RSP:
 				ptr = t_rpc_ver3_ptr_RTCUnregRsp((RTCUnregRsp *)msg_body, new_ptr);
 			break;
+		case RTP_DATA_REQ:
+				ptr = t_rpc_ver3_ptr_RTPDataReq((RTPDataReq *)msg_body, new_ptr);
+			break;
+		case RTP_DATA_RSP:
+				ptr = t_rpc_ver3_ptr_RTPDataRsp((RTPDataRsp *)msg_body, new_ptr);
+			break;
+		case RTP_RESET_REQ:
+				ptr = t_rpc_ver3_ptr_RTPResetReq((RTPResetReq *)msg_body, new_ptr);
+			break;
+		case RTP_RESET_RSP:
+				ptr = t_rpc_ver3_ptr_RTPResetRsp((RTPResetRsp *)msg_body, new_ptr);
+			break;
+		case RTP_START_REQ:
+				ptr = t_rpc_ver3_ptr_RTPStartReq((RTPStartReq *)msg_body, new_ptr);
+			break;
+		case RTP_START_RSP:
+				ptr = t_rpc_ver3_ptr_RTPStartRsp((RTPStartRsp *)msg_body, new_ptr);
+			break;
+		case RTP_STOP_REQ:
+				ptr = t_rpc_ver3_ptr_RTPStopReq((RTPStopReq *)msg_body, new_ptr);
+			break;
+		case RTP_STOP_RSP:
+				ptr = t_rpc_ver3_ptr_RTPStopRsp((RTPStopRsp *)msg_body, new_ptr);
+			break;
 		case SOCKET_BIND_REQ:
 				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body, new_ptr);
 			break;
@@ -1791,6 +1863,30 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case RTC_UNREG_RSP:
 				msg_len = t_rpc_ver3_sizeof_RTCUnregRsp();
+			break;
+		case RTP_DATA_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTPDataReq();
+			break;
+		case RTP_DATA_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTPDataRsp();
+			break;
+		case RTP_RESET_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTPResetReq();
+			break;
+		case RTP_RESET_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTPResetRsp();
+			break;
+		case RTP_START_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTPStartReq();
+			break;
+		case RTP_START_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTPStartRsp();
+			break;
+		case RTP_STOP_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTPStopReq();
+			break;
+		case RTP_STOP_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTPStopRsp();
 			break;
 		case SOCKET_BIND_REQ:
 				msg_len = t_rpc_ver3_sizeof_SocketBindReq();

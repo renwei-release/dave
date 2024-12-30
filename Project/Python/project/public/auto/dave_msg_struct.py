@@ -1010,6 +1010,88 @@ class RTCUnregRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for RTP_DATA_REQ message *#
+class RTPDataReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("payload_type", c_char),
+		("sequence_number", c_ushort),
+		("timestamp", c_uint),
+		("ssrc", c_uint),
+		("payload_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_DATA_RSP message *#
+class RTPDataRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("payload_type", c_char),
+		("sequence_number", c_ushort),
+		("timestamp", c_uint),
+		("ssrc", c_uint),
+		("payload_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_RESET_REQ message *#
+class RTPResetReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_RESET_RSP message *#
+class RTPResetRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_START_REQ message *#
+class RTPStartReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_START_RSP message *#
+class RTPStartRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_STOP_REQ message *#
+class RTPStopReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTP_STOP_RSP message *#
+class RTPStopRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 512),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
 #* for MSGID_RUN_FUNCTION message *#
 class RUNFUNCTIONMSG (Structure):
 	_fields_ = [

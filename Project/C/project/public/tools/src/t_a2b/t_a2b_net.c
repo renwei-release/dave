@@ -20,6 +20,8 @@ _t_a2b_net_ip_to_str(s8 *str_ptr, ub str_len, u8 *ip_ptr, ub ip_len, u16 port)
 		dave_snprintf(str_ptr, str_len, "this ip is NULL");
 	}
 
+	dave_memset(str_ptr, 0x00, str_len);
+
 	str_index = 0;
 
 	for(ip_index=0; ip_index<ip_len; ip_index++)
@@ -46,6 +48,10 @@ _t_a2b_net_str_to_ip(u8 *ip_ptr, ub ip_len, s8 *str_ptr, ub str_len)
 	ub temp_index;
 
 	dave_memset(ip_ptr, 0x00, ip_len);
+	if(str_len == 0)
+	{
+		str_len = dave_strlen(str_ptr);
+	}
 
 	ip_index = 0;
 

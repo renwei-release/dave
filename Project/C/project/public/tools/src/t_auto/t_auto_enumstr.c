@@ -4925,6 +4925,30 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case RTC_UNREG_RSP:
 				value_str = "'RTC_UNREG_RSP-2010'";
 			break;
+		case RTP_START_REQ:
+				value_str = "'RTP_START_REQ-2011'";
+			break;
+		case RTP_START_RSP:
+				value_str = "'RTP_START_RSP-2012'";
+			break;
+		case RTP_STOP_REQ:
+				value_str = "'RTP_STOP_REQ-2013'";
+			break;
+		case RTP_STOP_RSP:
+				value_str = "'RTP_STOP_RSP-2014'";
+			break;
+		case RTP_RESET_REQ:
+				value_str = "'RTP_RESET_REQ-2015'";
+			break;
+		case RTP_RESET_RSP:
+				value_str = "'RTP_RESET_RSP-2016'";
+			break;
+		case RTP_DATA_REQ:
+				value_str = "'RTP_DATA_REQ-2017'";
+			break;
+		case RTP_DATA_RSP:
+				value_str = "'RTP_DATA_RSP-2018'";
+			break;
 		case APPMSG_MCARD_REQ:
 				value_str = "'APPMSG_MCARD_REQ-2053'";
 			break;

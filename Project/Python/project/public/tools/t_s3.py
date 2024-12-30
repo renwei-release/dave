@@ -22,13 +22,25 @@ def t_s3_is_s3_path(path):
     return path.startswith('obs://') or path.startswith('s3://') or path.startswith('oss://') or path.startswith('cos://')
 
 
+def t_s3_is_valid_file(file):
+    if not t_s3_is_s3_path(file):
+        return False
+
+    t_s3_setup_s3_client()
+
+    ret = os.system(f'chmod +x /obsutil/obsutil && /obsutil/obsutil stat {file} > /dev/null 2>&1 && echo $?')
+    return ret == 0
+
+
 def t_s3_is_valid_path(path):
     if not t_s3_is_s3_path(path):
         return False
 
     t_s3_setup_s3_client()
 
-    ret = os.system(f'chmod +x /obsutil/obsutil && /obsutil/obsutil stat {path} > /dev/null 2>&1 && echo $?')
+    path = path[:path.rfind('/') + 1]
+
+    ret = os.system(f'chmod +x /obsutil/obsutil && /obsutil/obsutil ls {path} > /dev/null 2>&1 && echo $?')
     return ret == 0
 
 

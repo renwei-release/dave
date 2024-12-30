@@ -35,8 +35,6 @@ def mbuf_to_byte(mbuf_data):
     except:
         return None
 
-    return None
-
 
 def byte_to_mbuf(byte_data):
     if (byte_data == None) or (len(byte_data) == 0):
@@ -96,6 +94,14 @@ def mbuf_to_dict(mbuf_data):
         DAVELOG(f"json.loads error:{json_dict} / {str_data}")
         return {}
     return json_dict
+
+
+def mbuf_clone(mbuf_data):
+    if mbuf_data == None:
+        return None
+    mbuf_clone = dave_mmalloc(mbuf_data.contents.len)
+    memmove(mbuf_clone.contents.payload, mbuf_data.contents.payload, mbuf_data.contents.len)
+    return mbuf_clone
 
 
 def obj_to_obj(dst_obj, src_obj):
