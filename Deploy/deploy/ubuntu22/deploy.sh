@@ -18,4 +18,4 @@ EXTEND="-v `pwd`/../../../:/project/DAVE"
 
 cd ../../
 chmod a+x *.sh
-./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH} -u root
+./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}

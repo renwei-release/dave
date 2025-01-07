@@ -40,7 +40,7 @@
 #endif
 #define VERSION_REV "20"
 
-#define VERSION_DATE_TIME "20241230090115"
+#define VERSION_DATE_TIME "20250107211044"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -48,7 +48,7 @@
  #define VERSION_LEVEL "Beta"
 #endif
 
-#define __BUILD_MAC_ADDRESS__ "000C29F268F9"
+#define __BUILD_MAC_ADDRESS__ "000C29960DBF"
 #define __BUILD_HOSTNAME__ "fedora-renwei-fedora-docker"
 #define __BUILD_USERNAME__ "root"
 

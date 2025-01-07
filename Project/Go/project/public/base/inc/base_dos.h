@@ -12,6 +12,7 @@
 
 void base_dos_init(void);
 void base_dos_exit(void);
+s8 * base_dos_name(void);
 
 #ifdef __cplusplus
 extern "C"{

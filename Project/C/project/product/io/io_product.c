@@ -13,7 +13,7 @@
 #include "dave_uip.h"
 #include "dave_email.h"
 #include "dave_rtc.h"
-#include "dave_uac.h"
+#include "dave_sip.h"
 #include "dave_verno.h"
 #include "dave_echo.h"
 #include "io_test.h"
@@ -27,7 +27,7 @@ _io_thread_init(MSGBODY *msg)
 	dave_uip_init();
 	dave_email_init();
 	dave_rtc_init();
-	dave_uac_init();
+	dave_sip_init();
 }
 
 static void
@@ -50,7 +50,7 @@ _io_thread_main(MSGBODY *msg)
 static void
 _io_thread_exit(MSGBODY *msg)
 {
-	dave_uac_exit();
+	dave_sip_exit();
 	dave_rtc_exit();
 	dave_email_exit();
 	dave_uip_exit();

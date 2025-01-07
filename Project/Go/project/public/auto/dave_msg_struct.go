@@ -901,7 +901,7 @@ type RTCUnregRsp struct {
 
 /* for RTP_DATA_REQ message */
 type RTPDataReq struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Payload_type byte
@@ -914,7 +914,7 @@ type RTPDataReq struct {
 
 /* for RTP_DATA_RSP message */
 type RTPDataRsp struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Payload_type byte
@@ -925,25 +925,9 @@ type RTPDataRsp struct {
 	Ptr uint64
 }
 
-/* for RTP_RESET_REQ message */
-type RTPResetReq struct {
-	Call_id [512] byte
-	Call_from [128] byte
-	Call_to [128] byte
-	Ptr uint64
-}
-
-/* for RTP_RESET_RSP message */
-type RTPResetRsp struct {
-	Call_id [512] byte
-	Call_from [128] byte
-	Call_to [128] byte
-	Ptr uint64
-}
-
 /* for RTP_START_REQ message */
 type RTPStartReq struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Ptr uint64
@@ -951,7 +935,7 @@ type RTPStartReq struct {
 
 /* for RTP_START_RSP message */
 type RTPStartRsp struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Ptr uint64
@@ -959,7 +943,7 @@ type RTPStartRsp struct {
 
 /* for RTP_STOP_REQ message */
 type RTPStopReq struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Ptr uint64
@@ -967,7 +951,7 @@ type RTPStopReq struct {
 
 /* for RTP_STOP_RSP message */
 type RTPStopRsp struct {
-	Call_id [512] byte
+	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
 	Ptr uint64
@@ -980,6 +964,35 @@ type RUNFUNCTIONMSG struct {
 	Param unsafe.Pointer
 	Run_thread_id uint64
 	Initialization_flag int8
+}
+
+/* for SIP_BYE_REQ message */
+type SIPByeReq struct {
+	Call_id [128] byte
+	Phone_number [512] byte
+	Ptr uint64
+}
+
+/* for SIP_BYE_RSP message */
+type SIPByeRsp struct {
+	Ret int64
+	Call_id [128] byte
+	Phone_number [512] byte
+	Ptr uint64
+}
+
+/* for SIP_CALL_REQ message */
+type SIPCallReq struct {
+	Phone_number [512] byte
+	Ptr uint64
+}
+
+/* for SIP_CALL_RSP message */
+type SIPCallRsp struct {
+	Ret int64
+	Call_id [128] byte
+	Phone_number [512] byte
+	Ptr uint64
 }
 
 /* for SOCKET_BIND_REQ message */

@@ -274,7 +274,7 @@ _dos_cmd_analysis(s8 *input_ptr, ub input_len, s8 *cmd_ptr, ub cmd_len, s8 *para
 
 	_dos_record_cmd(cmd_ptr, param_ptr);
 
-	if(dave_strcmp(pCmd->owner_thread, DOS_THREAD_NAME) == dave_true)
+	if(dave_strcmp(pCmd->owner_thread, base_dos_name()) == dave_true)
 	{
 		_dos_execute_cmd(pCmd, cmd_ptr, cmd_len, param_ptr, param_len);
 	}
@@ -311,7 +311,7 @@ _dos_register_cmd_list(s8 *cmd, dos_cmd_fun cmd_fun, dos_help_fun help_fun, sb l
 
 	_dos_add_cmd_list(pNewCmd);
 
-	if(dave_strcmp(pNewCmd->owner_thread, DOS_THREAD_NAME) == dave_false)
+	if(dave_strcmp(pNewCmd->owner_thread, base_dos_name()) == dave_false)
 	{
 		reg_msg(MSGID_DOS_FORWARD, _dos_forward_msg);
 	}

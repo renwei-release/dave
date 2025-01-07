@@ -21,6 +21,7 @@
 #define CFG_DOS_IS_PRIVATE "DOSIsPrivate"
 
 static ThreadId _dos_thread = INVALID_THREAD_ID;
+static s8 _dos_name[128];
 
 static ub
 _base_dos_is_private(void)
@@ -106,15 +107,14 @@ void
 base_dos_init(void)
 {
 	ub thread_flag = THREAD_THREAD_FLAG|_base_dos_is_private();
-	s8 thread_name[128];
 
-	thread_flag = _base_dos_thread_name(thread_name, sizeof(thread_name), thread_flag);
+	thread_flag = _base_dos_thread_name(_dos_name, sizeof(_dos_name), thread_flag);
 
 	dos_cmd_init();
 
-	_dos_thread = base_thread_creat(thread_name, 1, thread_flag, _base_dos_init, _base_dos_main, _base_dos_exit);
+	_dos_thread = base_thread_creat(_dos_name, 1, thread_flag, _base_dos_init, _base_dos_main, _base_dos_exit);
 	if(_dos_thread == INVALID_THREAD_ID)
-		base_restart(thread_name);
+		base_restart(_dos_name);
 }
 
 void
@@ -125,6 +125,12 @@ base_dos_exit(void)
 	if(_dos_thread != INVALID_THREAD_ID)
 		base_thread_del(_dos_thread);
 	_dos_thread = INVALID_THREAD_ID;
+}
+
+s8 *
+base_dos_name(void)
+{
+	return _dos_name;
 }
 
 #endif

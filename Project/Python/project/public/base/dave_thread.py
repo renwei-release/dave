@@ -116,6 +116,12 @@ def gid_msg(gid, dst, msg_id, class_instance):
 
 def gid_qmsg(gid, dst, msg_id, class_instance):
     __func__, __LINE__ = t_sys_myline(2)
+
+    if isinstance(gid, str) == True:
+        gid = bytes(gid, encoding='utf8')
+    if isinstance(dst, str) == True:
+        dst = bytes(dst, encoding='utf8')
+
     davelib.dave_dll_thread_gid_qmsg(c_char_p(gid), c_char_p(dst), c_int(msg_id), c_int(sizeof(class_instance.contents)), class_instance, c_char_p(__func__), c_int(__LINE__))
     return
 
@@ -123,6 +129,12 @@ def gid_qmsg(gid, dst, msg_id, class_instance):
 def gid_co(gid, dst, req_id, pReq, rsp_id, rsp_class):
     __func__, __LINE__ = t_sys_myline(2)
     davelib.dave_dll_thread_gid_co.restype = c_void_p
+
+    if isinstance(gid, str) == True:
+        gid = bytes(gid, encoding='utf8')
+    if isinstance(dst, str) == True:
+        dst = bytes(dst, encoding='utf8')
+
     pRsp = davelib.dave_dll_thread_gid_co(c_char_p(gid), c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
 
@@ -130,6 +142,12 @@ def gid_co(gid, dst, req_id, pReq, rsp_id, rsp_class):
 def gid_qco(gid, dst, req_id, pReq, rsp_id, rsp_class):
     __func__, __LINE__ = t_sys_myline(2)
     davelib.dave_dll_thread_gid_co.restype = c_void_p
+
+    if isinstance(gid, str) == True:
+        gid = bytes(gid, encoding='utf8')
+    if isinstance(dst, str) == True:
+        dst = bytes(dst, encoding='utf8')
+
     pRsp = davelib.dave_dll_thread_gid_qco(c_char_p(gid), c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
 

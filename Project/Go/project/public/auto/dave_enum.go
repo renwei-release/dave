@@ -738,6 +738,7 @@ const (
 	RetCode_not_ready = -121
 	RetCode_Unauthorized = -122
 	RetCode_can_not_find_method = -123
+	RetCode_invalid_call = -124
 	RetCode_max = 0x1fffffffffffffff
 )
 

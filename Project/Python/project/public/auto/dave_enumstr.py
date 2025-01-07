@@ -1465,6 +1465,8 @@ def t_auto_RetCode_str(enum_value):
 		value_str = "'RetCode_Unauthorized--122'"
 	elif enum_value == RetCode_can_not_find_method:
 		value_str = "'RetCode_can_not_find_method--123'"
+	elif enum_value == RetCode_invalid_call:
+		value_str = "'RetCode_invalid_call--124'"
 	elif enum_value == RetCode_max:
 		value_str = "'RetCode_max-0x1fffffffffffffff'"
 	else:
@@ -1785,14 +1787,18 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'RTP_STOP_REQ-2013'"
 	elif enum_value == RTP_STOP_RSP:
 		value_str = "'RTP_STOP_RSP-2014'"
-	elif enum_value == RTP_RESET_REQ:
-		value_str = "'RTP_RESET_REQ-2015'"
-	elif enum_value == RTP_RESET_RSP:
-		value_str = "'RTP_RESET_RSP-2016'"
 	elif enum_value == RTP_DATA_REQ:
-		value_str = "'RTP_DATA_REQ-2017'"
+		value_str = "'RTP_DATA_REQ-2015'"
 	elif enum_value == RTP_DATA_RSP:
-		value_str = "'RTP_DATA_RSP-2018'"
+		value_str = "'RTP_DATA_RSP-2016'"
+	elif enum_value == SIP_CALL_REQ:
+		value_str = "'SIP_CALL_REQ-2017'"
+	elif enum_value == SIP_CALL_RSP:
+		value_str = "'SIP_CALL_RSP-2018'"
+	elif enum_value == SIP_BYE_REQ:
+		value_str = "'SIP_BYE_REQ-2019'"
+	elif enum_value == SIP_BYE_RSP:
+		value_str = "'SIP_BYE_RSP-2020'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:

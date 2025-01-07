@@ -23,9 +23,8 @@
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
+#include "sip_signal.h"
 #include "uip_msg.h"
-#include "ov_common.h"
-#include "ov_prepostprocess.h"
 #include "base_ramkv.h"
 #include "base_thread.h"
 #include "base_enum.h"
@@ -82,6 +81,7 @@ s8 *t_auto_ORDER_CODE_str(ORDER_CODE enum_value);
 s8 *t_auto_PythonFun_str(PythonFun enum_value);
 s8 *t_auto_ReqType_str(ReqType enum_value);
 s8 *t_auto_RetCode_str(RetCode enum_value);
+s8 *t_auto_SIPSignalType_str(SIPSignalType enum_value);
 s8 *t_auto_SOCCNTTYPE_str(SOCCNTTYPE enum_value);
 s8 *t_auto_SOCDOMAIN_str(SOCDOMAIN enum_value);
 s8 *t_auto_SOCEVENT_str(SOCEVENT enum_value);
@@ -94,10 +94,6 @@ s8 *t_auto_SyncServerType_str(SyncServerType enum_value);
 s8 *t_auto_TaskAttribute_str(TaskAttribute enum_value);
 s8 *t_auto_TraceLevel_str(TraceLevel enum_value);
 s8 *t_auto_UIPType_str(UIPType enum_value);
-s8 *t_auto_ov_color_format_e_str(ov_color_format_e enum_value);
-s8 *t_auto_ov_element_type_e_str(ov_element_type_e enum_value);
-s8 *t_auto_ov_preprocess_resize_algorithm_e_str(ov_preprocess_resize_algorithm_e enum_value);
-s8 *t_auto_ov_status_e_str(ov_status_e enum_value);
 s8 *t_auto_RPCMSG_str(RPCMSG enum_value);
 
 #endif

@@ -409,12 +409,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case RTP_DATA_RSP:
 				pBson = t_rpc_ver3_zip_RTPDataRsp((RTPDataRsp *)msg_body, msg_len);
 			break;
-		case RTP_RESET_REQ:
-				pBson = t_rpc_ver3_zip_RTPResetReq((RTPResetReq *)msg_body, msg_len);
-			break;
-		case RTP_RESET_RSP:
-				pBson = t_rpc_ver3_zip_RTPResetRsp((RTPResetRsp *)msg_body, msg_len);
-			break;
 		case RTP_START_REQ:
 				pBson = t_rpc_ver3_zip_RTPStartReq((RTPStartReq *)msg_body, msg_len);
 			break;
@@ -426,6 +420,18 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case RTP_STOP_RSP:
 				pBson = t_rpc_ver3_zip_RTPStopRsp((RTPStopRsp *)msg_body, msg_len);
+			break;
+		case SIP_BYE_REQ:
+				pBson = t_rpc_ver3_zip_SIPByeReq((SIPByeReq *)msg_body, msg_len);
+			break;
+		case SIP_BYE_RSP:
+				pBson = t_rpc_ver3_zip_SIPByeRsp((SIPByeRsp *)msg_body, msg_len);
+			break;
+		case SIP_CALL_REQ:
+				pBson = t_rpc_ver3_zip_SIPCallReq((SIPCallReq *)msg_body, msg_len);
+			break;
+		case SIP_CALL_RSP:
+				pBson = t_rpc_ver3_zip_SIPCallRsp((SIPCallRsp *)msg_body, msg_len);
 			break;
 		case SOCKET_BIND_REQ:
 				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
@@ -896,12 +902,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case RTP_DATA_RSP:
 				ret = t_rpc_ver3_unzip_RTPDataRsp(msg_body, msg_len, pBson);
 			break;
-		case RTP_RESET_REQ:
-				ret = t_rpc_ver3_unzip_RTPResetReq(msg_body, msg_len, pBson);
-			break;
-		case RTP_RESET_RSP:
-				ret = t_rpc_ver3_unzip_RTPResetRsp(msg_body, msg_len, pBson);
-			break;
 		case RTP_START_REQ:
 				ret = t_rpc_ver3_unzip_RTPStartReq(msg_body, msg_len, pBson);
 			break;
@@ -913,6 +913,18 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case RTP_STOP_RSP:
 				ret = t_rpc_ver3_unzip_RTPStopRsp(msg_body, msg_len, pBson);
+			break;
+		case SIP_BYE_REQ:
+				ret = t_rpc_ver3_unzip_SIPByeReq(msg_body, msg_len, pBson);
+			break;
+		case SIP_BYE_RSP:
+				ret = t_rpc_ver3_unzip_SIPByeRsp(msg_body, msg_len, pBson);
+			break;
+		case SIP_CALL_REQ:
+				ret = t_rpc_ver3_unzip_SIPCallReq(msg_body, msg_len, pBson);
+			break;
+		case SIP_CALL_RSP:
+				ret = t_rpc_ver3_unzip_SIPCallRsp(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_BIND_REQ:
 				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
@@ -1383,12 +1395,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case RTP_DATA_RSP:
 				ptr = t_rpc_ver3_ptr_RTPDataRsp((RTPDataRsp *)msg_body, new_ptr);
 			break;
-		case RTP_RESET_REQ:
-				ptr = t_rpc_ver3_ptr_RTPResetReq((RTPResetReq *)msg_body, new_ptr);
-			break;
-		case RTP_RESET_RSP:
-				ptr = t_rpc_ver3_ptr_RTPResetRsp((RTPResetRsp *)msg_body, new_ptr);
-			break;
 		case RTP_START_REQ:
 				ptr = t_rpc_ver3_ptr_RTPStartReq((RTPStartReq *)msg_body, new_ptr);
 			break;
@@ -1400,6 +1406,18 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case RTP_STOP_RSP:
 				ptr = t_rpc_ver3_ptr_RTPStopRsp((RTPStopRsp *)msg_body, new_ptr);
+			break;
+		case SIP_BYE_REQ:
+				ptr = t_rpc_ver3_ptr_SIPByeReq((SIPByeReq *)msg_body, new_ptr);
+			break;
+		case SIP_BYE_RSP:
+				ptr = t_rpc_ver3_ptr_SIPByeRsp((SIPByeRsp *)msg_body, new_ptr);
+			break;
+		case SIP_CALL_REQ:
+				ptr = t_rpc_ver3_ptr_SIPCallReq((SIPCallReq *)msg_body, new_ptr);
+			break;
+		case SIP_CALL_RSP:
+				ptr = t_rpc_ver3_ptr_SIPCallRsp((SIPCallRsp *)msg_body, new_ptr);
 			break;
 		case SOCKET_BIND_REQ:
 				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body, new_ptr);
@@ -1870,12 +1888,6 @@ _t_rpc_sizeof(ub msg_id)
 		case RTP_DATA_RSP:
 				msg_len = t_rpc_ver3_sizeof_RTPDataRsp();
 			break;
-		case RTP_RESET_REQ:
-				msg_len = t_rpc_ver3_sizeof_RTPResetReq();
-			break;
-		case RTP_RESET_RSP:
-				msg_len = t_rpc_ver3_sizeof_RTPResetRsp();
-			break;
 		case RTP_START_REQ:
 				msg_len = t_rpc_ver3_sizeof_RTPStartReq();
 			break;
@@ -1887,6 +1899,18 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case RTP_STOP_RSP:
 				msg_len = t_rpc_ver3_sizeof_RTPStopRsp();
+			break;
+		case SIP_BYE_REQ:
+				msg_len = t_rpc_ver3_sizeof_SIPByeReq();
+			break;
+		case SIP_BYE_RSP:
+				msg_len = t_rpc_ver3_sizeof_SIPByeRsp();
+			break;
+		case SIP_CALL_REQ:
+				msg_len = t_rpc_ver3_sizeof_SIPCallReq();
+			break;
+		case SIP_CALL_RSP:
+				msg_len = t_rpc_ver3_sizeof_SIPCallRsp();
 			break;
 		case SOCKET_BIND_REQ:
 				msg_len = t_rpc_ver3_sizeof_SocketBindReq();

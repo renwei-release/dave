@@ -24,7 +24,7 @@
 #include "email_msg.h"
 #include "http_msg.h"
 #include "rtc_msg.h"
-#include "uac_msg.h"
+#include "sip_msg.h"
 #include "uip_msg.h"
 #include "store_msg.h"
 #include "base_msg.h"
@@ -575,16 +575,6 @@ dave_bool t_rpc_ver3_unzip_RTPDataRsp(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_ptr_RTPDataRsp(RTPDataRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_RTPDataRsp(void);
 
-void * t_rpc_ver3_zip_RTPResetReq(RTPResetReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RTPResetReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RTPResetReq(RTPResetReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_RTPResetReq(void);
-
-void * t_rpc_ver3_zip_RTPResetRsp(RTPResetRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RTPResetRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RTPResetRsp(RTPResetRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_RTPResetRsp(void);
-
 void * t_rpc_ver3_zip_RTPStartReq(RTPStartReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RTPStartReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_RTPStartReq(RTPStartReq *struct_data, void *new_ptr);
@@ -609,6 +599,26 @@ void * t_rpc_ver3_zip_RUNFUNCTIONMSG(RUNFUNCTIONMSG *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RUNFUNCTIONMSG(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_RUNFUNCTIONMSG(RUNFUNCTIONMSG *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_RUNFUNCTIONMSG(void);
+
+void * t_rpc_ver3_zip_SIPByeReq(SIPByeReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPByeReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPByeReq(SIPByeReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPByeReq(void);
+
+void * t_rpc_ver3_zip_SIPByeRsp(SIPByeRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPByeRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPByeRsp(SIPByeRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPByeRsp(void);
+
+void * t_rpc_ver3_zip_SIPCallReq(SIPCallReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPCallReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPCallReq(SIPCallReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPCallReq(void);
+
+void * t_rpc_ver3_zip_SIPCallRsp(SIPCallRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPCallRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPCallRsp(SIPCallRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPCallRsp(void);
 
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
