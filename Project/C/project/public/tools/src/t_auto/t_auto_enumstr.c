@@ -4759,6 +4759,18 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case SIP_BYE_RSP:
 				value_str = "'SIP_BYE_RSP-2020'";
 			break;
+		case SIP_START_REQ:
+				value_str = "'SIP_START_REQ-2021'";
+			break;
+		case SIP_START_RSP:
+				value_str = "'SIP_START_RSP-2022'";
+			break;
+		case SIP_STOP_REQ:
+				value_str = "'SIP_STOP_REQ-2023'";
+			break;
+		case SIP_STOP_RSP:
+				value_str = "'SIP_STOP_RSP-2024'";
+			break;
 		case APPMSG_MCARD_REQ:
 				value_str = "'APPMSG_MCARD_REQ-2053'";
 			break;

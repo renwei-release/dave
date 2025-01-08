@@ -11,7 +11,7 @@
 SIPCall * sip_call(
 	SIPSignal *pSignal, s8 *call_data,
 	rtp_data_start data_start, rtp_data_stop data_stop, rtp_data_recv data_recv,
-	sip_bye_fun bye_fun,
+	call_start_fun start_fun, call_end_fun end_fun,
 	void *user_ptr);
 
 RetCode sip_bye(SIPSignal *pSignal, s8 *call_data);

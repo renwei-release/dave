@@ -995,6 +995,38 @@ type SIPCallRsp struct {
 	Ptr uint64
 }
 
+/* for SIP_START_REQ message */
+type SIPStartReq struct {
+	Call_id [128] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for SIP_START_RSP message */
+type SIPStartRsp struct {
+	Call_id [128] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for SIP_STOP_REQ message */
+type SIPStopReq struct {
+	Call_id [128] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
+/* for SIP_STOP_RSP message */
+type SIPStopRsp struct {
+	Call_id [128] byte
+	Call_from [128] byte
+	Call_to [128] byte
+	Ptr uint64
+}
+
 /* for SOCKET_BIND_REQ message */
 type SocketBindReq struct {
 	Netinfo SocNetInfo

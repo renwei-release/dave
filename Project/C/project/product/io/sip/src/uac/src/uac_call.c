@@ -94,13 +94,37 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 }
 
 static void
+_uac_call_start(void *call)
+{
+	SIPCall *pSIPCall = (SIPCall *)call;
+	UACCall *pUACCall = (UACCall *)(pSIPCall->user_ptr);
+	SIPStartReq *pReq = thread_msg(pReq);
+
+	UACLOG("call:%s start!", pSIPCall->call_data);
+
+	dave_strcpy(pReq->call_id, osip_call_id_get_number(pSIPCall->call_id), sizeof(pReq->call_id));
+	dave_strcpy(pReq->call_from, osip_uri_get_username(osip_from_get_url(pSIPCall->from)), sizeof(pReq->call_from));
+	dave_strcpy(pReq->call_to, osip_uri_get_username(osip_to_get_url(pSIPCall->to)), sizeof(pReq->call_to));
+
+	id_co(pUACCall->owner_id, SIP_START_REQ, pReq, SIP_START_RSP);
+}
+
+static void
 _uac_call_end(void *call)
 {
 	SIPCall *pSIPCall = (SIPCall *)call;
+	UACCall *pUACCall = (UACCall *)(pSIPCall->user_ptr);
+	SIPStartReq *pReq = thread_msg(pReq);
 
 	UACLOG("call:%s end!", pSIPCall->call_data);
 
 	uac_main_del_call(pSIPCall->call_data);
+
+	dave_strcpy(pReq->call_id, osip_call_id_get_number(pSIPCall->call_id), sizeof(pReq->call_id));
+	dave_strcpy(pReq->call_from, osip_uri_get_username(osip_from_get_url(pSIPCall->from)), sizeof(pReq->call_from));
+	dave_strcpy(pReq->call_to, osip_uri_get_username(osip_to_get_url(pSIPCall->to)), sizeof(pReq->call_to));
+
+	id_co(pUACCall->owner_id, SIP_STOP_REQ, pReq, SIP_STOP_RSP);
 }
 
 // =====================================================================
@@ -125,12 +149,12 @@ uac_call(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 	pSIPCall = sip_call(
 		uac_main_signal(), phone_number,
 		_uac_call_rtp_start, _uac_call_rtp_stop, _uac_call_rtp_recv,
-		_uac_call_end,
+		_uac_call_start, _uac_call_end,
 		pUACCall);
 
 	if(pSIPCall == NULL)
 	{
-		UACLOG("thread:%s/%s the call:%s on my table!",
+		UACLOG("thread:%s/%s the call:%s failed!",
 			thread_name(pUACCall->owner_id), thread_name(owner_id),
 			phone_number);
 		return RetCode_Resource_conflicts;
@@ -173,8 +197,6 @@ uac_bye(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 	{
 		dave_strcpy(call_id_ptr, osip_call_id_get_number(pUACCall->call->call_id), call_id_len);
 	}
-
-	uac_main_del_call(phone_number);
 
 	sip_bye(uac_main_signal(), phone_number);
 

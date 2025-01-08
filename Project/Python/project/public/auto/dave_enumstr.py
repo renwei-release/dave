@@ -1799,6 +1799,14 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'SIP_BYE_REQ-2019'"
 	elif enum_value == SIP_BYE_RSP:
 		value_str = "'SIP_BYE_RSP-2020'"
+	elif enum_value == SIP_START_REQ:
+		value_str = "'SIP_START_REQ-2021'"
+	elif enum_value == SIP_START_RSP:
+		value_str = "'SIP_START_RSP-2022'"
+	elif enum_value == SIP_STOP_REQ:
+		value_str = "'SIP_STOP_REQ-2023'"
+	elif enum_value == SIP_STOP_RSP:
+		value_str = "'SIP_STOP_RSP-2024'"
 	elif enum_value == APPMSG_MCARD_REQ:
 		value_str = "'APPMSG_MCARD_REQ-2053'"
 	elif enum_value == APPMSG_MCARD_RSP:

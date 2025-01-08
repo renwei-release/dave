@@ -15,7 +15,8 @@
 #define SIP_RECV_BUFFER_MAX 1024 * 4
 
 typedef ub (*sip_recv_fun)(void *param, osip_message_t *pRecv);
-typedef void (* sip_bye_fun)(void *call);
+typedef void (* call_start_fun)(void *call);
+typedef void (* call_end_fun)(void *call);
 
 typedef enum {
 	SIPSignalType_server,
@@ -36,7 +37,8 @@ typedef struct {
 	osip_cseq_t *cseq;
 	RTP *rtp;
 
-	sip_bye_fun bye_fun;
+	call_start_fun start_fun;
+	call_end_fun end_fun;
 
 	void *signal;
 	void *user_ptr;

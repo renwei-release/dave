@@ -620,6 +620,26 @@ dave_bool t_rpc_ver3_unzip_SIPCallRsp(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_ptr_SIPCallRsp(SIPCallRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_SIPCallRsp(void);
 
+void * t_rpc_ver3_zip_SIPStartReq(SIPStartReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPStartReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPStartReq(SIPStartReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPStartReq(void);
+
+void * t_rpc_ver3_zip_SIPStartRsp(SIPStartRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPStartRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPStartRsp(SIPStartRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPStartRsp(void);
+
+void * t_rpc_ver3_zip_SIPStopReq(SIPStopReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPStopReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPStopReq(SIPStopReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPStopReq(void);
+
+void * t_rpc_ver3_zip_SIPStopRsp(SIPStopRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SIPStopRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SIPStopRsp(SIPStopRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SIPStopRsp(void);
+
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SocketBindReq(SocketBindReq *struct_data, void *new_ptr);

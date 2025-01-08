@@ -97,5 +97,37 @@ typedef struct {
 	void *ptr;
 } SIPByeRsp;
 
+/* for SIP_START_REQ message */
+typedef struct {
+	s8 call_id[128];
+	s8 call_from[128];
+	s8 call_to[128];
+	void *ptr;
+} SIPStartReq;
+
+/* for SIP_START_RSP message */
+typedef struct {
+	s8 call_id[128];
+	s8 call_from[128];
+	s8 call_to[128];
+	void *ptr;
+} SIPStartRsp;
+
+/* for SIP_STOP_REQ message */
+typedef struct {
+	s8 call_id[128];
+	s8 call_from[128];
+	s8 call_to[128];
+	void *ptr;
+} SIPStopReq;
+
+/* for SIP_STOP_RSP message */
+typedef struct {
+	s8 call_id[128];
+	s8 call_from[128];
+	s8 call_to[128];
+	void *ptr;
+} SIPStopRsp;
+
 #endif
 

@@ -1117,6 +1117,42 @@ class SIPCallRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for SIP_START_REQ message *#
+class SIPStartReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 128),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for SIP_START_RSP message *#
+class SIPStartRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 128),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for SIP_STOP_REQ message *#
+class SIPStopReq (Structure):
+	_fields_ = [
+		("call_id", c_char * 128),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for SIP_STOP_RSP message *#
+class SIPStopRsp (Structure):
+	_fields_ = [
+		("call_id", c_char * 128),
+		("call_from", c_char * 128),
+		("call_to", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
 #* for SOCKET_BIND_REQ message *#
 class SocketBindReq (Structure):
 	_fields_ = [

@@ -804,12 +804,25 @@ _sync_client_exit(MSGBODY *msg)
 	sync_client_tx_exit();
 }
 
+static ub
+_sync_client_thread_number(void)
+{
+	ub thread_number = dave_os_cpu_process_number();
+
+	if(thread_number > 32)
+	{
+		thread_number = 32;
+	}
+
+	return thread_number;
+}
+
 // =====================================================================
 
 void
 sync_client_init(s8 *sync_domain)
 {
-	ub thread_number = dave_os_cpu_process_number();
+	ub thread_number = _sync_client_thread_number();
 
 	sync_cfg_external_incoming_sync_domain(sync_domain);
 

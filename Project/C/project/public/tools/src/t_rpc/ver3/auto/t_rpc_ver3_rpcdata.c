@@ -433,6 +433,18 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case SIP_CALL_RSP:
 				pBson = t_rpc_ver3_zip_SIPCallRsp((SIPCallRsp *)msg_body, msg_len);
 			break;
+		case SIP_START_REQ:
+				pBson = t_rpc_ver3_zip_SIPStartReq((SIPStartReq *)msg_body, msg_len);
+			break;
+		case SIP_START_RSP:
+				pBson = t_rpc_ver3_zip_SIPStartRsp((SIPStartRsp *)msg_body, msg_len);
+			break;
+		case SIP_STOP_REQ:
+				pBson = t_rpc_ver3_zip_SIPStopReq((SIPStopReq *)msg_body, msg_len);
+			break;
+		case SIP_STOP_RSP:
+				pBson = t_rpc_ver3_zip_SIPStopRsp((SIPStopRsp *)msg_body, msg_len);
+			break;
 		case SOCKET_BIND_REQ:
 				pBson = t_rpc_ver3_zip_SocketBindReq((SocketBindReq *)msg_body, msg_len);
 			break;
@@ -925,6 +937,18 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case SIP_CALL_RSP:
 				ret = t_rpc_ver3_unzip_SIPCallRsp(msg_body, msg_len, pBson);
+			break;
+		case SIP_START_REQ:
+				ret = t_rpc_ver3_unzip_SIPStartReq(msg_body, msg_len, pBson);
+			break;
+		case SIP_START_RSP:
+				ret = t_rpc_ver3_unzip_SIPStartRsp(msg_body, msg_len, pBson);
+			break;
+		case SIP_STOP_REQ:
+				ret = t_rpc_ver3_unzip_SIPStopReq(msg_body, msg_len, pBson);
+			break;
+		case SIP_STOP_RSP:
+				ret = t_rpc_ver3_unzip_SIPStopRsp(msg_body, msg_len, pBson);
 			break;
 		case SOCKET_BIND_REQ:
 				ret = t_rpc_ver3_unzip_SocketBindReq(msg_body, msg_len, pBson);
@@ -1419,6 +1443,18 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case SIP_CALL_RSP:
 				ptr = t_rpc_ver3_ptr_SIPCallRsp((SIPCallRsp *)msg_body, new_ptr);
 			break;
+		case SIP_START_REQ:
+				ptr = t_rpc_ver3_ptr_SIPStartReq((SIPStartReq *)msg_body, new_ptr);
+			break;
+		case SIP_START_RSP:
+				ptr = t_rpc_ver3_ptr_SIPStartRsp((SIPStartRsp *)msg_body, new_ptr);
+			break;
+		case SIP_STOP_REQ:
+				ptr = t_rpc_ver3_ptr_SIPStopReq((SIPStopReq *)msg_body, new_ptr);
+			break;
+		case SIP_STOP_RSP:
+				ptr = t_rpc_ver3_ptr_SIPStopRsp((SIPStopRsp *)msg_body, new_ptr);
+			break;
 		case SOCKET_BIND_REQ:
 				ptr = t_rpc_ver3_ptr_SocketBindReq((SocketBindReq *)msg_body, new_ptr);
 			break;
@@ -1911,6 +1947,18 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case SIP_CALL_RSP:
 				msg_len = t_rpc_ver3_sizeof_SIPCallRsp();
+			break;
+		case SIP_START_REQ:
+				msg_len = t_rpc_ver3_sizeof_SIPStartReq();
+			break;
+		case SIP_START_RSP:
+				msg_len = t_rpc_ver3_sizeof_SIPStartRsp();
+			break;
+		case SIP_STOP_REQ:
+				msg_len = t_rpc_ver3_sizeof_SIPStopReq();
+			break;
+		case SIP_STOP_RSP:
+				msg_len = t_rpc_ver3_sizeof_SIPStopRsp();
 			break;
 		case SOCKET_BIND_REQ:
 				msg_len = t_rpc_ver3_sizeof_SocketBindReq();

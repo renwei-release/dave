@@ -171,6 +171,27 @@ _sip_call_build(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip)
 }
 
 static void
+_sip_call_start(SIPCall *pCall)
+{
+	SIPSignal *pSignal = (SIPSignal *)(pCall->signal);
+
+	SIPLOG("server:%s:%s user:%s/%s local:%s:%s rtp:%s:%s",
+		pSignal->server_ip, pSignal->server_port,
+		pSignal->username, pSignal->password,
+		pSignal->local_ip, pSignal->local_port,
+		pSignal->rtp_ip, pSignal->rtp_port);
+
+	if(pCall->start_fun != NULL)
+	{
+		pCall->start_fun(pCall);
+	}
+	else
+	{
+		SIPABNOR("call:%s bye_fun is NULL!", pCall->call_data);
+	}
+}
+
+static void
 _sip_call_end(SIPCall *pCall)
 {
 	SIPSignal *pSignal = (SIPSignal *)(pCall->signal);
@@ -183,9 +204,9 @@ _sip_call_end(SIPCall *pCall)
 
 	_sip_call_rtp_release(pCall);
 
-	if(pCall->bye_fun != NULL)
+	if(pCall->end_fun != NULL)
 	{
-		pCall->bye_fun(pCall);
+		pCall->end_fun(pCall);
 	}
 	else
 	{
@@ -261,7 +282,56 @@ _sip_call_recv(void *signal, osip_message_t *pRecv)
 					_sip_call_sdp_bind(pCall, pRecv);
 				break;
 			case SIP_OK:
+					_sip_call_start(pCall);
 				break;
+			case SIP_TEMPORARILY_UNAVAILABLE:
+			case SIP_REQUEST_TERMINATED:
+			case SIP_SERVICE_UNAVAILABLE:
+					_sip_call_end(pCall);
+				break;
+			default:
+					SIPABNOR("unprocess status:%d %s", pRecv->status_code, pRecv->reason_phrase);
+				break;
+		}
+	}
+	else
+	{
+		if(dave_strcmp(pRecv->sip_method, "ACK") == dave_true)
+		{
+			SIPLOG("method:%s", pRecv->sip_method);
+		}
+		else if(dave_strcmp(pRecv->sip_method, "BYE") == dave_true)
+		{
+			_sip_call_end(pCall);
+		}
+		else
+		{
+			SIPABNOR("unprocess method:%s", pRecv->sip_method);
+		}
+	}
+
+	return SIP_OK;
+}
+
+static ub
+_sip_bye_recv(void *signal, osip_message_t *pRecv)
+{
+	SIPSignal *pSignal = (SIPSignal *)signal;
+	SIPCall *pCall = sip_call_id_query(pSignal, osip_get_call_id(pRecv));
+
+	if(pCall == NULL)
+	{
+		SIPLOG("%s->%s %s can't find the call!",
+			osip_get_from_user(pRecv), osip_get_to_user(pRecv),
+			osip_get_call_id(pRecv));
+		return SIP_NOT_FOUND;
+	}
+
+	if(pRecv->sip_method == NULL)
+	{
+		switch(pRecv->status_code)
+		{
+			case SIP_OK:
 			case SIP_TEMPORARILY_UNAVAILABLE:
 			case SIP_REQUEST_TERMINATED:
 			case SIP_SERVICE_UNAVAILABLE:
@@ -321,7 +391,7 @@ _sip_call_send(
 	dave_rtp_call_id_build(pCall->rtp, osip_call_id_get_number(sip->call_id), pSignal->username, pCall->call_data);
 
 	sip_signal_reg_inv(pSignal, _sip_call_recv, pSignal);
-	sip_signal_reg_bye(pSignal, _sip_call_recv, pSignal);
+	sip_signal_reg_bye(pSignal, _sip_bye_recv, pSignal);
 
 	_sip_call_build(pSignal, pCall, sip);
 
@@ -354,7 +424,7 @@ SIPCall *
 sip_call(
 	SIPSignal *pSignal, s8 *call_data,
 	rtp_data_start data_start, rtp_data_stop data_stop, rtp_data_recv data_recv,
-	sip_bye_fun bye_fun,
+	call_start_fun start_fun, call_end_fun end_fun,
 	void *user_ptr)
 {
 	SIPCall *pCall = sip_call_data_query(pSignal, call_data);
@@ -369,7 +439,8 @@ sip_call(
 
 	dave_strcpy(pCall->call_data, call_data, sizeof(pCall->call_data));
 
-	pCall->bye_fun = bye_fun;
+	pCall->start_fun = start_fun;
+	pCall->end_fun = end_fun;
 	
 	pCall->user_ptr = user_ptr;
 

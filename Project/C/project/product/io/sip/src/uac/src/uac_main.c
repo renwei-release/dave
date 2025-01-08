@@ -169,12 +169,15 @@ uac_main_inq_phone_number(s8 *phone_number)
 void
 uac_main_del_call(s8 *phone_number)
 {
-	UACCall *pUACCall = kv_del_key_ptr(_uac_class->phone_number_kv, phone_number);
+	UACCall *pUACCall;
+	s8 release_timer_name[64];
 
+	pUACCall = kv_del_key_ptr(_uac_class->phone_number_kv, phone_number);
 	if(pUACCall != NULL)
 	{
-		s8 release_timer_name[64];		
-		dave_snprintf(release_timer_name, sizeof(release_timer_name), "UACCALL%lx", pUACCall);
+		UACLOG("phone_number:%s", phone_number);
+
+		dave_snprintf(release_timer_name, sizeof(release_timer_name), "UACCALLD%lx", pUACCall);
 		base_timer_param_creat(release_timer_name, _uac_main_call_delay_release, pUACCall, sizeof(void *), 3000);
 	}
 }
