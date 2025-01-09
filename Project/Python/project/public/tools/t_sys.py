@@ -60,8 +60,12 @@ def t_sys_path_file_number(path):
 
 
 def t_sys_myline(depth):
-    __func__ = sys._getframe(depth).f_code.co_name.encode("utf-8")
-    __LINE__ = sys._getframe(depth).f_lineno
+    try:
+        __func__ = sys._getframe(depth).f_code.co_name.encode("utf-8")
+        __LINE__ = sys._getframe(depth).f_lineno
+    except:
+        __func__ = b'unknown'
+        __LINE__ = 0
     return __func__, __LINE__
 
 

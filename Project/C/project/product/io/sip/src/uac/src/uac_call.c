@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Renwei
+ * Copyright (c) 2025 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -12,6 +12,7 @@
 #include "sip_signal.h"
 #include "sip_call.h"
 #include "uac_main.h"
+#include "uac_rtp_buffer.h"
 #include "uac_cfg.h"
 #include "uac_log.h"
 
@@ -76,21 +77,31 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 {
 	RTP *pRTP = (RTP *)rtp;
 	UACCall *pUACCall = _uac_call_rtp_to_call(pRTP);
-	RTPDataReq *pReq = thread_msg(pReq);
+	MBUF *payload_data;
+	u16 send_sequence_number;
 
 	UACDEBUG("call:%s->%s owner:%s", pRTP->call_from, pRTP->call_to, thread_name(pUACCall->owner_id));
 
-	dave_strcpy(pReq->call_id, pRTP->call_id, sizeof(pReq->call_id));
-	dave_strcpy(pReq->call_from, pRTP->call_from, sizeof(pReq->call_from));
-	dave_strcpy(pReq->call_to, pRTP->call_to, sizeof(pReq->call_to));
-	pReq->payload_type = payload_type;
-	pReq->sequence_number = sequence_number;
-	pReq->timestamp = timestamp;
-	pReq->ssrc = ssrc;
-	pReq->payload_data = t_a2b_bin_to_mbuf(payload_ptr, payload_len);
-	pReq->ptr = pReq;
+	payload_data = uac_rtp_buffer(
+		&send_sequence_number,
+		&pUACCall->rtp_buffer,
+		payload_type, sequence_number, timestamp, ssrc, payload_ptr, payload_len);
 
-	id_msg(pUACCall->owner_id, RTP_DATA_REQ, pReq);
+	if(payload_data != NULL)
+	{
+		RTPDataReq *pReq = thread_msg(pReq);
+		dave_strcpy(pReq->call_id, pRTP->call_id, sizeof(pReq->call_id));
+		dave_strcpy(pReq->call_from, pRTP->call_from, sizeof(pReq->call_from));
+		dave_strcpy(pReq->call_to, pRTP->call_to, sizeof(pReq->call_to));
+		pReq->payload_type = payload_type;
+		pReq->sequence_number = send_sequence_number;
+		pReq->timestamp = timestamp;
+		pReq->ssrc = ssrc;
+		pReq->payload_data = payload_data;
+		pReq->ptr = pReq;
+
+		id_msg(pUACCall->owner_id, RTP_DATA_REQ, pReq);
+	}
 }
 
 static void

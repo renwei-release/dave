@@ -8,10 +8,13 @@
 #include "dave_tools.h"
 #include "sip_signal.h"
 #include "uac_main.h"
+#include "uac_rtp_buffer.h"
 #include "uac_cfg.h"
 #include "uac_log.h"
 
 UACClass *_uac_class = NULL;
+
+static RetCode _uac_main_call_recycle(void *ramkv, s8 *key);
 
 static UACClass *
 _uac_main_creat(
@@ -32,29 +35,6 @@ _uac_main_creat(
 		pClass->signal->rtp_ip, pClass->signal->rtp_port);
 
 	return pClass;
-}
-
-static RetCode
-_uac_main_call_recycle(void *ramkv, s8 *key)
-{
-	UACCall *pCall = kv_del_key_ptr(ramkv, key);
-
-	if(pCall == NULL)
-		return RetCode_empty_data;
-
-	dave_free(pCall);
-
-	return RetCode_OK;
-}
-
-static void
-_uac_main_call_delay_release(TIMERID timer_id, ub thread_index, void *param_ptr)
-{
-	UACCall *pCall = (RTP *)param_ptr;
-
-	dave_free(pCall);
-
-	base_timer_die(timer_id);
 }
 
 static void
@@ -103,6 +83,49 @@ _uac_main_booting(TIMERID timer_id, ub thread_index)
 	base_timer_die(timer_id);
 }
 
+static UACCall *
+_uac_main_call_build(ThreadId owner_id, s8 *phone_number)
+{
+	UACCall *pUACCall = dave_ralloc(sizeof(UACCall));
+
+	pUACCall->owner_id = owner_id;
+	uac_rtp_buffer_init(&(pUACCall->rtp_buffer));
+	pUACCall->call = NULL;
+
+	return pUACCall;
+}
+
+static void
+_uac_main_call_release(UACCall *pUACCall)
+{
+	uac_rtp_buffer_exit(&(pUACCall->rtp_buffer));
+
+	dave_free(pUACCall);
+}
+
+static RetCode
+_uac_main_call_recycle(void *ramkv, s8 *key)
+{
+	UACCall *pUACCall = kv_del_key_ptr(ramkv, key);
+
+	if(pUACCall == NULL)
+		return RetCode_empty_data;
+
+	_uac_main_call_release(pUACCall);
+
+	return RetCode_OK;
+}
+
+static void
+_uac_main_call_delay_release(TIMERID timer_id, ub thread_index, void *param_ptr)
+{
+	UACCall *pUACCall = (UACCall *)param_ptr;
+
+	_uac_main_call_release(pUACCall);
+
+	base_timer_die(timer_id);
+}
+
 static void
 _uac_main_init(void)
 {
@@ -142,10 +165,7 @@ uac_main_signal(void)
 UACCall *
 uac_main_build_call(ThreadId owner_id, s8 *phone_number)
 {
-	UACCall *pUACCall = dave_ralloc(sizeof(UACCall));
-
-	pUACCall->owner_id = owner_id;
-	pUACCall->call = NULL;
+	UACCall *pUACCall = _uac_main_call_build(owner_id, phone_number);
 
 	kv_add_key_ptr(_uac_class->phone_number_kv, phone_number, pUACCall);
 
@@ -175,8 +195,6 @@ uac_main_del_call(s8 *phone_number)
 	pUACCall = kv_del_key_ptr(_uac_class->phone_number_kv, phone_number);
 	if(pUACCall != NULL)
 	{
-		UACLOG("phone_number:%s", phone_number);
-
 		dave_snprintf(release_timer_name, sizeof(release_timer_name), "UACCALLD%lx", pUACCall);
 		base_timer_param_creat(release_timer_name, _uac_main_call_delay_release, pUACCall, sizeof(void *), 3000);
 	}

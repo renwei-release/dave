@@ -10,6 +10,34 @@ from .dave_tools import *
 from .dave_log import *
 
 
+def _general_data_process(general_data):
+    general_bin = general_data.get('bin_data', None)
+
+    if general_data != None:
+        if type(general_data) == dict:
+            general_data = dict_to_mbuf(general_data)
+        elif type(general_data) == str:
+            general_data = str_to_mbuf(general_data)
+        elif type(general_data) == bytes:
+            general_data = byte_to_mbuf(general_data)
+        else:
+            DAVELOG(f"Wrong general_data type:{type(general_data)}!!!")
+            general_data = None
+
+    if general_bin != None:
+        if type(general_bin) == dict:
+            general_bin = dict_to_mbuf(general_bin)
+        elif type(general_bin) == str:
+            general_bin = str_to_mbuf(general_bin)
+        elif type(general_bin) == bytes:
+            general_bin = byte_to_mbuf(general_bin)
+        else:
+            DAVELOG(f"Wrong general_bin type:{type(general_bin)}!!!")
+            general_bin = None
+
+    return general_data, general_bin
+
+
 # =====================================================================
 
 
@@ -26,18 +54,11 @@ def dave_call_general(call_dst, general_type, general_data):
         DAVELOG(f"Wrong general_type type:{general_type}!!!")
         general_type = None
 
-    if type(general_data) == dict:
-        general_data = dict_to_mbuf(general_data)
-    elif type(general_data) == str:
-        general_data = str_to_mbuf(general_data)
-    elif type(general_data) == bytes:
-        general_data = byte_to_mbuf(general_data)
-    else:
-        DAVELOG(f"Wrong general_data type:{type(general_data)}!!!")
-        general_data = None
+    general_data, general_bin = _general_data_process(general_data)
 
     pReq.contents.general_type = general_type
     pReq.contents.general_data = general_data
+    pReq.contents.general_bin = general_bin
     pReq.contents.send_req_us_time = t_time_current_us()
     pReq.ptr = None
 
@@ -48,8 +69,11 @@ def dave_call_general(call_dst, general_type, general_data):
     if pRsp.general_data == None:
         return None
 
-    result = mbuf_to_dict(pRsp.general_data)
+    general_result = mbuf_to_dict(pRsp.general_data)
+    if pRsp.general_bin != None:
+        general_result['bin_data'] = mbuf_to_byte(pRsp.general_bin)
+        dave_mfree(pRsp.general_bin)
 
     dave_mfree(pRsp.general_data)
 
-    return result
+    return general_result

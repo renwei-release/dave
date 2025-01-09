@@ -140,6 +140,7 @@ rtp_msg_start(RTP *pRTP)
 	else
 	{
 		pRTP->data_start(pRTP);
+		pRTP->data_start = NULL;
 	}
 }
 
@@ -153,6 +154,7 @@ rtp_msg_stop(RTP *pRTP)
 	else
 	{
 		pRTP->data_stop(pRTP);
+		pRTP->data_stop = NULL;
 	}
 }
 

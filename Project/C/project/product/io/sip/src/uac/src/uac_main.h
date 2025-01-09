@@ -12,8 +12,20 @@
 void uac_main_init(void);
 void uac_main_exit(void);
 
+#define ONE_SECOND_RTP_BUFFER 160 * 50
+
+typedef struct {
+	TLock buffer_pv;
+	u16 send_sequence_number;
+	u16 recv_sequence_number;
+	ub buffer_len;
+	s8 buffer_ptr[ONE_SECOND_RTP_BUFFER + 320];
+	void *pre_buffer_kv;
+} UACRTPBuffer;
+
 typedef struct {
 	ThreadId owner_id;
+	UACRTPBuffer rtp_buffer;
 	SIPCall *call;
 } UACCall;
 

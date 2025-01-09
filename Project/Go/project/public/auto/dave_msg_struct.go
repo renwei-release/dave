@@ -540,6 +540,7 @@ type FreeMessageArea5 struct {
 type GeneralReq struct {
 	General_type [256] byte
 	General_data *MBUF
+	General_bin *MBUF
 	Send_req_us_time uint64
 	Ptr uint64
 }
@@ -548,6 +549,7 @@ type GeneralReq struct {
 type GeneralRsp struct {
 	General_type [256] byte
 	General_data *MBUF
+	General_bin *MBUF
 	Send_req_us_time uint64
 	Recv_req_us_time uint64
 	Send_rsp_us_time uint64

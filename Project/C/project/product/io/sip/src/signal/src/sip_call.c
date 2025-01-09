@@ -184,10 +184,11 @@ _sip_call_start(SIPCall *pCall)
 	if(pCall->start_fun != NULL)
 	{
 		pCall->start_fun(pCall);
+		pCall->start_fun = NULL;
 	}
 	else
 	{
-		SIPABNOR("call:%s bye_fun is NULL!", pCall->call_data);
+		SIPABNOR("call:%s start_fun is NULL!", pCall->call_data);
 	}
 }
 
@@ -207,10 +208,11 @@ _sip_call_end(SIPCall *pCall)
 	if(pCall->end_fun != NULL)
 	{
 		pCall->end_fun(pCall);
+		pCall->end_fun = NULL;
 	}
 	else
 	{
-		SIPABNOR("call:%s bye_fun is NULL!", pCall->call_data);
+		SIPABNOR("call:%s end_fun is NULL!", pCall->call_data);
 	}
 
 	sip_call_release(pSignal, pCall);
@@ -269,6 +271,13 @@ _sip_call_recv(void *signal, osip_message_t *pRecv)
 		return SIP_NOT_FOUND;
 	}
 
+	SIPLOG("server:%s:%s user:%s/%s local:%s:%s rtp:%s:%s sip_method:%s status_code:%d",
+		pSignal->server_ip, pSignal->server_port,
+		pSignal->username, pSignal->password,
+		pSignal->local_ip, pSignal->local_port,
+		pSignal->rtp_ip, pSignal->rtp_port,
+		pRecv->sip_method, pRecv->status_code);
+
 	if(pRecv->sip_method == NULL)
 	{
 		_sip_call_update(pCall, pRecv);
@@ -326,6 +335,13 @@ _sip_bye_recv(void *signal, osip_message_t *pRecv)
 			osip_get_call_id(pRecv));
 		return SIP_NOT_FOUND;
 	}
+
+	SIPLOG("server:%s:%s user:%s/%s local:%s:%s rtp:%s:%s sip_method:%s status_code:%d",
+		pSignal->server_ip, pSignal->server_port,
+		pSignal->username, pSignal->password,
+		pSignal->local_ip, pSignal->local_port,
+		pSignal->rtp_ip, pSignal->rtp_port,
+		pRecv->sip_method, pRecv->status_code);
 
 	if(pRecv->sip_method == NULL)
 	{
