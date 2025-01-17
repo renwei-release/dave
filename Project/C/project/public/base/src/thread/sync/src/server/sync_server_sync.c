@@ -182,14 +182,49 @@ _sync_server_sync_link_to(SyncClient *pDstClient, SyncClient *pSrcClient)
 	return ret;
 }
 
+static dave_bool
+_sync_server_sync_is_cfg_link(SyncClient *pClient, SyncClient *pOtherClient, dave_bool *link_event)
+{
+	if(pClient->is_cfg_link_server == dave_true)
+	{
+		SYNCTRACE("pClient is server link, wait connecting! %s/%s/%s:%s -> %s/%s/%s:%s",
+			pOtherClient->verno, pOtherClient->globally_identifier, pOtherClient->host_name,
+			ipv4str(pOtherClient->link_ip, pOtherClient->link_port),
+			pClient->verno, pClient->globally_identifier, pClient->host_name, 
+			ipv4str2(pOtherClient->link_ip, pOtherClient->link_port));
+	
+		if(_sync_server_sync_link_to(pOtherClient, pClient) == dave_true)
+		{
+			link_event[pClient->client_index] = dave_true;
+		}
+
+		return dave_true;
+	}
+	else if(pOtherClient->is_cfg_link_server == dave_true)
+	{
+		SYNCTRACE("pOtherClient is server link, wait connecting! %s/%s/%s:%s -> %s/%s/%s:%s",
+			pClient->verno, pClient->globally_identifier, pClient->host_name,
+			ipv4str2(pOtherClient->link_ip, pOtherClient->link_port),
+			pOtherClient->verno, pOtherClient->globally_identifier, pOtherClient->host_name,
+			ipv4str(pOtherClient->link_ip, pOtherClient->link_port));
+	
+		if(_sync_server_sync_link_to(pClient, pOtherClient) == dave_true)
+		{
+			link_event[pOtherClient->client_index] = dave_true;
+		}
+
+		return dave_true;
+	}
+
+	return dave_false;
+}
+
 static void
 _sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 {
 	ub client_index;
 	SyncClient *pOtherClient;
 	ub expected_mode;
-
-	SYNCTRACE("%s", pClient->verno);
 
 	if((pClient->link_state != SyncConnectDetected_unobstructed) && (pClient->link_state != SyncConnectDetected_hinder))
 	{
@@ -198,6 +233,10 @@ _sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 		else
 			pClient->link_state = SyncConnectDetected_hinder;
 	}
+
+	SYNCTRACE("%s link_state:%d %s",
+		pClient->verno, pClient->link_state,
+		ipv4str(pClient->link_ip, pClient->link_port));
 
 	if(pClient->link_state == SyncConnectDetected_unobstructed)
 	{
@@ -215,13 +254,14 @@ _sync_server_sync_link_to_me(SyncClient *pClient, dave_bool *link_event)
 		if((pOtherClient != pClient)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			if((pClient->link_up_flag == dave_false)
-				|| (pClient->link_state == SyncConnectDetected_hinder)
-				|| (sync_server_link_mode(pClient->globally_identifier, pOtherClient->globally_identifier, expected_mode) == dave_true))
+			if(_sync_server_sync_is_cfg_link(pClient, pOtherClient, link_event) == dave_false)
 			{
-				if(_sync_server_sync_link_to(pClient, pOtherClient) == dave_true)
+				if(sync_server_link_mode(pClient->globally_identifier, pOtherClient->globally_identifier, expected_mode) == dave_true)
 				{
-					link_event[pOtherClient->client_index] = dave_true;
+					if(_sync_server_sync_link_to(pClient, pOtherClient) == dave_true)
+					{
+						link_event[pOtherClient->client_index] = dave_true;
+					}
 				}
 			}
 		}
@@ -243,12 +283,14 @@ _sync_server_sync_link_to_other(SyncClient *pClient, dave_bool *link_event)
 		if((pOtherClient != pClient)
 			&& (pOtherClient->client_socket != INVALID_SOCKET_ID))
 		{
-			if((pClient->link_up_flag == dave_false)
-				|| (sync_server_link_mode(pOtherClient->globally_identifier, pClient->globally_identifier, NULL_MODEL) == dave_true))
+			if(_sync_server_sync_is_cfg_link(pClient, pOtherClient, link_event) == dave_false)
 			{
-				if(_sync_server_sync_link_to(pOtherClient, pClient) == dave_true)
+				if(sync_server_link_mode(pOtherClient->globally_identifier, pClient->globally_identifier, NULL_MODEL) == dave_true)
 				{
-					link_event[pOtherClient->client_index] = dave_true;
+					if(_sync_server_sync_link_to(pOtherClient, pClient) == dave_true)
+					{
+						link_event[pOtherClient->client_index] = dave_true;
+					}
 				}
 			}
 		}
@@ -281,7 +323,7 @@ _sync_server_link_event_patrol(SyncClient *pClient, dave_bool *link_event)
 		{
 			if(link_event[pOtherClient->client_index] == dave_false)
 			{
-				SYNCLOG("%s/%s/%s patrol %s/%s/%s",
+				SYNCTRACE("%s/%s/%s patrol %s/%s/%s",
 					pClient->globally_identifier, pClient->verno,
 					pClient->link_up_flag == dave_true ? "up" : "down",
 					pOtherClient->globally_identifier, pOtherClient->verno,

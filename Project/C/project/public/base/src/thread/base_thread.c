@@ -1621,6 +1621,12 @@ base_thread_get_id(const s8 *name, s8 *fun, ub line)
 	return thread_id;
 }
 
+ThreadId
+base_thread_gid_to_id(const s8 *gid, const s8 *thread_name, s8 *fun, ub line)
+{
+	return thread_gid_table_inq((s8 *)gid, (s8 *)thread_name);	
+}
+
 TaskAttribute
 base_thread_attrib(ThreadId thread_id)
 {
@@ -2372,12 +2378,15 @@ base_thread_sync_msg(
 		THREADLTRACE(60,1,"sync thread call failed! %s->%s:%s <%s:%d>",
 			pSrcThread->thread_name, pDstThread->thread_name, msgstr(req_id),
 			fun, line);
+
+		thread_call_sync_pre_clean(pSrcThread, req_id, pSync);
 		thread_clean_user_input_data(req_body, req_id);
 		return NULL;
 	}
 
 	if(base_thread_id_msg(NULL, NULL, NULL, NULL, src_id, dst_id, BaseMsgType_Unicast, req_id, req_len, req_body, 0, fun, line) == dave_false)
 	{
+		thread_call_sync_pre_clean(pSrcThread, req_id, pSync);
 		return NULL;
 	}
 

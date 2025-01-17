@@ -11,6 +11,7 @@
 #include "sip_client.h"
 #include "sip_server.h"
 #include "sip_reg.h"
+#include "sip_call.h"
 #include "sip_state.h"
 #include "sip_automatic.h"
 #include "sip_global_lock.h"
@@ -104,7 +105,7 @@ _sip_signal_find_sip_package_end(SIPSignal *pSignal)
 }
 
 static dave_bool
-_sip_signal_is_re_requeset(SIPSignal *pSignal, osip_message_t *sip)
+_sip_signal_is_re_requeset(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip)
 {
 	if(sip->sip_method == NULL)
 		return dave_false;
@@ -112,10 +113,10 @@ _sip_signal_is_re_requeset(SIPSignal *pSignal, osip_message_t *sip)
 	if(pSignal->register_request == sip)
 		return dave_true;
 
-	if(pSignal->invite_request == sip)
+	if((pCall != NULL) && (pCall->invite_request == sip))
 		return dave_true;
 
-	if(pSignal->bye_request == sip)
+	if((pCall != NULL) && (pCall->bye_request == sip))
 		return dave_true;
 
 	return dave_false;;
@@ -124,6 +125,7 @@ _sip_signal_is_re_requeset(SIPSignal *pSignal, osip_message_t *sip)
 static void
 _sip_signal_recv(SIPSignal *pSignal)
 {
+	SIPCall *pCall;
 	ub sip_package_end_index;
 	osip_message_t *sip;
 	int status_code;
@@ -150,7 +152,9 @@ _sip_signal_recv(SIPSignal *pSignal)
 
 	status_code = _sip_signal_message_distribution(pSignal, sip);
 
-	sip_automatic_recv(pSignal, sip, status_code);
+	pCall = sip_my_call(pSignal, osip_get_call_id(sip));
+
+	sip_automatic_recv(pSignal, pCall, sip, status_code);
 
 	osip_message_free(sip);
 }
@@ -226,10 +230,6 @@ _sip_signal_signal_creat(
 	pSignal->cseq_number = t_rand() & 0xffff;
 	pSignal->get_register_request_intermediate_state = dave_false;
 	pSignal->register_request = NULL;
-	pSignal->get_invite_request_intermediate_state = dave_false;
-	pSignal->invite_request = NULL;
-	pSignal->get_bye_request_intermediate_state = dave_false;
-	pSignal->bye_request = NULL;
 
 	pSignal->reg.reg_timer_counter = 0;
 	dave_snprintf(kv_name, sizeof(kv_name), "sipcallidkv-%lx", pSignal);
@@ -251,18 +251,6 @@ _sip_signal_signal_release(SIPSignal *pSignal)
 	{
 		osip_message_free(pSignal->register_request);
 		pSignal->register_request = NULL;
-	}
-
-	if(pSignal->invite_request != NULL)
-	{
-		osip_message_free(pSignal->invite_request);
-		pSignal->invite_request = NULL;
-	}
-
-	if(pSignal->bye_request != NULL)
-	{
-		osip_message_free(pSignal->bye_request);
-		pSignal->bye_request = NULL;
 	}
 
 	if(pSignal->call_id_kv != NULL)
@@ -474,7 +462,7 @@ sip_signal_recv(SocketRead *pRead)
 	{
 		SIPLOG("buffer overflow! data len:%d w index:%d buffer max:%d",
 			pRead->data->len, pSignal->recv_w_index, SIP_RECV_BUFFER_MAX);
-		return dave_true;
+		pSignal->recv_r_index = pSignal->recv_e_index = pSignal->recv_w_index = 0;
 	}
 
 	pSignal->recv_w_index += dave_memcpy(&(pSignal->recv_buffer[pSignal->recv_w_index]), ms8(pRead->data), mlen(pRead->data));
@@ -490,7 +478,7 @@ sip_signal_recv(SocketRead *pRead)
 }
 
 void
-sip_signal_send(SIPSignal *pSignal, osip_message_t *sip)
+sip_signal_send(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip)
 {
 	char *sip_string;
 	size_t sip_length;
@@ -514,9 +502,9 @@ sip_signal_send(SIPSignal *pSignal, osip_message_t *sip)
 	sip_mbuf = dave_mmalloc(sip_length);
 	dave_memcpy(ms8(sip_mbuf), sip_string, sip_length);
 
-	if(_sip_signal_is_re_requeset(pSignal, sip) == dave_false)
+	if(_sip_signal_is_re_requeset(pSignal, pCall, sip) == dave_false)
 	{
-		if(sip_automatic_send(pSignal, sip) == dave_false)
+		if(sip_automatic_send(pSignal, pCall, sip) == dave_false)
 		{
 			osip_message_free(sip);
 		}

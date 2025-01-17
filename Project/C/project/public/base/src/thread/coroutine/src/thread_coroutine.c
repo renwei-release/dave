@@ -228,7 +228,10 @@ _thread_coroutine_msg_site_malloc(CoroutineSite *pSite)
 {
 	if(pSite->msg_site != 0)
 	{
-		THREADABNOR("invalid malloc:%lx", pSite->msg_site);
+		THREADABNOR("invalid malloc:%lx %s:%s->%s:%s",
+			pSite->msg_site,
+			thread_id_to_name(pSite->src_thread), msgstr(pSite->req_msg_id),
+			thread_id_to_name(pSite->dst_thread), msgstr(pSite->rsp_msg_id));
 	}
 
 	return coroutine_msg_site_malloc(pSite);
@@ -475,6 +478,20 @@ _thread_coroutine_running_step_3(
 	_thread_coroutine_add_kv(pSite);
 
 	return pSite;
+}
+
+static inline void
+_thread_coroutine_running_step_3_clean(void *param)
+{
+	CoroutineSite *pSite = param;
+
+	_thread_coroutine_del_kv(pSite->rsp_msg_id, pSite->wakeup_index, pSite->msg_site);
+
+	_thread_coroutine_msg_site_free(pSite);
+
+	pSite->src_thread = pSite->dst_thread = INVALID_THREAD_ID;
+	pSite->req_msg_id = pSite->rsp_msg_id = MSGID_RESERVED;
+	pSite->co_setup_time = 0;
 }
 
 static inline void *
@@ -773,6 +790,18 @@ thread_coroutine_running_step_setup(
 		src_id, dst_id,
 		req_msg_id, req_msg_body,
 		rsp_msg_id, rsp_msg_body, rsp_msg_len);
+}
+
+void
+thread_coroutine_running_step_setup_clean(void *param)
+{
+	if(param == NULL)
+	{
+		THREADLOG("empty param!");
+		return;
+	}
+
+	_thread_coroutine_running_step_3_clean(param);
 }
 
 void *

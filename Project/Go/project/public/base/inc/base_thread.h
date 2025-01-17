@@ -109,6 +109,7 @@ void base_thread_msg_unregister(ThreadId thread_id, ub msg_id);
 
 ThreadId base_thread_get_local(ThreadId thread_id);
 ThreadId base_thread_get_id(const s8 *name, s8 *fun, ub line);
+ThreadId base_thread_gid_to_id(const s8 *gid, const s8 *thread_name, s8 *fun, ub line);
 TaskAttribute base_thread_attrib(ThreadId thread_id);
 dave_bool base_thread_has_initialization(ThreadId thread_id);
 s8 *base_thread_get_name(ThreadId thread_id, s8 *fun, ub line);
@@ -142,8 +143,10 @@ dave_bool base_thread_broadcast_msg(BaseMsgType type, s8 *dst_name, ub msg_id, u
 #define self() base_thread_get_self((s8 *)__func__, (ub)__LINE__)
 #define get_thread_flag() base_thread_get_flag((s8 *)__func__, (ub)__LINE__)
 #define get_thread_id(name) base_thread_get_id((const s8 *)name, (s8 *)__func__, (ub)__LINE__)
+#define get_gid_id(gid, name) base_thread_gid_to_id((const s8 *)gid, (const s8 *)name, (s8 *)__func__, (ub)__LINE__)
 
-#define thread_id(name) base_thread_get_id((const s8 *)name, (s8 *)__func__, (ub)__LINE__)
+#define thread_id(name) get_thread_id(name)
+#define gid_id(gid, name) get_gid_id(gid, name)
 #define thread_attrib(thread_id) base_thread_attrib(thread_id)
 #define thread_has_initialization(thread_id) base_thread_has_initialization(thread_id)
 

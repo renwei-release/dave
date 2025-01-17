@@ -40,6 +40,11 @@ typedef struct {
 	call_start_fun start_fun;
 	call_end_fun end_fun;
 
+	dave_bool get_invite_request_intermediate_state;
+	osip_message_t *invite_request;
+	dave_bool get_bye_request_intermediate_state;
+	osip_message_t *bye_request;
+
 	void *signal;
 	void *user_ptr;
 } SIPCall;
@@ -73,10 +78,6 @@ typedef struct {
 	ub cseq_number;
 	dave_bool get_register_request_intermediate_state;
 	osip_message_t *register_request;
-	dave_bool get_invite_request_intermediate_state;
-	osip_message_t *invite_request;
-	dave_bool get_bye_request_intermediate_state;
-	osip_message_t *bye_request;
 
 	SIPReg reg;
 	void *call_id_kv;
@@ -99,7 +100,7 @@ void sip_signal_reg_bye(SIPSignal *pSignal, sip_recv_fun fun, void *param);
 
 dave_bool sip_signal_recv(SocketRead *pRead);
 
-void sip_signal_send(SIPSignal *pSignal, osip_message_t *sip);
+void sip_signal_send(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip);
 
 #endif
 

@@ -8,6 +8,7 @@
 #include "dave_tools.h"
 #include "sip_signal.h"
 #include "sip_reg.h"
+#include "sip_call.h"
 #include "sip_global_lock.h"
 #include "sip_log.h"
 
@@ -16,25 +17,35 @@ static void *_sip_state_kv = NULL;
 static void
 _sip_state_resend_request(SIPSignal *pSignal)
 {
+	ub call_index;
+	SIPCall *pCall;
+
 	if((pSignal->get_register_request_intermediate_state == dave_false) && (pSignal->register_request != NULL))
 	{
 		SIPLOG("auto resend register request!");
 
-		sip_signal_send(pSignal, pSignal->register_request);
+		sip_signal_send(pSignal, NULL, pSignal->register_request);
 	}
 
-	if((pSignal->get_invite_request_intermediate_state == dave_false) && (pSignal->invite_request != NULL))
+	for(call_index=0; call_index<9999999999999; call_index++)
 	{
-		SIPLOG("auto resend invite request!");
+		pCall = sip_index_call(pSignal, call_index);
+		if(pCall == NULL)
+			break;
 
-		sip_signal_send(pSignal, pSignal->invite_request);
-	}
+		if((pCall->get_invite_request_intermediate_state == dave_false) && (pCall->invite_request != NULL))
+		{
+			SIPLOG("auto resend invite request!");
 
-	if((pSignal->get_bye_request_intermediate_state == dave_false) && (pSignal->bye_request != NULL))
-	{
-		SIPLOG("auto resend bye request!");
+			sip_signal_send(pSignal, pCall, pCall->invite_request);
+		}
 
-		sip_signal_send(pSignal, pSignal->bye_request);
+		if((pCall->get_bye_request_intermediate_state == dave_false) && (pCall->bye_request != NULL))
+		{
+			SIPLOG("auto resend bye request!");
+
+			sip_signal_send(pSignal, pCall, pCall->bye_request);
+		}
 	}
 }
 

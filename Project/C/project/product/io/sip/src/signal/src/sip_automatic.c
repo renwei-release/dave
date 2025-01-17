@@ -10,7 +10,7 @@
 #include "sip_log.h"
 
 static dave_bool
-_sip_automatic_save_request(SIPSignal *pSignal, osip_message_t *sip)
+_sip_automatic_save_request(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip)
 {
 	if(sip->sip_method == NULL)
 		return dave_false;
@@ -25,25 +25,25 @@ _sip_automatic_save_request(SIPSignal *pSignal, osip_message_t *sip)
 		pSignal->get_register_request_intermediate_state = dave_false;
 		pSignal->register_request = sip;
 	}
-	else if(dave_strcmp(sip->sip_method, "INVITE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(sip->sip_method, "INVITE") == dave_true))
 	{
-		if(pSignal->invite_request != NULL)
+		if(pCall->invite_request != NULL)
 		{
 			SIPLOG("has new invite!");
-			osip_message_free(pSignal->invite_request);
+			osip_message_free(pCall->invite_request);
 		}
-		pSignal->get_invite_request_intermediate_state = dave_false;
-		pSignal->invite_request = sip;
+		pCall->get_invite_request_intermediate_state = dave_false;
+		pCall->invite_request = sip;
 	}
-	else if(dave_strcmp(sip->sip_method, "BYE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(sip->sip_method, "BYE") == dave_true))
 	{
-		if(pSignal->bye_request != NULL)
+		if(pCall->bye_request != NULL)
 		{
 			SIPLOG("has new bye!");
-			osip_message_free(pSignal->bye_request);
+			osip_message_free(pCall->bye_request);
 		}
-		pSignal->get_bye_request_intermediate_state = dave_false;
-		pSignal->bye_request = sip;
+		pCall->get_bye_request_intermediate_state = dave_false;
+		pCall->bye_request = sip;
 	}
 	else if(dave_strcmp(sip->sip_method, "ACK") == dave_true)
 	{
@@ -59,7 +59,7 @@ _sip_automatic_save_request(SIPSignal *pSignal, osip_message_t *sip)
 }
 
 static osip_message_t *
-_sip_automatic_load_request(SIPSignal *pSignal, osip_message_t *response)
+_sip_automatic_load_request(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *response)
 {
 	osip_message_t *request;
 
@@ -80,15 +80,15 @@ _sip_automatic_load_request(SIPSignal *pSignal, osip_message_t *response)
 		request = pSignal->register_request;
 		pSignal->register_request = NULL;
 	}
-	else if(dave_strcmp(response->cseq->method, "INVITE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "INVITE") == dave_true))
 	{
-		request = pSignal->invite_request;
-		pSignal->invite_request = NULL;
+		request = pCall->invite_request;
+		pCall->invite_request = NULL;
 	}
-	else if(dave_strcmp(response->cseq->method, "BYE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "BYE") == dave_true))
 	{
-		request = pSignal->bye_request;
-		pSignal->bye_request = NULL;
+		request = pCall->bye_request;
+		pCall->bye_request = NULL;
 	}
 	else
 	{
@@ -98,14 +98,17 @@ _sip_automatic_load_request(SIPSignal *pSignal, osip_message_t *response)
 
 	if(request == NULL)
 	{
-		SIPLOG("can't find the method:%s request", response->cseq->method);
+		SIPLOG("can't find the method:%s status_code:%d/%s request pCall:%lx",
+			response->cseq->method,
+			response->status_code, response->reason_phrase,
+			pCall);
 	}
 
 	return request;
 }
 
 static void
-_sip_automatic_is_intermediate_state(SIPSignal *pSignal, osip_message_t *response)
+_sip_automatic_is_intermediate_state(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *response)
 {
 	if(response->sip_method != NULL)
 		return;
@@ -122,41 +125,41 @@ _sip_automatic_is_intermediate_state(SIPSignal *pSignal, osip_message_t *respons
 	{
 		pSignal->get_register_request_intermediate_state = dave_true;
 	}
-	else if(dave_strcmp(response->cseq->method, "INVITE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "INVITE") == dave_true))
 	{
-		pSignal->get_invite_request_intermediate_state = dave_true;
+		pCall->get_invite_request_intermediate_state = dave_true;
 	}
-	else if(dave_strcmp(response->cseq->method, "BYE") == dave_true)
+	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "BYE") == dave_true))
 	{
-		pSignal->get_bye_request_intermediate_state = dave_true;
+		pCall->get_bye_request_intermediate_state = dave_true;
 	}
 	else
 	{
-		SIPLOG("unsupport method:%s", response->cseq->method);
+		SIPLOG("unsupport method:%s pCall:%lx", response->cseq->method, pCall);
 	}
 }
 
 static void
-_sip_automatic_ack(SIPSignal *pSignal, osip_message_t *response)
+_sip_automatic_ack(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *response)
 {
 	osip_message_t *request, *sip;
 
-	request = _sip_automatic_load_request(pSignal, response);
+	request = _sip_automatic_load_request(pSignal, pCall, response);
 	if(request == NULL)
 	{
-		_sip_automatic_is_intermediate_state(pSignal, response);
+		_sip_automatic_is_intermediate_state(pSignal, pCall, response);
 		return;
 	}
 
 	sip = osip_ack(request, response);
 
-	sip_signal_send(pSignal, sip);
+	sip_signal_send(pSignal, pCall, sip);
 
 	osip_message_free(request);
 }
 
 static void
-_sip_automatic_status(SIPSignal *pSignal, osip_message_t *request, int status_code)
+_sip_automatic_status(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *request, int status_code)
 {
 	osip_message_t *sip = NULL;
 
@@ -171,24 +174,24 @@ _sip_automatic_status(SIPSignal *pSignal, osip_message_t *request, int status_co
 			sip->cseq->method, sip->cseq->number,
 			sip->status_code, sip->reason_phrase);
 
-		sip_signal_send(pSignal, sip);
+		sip_signal_send(pSignal, pCall, sip);
 	}
 }
 
 // =====================================================================
 
 dave_bool
-sip_automatic_send(SIPSignal *pSignal, osip_message_t *sip)
+sip_automatic_send(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip)
 {
-	return _sip_automatic_save_request(pSignal, sip);
+	return _sip_automatic_save_request(pSignal, pCall, sip);
 }
 
 void
-sip_automatic_recv(SIPSignal *pSignal, osip_message_t *sip, int status_code)
+sip_automatic_recv(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *sip, int status_code)
 {
 	if(sip->sip_method == NULL)
-		_sip_automatic_ack(pSignal, sip);
+		_sip_automatic_ack(pSignal, pCall, sip);
 	else
-		_sip_automatic_status(pSignal, sip, status_code);
+		_sip_automatic_status(pSignal, pCall, sip, status_code);
 }
 

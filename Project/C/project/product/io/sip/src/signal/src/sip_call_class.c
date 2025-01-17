@@ -65,6 +65,18 @@ _sip_call_delay_release(TIMERID timer_id, ub thread_index, void *param_ptr)
 		pCall->rtp = NULL;
 	}
 
+	if(pCall->invite_request != NULL)
+	{
+		osip_message_free(pCall->invite_request);
+		pCall->invite_request = NULL;
+	}
+
+	if(pCall->bye_request != NULL)
+	{
+		osip_message_free(pCall->bye_request);
+		pCall->bye_request = NULL;
+	}
+
 	dave_memset(pCall, 0x00, sizeof(SIPCall));
 
 	dave_free(pCall);
@@ -79,6 +91,11 @@ sip_call_build(SIPSignal *pSignal, s8 *call_data)
 
 	kv_add_key_ptr(pSignal->call_data_kv, call_data, pCall);
 
+	pCall->get_invite_request_intermediate_state = dave_false;
+	pCall->invite_request = NULL;
+	pCall->get_bye_request_intermediate_state = dave_false;
+	pCall->bye_request = NULL;
+
 	return pCall;
 }
 
@@ -89,6 +106,12 @@ sip_call_id_query(SIPSignal *pSignal, s8 *call_id)
 		return NULL;
 
 	return (SIPCall *)kv_inq_key_ptr(pSignal->call_id_kv, call_id);
+}
+
+SIPCall *
+sip_call_index_query(SIPSignal *pSignal, ub index)
+{
+	return (SIPCall *)kv_index_key_ptr(pSignal->call_id_kv, index);
 }
 
 SIPCall *

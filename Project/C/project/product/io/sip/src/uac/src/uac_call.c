@@ -59,17 +59,20 @@ _uac_call_rtp_stop(void *rtp)
 {
 	RTP *pRTP = (RTP *)rtp;
 	UACCall *pUACCall = _uac_call_rtp_to_call(pRTP);
-	RTPStopReq *pReq = thread_msg(pReq);
 
 	UACLOG("%s %s->%s owner:%s",
 		pRTP->call_id, pRTP->call_from, pRTP->call_to,
 		thread_name(pUACCall->owner_id));
 
-	dave_strcpy(pReq->call_id, pRTP->call_id, sizeof(pReq->call_id));
-	dave_strcpy(pReq->call_from, pRTP->call_from, sizeof(pReq->call_from));
-	dave_strcpy(pReq->call_to, pRTP->call_to, sizeof(pReq->call_to));
+	if(pUACCall->owner_id != INVALID_THREAD_ID)
+	{
+		RTPStopReq *pReq = thread_msg(pReq);
+		dave_strcpy(pReq->call_id, pRTP->call_id, sizeof(pReq->call_id));
+		dave_strcpy(pReq->call_from, pRTP->call_from, sizeof(pReq->call_from));
+		dave_strcpy(pReq->call_to, pRTP->call_to, sizeof(pReq->call_to));
 
-	id_co(pUACCall->owner_id, RTP_STOP_REQ, pReq, RTP_STOP_RSP);
+		id_co(pUACCall->owner_id, RTP_STOP_REQ, pReq, RTP_STOP_RSP);
+	}
 }
 
 static void
@@ -81,6 +84,13 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 	u16 send_sequence_number;
 
 	UACDEBUG("call:%s->%s owner:%s", pRTP->call_from, pRTP->call_to, thread_name(pUACCall->owner_id));
+
+	if(pUACCall->owner_id == INVALID_THREAD_ID)
+	{
+		UACLOG("phone_number:%s owner_id is invalid!",
+			pUACCall->phone_number);
+		return;
+	}
 
 	payload_data = uac_rtp_buffer(
 		&send_sequence_number,
@@ -100,7 +110,10 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 		pReq->payload_data = payload_data;
 		pReq->ptr = pReq;
 
-		id_msg(pUACCall->owner_id, RTP_DATA_REQ, pReq);
+		if(id_msg(pUACCall->owner_id, RTP_DATA_REQ, pReq) == dave_false)
+		{
+			dave_mfree(payload_data);
+		}
 	}
 }
 
@@ -146,6 +159,8 @@ uac_call(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 	UACCall *pUACCall;
 	SIPCall *pSIPCall;
 
+	dave_memset(call_id_ptr, 0x00, call_id_len);
+
 	pUACCall = uac_main_inq_phone_number(phone_number);
 	if(pUACCall != NULL)
 	{
@@ -190,18 +205,12 @@ uac_bye(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 {
 	UACCall *pUACCall = uac_main_inq_phone_number(phone_number);
 
+	dave_memset(call_id_ptr, 0x00, call_id_len);
+
 	if(pUACCall == NULL)
 	{
 		UACLOG("call:%s is end!", phone_number);
 		return RetCode_OK;
-	}
-
-	if(pUACCall->owner_id != owner_id)
-	{
-		UACLOG("owner:%s/%lx %s/%lx mismatch! phone_number:%s",
-			thread_name(pUACCall->owner_id), pUACCall->owner_id,
-			thread_name(owner_id), owner_id,
-			phone_number);
 	}
 
 	if(call_id_ptr != NULL)

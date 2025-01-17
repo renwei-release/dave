@@ -76,6 +76,17 @@ thread_call_sync_pre(
 		return thread_sync_call_step_1_pre(pSrcThread, src_id, pDstThread, rsp_msg_id, rsp_msg_body, rsp_msg_len);
 }
 
+void
+thread_call_sync_pre_clean(
+	ThreadStruct *pSrcThread, ub req_msg_id,
+	void *param)
+{
+#ifdef ENABLE_THREAD_COROUTINE
+	if(thread_enable_coroutine(pSrcThread, req_msg_id) == dave_true)
+		thread_coroutine_running_step_setup_clean(param);
+#endif
+}
+
 void *
 thread_call_sync_wait(
 	ThreadStruct *pSrcThread, ThreadStruct *pDstThread,

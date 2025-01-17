@@ -18,5 +18,7 @@ RetCode sip_bye(SIPSignal *pSignal, s8 *call_data);
 
 SIPCall * sip_my_call(SIPSignal *pSignal, s8 *call_id);
 
+SIPCall * sip_index_call(SIPSignal *pSignal, ub index);
+
 #endif
 

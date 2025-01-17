@@ -358,6 +358,12 @@ coroutine_be_in_use(void *co)
 {
 	CoCore *pCore = (CoCore *)co;
 
+	if(pCore == NULL)
+	{
+		THREADABNOR("pCore is NULL!");
+		return dave_true;
+	}
+
 	return pCore->be_in_use;
 }
 

@@ -82,6 +82,7 @@ typedef struct {
 
 	dave_bool receive_thread_done;
 	dave_bool sync_thread_flag;
+	dave_bool is_cfg_link_server;
 
 	dave_bool ready_flag;
 	dave_bool client_app_busy;

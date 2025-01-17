@@ -16,6 +16,8 @@ SIPCall * sip_call_build(SIPSignal *pSignal, s8 *call_data);
 
 SIPCall * sip_call_id_query(SIPSignal *pSignal, s8 *call_id);
 
+SIPCall * sip_call_index_query(SIPSignal *pSignal, ub index);
+
 SIPCall * sip_call_data_query(SIPSignal *pSignal, s8 *call_data);
 
 void sip_call_creat(SIPSignal *pSignal, s8 *call_id, SIPCall *pCall);

@@ -71,6 +71,16 @@ _uac_bye(ThreadId src, SIPByeReq *pReq)
 }
 
 static void
+_uac_all_bye(ThreadRemoteIDRemoveMsg *pRemove)
+{
+	UACLOG("%lx/%s/%s",
+		pRemove->remote_thread_id, pRemove->remote_thread_name,
+		pRemove->globally_identifier);
+
+	uac_main_del_owner_id_all_call(pRemove->remote_thread_id);
+}
+
+static void
 _uac_main(MSGBODY *pMsg)
 {
 	switch((sb)(pMsg->msg_id))
@@ -85,7 +95,10 @@ _uac_main(MSGBODY *pMsg)
 		case MSGID_REMOTE_THREAD_READY:
 		case MSGID_REMOTE_THREAD_REMOVE:
 		case MSGID_REMOTE_THREAD_ID_READY:
+			break;
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
+				_uac_all_bye((ThreadRemoteIDRemoveMsg *)(pMsg->msg_body));
+			break;
 		case SOCKET_DISCONNECT_RSP:
 		case SOCKET_PLUGIN:
 		case SOCKET_PLUGOUT:

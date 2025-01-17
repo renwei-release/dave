@@ -375,6 +375,8 @@ _sync_server_rx_verno(SyncClient *pClient, ub frame_len, u8 *frame_ptr)
 		frame_index += sync_str_unpacket(&frame_ptr[frame_index], frame_len-frame_index, pClient->host_name, sizeof(pClient->host_name));
 	}
 
+	pClient->is_cfg_link_server = sync_server_link_server_white_list_cfg(pClient->globally_identifier);
+
 	pClient->work_start_second = dave_os_time_s();
 
 	sync_server_tx_my_verno(pClient);

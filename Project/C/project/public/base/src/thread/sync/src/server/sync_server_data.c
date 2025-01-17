@@ -67,6 +67,7 @@ _sync_server_reset_client(SyncClient *pClient)
 
 	pClient->receive_thread_done = dave_false;
 	pClient->sync_thread_flag = dave_false;
+	pClient->is_cfg_link_server = dave_false;
 
 	pClient->ready_flag = dave_false;
 	pClient->client_app_busy = dave_false;

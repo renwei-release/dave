@@ -18,7 +18,7 @@
 static RetCode
 _uac_rtp_buffer_recycle(void *ramkv, s8 *key)
 {
-	MBUF *pData = kv_inq_key_ptr(ramkv, key);
+	MBUF *pData = kv_del_key_ptr(ramkv, key);
 
 	if(pData == NULL)
 		return RetCode_empty_data;
@@ -61,6 +61,7 @@ uac_rtp_buffer_init(UACRTPBuffer *pBuffer)
 	pBuffer->send_sequence_number = pBuffer->recv_sequence_number = 0;
 	pBuffer->buffer_len = 0;
 	dave_snprintf(kv_name, sizeof(kv_name), "rtpbuffer-%lx", pBuffer);
+	pBuffer->pre_buffer_number = 0;
 	pBuffer->pre_buffer_kv = kv_malloc(kv_name, 0, NULL);
 }
 

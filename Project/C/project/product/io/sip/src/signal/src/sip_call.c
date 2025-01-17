@@ -188,7 +188,7 @@ _sip_call_start(SIPCall *pCall)
 	}
 	else
 	{
-		SIPABNOR("call:%s start_fun is NULL!", pCall->call_data);
+		SIPLOG("call:%s start_fun is NULL!", pCall->call_data);
 	}
 }
 
@@ -212,7 +212,7 @@ _sip_call_end(SIPCall *pCall)
 	}
 	else
 	{
-		SIPABNOR("call:%s end_fun is NULL!", pCall->call_data);
+		SIPLOG("call:%s end_fun is NULL!", pCall->call_data);
 	}
 
 	sip_call_release(pSignal, pCall);
@@ -411,7 +411,7 @@ _sip_call_send(
 
 	_sip_call_build(pSignal, pCall, sip);
 
-	sip_signal_send(pSignal, sip);
+	sip_signal_send(pSignal, pCall, sip);
 
 	return dave_true;
 }
@@ -429,7 +429,7 @@ _sip_bye_send(SIPSignal *pSignal, SIPCall *pCall)
 			pSignal->cseq_number ++);
 	});
 
-	sip_signal_send(pSignal, sip);
+	sip_signal_send(pSignal, pCall, sip);
 
 	_sip_call_rtp_release(pCall);
 }
@@ -493,5 +493,11 @@ SIPCall *
 sip_my_call(SIPSignal *pSignal, s8 *call_id)
 {
 	return sip_call_id_query(pSignal, call_id);
+}
+
+SIPCall *
+sip_index_call(SIPSignal *pSignal, ub index)
+{
+	return sip_call_index_query(pSignal, index);
 }
 

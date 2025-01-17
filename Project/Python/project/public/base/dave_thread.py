@@ -21,8 +21,18 @@ def thread_id(thread_name):
     if isinstance(thread_name, str) == True:
         thread_name = bytes(thread_name, encoding='utf8')
 
-    davelib.dave_dll_thread_id.restype = c_int
+    davelib.dave_dll_thread_id.restype = c_long
     return davelib.dave_dll_thread_id(c_char_p(thread_name))
+
+
+def gid_id(gid, thread_name):
+    if isinstance(gid, str) == True:
+        gid = bytes(gid, encoding='utf8')
+    if isinstance(thread_name, str) == True:
+        thread_name = bytes(thread_name, encoding='utf8')
+
+    davelib.dave_dll_gid_id.restype = c_long
+    return davelib.dave_dll_gid_id(c_char_p(gid), c_char_p(thread_name))
 
 
 def thread_self():
@@ -136,6 +146,8 @@ def gid_co(gid, dst, req_id, pReq, rsp_id, rsp_class):
         dst = bytes(dst, encoding='utf8')
 
     pRsp = davelib.dave_dll_thread_gid_co(c_char_p(gid), c_char_p(dst), c_int(req_id), c_int(sizeof(pReq.contents)), pReq, c_int(rsp_id), c_char_p(__func__), c_int(__LINE__))
+    if pRsp == None:
+        return None
     return struct_copy(rsp_class, pRsp, sizeof(rsp_class))
 
 
@@ -173,6 +185,11 @@ def sync_msg(dst, req_id, pReq, rsp_id, rsp_class):
 
     thread_msg_release(pRsp)
     return rsp_ret
+
+
+def gid_sync(gid, dst, req_id, pReq, rsp_id, rsp_class):
+    dst = gid_id(gid, dst)
+    return sync_msg(dst, req_id, pReq, rsp_id, rsp_class)
 
 
 def broadcast_msg(thread_name, msg_id, class_instance):

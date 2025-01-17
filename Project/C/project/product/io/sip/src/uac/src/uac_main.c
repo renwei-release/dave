@@ -7,9 +7,11 @@
 #include "dave_base.h"
 #include "dave_tools.h"
 #include "sip_signal.h"
+#include "sip_call.h"
 #include "uac_main.h"
 #include "uac_rtp_buffer.h"
 #include "uac_cfg.h"
+#include "uac_call.h"
 #include "uac_log.h"
 
 UACClass *_uac_class = NULL;
@@ -89,6 +91,7 @@ _uac_main_call_build(ThreadId owner_id, s8 *phone_number)
 	UACCall *pUACCall = dave_ralloc(sizeof(UACCall));
 
 	pUACCall->owner_id = owner_id;
+	dave_strcpy(pUACCall->phone_number, phone_number, sizeof(pUACCall->phone_number));
 	uac_rtp_buffer_init(&(pUACCall->rtp_buffer));
 	pUACCall->call = NULL;
 
@@ -100,6 +103,8 @@ _uac_main_call_release(UACCall *pUACCall)
 {
 	uac_rtp_buffer_exit(&(pUACCall->rtp_buffer));
 
+	pUACCall->call = NULL;
+
 	dave_free(pUACCall);
 }
 
@@ -110,6 +115,11 @@ _uac_main_call_recycle(void *ramkv, s8 *key)
 
 	if(pUACCall == NULL)
 		return RetCode_empty_data;
+
+	if((pUACCall->call != NULL) && (pUACCall->call->signal != NULL))
+	{
+		sip_bye((SIPSignal *)(pUACCall->call->signal), pUACCall->phone_number);
+	}
 
 	_uac_main_call_release(pUACCall);
 
@@ -197,6 +207,31 @@ uac_main_del_call(s8 *phone_number)
 	{
 		dave_snprintf(release_timer_name, sizeof(release_timer_name), "UACCALLD%lx", pUACCall);
 		base_timer_param_creat(release_timer_name, _uac_main_call_delay_release, pUACCall, sizeof(void *), 3000);
+	}
+}
+
+void
+uac_main_del_owner_id_all_call(ThreadId owner_id)
+{
+	UACCall *pUACCall;
+	ub call_index;
+	s8 call_id[128];
+
+	for(call_index=0; call_index<9999999999; call_index++)
+	{
+		pUACCall = (UACCall *)kv_index_key_ptr(_uac_class->phone_number_kv, call_index);
+		if(pUACCall == NULL)
+		{
+			UACLOG("call_index:%d", call_index);
+			break;
+		}
+
+		UACLOG("owner_id:%lx/%lx", pUACCall->owner_id, owner_id);
+
+		if((pUACCall->owner_id & 0x0000ffffffffffff) == (owner_id & 0x0000ffffffffffff))
+		{
+			uac_bye(call_id, sizeof(call_id), owner_id, pUACCall->phone_number);
+		}
 	}
 }
 

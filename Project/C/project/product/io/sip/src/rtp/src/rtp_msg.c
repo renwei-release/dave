@@ -93,7 +93,7 @@ _rtp_data_buffer_set(RTP *pRTP, u32 ssrc, s8 *payload_data_ptr, ub payload_data_
 		{
 			pRTP->current_buffer_ssrc = ssrc;
 
-			RTPLOG("ssrc:%d data_len:%d", ssrc, payload_data_len)
+			RTPDEBUG("ssrc:%d data_len:%d", ssrc, payload_data_len)
 		}
 		else
 		{

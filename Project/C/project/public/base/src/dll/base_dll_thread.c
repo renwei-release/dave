@@ -233,7 +233,7 @@ _dll_thread_uid_co(char *uid, BaseMsgType msg_type, int req_id, int req_len, voi
 
 // =====================================================================
 
-int
+unsigned long long
 dave_dll_thread_id(char *thread_name)
 {
 	ThreadId id;
@@ -243,7 +243,20 @@ dave_dll_thread_id(char *thread_name)
 	if((id == INVALID_THREAD_ID) || (id < 0))
 		return -1;
 
-	return (int)id;
+	return (unsigned long long)id;
+}
+
+unsigned long long
+dave_dll_gid_id(char *gid, char *thread_name)
+{
+	ThreadId id;
+
+	id = gid_id(gid, thread_name);
+
+	if((id == INVALID_THREAD_ID) || (id < 0))
+		return -1;
+
+	return (unsigned long long)id;
 }
 
 char *

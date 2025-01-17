@@ -68,6 +68,8 @@ _thread_ready_co_msg(
 			pSrcThread->thread_name, msgstr(req_id),
 			thread_name(dst_id), msgstr(rsp_id),
 			fun, line);
+
+		thread_coroutine_running_step_setup_clean(coroutine_site);
 	}
 
 	return rsp_body;	
@@ -132,6 +134,8 @@ _thread_no_ready_co_msg(
 			pSrcThread->thread_name, msgstr(req_id),
 			gid, dst_thread, uid, msgstr(rsp_id),
 			fun, line);
+
+		thread_coroutine_running_step_setup_clean(coroutine_site);
 	}
 
 	return rsp_body;	

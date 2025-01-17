@@ -17,5 +17,7 @@ void sync_server_link_mode_exit(void);
 
 dave_bool sync_server_link_mode(s8 *ptr_a, s8 *ptr_b, ub expected_mode);
 
+dave_bool sync_server_link_server_white_list_cfg(s8 *globally_identifier);
+
 #endif
 

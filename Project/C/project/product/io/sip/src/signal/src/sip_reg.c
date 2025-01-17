@@ -36,7 +36,7 @@ _sip_reg_send(SIPSignal *pSignal)
 
 	sip_signal_reg_reg(pSignal, _sip_reg_recv, pSignal);
 
-	sip_signal_send(pSignal, sip);
+	sip_signal_send(pSignal, NULL, sip);
 }
 
 // =====================================================================

@@ -13,6 +13,7 @@ void uac_main_init(void);
 void uac_main_exit(void);
 
 #define ONE_SECOND_RTP_BUFFER 160 * 50
+#define PRE_BUFFER_MAX_NUMBER 32
 
 typedef struct {
 	TLock buffer_pv;
@@ -20,11 +21,13 @@ typedef struct {
 	u16 recv_sequence_number;
 	ub buffer_len;
 	s8 buffer_ptr[ONE_SECOND_RTP_BUFFER + 320];
+	sb pre_buffer_number;
 	void *pre_buffer_kv;
 } UACRTPBuffer;
 
 typedef struct {
 	ThreadId owner_id;
+	s8 phone_number[128];
 	UACRTPBuffer rtp_buffer;
 	SIPCall *call;
 } UACCall;
@@ -45,6 +48,8 @@ UACCall * uac_main_inq_phone_number(s8 *phone_number);
 UACCall * uac_main_inq_call_id(s8 *call_id);
 
 void uac_main_del_call(s8 *phone_number);
+
+void uac_main_del_owner_id_all_call(ThreadId owner_id);
 
 #endif
 
