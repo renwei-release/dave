@@ -12,45 +12,22 @@
 #include "sip_global_lock.h"
 #include "sip_log.h"
 
-static void *_sip_state_kv = NULL;
+static void *_sip_signal_state_kv = NULL;
+static void *_sip_call_state_kv = NULL;
 
 static void
-_sip_state_resend_request(SIPSignal *pSignal)
+_sip_state_signal_resend_request(SIPSignal *pSignal)
 {
-	ub call_index;
-	SIPCall *pCall;
-
 	if((pSignal->get_register_request_intermediate_state == dave_false) && (pSignal->register_request != NULL))
 	{
 		SIPLOG("auto resend register request!");
 
 		sip_signal_send(pSignal, NULL, pSignal->register_request);
 	}
-
-	for(call_index=0; call_index<9999999999999; call_index++)
-	{
-		pCall = sip_index_call(pSignal, call_index);
-		if(pCall == NULL)
-			break;
-
-		if((pCall->get_invite_request_intermediate_state == dave_false) && (pCall->invite_request != NULL))
-		{
-			SIPLOG("auto resend invite request!");
-
-			sip_signal_send(pSignal, pCall, pCall->invite_request);
-		}
-
-		if((pCall->get_bye_request_intermediate_state == dave_false) && (pCall->bye_request != NULL))
-		{
-			SIPLOG("auto resend bye request!");
-
-			sip_signal_send(pSignal, pCall, pCall->bye_request);
-		}
-	}
 }
 
 static void
-_sip_state_rereg(SIPSignal *pSignal)
+_sip_state_signal_rereg(SIPSignal *pSignal)
 {
 	ub reg_base_counter = 90;
 
@@ -62,16 +39,61 @@ _sip_state_rereg(SIPSignal *pSignal)
 }
 
 static void
-_sip_state_kv_timer(void *ramkv, s8 *key)
+_sip_state_signal_kv_timer(void *ramkv, s8 *key)
 {
 	SIPSignal *pSignal = kv_inq_key_ptr(ramkv, key);
 
 	sip_global_lock();
 
-	_sip_state_resend_request(pSignal);
-	_sip_state_rereg(pSignal);
+	_sip_state_signal_resend_request(pSignal);
+	_sip_state_signal_rereg(pSignal);
 
 	sip_global_unlock();
+}
+
+
+static void
+_sip_state_call_resend_request(SIPCall *pCall)
+{
+	osip_message_t *request = NULL;
+
+	if(pCall == NULL)
+		return;
+
+	if((pCall->get_invite_request_intermediate_state == dave_false) && (pCall->invite_request != NULL))
+	{
+		SIPLOG("auto resend invite request:%d", pCall->counter_request_intermediate_state);
+
+		request = pCall->invite_request;
+	}
+	if((pCall->get_bye_request_intermediate_state == dave_false) && (pCall->bye_request != NULL))
+	{
+		SIPLOG("auto resend bye request:%d", pCall->counter_request_intermediate_state);
+
+		request = pCall->bye_request;
+	}
+
+	if(request != NULL)
+	{
+		if((pCall->counter_request_intermediate_state ++) < SIP_MAX_REQUEST_TIME)
+		{
+			sip_signal_send((SIPSignal *)(pCall->signal), pCall, request);
+		}
+		else
+		{
+			SIPLOG("resend times out!");
+
+			sip_end_call(pCall);
+		}
+	}
+}
+
+static void
+_sip_state_call_kv_timer(void *ramkv, s8 *key)
+{
+	SIPCall *pCall = kv_inq_key_ptr(ramkv, key);
+
+	_sip_state_call_resend_request(pCall);
 }
 
 // =====================================================================
@@ -79,28 +101,46 @@ _sip_state_kv_timer(void *ramkv, s8 *key)
 void
 sip_state_init(void)
 {
-	_sip_state_kv = kv_malloc("sipstatekv", 3, _sip_state_kv_timer);
+	_sip_signal_state_kv = kv_malloc("sipsignalstatekv", 3, _sip_state_signal_kv_timer);
+	_sip_call_state_kv = kv_malloc("sipcallstatekv", 10, _sip_state_call_kv_timer);
 }
 
 void
 sip_state_exit(void)
 {
-	if(_sip_state_kv != NULL)
+	if(_sip_signal_state_kv != NULL)
 	{
-		kv_free(_sip_state_kv, NULL);
-		_sip_state_kv = NULL;
+		kv_free(_sip_signal_state_kv, NULL);
+		_sip_signal_state_kv = NULL;
+	}
+	if(_sip_call_state_kv != NULL)
+	{
+		kv_free(_sip_call_state_kv, NULL);
+		_sip_call_state_kv = NULL;
 	}
 }
 
 void
-sip_state_creat(SIPSignal *pSignal)
+sip_state_signal_creat(SIPSignal *pSignal)
 {
-	kv_add_ub_ptr(_sip_state_kv, (ub)pSignal, pSignal);
+	kv_add_ub_ptr(_sip_signal_state_kv, (ub)pSignal, pSignal);
 }
 
 void
-sip_state_release(SIPSignal *pSignal)
+sip_state_signal_release(SIPSignal *pSignal)
 {
-	kv_del_ub_ptr(_sip_state_kv, (ub)pSignal);
+	kv_del_ub_ptr(_sip_signal_state_kv, (ub)pSignal);
+}
+
+void
+sip_state_call_creat(SIPCall *pCall)
+{
+	kv_add_ub_ptr(_sip_call_state_kv, (ub)pCall, pCall);
+}
+
+void
+sip_state_call_release(SIPCall *pCall)
+{
+	kv_del_ub_ptr(_sip_call_state_kv, (ub)pCall);
 }
 

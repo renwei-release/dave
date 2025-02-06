@@ -12,6 +12,7 @@ osip_message_t * osip_invite(
 	s8 *server, s8 *port, s8 *username,
 	s8 *local_ip, s8 *local_port,
 	s8 *rtp_ip, s8 *rtp_port,
-	s8 *call_number, ub cseq_number);
+	s8 *call_number, ub cseq_number,
+	u8 media_format);
 
 #endif

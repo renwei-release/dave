@@ -42,6 +42,8 @@ API char * dave_dll_verno(void);
 
 API char * dave_dll_reset_verno(char *verno);
 
+API char * dave_dll_my_gid(void);
+
 API void * dave_dll_mmalloc(int length, char *fun, int line);
 
 API int dave_dll_mfree(void *m, char *fun, int line);

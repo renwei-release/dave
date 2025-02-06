@@ -131,3 +131,27 @@ osip_get_call_id(osip_message_t *sip)
 	return (s8 *)osip_call_id_get_number(sip->call_id);
 }
 
+s8 *
+osip_get_cseq_method(osip_message_t *sip)
+{
+	if(sip == NULL)
+		return NULL;
+
+	if(sip->cseq == NULL)
+		return NULL;
+
+	return sip->cseq->method;
+}
+
+s8 *
+osip_get_cseq_number(osip_message_t *sip)
+{
+	if(sip == NULL)
+		return NULL;
+
+	if(sip->cseq == NULL)
+		return NULL;
+
+	return sip->cseq->number;
+}
+

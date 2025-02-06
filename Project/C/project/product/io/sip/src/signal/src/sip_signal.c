@@ -66,7 +66,7 @@ _sip_signal_message_distribution(SIPSignal *pSignal, osip_message_t *sip)
 	}
 	else
 	{
-		SIPLOG("unprocess cseq:%s %s", sip->cseq->method, sip->cseq->number);
+		SIPLOG("unprocess cseq:%s/%s", osip_get_cseq_method(sip), osip_get_cseq_number(sip));
 	}
 
 	return status_code;
@@ -146,9 +146,11 @@ _sip_signal_recv(SIPSignal *pSignal)
 		return;
 	}
 
-	SIPLOG("r:%d e:%d w:%d version:%s method:%s status_code:%d reason_phrase:%s",
+	SIPLOG("r:%d e:%d w:%d %s/%s status:%d/%s cseq:%s/%s",
 		pSignal->recv_r_index, pSignal->recv_e_index, pSignal->recv_w_index,
-		sip->sip_version, sip->sip_method, sip->status_code, sip->reason_phrase);
+		sip->sip_version, sip->sip_method,
+		sip->status_code, sip->reason_phrase,
+		osip_get_cseq_method(sip), osip_get_cseq_number(sip));
 
 	status_code = _sip_signal_message_distribution(pSignal, sip);
 
@@ -317,7 +319,7 @@ _sip_signal_creat(
 
 	kv_add_ub_ptr(_sip_signal_socket_kv, pSignal->signal_socket, pSignal);
 
-	sip_state_creat(pSignal);
+	sip_state_signal_creat(pSignal);
 
 	return pSignal;
 }
@@ -325,7 +327,7 @@ _sip_signal_creat(
 static void
 _sip_signal_release(SIPSignal *pSignal)
 {
-	sip_state_release(pSignal);
+	sip_state_signal_release(pSignal);
 
 	kv_del_ub_ptr(_sip_signal_socket_kv, pSignal->signal_socket);
 
@@ -387,8 +389,6 @@ sip_signal_creat(
 		local_ip, local_port,
 		rtp_ip, rtp_port);
 
-	sip_state_creat(pSignal);
-
 	sip_global_unlock();
 
 	if(pSignal == NULL)
@@ -418,8 +418,6 @@ sip_signal_release(SIPSignal *pSignal)
 		pSignal->rtp_ip, pSignal->rtp_port);
 
 	sip_global_lock();
-
-	sip_state_release(pSignal);
 
 	_sip_signal_release(pSignal);
 

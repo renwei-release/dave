@@ -16,6 +16,7 @@
 #include "dave_base.h"
 #include "dave_application.h"
 #include "dave_general_main.h"
+#include "dave_msg.h"
 #include "aix_msg.h"
 #include "cv_msg.h"
 #include "bbs_msg.h"
@@ -535,6 +536,16 @@ dave_bool t_rpc_ver3_unzip_RPCDebugRsp(void **unzip_data, ub *unzip_len, void *p
 void * t_rpc_ver3_ptr_RPCDebugRsp(RPCDebugRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_RPCDebugRsp(void);
 
+void * t_rpc_ver3_zip_RTCDataReq(RTCDataReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCDataReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCDataReq(RTCDataReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCDataReq(void);
+
+void * t_rpc_ver3_zip_RTCDataRsp(RTCDataRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCDataRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCDataRsp(RTCDataRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCDataRsp(void);
+
 void * t_rpc_ver3_zip_RTCRegReq(RTCRegReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RTCRegReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_RTCRegReq(RTCRegReq *struct_data, void *new_ptr);
@@ -545,15 +556,35 @@ dave_bool t_rpc_ver3_unzip_RTCRegRsp(void **unzip_data, ub *unzip_len, void *pSt
 void * t_rpc_ver3_ptr_RTCRegRsp(RTCRegRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_RTCRegRsp(void);
 
-void * t_rpc_ver3_zip_RTCReq(RTCReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RTCReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RTCReq(RTCReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_RTCReq(void);
+void * t_rpc_ver3_zip_RTCTranslationDataReq(RTCTranslationDataReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationDataReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationDataReq(RTCTranslationDataReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationDataReq(void);
 
-void * t_rpc_ver3_zip_RTCRsp(RTCRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_RTCRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_RTCRsp(RTCRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_RTCRsp(void);
+void * t_rpc_ver3_zip_RTCTranslationDataRsp(RTCTranslationDataRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationDataRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationDataRsp(RTCTranslationDataRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationDataRsp(void);
+
+void * t_rpc_ver3_zip_RTCTranslationStartReq(RTCTranslationStartReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationStartReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationStartReq(RTCTranslationStartReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationStartReq(void);
+
+void * t_rpc_ver3_zip_RTCTranslationStartRsp(RTCTranslationStartRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationStartRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationStartRsp(RTCTranslationStartRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationStartRsp(void);
+
+void * t_rpc_ver3_zip_RTCTranslationStopReq(RTCTranslationStopReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationStopReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationStopReq(RTCTranslationStopReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationStopReq(void);
+
+void * t_rpc_ver3_zip_RTCTranslationStopRsp(RTCTranslationStopRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_RTCTranslationStopRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_RTCTranslationStopRsp(RTCTranslationStopRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_RTCTranslationStopRsp(void);
 
 void * t_rpc_ver3_zip_RTCUnregReq(RTCUnregReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_RTCUnregReq(void **unzip_data, ub *unzip_len, void *pStructBson);

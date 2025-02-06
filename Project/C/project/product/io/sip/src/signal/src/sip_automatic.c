@@ -32,6 +32,7 @@ _sip_automatic_save_request(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *
 			SIPLOG("has new invite!");
 			osip_message_free(pCall->invite_request);
 		}
+		pCall->counter_request_intermediate_state = 0;
 		pCall->get_invite_request_intermediate_state = dave_false;
 		pCall->invite_request = sip;
 	}
@@ -42,6 +43,7 @@ _sip_automatic_save_request(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *
 			SIPLOG("has new bye!");
 			osip_message_free(pCall->bye_request);
 		}
+		pCall->counter_request_intermediate_state = 0;
 		pCall->get_bye_request_intermediate_state = dave_false;
 		pCall->bye_request = sip;
 	}
@@ -98,8 +100,8 @@ _sip_automatic_load_request(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *
 
 	if(request == NULL)
 	{
-		SIPLOG("can't find the method:%s status_code:%d/%s request pCall:%lx",
-			response->cseq->method,
+		SIPLOG("can't find the cseq:%s/%s status_code:%d/%s request pCall:%lx",
+			osip_get_cseq_method(response), osip_get_cseq_number(response),
 			response->status_code, response->reason_phrase,
 			pCall);
 	}
@@ -127,15 +129,19 @@ _sip_automatic_is_intermediate_state(SIPSignal *pSignal, SIPCall *pCall, osip_me
 	}
 	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "INVITE") == dave_true))
 	{
+		pCall->counter_request_intermediate_state = 0;
 		pCall->get_invite_request_intermediate_state = dave_true;
 	}
 	else if((pCall != NULL) && (dave_strcmp(response->cseq->method, "BYE") == dave_true))
 	{
+		pCall->counter_request_intermediate_state = 0;
 		pCall->get_bye_request_intermediate_state = dave_true;
 	}
 	else
 	{
-		SIPLOG("unsupport method:%s pCall:%lx", response->cseq->method, pCall);
+		SIPLOG("unsupport cseq:%s/%s pCall:%lx",
+			osip_get_cseq_method(response), osip_get_cseq_number(response),
+			pCall);
 	}
 }
 
@@ -170,11 +176,17 @@ _sip_automatic_status(SIPSignal *pSignal, SIPCall *pCall, osip_message_t *reques
 
 	if(sip != NULL)
 	{
-		SIPLOG("method:%s/%s status:%d/%s",
-			sip->cseq->method, sip->cseq->number,
+		SIPLOG("cseq:%s/%s status:%d/%s",
+			osip_get_cseq_method(sip), osip_get_cseq_number(sip),
 			sip->status_code, sip->reason_phrase);
 
 		sip_signal_send(pSignal, pCall, sip);
+	}
+	else
+	{
+		SIPLOG("cseq:%s/%s status:%d/%s",
+			osip_get_cseq_method(request), osip_get_cseq_number(request),
+			request->status_code, request->reason_phrase);
 	}
 }
 

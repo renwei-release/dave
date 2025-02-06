@@ -59,6 +59,12 @@ extern "C"{
 #ifdef QUICKMAIL_3RDPARTY
 #include "dave_quickmail.h"
 #endif
+#ifdef WEBSOCKET_3RDPARTY
+#include "dave_websocket.h"
+#endif
+#ifdef WEBRTC_3RDPARTY
+#include "dave_webrtc.h"
+#endif
 
 #ifdef __cplusplus
 }

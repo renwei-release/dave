@@ -31,6 +31,7 @@ RUN yum install -y apr-devel apr-util libcurl libcurl-devel
 RUN ln -s /usr/lib64/libaprutil-1.so.0 /usr/lib64/libaprutil-1.so
 RUN yum install -y xz
 RUN yum install -y meson
+RUN yum install -y libwebsockets-devel
 
 RUN mkdir -p /project/DAVE
 

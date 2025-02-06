@@ -28,6 +28,12 @@ dave_dll_reset_verno(char *verno)
 	return dave_verno_reset(verno);
 }
 
+char *
+dave_dll_my_gid(void)
+{
+	return t_gp_globally_identifier();
+}
+
 void *
 dave_dll_mmalloc(int length, char *fun, int line)
 {

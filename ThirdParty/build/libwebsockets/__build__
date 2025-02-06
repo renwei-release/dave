@@ -1,0 +1,37 @@
+#!/bin/sh
+
+homepath=$(cd `dirname $0`; pwd)
+INSTALL=${homepath}/setup
+
+VERSION=4.3.3
+
+if [ ! -f v${VERSION}.tar.gz ]; then
+  wget https://github.com/warmcat/libwebsockets/archive/refs/tags/v${VERSION}.tar.gz
+fi
+if [ ! -d ./libwebsockets-${VERSION} ]; then
+  tar -zxvf v${VERSION}.tar.gz
+fi
+
+cd libwebsockets-${VERSION}
+
+if [ -d ${INSTALL} ]; then
+   rm -rf ${INSTALL}
+fi
+mkdir ${INSTALL}
+if [ -d build ]; then
+   rm -rf build
+fi
+mkdir build
+
+cd build
+
+cmake -DCMAKE_INSTALL_PREFIX=${INSTALL} \
+      -DCMAKE_C_FLAGS="-fPIC" \
+      -DCMAKE_CXX_FLAGS="-fPIC" \
+      -DLWS_WITH_STATIC=ON \
+      -DLWS_WITH_SHARED=OFF \
+      ../
+
+make && make install
+
+rm -rf ${homepath}/libwebsockets-${VERSION}

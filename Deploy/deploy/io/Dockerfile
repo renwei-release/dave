@@ -4,8 +4,7 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt -y update
-RUN apt -y install libgomp1
-RUN apt -y install procps
+RUN apt -y install libgomp1 procps libwebsockets-dev
 
 WORKDIR /
 COPY ./file_system .

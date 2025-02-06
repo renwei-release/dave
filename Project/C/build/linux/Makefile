@@ -39,7 +39,7 @@ CPLUS := g++
 
 CFLAGS := -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
 CFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
-CPLUSFLAGS := -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+CPLUSFLAGS := -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections -std=c++17
 CPLUSFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 
 ifeq ($(LEVEL_PRODUCT), profiling)

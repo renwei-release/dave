@@ -24,3 +24,8 @@ def dave_system_online():
 def dave_system_offline():
     davelib.dave_dll_system_offline()
     return
+
+
+def dave_my_gid():
+    davelib.dave_dll_my_gid.restype = c_char_p
+    return davelib.dave_dll_my_gid()

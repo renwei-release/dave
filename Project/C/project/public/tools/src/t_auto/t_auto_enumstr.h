@@ -23,6 +23,7 @@
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
+#include "rtc_param.h"
 #include "sip_signal.h"
 #include "uip_msg.h"
 #include "base_ramkv.h"
@@ -79,6 +80,7 @@ s8 *t_auto_NLPSemanticRole_str(NLPSemanticRole enum_value);
 s8 *t_auto_NetAddrType_str(NetAddrType enum_value);
 s8 *t_auto_ORDER_CODE_str(ORDER_CODE enum_value);
 s8 *t_auto_PythonFun_str(PythonFun enum_value);
+s8 *t_auto_RTCClientType_str(RTCClientType enum_value);
 s8 *t_auto_ReqType_str(ReqType enum_value);
 s8 *t_auto_RetCode_str(RetCode enum_value);
 s8 *t_auto_SIPSignalType_str(SIPSignalType enum_value);

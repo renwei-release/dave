@@ -8,6 +8,7 @@
 #include "dave_tools.h"
 #include "dave_osip.h"
 #include "sip_signal.h"
+#include "sip_state.h"
 #include "sip_log.h"
 
 static void
@@ -21,6 +22,9 @@ _sip_call_delay_release(TIMERID timer_id, ub thread_index, void *param_ptr)
 	base_timer_die(timer_id);
 
 	if(pSignal == NULL)
+		return;
+
+	if((~ pCall->magic_1) != pCall->magic_2)
 		return;
 
 	if(kv_del_key_ptr(pSignal->call_id_kv, osip_call_id_get_number(pCall->call_id)) != pCall)
@@ -89,12 +93,20 @@ sip_call_build(SIPSignal *pSignal, s8 *call_data)
 {
 	SIPCall *pCall = (SIPCall *)dave_ralloc(sizeof(SIPCall));
 
-	kv_add_key_ptr(pSignal->call_data_kv, call_data, pCall);
+	pCall->magic_1 = t_rand();
+	pCall->magic_2 = (~ pCall->magic_1);
 
+	pCall->counter_request_intermediate_state = 0;
 	pCall->get_invite_request_intermediate_state = dave_false;
 	pCall->invite_request = NULL;
 	pCall->get_bye_request_intermediate_state = dave_false;
 	pCall->bye_request = NULL;
+
+	pCall->signal = pSignal;
+
+	kv_add_key_ptr(pSignal->call_data_kv, call_data, pCall);
+
+	sip_state_call_creat(pCall);
 
 	return pCall;
 }
@@ -135,6 +147,8 @@ void
 sip_call_release(SIPSignal *pSignal, SIPCall *pCall)
 {
 	s8 release_timer_name[64];
+
+	sip_state_call_release(pCall);
 
 	dave_snprintf(release_timer_name, sizeof(release_timer_name), "SIPCALLD-%lx", pCall);
 	base_timer_param_creat(release_timer_name, _sip_call_delay_release, pCall, sizeof(void *), 3000);

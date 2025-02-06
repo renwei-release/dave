@@ -7,7 +7,6 @@
 
 #ifndef __DAVE_DEFINE_H__
 #define __DAVE_DEFINE_H__
-#include "dave_base.h"
 #include "dave_os.h"
 
 #include "dave_parameters.h"

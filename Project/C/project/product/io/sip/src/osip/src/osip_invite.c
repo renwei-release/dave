@@ -60,14 +60,14 @@ _osip_invite_add_head(osip_message_t *pInvite, s8 *server, s8 *port, s8 *usernam
 }
 
 static void
-_osip_invite_add_sdp(osip_message_t *pInvite, s8 *local_ip, s8 *rtp_port)
+_osip_invite_add_sdp(osip_message_t *pInvite, s8 *local_ip, s8 *rtp_port, u8 media_format)
 {
 	sdp_message_t *sdp = NULL;
 	char *sdp_string;
 	int sdp_length;
 	s8 temp_buffer[256];
 
-	sdp = osip_build_sdp(local_ip, rtp_port);
+	sdp = osip_build_sdp(local_ip, rtp_port, media_format);
 
 	sdp_message_to_str(sdp, &sdp_string);
 	sdp_length = dave_strlen(sdp_string);
@@ -87,7 +87,8 @@ osip_invite(
 	s8 *server, s8 *port, s8 *username,
 	s8 *local_ip, s8 *local_port,
 	s8 *rtp_ip, s8 *rtp_port,
-	s8 *call_number, ub cseq_number)
+	s8 *call_number, ub cseq_number,
+	u8 media_format)
 {
 	osip_message_t *pInvite;
 
@@ -95,7 +96,7 @@ osip_invite(
 
 	_osip_invite_request_line(pInvite, server, port, call_number);
 	_osip_invite_add_head(pInvite, server, port, username, local_ip, local_port, call_number, cseq_number);
-	_osip_invite_add_sdp(pInvite, rtp_ip, rtp_port);
+	_osip_invite_add_sdp(pInvite, rtp_ip, rtp_port, media_format);
 
 	return pInvite;
 }

@@ -854,49 +854,104 @@ type RPCDebugRsp struct {
 	Ptr uint64
 }
 
+/* for RTC_DATA_REQ message */
+type RTCDataReq struct {
+	Token [512] byte
+	Src [128] byte
+	Dst [128] byte
+	Sequence_number uint16
+	Data_format [64] byte
+	Data *MBUF
+	Ptr uint64
+}
+
+/* for RTC_DATA_RSP message */
+type RTCDataRsp struct {
+	Token [512] byte
+	Src [128] byte
+	Dst [128] byte
+	Sequence_number uint16
+	Data_format [64] byte
+	Data *MBUF
+	Ptr uint64
+}
+
 /* for RTC_REG_REQ message */
 type RTCRegReq struct {
-	Id [128] byte
+	Terminal_type [128] byte
+	Terminal_id [128] byte
 	Ptr uint64
 }
 
 /* for RTC_REG_RSP message */
 type RTCRegRsp struct {
-	Id [128] byte
+	Terminal_type [128] byte
+	Terminal_id [128] byte
 	Token [512] byte
 	Ptr uint64
 }
 
-/* for RTC_REQ message */
-type RTCReq struct {
-	Token [512] byte
-	Src [128] byte
-	Dst [128] byte
-	Content *MBUF
-	Format [64] byte
+/* for RTC_TRANSLATION_DATA_REQ message */
+type RTCTranslationDataReq struct {
+	Translation_id [128] byte
+	Sequence_number uint64
+	Payload_data *MBUF
 	Ptr uint64
 }
 
-/* for RTC_RSP message */
-type RTCRsp struct {
-	Token [512] byte
-	Src [128] byte
-	Dst [128] byte
-	Content *MBUF
-	Format [64] byte
+/* for RTC_TRANSLATION_DATA_RSP message */
+type RTCTranslationDataRsp struct {
+	Translation_id [128] byte
+	Sequence_number uint64
+	Payload_data *MBUF
+	Ptr uint64
+}
+
+/* for RTC_TRANSLATION_START_REQ message */
+type RTCTranslationStartReq struct {
+	Translation_id [128] byte
+	Src_lang [128] byte
+	Dst_lang [128] byte
+	Ptr uint64
+}
+
+/* for RTC_TRANSLATION_START_RSP message */
+type RTCTranslationStartRsp struct {
+	Ret int64
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Translation_id [128] byte
+	Src_lang [128] byte
+	Dst_lang [128] byte
+	Ptr uint64
+}
+
+/* for RTC_TRANSLATION_STOP_REQ message */
+type RTCTranslationStopReq struct {
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Translation_id [128] byte
+	Ptr uint64
+}
+
+/* for RTC_TRANSLATION_STOP_RSP message */
+type RTCTranslationStopRsp struct {
+	Ret int64
+	Gid [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
+	Translation_id [128] byte
 	Ptr uint64
 }
 
 /* for RTC_UNREG_REQ message */
 type RTCUnregReq struct {
-	Id [128] byte
+	Terminal_type [128] byte
+	Terminal_id [128] byte
 	Token [512] byte
 	Ptr uint64
 }
 
 /* for RTC_UNREG_RSP message */
 type RTCUnregRsp struct {
-	Id [128] byte
+	Terminal_type [128] byte
+	Terminal_id [128] byte
 	Token [512] byte
 	Ptr uint64
 }

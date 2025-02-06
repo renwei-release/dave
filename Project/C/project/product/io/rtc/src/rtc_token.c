@@ -10,6 +10,7 @@
 #include "dave_rtc.h"
 #include "tlv_parse.h"
 #include "rtc_param.h"
+#include "rtc_token.h"
 #include "rtc_log.h"
 
 void *_rtc_token_kv = NULL;
@@ -34,31 +35,65 @@ _rtc_token_build(s8 *token_ptr, ub token_len)
 }
 
 static RTCToken *
-_rtc_token_malloc(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name)
+_rtc_token_malloc(ThreadId src_id, s8 *src_gid, s8 *src_name, s8 *terminal_type, s8 *terminal_id)
 {
 	RTCToken *pToken = dave_ralloc(sizeof(RTCToken));
+	s8 kv_name[128];
 
 	_rtc_token_build(pToken->token, sizeof(pToken->token));
-	dave_strcpy(pToken->id, id, sizeof(pToken->id));
+	dave_strcpy(pToken->terminal_type, terminal_type, sizeof(pToken->terminal_type));
+	dave_strcpy(pToken->terminal_id, terminal_id, sizeof(pToken->terminal_id));
 
 	pToken->src_id = src_id;
 	dave_strcpy(pToken->src_gid, src_gid, sizeof(pToken->src_gid));
 	dave_strcpy(pToken->src_name, src_name, sizeof(pToken->src_name));
 
-	pToken->app_data_length = 0;
-	pToken->app_format[0] = '\0';
+	pToken->data_length = 0;
+	pToken->recv_serial = pToken->send_serial = pToken->local_serial = 0;
+	dave_snprintf(kv_name, sizeof(kv_name), "tokenkv-%lx", pToken);
+	pToken->pre_buffer_kv = kv_malloc(kv_name, 0, NULL);
 
 	pToken->pClient = NULL;
 
 	return pToken;
 }
 
+static RetCode
+_rtc_token_buffer_recycle(void *ramkv, s8 *key)
+{
+	MBUF *pre_buffer = (MBUF *)kv_del_key_ptr(ramkv, key);
+
+	if(pre_buffer == NULL)
+		return RetCode_not_my_data;
+
+	dave_mfree(pre_buffer);
+
+	return RetCode_OK;
+}
+
+static void
+_rtc_token_delay_free(TIMERID timer_id, ub thread_index, void *param)
+{
+	RTCToken *pToken = (RTCToken *)param;
+
+	if(pToken->pre_buffer_kv != NULL)
+	{
+		kv_free(pToken->pre_buffer_kv, _rtc_token_buffer_recycle);
+	}
+
+	dave_free(pToken);
+}
+
 static void
 _rtc_token_free(RTCToken *pToken)
 {
+	s8 timer_name[128];
+
 	if(pToken != NULL)
 	{
-		dave_free(pToken);
+		dave_snprintf(timer_name, sizeof(timer_name), "tokenfree-%lx", pToken);
+
+		base_timer_param_creat(timer_name, _rtc_token_delay_free, pToken, sizeof(void *), 3000);
 	}
 }
 
@@ -75,12 +110,26 @@ _rtc_token_recycle(void *ramkv, s8 *key)
 	return RetCode_OK;
 }
 
+static void
+_rtc_token_timer_out(void *ramkv, s8 *key)
+{
+	RTCToken *pToken = kv_inq_key_ptr(ramkv, key);
+
+	if(pToken != NULL)
+	{
+		if((pToken->lift_counter --) <= 0)
+		{
+			rtc_token_del(pToken->token);
+		}
+	}
+}
+
 // =====================================================================
 
 void
 rtc_token_init(void)
 {
-    _rtc_token_kv = kv_malloc("rtctoken", 0, NULL);
+    _rtc_token_kv = kv_malloc("rtctoken", 30, _rtc_token_timer_out);
 }
 
 void
@@ -90,9 +139,9 @@ rtc_token_exit(void)
 }
 
 s8 *
-rtc_token_creat(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name)
+rtc_token_add(ThreadId src_id, s8 *src_gid, s8 *src_name, s8 *terminal_type, s8 *terminal_id)
 {
-	RTCToken *pToken = _rtc_token_malloc(id, src_id, src_gid, src_name);
+	RTCToken *pToken = _rtc_token_malloc(src_id, src_gid, src_name, terminal_type, terminal_id);
 
 	kv_add_key_ptr(_rtc_token_kv, pToken->token, pToken);
 
@@ -102,7 +151,14 @@ rtc_token_creat(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name)
 RTCToken *
 rtc_token_inq(s8 *token)
 {
-	return (RTCToken *)kv_inq_key_ptr(_rtc_token_kv, token);
+	RTCToken *pToken = (RTCToken *)kv_inq_key_ptr(_rtc_token_kv, token);
+
+	if(pToken != NULL)
+	{
+		pToken->lift_counter = TOKEN_LIFT_MAX;
+	}
+
+	return pToken;
 }
 
 void

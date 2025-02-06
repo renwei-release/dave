@@ -218,6 +218,24 @@ _sip_call_end(SIPCall *pCall)
 	sip_call_release(pSignal, pCall);
 }
 
+static sdp_media_t *
+_sip_call_med_chose(sdp_message_t *sdp)
+{
+	int pos;
+	sdp_media_t *med = NULL;
+
+	pos = 0;
+	while(pos < 99999)
+	{
+		med = osip_list_get(&sdp->m_medias, pos);
+		if((med->m_port != NULL) && (dave_strcmp(med->m_port, "0") == dave_false))
+			return med;
+		pos ++;
+	}
+
+	return NULL;
+}
+
 static void
 _sip_call_sdp_bind(SIPCall *pCall, osip_message_t *pRecv)
 {
@@ -233,7 +251,14 @@ _sip_call_sdp_bind(SIPCall *pCall, osip_message_t *pRecv)
 		return;
 	}
 
-	med = osip_list_get(&sdp->m_medias, 0);
+	med = _sip_call_med_chose(sdp);
+	if(med == NULL)
+	{
+		SIPABNOR("%s/%s->%s can't find med!",
+			osip_get_call_id(pRecv),
+			osip_get_from_user(pRecv), osip_get_to_user(pRecv));
+		return;
+	}
 
 	SIPLOG("c_nettype:%s c_addrtype:%s c_addr:%s multicast:%s/%s media:%s/%s/%s",
 		sdp->c_connection->c_nettype, sdp->c_connection->c_addrtype,
@@ -296,6 +321,7 @@ _sip_call_recv(void *signal, osip_message_t *pRecv)
 			case SIP_TEMPORARILY_UNAVAILABLE:
 			case SIP_REQUEST_TERMINATED:
 			case SIP_SERVICE_UNAVAILABLE:
+			case SIP_NOT_ACCEPTABLE_HERE: // SDP Parameter Error In SIP Request
 					_sip_call_end(pCall);
 				break;
 			default:
@@ -380,7 +406,8 @@ _sip_bye_recv(void *signal, osip_message_t *pRecv)
 static dave_bool
 _sip_call_send(
 	SIPSignal *pSignal, SIPCall *pCall,
-	rtp_data_start data_start, rtp_data_stop data_stop, rtp_data_recv data_recv)
+	rtp_data_start data_start, rtp_data_stop data_stop, rtp_data_recv data_recv,
+	u8 media_format)
 {
 	osip_message_t *sip;
 
@@ -395,7 +422,8 @@ _sip_call_send(
 			pSignal->server_ip, pSignal->server_port, pSignal->username,
 			pSignal->local_ip, pSignal->local_port,
 			pCall->rtp->local_rtp_ip, pCall->rtp->local_rtp_port,
-			pCall->call_data, pSignal->cseq_number ++);
+			pCall->call_data, pSignal->cseq_number ++,
+			media_format);
 	});
 
 	SIPLOG("server:%s:%s local:%s:%s rtp:%s:%s phone_number:%s call_id:%s cseq:%s/%s",
@@ -441,7 +469,7 @@ sip_call(
 	SIPSignal *pSignal, s8 *call_data,
 	rtp_data_start data_start, rtp_data_stop data_stop, rtp_data_recv data_recv,
 	call_start_fun start_fun, call_end_fun end_fun,
-	void *user_ptr)
+	u8 media_format, void *user_ptr)
 {
 	SIPCall *pCall = sip_call_data_query(pSignal, call_data);
 
@@ -462,7 +490,7 @@ sip_call(
 
 	SIPLOG("call_data:%s", pCall->call_data);
 
-	if(_sip_call_send(pSignal, pCall, data_start, data_stop, data_recv) == dave_false)
+	if(_sip_call_send(pSignal, pCall, data_start, data_stop, data_recv, media_format) == dave_false)
 	{
 		SIPLOG("call:%s failed!", call_data);
 		sip_call_release(pSignal, pCall);
@@ -499,5 +527,12 @@ SIPCall *
 sip_index_call(SIPSignal *pSignal, ub index)
 {
 	return sip_call_index_query(pSignal, index);
+}
+
+void
+sip_end_call(SIPCall *pCall)
+{
+	if(pCall != NULL)
+		_sip_call_end(pCall);
 }
 

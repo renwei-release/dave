@@ -959,47 +959,107 @@ class RPCDebugRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for RTC_DATA_REQ message *#
+class RTCDataReq (Structure):
+	_fields_ = [
+		("token", c_char * 512),
+		("src", c_char * 128),
+		("dst", c_char * 128),
+		("sequence_number", c_ushort),
+		("data_format", c_char * 64),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_DATA_RSP message *#
+class RTCDataRsp (Structure):
+	_fields_ = [
+		("token", c_char * 512),
+		("src", c_char * 128),
+		("dst", c_char * 128),
+		("sequence_number", c_ushort),
+		("data_format", c_char * 64),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
 #* for RTC_REG_REQ message *#
 class RTCRegReq (Structure):
 	_fields_ = [
-		("id", c_char * 128),
+		("terminal_type", c_char * 128),
+		("terminal_id", c_char * 128),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for RTC_REG_RSP message *#
 class RTCRegRsp (Structure):
 	_fields_ = [
-		("id", c_char * 128),
+		("terminal_type", c_char * 128),
+		("terminal_id", c_char * 128),
 		("token", c_char * 512),
 		("ptr", POINTER(c_char)),
 ]
 
-#* for RTC_REQ message *#
-class RTCReq (Structure):
+#* for RTC_TRANSLATION_DATA_REQ message *#
+class RTCTranslationDataReq (Structure):
 	_fields_ = [
-		("token", c_char * 512),
-		("src", c_char * 128),
-		("dst", c_char * 128),
-		("content", POINTER(MBUF)),
-		("format", c_char * 64),
+		("translation_id", c_char * 128),
+		("sequence_number", c_ulonglong),
+		("payload_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
 
-#* for RTC_RSP message *#
-class RTCRsp (Structure):
+#* for RTC_TRANSLATION_DATA_RSP message *#
+class RTCTranslationDataRsp (Structure):
 	_fields_ = [
-		("token", c_char * 512),
-		("src", c_char * 128),
-		("dst", c_char * 128),
-		("content", POINTER(MBUF)),
-		("format", c_char * 64),
+		("translation_id", c_char * 128),
+		("sequence_number", c_ulonglong),
+		("payload_data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_TRANSLATION_START_REQ message *#
+class RTCTranslationStartReq (Structure):
+	_fields_ = [
+		("translation_id", c_char * 128),
+		("src_lang", c_char * 128),
+		("dst_lang", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_TRANSLATION_START_RSP message *#
+class RTCTranslationStartRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("translation_id", c_char * 128),
+		("src_lang", c_char * 128),
+		("dst_lang", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_TRANSLATION_STOP_REQ message *#
+class RTCTranslationStopReq (Structure):
+	_fields_ = [
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("translation_id", c_char * 128),
+		("ptr", POINTER(c_char)),
+]
+
+#* for RTC_TRANSLATION_STOP_RSP message *#
+class RTCTranslationStopRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("gid", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
+		("translation_id", c_char * 128),
 		("ptr", POINTER(c_char)),
 ]
 
 #* for RTC_UNREG_REQ message *#
 class RTCUnregReq (Structure):
 	_fields_ = [
-		("id", c_char * 128),
+		("terminal_type", c_char * 128),
+		("terminal_id", c_char * 128),
 		("token", c_char * 512),
 		("ptr", POINTER(c_char)),
 ]
@@ -1007,7 +1067,8 @@ class RTCUnregReq (Structure):
 #* for RTC_UNREG_RSP message *#
 class RTCUnregRsp (Structure):
 	_fields_ = [
-		("id", c_char * 128),
+		("terminal_type", c_char * 128),
+		("terminal_id", c_char * 128),
 		("token", c_char * 512),
 		("ptr", POINTER(c_char)),
 ]

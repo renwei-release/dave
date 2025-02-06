@@ -35,6 +35,8 @@ _uac_rtp_buffer_load(UACRTPBuffer *pBuffer)
 
 	while(pre_buffer != NULL)
 	{
+		pBuffer->recv_sequence_number ++;
+	
 		if((pBuffer->buffer_len + mlen(pre_buffer)) >= sizeof(pBuffer->buffer_ptr))
 		{
 			UACABNOR("Arithmetic error:%d/%d", pBuffer->buffer_len, mlen(pre_buffer));
@@ -46,7 +48,7 @@ _uac_rtp_buffer_load(UACRTPBuffer *pBuffer)
 
 		dave_mfree(pre_buffer);
 
-		pre_buffer = kv_del_ub_ptr(pBuffer->pre_buffer_kv, (ub)(++ pBuffer->recv_sequence_number));
+		pre_buffer = kv_del_ub_ptr(pBuffer->pre_buffer_kv, (ub)(pBuffer->recv_sequence_number));
 	}
 }
 

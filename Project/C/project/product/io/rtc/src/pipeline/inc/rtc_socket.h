@@ -5,11 +5,14 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 
-#ifndef __RTC_SERVER_H__
-#define __RTC_SERVER_H__
+#ifndef __RTC_SOCKET_H__
+#define __RTC_SOCKET_H__
 #include "dave_base.h"
+#include "rtc_main.h"
 
-void rtc_server_init(void);
-void rtc_server_exit(void);
+void rtc_socket_init(void);
+void rtc_socket_exit(void);
+
+void rtc_socket_send(RTCClient *pClient, MBUF *data);
 
 #endif

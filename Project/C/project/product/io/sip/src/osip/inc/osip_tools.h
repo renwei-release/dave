@@ -18,5 +18,9 @@ s8 * osip_get_to_user(osip_message_t *sip);
 
 s8 * osip_get_call_id(osip_message_t *sip);
 
+s8 * osip_get_cseq_method(osip_message_t *sip);
+
+s8 * osip_get_cseq_number(osip_message_t *sip);
+
 #endif
 

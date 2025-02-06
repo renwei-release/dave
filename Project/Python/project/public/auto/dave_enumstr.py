@@ -1767,10 +1767,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'EMAIL_SEND_REQ-2003'"
 	elif enum_value == EMAIL_SEND_RSP:
 		value_str = "'EMAIL_SEND_RSP-2004'"
-	elif enum_value == RTC_REQ:
-		value_str = "'RTC_REQ-2005'"
-	elif enum_value == RTC_RSP:
-		value_str = "'RTC_RSP-2006'"
+	elif enum_value == RTC_DATA_REQ:
+		value_str = "'RTC_DATA_REQ-2005'"
+	elif enum_value == RTC_DATA_RSP:
+		value_str = "'RTC_DATA_RSP-2006'"
 	elif enum_value == RTC_REG_REQ:
 		value_str = "'RTC_REG_REQ-2007'"
 	elif enum_value == RTC_REG_RSP:
@@ -1949,6 +1949,18 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MAINMSG_PYTHON_REQ-5135'"
 	elif enum_value == MAINMSG_PYTHON_RSP:
 		value_str = "'MAINMSG_PYTHON_RSP-5136'"
+	elif enum_value == RTC_TRANSLATION_START_REQ:
+		value_str = "'RTC_TRANSLATION_START_REQ-6001'"
+	elif enum_value == RTC_TRANSLATION_START_RSP:
+		value_str = "'RTC_TRANSLATION_START_RSP-6002'"
+	elif enum_value == RTC_TRANSLATION_STOP_REQ:
+		value_str = "'RTC_TRANSLATION_STOP_REQ-6003'"
+	elif enum_value == RTC_TRANSLATION_STOP_RSP:
+		value_str = "'RTC_TRANSLATION_STOP_RSP-6004'"
+	elif enum_value == RTC_TRANSLATION_DATA_REQ:
+		value_str = "'RTC_TRANSLATION_DATA_REQ-6005'"
+	elif enum_value == RTC_TRANSLATION_DATA_RSP:
+		value_str = "'RTC_TRANSLATION_DATA_RSP-6006'"
 	elif enum_value == CVMSG_IMAGE_SEARCH_REQ:
 		value_str = "'CVMSG_IMAGE_SEARCH_REQ-10001'"
 	elif enum_value == CVMSG_IMAGE_SEARCH_RSP:

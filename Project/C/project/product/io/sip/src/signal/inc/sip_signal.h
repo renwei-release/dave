@@ -13,6 +13,7 @@
 #include "dave_rtp.h"
 
 #define SIP_RECV_BUFFER_MAX 1024 * 4
+#define SIP_MAX_REQUEST_TIME 6
 
 typedef ub (*sip_recv_fun)(void *param, osip_message_t *pRecv);
 typedef void (* call_start_fun)(void *call);
@@ -29,6 +30,9 @@ typedef struct {
 } SIPReg;
 
 typedef struct {
+	ub magic_1;
+	ub magic_2;
+
 	s8 call_data[128];
 
 	osip_call_id_t *call_id;
@@ -40,6 +44,7 @@ typedef struct {
 	call_start_fun start_fun;
 	call_end_fun end_fun;
 
+	ub counter_request_intermediate_state;
 	dave_bool get_invite_request_intermediate_state;
 	osip_message_t *invite_request;
 	dave_bool get_bye_request_intermediate_state;

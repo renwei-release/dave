@@ -7,7 +7,6 @@
 
 #ifndef __DAVE_OS_SOCKET_H__
 #define __DAVE_OS_SOCKET_H__
-#include "dave_base.h"
 
 typedef void (* dave_socket_event_fun)(SOCEVENT event, s32 socket_id, dave_bool level_trigger);
 

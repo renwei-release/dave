@@ -7,7 +7,7 @@ RUN apt update -y
 RUN apt install -y build-essential
 RUN apt install -y python3 python3-pip wget unzip git cmake vim
 RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN apt install -y libjpeg-dev libpng-dev libtiff-dev libopenexr-dev
+RUN apt install -y libjpeg-dev libpng-dev libtiff-dev libopenexr-dev libssl-dev
 RUN apt install -y software-properties-common 
 #RUN wget --no-check-certificate https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh && chmod +x bazel-0.25.2-installer-linux-x86_64.sh && ./bazel-0.25.2-installer-linux-x86_64.sh
 

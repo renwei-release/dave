@@ -134,3 +134,9 @@ uac_cfg_rtp_port(void)
 	return rtp_port;
 }
 
+u8
+uac_cfg_media_format(void)
+{
+	return (u8)cfg_get_ub("RTPMediaFormat", 8);
+}
+

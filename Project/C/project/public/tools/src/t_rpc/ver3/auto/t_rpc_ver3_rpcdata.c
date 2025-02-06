@@ -385,17 +385,35 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case MSGID_WAKEUP:
 				pBson = t_rpc_ver3_zip_WAKEUPMSG((WAKEUPMSG *)msg_body, msg_len);
 			break;
+		case RTC_DATA_REQ:
+				pBson = t_rpc_ver3_zip_RTCDataReq((RTCDataReq *)msg_body, msg_len);
+			break;
+		case RTC_DATA_RSP:
+				pBson = t_rpc_ver3_zip_RTCDataRsp((RTCDataRsp *)msg_body, msg_len);
+			break;
 		case RTC_REG_REQ:
 				pBson = t_rpc_ver3_zip_RTCRegReq((RTCRegReq *)msg_body, msg_len);
 			break;
 		case RTC_REG_RSP:
 				pBson = t_rpc_ver3_zip_RTCRegRsp((RTCRegRsp *)msg_body, msg_len);
 			break;
-		case RTC_REQ:
-				pBson = t_rpc_ver3_zip_RTCReq((RTCReq *)msg_body, msg_len);
+		case RTC_TRANSLATION_DATA_REQ:
+				pBson = t_rpc_ver3_zip_RTCTranslationDataReq((RTCTranslationDataReq *)msg_body, msg_len);
 			break;
-		case RTC_RSP:
-				pBson = t_rpc_ver3_zip_RTCRsp((RTCRsp *)msg_body, msg_len);
+		case RTC_TRANSLATION_DATA_RSP:
+				pBson = t_rpc_ver3_zip_RTCTranslationDataRsp((RTCTranslationDataRsp *)msg_body, msg_len);
+			break;
+		case RTC_TRANSLATION_START_REQ:
+				pBson = t_rpc_ver3_zip_RTCTranslationStartReq((RTCTranslationStartReq *)msg_body, msg_len);
+			break;
+		case RTC_TRANSLATION_START_RSP:
+				pBson = t_rpc_ver3_zip_RTCTranslationStartRsp((RTCTranslationStartRsp *)msg_body, msg_len);
+			break;
+		case RTC_TRANSLATION_STOP_REQ:
+				pBson = t_rpc_ver3_zip_RTCTranslationStopReq((RTCTranslationStopReq *)msg_body, msg_len);
+			break;
+		case RTC_TRANSLATION_STOP_RSP:
+				pBson = t_rpc_ver3_zip_RTCTranslationStopRsp((RTCTranslationStopRsp *)msg_body, msg_len);
 			break;
 		case RTC_UNREG_REQ:
 				pBson = t_rpc_ver3_zip_RTCUnregReq((RTCUnregReq *)msg_body, msg_len);
@@ -890,17 +908,35 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case MSGID_WAKEUP:
 				ret = t_rpc_ver3_unzip_WAKEUPMSG(msg_body, msg_len, pBson);
 			break;
+		case RTC_DATA_REQ:
+				ret = t_rpc_ver3_unzip_RTCDataReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_DATA_RSP:
+				ret = t_rpc_ver3_unzip_RTCDataRsp(msg_body, msg_len, pBson);
+			break;
 		case RTC_REG_REQ:
 				ret = t_rpc_ver3_unzip_RTCRegReq(msg_body, msg_len, pBson);
 			break;
 		case RTC_REG_RSP:
 				ret = t_rpc_ver3_unzip_RTCRegRsp(msg_body, msg_len, pBson);
 			break;
-		case RTC_REQ:
-				ret = t_rpc_ver3_unzip_RTCReq(msg_body, msg_len, pBson);
+		case RTC_TRANSLATION_DATA_REQ:
+				ret = t_rpc_ver3_unzip_RTCTranslationDataReq(msg_body, msg_len, pBson);
 			break;
-		case RTC_RSP:
-				ret = t_rpc_ver3_unzip_RTCRsp(msg_body, msg_len, pBson);
+		case RTC_TRANSLATION_DATA_RSP:
+				ret = t_rpc_ver3_unzip_RTCTranslationDataRsp(msg_body, msg_len, pBson);
+			break;
+		case RTC_TRANSLATION_START_REQ:
+				ret = t_rpc_ver3_unzip_RTCTranslationStartReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_TRANSLATION_START_RSP:
+				ret = t_rpc_ver3_unzip_RTCTranslationStartRsp(msg_body, msg_len, pBson);
+			break;
+		case RTC_TRANSLATION_STOP_REQ:
+				ret = t_rpc_ver3_unzip_RTCTranslationStopReq(msg_body, msg_len, pBson);
+			break;
+		case RTC_TRANSLATION_STOP_RSP:
+				ret = t_rpc_ver3_unzip_RTCTranslationStopRsp(msg_body, msg_len, pBson);
 			break;
 		case RTC_UNREG_REQ:
 				ret = t_rpc_ver3_unzip_RTCUnregReq(msg_body, msg_len, pBson);
@@ -1395,17 +1431,35 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case MSGID_WAKEUP:
 				ptr = t_rpc_ver3_ptr_WAKEUPMSG((WAKEUPMSG *)msg_body, new_ptr);
 			break;
+		case RTC_DATA_REQ:
+				ptr = t_rpc_ver3_ptr_RTCDataReq((RTCDataReq *)msg_body, new_ptr);
+			break;
+		case RTC_DATA_RSP:
+				ptr = t_rpc_ver3_ptr_RTCDataRsp((RTCDataRsp *)msg_body, new_ptr);
+			break;
 		case RTC_REG_REQ:
 				ptr = t_rpc_ver3_ptr_RTCRegReq((RTCRegReq *)msg_body, new_ptr);
 			break;
 		case RTC_REG_RSP:
 				ptr = t_rpc_ver3_ptr_RTCRegRsp((RTCRegRsp *)msg_body, new_ptr);
 			break;
-		case RTC_REQ:
-				ptr = t_rpc_ver3_ptr_RTCReq((RTCReq *)msg_body, new_ptr);
+		case RTC_TRANSLATION_DATA_REQ:
+				ptr = t_rpc_ver3_ptr_RTCTranslationDataReq((RTCTranslationDataReq *)msg_body, new_ptr);
 			break;
-		case RTC_RSP:
-				ptr = t_rpc_ver3_ptr_RTCRsp((RTCRsp *)msg_body, new_ptr);
+		case RTC_TRANSLATION_DATA_RSP:
+				ptr = t_rpc_ver3_ptr_RTCTranslationDataRsp((RTCTranslationDataRsp *)msg_body, new_ptr);
+			break;
+		case RTC_TRANSLATION_START_REQ:
+				ptr = t_rpc_ver3_ptr_RTCTranslationStartReq((RTCTranslationStartReq *)msg_body, new_ptr);
+			break;
+		case RTC_TRANSLATION_START_RSP:
+				ptr = t_rpc_ver3_ptr_RTCTranslationStartRsp((RTCTranslationStartRsp *)msg_body, new_ptr);
+			break;
+		case RTC_TRANSLATION_STOP_REQ:
+				ptr = t_rpc_ver3_ptr_RTCTranslationStopReq((RTCTranslationStopReq *)msg_body, new_ptr);
+			break;
+		case RTC_TRANSLATION_STOP_RSP:
+				ptr = t_rpc_ver3_ptr_RTCTranslationStopRsp((RTCTranslationStopRsp *)msg_body, new_ptr);
 			break;
 		case RTC_UNREG_REQ:
 				ptr = t_rpc_ver3_ptr_RTCUnregReq((RTCUnregReq *)msg_body, new_ptr);
@@ -1900,17 +1954,35 @@ _t_rpc_sizeof(ub msg_id)
 		case MSGID_WAKEUP:
 				msg_len = t_rpc_ver3_sizeof_WAKEUPMSG();
 			break;
+		case RTC_DATA_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCDataReq();
+			break;
+		case RTC_DATA_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCDataRsp();
+			break;
 		case RTC_REG_REQ:
 				msg_len = t_rpc_ver3_sizeof_RTCRegReq();
 			break;
 		case RTC_REG_RSP:
 				msg_len = t_rpc_ver3_sizeof_RTCRegRsp();
 			break;
-		case RTC_REQ:
-				msg_len = t_rpc_ver3_sizeof_RTCReq();
+		case RTC_TRANSLATION_DATA_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationDataReq();
 			break;
-		case RTC_RSP:
-				msg_len = t_rpc_ver3_sizeof_RTCRsp();
+		case RTC_TRANSLATION_DATA_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationDataRsp();
+			break;
+		case RTC_TRANSLATION_START_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationStartReq();
+			break;
+		case RTC_TRANSLATION_START_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationStartRsp();
+			break;
+		case RTC_TRANSLATION_STOP_REQ:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationStopReq();
+			break;
+		case RTC_TRANSLATION_STOP_RSP:
+				msg_len = t_rpc_ver3_sizeof_RTCTranslationStopRsp();
 			break;
 		case RTC_UNREG_REQ:
 				msg_len = t_rpc_ver3_sizeof_RTCUnregReq();

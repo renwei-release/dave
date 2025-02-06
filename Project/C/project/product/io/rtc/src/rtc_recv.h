@@ -8,9 +8,8 @@
 #ifndef __RTC_RECV_H__
 #define __RTC_RECV_H__
 #include "dave_base.h"
-#include "tlv_tag.h"
 
-void rtc_recv(RTCReq *pReq);
+void rtc_recv(RTCDataReq *pReq);
 
 #endif
 

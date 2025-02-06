@@ -12,7 +12,7 @@
 void uac_main_init(void);
 void uac_main_exit(void);
 
-#define ONE_SECOND_RTP_BUFFER 160 * 50
+#define ONE_SECOND_RTP_BUFFER 160 * 10
 #define PRE_BUFFER_MAX_NUMBER 32
 
 typedef struct {

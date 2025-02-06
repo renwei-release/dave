@@ -16,5 +16,6 @@ s8 * uac_cfg_local_ip(void);
 s8 * uac_cfg_local_port(void);
 s8 * uac_cfg_rtp_ip(void);
 s8 * uac_cfg_rtp_port(void);
+u8 uac_cfg_media_format(void);
 
 #endif

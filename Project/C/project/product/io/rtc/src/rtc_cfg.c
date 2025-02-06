@@ -10,7 +10,6 @@
 #include "dave_store.h"
 #include "dave_os.h"
 #include "dave_echo.h"
-#include "rtc_server.h"
 
 #define CFG_RTC_SERVER_PORT "RTCServerPort"
 

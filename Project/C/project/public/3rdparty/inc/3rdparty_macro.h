@@ -60,6 +60,14 @@
 #define QUICKMAIL_3RDPARTY
 #endif
 
+#ifdef __DAVE_PRODUCT_IO__
+#define WEBSOCKET_3RDPARTY
+#endif
+
+#ifdef __DAVE_PRODUCT_IO__
+// #define WEBRTC_3RDPARTY
+#endif
+
 #define REDIS_3RDPARTY
 
 #endif

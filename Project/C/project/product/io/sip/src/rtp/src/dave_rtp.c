@@ -357,6 +357,7 @@ dave_rtp_send(
 	{
 		RTPLOG("invalid pRTP:%lx payload:%lx",
 			pRTP, payload_data);
+		dave_mfree(payload_data);
 		return;
 	}
 
@@ -376,5 +377,7 @@ dave_rtp_send(
 
 		_rtp_send(pRTP, rtp_data);
 	}
+
+	dave_mfree(payload_data);
 }
 

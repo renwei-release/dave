@@ -9,7 +9,7 @@
 #define __RTC_SEND_H__
 #include "dave_base.h"
 
-ub rtc_send(RTCClient *pClient);
+void rtc_send(RTCClient *pClient, s8 *tlv_ptr, ub tlv_len);
 
 #endif
 

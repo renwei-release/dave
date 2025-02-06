@@ -10,10 +10,34 @@
 #include "osip_param.h"
 #include "osip_log.h"
 
+static void
+_osip_build_media(sdp_message_t *sdp, s8 *rtp_port, u8 media_format)
+{
+	switch(media_format)
+	{
+		case 0:
+				sdp_message_m_media_add(sdp, "audio", rtp_port, NULL, "RTP/AVP 0");
+				sdp_message_a_attribute_add(sdp, 0, "rtpmap", "0 PCMU/8000");	
+			break;
+		case 8:
+				sdp_message_m_media_add(sdp, "audio", rtp_port, NULL, "RTP/AVP 8");
+				sdp_message_a_attribute_add(sdp, 0, "rtpmap", "8 PCMA/8000");
+			break;
+		case 96:
+				sdp_message_m_media_add(sdp, "audio", rtp_port, NULL, "RTP/AVP 96");
+				sdp_message_a_attribute_add(sdp, 0, "rtpmap", "96 L16/16000/2");
+			break;
+		default:
+				sdp_message_m_media_add(sdp, "audio", rtp_port, NULL, "RTP/AVP 8");
+				sdp_message_a_attribute_add(sdp, 0, "rtpmap", "8 PCMA/8000");
+			break;
+	}
+}
+
 // =====================================================================
 
 sdp_message_t *
-osip_build_sdp(s8 *local_ip, s8 *rtp_port)
+osip_build_sdp(s8 *local_ip, s8 *rtp_port, u8 media_format)
 {
     sdp_message_t *sdp;
     int err;
@@ -40,9 +64,9 @@ osip_build_sdp(s8 *local_ip, s8 *rtp_port)
     sdp_message_c_connection_add(sdp, -1, "IN", "IP4", local_ip, NULL, NULL);
     sdp_message_t_time_descr_add(sdp, "0", "0");
 	sdp_message_a_attribute_add(sdp, -1, "sendrecv", NULL);
-    sdp_message_m_media_add(sdp, "audio", rtp_port, NULL, "RTP/AVP 8");
-    sdp_message_a_attribute_add(sdp, 0, "rtpmap", "8 PCMA/8000");
-    sdp_message_a_attribute_add(sdp, 0, "maxptime", "40");
+	sdp_message_a_attribute_add(sdp, 0, "maxptime", "40");
+
+	_osip_build_media(sdp, rtp_port, media_format);
 
     return sdp;
 }

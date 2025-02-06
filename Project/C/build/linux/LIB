@@ -29,6 +29,9 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
 LIB += -L../../../../ThirdParty/build/Aliyun/setup/log/lib -llog_c_sdk_static
 endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), IO)), 1)
+LIB += -L../../../../ThirdParty/build/libwebsockets/setup/lib -lwebsockets
+endif
 
 LIB += -Wl,-Bdynamic
 

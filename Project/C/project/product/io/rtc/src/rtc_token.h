@@ -8,11 +8,12 @@
 #ifndef __RTC_TOKEN_H__
 #define __RTC_TOKEN_H__
 #include "dave_base.h"
+#include "rtc_main.h"
 
 void rtc_token_init(void);
 void rtc_token_exit(void);
 
-s8 * rtc_token_creat(s8 *id, ThreadId src_id, s8 *src_gid, s8 *src_name);
+s8 * rtc_token_add(ThreadId src_id, s8 *src_gid, s8 *src_name, s8 *terminal_type, s8 *terminal_id);
 RTCToken * rtc_token_inq(s8 *token);
 void rtc_token_del(s8 *token);
 

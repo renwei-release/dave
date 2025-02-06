@@ -7,26 +7,14 @@
 #include "dave_tools.h"
 #include "dave_rtc.h"
 #include "dave_os.h"
-#include "tlv_parse.h"
+#include "rtc_main.h"
 #include "rtc_token.h"
 #include "rtc_param.h"
+#include "tlv_parse.h"
 #include "rtc_log.h"
 
-static void
-_rtc_recv_socket_send(RTCClient *pClient, MBUF *data)
-{
-	SocketWrite *pWrite = thread_msg(pWrite);
-
-	pWrite->socket = pClient->socket;
-	pWrite->data_len = mlen(data);
-	pWrite->data = data;
-	pWrite->close_flag = dave_false;
-
-	name_msg(SOCKET_THREAD_NAME, SOCKET_WRITE, pWrite);
-}
-
 static RTCClient *
-_rtc_recv_load_client(RTCReq *pReq)
+_rtc_recv_load_client(RTCDataReq *pReq)
 {
 	ub load_counter;
 	RTCClient *pClient;
@@ -48,29 +36,40 @@ _rtc_recv_load_client(RTCReq *pReq)
 // =====================================================================
 
 void
-rtc_recv(RTCReq *pReq)
+rtc_recv(RTCDataReq *pReq)
 {
 	RTCClient *pClient;
-	MBUF *data;
+	RTCToken *pToken;
+	MBUF *data = NULL;
 
 	pClient = _rtc_recv_load_client(pReq);
 	if(pClient == NULL)
 	{
-		RTCLOG("can't find token:%s", pReq->token);
+		RTCLOG("can't find req token:%s", pReq->token);
 		return;
 	}
 
-	if((pReq->content == NULL) || (pReq->content->len == 0))
+	if((ms8(pReq->data) == NULL) || (mlen(pReq->data) == 0))
 	{
 		RTCDEBUG("END %s", pReq->token);
 		data = tlv_parse_set_close();
 	}
 	else
 	{
-		RTCDEBUG("%d %s", mlen(pReq->content), pReq->token);
-		data = tlv_parse_set_app_data(pReq->token, ms8(pReq->content), mlen(pReq->content), pReq->format, dave_strlen(pReq->format));
+		pToken = rtc_token_inq(pClient->token);
+
+		if(pToken == NULL)
+		{
+			RTCABNOR("can't find the client token:%s", pClient->token);
+		}
+		else
+		{
+			RTCDEBUG("%d %s", mlen(pReq->data), pReq->token);
+			data = tlv_parse_set_data(pReq->token, pReq->data_format, pToken->local_serial, ms8(pReq->data), mlen(pReq->data));
+			pToken->local_serial ++;
+		}
 	}
 
-	_rtc_recv_socket_send(pClient, data);	
+	rtc_main_send(pClient, data);	
 }
 

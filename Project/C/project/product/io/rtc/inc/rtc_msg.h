@@ -10,49 +10,55 @@
 
 #define RTC_THREAD_NAME "rtc"
 
-/* for RTC_REQ message */
+/* for RTC_DATA_REQ message */
 typedef struct {
 	s8 token[512];
 	s8 src[128];
 	s8 dst[128];
-	MBUF *content;
-	s8 format[64];
+	u16 sequence_number;
+	s8 data_format[64];
+	MBUF *data;
 	void *ptr;
-} RTCReq;
+} RTCDataReq;
 
-/* for RTC_RSP message */
+/* for RTC_DATA_RSP message */
 typedef struct {
 	s8 token[512];
 	s8 src[128];
 	s8 dst[128];
-	MBUF *content;
-	s8 format[64];
+	u16 sequence_number;
+	s8 data_format[64];
+	MBUF *data;
 	void *ptr;
-} RTCRsp;
+} RTCDataRsp;
 
 /* for RTC_REG_REQ message */
 typedef struct {
-	s8 id[128];
+	s8 terminal_type[128];
+	s8 terminal_id[128];
 	void *ptr;
 } RTCRegReq;
 
 /* for RTC_REG_RSP message */
 typedef struct {
-	s8 id[128];
+	s8 terminal_type[128];
+	s8 terminal_id[128];
 	s8 token[512];
 	void *ptr;
 } RTCRegRsp;
 
 /* for RTC_UNREG_REQ message */
 typedef struct {
-	s8 id[128];
+	s8 terminal_type[128];
+	s8 terminal_id[128];
 	s8 token[512];
 	void *ptr;
 } RTCUnregReq;
 
 /* for RTC_UNREG_RSP message */
 typedef struct {
-	s8 id[128];
+	s8 terminal_type[128];
+	s8 terminal_id[128];
 	s8 token[512];
 	void *ptr;
 } RTCUnregRsp;

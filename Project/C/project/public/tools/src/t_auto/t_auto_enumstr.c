@@ -22,6 +22,7 @@
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
+#include "rtc_param.h"
 #include "sip_signal.h"
 #include "uip_msg.h"
 #include "base_ramkv.h"
@@ -3598,6 +3599,27 @@ t_auto_PythonFun_str(PythonFun enum_value)
 }
 
 s8 *
+t_auto_RTCClientType_str(RTCClientType enum_value)
+{
+	s8 *value_str = _string_buf;
+
+	switch(enum_value)
+	{
+		case RTCClientType_socket:
+				value_str = "'RTCClientType_socket'";
+			break;
+		case RTCClientType_websocket:
+				value_str = "'RTCClientType_websocket'";
+			break;
+		default:
+				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
+			break;
+	}
+
+	return value_str;
+}
+
+s8 *
 t_auto_ReqType_str(ReqType enum_value)
 {
 	s8 *value_str = _string_buf;
@@ -4711,11 +4733,11 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case EMAIL_SEND_RSP:
 				value_str = "'EMAIL_SEND_RSP-2004'";
 			break;
-		case RTC_REQ:
-				value_str = "'RTC_REQ-2005'";
+		case RTC_DATA_REQ:
+				value_str = "'RTC_DATA_REQ-2005'";
 			break;
-		case RTC_RSP:
-				value_str = "'RTC_RSP-2006'";
+		case RTC_DATA_RSP:
+				value_str = "'RTC_DATA_RSP-2006'";
 			break;
 		case RTC_REG_REQ:
 				value_str = "'RTC_REG_REQ-2007'";
@@ -4983,6 +5005,24 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case MAINMSG_PYTHON_RSP:
 				value_str = "'MAINMSG_PYTHON_RSP-5136'";
+			break;
+		case RTC_TRANSLATION_START_REQ:
+				value_str = "'RTC_TRANSLATION_START_REQ-6001'";
+			break;
+		case RTC_TRANSLATION_START_RSP:
+				value_str = "'RTC_TRANSLATION_START_RSP-6002'";
+			break;
+		case RTC_TRANSLATION_STOP_REQ:
+				value_str = "'RTC_TRANSLATION_STOP_REQ-6003'";
+			break;
+		case RTC_TRANSLATION_STOP_RSP:
+				value_str = "'RTC_TRANSLATION_STOP_RSP-6004'";
+			break;
+		case RTC_TRANSLATION_DATA_REQ:
+				value_str = "'RTC_TRANSLATION_DATA_REQ-6005'";
+			break;
+		case RTC_TRANSLATION_DATA_RSP:
+				value_str = "'RTC_TRANSLATION_DATA_RSP-6006'";
 			break;
 		case CVMSG_IMAGE_SEARCH_REQ:
 				value_str = "'CVMSG_IMAGE_SEARCH_REQ-10001'";

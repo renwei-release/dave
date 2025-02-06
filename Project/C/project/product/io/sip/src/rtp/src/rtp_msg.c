@@ -54,20 +54,20 @@ _rtp_data_echo(
 static RTPDATA
 _rtp_data_buffer_get(RTP *pRTP)
 {
-	RTPDATA echo_rtp_data;
+	RTPDATA buffer_rtp_data;
 
 	SAFECODEv1(pRTP->rtp_data_pv, {
 		pRTP->sequence_number += 1;
 		pRTP->timestamp += RTP_FRAME_DATA_LEN;
 
-		echo_rtp_data.payload_type = pRTP->payload_type;
-		echo_rtp_data.sequence_number = pRTP->sequence_number;
-		echo_rtp_data.timestamp = pRTP->timestamp;
-		echo_rtp_data.ssrc = pRTP->ssrc;
+		buffer_rtp_data.payload_type = pRTP->payload_type;
+		buffer_rtp_data.sequence_number = pRTP->sequence_number;
+		buffer_rtp_data.timestamp = pRTP->timestamp;
+		buffer_rtp_data.ssrc = pRTP->ssrc;
 
 		if((pRTP->rtp_data_w_index - pRTP->rtp_data_r_index) >= RTP_FRAME_DATA_LEN)
 		{
-			echo_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)(&pRTP->rtp_data_buffer[pRTP->rtp_data_r_index]), RTP_FRAME_DATA_LEN);
+			buffer_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)(&pRTP->rtp_data_buffer[pRTP->rtp_data_r_index]), RTP_FRAME_DATA_LEN);
 			pRTP->rtp_data_r_index += RTP_FRAME_DATA_LEN;
 			if(pRTP->rtp_data_r_index >= pRTP->rtp_data_w_index)
 			{
@@ -76,11 +76,11 @@ _rtp_data_buffer_get(RTP *pRTP)
 		}
 		else
 		{
-			echo_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)_mte_bag, RTP_FRAME_DATA_LEN);
+			buffer_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)_mte_bag, RTP_FRAME_DATA_LEN);
 		}
 	});
 
-	return echo_rtp_data;
+	return buffer_rtp_data;
 }
 
 #endif
@@ -93,7 +93,7 @@ _rtp_data_buffer_set(RTP *pRTP, u32 ssrc, s8 *payload_data_ptr, ub payload_data_
 		{
 			pRTP->current_buffer_ssrc = ssrc;
 
-			RTPDEBUG("ssrc:%d data_len:%d", ssrc, payload_data_len)
+			RTPLOG("ssrc:%d data_len:%d", ssrc, payload_data_len)
 		}
 		else
 		{

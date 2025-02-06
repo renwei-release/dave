@@ -14,130 +14,108 @@
 static void
 _rtc_send(RTCToken *pToken)
 {
-	RTCReq *pReq = thread_msg(pReq);
-	RTCRsp rsp;
-
-	dave_strcpy(pReq->token, pToken->token, sizeof(pReq->token));
-	dave_strcpy(pReq->src, RTC_THREAD_NAME, sizeof(pReq->src));
-	dave_strcpy(pReq->dst, pToken->src_name, sizeof(pReq->dst));
-	if(pToken->app_data_length == 0)
+	if(pToken->data_length >= (TOKEN_DATA_BUFFER_MAX / 2))
 	{
-		RTCDEBUG("END %s", pToken->token);
-		pReq->content = NULL;
-	}
-	else
-	{
-		RTCDEBUG("%d %s", pToken->app_data_length, pToken->token);
-		pReq->content = t_a2b_bin_to_mbuf(pToken->app_data_buffer, pToken->app_data_length);
-	}
-	dave_strcpy(pReq->format, pToken->app_format, sizeof(pReq->format));
-	pReq->ptr = pToken;
+		RTCDataReq *pReq = thread_msg(pReq);
 
-	RTCLOG("dst:%lx/%s data:%ld", pToken->src_id, thread_name(pToken->src_id), pToken->app_data_length);
+		dave_strcpy(pReq->token, pToken->token, sizeof(pReq->token));
+		dave_strcpy(pReq->src, RTC_THREAD_NAME, sizeof(pReq->src));
+		dave_strcpy(pReq->dst, pToken->src_name, sizeof(pReq->dst));
+		pReq->sequence_number = pToken->send_serial;
+		dave_strcpy(pReq->data_format, pToken->data_format, sizeof(pReq->data_format));
+		pReq->data = t_a2b_bin_to_mbuf(pToken->data_buffer, pToken->data_length);
+		pReq->ptr = pToken;
 
-	rsp.content = NULL;
+		pToken->data_length = 0;
 
-	sync_msg(pToken->src_id, RTC_REQ, pReq, RTC_RSP, &rsp);
-
-	if(rsp.content != NULL)
-	{
-		dave_mfree(rsp.content);
-	}
-
-	pToken->app_data_length = 0;
-	pToken->app_format[0] = '\0';
-}
-
-static void
-_rtc_app_data_to_buffer(s8 *token, s8 *value_ptr, ub value_len)
-{
-	RTCToken *pToken = rtc_token_inq(token);
-
-	if(pToken == NULL)
-	{
-		RTCLOG("can't find token data:%s", token);
-		return;
-	}
-
-	if(value_len > TOKEN_APP_DATA_BUFFER_MAX)
-	{
-		RTCLOG("value_len:%d is too longer!", value_len);
-		return;
-	}
-
-	if(value_len == 0)
-	{
-		if(pToken->app_data_length != 0)
-		{
-			_rtc_send(pToken);
-		}
-		// send END flag.
-		pToken->app_data_length = 0;
-		_rtc_send(pToken);
-		return;
-	}
-
-	if((pToken->app_data_length + value_len) > TOKEN_APP_DATA_BUFFER_MAX)
-	{
-		_rtc_send(pToken);
-	}
-
-	pToken->app_data_length += dave_memcpy(&pToken->app_data_buffer[pToken->app_data_length], value_ptr, value_len);
-
-	if((pToken->app_data_length + 1024) >= TOKEN_APP_DATA_BUFFER_MAX)
-	{
-		_rtc_send(pToken);
+		gid_msg(pToken->src_gid, pToken->src_name, RTC_DATA_REQ, pReq);
 	}
 }
 
-static void
-_rtc_app_format_to_buffer(s8 *token, s8 *value_ptr, ub value_len)
+static RTCToken *
+_rtc_send_load_token(RTCClient *pClient, s8 *tlv_ptr, ub tlv_len)
 {
-	RTCToken *pToken = rtc_token_inq(token);
-
-	if(pToken == NULL)
+	if((pClient->token[0] == 0x00)
+		&& (tlv_parse_get_token(pClient->token, sizeof(pClient->token), tlv_ptr, tlv_len) == dave_true))
 	{
-		RTCLOG("can't find token data:%s", token);
-		return;
+		rtc_token_add_client(pClient->token, pClient);
 	}
 
-	if(pToken->app_format[0] == '\0')
-	{
-		if(value_len > (sizeof(pToken->app_format) - 1))
-		{
-			value_len = sizeof(pToken->app_format) - 1;
-		}
-	
-		dave_memcpy(pToken->app_format, value_ptr, value_len);
+	return rtc_token_inq(pClient->token);
+}
 
-		pToken->app_format[value_len] = '\0';
+static void
+_rtc_send_pre_buffer_clear(RTCToken *pToken)
+{
+	MBUF *pre_buffer;
+	ub clean_counter;
+
+	clean_counter = 0;
+
+	while((clean_counter ++) < 1024)
+	{
+		pre_buffer = kv_del_ub_ptr(pToken->pre_buffer_kv, (ub)(pToken->recv_serial));
+		if(pre_buffer == NULL)
+			break;
+
+		if((pToken->data_length + mlen(pre_buffer)) >= TOKEN_DATA_BUFFER_MAX)
+		{
+			RTCLOG("data buffer overflow:%d/%d", pToken->data_length, mlen(pre_buffer));
+		}
+		else
+		{
+			pToken->data_length += dave_memcpy(&pToken->data_buffer[pToken->data_length], ms8(pre_buffer), mlen(pre_buffer));
+		}
+
+		dave_mfree(pre_buffer);
 	}
 }
 
 // =====================================================================
 
-ub
-rtc_send(RTCClient *pClient)
+void
+rtc_send(RTCClient *pClient, s8 *tlv_ptr, ub tlv_len)
 {
-	s8 *value_ptr;
-	ub value_len;
+	RTCToken *pToken;
+	u16 my_data_serial;
+	unsigned char *my_data_ptr;
+	ub my_data_length;
 
-	if((pClient->token[0] == 0x00)
-		&& (tlv_parse_get_token(pClient->token, sizeof(pClient->token), pClient->tlv_buffer_ptr, pClient->tlv_buffer_r_index) == dave_true))
+	pToken = _rtc_send_load_token(pClient, tlv_ptr, tlv_len);
+	if(pToken == NULL)
 	{
-		rtc_token_add_client(pClient->token, pClient);
+		RTCLOG("invalid token:%s tlv:%d", pClient->token, tlv_len);
+		return;
 	}
 
-	if(tlv_parse_get_app_data(&value_ptr, &value_len, pClient->tlv_buffer_ptr, pClient->tlv_buffer_r_index) == dave_true)
-	{
-		_rtc_app_data_to_buffer(pClient->token, value_ptr, value_len);
-	}
+	tlv_parse_get_tlv(pToken, &my_data_serial, &my_data_ptr, &my_data_length, tlv_ptr, tlv_len);
 
-	if(tlv_parse_get_app_format(&value_ptr, &value_len, pClient->tlv_buffer_ptr, pClient->tlv_buffer_r_index) == dave_true)
+	if(my_data_serial < pToken->recv_serial)
 	{
-		_rtc_app_format_to_buffer(pClient->token, value_ptr, value_len);
+		RTCLOG("Ineffective serial:%d/%d", my_data_serial, pToken->recv_serial);
 	}
+	else if(my_data_serial == pToken->recv_serial)
+	{
+		pToken->recv_serial ++;
+	
+		if((pToken->data_length + my_data_length) >= TOKEN_DATA_BUFFER_MAX)
+		{
+			RTCLOG("data buffer overflow:%d/%d", pToken->data_length, my_data_length);
+		}
+		else
+		{
+			pToken->data_length += dave_memcpy(&pToken->data_buffer[pToken->data_length], my_data_ptr, my_data_length);
+		}
 
-	return pClient->tlv_buffer_r_index;
+		_rtc_send_pre_buffer_clear(pToken);
+
+		_rtc_send(pToken);
+	}
+	else
+	{
+		MBUF *pre_buffer = t_a2b_bin_to_mbuf((s8 *)my_data_ptr, my_data_length);
+
+		kv_add_ub_ptr(pToken->pre_buffer_kv, (ub)my_data_serial, pre_buffer);
+	}
 }
 

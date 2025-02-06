@@ -176,7 +176,7 @@ uac_call(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 		uac_main_signal(), phone_number,
 		_uac_call_rtp_start, _uac_call_rtp_stop, _uac_call_rtp_recv,
 		_uac_call_start, _uac_call_end,
-		pUACCall);
+		uac_cfg_media_format(), pUACCall);
 
 	if(pSIPCall == NULL)
 	{

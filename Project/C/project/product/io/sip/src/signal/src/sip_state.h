@@ -12,8 +12,11 @@
 void sip_state_init(void);
 void sip_state_exit(void);
 
-void sip_state_creat(SIPSignal *pSignal);
-void sip_state_release(SIPSignal *pSignal);
+void sip_state_signal_creat(SIPSignal *pSignal);
+void sip_state_signal_release(SIPSignal *pSignal);
+
+void sip_state_call_creat(SIPCall *pCall);
+void sip_state_call_release(SIPCall *pCall);
 
 #endif
 

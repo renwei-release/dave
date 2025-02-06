@@ -11,7 +11,8 @@
 #include "dave_echo.h"
 #include "dave_rtc.h"
 #include "rtc_param.h"
-#include "rtc_server.h"
+#include "rtc_socket.h"
+#include "rtc_websocket.h"
 #include "rtc_token.h"
 #include "rtc_log.h"
 
@@ -21,7 +22,8 @@ static void
 _rtc_init(MSGBODY *pMsg)
 {
 	rtc_token_init();
-	rtc_server_init();
+	rtc_socket_init();
+	rtc_websocket_init();
 }
 
 static void
@@ -52,7 +54,8 @@ _rtc_main(MSGBODY *pMsg)
 static void
 _rtc_exit(MSGBODY *pMsg)
 {
-	rtc_server_exit();
+	rtc_websocket_exit();
+	rtc_socket_exit();
 	rtc_token_exit();
 }
 

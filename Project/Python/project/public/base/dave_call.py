@@ -138,3 +138,66 @@ def dave_call_general_rsp(call_dst, general_type, general_data):
 
     write_msg(call_dst, MSGID_GENERAL_RSP, pRsp)
     return
+
+
+def dave_call_rtc_translation_start(call_dst, translation_id, src_lang, dst_lang):
+    if type(call_dst) == str:
+        if thread_id(call_dst) == -1:
+            return None
+
+    if type(translation_id) == str:
+        translation_id = bytes(translation_id, encoding='utf8')
+    if type(src_lang) == str:
+        src_lang = bytes(src_lang, encoding='utf8')
+    if type(dst_lang) == str:
+        dst_lang = bytes(dst_lang, encoding='utf8')
+
+    pReq = thread_msg(RTCTranslationStartReq)
+
+    pReq.contents.translation_id = translation_id
+    pReq.contents.src_lang = src_lang
+    pReq.contents.dst_lang = dst_lang
+    pReq.contents.ptr = None
+
+    pRsp = sync_msg(call_dst, RTC_TRANSLATION_START_REQ, pReq, RTC_TRANSLATION_START_RSP, RTCTranslationStartRsp)
+    if pRsp == None:
+        return None
+    return pRsp.gid
+
+
+def dave_call_rtc_translation_stop(call_dst, translation_id):
+    if type(call_dst) == str:
+        if thread_id(call_dst) == -1:
+            return False
+
+    if type(translation_id) == str:
+        translation_id = bytes(translation_id, encoding='utf8')
+
+    pReq = thread_msg(RTCTranslationStopReq)
+
+    pReq.contents.translation_id = translation_id
+    pReq.contents.ptr = None
+
+    pRsp = sync_msg(call_dst, RTC_TRANSLATION_STOP_REQ, pReq, RTC_TRANSLATION_STOP_RSP, RTCTranslationStopRsp)
+    if pRsp == None:
+        return False
+    return True
+
+
+def dave_call_rtc_translation_data(call_dst, translation_id, sequence_number, translation_data):
+    if type(call_dst) == str:
+        if thread_id(call_dst) == -1:
+            return False
+
+    if type(translation_id) == str:
+        translation_id = bytes(translation_id, encoding='utf8')
+
+    pReq = thread_msg(RTCTranslationDataReq)
+
+    pReq.contents.translation_id = translation_id
+    pReq.contents.sequence_number = sequence_number
+    pReq.contents.payload_data = byte_to_mbuf(translation_data)
+    pReq.contents.ptr = None
+
+    write_msg(call_dst, RTC_TRANSLATION_DATA_REQ, pReq)
+    return
