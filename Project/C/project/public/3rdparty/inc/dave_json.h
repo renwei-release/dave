@@ -8,7 +8,7 @@
 #ifndef __DAVE_JSON_H__
 #define __DAVE_JSON_H__
 
-#include "json.h"
+#include "json-c/json.h"
 
 s8 * dave_json_c_version(void);
 #define dave_json_version dave_json_c_version

@@ -18,6 +18,8 @@
 #include "sync_param.h"
 #include "sync_log.h"
 
+// #define QUEUE_MSG_PROCESS_LOGIC_IF_SERVER_NOT_BUSY_MSG_TO_SERVER
+
 static ThreadId _queue_server_thread = INVALID_THREAD_ID;
 
 static inline dave_bool
@@ -110,6 +112,7 @@ sync_client_queue_enable(SyncServer *pServer, ThreadId src, ThreadId dst, ub msg
 		return msg_type;
 	}
 
+#ifdef QUEUE_MSG_PROCESS_LOGIC_IF_SERVER_NOT_BUSY_MSG_TO_SERVER
 	if(pServer->server_app_busy == dave_false)
 	{
 		/*
@@ -121,6 +124,7 @@ sync_client_queue_enable(SyncServer *pServer, ThreadId src, ThreadId dst, ub msg
 			msg_type = BaseMsgType_Unicast;
 		}
 	}
+#endif
 
 	if(msg_type == BaseMsgType_Unicast_queue)
 	{

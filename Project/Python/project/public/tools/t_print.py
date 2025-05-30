@@ -38,3 +38,5 @@ class t_print_progress_bar():
 def t_print_class_member(class_struct):
     print(f"======== t_print_class_member:{class_struct} =======")
     print([e for e in dir(class_struct) if not e.startswith('_')])
+    print(f"\n\nvars:{vars(class_struct)}")
+    return

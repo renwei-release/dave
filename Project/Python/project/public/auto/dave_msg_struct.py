@@ -1459,6 +1459,7 @@ class ThreadRemoteReadyMsg (Structure):
 	_fields_ = [
 		("remote_thread_id", c_ulonglong),
 		("remote_thread_name", c_char * 128),
+		("globally_identifier", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 ]
 
 #* for MSGID_REMOTE_THREAD_REMOVE message *#
@@ -1466,6 +1467,7 @@ class ThreadRemoteRemoveMsg (Structure):
 	_fields_ = [
 		("remote_thread_id", c_ulonglong),
 		("remote_thread_name", c_char * 128),
+		("globally_identifier", c_char * DAVE_GLOBALLY_IDENTIFIER_LEN),
 ]
 
 #* for MSGID_TRACE_SWITCH message *#

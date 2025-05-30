@@ -1297,12 +1297,14 @@ type ThreadRemoteIDRemoveMsg struct {
 type ThreadRemoteReadyMsg struct {
 	Remote_thread_id uint64
 	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 }
 
 /* for MSGID_REMOTE_THREAD_REMOVE message */
 type ThreadRemoteRemoveMsg struct {
 	Remote_thread_id uint64
 	Remote_thread_name [128] byte
+	Globally_identifier [DAVE_GLOBALLY_IDENTIFIER_LEN] byte
 }
 
 /* for MSGID_TRACE_SWITCH message */

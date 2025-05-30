@@ -25,6 +25,7 @@
 #include "sync_server_sync.h"
 #include "sync_server_run.h"
 #include "sync_server_msg_buffer.h"
+#include "sync_server_link_mode.h"
 #include "sync_lock.h"
 #include "sync_test.h"
 #include "sync_log.h"

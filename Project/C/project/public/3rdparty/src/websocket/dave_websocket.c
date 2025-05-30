@@ -164,7 +164,7 @@ dave_websocket_data_write(void *wsl, s8 *data_ptr, ub data_len)
 	s8 *buf = (s8 *)dave_malloc(LWS_SEND_BUFFER_PRE_PADDING + data_len + LWS_SEND_BUFFER_POST_PADDING);
 
 	memcpy(buf + LWS_SEND_BUFFER_PRE_PADDING, data_ptr, data_len);
-	lws_write(wsi, buf + LWS_SEND_BUFFER_PRE_PADDING, data_len, LWS_WRITE_TEXT);
+	lws_write(wsi, (unsigned char *)(buf + LWS_SEND_BUFFER_PRE_PADDING), (size_t)data_len, LWS_WRITE_TEXT);
 
 	dave_free(buf);
 }

@@ -8,4 +8,8 @@
 
 CONTAINER=${PWD##*/}
 
-docker exec -it ${CONTAINER} bash
+if [ "$USER" == "root" ]; then
+   docker exec -it ${CONTAINER} bash
+else
+   docker exec -it ${CONTAINER}-${USER} bash
+fi

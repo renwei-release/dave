@@ -12,9 +12,13 @@ RUN apt install -y software-properties-common
 #RUN wget --no-check-certificate https://github.com/bazelbuild/bazel/releases/download/0.25.2/bazel-0.25.2-installer-linux-x86_64.sh && chmod +x bazel-0.25.2-installer-linux-x86_64.sh && ./bazel-0.25.2-installer-linux-x86_64.sh
 
 RUN pip install opencv-python==4.10.0.84 imageio==2.34.2 ultralytics==8.2.64 torch==2.3.1 imageio[ffmpeg] imageio[pyav]
-RUN pip install filterpy==1.4.5 lap==0.4.0 tensorrt==10.2.0.post1
+RUN pip install filterpy==1.4.5 lap==0.4.0 tensorrt==10.2.0.post1 Cython==3.0.12
 
 WORKDIR /
 COPY ./file_system .
+
+WORKDIR /pip/jmpy
+RUN pip uninstall jmpy3
+RUN pip install -e .
 
 WORKDIR /project

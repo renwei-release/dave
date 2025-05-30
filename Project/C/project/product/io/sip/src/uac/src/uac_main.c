@@ -157,7 +157,10 @@ uac_main_init(void)
 {
 	_uac_main_init();
 
-	base_timer_creat("umainbooting", _uac_main_booting, 5000);
+	if(uac_cfg_sbc_server() != NULL)
+	{
+		base_timer_creat("umainbooting", _uac_main_booting, 5000);
+	}
 }
 
 void
@@ -169,12 +172,18 @@ uac_main_exit(void)
 SIPSignal *
 uac_main_signal(void)
 {
+	if(_uac_class == NULL)
+		return NULL;
+
 	return _uac_class->signal;
 }
 
 UACCall *
 uac_main_build_call(ThreadId owner_id, s8 *phone_number)
 {
+	if(_uac_class == NULL)
+		return NULL;
+
 	UACCall *pUACCall = _uac_main_call_build(owner_id, phone_number);
 
 	kv_add_key_ptr(_uac_class->phone_number_kv, phone_number, pUACCall);
@@ -193,6 +202,9 @@ uac_main_setup_call(UACCall *pUACCall, SIPCall *pCall)
 UACCall *
 uac_main_inq_phone_number(s8 *phone_number)
 {
+	if(_uac_class == NULL)
+		return NULL;
+
 	return (UACCall *)kv_inq_key_ptr(_uac_class->phone_number_kv, phone_number);
 }
 
@@ -201,6 +213,9 @@ uac_main_del_call(s8 *phone_number)
 {
 	UACCall *pUACCall;
 	s8 release_timer_name[64];
+
+	if(_uac_class == NULL)
+		return;
 
 	pUACCall = kv_del_key_ptr(_uac_class->phone_number_kv, phone_number);
 	if(pUACCall != NULL)
@@ -217,12 +232,15 @@ uac_main_del_owner_id_all_call(ThreadId owner_id)
 	ub call_index;
 	s8 call_id[128];
 
+	if(_uac_class == NULL)
+		return;
+
 	for(call_index=0; call_index<9999999999; call_index++)
 	{
 		pUACCall = (UACCall *)kv_index_key_ptr(_uac_class->phone_number_kv, call_index);
 		if(pUACCall == NULL)
 		{
-			UACLOG("call_index:%d", call_index);
+			UACDEBUG("call_index:%d", call_index);
 			break;
 		}
 

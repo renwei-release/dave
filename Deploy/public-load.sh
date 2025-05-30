@@ -24,13 +24,15 @@ if [ -f ${RUNNINGPATH}/${RUNNINGFILE} ]; then
    chmod a+x ${RUNNINGPATH}/${RUNNINGFILE}
 fi
 
+BUILDARG=$(./extend.sh 'build' '')
+
 if [ "$exit_dave_image" == "" ]; then
    if [ -f ${DOCKERFILE} ]; then
-      echo ${File} build ${IMAGE} on ${IMAGE}:${TAG}
+      echo ${File} build ${IMAGE} on ${IMAGE}:${TAG} BUILDARG=${BUILDARG}
 	   mkdir -p ${RUNNINGPATH}
       chmod a+x ${RUNNINGFILE}
       cp ${RUNNINGFILE} ${RUNNINGPATH}
-      docker build --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
+      docker build ${BUILDARG} --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
    else
       echo ${File} "can't find ${DOCKERFILE}"
       exit 1

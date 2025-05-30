@@ -35,7 +35,7 @@
 
 // #define ENABLE_PROTECTOR
 
-#define DLL_MAIN_THREAD_MAX_NUMBER 32
+#define DLL_MAIN_THREAD_MAX_NUMBER 512
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
 typedef struct {
@@ -80,14 +80,7 @@ _dll_main_number(ub thread_number)
 		thread_number = dave_os_cpu_process_number();
 	}
 
-	if(dave_os_cpu_process_number() > DLL_MAIN_THREAD_MAX_NUMBER)
-	{
-		max_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
-	}
-	else
-	{
-		max_thread_number = dave_os_cpu_process_number();
-	}
+	max_thread_number = DLL_MAIN_THREAD_MAX_NUMBER;
 
 	if(thread_number > max_thread_number)
 	{

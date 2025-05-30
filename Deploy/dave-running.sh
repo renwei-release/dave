@@ -44,10 +44,18 @@ function jenkins_booting()
    fi
 }
 
+function ssh_booting()
+{
+   if [ -f /usr/sbin/sshd ]; then
+      /etc/init.d/ssh restart
+   fi
+}
+
 function goto_debug()
 {
    jupyter_booting
    jenkins_booting
+   ssh_booting
 	
    loop_notify "container on $action mode!"
 }

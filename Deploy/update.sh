@@ -6,11 +6,12 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-HOMEPATH=$1
-PROJECT=$2
-PROJECTNAME=$3
-JUPYTERPORT=$4
-PROJECTMAPPING=$5
+HOMEPATH=${1}
+PROJECT=${2}
+PROJECTNAME=${3}
+JUPYTERPORT=${4}
+SSHPORT=${5}
+PROJECTMAPPING=${6}
 File=$(basename $0)
 
 HOMEPRJDIR=${HOMEPATH}/file_system/project
@@ -25,7 +26,7 @@ if [ ! -d ${HOMEPRJDIR} ]; then
 fi
 DEPLOYCODE='Python'
 if [ ! -f ${HOMEPRJDIR}/dave_main.py ]; then
-   DEPLOYCODE='C or Go'
+   DEPLOYCODE='BIN'
 fi
 
 echo -e "${File} deploy mode:\033[35m${DEPLOYMODE}\033[0m code:\033[35m${DEPLOYCODE}\033[0m"
@@ -162,6 +163,9 @@ fi
 
 if [ -f jupyter.sh ]; then
    ./jupyter.sh ${PROJECTNAME} ${JUPYTERPORT}
+fi
+if [ -f ssh.sh ]; then
+   ./ssh.sh ${PROJECTNAME} ${SSHPORT}
 fi
 
 ./release.sh ${PROJECTNAME} ${PROJECTMAPPING}

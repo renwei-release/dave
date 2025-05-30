@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-chmod a+x *.sh
+chmod +x *.sh
 
 PROJECT=demo
 PROJECTNAME=''
@@ -16,11 +16,12 @@ TAG=latest
 EXTEND=''
 PROJECTMAPPING=''
 USERNAME=${USER}
-JUPYTERPORT=8888
+JUPYTERPORT=0
+SSHPORT=0
 HOMEPATH='./'
 COPYACTION='TRUE'
 
-while getopts ":p:g:i:t:e:h:j:u:n:c:" opt
+while getopts ":p:g:i:t:e:h:j:u:n:c:s:" opt
 do
     case $opt in
         p)
@@ -52,6 +53,10 @@ do
         j)
         JUPYTERPORT=$OPTARG
         echo JUPYTER PORT:$JUPYTERPORT
+        ;;
+        s)
+        SSHPORT=$OPTARG
+        echo SSH PORT:$SSHPORT
         ;;
         u)
         USERNAME=$OPTARG
@@ -95,6 +100,8 @@ fi
 
 ./remove.sh $PROJECTNAME $PROJECT ${IMAGE} ${TAG}
 
+EXTEND=$(./extend.sh run "${EXTEND}")
+
 #
 # 使用${IMAGE}的镜像构建一个名叫${PROJECTNAME}的容器，
 # 并启动容器，
@@ -116,12 +123,12 @@ if [ "$exit_project_contains" == "" ]; then
    ./restore.sh $PROJECTNAME $PROJECT
 
    if [ "$COPYACTION" == "TRUE" ]; then
-      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}
    fi
    echo Successfully created a new ${PROJECTNAME} container!
 else
    if [ "$COPYACTION" == "TRUE" ]; then
-      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${PROJECTMAPPING}
+      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}
    fi
    echo The ${PROJECTNAME} container exists, no new container is installed! But update the ${PROJECTNAME}
 fi

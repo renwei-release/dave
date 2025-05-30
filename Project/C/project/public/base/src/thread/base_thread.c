@@ -1204,11 +1204,6 @@ _thread_safe_creat(s8 *name, ub level_number, ub thread_flag, base_thread_fun th
 {
 	ThreadId thread_id;
 
-	if(level_number > 255)
-	{
-		level_number = 255;
-	}
-
 	if((thread_flag & THREAD_REMOTE_FLAG) == THREAD_REMOTE_FLAG)
 		thread_id  = _thread_creat(name, level_number, thread_flag, REMOTE_TASK_ATTRIB, thread_init, thread_main, thread_exit);
 	else

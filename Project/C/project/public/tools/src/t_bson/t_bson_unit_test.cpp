@@ -13,7 +13,7 @@ using namespace std;
 #include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "dave_os.h"
-#include "json.h"
+#include "json-c/json.h"
 #include "tools_log.h"
 
 static void

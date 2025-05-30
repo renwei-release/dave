@@ -19,4 +19,10 @@ build()
 
 build
 
-rm -rf $OUTPUTFILE
+if [[ `grep -c "Error:" $OUTPUTFILE` -ne '0' ]];then
+   echo -e `grep "Error:" $OUTPUTFILE`
+   echo -e "\033[31mfound some problems!\033[0m"
+   echo -e "For details, please check:${OUTPUTFILE}"
+else
+   rm -rf $OUTPUTFILE
+fi

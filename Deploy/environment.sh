@@ -11,10 +11,11 @@ if [[ -f /usr/bin/yum ]] || [[ -f /usr/sbin/yum ]] || [[ -f /bin/yum ]] || [[ -f
 else
    INSTALL=apt
 fi
+File=$(basename $0)
 
 exit_program=$(type docker)
 if [ "$exit_program" == "" ]; then
-   echo environment.sh setup docker ...
+   echo $File setup docker ...
    sudo ${INSTALL} update --fix-missing
    if [ "$INSTALL" == "apt" ]; then
       sudo ${INSTALL} -y install docker.io
@@ -27,27 +28,27 @@ fi
 
 #exit_program=$(type docker-compose)
 #if [ "$exit_program" == "" ]; then
-#   echo environment.sh setup docker-compose ...
+#   echo $File setup docker-compose ...
 #   sudo ${INSTALL} -y install docker-compose
 #fi
 
 exit_program=$(type bzip2)
 if [ "$exit_program" == "" ]; then
-   echo environment.sh setup bzip2 ...
+   echo $File setup bzip2 ...
    sudo ${INSTALL} update --fix-missing
    sudo ${INSTALL} -y install bzip2
 fi
 
 exit_program=$(type wget)
 if [ "$exit_program" == "" ]; then
-   echo environment.sh setup wget ...
+   echo $File setup wget ...
    sudo ${INSTALL} update --fix-missing
    sudo ${INSTALL} -y install wget
 fi
 
 #exit_program=$(type expect)
 #if [ "$exit_program" == "" ]; then
-#   echo environment.sh setup expect ...
+#   echo $File setup expect ...
 #   sudo ${INSTALL} update --fix-missing
 #   sudo ${INSTALL} -y install expect --fix-missing
 #fi

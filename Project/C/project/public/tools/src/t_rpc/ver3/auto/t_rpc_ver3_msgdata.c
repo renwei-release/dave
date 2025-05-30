@@ -9927,6 +9927,7 @@ t_rpc_ver3_zip_ThreadRemoteReadyMsg(ThreadRemoteReadyMsg *zip_data, ub zip_len)
 
 	t_bson_add_object(pStructBson, "ThreadId-remote_thread_id", t_rpc_ver3_zip_ThreadId(zip_data->remote_thread_id));
 	t_bson_add_object(pStructBson, "s8-remote_thread_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->remote_thread_name), 1, 128));
+	t_bson_add_object(pStructBson, "s8-globally_identifier", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->globally_identifier), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 
 	return pStructBson;
 }
@@ -9951,6 +9952,7 @@ t_rpc_ver3_unzip_ThreadRemoteReadyMsg(void **unzip_data, ub *unzip_len, void *pS
 
 		t_rpc_ver3_unzip_ThreadId(&(pUnzip->remote_thread_id), t_bson_inq_object(pStructBson, "ThreadId-remote_thread_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->remote_thread_name), 1, 128, t_bson_inq_object(pStructBson, "s8-remote_thread_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->globally_identifier), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-globally_identifier"));
 	}
 
 	return ret;
@@ -9983,6 +9985,7 @@ t_rpc_ver3_zip_ThreadRemoteRemoveMsg(ThreadRemoteRemoveMsg *zip_data, ub zip_len
 
 	t_bson_add_object(pStructBson, "ThreadId-remote_thread_id", t_rpc_ver3_zip_ThreadId(zip_data->remote_thread_id));
 	t_bson_add_object(pStructBson, "s8-remote_thread_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->remote_thread_name), 1, 128));
+	t_bson_add_object(pStructBson, "s8-globally_identifier", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->globally_identifier), 1, DAVE_GLOBALLY_IDENTIFIER_LEN));
 
 	return pStructBson;
 }
@@ -10007,6 +10010,7 @@ t_rpc_ver3_unzip_ThreadRemoteRemoveMsg(void **unzip_data, ub *unzip_len, void *p
 
 		t_rpc_ver3_unzip_ThreadId(&(pUnzip->remote_thread_id), t_bson_inq_object(pStructBson, "ThreadId-remote_thread_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->remote_thread_name), 1, 128, t_bson_inq_object(pStructBson, "s8-remote_thread_name"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->globally_identifier), 1, DAVE_GLOBALLY_IDENTIFIER_LEN, t_bson_inq_object(pStructBson, "s8-globally_identifier"));
 	}
 
 	return ret;

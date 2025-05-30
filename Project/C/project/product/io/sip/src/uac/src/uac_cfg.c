@@ -22,6 +22,12 @@ uac_cfg_sbc_server(void)
     	cfg_get_str("SBCServer", sbc_server, sizeof(sbc_server), "0.0.0.0");
 	}
 
+	if(dave_strcmp(sbc_server, "0.0.0.0") == dave_true)
+	{
+		UACLOG("sbc_server:%s is empty!", sbc_server);
+		return NULL;
+	}
+
     return sbc_server;
 }
 

@@ -6,6 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 import threading
+import multiprocessing as mp
 
 
 def _wait_thread_run(thread, timeout):
@@ -35,4 +36,12 @@ def t_thread_run(function, args, timeout=8):
 
 def t_thread_run_no_wait(function, args):
     t_thread_run(function, args, 0)
+    return
+
+
+def t_processing_run(p_function, p_args, t_function, t_args):
+    t_thread_run_no_wait(t_function, t_args)
+
+    p = mp.Process(target=p_function, args=p_args)
+    p.start()
     return

@@ -37,18 +37,21 @@ if [ -d "project" ]; then
 fi
 mkdir project
 cd project
-cp ../../../../project/dave_main.py ./
-cp -r ../../../../project/components ./
+# cp components
+python3 $homedir/cp_components.py $product ./
+# cp product
 mkdir ./product
 cp ../../../../project/product/dave_product.py ./product
 cp -r ../../../../project/product/$product ./product
-cp -r ../../../../project/public ./
 cd ../
 
-jmpy -i "project/product/$product" -o "project/dist" -m 0
-rm -rf ./project/product/$product
-mkdir ./project/product/$product
-cp -r ./project/dist/* ./project/product/$product
+jmpy -i "project" -o "./dist" -m 0
+rm -rf ./project/*
+cp -r ./dist/* ./project
+# cp dave_main.py
+cp -r ../../../project/dave_main.py ./project
+# cp public
+cp -r ../../../project/public ./project
 
 pyinstaller build.spec
 

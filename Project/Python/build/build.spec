@@ -13,7 +13,7 @@ a = Analysis(
     datas=[
         ('./project/dave_main.py', '.'),
 		('./project/components', 'components'),
-		('./project/product/dave_product.py', 'product'),
+		('./project/product/dave_product.so', 'product'),
 		('./project/product/___FLAG_FOR_PRODUCT___', 'product/___FLAG_FOR_PRODUCT___'),
 		('./project/public', 'public'),
 	],

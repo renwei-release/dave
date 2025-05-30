@@ -74,12 +74,13 @@ def t_sys_gpu_name():
         result = subprocess.run(['nvidia-smi', '--query-gpu=name', '--format=csv,noheader'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if result.returncode != 0:
-            raise RuntimeError(f"nvidia-smi command failed with error: {result.stderr}")
+            print(f"nvidia-smi command failed with error: {result.stderr}")
+            return 'CPU'
 
         gpu_models = result.stdout.strip().split('\n')
         return gpu_models[0]
     except FileNotFoundError:
-        raise RuntimeError("nvidia-smi command not found. Ensure that NVIDIA drivers are installed and nvidia-smi is in your PATH.")
+        return 'CPU'
 
 
 def t_sys_pyInstaller_temp_dir():

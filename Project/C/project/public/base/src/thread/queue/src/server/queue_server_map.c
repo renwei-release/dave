@@ -82,34 +82,34 @@ static inline void
 _queue_server_map_del(QueueServerMap *pMap, s8 *gid)
 {
 	ub index, copy_index;
+	ub client_number;
+	s8 client_gid[QUEUE_SERVER_MAP_MAX][DAVE_GLOBALLY_IDENTIFIER_LEN];
 
-	for(index=0; index<QUEUE_SERVER_MAP_MAX; index++)
+	client_number = 0;
+
+	for(index=0; index<pMap->client_number; index++)
 	{
-		if(pMap->client_gid[index][0] == '\0')
-			break;
-
-		if(dave_strcmp(pMap->client_gid[index], gid) == dave_true)
+		if((pMap->client_gid[index][0] != '\0') && (dave_strcmp(pMap->client_gid[index], gid) == dave_false))
 		{
-			pMap->client_gid[index][0] = '\0';
+			dave_strcpy(client_gid[client_number ++], pMap->client_gid[index], DAVE_GLOBALLY_IDENTIFIER_LEN);
 		}
 	}
 
 	copy_index = 0;
 
-	for(index=0; index<QUEUE_SERVER_MAP_MAX; index++)
+	for(index=0; index<client_number; index++)
 	{
-		if(pMap->client_gid[index][0] != '\0')
-		{
-			dave_strcpy(pMap->client_gid[copy_index ++], pMap->client_gid[index], DAVE_GLOBALLY_IDENTIFIER_LEN);
-		}
+		dave_strcpy(pMap->client_gid[copy_index ++], client_gid[index], DAVE_GLOBALLY_IDENTIFIER_LEN);
 	}
 	pMap->client_number = copy_index;
+
 	if(pMap->client_number > QUEUE_SERVER_MAP_MAX)
 	{
 		QUEUELOG("invalid client_number:%d", pMap->client_number);
 		pMap->client_number = QUEUE_SERVER_MAP_MAX;
 	}
-	for(copy_index=0; copy_index<QUEUE_SERVER_MAP_MAX; copy_index++)
+
+	for(copy_index=pMap->client_number; copy_index<QUEUE_SERVER_MAP_MAX; copy_index++)
 	{
 		pMap->client_gid[copy_index][0] = '\0';
 	}

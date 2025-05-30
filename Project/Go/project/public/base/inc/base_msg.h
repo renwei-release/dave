@@ -65,12 +65,14 @@ typedef struct {
 typedef struct {
 	ThreadId remote_thread_id;
 	s8 remote_thread_name[128];
+	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
 } ThreadRemoteReadyMsg;
 
 /* for MSGID_REMOTE_THREAD_REMOVE message */
 typedef struct {
 	ThreadId remote_thread_id;
 	s8 remote_thread_name[128];
+	s8 globally_identifier[DAVE_GLOBALLY_IDENTIFIER_LEN];
 } ThreadRemoteRemoveMsg;
 
 /* for MSGID_TRACE_SWITCH message */

@@ -7,6 +7,7 @@
 # */
 import string
 import unicodedata
+import re
 
 
 # =====================================================================
@@ -28,6 +29,20 @@ def t_stdio_string_split(want_split_string, split_flag):
 def t_stdio_string_remove_punctuation(input_string):
     translator = str.maketrans('', '', string.punctuation)
     return input_string.translate(translator)
+
+
+def t_stdio_decode_unicode(text):
+    # 定义一个转换函数，将 /uniXXXX 转换为对应的 Unicode 字符
+    def decode_match(match):
+        hex_value = match.group(1)
+        try:
+            return chr(int(hex_value, 16))
+        except Exception:
+            return match.group(0)
+
+    # 使用正则表达式匹配 /uni 后面跟4个16进制数字
+    decoded_text = re.sub(r"/uni([0-9A-Fa-f]{4})", decode_match, text)
+    return decoded_text
 
 
 def t_stdio_fullwidth_to_halfwidth(ustring):

@@ -31,18 +31,18 @@ _uip_dos_channel_add(s8 *cmd_ptr, ub cmd_len)
 	auth_key = uip_channel_inq(channel_name);
 	if(auth_key != NULL)
 	{
-		dos_print("channel:%s key:%s", channel_name, auth_key);
+		dos_print("CHANNEL:%s AUTH_KEY:%s", channel_name, auth_key);
 	}
 	else
 	{
 		auth_key = uip_channel_add(channel_name, user_input_auth_key);
 		if(auth_key == NULL)
 		{
-			dos_print("creat channel:%s failed!", channel_name);	
+			dos_print("creat CHANNEL:%s failed!", channel_name);	
 		}
 		else
 		{
-			dos_print("creat channel:%s key:%s", channel_name, auth_key);
+			dos_print("creat CHANNEL:%s AUTH_KEY:%s", channel_name, auth_key);
 		}
 	}
 
@@ -70,11 +70,11 @@ _uip_dos_channel_inq(s8 *cmd_ptr, ub cmd_len)
 		auth_key = uip_channel_inq(channel_name);
 		if(auth_key == NULL)
 		{
-			dos_print("can't find channel:%s!", channel_name);	
+			dos_print("can't find CHANNEL:%s!", channel_name);	
 		}
 		else
 		{
-			dos_print("channel:%s key:%s", channel_name, auth_key);
+			dos_print("CHANNEL:%s AUTH_KEY:%s", channel_name, auth_key);
 		}
 	}
 
@@ -92,11 +92,11 @@ _uip_dos_channel_del(s8 *cmd_ptr, ub cmd_len)
 
 	if(uip_channel_del(channel_name) == dave_false)
 	{
-		dos_print("invalid channel:%s", channel_name);
+		dos_print("invalid CHANNEL:%s", channel_name);
 	}
 	else
 	{
-		dos_print("delete channel:%s", channel_name);
+		dos_print("delete CHANNEL:%s", channel_name);
 	}
 
 	return RetCode_OK;
@@ -115,7 +115,7 @@ _uip_dos_channel_add_method(s8 *cmd_ptr, ub cmd_len)
 	if(uip_channel_add_method(channel_name, method) == dave_false)
 		return RetCode_invalid_option;
 
-	dos_print("channel:%s add method:%s", channel_name, method);
+	dos_print("CHANNEL:%s add METHOD:%s", channel_name, method);
 
 	return RetCode_OK;
 }

@@ -111,12 +111,6 @@ dave_os_cpu_process_number(void)
 {
 	ub cpu_number = (ub)get_nprocs_conf();
 
-	if(cpu_number > 128)
-	{
-		OSABNOR("invalid cpu_number:%d", cpu_number);
-		cpu_number = 128;
-	}
-
 	return cpu_number;
 }
 
