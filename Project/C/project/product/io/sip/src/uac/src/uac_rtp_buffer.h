@@ -14,7 +14,8 @@ void uac_rtp_buffer_exit(UACRTPBuffer *pBuffer);
 MBUF * uac_rtp_buffer(
 	u16 *send_sequence_number,
 	UACRTPBuffer *pBuffer,
-	u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len);
+	u16 sequence_number, u32 timestamp, u32 ssrc,
+	u8 payload_type, s8 *payload_ptr, ub payload_len);
 
 #endif
 

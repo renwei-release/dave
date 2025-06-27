@@ -51,13 +51,12 @@ static void
 _sip_client_disconnect(s32 socket)
 {
 	SocketDisconnectReq *pReq = thread_msg(pReq);
-	SocketDisconnectRsp *pRsp;
 
 	pReq->socket = socket;
 
-	pRsp = (SocketDisconnectRsp *)name_co(SOCKET_THREAD_NAME, SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP);
+	SIPLOG("socket:%d", pReq->socket);
 
-	SIPLOG("socket:%d result:%d", pRsp->socket, pRsp->result);
+	name_co(SOCKET_THREAD_NAME, SOCKET_DISCONNECT_REQ, pReq, SOCKET_DISCONNECT_RSP);
 }
 
 // =====================================================================

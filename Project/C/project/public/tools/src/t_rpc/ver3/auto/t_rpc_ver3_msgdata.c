@@ -7225,10 +7225,8 @@ t_rpc_ver3_zip_RTPDataReq(RTPDataReq *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-call_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_id), 1, 128));
 	t_bson_add_object(pStructBson, "s8-call_from", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_from), 1, 128));
 	t_bson_add_object(pStructBson, "s8-call_to", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_to), 1, 128));
-	t_bson_add_object(pStructBson, "u8-payload_type", t_rpc_ver3_zip_u8(zip_data->payload_type));
 	t_bson_add_object(pStructBson, "u16-sequence_number", t_rpc_ver3_zip_u16(zip_data->sequence_number));
-	t_bson_add_object(pStructBson, "u32-timestamp", t_rpc_ver3_zip_u32(zip_data->timestamp));
-	t_bson_add_object(pStructBson, "u32-ssrc", t_rpc_ver3_zip_u32(zip_data->ssrc));
+	t_bson_add_object(pStructBson, "u8-payload_type", t_rpc_ver3_zip_u8(zip_data->payload_type));
 	t_bson_add_object(pStructBson, "MBUF-payload_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->payload_data));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
@@ -7256,10 +7254,8 @@ t_rpc_ver3_unzip_RTPDataReq(void **unzip_data, ub *unzip_len, void *pStructBson)
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_id), 1, 128, t_bson_inq_object(pStructBson, "s8-call_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_from), 1, 128, t_bson_inq_object(pStructBson, "s8-call_from"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_to), 1, 128, t_bson_inq_object(pStructBson, "s8-call_to"));
-		t_rpc_ver3_unzip_u8(&(pUnzip->payload_type), t_bson_inq_object(pStructBson, "u8-payload_type"));
 		t_rpc_ver3_unzip_u16(&(pUnzip->sequence_number), t_bson_inq_object(pStructBson, "u16-sequence_number"));
-		t_rpc_ver3_unzip_u32(&(pUnzip->timestamp), t_bson_inq_object(pStructBson, "u32-timestamp"));
-		t_rpc_ver3_unzip_u32(&(pUnzip->ssrc), t_bson_inq_object(pStructBson, "u32-ssrc"));
+		t_rpc_ver3_unzip_u8(&(pUnzip->payload_type), t_bson_inq_object(pStructBson, "u8-payload_type"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->payload_data), t_bson_inq_object(pStructBson, "MBUF-payload_data"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
@@ -7298,10 +7294,8 @@ t_rpc_ver3_zip_RTPDataRsp(RTPDataRsp *zip_data, ub zip_len)
 	t_bson_add_object(pStructBson, "s8-call_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_id), 1, 128));
 	t_bson_add_object(pStructBson, "s8-call_from", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_from), 1, 128));
 	t_bson_add_object(pStructBson, "s8-call_to", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->call_to), 1, 128));
-	t_bson_add_object(pStructBson, "u8-payload_type", t_rpc_ver3_zip_u8(zip_data->payload_type));
-	t_bson_add_object(pStructBson, "u16-sequence_number", t_rpc_ver3_zip_u16(zip_data->sequence_number));
-	t_bson_add_object(pStructBson, "u32-timestamp", t_rpc_ver3_zip_u32(zip_data->timestamp));
 	t_bson_add_object(pStructBson, "u32-ssrc", t_rpc_ver3_zip_u32(zip_data->ssrc));
+	t_bson_add_object(pStructBson, "u8-payload_type", t_rpc_ver3_zip_u8(zip_data->payload_type));
 	t_bson_add_object(pStructBson, "MBUF-payload_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->payload_data));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
@@ -7329,10 +7323,8 @@ t_rpc_ver3_unzip_RTPDataRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_id), 1, 128, t_bson_inq_object(pStructBson, "s8-call_id"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_from), 1, 128, t_bson_inq_object(pStructBson, "s8-call_from"));
 		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->call_to), 1, 128, t_bson_inq_object(pStructBson, "s8-call_to"));
-		t_rpc_ver3_unzip_u8(&(pUnzip->payload_type), t_bson_inq_object(pStructBson, "u8-payload_type"));
-		t_rpc_ver3_unzip_u16(&(pUnzip->sequence_number), t_bson_inq_object(pStructBson, "u16-sequence_number"));
-		t_rpc_ver3_unzip_u32(&(pUnzip->timestamp), t_bson_inq_object(pStructBson, "u32-timestamp"));
 		t_rpc_ver3_unzip_u32(&(pUnzip->ssrc), t_bson_inq_object(pStructBson, "u32-ssrc"));
+		t_rpc_ver3_unzip_u8(&(pUnzip->payload_type), t_bson_inq_object(pStructBson, "u8-payload_type"));
 		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->payload_data), t_bson_inq_object(pStructBson, "MBUF-payload_data"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}

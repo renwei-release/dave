@@ -36,8 +36,8 @@ _uac_rtp(ThreadId src, RTPDataRsp *pRsp)
 {
 	uac_rtp(
 		pRsp->call_id, pRsp->call_from, pRsp->call_to,
-		pRsp->payload_type, pRsp->sequence_number, pRsp->timestamp, pRsp->ssrc,
-		ms8(pRsp->payload_data), mlen(pRsp->payload_data));
+		pRsp->ssrc,
+		pRsp->payload_type, ms8(pRsp->payload_data), mlen(pRsp->payload_data));
 
 	dave_mfree(pRsp->payload_data);
 }

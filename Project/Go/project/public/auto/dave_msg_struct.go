@@ -961,10 +961,8 @@ type RTPDataReq struct {
 	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
-	Payload_type byte
 	Sequence_number uint16
-	Timestamp uint32
-	Ssrc uint32
+	Payload_type byte
 	Payload_data *MBUF
 	Ptr uint64
 }
@@ -974,10 +972,8 @@ type RTPDataRsp struct {
 	Call_id [128] byte
 	Call_from [128] byte
 	Call_to [128] byte
-	Payload_type byte
-	Sequence_number uint16
-	Timestamp uint32
 	Ssrc uint32
+	Payload_type byte
 	Payload_data *MBUF
 	Ptr uint64
 }

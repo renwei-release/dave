@@ -108,6 +108,8 @@ _rtc_websocket_start(void)
         return NULL;
     }
 
+	PARTYLOG("port:%d websocket start", info.port);
+
 	return context;
 }
 
@@ -115,6 +117,8 @@ static void
 _rtc_websocket_stop(struct lws_context *context)
 {
 	lws_context_destroy(context);
+
+	PARTYLOG("websocket stop");
 }
 
 static void *

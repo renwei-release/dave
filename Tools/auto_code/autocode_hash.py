@@ -49,5 +49,5 @@ def check_file_hash(file_list):
 
 def clean_file_hash():
     _set_hash_file("")
-    print("Set the hash file to empty!")
+    print("Set the autocode hash file to empty!")
     return

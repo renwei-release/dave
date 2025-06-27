@@ -23,7 +23,8 @@ _rtc_init(MSGBODY *pMsg)
 {
 	rtc_token_init();
 	rtc_socket_init();
-	rtc_websocket_init();
+	if(cfg_get_bool("IOWebScoketEnable", dave_true) == dave_true)
+		rtc_websocket_init();
 }
 
 static void

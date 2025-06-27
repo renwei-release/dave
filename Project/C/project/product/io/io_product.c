@@ -23,11 +23,16 @@ static ThreadId _io_thread = INVALID_THREAD_ID;
 static void
 _io_thread_init(MSGBODY *msg)
 {
-	dave_http_init();
-	dave_uip_init();
-	dave_email_init();
-	dave_rtc_init();
-	dave_sip_init();
+	if(cfg_get_bool("IOHttpEnable", dave_true) == dave_true)
+		dave_http_init();
+	if(cfg_get_bool("IOUIPEnable", dave_true) == dave_true)
+		dave_uip_init();
+	if(cfg_get_bool("IOEmailEnable", dave_true) == dave_true)
+		dave_email_init();
+	if(cfg_get_bool("IORTCEnable", dave_true) == dave_true)
+		dave_rtc_init();
+	if(cfg_get_bool("IOSIPEEnable", dave_true) == dave_true)
+		dave_sip_init();
 }
 
 static void

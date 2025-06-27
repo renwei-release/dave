@@ -47,10 +47,8 @@ typedef struct {
 	s8 call_id[128];
 	s8 call_from[128];
 	s8 call_to[128];
-	u8 payload_type;
 	u16 sequence_number;
-	u32 timestamp;
-	u32 ssrc;
+	u8 payload_type;
 	MBUF *payload_data;
 	void *ptr;
 } RTPDataReq;
@@ -60,10 +58,8 @@ typedef struct {
 	s8 call_id[128];
 	s8 call_from[128];
 	s8 call_to[128];
-	u8 payload_type;
-	u16 sequence_number;
-	u32 timestamp;
 	u32 ssrc;
+	u8 payload_type;
 	MBUF *payload_data;
 	void *ptr;
 } RTPDataRsp;

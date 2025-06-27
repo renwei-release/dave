@@ -41,7 +41,7 @@ _rtp_build_rtp_header(RTPHeadr *header, MBUF *payload_data)
 	MBUF *rtp_data;
 	u8 *packet;
 
-	rtp_data = dave_mmalloc(head_len + payload_data->len);
+	rtp_data = dave_mmalloc(head_len);
 
 	packet = (u8 *)(rtp_data->payload);
 
@@ -66,9 +66,7 @@ _rtp_build_rtp_header(RTPHeadr *header, MBUF *payload_data)
 		packet[15 + i * 4] = header->csrc[i] & 0xFF;
 	}
 
-	dave_memcpy(&packet[head_len], payload_data->payload, payload_data->len);
-
-	return rtp_data;
+	return dave_mchain(rtp_data, payload_data);
 }
 
 static RetCode
@@ -377,7 +375,9 @@ dave_rtp_send(
 
 		_rtp_send(pRTP, rtp_data);
 	}
-
-	dave_mfree(payload_data);
+	else
+	{
+		dave_mfree(payload_data);
+	}
 }
 

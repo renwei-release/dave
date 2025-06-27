@@ -25,7 +25,7 @@ void rtp_msg_stop(RTP *pRTP);
 
 RTPDATA rtp_msg_data_recv(RTP *pRTP, u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len);
 
-void rtp_msg_data_send(void *rtp, u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len);
+void rtp_msg_data_send(void *rtp, u32 ssrc, u8 payload_type, s8 *payload_ptr, ub payload_len);
 
 #endif
 

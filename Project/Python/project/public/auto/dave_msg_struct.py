@@ -1079,10 +1079,8 @@ class RTPDataReq (Structure):
 		("call_id", c_char * 128),
 		("call_from", c_char * 128),
 		("call_to", c_char * 128),
-		("payload_type", c_char),
 		("sequence_number", c_ushort),
-		("timestamp", c_uint),
-		("ssrc", c_uint),
+		("payload_type", c_char),
 		("payload_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]
@@ -1093,10 +1091,8 @@ class RTPDataRsp (Structure):
 		("call_id", c_char * 128),
 		("call_from", c_char * 128),
 		("call_to", c_char * 128),
-		("payload_type", c_char),
-		("sequence_number", c_ushort),
-		("timestamp", c_uint),
 		("ssrc", c_uint),
+		("payload_type", c_char),
 		("payload_data", POINTER(MBUF)),
 		("ptr", POINTER(c_char)),
 ]

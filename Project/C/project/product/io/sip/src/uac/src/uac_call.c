@@ -95,7 +95,8 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 	payload_data = uac_rtp_buffer(
 		&send_sequence_number,
 		&pUACCall->rtp_buffer,
-		payload_type, sequence_number, timestamp, ssrc, payload_ptr, payload_len);
+		sequence_number, timestamp, ssrc,
+		payload_type, payload_ptr, payload_len);
 
 	if(payload_data != NULL)
 	{
@@ -103,10 +104,8 @@ _uac_call_rtp_recv(void *rtp, u8 payload_type, u16 sequence_number, u32 timestam
 		dave_strcpy(pReq->call_id, pRTP->call_id, sizeof(pReq->call_id));
 		dave_strcpy(pReq->call_from, pRTP->call_from, sizeof(pReq->call_from));
 		dave_strcpy(pReq->call_to, pRTP->call_to, sizeof(pReq->call_to));
-		pReq->payload_type = payload_type;
 		pReq->sequence_number = send_sequence_number;
-		pReq->timestamp = timestamp;
-		pReq->ssrc = ssrc;
+		pReq->payload_type = payload_type;
 		pReq->payload_data = payload_data;
 		pReq->ptr = pReq;
 
@@ -230,8 +229,8 @@ uac_bye(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_number)
 void
 uac_rtp(
 	s8 *call_id, s8 *call_from, s8 *call_to,
-	u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc,
-	s8 *payload_ptr, ub payload_len)
+	u32 ssrc,
+	u8 payload_type, s8 *payload_ptr, ub payload_len)
 {
 	SIPCall *pSIPCall = sip_my_call(uac_main_signal(), call_id);
 
@@ -247,6 +246,6 @@ uac_rtp(
 		return;
 	}
 
-	pSIPCall->rtp->data_send(pSIPCall->rtp, payload_type, sequence_number, timestamp, ssrc, payload_ptr, payload_len);
+	pSIPCall->rtp->data_send(pSIPCall->rtp, ssrc, payload_type, payload_ptr, payload_len);
 }
 

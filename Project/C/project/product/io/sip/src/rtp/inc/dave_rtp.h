@@ -14,10 +14,10 @@ void dave_rtp_exit(void);
 typedef void(* rtp_data_start)(void *pRTP);
 typedef void(* rtp_data_stop)(void *pRTP);
 typedef void(* rtp_data_recv)(void *pRTP, u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len);
-typedef void(* rtp_data_send)(void *pRTP, u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len);
+typedef void(* rtp_data_send)(void *pRTP, u32 ssrc, u8 payload_type, s8 *payload_ptr, ub payload_len);
 
 #define RTP_HEADER_LEN 12
-#define RTP_DATA_BUFFER 512 * 1024
+#define RTP_DATA_BUFFER 2 * 1024 * 1024
 
 typedef struct {
     u8  version:2;

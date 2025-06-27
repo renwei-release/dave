@@ -55,6 +55,7 @@ static RTPDATA
 _rtp_data_buffer_get(RTP *pRTP)
 {
 	RTPDATA buffer_rtp_data;
+	ub buffer_length;
 
 	SAFECODEv1(pRTP->rtp_data_pv, {
 		pRTP->sequence_number += 1;
@@ -64,19 +65,29 @@ _rtp_data_buffer_get(RTP *pRTP)
 		buffer_rtp_data.sequence_number = pRTP->sequence_number;
 		buffer_rtp_data.timestamp = pRTP->timestamp;
 		buffer_rtp_data.ssrc = pRTP->ssrc;
+		buffer_rtp_data.payload_data = NULL;
 
-		if((pRTP->rtp_data_w_index - pRTP->rtp_data_r_index) >= RTP_FRAME_DATA_LEN)
+		buffer_length = pRTP->rtp_data_w_index - pRTP->rtp_data_r_index;
+
+		if(buffer_length > 0)
 		{
-			buffer_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)(&pRTP->rtp_data_buffer[pRTP->rtp_data_r_index]), RTP_FRAME_DATA_LEN);
-			pRTP->rtp_data_r_index += RTP_FRAME_DATA_LEN;
+			if(buffer_length > RTP_FRAME_DATA_LEN)
+				buffer_length = RTP_FRAME_DATA_LEN;
+		
+			buffer_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)(&pRTP->rtp_data_buffer[pRTP->rtp_data_r_index]), buffer_length);
+			pRTP->rtp_data_r_index += buffer_length;
 			if(pRTP->rtp_data_r_index >= pRTP->rtp_data_w_index)
 			{
 				pRTP->rtp_data_w_index = pRTP->rtp_data_r_index = 0;
 			}
 		}
-		else
+
+		if(buffer_length < RTP_FRAME_DATA_LEN)
 		{
-			buffer_rtp_data.payload_data = t_a2b_bin_to_mbuf((s8 *)_mte_bag, RTP_FRAME_DATA_LEN);
+			if(buffer_length != 0)
+				RTPLOG("Fill in a complete frame of data:%d", buffer_length);
+
+			buffer_rtp_data.payload_data = dave_mchain(buffer_rtp_data.payload_data, t_a2b_bin_to_mbuf((s8 *)_mte_bag, RTP_FRAME_DATA_LEN - buffer_length));
 		}
 	});
 
@@ -92,16 +103,16 @@ _rtp_data_buffer_set(RTP *pRTP, u32 ssrc, s8 *payload_data_ptr, ub payload_data_
 		if(pRTP->rtp_data_w_index == 0)
 		{
 			pRTP->current_buffer_ssrc = ssrc;
-
-			RTPLOG("ssrc:%d data_len:%d", ssrc, payload_data_len)
 		}
 		else
 		{
-			if(pRTP->current_buffer_ssrc != ssrc)
+			if(pRTP->current_buffer_ssrc < ssrc)
 			{
-				RTPLOG("It is possible that the conversation was interrupted by the user! %s->%s ssrc:%d/%d",
+				RTPLOG("It is possible that the conversation was interrupted by the user! %s->%s ssrc:%d/%d data_len:%d %d/%d/%d",
 					pRTP->call_from, pRTP->call_to,
-					pRTP->current_buffer_ssrc, ssrc);
+					pRTP->current_buffer_ssrc, ssrc,
+					payload_data_len,
+					pRTP->rtp_data_r_index, pRTP->rtp_data_w_index, RTP_DATA_BUFFER);
 
 				pRTP->current_buffer_ssrc = ssrc;
 				pRTP->rtp_data_r_index = pRTP->rtp_data_w_index = 0;
@@ -110,12 +121,18 @@ _rtp_data_buffer_set(RTP *pRTP, u32 ssrc, s8 *payload_data_ptr, ub payload_data_
 	
 		if((pRTP->rtp_data_w_index + payload_data_len) > (RTP_DATA_BUFFER - RTP_FRAME_DATA_LEN))
 		{
-			RTPABNOR("rtp buffer overflow! buffer:%d/%d/%d payload:%d",
-				pRTP->rtp_data_r_index, pRTP->rtp_data_w_index, RTP_DATA_BUFFER,
-				payload_data_len);
+			RTPABNOR("rtp buffer overflow! ssrc:%d data_len:%d %d/%d/%d",
+				ssrc,
+				payload_data_len,
+				pRTP->rtp_data_r_index, pRTP->rtp_data_w_index, RTP_DATA_BUFFER);
 		}
 		else
 		{
+			RTPLOG("ssrc:%d data_len:%d %d/%d/%d",
+				ssrc,
+				payload_data_len,
+				pRTP->rtp_data_r_index, pRTP->rtp_data_w_index, RTP_DATA_BUFFER)
+
 			dave_memcpy(&pRTP->rtp_data_buffer[pRTP->rtp_data_w_index], payload_data_ptr, payload_data_len);
 			pRTP->rtp_data_w_index += payload_data_len;
 			if((payload_data_len % RTP_FRAME_DATA_LEN) != 0)
@@ -175,7 +192,7 @@ rtp_msg_data_recv(
 }
 
 void
-rtp_msg_data_send(void *rtp, u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc, s8 *payload_ptr, ub payload_len)
+rtp_msg_data_send(void *rtp, u32 ssrc, u8 payload_type, s8 *payload_ptr, ub payload_len)
 {
 	RTP *pRTP = (RTP *)rtp;
 

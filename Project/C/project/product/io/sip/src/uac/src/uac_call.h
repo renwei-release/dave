@@ -14,8 +14,8 @@ RetCode uac_bye(s8 *call_id_ptr, ub call_id_len, ThreadId owner_id, s8 *phone_nu
 
 void uac_rtp(
 	s8 *call_id, s8 *call_from, s8 *call_to,
-	u8 payload_type, u16 sequence_number, u32 timestamp, u32 ssrc,
-	s8 *payload_ptr, ub payload_len);
+	u32 ssrc,
+	u8 payload_type, s8 *payload_ptr, ub payload_len);
 
 #endif
 
