@@ -7,8 +7,8 @@
 # */
 
 LEVEL=$1
-PROJECT=${PWD##*/}
-PROJECT=${PROJECT^^}
+PRODUCT=${PWD##*/}
+PRODUCT=${PRODUCT^^}
 BASELIBNAME=liblinuxBASE
 LOGFILE=build_lib_log.txt
 HOMEPATH=$(cd `dirname $0`; pwd)/../../../
@@ -42,16 +42,23 @@ build_static_lib()
    ar cr ${GOLIB} ${obj_list}
 }
 
-build_dynamic_lib()
+__build_dynamic_lib__()
 {
-   mkdir -p ${HOMEPATH}../Python/project/public/base/lib
-
    obj_list=$(find `pwd`/../../../project/public -name '*.o')
-
-   SOLIB=${HOMEPATH}../Python/project/public/base/lib/${BASELIBNAME}.so
+   mkdir -p ${SOPATH}
+   SOLIB=${SOPATH}/${BASELIBNAME}.so
    echo lib build ${SOLIB}
    rm -f ${SOLIB}
-   gcc -lpthread -lrt -ldl -lm -lstdc++ -shared -o ${SOLIB} ${obj_list}
+   gcc -Wl,-z,noexecstack -lpthread -lrt -ldl -lm -lstdc++ -shared -o ${SOLIB} ${obj_list}
+}
+
+build_dynamic_lib()
+{
+   SOPATH=${HOMEPATH}../Python/project/public/base/lib
+   __build_dynamic_lib__
+
+   SOPATH=${HOMEPATH}../Java/project/public/base/lib
+   __build_dynamic_lib__
 }
 
 build_lib()

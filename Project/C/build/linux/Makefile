@@ -38,8 +38,12 @@ CC := gcc
 CPLUS := g++
 
 CFLAGS := -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+# Disallow executable stack in objects and final binaries
+CFLAGS += -Wa,--noexecstack -Wl,-z,noexecstack
 CFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 CPLUSFLAGS := -fPIC -Wall -Wno-missing-braces -fopenmp -ffunction-sections -fdata-sections -Wl,--gc-sections
+# Disallow executable stack in C++ objects and final binaries
+CPLUSFLAGS += -Wa,--noexecstack -Wl,-z,noexecstack
 CPLUSFLAGS += -D__DAVE_LINUX__ -D__DAVE_PRODUCT_$(NAME_PRODUCT)__ -DLEVEL_PRODUCT_$(MAKE_LEVEL_PRODUCT) -DFORM_PRODUCT_$(FORM)
 
 ifeq ($(LEVEL_PRODUCT), profiling)
@@ -69,8 +73,7 @@ $(NAME_PRODUCT)-BIN: $(OBJS)
 	@$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDE)
 
 pre_build:
-	python3 ../../../../Tools/refresh_version/refresh_version.py "../../../../" $(NAME_PRODUCT)
-	chmod a+x ../../../../Tools/auto_code/AUTOCODE
+	chmod +x ../../../../Tools/auto_code/AUTOCODE
 	../../../../Tools/auto_code/AUTOCODE
 
 end_build:
@@ -80,5 +83,5 @@ end_build:
 
 clean_build:
 	rm $(totalOBJS) $(NAME_PRODUCT).* -f
-	chmod a+x ../../../../Tools/auto_code/AUTOCLEAN
+	chmod +x ../../../../Tools/auto_code/AUTOCLEAN
 	../../../../Tools/auto_code/AUTOCLEAN

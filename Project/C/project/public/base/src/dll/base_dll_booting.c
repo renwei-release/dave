@@ -75,11 +75,7 @@ _dave_dll_mode_decode(char *work_mode)
 static void
 _dave_dll_sigaction_hander(int signum, siginfo_t *info, void *secret)
 {
-	if(signum == TIMER_SIG)
-	{
-		dave_os_timer_notify((unsigned long)signum);
-	}
-	else if(signum == KILL_SIG)
+	if(signum == KILL_SIG)
 	{
 		base_restart("KILL");
 	}
@@ -116,7 +112,6 @@ _dave_dll_reset_set(sigset_t *set)
 {
 	sigemptyset(set);
 
-	sigaddset(set, TIMER_SIG);
 	sigaddset(set, QUIT_SIG);
 	sigaddset(set, KILL_SIG);
 }
@@ -129,7 +124,6 @@ _dave_dll_wait_signal(void *arg)
 	if(arg != NULL)
 	{
 		// arg != NULL, on thread wait signal
-		_dave_dll_sigaction_set(TIMER_SIG);
 		_dave_dll_sigaction_set(QUIT_SIG);
 		_dave_dll_sigaction_set(KILL_SIG);
 	}

@@ -7,10 +7,12 @@
 # */
 homedir=$(cd `dirname $0`; pwd)
 
-product=$1
-bin=`echo $product | tr '[a-z]' '[A-Z]'`-BIN
+PRODUCT=$1
+BIN=`echo $PRODUCT | tr '[a-z]' '[A-Z]'`-BIN
 
-cd $product
+cd $PRODUCT
+
+python3 ../../../../Tools/refresh_version/refresh_version.py "../../../../" ${PRODUCT^^}
 
 if [ -d "bin_data" ]; then
     rm -rf bin_data
@@ -21,9 +23,9 @@ cd bin_data
 cp $homedir/build.spec .
 cp $homedir/boot.py .
 
-sed -i "s/___FLAG_FOR_PRODUCT___/$product/g" build.spec
-sed -i "s/___FLAG_FOR_BIN___/$bin/g" build.spec
-sed -i "s/___FLAG_FOR_PRODUCT___/$product/g" boot.py
+sed -i "s/___FLAG_FOR_PRODUCT___/$PRODUCT/g" build.spec
+sed -i "s/___FLAG_FOR_BIN___/$BIN/g" build.spec
+sed -i "s/___FLAG_FOR_PRODUCT___/$PRODUCT/g" boot.py
 
 if [ ! -f "/usr/local/bin/pyinstaller" ]; then
     pip install pyinstaller
@@ -37,12 +39,14 @@ if [ -d "project" ]; then
 fi
 mkdir project
 cd project
+# cp weights
+python3 $homedir/cp_weights.py $PRODUCT
 # cp components
-python3 $homedir/cp_components.py $product ./
+python3 $homedir/cp_components.py $PRODUCT ./
 # cp product
 mkdir ./product
 cp ../../../../project/product/dave_product.py ./product
-cp -r ../../../../project/product/$product ./product
+cp -r ../../../../project/product/$PRODUCT ./product
 cd ../
 
 jmpy -i "project" -o "./dist" -m 0
@@ -55,10 +59,10 @@ cp -r ../../../project/public ./project
 
 pyinstaller build.spec
 
-if [ ! -d "../../../../../Deploy/deploy/$product/file_system/project" ]; then
-    mkdir -p ../../../../../Deploy/deploy/$product/file_system/project
+if [ ! -d "../../../../../Deploy/deploy/$PRODUCT/file_system/project" ]; then
+    mkdir -p ../../../../../Deploy/deploy/$PRODUCT/file_system/project
 fi
-cp ./dist/$product/$bin ../../../../../Deploy/deploy/$product/file_system/project
+cp ./dist/$PRODUCT/$BIN ../../../../../Deploy/deploy/$PRODUCT/file_system/project
 
 cd ..
 

@@ -37,12 +37,55 @@
 #include "os_log.h"
 
 typedef struct {
-	dave_bool start;
-	timer_t id;
+	volatile dave_bool start;
+	pthread_t thread;
+	ub interval_ms;
 } HWTIMER;
 
 static HWTIMER _hw_timer;
 static sync_notify_fun _linux_timer_notify = NULL;
+
+static inline void
+_timespec_add_ms(struct timespec *ts, ub ms)
+{
+	ts->tv_sec  += (time_t)(ms / 1000);
+	long add_ns  = (long)((ms % 1000) * 1000000L);
+	ts->tv_nsec += add_ns;
+	if (ts->tv_nsec >= 1000000000L) {
+		ts->tv_sec += 1;
+		ts->tv_nsec -= 1000000000L;
+	}
+}
+
+static void *
+_timer_thread_fn(void *arg)
+{
+	(void)arg;
+
+	if (_hw_timer.interval_ms == 0) {
+		_hw_timer.interval_ms = 1;
+	}
+
+	struct timespec next;
+	clock_gettime(CLOCK_MONOTONIC, &next);
+	_timespec_add_ms(&next, _hw_timer.interval_ms);
+
+	while (_hw_timer.start == dave_true) {
+		int rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL);
+		if (rc == EINTR) {
+			continue;
+		}
+
+		sync_notify_fun cb = _linux_timer_notify;
+		if (cb != NULL) {
+			cb(0);
+		}
+
+		_timespec_add_ms(&next, _hw_timer.interval_ms);
+	}
+
+	return NULL;
+}
 
 static inline void
 _time_set_tz(int tz)
@@ -135,45 +178,27 @@ dave_os_utc_date(DateStruct *date)
 	date->second = (p->tm_sec < 60 ? p->tm_sec : 59);
 }
 
-void
-dave_os_timer_notify(unsigned long data)
-{
-	if(_linux_timer_notify != NULL)
-	{
-		_linux_timer_notify((ub)data);
-	}
-}
-
 dave_bool
 dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms)
 {
-	struct sigevent sev;
-	struct itimerspec its;
-
 	dave_os_stop_hardware_timer();
 
 	_linux_timer_notify = fun;
+	_hw_timer.interval_ms = alarm_ms;
+	_hw_timer.start = dave_true;
 
-	sev.sigev_notify = SIGEV_SIGNAL;
-	sev.sigev_signo = TIMER_SIG;
-	sev.sigev_value.sival_ptr = (void *)fun;
-
-	if(timer_create(CLOCK_REALTIME, &sev, &(_hw_timer.id)) == -1)
+	pthread_attr_t attr;
+	if(pthread_attr_init(&attr) != 0)
 	{
-		OSABNOR("timer create failed:%d<%s>!", errno, strerror(errno));
+		_hw_timer.start = dave_false;
 		return dave_false;
 	}
 
-	_hw_timer.start = dave_true;
-
-	its.it_value.tv_sec = alarm_ms / 1000;
-	its.it_value.tv_nsec = (alarm_ms % 1000) * 1000;
-	its.it_interval.tv_sec = its.it_value.tv_sec;
-	its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-	if (timer_settime(_hw_timer.id, 0, &its, NULL) == -1)
-	{
-		OSABNOR("timer set failed:%d<%s>!", errno, strerror(errno));
+	int rc = pthread_create(&(_hw_timer.thread), &attr, _timer_thread_fn, NULL);
+	pthread_attr_destroy(&attr);
+	if(rc != 0) {
+		_hw_timer.start = dave_false;
+		OSABNOR("timer thread create failed:%d<%s>!", rc, strerror(rc));
 		return dave_false;
 	}
 
@@ -185,8 +210,11 @@ dave_os_stop_hardware_timer(void)
 {
 	if(_hw_timer.start == dave_true)
 	{
-		timer_delete(_hw_timer.id);
 		_hw_timer.start = dave_false;
+		if (_hw_timer.thread != (pthread_t)0) {
+			pthread_join(_hw_timer.thread, NULL);
+			_hw_timer.thread = (pthread_t)0;
+		}
 	}
 	_linux_timer_notify = NULL;
 }

@@ -6,7 +6,7 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
+PRODUCT=${PWD##*/}
 LEVEL=$1
 if [ "$LEVEL" == "" ]; then
    LEVEL="alpha"
@@ -18,13 +18,13 @@ fi
 CONTAINER="fedora"
 
 if [ "$FORM" == "BIN" ]; then
-   chmod a+x ../ENV
-   ../ENV ${PROJECT} ${LEVEL} ${CONTAINER}
+   chmod +x ../ENV
+   ../ENV ${PRODUCT} ${LEVEL} ${CONTAINER}
 
-   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod a+x BUILD && ./BUILD ${PROJECT} ${LEVEL} ${FORM}"
+   echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PRODUCT}\033[0m project"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod +x build.sh && ./build.sh ${PRODUCT} ${LEVEL} ${FORM}"
 else
    cd ../
-   chmod a+x BUILD
-   ./BUILD ${PROJECT} ${LEVEL} ${FORM}
+   chmod +x build.sh
+   ./build.sh ${PRODUCT} ${LEVEL} ${FORM}
 fi

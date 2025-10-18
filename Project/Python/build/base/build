@@ -1,0 +1,19 @@
+#!/bin/bash
+#/*
+# * Copyright (c) 2024 Renwei
+# *
+# * This is a free software; you can redistribute it and/or modify
+# * it under the terms of the MIT license. See LICENSE for details.
+# */
+
+PRODUCT=${PWD##*/}
+if [ "${USER}" == "root" ]; then
+   CONTAINER="ubuntu22"
+else
+   CONTAINER="ubuntu22"-${USER}
+fi
+
+../ENV ${CONTAINER}
+
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PRODUCT}\033[0m project"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Python/build && chmod +x build.sh && ./build.sh ${PRODUCT}"

@@ -23,7 +23,7 @@
 #include <dirent.h>
 #include <sys/mman.h>
 #include <sys/types.h>
-#include <termio.h>
+#include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>

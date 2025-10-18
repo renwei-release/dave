@@ -14,5 +14,5 @@ else
 fi
 
 cd ../../
-chmod a+x *.sh
+chmod +x *.sh
 ./debug.sh $PROJECTNAME $PROJECT

@@ -6,9 +6,9 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=$1
+PRODUCT=$1
 TAGS=$2
 TIDY=$3
 
 chmod a+x build.sh
-./build.sh $PROJECT $TAGS $TIDY
+./build.sh $PRODUCT $TAGS $TIDY

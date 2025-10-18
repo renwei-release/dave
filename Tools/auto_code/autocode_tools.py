@@ -140,14 +140,14 @@ def _check_struct_list_has_invalid_define(struct_list):
 
 
 def _get_struct_name_and_body(struct_data):
-    struct_name = re.findall("}(.*?);", struct_data)
+    struct_name = re.findall(r"}(.*?);", struct_data)
     if len(struct_name) == 0:
-        struct_name = re.findall("typedef struct(.*?){", struct_data)
+        struct_name = re.findall(r"typedef struct(.*?){", struct_data)
     if len(struct_name) == 0:
-        struct_name = re.findall("typedef union(.*?){", struct_data)
-    struct_body = re.findall("typedef struct.*?\{(.*?)\}.*?;", struct_data)
+        struct_name = re.findall(r"typedef union(.*?){", struct_data)
+    struct_body = re.findall(r"typedef struct.*?\{(.*?)\}.*?;", struct_data)
     if len(struct_body) == 0:
-        struct_body = re.findall("typedef union.*?\{(.*?)\}.*?;", struct_data)
+        struct_body = re.findall(r"typedef union.*?\{(.*?)\}.*?;", struct_data)
     if struct_name == None or struct_name == "" or struct_body == None or struct_body == "":
         print(f"struct_name:{struct_name} struct_body:{struct_body} struct_data:{struct_data}")
     if len(struct_body) == 0:
@@ -243,9 +243,9 @@ def remove_invalid_data(file_data):
     #
     # 需要按步骤去除
     #
-    file_data = re.sub("//.*?\r\n", "", file_data)
-    file_data = re.sub("//.*?\n", "", file_data)
-    file_data = re.sub("\n|\r\n|\t", " ", file_data)
+    file_data = re.sub(r"//.*?\r\n", "", file_data)
+    file_data = re.sub(r"//.*?\n", "", file_data)
+    file_data = re.sub(r"\n|\r\n|\t", " ", file_data)
     return file_data
 
 
@@ -271,7 +271,7 @@ def get_struct_data(struct_data):
 
     base_array = []
     for struct_line in struct_body:
-        body_list = re.findall("(.*?);", struct_line)
+        body_list = re.findall(r"(.*?);", struct_line)
 
         for body in body_list:
             data_name, data_types, data_dimension = _get_struct_body_data(body)
@@ -283,17 +283,17 @@ def get_struct_data(struct_data):
 def get_struct_list(file_data):
     file_data = remove_annotation_data(file_data)
     file_data = _leaving_only_the_data_structure_string(file_data)
-    struct_list = re.findall("typedef struct.*?\{.*?\}.*?;", file_data)
+    struct_list = re.findall(r"typedef struct.*?\{.*?\}.*?;", file_data)
     _check_struct_list_has_invalid_define(struct_list)
     return struct_list
 
 
 def get_enum_id_table(enum_content):
-    enum_content = str(re.findall("typedef enum.*?\{(.*?)\}.*?;", enum_content))
+    enum_content = str(re.findall(r"typedef enum.*?\{(.*?)\}.*?;", enum_content))
     enum_content = enum_content.replace(' ', '').replace('[', '').replace(']', '').replace('\'', '') + ','
-    enum_content = str(re.findall('([A-Z,a-z,0-9,_]*)=.*?,|([A-Z,a-z,0-9,_]*),', enum_content))
+    enum_content = str(re.findall(r'([A-Z,a-z,0-9,_]*)=.*?,|([A-Z,a-z,0-9,_]*),', enum_content))
     enum_content = enum_content.replace('[', '').replace(']', '').replace('(', '').replace(')', '').replace('\'', '').replace(', ,', ',').replace(' ', '')
-    enum_content = re.findall("(.*?),", enum_content)
+    enum_content = re.findall(r"(.*?),", enum_content)
     return enum_content
 
 

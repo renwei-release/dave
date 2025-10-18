@@ -60,8 +60,8 @@ def _remove_invalid_file(file_list):
         with open(file_name, "r", encoding="utf-8") as file_id:
             try:
                 file_content = file_id.read()
-                find_msg_struct = re.findall("\/\* for *(.+?) *?message *\*\/.*?", file_content)
-                find_inc_file = re.findall("#include .*?[\",<](.+?.h)[\",>]", file_content)
+                find_msg_struct = re.findall(r"/\* for *(.+?) *?message *\*/.*?", file_content)
+                find_inc_file = re.findall(r"#include .*?[\",<](.+?.h)[\",>]", file_content)
                 if len(find_msg_struct) > 0:
                     new_file_list.append(file_name)
                 if len(find_inc_file) > 0:
@@ -77,7 +77,7 @@ def _remove_invalid_file(file_list):
             with open(inc_file, "r", encoding="utf-8") as file_id:
                 try:
                     file_content = file_id.read()
-                    find_inc_file = re.findall("#include .*?[\",<](.+?.h)[\",>]", file_content)
+                    find_inc_file = re.findall(r"#include .*?[\",<](.+?.h)[\",>]", file_content)
                     if len(find_inc_file) > 0:
                         find_inc_file = _inc_file_name_to_path(find_inc_file, file_list)
                         new_inc_file_list.extend(find_inc_file)

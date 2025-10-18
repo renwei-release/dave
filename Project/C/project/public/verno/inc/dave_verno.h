@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Renwei
+ * Copyright (c) 2025 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -16,7 +16,7 @@
 #include "verno_macro.h"
 #include "dave_base.h"
 
-#define VERSION_PRODUCT "TEST"
+#define VERSION_PRODUCT "base"
 
 #ifdef __x86_64__
  #define VERSION_ARCH "-x86-64"
@@ -38,9 +38,9 @@
 #else
  #define VERSION_SUB "22"
 #endif
-#define VERSION_REV "9"
+#define VERSION_REV "16"
 
-#define VERSION_DATE_TIME "20250627221155"
+#define VERSION_DATE_TIME "20251012145327"
 
 #ifdef __VERNO_ALPHA_VERSION__
  #define VERSION_LEVEL "Alpha"
@@ -48,8 +48,8 @@
  #define VERSION_LEVEL "Beta"
 #endif
 
-#define __BUILD_MAC_ADDRESS__ "000C29C94E31"
-#define __BUILD_HOSTNAME__ "fedora-renwei-fedora-docker"
+#define __BUILD_MAC_ADDRESS__ "A9614FA2AAA7"
+#define __BUILD_HOSTNAME__ "fedora-renwei-fedora44-docker"
 #define __BUILD_USERNAME__ "root"
 
 s8 * dave_verno(void);

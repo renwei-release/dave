@@ -8,11 +8,11 @@
 
 homepath=$(cd `dirname $0`; pwd)
 
-PROJECT=$1
+PRODUCT=$1
 TAGS=$2
 
 cd ../project
 
 GOOS=linux GOARCH=amd64 go clean .
 
-echo -e "clean.sh clean \033[35m${PROJECT}\033[0m"
+echo -e "clean.sh clean \033[35m${PRODUCT}\033[0m"

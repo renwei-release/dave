@@ -6,10 +6,10 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
+PRODUCT=${PWD##*/}
 CONTAINER="golang21"
 
 ../ENV ${CONTAINER}
 
-echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m project"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PROJECT} && chmod a+x BUILD && ./BUILD"
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PRODUCT}\033[0m project"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/Go/project/product/${PRODUCT} && chmod a+x BUILD && ./BUILD"

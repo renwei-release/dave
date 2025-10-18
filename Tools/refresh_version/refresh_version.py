@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #/*
-# * Copyright (c) 2022 Renwei
+# * Copyright (c) 2025 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
@@ -14,11 +14,12 @@ import traceback
 import getpass
 import sys
 import os.path
+import xml.etree.ElementTree as ET
 
 
 def_c_verno_head_file="\
 /*\n\
- * Copyright (c) 2023 Renwei\n\
+ * Copyright (c) 2025 Renwei\n\
  *\n\
  * This is a free software; you can redistribute it and/or modify\n\
  * it under the terms of the MIT license. See LICENSE for details.\n\
@@ -71,17 +72,23 @@ def touch_file(file):
     return
 
 
-def file_exists(file):
+def file_exists(file, warn=True):
     if os.path.exists(file) == False:
-        print(f'\033[33mfile:{file} does not exist!\033[0m')
+        if warn:
+            print(f'\033[33mfile:{file} does not exist! current path:{os.getcwd()}, auto copy it!\033[0m')
         return False
     return True
 
 
-def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, SUB, REV):
+def update_c_verno_file(root_path, c_verno_inc_file, c_verno_src_file, productname, MAIN, SUB, REV):
+    if file_exists(c_verno_inc_file) == False:
+        os.system(f"cp {root_path}/Tools/refresh_version/verno_backup/dave_verno.h "+c_verno_inc_file)
+    if productname == None:
+        return
+
     with open(c_verno_inc_file, "w+") as file_id:
         file_id.write(def_c_verno_head_file)
-        file_id.write(f'#define VERSION_PRODUCT "{projectname}"\n\n')
+        file_id.write(f'#define VERSION_PRODUCT "{productname}"\n\n')
         file_id.write(f'#ifdef __x86_64__\n')
         file_id.write(f' #define VERSION_ARCH "-x86-64"\n')
         file_id.write(f'#elif defined(__aarch64__)\n')
@@ -122,10 +129,10 @@ def update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, S
     return
 
 
-def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
+def update_go_verno_file(root_path, go_verno_file, productname, MAIN, SUB, REV):
     if file_exists(go_verno_file) == False:
-        return
-    if projectname == None:
+        os.system(f"cp {root_path}/Tools/refresh_version/verno_backup/dave_verno.go "+go_verno_file)
+    if productname == None:
         return
 
     with open(go_verno_file, "r") as file_id:
@@ -136,7 +143,7 @@ def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
         end_file_data = file_content.split(end_split_data)[-1]
     with open(go_verno_file, "w") as file_id:
         file_id.write(start_file_data)
-        file_id.write("var VERSION_PRODUCT = \""+projectname+"\"\n")
+        file_id.write("var VERSION_PRODUCT = \""+productname+"\"\n")
         file_id.write("var VERSION_MISC = strings.Replace(tools.T_sys_go_version(), \".\", \"-\", -1)\n")
         file_id.write("var VERSION_MAIN = \""+MAIN+"\"\n")
         file_id.write("var VERSION_SUB = \""+SUB+"\"\n")
@@ -150,9 +157,9 @@ def update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV):
     return
 
 
-def update_py_verno_file(py_verno_file, MAIN, SUB, REV):
+def update_py_verno_file(root_path, py_verno_file, MAIN, SUB, REV):
     if file_exists(py_verno_file) == False:
-        return
+        os.system(f"cp {root_path}/Tools/refresh_version/verno_backup/dave_verno.py "+py_verno_file)
 
     with open(py_verno_file, "r") as file_id:
         file_content = file_id.read()
@@ -169,20 +176,58 @@ def update_py_verno_file(py_verno_file, MAIN, SUB, REV):
     return
 
 
-def refresh_version(root_path, projectname):
+def update_java_verno_file(java_verno_file, productname, MAIN, SUB, REV):
+    if file_exists(java_verno_file, False) == False:
+        return
+    if productname == None:
+        return
+
+    try:
+        with open(java_verno_file, "rb") as f:
+            xml_bytes = f.read()
+
+        root = ET.fromstring(xml_bytes)
+
+        ns = ""
+        if root.tag.startswith("{"):
+            ns = root.tag.split("}")[0].strip("{")
+            ET.register_namespace("", ns)
+
+        nsmap = {"m": ns} if ns else {}
+
+        artifact_node = root.find("m:artifactId", nsmap) if ns else root.find("artifactId")
+        version_node = root.find("m:version", nsmap) if ns else root.find("version")
+
+        if artifact_node is None or version_node is None:
+            print(f"Warning: Could not locate top-level <artifactId> or <version> in {java_verno_file}.")
+            return
+
+        artifact_node.text = productname.upper()
+        version_node.text = f"{productname.upper()}.java.{MAIN}.{SUB}.{REV}.{time.strftime("%Y%m%d%H%M%S", time.localtime())}.Alpha"
+
+        tree = ET.ElementTree(root)
+        tree.write(java_verno_file, encoding="utf-8", xml_declaration=True)
+    except Exception:
+        traceback.print_exc()
+    return
+
+
+def refresh_version(root_path, productname):
     verno_file = root_path+"VERSION"
     c_verno_inc_file = root_path+"Project/C/project/public/verno/inc/dave_verno.h"
     c_verno_src_file = root_path+"Project/C/project/public/verno/src/dave_verno.c"
     go_verno_file = root_path+"Project/Go/project/public/base/dave_verno.go"
     py_verno_file = root_path+"Project/Python/project/public/base/dave_verno.py"
+    java_verno_file = root_path+f"Project/Java/project/product/{productname}/pom.xml"
 
     MAIN, SUB, REV = load_verno_file(verno_file)
     if MAIN == None or SUB == None or REV == None:
         return
 
-    update_c_verno_file(c_verno_inc_file, c_verno_src_file, projectname, MAIN, SUB, REV)
-    update_go_verno_file(go_verno_file, projectname, MAIN, SUB, REV)
-    update_py_verno_file(py_verno_file, MAIN, SUB, REV)
+    update_c_verno_file(root_path, c_verno_inc_file, c_verno_src_file, productname, MAIN, SUB, REV)
+    update_go_verno_file(root_path, go_verno_file, productname, MAIN, SUB, REV)
+    update_py_verno_file(root_path, py_verno_file, MAIN, SUB, REV)
+    update_java_verno_file(java_verno_file, productname, MAIN, SUB, REV)
     return
 
 

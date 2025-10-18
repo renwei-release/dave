@@ -8,7 +8,7 @@
 
 homepath=$(cd `dirname $0`; pwd)/../../../../
 
-PROJECT=$1
+PRODUCT=$1
 LEVEL=$2
 CONTAINER=$3
 
@@ -19,15 +19,15 @@ if [ ! "$CONTAINER" == "" ]; then
    if [ "$exit_container" == "" ]; then
       echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
       cd ./Deploy/deploy/${CONTAINER}
-      chmod a+x deploy.sh
+      chmod +x deploy.sh
       ./deploy.sh
       echo -e "The build \033[35m${CONTAINER}\033[0m is ready, now start building the project:"
       echo
       cd ${homepath}
    fi
-   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod a+x lib-ENV && ./lib-ENV ${PROJECT} ${LEVEL}"
+   docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux && chmod +x lib-ENV && ./lib-ENV ${PRODUCT} ${LEVEL}"
 else
-   chmod a+x `pwd`/Project/C/build/linux/lib-ENV
-   `pwd`/Project/C/build/linux/lib-ENV ${PROJECT} ${LEVEL}
+   chmod +x `pwd`/Project/C/build/linux/lib-ENV
+   `pwd`/Project/C/build/linux/lib-ENV ${PRODUCT} ${LEVEL}
 fi
 

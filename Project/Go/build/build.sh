@@ -8,25 +8,25 @@
 
 homepath=$(cd `dirname $0`; pwd)
 
-PROJECT=$1
+PRODUCT=$1
 TAGS=$2
 TIDY=$3
 ARCH=`arch`
 
-if [ "$PROJECT" == "" ]; then
-   PROJECT=dave
+if [ "$PRODUCT" == "" ]; then
+   PRODUCT=dave
 fi
-projectnameforbuild=projectname${PROJECT}
+projectnameforbuild=projectname${PRODUCT}
 
-python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PROJECT^^}
+python3 ../../../Tools/refresh_version/refresh_version.py "../../../" ${PRODUCT^^}
 
 if [ -f tidy.sh ]; then
    chmod a+x tidy.sh
-   ./tidy.sh ${PROJECT} ${TIDY}
+   ./tidy.sh ${PRODUCT} ${TIDY}
 fi
 
-if [ -f $PROJECT ]; then
-   rm -rf $PROJECT
+if [ -f $PRODUCT ]; then
+   rm -rf $PRODUCT
 fi
 
 if [ "$ARCH" == "x86_64" ]; then
@@ -39,17 +39,17 @@ fi
 
 cd ../project
 
-GOOS=linux GOARCH=${GOARCH} go build -gcflags=all="-N -l" -tags "${TAGS} __DAVE_PRODUCT_${PROJECT^^}__" -o $projectnameforbuild dave_main.go
+GOOS=linux GOARCH=${GOARCH} go build -gcflags=all="-N -l" -tags "${TAGS} __DAVE_PRODUCT_${PRODUCT^^}__" -o $projectnameforbuild dave_main.go
 
 if [ -f $projectnameforbuild ]; then
-   PROJECTDIR=../../../Deploy/deploy/${PROJECT,,}/file_system/project
-   PRIJECTFILE=${PROJECTDIR}/${PROJECT^^}-BIN
+   PRODUCTDIR=../../../Deploy/deploy/${PRODUCT,,}/file_system/project
+   PRIJECTFILE=${PRODUCTDIR}/${PRODUCT^^}-BIN
 
-   if [ ! -d ${PROJECTDIR} ]; then
-      mkdir -p ${PROJECTDIR}
+   if [ ! -d ${PRODUCTDIR} ]; then
+      mkdir -p ${PRODUCTDIR}
    fi
-   echo -e "build.sh copy \033[35m${PROJECT}\033[0m to ${PRIJECTFILE}"
+   echo -e "build.sh copy \033[35m${PRODUCT}\033[0m to ${PRIJECTFILE}"
    cp $projectnameforbuild ${PRIJECTFILE}
-   echo -e "build.sh copy \033[35m${PROJECT}\033[0m to $homepath/${PROJECT,,}/${PROJECT^^}-BIN"
-   mv $projectnameforbuild $homepath/${PROJECT,,}/${PROJECT^^}-BIN
+   echo -e "build.sh copy \033[35m${PRODUCT}\033[0m to $homepath/${PRODUCT,,}/${PRODUCT^^}-BIN"
+   mv $projectnameforbuild $homepath/${PRODUCT,,}/${PRODUCT^^}-BIN
 fi

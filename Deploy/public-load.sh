@@ -21,7 +21,7 @@ else
 fi
 
 if [ -f ${RUNNINGPATH}/${RUNNINGFILE} ]; then
-   chmod a+x ${RUNNINGPATH}/${RUNNINGFILE}
+   chmod +x ${RUNNINGPATH}/${RUNNINGFILE}
 fi
 
 BUILDARG=$(./extend.sh 'build' '')
@@ -30,7 +30,7 @@ if [ "$exit_dave_image" == "" ]; then
    if [ -f ${DOCKERFILE} ]; then
       echo ${File} build ${IMAGE} on ${IMAGE}:${TAG} BUILDARG=${BUILDARG}
 	   mkdir -p ${RUNNINGPATH}
-      chmod a+x ${RUNNINGFILE}
+      chmod +x ${RUNNINGFILE}
       cp ${RUNNINGFILE} ${RUNNINGPATH}
       docker build ${BUILDARG} --tag ${IMAGE}:${TAG} ./deploy/${PROJECT}
    else

@@ -92,7 +92,6 @@ _linux_handle_signal(void)
 	signal(SIGALRM, _linux_handle_alarm);
 
 	sigemptyset(&set);
-	sigaddset(&set, TIMER_SIG);
 	sigaddset(&set, QUIT_SIG);
 	sigaddset(&set, KILL_SIG);
 
@@ -102,11 +101,7 @@ _linux_handle_signal(void)
 
 		if (ret == 0)
 		{
-			if(sig == TIMER_SIG)
-			{
-				dave_os_timer_notify((unsigned long)sig);
-			}
-			else if(sig == KILL_SIG)
+			if(sig == KILL_SIG)
 			{
 				base_restart("KILL");
 			}

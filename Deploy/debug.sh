@@ -21,7 +21,7 @@ fi
 
 if [ -f ${PRJBINFILE} ]; then
    echo ${File} copy ${PRJBINFILE} to ${PROJECTNAME}
-   chmod a+x ${PRJBINFILE}
+   chmod +x ${PRJBINFILE}
    docker cp ${PRJBINFILE} ${PROJECTNAME}:/project
 fi
 

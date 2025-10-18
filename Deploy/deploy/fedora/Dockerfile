@@ -1,40 +1,29 @@
 FROM fedora:30
 
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV TZ=Asia/Shanghai \
+	GOPROXY=https://goproxy.io
 
-RUN yum update -y
-RUN yum groupinstall -y "Development Tools"
-RUN yum install -y libtool
-RUN yum install -y findutils
-RUN yum install -y vim
-RUN yum install -y wget
-RUN yum install -y libgomp
-RUN yum install -y gcc-c++
-RUN yum install -y cmake
-RUN yum install -y python3 python3-devel
-RUN yum install -y libstdc++ libstdc++-devel libstdc++-static
-RUN yum install -y flex
-RUN yum install -y bison
-RUN yum install -y boost boost-devel
-RUN yum install -y openssl openssl-devel
-RUN yum install -y protobuf protobuf-devel grpc grpc-devel grpc-plugins
-RUN yum install -y cpprest cpprest-devel
-RUN yum install -y java-openjdk
-RUN yum install -y rust cargo
-RUN yum install -y golang
-RUN ln -s /usr/local/go/bin/go /usr/local/bin/go
-RUN yum install -y scala sbt
-RUN yum install -y bzip2
-RUN yum install -y libicu.x86_64
-RUN yum install -y apr-devel apr-util libcurl libcurl-devel
-RUN ln -s /usr/lib64/libaprutil-1.so.0 /usr/lib64/libaprutil-1.so
-RUN yum install -y xz
-RUN yum install -y meson
-RUN yum install -y libwebsockets-devel
+RUN set -eux; \
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone; \
+	dnf -y update; \
+	(dnf -y group install "Development Tools" || dnf -y groupinstall "Development Tools" || dnf -y install @development-tools); \
+	dnf -y install \
+		libtool vim wget gcc-c++ libstdc++ libstdc++-devel cmake \
+		python3 python3-devel python3-pip \
+		flex bison boost boost-devel \
+		openssl openssl-devel protobuf protobuf-devel \
+		grpc grpc-devel grpc-plugins \
+		cpprest cpprest-devel \
+		rust golang meson libwebsockets-devel findutils \
+		bzip2 libicu apr-devel apr-util libcurl libcurl-devel \
+		--exclude=openh264* --setopt=install_weak_deps=False || true; \
+	ln -sf /usr/lib64/libaprutil-1.so.0 /usr/lib64/libaprutil-1.so || true; \
+	python3 -m pip install --upgrade pip setuptools wheel || true; \
+	python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple || true; \
+	dnf clean all; rm -rf /var/cache/dnf /var/cache/yum ~/.cache/pip; \
+	mkdir -p /project/DAVE
 
-RUN mkdir -p /project/DAVE
-
-ENV GOPROXY=https://goproxy.io
+WORKDIR /
+COPY ./file_system .
 
 WORKDIR /project

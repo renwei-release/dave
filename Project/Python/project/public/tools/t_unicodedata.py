@@ -102,7 +102,8 @@ def t_unicodedata_check_language(s):
 
     return max(language_counter, key=language_counter.get)
 
-def remove_garbage_characters(text):
+
+def t_unicodedata_remove_garbage_characters(text):
     """
     删除 Unicode 私有区域字符和无效字符
     （范围覆盖常见乱码区：U+E000-U+F8FF, U+F0000-U+FFFFD, U+100000-U+10FFFD）

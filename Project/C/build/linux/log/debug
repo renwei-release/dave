@@ -6,12 +6,14 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
-DEPLOYPATH=../../../../../Deploy/deploy/${PROJECT}
+PRODUCT=${PWD##*/}
+DEPLOYPATH=../../../../../Deploy/deploy/${PRODUCT}
+
+./deploy
 
 cd ${DEPLOYPATH}
-PROJECTNAME=${PROJECT}-log
+PRODUCTNAME=${PRODUCT}-log
 
-echo debug $PROJECTNAME
+echo debug $PRODUCTNAME
 chmod a+x *.sh
-./debug.sh $PROJECTNAME
+./debug.sh $PRODUCTNAME

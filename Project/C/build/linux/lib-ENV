@@ -8,13 +8,13 @@
 
 homepath=$(cd `dirname $0`; pwd)/../../../../
 
-PROJECT=$1
+PRODUCT=$1
 LEVEL=$2
 CONTAINER=$3
 File=$(basename $0)
 
-if [ "$PROJECT" == "base" ]; then
-   echo -e "At present, ${PROJECT} project does not need any library."
+if [ "$PRODUCT" == "base" ]; then
+   echo -e "At present, ${PRODUCT} project does not need any library."
    exit 0
 fi
 
@@ -58,7 +58,7 @@ if [ ! -f ${THIRDPARTYDIR}/redis/setup/lib/libhiredis.a ]; then
    build
    cd ${homepath}
 fi
-if [ "$PROJECT" == "sync" ]; then
+if [ "$PRODUCT" == "sync" ]; then
    ETCDFILE=/dave/tools/etcd-cpp-apiv3/lib64/libetcd-cpp-api.so
    if [ ! -f ${ETCDFILE} ]; then
       cd ${THIRDPARTYDIR}/etcd-cpp-apiv3

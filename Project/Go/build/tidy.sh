@@ -6,25 +6,25 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=$1
+PRODUCT=$1
 TIDY=$2
 
-BUILDMODFILE=`pwd`/${PROJECT}/go.mod
-BUILDSUMFILE=`pwd`/${PROJECT}/go.sum
-PROJECTMODFILE=`pwd`/../project/go.mod
-PROJECTSUMFILE=`pwd`/../project/go.sum
+BUILDMODFILE=`pwd`/${PRODUCT}/go.mod
+BUILDSUMFILE=`pwd`/${PRODUCT}/go.sum
+PRODUCTMODFILE=`pwd`/../project/go.mod
+PRODUCTSUMFILE=`pwd`/../project/go.sum
 
 if [ -f ${BUILDMODFILE} ]; then
-   if [ -f ${PROJECTMODFILE} ]; then
-      rm -rf ${PROJECTMODFILE}
+   if [ -f ${PRODUCTMODFILE} ]; then
+      rm -rf ${PRODUCTMODFILE}
    fi
-   cp -rf ${BUILDMODFILE} ${PROJECTMODFILE}
+   cp -rf ${BUILDMODFILE} ${PRODUCTMODFILE}
 fi
 if [ -f ${BUILDSUMFILE} ]; then
-   if [ -f ${PROJECTSUMFILE} ]; then
-      rm -rf ${PROJECTSUMFILE}
+   if [ -f ${PRODUCTSUMFILE} ]; then
+      rm -rf ${PRODUCTSUMFILE}
    fi
-   cp -rf ${BUILDSUMFILE} ${PROJECTSUMFILE}
+   cp -rf ${BUILDSUMFILE} ${PRODUCTSUMFILE}
 fi
 
 cd ../project
@@ -34,5 +34,5 @@ if [ "$TIDY" != "" ]; then
    go mod tidy
 fi
 
-cp -rf ${PROJECTMODFILE} ${BUILDMODFILE}
-cp -rf ${PROJECTSUMFILE} ${BUILDSUMFILE}
+cp -rf ${PRODUCTMODFILE} ${BUILDMODFILE}
+cp -rf ${PRODUCTSUMFILE} ${BUILDSUMFILE}

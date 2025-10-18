@@ -35,17 +35,29 @@ def _get_path_py_list(path):
     return py_list
 
 
-def _collect_components_imports(product_home):
+def _collect_components_imports(imports_home):
     components_imports = []
 
-    py_list = _get_path_py_list(product_home)
+    py_list = _get_path_py_list(imports_home)
 
     for py_file in py_list:
         imports = _get_imports_from_file(py_file)
         components = [imp for imp in imports if imp.startswith('components')]
         components_imports.extend(components)
 
-    return components_imports
+    return list(set(components_imports))
+
+
+def _collect_components_imports_iteration(project_home, product_home):
+    components_imports = _collect_components_imports(product_home)
+
+    iteration_components_imports = []
+    for imports_home in components_imports:
+        iteration_components_imports += _collect_components_imports(f'{project_home}/{imports_home}')
+
+    components_imports += iteration_components_imports
+
+    return list(set(components_imports))
 
 
 def _copy_components(all_imports, project_home, copy_components_dest):
@@ -70,12 +82,10 @@ def _copy_components(all_imports, project_home, copy_components_dest):
             src_dir = src_file
             rel_path = os.path.relpath(src_dir, start=project_home)
             dest_dir = os.path.join(copy_components_dest, rel_path)
-            if not os.path.exists(dest_dir):
-                shutil.copytree(src_dir, dest_dir)
+            shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True)
 
     if copy_components_dest and not os.path.exists(os.path.join(copy_components_dest, 'components')):
         os.makedirs(os.path.join(copy_components_dest, 'components'))
-
     return
 
 
@@ -89,5 +99,6 @@ if __name__ == '__main__':
     project_home='../../../../project'
     product_home=f"{project_home}/product/{project_name}"
 
-    all_imports = _collect_components_imports(product_home)
+    all_imports = _collect_components_imports_iteration(project_home, product_home)
+
     _copy_components(all_imports, project_home, copy_components_dest)

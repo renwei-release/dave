@@ -23,7 +23,7 @@ def find_msg_file_list(file_list=None):
                 print(f"1 find_msg_file_list file_name:{file_name}")
                 return head_list
             try:
-                result = re.findall("\/\* for *(.+?) *message *\*\/", file_content)
+                result = re.findall(r"/\* for *(.+?) *message *\*/", file_content)
                 if result:
                     head_list.append(file_name)
             except:

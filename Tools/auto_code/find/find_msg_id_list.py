@@ -24,7 +24,7 @@ def find_msg_id_list(file_list):
                 print(f"1 find_msg_id_list file_name:{file_name}")
                 return msg_id_list
             try:
-                result = re.findall("\/\* for *(.+?) *message *\*\/", file_content)
+                result = re.findall(r"/\* for *(.+?) *message *\*/", file_content)
                 if result:
                     msg_id_list.extend(result)
             except:

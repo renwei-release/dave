@@ -17,5 +17,5 @@ TAG="1.19.2"
 EXTEND="-v `pwd`/../../../:/project/DAVE"
 
 cd ../../
-chmod a+x *.sh
+chmod +x *.sh
 ./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH} -u root

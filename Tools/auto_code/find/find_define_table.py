@@ -140,8 +140,8 @@ def _find_define_list(file_list=None):
 
 def _find_define_digital_table(define_table, define_list):
     for define_data in define_list:
-        define_name_list = re.findall('#define +([a-z,A-Z,0-9,_]+) +[0-9,*]+', define_data)
-        define_value_list = re.findall('#define +[a-z,A-Z,0-9,_]+ +([0-9,*]+)', define_data)
+        define_name_list = re.findall(r'#define +([a-z,A-Z,0-9,_]+) +[0-9,*]+', define_data)
+        define_value_list = re.findall(r'#define +[a-z,A-Z,0-9,_]+ +([0-9,*]+)', define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
         if (define_name != None) and (define_value != None):
@@ -151,8 +151,8 @@ def _find_define_digital_table(define_table, define_list):
 
 def _find_define_hex_table(define_table, define_list):
     for define_data in define_list:
-        define_name_list = re.findall('#define +([a-z,A-Z,0-9,_]+) 0x[0-9,a-f,A-F]+', define_data)
-        define_value_list = re.findall('#define +[a-z,A-Z,0-9,_]+ (0x[0-9,a-f,A-F]+)', define_data)
+        define_name_list = re.findall(r'#define +([a-z,A-Z,0-9,_]+) 0x[0-9,a-f,A-F]+', define_data)
+        define_value_list = re.findall(r'#define +[a-z,A-Z,0-9,_]+ (0x[0-9,a-f,A-F]+)', define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
         if (define_name != None) and (define_value != None):
@@ -162,8 +162,8 @@ def _find_define_hex_table(define_table, define_list):
 
 def _find_define_complex_table(define_table, define_list):
     for define_data in define_list:
-        define_name_list = re.findall("#define +([a-z,A-Z,0-9,_]+) +[0-9,a-z,A-Z,+,-,*,/, ,_]+", define_data)
-        define_value_list = re.findall("#define +[a-z,A-Z,0-9,_]+ +([0-9,a-z,A-Z,+,-,*,/, ,_]+)", define_data)
+        define_name_list = re.findall(r"#define +([a-z,A-Z,0-9,_]+) +[0-9,a-z,A-Z,+,-,*,/, ,_]+", define_data)
+        define_value_list = re.findall(r"#define +[a-z,A-Z,0-9,_]+ +([0-9,a-z,A-Z,+,-,*,/, ,_]+)", define_data)
         define_name = get_array_data(define_name_list, 0)
         define_value = get_array_data(define_value_list, 0)
         if (define_name != None) and (define_value != None):

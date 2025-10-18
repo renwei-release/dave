@@ -17,7 +17,7 @@ TAG="latest"
 EXTEND=""
 
 cd ../../
-chmod a+x *.sh
+chmod +x *.sh
 ./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
 
 echo -e "Now \033[35mjenkins\033[0m is ready!"

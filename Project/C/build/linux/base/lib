@@ -7,7 +7,7 @@
 # */
 
 LEVEL=$1
-PROJECT=${PWD##*/}
+PRODUCT=${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)/../../../
 if [ "$LEVEL" == "" ]; then
    LEVEL="alpha"
@@ -17,10 +17,10 @@ CONTAINER="gcc9"
 File=$(basename $0)
 
 chmod a+x ../ENV
-../ENV ${PROJECT} ${LEVEL} ${CONTAINER}
+../ENV ${PRODUCT} ${LEVEL} ${CONTAINER}
 
-echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PROJECT}\033[0m lib"
-docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux/${PROJECT} && chmod a+x __lib__ && ./__lib__ ${LEVEL}"
+echo -e "Now enter container \033[36m${CONTAINER}\033[0m and build \033[36m${PRODUCT}\033[0m lib"
+docker exec -it ${CONTAINER} bash -c "cd /project/DAVE/Project/C/build/linux/${PRODUCT} && chmod +x __lib__ && ./__lib__ ${LEVEL}"
 
 if [ "$OWNER" != "" ]; then
    echo ${File} chown ${HOMEPATH}../../ to ${OWNER}

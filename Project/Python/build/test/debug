@@ -6,17 +6,17 @@
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
 
-PROJECT=${PWD##*/}
-DEPLOYPATH=../../../../Deploy/deploy/${PROJECT}
+PRODUCT=${PWD##*/}
+DEPLOYPATH=../../../../Deploy/deploy/${PRODUCT}
 
 cd ${DEPLOYPATH}
 
 if [ "$USER" == "root" ]; then
-   PROJECTNAME=${PROJECT}
+   PRODUCTNAME=${PRODUCT}
 else
-   PROJECTNAME=${PROJECT}-${USER}
+   PRODUCTNAME=${PRODUCT}-${USER}
 fi
 
-echo debug $PROJECTNAME
+echo debug $PRODUCTNAME
 chmod a+x *.sh
-./debug.sh $PROJECTNAME
+./debug.sh $PRODUCTNAME

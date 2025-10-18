@@ -12,7 +12,7 @@ from .find_file_list import *
 
 
 def _find_enum_body(body_content):
-    body_array = re.findall("(.*?)[',','{','}']", body_content)
+    body_array = re.findall(r"(.*?)[',','{','}']", body_content)
     body_array = [var for var in body_array if var]
 
     body_table = {}
@@ -52,8 +52,8 @@ def _find_enum_list_from_file(enum_table, include_list, type_array, file_name):
             return
         try:
             file_content = remove_annotation_data(file_content)
-            name_array = re.findall("typedef enum.*?\{.*?\}(.*?);", file_content)
-            body_array = re.findall("typedef enum.*?(\{.*?\}).*?;", file_content)
+            name_array = re.findall(r"typedef enum.*?\{.*?\}(.*?);", file_content)
+            body_array = re.findall(r"typedef enum.*?(\{.*?\}).*?;", file_content)
             if name_array:
                 if _find_enum_name_and_body(enum_table, name_array, body_array, type_array) == True:
                     include_list.append(file_name)

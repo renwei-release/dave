@@ -7,9 +7,9 @@
 # */
 
 DEPLOYMODEL=$1
-PROJECT=${PWD##*/}
+PRODUCT=${PWD##*/}
 HOMEPATH=$(cd `dirname $0`; pwd)
-DEPLOYPATH=../../../../../Deploy/deploy/${PROJECT}
+DEPLOYPATH=../../../../../Deploy/deploy/${PRODUCT}
 
 if [ "$DEPLOYMODEL" == "" ]; then
    DEPLOYMODEL="log"
@@ -17,6 +17,6 @@ fi
 
 cd ${DEPLOYPATH}
 
-echo deploy ${PROJECT}
+echo deploy ${PRODUCT}
 chmod a+x *.sh
 ./deploy.sh ${DEPLOYMODEL} ${HOMEPATH}

@@ -18,8 +18,6 @@ ub dave_os_time_s(void);
 
 void dave_os_utc_date(DateStruct *date);
 
-void dave_os_timer_notify(unsigned long data);
-
 dave_bool dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms);
 
 void dave_os_stop_hardware_timer(void);

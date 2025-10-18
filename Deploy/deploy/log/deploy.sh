@@ -21,7 +21,7 @@ if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "log" ]] || [[ "$DEPLOYMOD
    TAG="latest"
    EXTEND="-v /dave/log:/dave/log"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-log -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
@@ -39,7 +39,7 @@ if [[ "$DEPLOYMODEL" == "stash" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    TAG="latest"
    EXTEND="-v /dave/log:/dave/log"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-logstash -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
@@ -51,7 +51,7 @@ if [[ "$DEPLOYMODEL" == "kibana" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    TAG="latest"
    EXTEND="-v /dave/log:/dave/log -e ELASTICSEARCH_HOSTS=http://127.0.0.1:9200"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-kibana -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
@@ -65,7 +65,7 @@ if [[ "$DEPLOYMODEL" == "jaeger" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    TAG="latest"
    EXTEND="-v /dave/log:/dave/log"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-jaeger -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile

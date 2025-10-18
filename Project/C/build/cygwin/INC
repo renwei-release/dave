@@ -1,1 +1,8 @@
+## Tool checks (for Git Bash/Cygwin environments)
+FIND := $(shell command -v find 2>/dev/null)
+AWK  := $(shell command -v awk  2>/dev/null)
+ifeq ($(FIND),)
+$(error Required tool 'find' not found. Ensure findutils is installed in Cygwin/MSYS2/Git Bash.)
+endif
+
 INCLUDE = $(shell find `pwd`/../../project -type d | awk '!/\.svn/ {print " -I "$$0}')

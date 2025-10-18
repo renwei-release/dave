@@ -22,7 +22,7 @@ def _find_fun_list_from_file(fun_list, file_name, all_struct_table):
             return valid_document
         try:
             file_content = remove_annotation_data(file_content)
-            result_array = re.findall("typedef void \(\*.*?(.*?)\).*?;", file_content)
+            result_array = re.findall(r"typedef void \(\*.*?(.*?)\).*?;", file_content)
             if result_array:
                 for result in result_array:
                     if type_on_the_table(result, all_struct_table) == True:

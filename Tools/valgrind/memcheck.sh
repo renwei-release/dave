@@ -32,7 +32,7 @@ build_valgrind()
    if [ ! -f ./setup/bin/valgrind ]; then
       echo build valgrind ...
       echo
-      chmod a+x ./build-valgrind
+      chmod +x ./build-valgrind
       ./build-valgrind > /dev/null
    fi
 }
@@ -51,7 +51,7 @@ build_project()
       echo build ${BINNAME} ...
       echo
       cd ${PROJECTDIR}
-      chmod a+x clean build
+      chmod +x clean build
       ./clean > /dev/null
       ./build > /dev/null
       cd ${homepath}

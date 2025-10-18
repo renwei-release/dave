@@ -32,7 +32,7 @@ build_valgrind()
    if [ ! -f ./setup/bin/valgrind ]; then
       echo build valgrind ...
       echo
-      chmod a+x ./build-valgrind
+      chmod +x ./build-valgrind
       ./build-valgrind > /dev/null
    fi
 }
@@ -51,7 +51,7 @@ build_project()
       echo build ${BINNAME} ...
       echo
       cd ${PROJECTDIR}
-      chmod a+x clean build
+      chmod +x clean build
       ./clean > /dev/null
       ./build > /dev/null
       cd ${homepath}
@@ -64,7 +64,7 @@ run_helgrind()
    cd ${homepath}
 
    if [ -f ${WORKDIR}/${BINNAME} ]; then
-      chmod a+x ${WORKDIR}/${BINNAME}
+      chmod +x ${WORKDIR}/${BINNAME}
       sudo ./setup/bin/valgrind --tool=helgrind --log-file=${WORKDIR}/${BINNAME}.txt ${WORKDIR}/${BINNAME}
    else
       echo File ${WORKDIR}/${BINNAME} does not exist, nothing is done!

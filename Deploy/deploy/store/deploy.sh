@@ -17,5 +17,5 @@ TAG="latest"
 EXTEND="-v /dave/store:/dave/store"
 
 cd ../../
-chmod a+x *.sh
+chmod +x *.sh
 ./deploy.sh -p ${PROJECT} -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}

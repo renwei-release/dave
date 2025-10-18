@@ -13,7 +13,6 @@
 extern "C"{
 #endif
 
-#define TIMER_SIG    (SIGUSR2)
 #define QUIT_SIG     (SIGUSR1)
 #define BREAK_SIG    (SIGRTMIN)
 #define KILL_SIG     (SIGTERM)

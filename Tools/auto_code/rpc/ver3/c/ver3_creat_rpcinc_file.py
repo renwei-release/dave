@@ -29,13 +29,13 @@ def _read_rpcinc_file(file_name):
     msg_id_exist_table = {}
     with open(file_name, encoding="utf-8") as file_id:
         file_content = remove_annotation_data(file_id.read())
-        result = re.findall("(typedef enum.*?\{.*?\}.*?;)", file_content)
-        key_array = re.findall('([A-Z,a-z,0-9,_]*) = [0-9]*,', str(result))
-        value_array = re.findall('[A-Z,a-z,0-9,_]* = ([0-9]*),', str(result))
+    result = re.findall(r"(typedef enum.*?\{.*?\}.*?;)", file_content)
+    key_array = re.findall(r'([A-Z,a-z,0-9,_]*) = [0-9]*,', str(result))
+    value_array = re.findall(r'[A-Z,a-z,0-9,_]* = ([0-9]*),', str(result))
 
     index = 0
     for key in key_array:
-        has_value = re.findall('[A-Z,a-z,0-9,_]* = ([0-9])*,', value_array[index])
+        has_value = re.findall(r'[A-Z,a-z,0-9,_]* = ([0-9])*,', value_array[index])
         if has_value != None:
             msg_id_exist_table[key] = value_array[index]
         index += 1

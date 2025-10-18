@@ -21,7 +21,7 @@ if [[ "$DEPLOYMODEL" == "etcd" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    TAG="latest"
    EXTEND="-e ETCD_NAME=sync-etcd -e ALLOW_NONE_AUTHENTICATION=yes"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-etcd -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
@@ -33,7 +33,7 @@ if [[ "$DEPLOYMODEL" == "etcdkeeper" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    TAG="latest"
    EXTEND=""
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-etcdkeeper -c "FALSE" -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
@@ -47,7 +47,7 @@ if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "sync" ]] || [[ "$DEPLOYMO
    TAG="latest"
    EXTEND="-v /dave/sync:/dave/sync"
    cd ../../
-   chmod a+x *.sh
+   chmod +x *.sh
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-sync -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
    cd ${SHHOMEPATH}
    rm -rf Dockerfile
