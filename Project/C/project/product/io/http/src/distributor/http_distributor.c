@@ -16,7 +16,7 @@
 #include "http_tools.h"
 #include "http_log.h"
 
-static ub _distributor_port_list[] = { 443, 80, 1823, 0 };
+static ub _distributor_port_list[] = { 443, 80, 0 };
 
 #define DISTRIBUTOR_THREAD_MAX 8
 #define DISTRIBUTOR_ROOT_PATH "/"

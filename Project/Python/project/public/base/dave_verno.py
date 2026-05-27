@@ -16,9 +16,9 @@ default_PRODUCT="defaultBASE"
 class define_VERSION:
     VERSION_PRODUCT=default_PRODUCT
     VERSION_MISC=("".join(("py"+platform.python_version()).replace('.', '-')))
-    VERSION_MAIN="4"
-    VERSION_SUB="21"
-    VERSION_REV="17"
+    VERSION_MAIN="5"
+    VERSION_SUB="1"
+    VERSION_REV="6"
     VERSION_DATE_TIME=time.strftime("%Y%m%d%H%M%S", time.localtime())
     VERSION_LEVEL="Alpha"
 

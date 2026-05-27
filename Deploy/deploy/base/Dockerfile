@@ -1,4 +1,4 @@
-FROM fedora:44
+FROM fedora:42
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

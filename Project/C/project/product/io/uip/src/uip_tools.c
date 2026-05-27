@@ -10,7 +10,6 @@
 #include "dave_3rdparty.h"
 #include "uip_server_register.h"
 #include "uip_server_monitor.h"
-#include "uip_server_http.h"
 #include "uip_server_send.h"
 #include "uip_server_recv.h"
 #include "uip_channel.h"

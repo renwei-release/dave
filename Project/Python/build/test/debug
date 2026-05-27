@@ -11,12 +11,8 @@ DEPLOYPATH=../../../../Deploy/deploy/${PRODUCT}
 
 cd ${DEPLOYPATH}
 
-if [ "$USER" == "root" ]; then
-   PRODUCTNAME=${PRODUCT}
-else
-   PRODUCTNAME=${PRODUCT}-${USER}
-fi
+PRODUCTNAME=${PRODUCT}-${USER}
 
 echo debug $PRODUCTNAME
-chmod a+x *.sh
+chmod +x *.sh
 ./debug.sh $PRODUCTNAME

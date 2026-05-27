@@ -36,7 +36,7 @@ endif
 LIB += -Wl,-Bdynamic
 
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
-LIB += -L/dave/tools/opencv/lib -lopencv_calib3d -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_imgcodecs -lopencv_imgproc -lopencv_xfeatures2d
+LIB += -L/dave/tools/opencv/lib64 -lopencv_calib3d -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_imgcodecs -lopencv_imgproc -lopencv_xfeatures2d
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L/dave/tools/tensorflow/lib -ltensorflow_cc -ltensorflow_framework

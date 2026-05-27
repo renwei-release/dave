@@ -13,7 +13,6 @@
 #include "uip_dos.h"
 #include "uip_server_register.h"
 #include "uip_server_monitor.h"
-#include "uip_server_http.h"
 #include "uip_server_distributor.h"
 #include "uip_server_send.h"
 #include "uip_server_recv.h"
@@ -32,15 +31,7 @@ static void _uip_server_uip_rsp(UIPStack *pRecvStack, UIPDataRecvRsp *pRsp);
 static inline uip_server_recv_fun
 _uip_server_recv_fun(HTTPRecvReq *pReq)
 {
-	uip_server_recv_fun recv_fun;
-
-	recv_fun = uip_server_http_recv_fun(pReq->listen_port);
-	if(recv_fun == NULL)
-	{
-		recv_fun = uip_server_distributor_recv_fun(pReq->remote_address);
-	}
-
-	return recv_fun;
+	return uip_server_distributor_recv_fun(pReq->remote_address);
 }
 
 static void
@@ -282,10 +273,6 @@ _uip_server_http_start(void)
 	{
 		_uip_server_start_flag = dave_true;
 
-		uip_server_http_start(UIP_SERVER_HTTPs_PORT, ListenHttps, "/uips", _uip_server_uip_req);
-		uip_server_http_start(UIP_SERVER_H5_PORT, ListenHttps, "/h5", _uip_server_uip_req);
-		uip_server_http_start(UIP_SERVER_WeChat_PORT, ListenHttps, "/wechat", _uip_server_wechat_req);
-
 		uip_server_distributor_start("/uips", _uip_server_uip_req);
 		uip_server_distributor_start("/h5", _uip_server_uip_req);
 		uip_server_distributor_start("/wechat", _uip_server_wechat_req);
@@ -295,8 +282,6 @@ _uip_server_http_start(void)
 static void
 _uip_server_http_stop(void)
 {
-	uip_server_http_exit();
-
 	uip_server_distributor_exit();
 }
 
@@ -328,8 +313,6 @@ uip_server_init(MSGBODY *pMsg)
 	_uip_server_start_flag = dave_false;
 
 	uip_server_monitor_init(_uip_server_http_rsp);
-
-	uip_server_http_init();
 
 	uip_server_distributor_init();
 
@@ -371,8 +354,6 @@ uip_server_exit(MSGBODY *pMsg)
 	uip_dos_exit();
 
 	_uip_server_http_stop();
-
-	uip_server_http_exit();
 
 	uip_server_distributor_exit();
 

@@ -67,9 +67,7 @@ _io_thread_exit(MSGBODY *msg)
 void
 dave_product_init(void)
 {
-	ub thread_number = dave_os_cpu_process_number();
-
-	_io_thread = base_thread_creat(t_gp_product_name(), thread_number, THREAD_THREAD_FLAG, _io_thread_init, _io_thread_main, _io_thread_exit);
+	_io_thread = base_thread_creat(t_gp_product_name(), 1, THREAD_THREAD_FLAG, _io_thread_init, _io_thread_main, _io_thread_exit);
 	if(_io_thread == INVALID_THREAD_ID)
 		base_restart(t_gp_product_name());
 }

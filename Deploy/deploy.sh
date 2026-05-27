@@ -20,8 +20,9 @@ JUPYTERPORT=0
 SSHPORT=0
 HOMEPATH='./'
 COPYACTION='TRUE'
+NETWORK='host'
 
-while getopts ":p:g:i:t:e:h:j:u:n:c:s:" opt
+while getopts ":p:g:i:t:e:h:j:u:n:c:s:w:" opt
 do
     case $opt in
         p)
@@ -70,6 +71,10 @@ do
         COPYACTION=$OPTARG
         echo COPY ACTION:$COPYACTION
         ;;
+        w)
+        NETWORK=$OPTARG
+        echo NETWORK:$NETWORK
+        ;;
         ?)
         echo "未知参数:" $opt
         ;;
@@ -77,7 +82,7 @@ do
 done
 
 if [ "$PROJECTNAME" == "" ]; then
-   if [ "$USERNAME" == "root" ]; then
+   if [ "$USERNAME" == "__EMPTY__" ]; then
       PROJECTNAME=${PROJECT}
    else
       PROJECTNAME=${PROJECT}-${USERNAME}
@@ -115,9 +120,9 @@ exit_project_contains=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | a
 
 if [ "$exit_project_contains" == "" ]; then
    if [ "$GPU" == '"NULL"' ]; then
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${HOSTNAME} --name ${PROJECTNAME} ${IMAGE}:${TAG}
+      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} ${IMAGE}:${TAG}
    else
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network host --hostname ${HOSTNAME} --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
+      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
    fi
 
    ./restore.sh $PROJECTNAME $PROJECT

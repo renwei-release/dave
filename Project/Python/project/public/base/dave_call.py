@@ -46,7 +46,7 @@ def _general_data_process(general_data):
 def dave_call_general(call_dst, general_type, general_data):
     if type(call_dst) == str:
         if thread_id(call_dst) == -1:
-            return None
+            return {}
 
     pReq = thread_msg(GeneralReq)
 
@@ -70,9 +70,9 @@ def dave_call_general(call_dst, general_type, general_data):
     pRsp = sync_msg(call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
 
     if pRsp == None:
-        return None
+        return {}
     if pRsp.general_data == None:
-        return None
+        return {}
 
     general_result = mbuf_to_dict(pRsp.general_data)
     if pRsp.general_bin != None:

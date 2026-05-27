@@ -13,5 +13,5 @@ DEPLOYPATH=../../../../Deploy/deploy/${PRODUCT}
 cd ${DEPLOYPATH}
 
 echo deploy ${PRODUCT}
-chmod a+x *.sh
+chmod +x *.sh
 ./deploy.sh ${HOMEPATH}

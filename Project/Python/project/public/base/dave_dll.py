@@ -27,7 +27,14 @@ class DllMsgBody(Structure):
 
 
 path=os.path.dirname(os.path.abspath(__file__))
-davelib=cdll.LoadLibrary(path+"/lib/liblinuxBASE.so")
+ARCH=os.uname().machine
+if ARCH == "x86_64":
+   libname="liblinuxBASE.so"
+elif ARCH == "aarch64":
+   libname="liblinuxBASE-ARM.so"
+else:
+   raise Exception(f"Unsupported architecture: {ARCH}")
+davelib=cdll.LoadLibrary(path+"/lib/"+libname)
 
 
 _product_init_fun = None

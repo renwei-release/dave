@@ -5,6 +5,7 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+import inspect
 import os
 import sys
 import subprocess
@@ -144,3 +145,16 @@ def t_sys_memory_cache_ratio():
 
     memory_ratio = int(mem[6]) / int(mem[1])
     return memory_ratio
+
+#
+# depth=2 is the caller of the caller, 
+# which is the function that calls the function that calls t_sys_myline. 
+# This is usually the function that we want to log.
+#
+def t_sys_myline(depth=2):
+    current_depth = len(inspect.stack())
+    if depth >= current_depth:
+        return 'NULL'.encode("utf-8"), 0
+    __func__ = sys._getframe(depth).f_code.co_name.encode("utf-8")
+    __LINE__ = sys._getframe(depth).f_lineno
+    return __func__, __LINE__

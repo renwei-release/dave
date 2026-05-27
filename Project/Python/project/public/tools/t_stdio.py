@@ -58,3 +58,49 @@ def t_stdio_fullwidth_to_halfwidth(ustring):
         else:
             rstring += chr(inside_code)
     return rstring
+
+
+def t_stdio_remove_the_middle_space(string):
+    space = r"[ \t\u3000\u00A0]+"
+    # 常见中文标点
+    punct = r"，。！？；：、“”‘’（）《》【】"
+
+    # 去掉“中文 + 空白 + 中文”的空格（不处理换行）
+    string = re.sub(
+        rf"([\u4e00-\u9fa5]){space}([\u4e00-\u9fa5])",
+        r"\1\2",
+        string
+    )
+
+    # 去掉“中文 + 空白 + 标点”的空格（不处理换行）
+    string = re.sub(
+        rf"([\u4e00-\u9fa5]){space}([{punct}])",
+        r"\1\2",
+        string
+    )
+
+    # 去掉“标点 + 空白 + 中文”的空格（不处理换行）
+    string = re.sub(
+    rf"([{punct}]){space}([\u4e00-\u9fa5])",
+        r"\1\2",
+        string
+    )
+
+    return string
+
+
+def t_stdio_remove_all_punctuation(string):
+    if not string:
+        return ""
+
+    # 1. 移除空白字符（空格、换行、制表符等）
+    string = "".join(string.split())
+
+    # 2. 移除所有标点符号（包括中英文标点）
+    # \W 会匹配非字母数字下划线的字符（在 Unicode 模式下包括大部分标点）
+    # _ 也会被作为标点移除（如果需要的话）
+    string = re.sub(r'[^\w\s]', '', string, flags=re.UNICODE)
+    # 如果想更彻底地去掉下划线：
+    string = string.replace('_', '')
+
+    return string

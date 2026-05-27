@@ -120,6 +120,27 @@ _uip_dos_channel_add_method(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
+static RetCode
+_dos_uip_info(s8 *cmd_ptr, ub cmd_len)
+{
+	DebugReq *pReq = thread_reset_msg(pReq);
+	DebugRsp *pRsp;
+
+	dave_snprintf(pReq->msg, sizeof(pReq->msg), "i");
+
+	pRsp = name_co("uip", MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP);
+	if((pRsp == NULL) || (dave_strlen(pRsp->msg) == 0))
+	{
+		dos_print("the empty message from uip!");
+	}
+	else
+	{
+		dos_print("%s", pRsp->msg);
+	}
+
+	return RetCode_OK;
+}
+
 // =====================================================================
 
 void
@@ -129,6 +150,7 @@ uip_dos_init(void)
 	dos_cmd_reg("cinq", _uip_dos_channel_inq, NULL);
 	dos_cmd_reg("cdel", _uip_dos_channel_del, NULL);
 	dos_cmd_reg("caddm", _uip_dos_channel_add_method, NULL);
+	dos_cmd_reg("info", _dos_uip_info, NULL);
 }
 
 void

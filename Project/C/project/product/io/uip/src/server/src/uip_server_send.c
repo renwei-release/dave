@@ -10,7 +10,6 @@
 #include "dave_3rdparty.h"
 #include "dave_bdata.h"
 #include "uip_server_register.h"
-#include "uip_server_http.h"
 #include "uip_server_monitor.h"
 #include "uip_server_report.h"
 #include "uip_parsing.h"

@@ -1,0 +1,9 @@
+chmod 400 ethereum-test.pem
+
+
+
+ethereum-1		47.238.205.52			ecs-user/qwertyuiop/er%$247RaaTec
+ethereum-2		8.218.177.240			ecs-user/qwertyuiop/er%$247RaaTec
+ethereum-3		47.76.42.78				ssh -i ethereum-test.pem ecs-user@47.76.42.78
+ethereum-4		47.242.70.65			ssh -i ethereum-test.pem ecs-user@47.242.70.65
+ethereum-5		47.76.143.216			ssh -i ethereum-test.pem ecs-user@47.76.143.216

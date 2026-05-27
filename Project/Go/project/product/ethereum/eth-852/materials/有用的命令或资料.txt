@@ -1,0 +1,25 @@
+https://geth.ethereum.org/docs/fundamentals/command-line-options
+https://github.com/gnosischain/deposit-contract/tree/master
+
+https://hardhat.org/hardhat-runner/docs/getting-started#installation
+
+https://book.getfoundry.sh/
+
+https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa#code   质押收益提取相关的智能合约代码
+
+https://ethereum.org/en/developers/docs/blocks/#block-time
+
+https://ethereum.stackexchange.com/questions/149229/how-to-add-new-validators-on-ethereum-private-network
+
+curl localhost:8080/p2p  获取节点信息
+curl http://localhost:3500/eth/v1/node/syncing  获取链的基础信息
+
+admin.nodeInfo
+admin.peers
+
+
+LayerZero:
+
+https://book.getfoundry.sh/getting-started/installation
+
+

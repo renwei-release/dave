@@ -107,6 +107,27 @@ _dos_main_req(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
+static RetCode
+_dos_info_req(s8 *cmd_ptr, ub cmd_len)
+{
+	DebugReq *pReq;
+	ThreadId main_thread;
+
+	main_thread = main_thread_id_get();
+	if(main_thread == INVALID_THREAD_ID)
+	{
+		return RetCode_can_not_find_thread;		
+	}
+
+	pReq = thread_reset_msg(pReq);
+
+	dave_snprintf(pReq->msg, sizeof(pReq->msg), "i");
+
+	id_event(main_thread, MSGID_DEBUG_REQ, pReq, MSGID_DEBUG_RSP, _dos_debug_rsp);
+
+	return RetCode_OK;
+}
+
 // =====================================================================
 
 void
@@ -114,6 +135,7 @@ dos_debug_reset(void)
 {
 	dos_cmd_reg("debug", _dos_debug_req, NULL);
 	dos_cmd_reg("m", _dos_main_req, NULL);
+	dos_cmd_reg("i", _dos_info_req, NULL);
 }
 
 #endif

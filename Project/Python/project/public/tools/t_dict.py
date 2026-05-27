@@ -82,3 +82,17 @@ def t_dict_surround(dict_data):
             new_dict[dict_key_ls[i]] = dict_value_ls[i]
 
     return new_dict
+
+
+def t_dict_to_json_str(dict_data):
+    if isinstance(dict_data, str):
+        dict_data = eval(dict_data)
+    return json.dumps(dict_data, ensure_ascii=False, indent=4)
+
+
+def t_json_str_to_dict(json_str):
+    if json_str is None or len(json_str) == 0:
+        return {}
+    if isinstance(json_str, dict):
+        return json_str
+    return json.loads(json_str)

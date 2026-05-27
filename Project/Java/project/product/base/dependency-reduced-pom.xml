@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.example</groupId>
   <artifactId>BASE</artifactId>
-  <version>BASE.java.4.21.17.20251015113824.Alpha</version>
+  <version>BASE.java.5.1.1.20251029144241.Alpha</version>
   <build>
     <resources>
       <resource>

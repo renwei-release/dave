@@ -7,6 +7,7 @@
 # */
 from public import *
 from public.base.dave_log import DAVELOG
+from public.tools.t_sys import t_sys_myline
 
 
 STORE_THREAD_NAME=b"store"
@@ -42,7 +43,8 @@ def STORESQL(*sql: object):
         return ERRCODE_ptr_null, None
 
     if (pRsp.ret != RetCode_OK) and (pRsp.ret != RetCode_empty_data) and (pRsp.ret != RetCode_table_exist):
-        DAVELOG(f"ret:{t_auto_RetCode_str(pRsp.ret)}/{pRsp.msg}, sql:{sql}")
+        __func__, __LINE__ = t_sys_myline(2)
+        DAVELOG(f"<-<{__func__.decode('utf-8')}:{__LINE__}> ret:{t_auto_RetCode_str(pRsp.ret)}/{pRsp.msg}, sql:{sql}")
         return pRsp.ret, None
 
     sql_array = mbuf_to_dict(pRsp.data)

@@ -13,11 +13,7 @@ DEPLOYPATH=../../../../../Deploy/deploy/${PRODUCT}
 
 cd ${DEPLOYPATH}
 
-if [ "$USER" == "root" ]; then
-   PRODUCTNAME=${PRODUCT}
-else
-   PRODUCTNAME=${PRODUCT}-${USER}
-fi
+docker attach ${CONTAINER}-${USER}
 
 echo debug $PRODUCTNAME
 chmod a+x *.sh

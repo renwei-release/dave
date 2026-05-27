@@ -10,6 +10,15 @@ LEVEL=$1
 PRODUCT=${PWD##*/}
 PRODUCT=${PRODUCT^^}
 BASELIBNAME=liblinuxBASE
+ARCH=$(uname -m)
+if [ "$ARCH" == "x86_64" ]; then
+   BASELIBNAME=${BASELIBNAME}
+elif [ "$ARCH" == "aarch64" ]; then
+   BASELIBNAME=${BASELIBNAME}-ARM
+else
+   echo "unknown arch $ARCH"
+   exit 1
+fi
 LOGFILE=build_lib_log.txt
 HOMEPATH=$(cd `dirname $0`; pwd)/../../../
 File=$(basename $0)

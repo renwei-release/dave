@@ -29,6 +29,7 @@ fi
 
 if [[ "$DEPLOYMODEL" == "es" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
    cd ../elasticsearch
+   chmod +x *.sh
    ./deploy.sh
    cd ${SHHOMEPATH}
 fi

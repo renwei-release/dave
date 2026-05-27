@@ -18,7 +18,7 @@ if [ ! "$CONTAINER" == "" ]; then
    if [ "$exit_container" == "" ]; then
       echo -e "The container used for compilation does not exist, start building this \033[35m${CONTAINER}\033[0m now ..."
       cd ./Deploy/deploy/${CONTAINER}
-      chmod a+x deploy.sh
+      chmod +x deploy.sh
       ./deploy.sh
       cd ${homepath}
    fi
