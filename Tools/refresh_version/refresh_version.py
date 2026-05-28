@@ -203,7 +203,7 @@ def update_java_verno_file(java_verno_file, productname, MAIN, SUB, REV):
             return
 
         artifact_node.text = productname.upper()
-        version_node.text = f"{productname.upper()}.java.{MAIN}.{SUB}.{REV}.{time.strftime("%Y%m%d%H%M%S", time.localtime())}.Alpha"
+        version_node.text = f"{productname.upper()}.java.{MAIN}.{SUB}.{REV}.{time.strftime('%Y%m%d%H%M%S', time.localtime())}.Alpha"
 
         tree = ET.ElementTree(root)
         tree.write(java_verno_file, encoding="utf-8", xml_declaration=True)
