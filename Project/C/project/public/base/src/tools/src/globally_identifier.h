@@ -10,5 +10,7 @@
 
 s8 * globally_identifier(void);
 
+void reset_globally_identifier(void);
+
 #endif
 

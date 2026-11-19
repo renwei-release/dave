@@ -32,6 +32,7 @@
 #include "sync_client_queue.h"
 #include "sync_client_app_tx.h"
 #include "sync_client_service_statement.h"
+#include "sync_client_lost_link.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -246,6 +247,8 @@ _sync_client_plugin_server(SocketPlugIn *pPlugIn, SyncServer *pServer)
 
 	pServer->recv_data_counter = 0;
 	pServer->send_data_counter = 0;
+
+	sync_client_lost_link_in(pServer);
 }
 
 static void
@@ -262,6 +265,8 @@ _sync_client_plugout_server(SocketPlugOut *pPlugOut, SyncServer *pServer)
 	SYNCTRACE("verno:%s %s socket:%d",
 		pServer->verno, sync_client_type_to_str(pServer->server_type),
 		pServer->server_socket);
+
+	sync_client_lost_link_out(pServer);
 
 	clean_rxtx(pPlugOut->socket);
 
@@ -696,15 +701,6 @@ _sync_client_safe_cfg_update(CFGUpdate *pUpdate)
 }
 
 static void
-_sync_client_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
-{
-	sync_client_tx_run_internal_msg_req(
-		sync_client_data_sync_server(),
-		MSGID_CFG_REMOTE_SYNC_UPDATE, sizeof(CFGRemoteSyncUpdate), pUpdate,
-		dave_false);
-}
-
-static void
 _sync_client_init(MSGBODY *msg)
 {
 	t_lock_reset(&_sync_client_system_lock);
@@ -735,9 +731,6 @@ _sync_client_main(MSGBODY *msg)
 			break;
 		case MSGID_CFG_UPDATE:
 				_sync_client_safe_cfg_update((CFGUpdate *)(msg->msg_body));
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				_sync_client_cfg_remote_update((CFGRemoteSyncUpdate *)(msg->msg_body));
 			break;
 		case MSGID_DEBUG_REQ:
 				sync_test_req(msg->msg_src, (DebugReq *)(msg->msg_body), sync_client_info);
@@ -778,7 +771,6 @@ _sync_client_main(MSGBODY *msg)
 		case MSGID_WAKEUP:
 		case MSGID_LOCAL_THREAD_READY:
 		case MSGID_LOCAL_THREAD_REMOVE:
-		case MSGID_CFG_REMOTE_UPDATE:
 		case MSGID_REMOTE_THREAD_ID_READY:
 		case MSGID_REMOTE_THREAD_ID_REMOVE:
 		case MSGID_REMOTE_THREAD_READY:

@@ -81,7 +81,7 @@ _os_cygwin_add_event(int sock)
 	ub index;
 	WSAEVENT event = WSACreateEvent();
 
-	WSAEventSelect(sock, event, FD_READ|FD_ACCEPT|FD_CONNECT|FD_CLOSE);
+	WSAEventSelect(sock, event, FD_READ|FD_ACCEPT|FD_CONNECT|FD_CLOSE|FD_WRITE);
 
 	pthread_mutex_lock(&m_event_mutex);
 	for(index=0; index<WSA_MAXIMUM_WAIT_EVENTS; index++)
@@ -429,25 +429,24 @@ _os_cygwin_socket_event_thread(void *arg)
 		sock = sockArray[nIndex - WSA_WAIT_EVENT_0];
 		WSAEnumNetworkEvents(sock, eventArray[nIndex], &event);
 
-		if(event.lNetworkEvents & FD_ACCEPT)
-		{
-			_os_cygwin_notify_event(SOC_EVENT_REV, sock);
-		}
-		else if(event.lNetworkEvents & FD_READ)
-		{
-			_os_cygwin_notify_event(SOC_EVENT_REV, sock);
-		}
-		else if(event.lNetworkEvents & FD_CLOSE)
+		if(event.lNetworkEvents & FD_CLOSE)
 		{
 			_os_cygwin_notify_event(SOC_EVENT_CLOSE, sock);
+			continue;
 		}
-		else if(event.lNetworkEvents & FD_WRITE)
+		if(event.lNetworkEvents & FD_CONNECT)
 		{
-			OSDEBUG("socket:%d write", sock);
+			_os_cygwin_notify_event(event.iErrorCode[FD_CONNECT_BIT] == 0
+				? SOC_EVENT_CONNECT : SOC_EVENT_CONNECT_FAIL, sock);
 		}
-		else
+		if(event.lNetworkEvents & (FD_ACCEPT|FD_READ))
 		{
-			OSDEBUG("socket:%d lost event:%x", sock, event.lNetworkEvents);
+			_os_cygwin_notify_event(SOC_EVENT_REV, sock);
+		}
+		if(event.lNetworkEvents & FD_WRITE)
+		{
+			_os_cygwin_notify_event(event.iErrorCode[FD_WRITE_BIT] == 0
+				? SOC_EVENT_SND : SOC_EVENT_CLOSE, sock);
 		}
 	}
 
@@ -693,6 +692,29 @@ dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub *data_len)
 	}
 }
 
+dave_bool
+dave_os_wait_write(s32 socket)
+{
+	ub index;
+	dave_bool found = dave_false;
+
+	// FD_WRITE is already subscribed and is reenabled by a WSAEWOULDBLOCK send.
+	pthread_mutex_lock(&m_event_mutex);
+	for(index=0; index<WSA_MAXIMUM_WAIT_EVENTS; index++)
+	{
+		if(_sockArray[index] == (SOCKET)socket)
+		{
+			found = dave_true;
+			break;
+		}
+	}
+	pthread_mutex_unlock(&m_event_mutex);
+	if(found == dave_false)
+		OSLOG("can't wait for writable socket:%d", socket);
+
+	return found;
+}
+
 sb
 dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool urg)
 {
@@ -751,7 +773,7 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 		}
 		else
 		{
-			if(WSAGetLastError() == 0)
+			if(WSAGetLastError() == WSAEWOULDBLOCK)
 			{
 				return 0;
 			}
@@ -763,8 +785,9 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data, ub data_len, dave_bool 
 	}
 	else
 	{
-		OSDEBUG("socket send type:%d", pNetInfo->type);
-		return 0;
+		OSLOG("unsupported socket send type:%d", pNetInfo->type);
+		WSASetLastError(WSAEPROTOTYPE);
+		return -1;
 	}
 
 	return 0;

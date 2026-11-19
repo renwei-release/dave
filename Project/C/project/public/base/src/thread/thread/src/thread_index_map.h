@@ -20,6 +20,7 @@ ThreadThread * thread_index_thread_del(ThreadThread *pTThread);
 void thread_index_list_add(ThreadThread *pTThread);
 void thread_index_list_del(ThreadThread *pTThread);
 __ThreadThreadList__ * thread_index_list_inq(ub thread_index);
+// Selects and advances the shared round-robin cursor under an exclusive lock.
 ThreadThread * thread_index_list_loop(ub thread_index);
 
 #endif

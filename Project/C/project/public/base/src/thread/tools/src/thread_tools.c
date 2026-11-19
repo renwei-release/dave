@@ -401,8 +401,41 @@ thread_check_pair_msg(ub req_id, ub rsp_id)
 }
 
 void
+thread_booting_sync(ThreadSync *pSync)
+{
+	pthread_condattr_t attr;
+	int ret;
+
+	t_lock_reset(&(pSync->sync_pv));
+	pSync->sync_cond_ready = dave_false;
+
+	ret = pthread_condattr_init(&attr);
+	if(ret != 0)
+	{
+		THREADABNOR("sync condition attribute init failed:%d", ret);
+		return;
+	}
+
+	ret = pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+	if(ret == 0)
+		ret = pthread_cond_init(&(pSync->sync_cond), &attr);
+
+	pthread_condattr_destroy(&attr);
+	if(ret != 0)
+	{
+		THREADABNOR("sync condition init failed:%d", ret);
+		return;
+	}
+
+	pSync->sync_cond_ready = dave_true;
+}
+
+void
 thread_reset_sync(ThreadSync *pSync)
 {
+	pSync->sync_busy = dave_false;
+	pSync->deadline.tv_sec = pSync->deadline.tv_nsec = 0;
+	dave_memset(pSync->wait_name, 0x00, sizeof(pSync->wait_name));
 	pSync->wait_thread = INVALID_THREAD_ID;
 	pSync->wait_msg = MSGID_INVALID;
 	pSync->wait_body = NULL;

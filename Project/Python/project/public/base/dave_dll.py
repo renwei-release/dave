@@ -39,6 +39,7 @@ davelib=cdll.LoadLibrary(path+"/lib/"+libname)
 
 _product_init_fun = None
 _product_exit_fun = None
+_product_work_mode = ''
 
 
 def _python_import_product():
@@ -115,13 +116,15 @@ def _python_self_check():
 
 
 def dave_python_init():
-   thread_number, work_mode, product_name = _product_cfg()
+   global _product_work_mode
+
+   thread_number, _product_work_mode, product_name = _product_cfg()
    my_verno = dave_verno()
    sync_domain = b""
 
    davelib.dave_dll_init(
       c_char_p(product_name),
-      c_char_p(my_verno), c_char_p(work_mode),
+      c_char_p(my_verno), c_char_p(_product_work_mode),
       c_int(thread_number),
       _c_python_init, _c_python_main, _c_python_exit,
       c_char_p(sync_domain))
@@ -138,6 +141,12 @@ def dave_python_running():
 def dave_python_exit():
    davelib.dave_dll_exit()
    return
+
+
+def dave_python_work_mode():
+   global _product_work_mode
+
+   return _product_work_mode
 
 
 def dave_dll():

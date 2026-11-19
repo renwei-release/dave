@@ -101,7 +101,10 @@ fi
 #
 ./booting.sh $PROJECTNAME
 
-./load.sh $PROJECT ${IMAGE} ${TAG}
+if ! ./load.sh $PROJECT ${IMAGE} ${TAG}; then
+   echo "Failed to load or build image ${IMAGE}:${TAG}. Deployment aborted."
+   exit 1
+fi
 
 ./remove.sh $PROJECTNAME $PROJECT ${IMAGE} ${TAG}
 
@@ -120,20 +123,54 @@ exit_project_contains=`docker ps -a | awk -v name=${PROJECTNAME} '$NF==name' | a
 
 if [ "$exit_project_contains" == "" ]; then
    if [ "$GPU" == '"NULL"' ]; then
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} ${IMAGE}:${TAG}
+      docker create ${EXTEND} --cap-add sys_ptrace --restart always -it --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} ${IMAGE}:${TAG}
    else
-      docker run ${EXTEND} --cap-add sys_ptrace --restart always -itd --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
+      docker create ${EXTEND} --cap-add sys_ptrace --restart always -it --network ${NETWORK} --hostname ${HOSTNAME} --name ${PROJECTNAME} --gpus ${GPU} ${IMAGE}:${TAG}
    fi
 
-   ./restore.sh $PROJECTNAME $PROJECT
+   if [ $? -ne 0 ]; then
+      echo "Failed to create container ${PROJECTNAME}. Please check docker create errors above."
+      exit 1
+   fi
+
+   if [ "$COPYACTION" == "TRUE" ] && [ -z "$PROJECTMAPPING" ]; then
+      if ! CONTAINERCOMMAND=$(docker inspect --format '{{.Path}} {{join .Args " "}}' "${PROJECTNAME}"); then
+         echo "Failed to inspect container ${PROJECTNAME}. Deployment aborted."
+         exit 1
+      fi
+      case "$CONTAINERCOMMAND" in
+         *dave-running.sh*)
+            if ! docker cp dave-running.sh "${PROJECTNAME}:/project/dave-running.sh"; then
+               echo "Failed to initialize startup script for ${PROJECTNAME}. Deployment aborted."
+               exit 1
+            fi
+            ;;
+      esac
+   fi
+
+   if ! docker start "${PROJECTNAME}"; then
+      echo "Failed to start container ${PROJECTNAME}. Deployment aborted."
+      exit 1
+   fi
+
+   if ! ./restore.sh $PROJECTNAME $PROJECT; then
+      echo "Failed to restore container ${PROJECTNAME}. Deployment aborted."
+      exit 1
+   fi
 
    if [ "$COPYACTION" == "TRUE" ]; then
-      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}
+      if ! ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}; then
+         echo "Failed to update container ${PROJECTNAME}. Deployment aborted."
+         exit 1
+      fi
    fi
    echo Successfully created a new ${PROJECTNAME} container!
 else
    if [ "$COPYACTION" == "TRUE" ]; then
-      ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}
+      if ! ./update.sh ${HOMEPATH} ${PROJECT} ${PROJECTNAME} ${JUPYTERPORT} ${SSHPORT} ${PROJECTMAPPING}; then
+         echo "Failed to update container ${PROJECTNAME}. Deployment aborted."
+         exit 1
+      fi
    fi
    echo The ${PROJECTNAME} container exists, no new container is installed! But update the ${PROJECTNAME}
 fi

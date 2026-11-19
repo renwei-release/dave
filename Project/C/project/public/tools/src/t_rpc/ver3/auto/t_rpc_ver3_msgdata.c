@@ -24,7 +24,6 @@
 #include "dave_msg.h"
 #include "aix_msg.h"
 #include "cv_msg.h"
-#include "bbs_msg.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "email_msg.h"
@@ -891,264 +890,6 @@ t_rpc_ver3_sizeof_ApplicationIdle(void)
 }
 
 void *
-t_rpc_ver3_zip_BBSMsgAddCommentReq(BBSMsgAddCommentReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(BBSMsgAddCommentReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(BBSMsgAddCommentReq) does not match(%d/%d), please contact the message settlers!", sizeof(BBSMsgAddCommentReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-product_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->product_name), 1, DAVE_NORMAL_NAME_LEN));
-	t_bson_add_object(pStructBson, "s8-post_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->post_id), 1, DAVE_KEY_LEN_MAX));
-	t_bson_add_object(pStructBson, "MCard-mcard", t_rpc_ver3_zip_MCard(&(zip_data->mcard)));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_BBSMsgAddCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		BBSMsgAddCommentReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BBSMsgAddCommentReq);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->product_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-product_name"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->post_id), 1, DAVE_KEY_LEN_MAX, t_bson_inq_object(pStructBson, "s8-post_id"));
-		t_rpc_ver3_unzip_MCard(&(pUnzip->mcard), t_bson_inq_object(pStructBson, "MCard-mcard"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_BBSMsgAddCommentReq(void)
-{
-	return sizeof(BBSMsgAddCommentReq);
-}
-
-void *
-t_rpc_ver3_zip_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(BBSMsgAddCommentRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(BBSMsgAddCommentRsp) does not match(%d/%d), please contact the message settlers!", sizeof(BBSMsgAddCommentRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_BBSMsgAddCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		BBSMsgAddCommentRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BBSMsgAddCommentRsp);
-
-		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_BBSMsgAddCommentRsp(void)
-{
-	return sizeof(BBSMsgAddCommentRsp);
-}
-
-void *
-t_rpc_ver3_zip_BBSMsgInqCommentReq(BBSMsgInqCommentReq *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(BBSMsgInqCommentReq) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(BBSMsgInqCommentReq) does not match(%d/%d), please contact the message settlers!", sizeof(BBSMsgInqCommentReq), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "s8-product_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->product_name), 1, DAVE_NORMAL_NAME_LEN));
-	t_bson_add_object(pStructBson, "s8-post_or_comment_id", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->post_or_comment_id), 1, DAVE_KEY_LEN_MAX));
-	t_bson_add_object(pStructBson, "ub-page_id", t_rpc_ver3_zip_ub(zip_data->page_id));
-	t_bson_add_object(pStructBson, "ub-page_number", t_rpc_ver3_zip_ub(zip_data->page_number));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_BBSMsgInqCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		BBSMsgInqCommentReq *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BBSMsgInqCommentReq);
-
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->product_name), 1, DAVE_NORMAL_NAME_LEN, t_bson_inq_object(pStructBson, "s8-product_name"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->post_or_comment_id), 1, DAVE_KEY_LEN_MAX, t_bson_inq_object(pStructBson, "s8-post_or_comment_id"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->page_id), t_bson_inq_object(pStructBson, "ub-page_id"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->page_number), t_bson_inq_object(pStructBson, "ub-page_number"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_BBSMsgInqCommentReq(BBSMsgInqCommentReq *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_BBSMsgInqCommentReq(void)
-{
-	return sizeof(BBSMsgInqCommentReq);
-}
-
-void *
-t_rpc_ver3_zip_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(BBSMsgInqCommentRsp) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(BBSMsgInqCommentRsp) does not match(%d/%d), please contact the message settlers!", sizeof(BBSMsgInqCommentRsp), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "ErrCode-ret", t_rpc_ver3_zip_ErrCode(zip_data->ret));
-	t_bson_add_object(pStructBson, "ub-total_page_number", t_rpc_ver3_zip_ub(zip_data->total_page_number));
-	t_bson_add_object(pStructBson, "ub-page_id", t_rpc_ver3_zip_ub(zip_data->page_id));
-	t_bson_add_object(pStructBson, "ub-page_array_number", t_rpc_ver3_zip_ub(zip_data->page_array_number));
-	t_bson_add_object(pStructBson, "MCard-page_array", t_rpc_ver3_zip_MCard_d((MCard *)(zip_data->page_array), DAVE_COMMENT_MCARD_ARRAY_MAX));
-	t_bson_add_object(pStructBson, "ub-reply_array_number", t_rpc_ver3_zip_ub(zip_data->reply_array_number));
-	t_bson_add_object(pStructBson, "MCard-reply_array", t_rpc_ver3_zip_MCard_d((MCard *)(zip_data->reply_array), DAVE_COMMENT_MCARD_ARRAY_MAX));
-	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_BBSMsgInqCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		BBSMsgInqCommentRsp *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(BBSMsgInqCommentRsp);
-
-		t_rpc_ver3_unzip_ErrCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "ErrCode-ret"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->total_page_number), t_bson_inq_object(pStructBson, "ub-total_page_number"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->page_id), t_bson_inq_object(pStructBson, "ub-page_id"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->page_array_number), t_bson_inq_object(pStructBson, "ub-page_array_number"));
-		t_rpc_ver3_unzip_MCard_d((MCard *)(pUnzip->page_array), DAVE_COMMENT_MCARD_ARRAY_MAX, t_bson_inq_object(pStructBson, "MCard-page_array"));
-		t_rpc_ver3_unzip_ub(&(pUnzip->reply_array_number), t_bson_inq_object(pStructBson, "ub-reply_array_number"));
-		t_rpc_ver3_unzip_MCard_d((MCard *)(pUnzip->reply_array), DAVE_COMMENT_MCARD_ARRAY_MAX, t_bson_inq_object(pStructBson, "MCard-reply_array"));
-		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data, void *new_ptr)
-{
-	void *old_ptr = struct_data->ptr;
-	if(new_ptr != NULL)
-		struct_data->ptr = new_ptr;
-	return old_ptr;
-}
-
-ub
-t_rpc_ver3_sizeof_BBSMsgInqCommentRsp(void)
-{
-	return sizeof(BBSMsgInqCommentRsp);
-}
-
-void *
 t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -1286,126 +1027,6 @@ ub
 t_rpc_ver3_sizeof_BDataLogRsp(void)
 {
 	return sizeof(BDataLogRsp);
-}
-
-void *
-t_rpc_ver3_zip_CFGRemoteSyncUpdate(CFGRemoteSyncUpdate *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(CFGRemoteSyncUpdate) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(CFGRemoteSyncUpdate) does not match(%d/%d), please contact the message settlers!", sizeof(CFGRemoteSyncUpdate), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "dave_bool-put_flag", t_rpc_ver3_zip_dave_bool(zip_data->put_flag));
-	t_bson_add_object(pStructBson, "MBUF-cfg_mbuf_name", t_rpc_ver3_zip_MBUF_ptr(zip_data->cfg_mbuf_name));
-	t_bson_add_object(pStructBson, "MBUF-cfg_mbuf_value", t_rpc_ver3_zip_MBUF_ptr(zip_data->cfg_mbuf_value));
-	t_bson_add_object(pStructBson, "sb-ttl", t_rpc_ver3_zip_sb(zip_data->ttl));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_CFGRemoteSyncUpdate(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		CFGRemoteSyncUpdate *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(CFGRemoteSyncUpdate);
-
-		t_rpc_ver3_unzip_dave_bool(&(pUnzip->put_flag), t_bson_inq_object(pStructBson, "dave_bool-put_flag"));
-		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->cfg_mbuf_name), t_bson_inq_object(pStructBson, "MBUF-cfg_mbuf_name"));
-		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->cfg_mbuf_value), t_bson_inq_object(pStructBson, "MBUF-cfg_mbuf_value"));
-		t_rpc_ver3_unzip_sb(&(pUnzip->ttl), t_bson_inq_object(pStructBson, "sb-ttl"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_CFGRemoteSyncUpdate(CFGRemoteSyncUpdate *struct_data, void *new_ptr)
-{
-	return NULL;
-}
-
-ub
-t_rpc_ver3_sizeof_CFGRemoteSyncUpdate(void)
-{
-	return sizeof(CFGRemoteSyncUpdate);
-}
-
-void *
-t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len)
-{
-	void *pStructBson;
-
-	if(sizeof(CFGRemoteUpdate) != zip_len)
-	{
-	    TOOLSABNOR("Discover this message(CFGRemoteUpdate) does not match(%d/%d), please contact the message settlers!", sizeof(CFGRemoteUpdate), zip_len);
-		return NULL;
-	}
-
-	pStructBson = t_bson_malloc_object();
-
-	t_bson_add_object(pStructBson, "dave_bool-put_flag", t_rpc_ver3_zip_dave_bool(zip_data->put_flag));
-	t_bson_add_object(pStructBson, "s8-cfg_name", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_name), 1, 1024));
-	t_bson_add_object(pStructBson, "s8-cfg_value", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->cfg_value), 1, 262144));
-	t_bson_add_object(pStructBson, "sb-ttl", t_rpc_ver3_zip_sb(zip_data->ttl));
-
-	return pStructBson;
-}
-
-dave_bool
-t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStructBson)
-{
-	dave_bool ret = dave_true;
-
-	if(pStructBson == NULL)
-	{
-		TOOLSLTRACE(360,1,"the pBson is NULL!");
-		*unzip_data = NULL;
-		*unzip_len = 0;
-		ret = dave_false;
-	}
-	else
-	{
-		CFGRemoteUpdate *pUnzip = thread_msg(pUnzip);
-		*unzip_data = pUnzip;
-		*unzip_len = sizeof(CFGRemoteUpdate);
-
-		t_rpc_ver3_unzip_dave_bool(&(pUnzip->put_flag), t_bson_inq_object(pStructBson, "dave_bool-put_flag"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_name), 1, 1024, t_bson_inq_object(pStructBson, "s8-cfg_name"));
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->cfg_value), 1, 262144, t_bson_inq_object(pStructBson, "s8-cfg_value"));
-		t_rpc_ver3_unzip_sb(&(pUnzip->ttl), t_bson_inq_object(pStructBson, "sb-ttl"));
-	}
-
-	return ret;
-}
-
-void *
-t_rpc_ver3_ptr_CFGRemoteUpdate(CFGRemoteUpdate *struct_data, void *new_ptr)
-{
-	return NULL;
-}
-
-ub
-t_rpc_ver3_sizeof_CFGRemoteUpdate(void)
-{
-	return sizeof(CFGRemoteUpdate);
 }
 
 void *
@@ -3517,7 +3138,7 @@ t_rpc_ver3_zip_DebugRsp(DebugRsp *zip_data, ub zip_len)
 
 	pStructBson = t_bson_malloc_object();
 
-	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 1048576));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 16777216));
 	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
 
 	return pStructBson;
@@ -3541,7 +3162,7 @@ t_rpc_ver3_unzip_DebugRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
 		*unzip_data = pUnzip;
 		*unzip_len = sizeof(DebugRsp);
 
-		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 1048576, t_bson_inq_object(pStructBson, "s8-msg"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 16777216, t_bson_inq_object(pStructBson, "s8-msg"));
 		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
 	}
 
@@ -4079,6 +3700,73 @@ ub
 t_rpc_ver3_sizeof_FreeMessageArea5(void)
 {
 	return sizeof(FreeMessageArea5);
+}
+
+void *
+t_rpc_ver3_zip_GeneralLoopMsg(GeneralLoopMsg *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(GeneralLoopMsg) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(GeneralLoopMsg) does not match(%d/%d), please contact the message settlers!", sizeof(GeneralLoopMsg), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-general_type", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->general_type), 1, 256));
+	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "ub-send_req_us_time", t_rpc_ver3_zip_ub(zip_data->send_req_us_time));
+	t_bson_add_object(pStructBson, "ub-recv_req_us_time", t_rpc_ver3_zip_ub(zip_data->recv_req_us_time));
+	t_bson_add_object(pStructBson, "ub-send_rsp_us_time", t_rpc_ver3_zip_ub(zip_data->send_rsp_us_time));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_GeneralLoopMsg(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		GeneralLoopMsg *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(GeneralLoopMsg);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->general_type), 1, 256, t_bson_inq_object(pStructBson, "s8-general_type"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_req_us_time), t_bson_inq_object(pStructBson, "ub-send_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->recv_req_us_time), t_bson_inq_object(pStructBson, "ub-recv_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_rsp_us_time), t_bson_inq_object(pStructBson, "ub-send_rsp_us_time"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_GeneralLoopMsg(GeneralLoopMsg *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_GeneralLoopMsg(void)
+{
+	return sizeof(GeneralLoopMsg);
 }
 
 void *
@@ -8160,6 +7848,73 @@ t_rpc_ver3_sizeof_SIPStopRsp(void)
 }
 
 void *
+t_rpc_ver3_zip_SQLLoopMsg(SQLLoopMsg *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(SQLLoopMsg) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(SQLLoopMsg) does not match(%d/%d), please contact the message settlers!", sizeof(SQLLoopMsg), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "s8-general_type", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->general_type), 1, 256));
+	t_bson_add_object(pStructBson, "MBUF-general_data", t_rpc_ver3_zip_MBUF_ptr(zip_data->general_data));
+	t_bson_add_object(pStructBson, "ub-send_req_us_time", t_rpc_ver3_zip_ub(zip_data->send_req_us_time));
+	t_bson_add_object(pStructBson, "ub-recv_req_us_time", t_rpc_ver3_zip_ub(zip_data->recv_req_us_time));
+	t_bson_add_object(pStructBson, "ub-send_rsp_us_time", t_rpc_ver3_zip_ub(zip_data->send_rsp_us_time));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_SQLLoopMsg(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		SQLLoopMsg *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(SQLLoopMsg);
+
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->general_type), 1, 256, t_bson_inq_object(pStructBson, "s8-general_type"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->general_data), t_bson_inq_object(pStructBson, "MBUF-general_data"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_req_us_time), t_bson_inq_object(pStructBson, "ub-send_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->recv_req_us_time), t_bson_inq_object(pStructBson, "ub-recv_req_us_time"));
+		t_rpc_ver3_unzip_ub(&(pUnzip->send_rsp_us_time), t_bson_inq_object(pStructBson, "ub-send_rsp_us_time"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_SQLLoopMsg(SQLLoopMsg *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_SQLLoopMsg(void)
+{
+	return sizeof(SQLLoopMsg);
+}
+
+void *
 t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len)
 {
 	void *pStructBson;
@@ -9034,6 +8789,250 @@ ub
 t_rpc_ver3_sizeof_StoreMysqlRsp(void)
 {
 	return sizeof(StoreMysqlRsp);
+}
+
+void *
+t_rpc_ver3_zip_StoreOracleReq(StoreOracleReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreOracleReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreOracleReq) does not match(%d/%d), please contact the message settlers!", sizeof(StoreOracleReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-sql", t_rpc_ver3_zip_MBUF_ptr(zip_data->sql));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreOracleReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreOracleReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreOracleReq);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->sql), t_bson_inq_object(pStructBson, "MBUF-sql"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreOracleReq(StoreOracleReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreOracleReq(void)
+{
+	return sizeof(StoreOracleReq);
+}
+
+void *
+t_rpc_ver3_zip_StoreOracleRsp(StoreOracleRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StoreOracleRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StoreOracleRsp) does not match(%d/%d), please contact the message settlers!", sizeof(StoreOracleRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 4096));
+	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StoreOracleRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StoreOracleRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StoreOracleRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 4096, t_bson_inq_object(pStructBson, "s8-msg"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StoreOracleRsp(StoreOracleRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StoreOracleRsp(void)
+{
+	return sizeof(StoreOracleRsp);
+}
+
+void *
+t_rpc_ver3_zip_StorePgsqlReq(StorePgsqlReq *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StorePgsqlReq) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StorePgsqlReq) does not match(%d/%d), please contact the message settlers!", sizeof(StorePgsqlReq), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "MBUF-sql", t_rpc_ver3_zip_MBUF_ptr(zip_data->sql));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StorePgsqlReq(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StorePgsqlReq *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StorePgsqlReq);
+
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->sql), t_bson_inq_object(pStructBson, "MBUF-sql"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StorePgsqlReq(StorePgsqlReq *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StorePgsqlReq(void)
+{
+	return sizeof(StorePgsqlReq);
+}
+
+void *
+t_rpc_ver3_zip_StorePgsqlRsp(StorePgsqlRsp *zip_data, ub zip_len)
+{
+	void *pStructBson;
+
+	if(sizeof(StorePgsqlRsp) != zip_len)
+	{
+	    TOOLSABNOR("Discover this message(StorePgsqlRsp) does not match(%d/%d), please contact the message settlers!", sizeof(StorePgsqlRsp), zip_len);
+		return NULL;
+	}
+
+	pStructBson = t_bson_malloc_object();
+
+	t_bson_add_object(pStructBson, "RetCode-ret", t_rpc_ver3_zip_RetCode(zip_data->ret));
+	t_bson_add_object(pStructBson, "s8-msg", t_rpc_ver3_zip_s8_d((s8 *)(zip_data->msg), 1, 4096));
+	t_bson_add_object(pStructBson, "MBUF-data", t_rpc_ver3_zip_MBUF_ptr(zip_data->data));
+	t_bson_add_object(pStructBson, "void-ptr", t_rpc_ver3_zip_void_ptr(zip_data->ptr));
+
+	return pStructBson;
+}
+
+dave_bool
+t_rpc_ver3_unzip_StorePgsqlRsp(void **unzip_data, ub *unzip_len, void *pStructBson)
+{
+	dave_bool ret = dave_true;
+
+	if(pStructBson == NULL)
+	{
+		TOOLSLTRACE(360,1,"the pBson is NULL!");
+		*unzip_data = NULL;
+		*unzip_len = 0;
+		ret = dave_false;
+	}
+	else
+	{
+		StorePgsqlRsp *pUnzip = thread_msg(pUnzip);
+		*unzip_data = pUnzip;
+		*unzip_len = sizeof(StorePgsqlRsp);
+
+		t_rpc_ver3_unzip_RetCode(&(pUnzip->ret), t_bson_inq_object(pStructBson, "RetCode-ret"));
+		t_rpc_ver3_unzip_s8_d((s8 *)(pUnzip->msg), 1, 4096, t_bson_inq_object(pStructBson, "s8-msg"));
+		t_rpc_ver3_unzip_MBUF_ptr(&(pUnzip->data), t_bson_inq_object(pStructBson, "MBUF-data"));
+		t_rpc_ver3_unzip_void_ptr(&(pUnzip->ptr), t_bson_inq_object(pStructBson, "void-ptr"));
+	}
+
+	return ret;
+}
+
+void *
+t_rpc_ver3_ptr_StorePgsqlRsp(StorePgsqlRsp *struct_data, void *new_ptr)
+{
+	void *old_ptr = struct_data->ptr;
+	if(new_ptr != NULL)
+		struct_data->ptr = new_ptr;
+	return old_ptr;
+}
+
+ub
+t_rpc_ver3_sizeof_StorePgsqlRsp(void)
+{
+	return sizeof(StorePgsqlRsp);
 }
 
 void *

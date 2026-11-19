@@ -350,8 +350,8 @@ dave_os_cpu_process_number(void)
 
 	if(cpu_number > 128)
 	{
-		OSABNOR("invalid cpu_number:%ld", cpu_number);
-		cpu_number = 64;
+		OSDEBUG("cpu_number:%ld is too large, reset to 128", cpu_number);
+		cpu_number = 128;
 	}
 
 	return (ub)cpu_number;

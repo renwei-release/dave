@@ -83,7 +83,7 @@ _uip_server_stack_req(UIPStack *pRecvStack)
 		pRecvStack->head.channel, pRecvStack->head.method, pRecvStack->register_thread,
 		pReq->ptr);
 
-	name_qmsg(pRecvStack->register_thread, UIP_DATA_RECV_REQ, pReq);
+	name_msg(pRecvStack->register_thread, UIP_DATA_RECV_REQ, pReq);
 
 	return RetCode_OK;
 }

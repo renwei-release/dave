@@ -27,12 +27,11 @@ sed -i "s/___FLAG_FOR_PRODUCT___/$PRODUCT/g" build.spec
 sed -i "s/___FLAG_FOR_BIN___/$BIN/g" build.spec
 sed -i "s/___FLAG_FOR_PRODUCT___/$PRODUCT/g" boot.py
 
-if [ ! -f "/usr/local/bin/pyinstaller" ]; then
-    pip install pyinstaller
-fi
-if [ ! -f "/usr/bin/jmpy" ]; then
-    pip install jmpy3
-fi
+#
+# jmpy compiles Cython-generated C sources; suppress benign warnings from
+# generated code to keep product builds stable and readable.
+#
+export CFLAGS="$CFLAGS -Wno-unused-function -Wno-maybe-uninitialized -fno-var-tracking -fno-var-tracking-assignments"
 
 if [ -d "project" ]; then
     rm -rf project
@@ -57,6 +56,12 @@ cp -r ../../../project/dave_main.py ./project
 # cp public
 cp -r ../../../project/public ./project
 
+#
+# Package BIN with pyinstaller.
+# It packages a simple Python program into an executable file,
+# which contains the Python interpreter and all dependent libraries.
+# This Python program is mainly used to start boot.py, and boot.py will use the local system Python environment to load dave_main.py.
+#
 pyinstaller build.spec
 
 if [ ! -d "../../../../../Deploy/deploy/$PRODUCT/file_system/project" ]; then

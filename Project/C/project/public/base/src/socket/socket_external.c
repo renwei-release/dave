@@ -19,12 +19,19 @@
 #include "socket_log.h"
 
 #define RECV_COUNTER_MAX (32)
-#define SEND_COUNTER_MAX (16384)
+#define SEND_COUNTER_MAX (32)
 #define SEND_MBUF_MAX (256)
 #define GAVE_EVENT_MAX (32)
 #define WAIT_EVENT_MAX (16)
 
 static ThreadId _socket_thread = INVALID_THREAD_ID;
+
+typedef enum {
+	SocketSend_complete,
+	SocketSend_wait_write,
+	SocketSend_retry,
+	SocketSend_failed
+} SocketSendResult;
 
 static inline void
 _socket_external_raw_event(SOCEVENT event, s32 socket, s32 os_socket)
@@ -372,32 +379,28 @@ _socket_external_recv(SocketCore *pCore, SocketRawEvent *pEvent)
 	}
 }
 
-static inline dave_bool
-_socket_external_send(SocketCore *pCore, IPBaseInfo *pIPInfo, u8 *data, sb data_len, SOCKETINFO snd_flag)
+static inline SocketSendResult
+_socket_external_send(SocketCore *pCore, IPBaseInfo *pIPInfo, u8 *data, sb data_len,
+	ub *data_offset, SOCKETINFO snd_flag, ub *send_counter)
 {
 	dave_bool urg = (snd_flag == SOCKETINFO_SND_URG) ? dave_true : dave_false;
-	sb data_index, send_counter;
-	ub snd_start_time;
 	SocNetInfo NetInfo;
-	sb send_len, ret_error;
+	sb send_len;
 
-	if((data == NULL) || (data_len < 0))
+	if((data == NULL) || (data_len < 0) || (*data_offset > (ub)data_len))
 	{
 		SOCKETABNOR("invalid data:%x or data_len:%d", data, data_len);
-		return dave_false;
+		return SocketSend_failed;
 	}
-
-	data_index = send_counter = 0;
-
-	snd_start_time = dave_os_time_us();
 
 	_socket_external_build_write_ipinfo(&NetInfo, pCore, pIPInfo);
 
-	while(((++  send_counter) < SEND_COUNTER_MAX) && (data_index < data_len))
+	while((*send_counter < SEND_COUNTER_MAX) && (*data_offset < (ub)data_len))
 	{
+		(*send_counter) ++;
 		send_len = dave_os_send(
 			pCore->os_socket, &NetInfo,
-			&data[data_index], data_len-data_index,
+			&data[*data_offset], (ub)data_len-*data_offset,
 			urg);
 
 		if(send_len < 0)
@@ -411,47 +414,26 @@ _socket_external_send(SocketCore *pCore, IPBaseInfo *pIPInfo, u8 *data, sb data_
 				data_len, send_len,
 				dave_os_errno(NULL));
 
-			return dave_false;
+			return SocketSend_failed;
 		}
 		else if(send_len == 0)
 		{
-			dave_os_errno(&ret_error);
-
-			// Resource temporarily unavailable
-			if(ret_error == 11)
-			{
-				dave_os_usleep(send_counter);
-			}
-			else
-			{
-				dave_os_usleep(1);
-			}
+			return SocketSend_wait_write;
 		}
 		else
 		{
-			data_index += send_len;
-
-			send_counter = 0;
+			if(((ub)send_len > ((ub)data_len-*data_offset))
+				|| ((NetInfo.type == TYPE_SOCK_DGRAM) && (send_len != data_len)))
+			{
+				SOCKETABNOR("invalid send length:%d/%d on socket:%d", send_len, data_len, pCore->os_socket);
+				return SocketSend_failed;
+			}
+			*data_offset += (ub)send_len;
+			_socket_external_send_counter(pCore, (ub)send_len);
 		}
 	}
 
-	if((send_counter >= SEND_COUNTER_MAX) || (data_index < data_len))
-	{
-		SOCKETABNOR("%s socket:%d/%d counter:%d index:%d len:%d %s time:%ldus",
-			thread_name(pCore->owner),
-			pCore->socket_external_index, pCore->socket_internal_index,
-			send_counter, data_index, data_len,
-			dave_os_errno(NULL),
-			dave_os_time_us() - snd_start_time);
-
-		return dave_false;
-	}
-	else
-	{
-		_socket_external_send_counter(pCore, data_index);
-
-		return dave_true;
-	}
+	return (*data_offset == (ub)data_len) ? SocketSend_complete : SocketSend_retry;
 }
 
 static inline dave_bool
@@ -730,15 +712,14 @@ _socket_external_connect_service(ThreadId src, SocNetInfo *pNetInfo, void *user_
 	return pCore;
 }
 
-static inline dave_bool
-_socket_external_output(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, SOCKETINFO snd_flag)
+static inline SocketSendResult
+_socket_external_output(SocketCore *pCore, SokcetSndList *pSndData, ub *send_counter)
 {
 	u8 *data_buf;
 	ub data_length;
 	ub safe_counter;
-	dave_bool ret;
-
-	ret = dave_false;
+	SocketSendResult ret;
+	MBUF *data;
 
 	if(pCore->NetInfo.type == TYPE_SOCK_DGRAM)
 	{
@@ -746,13 +727,22 @@ _socket_external_output(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, SOCK
 		 * 对于UDP包，如果不是一次性提交给系统，那么很有可能会发生一个UDP包
 		 * 被系统分多次发送，而这多次的到达时间可能不会按顺序要求。
 		 */
-		data_length = data->tot_len;
+		data = pSndData->data;
+		if(data->tot_len < 0)
+		{
+			SOCKETABNOR("invalid datagram length:%d", data->tot_len);
+			return SocketSend_failed;
+		}
+		if(data->tot_len == 0)
+			return SocketSend_complete;
+		data_length = (ub)data->tot_len;
 
 		data_buf = dave_malloc(data_length);
 
 		data_length = t_a2b_mbuf_to_buf(data_buf, data_length, data);
 
-		ret = _socket_external_send(pCore, pIPInfo, (u8 *)(data_buf), (sb)(data_length), snd_flag);
+		ret = _socket_external_send(pCore, &(pSndData->IPInfo), data_buf, (sb)data_length,
+			&(pSndData->data_offset), pSndData->snd_flag, send_counter);
 
 		dave_free(data_buf);
 	}
@@ -760,19 +750,19 @@ _socket_external_output(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, SOCK
 	{
 		safe_counter = 0;
 
-		ret = dave_true;
-
-		while(((safe_counter ++) < SEND_MBUF_MAX) && (data != NULL) && (ret == dave_true))
+		while((safe_counter < SEND_MBUF_MAX) && (pSndData->current_data != NULL))
 		{
-			ret = _socket_external_send(pCore, pIPInfo, (u8 *)(data->payload), (sb)(data->len), snd_flag);
-
-			data = data->next;
+			data = pSndData->current_data;
+			ret = _socket_external_send(pCore, &(pSndData->IPInfo), data->payload, data->len,
+				&(pSndData->data_offset), pSndData->snd_flag, send_counter);
+			if(ret != SocketSend_complete)
+				return ret;
+			pSndData->current_data = data->next;
+			pSndData->data_offset = 0;
+			safe_counter ++;
 		}
 
-		if(safe_counter >= SEND_MBUF_MAX)
-		{
-			SOCKETABNOR("invalid safe_counter:%d", safe_counter);
-		}
+		ret = (pSndData->current_data == NULL) ? SocketSend_complete : SocketSend_retry;
 	}
 
 	return ret;
@@ -815,41 +805,61 @@ _socker_external_list_output(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data,
 {
 	dave_bool snd_token;
 	SokcetSndList *pSndData;
-	dave_bool ret;
+	SocketSendResult ret = SocketSend_complete;
+	ub send_counter = 0;
+	ub message_counter = 0;
+	dave_bool close_after_send;
 
 	snd_token = socket_snd_list_catch_snd_token(pCore, pIPInfo, data, snd_flag);
 
 	if(snd_token == dave_true)
 	{
-		ret = dave_true;
-
-		while(ret == dave_true)
+		while((send_counter < SEND_COUNTER_MAX) && (message_counter < SEND_MBUF_MAX))
 		{
 			pSndData = socket_snd_list_catch_data(pCore);
 			if(pSndData != NULL)
 			{
-				ret = _socket_external_output(pCore, &(pSndData->IPInfo), pSndData->data, pSndData->snd_flag);
-				if(ret == dave_false)
+				ret = _socket_external_output(pCore, pSndData, &send_counter);
+				if((ret == SocketSend_wait_write) || (ret == SocketSend_retry))
 				{
-					SOCKETTRACE("%s socket:%d/%d failed! %s",
-						thread_name(pCore->owner),
-						pCore->socket_external_index, pCore->socket_internal_index,
-						dave_os_errno(NULL));
+					socket_snd_list_return_data(pCore, pSndData);
+					break;
+				}
+				close_after_send = (pSndData->snd_flag == SOCKETINFO_WRITE_THEN_CLOSE);
+				socket_snd_list_release_data(pSndData);
+				message_counter ++;
+				if((ret == SocketSend_failed) || (close_after_send == dave_true))
+				{
+					if(ret == SocketSend_failed)
+					{
+						SOCKETLOG("%s socket:%d/%d send failed! %s",
+							thread_name(pCore->owner),
+							pCore->socket_external_index, pCore->socket_internal_index,
+							dave_os_errno(NULL));
+					}
 
 					socket_snd_list_clean(pCore);
 
 					_socket_external_core_event(SOC_EVENT_CLOSE, pCore);
+					break;
 				}
-
-				socket_snd_list_release_data(pSndData);
 			}
 			else
 			{
-				ret = dave_false;
+				break;
 			}
 		}
 
-		socket_snd_list_release_snd_token(pCore);
+		if((ret == SocketSend_wait_write) && (dave_os_wait_write(pCore->os_socket) == dave_false))
+		{
+			socket_snd_list_clean(pCore);
+			_socket_external_core_event(SOC_EVENT_CLOSE, pCore);
+			ret = SocketSend_failed;
+		}
+		if(socket_snd_list_release_snd_token(pCore, ret == SocketSend_wait_write) == dave_true)
+		{
+			_socket_external_core_event(SOC_EVENT_SND, pCore);
+		}
 	}
 
 	return snd_token;
@@ -865,10 +875,7 @@ _socket_external_send_event(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, 
 		{
 			ret = dave_true;
 
-			if(_socker_external_list_output(pCore, pIPInfo, data, snd_flag) == dave_false)
-			{
-				_socket_external_core_event(SOC_EVENT_SND, pCore);
-			}
+			_socker_external_list_output(pCore, pIPInfo, data, snd_flag);
 		}
 	} );
 

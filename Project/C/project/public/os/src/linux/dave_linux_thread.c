@@ -18,6 +18,7 @@
 #include <sys/socket.h> 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <stdint.h>
 #include <netinet/ip.h>
 #include <net/if.h>
 #include <time.h>
@@ -42,6 +43,8 @@
 #include "os_log.h"
 
 #define DAVE_THREAD_MAX (32)
+#define THREAD_HANDLE_BITS 6
+#define THREAD_HANDLE_MASK (((uintptr_t)1 << THREAD_HANDLE_BITS) - 1)
 
 typedef enum {
 	THREADSTATE_INIT,
@@ -57,8 +60,10 @@ typedef struct {
 	pthread_t thr_id;
 	pthread_mutex_t m_mutex_t;
 	pthread_cond_t  m_cond_t;
-	volatile dave_bool signal_recd;
-	volatile THREADSTATE state;
+	dave_bool signal_recd;
+	THREADSTATE state;
+	dave_bool initialized;
+	uintptr_t generation;
 	s8 thread_name[15];
 	ThreadId dave_thread_id;
 } DAVEPTHREAD;
@@ -66,6 +71,51 @@ typedef struct {
 int pthread_setname_np(pthread_t thread, const char *name);
 
 static DAVEPTHREAD _dave_pthread[DAVE_THREAD_MAX];
+static pthread_mutex_t _thread_table_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Opaque handles include a generation so a reused slot rejects old requests.
+static void *
+_thread_handle(DAVEPTHREAD *id)
+{
+	return (void *)((id->generation << THREAD_HANDLE_BITS)
+		| (uintptr_t)(id - _dave_pthread + 1));
+}
+
+static DAVEPTHREAD *
+_thread_find(void *handle)
+{
+	uintptr_t value = (uintptr_t)handle;
+	uintptr_t slot = value & THREAD_HANDLE_MASK;
+	DAVEPTHREAD *id;
+
+	if((slot == 0) || (slot > DAVE_THREAD_MAX))
+		return NULL;
+	id = &_dave_pthread[slot - 1];
+	if((id->fun == NULL) || (id->generation != (value >> THREAD_HANDLE_BITS)))
+		return NULL;
+	return id;
+}
+
+static void
+_thread_recycle(void *arg)
+{
+	DAVEPTHREAD *id = arg;
+
+	pthread_mutex_lock(&_thread_table_mutex);
+	pthread_mutex_lock(&id->m_mutex_t);
+	id->state = THREADSTATE_RELEASED;
+	id->signal_recd = dave_false;
+	id->fun = NULL;
+	id->arg = NULL;
+	pthread_mutex_unlock(&id->m_mutex_t);
+	pthread_mutex_unlock(&_thread_table_mutex);
+}
+
+static void
+_thread_sleep_unlock(void *arg)
+{
+	pthread_mutex_unlock(arg);
+}
 
 static void
 _thread_empty_handler(int signum)
@@ -104,25 +154,32 @@ static void *
 _thread_function(void *arg)
 {
 	DAVEPTHREAD *id = (DAVEPTHREAD *)arg;
+	dave_os_thread_fun fun = NULL;
+	void *fun_arg = NULL;
+	s8 name[sizeof(id->thread_name)];
 
+	pthread_cleanup_push(_thread_recycle, id);
 	_thread_block_all_signal();
 	_thread_set_break_signal();
 
+	pthread_mutex_lock(&_thread_table_mutex);
 	pthread_mutex_lock(&(id->m_mutex_t));
-	if (id->state != THREADSTATE_INIT)
+	if(id->state == THREADSTATE_INIT)
 	{
-		pthread_mutex_unlock(&(id->m_mutex_t));
-		return NULL;
+		id->state = THREADSTATE_RUNNING;
+		fun = id->fun;
+		fun_arg = id->arg;
+		dave_memcpy(name, id->thread_name, sizeof(name));
 	}
-	id->state = THREADSTATE_RUNNING;
 	pthread_mutex_unlock(&(id->m_mutex_t));
+	pthread_mutex_unlock(&_thread_table_mutex);
 
-	if((id != NULL) && (id->fun))
+	if(fun != NULL)
 	{
-		pthread_setname_np(id->thr_id, (const char *)(id->thread_name));
-
-		id->fun(id->arg);
+		pthread_setname_np(pthread_self(), (const char *)name);
+		fun(fun_arg);
 	}
+	pthread_cleanup_pop(1);
 
 	return NULL;
 }
@@ -132,15 +189,6 @@ _thread_function(void *arg)
 void
 dave_os_init_thread(void)
 {
-	ub thread_index;
-
-	for(thread_index=0; thread_index<DAVE_THREAD_MAX; thread_index++)
-	{
-		dave_memset(&_dave_pthread[thread_index], 0x00, sizeof(DAVEPTHREAD));
-
-		_dave_pthread[thread_index].thr_id = (pthread_t)NULL;
-	}
-
 	signal(SIGPIPE, SIG_IGN);
 
 	_thread_block_all_signal();
@@ -157,59 +205,119 @@ dave_os_create_thread(char *name, dave_os_thread_fun fun, void *arg)
 {
 	ub thread_index;
 	pthread_attr_t process_attr;
+	DAVEPTHREAD *id;
+	void *handle = NULL;
+	ThreadId dave_thread_id;
+	int rc, destroy_rc;
 
-	t_lock;
+	if((name == NULL) || (fun == NULL))
+	{
+		OSABNOR("invalid thread name or function!");
+		return NULL;
+	}
+	dave_thread_id = get_self();
+	rc = pthread_attr_init(&process_attr);
+	if(rc != 0)
+	{
+		OSABNOR("thread attribute init failed:%d<%s>!", rc, strerror(rc));
+		return NULL;
+	}
+	rc = pthread_attr_setdetachstate(&process_attr, PTHREAD_CREATE_DETACHED);
+	if(rc != 0)
+	{
+		destroy_rc = pthread_attr_destroy(&process_attr);
+		if(destroy_rc != 0)
+			OSABNOR("thread attribute destroy failed:%d<%s>!", destroy_rc, strerror(destroy_rc));
+		OSABNOR("thread detach attribute failed:%d<%s>!", rc, strerror(rc));
+		return NULL;
+	}
+
+	pthread_mutex_lock(&_thread_table_mutex);
 	for(thread_index=0; thread_index<DAVE_THREAD_MAX; thread_index++)
 	{
-		if(_dave_pthread[thread_index].fun == NULL)
-		{
-			_dave_pthread[thread_index].fun = fun;
+		if((_dave_pthread[thread_index].fun == NULL)
+			&& (_dave_pthread[thread_index].generation < (UINTPTR_MAX >> THREAD_HANDLE_BITS)))
 			break;
-		}
 	}
-	t_unlock;
 
 	if(thread_index >= DAVE_THREAD_MAX)
 	{
+		pthread_mutex_unlock(&_thread_table_mutex);
+		destroy_rc = pthread_attr_destroy(&process_attr);
+		if(destroy_rc != 0)
+			OSABNOR("thread attribute destroy failed:%d<%s>!", destroy_rc, strerror(destroy_rc));
 		OSABNOR("Please increase thread(%d) resources!", DAVE_THREAD_MAX);
 		return NULL;
 	}
 
-	_dave_pthread[thread_index].arg = arg;
-	pthread_mutex_init(&(_dave_pthread[thread_index].m_mutex_t), NULL);
-	pthread_cond_init(&(_dave_pthread[thread_index].m_cond_t), NULL);
-	_dave_pthread[thread_index].signal_recd = dave_false;
-	_dave_pthread[thread_index].state = THREADSTATE_INIT;
-	dave_strcpy(_dave_pthread[thread_index].thread_name, (s8 *)name, 15);
-	_dave_pthread[thread_index].dave_thread_id = get_self();
-
-	/* initialized with default attributes */
-	pthread_attr_init(&process_attr);
-	pthread_attr_setscope(&process_attr, PTHREAD_SCOPE_SYSTEM);
-	pthread_attr_setdetachstate(&process_attr, PTHREAD_CREATE_DETACHED);
-
-	if(pthread_create(&(_dave_pthread[thread_index].thr_id), &process_attr, _thread_function, (void *)(&(_dave_pthread[thread_index]))) != 0)
+	id = &_dave_pthread[thread_index];
+	if(id->initialized == dave_false)
 	{
-		OSABNOR("Creat thread fail!");
-		return NULL;
+		rc = pthread_mutex_init(&id->m_mutex_t, NULL);
+		if(rc == 0)
+		{
+			rc = pthread_cond_init(&id->m_cond_t, NULL);
+			if(rc == 0)
+				id->initialized = dave_true;
+			else
+			{
+				destroy_rc = pthread_mutex_destroy(&id->m_mutex_t);
+				if(destroy_rc != 0)
+					rc = destroy_rc;
+			}
+		}
 	}
+	if(rc == 0)
+	{
+		id->generation ++;
+		id->fun = fun;
+		id->arg = arg;
+		id->signal_recd = dave_false;
+		id->state = THREADSTATE_INIT;
+		dave_strcpy(id->thread_name, (s8 *)name, sizeof(id->thread_name));
+		id->dave_thread_id = dave_thread_id;
+		handle = _thread_handle(id);
 
-	return (void *)(&(_dave_pthread[thread_index]));
+		rc = pthread_create(&id->thr_id, &process_attr, _thread_function, id);
+		if(rc != 0)
+		{
+			id->fun = NULL;
+			id->arg = NULL;
+			id->state = THREADSTATE_RELEASED;
+			handle = NULL;
+		}
+	}
+	pthread_mutex_unlock(&_thread_table_mutex);
+	destroy_rc = pthread_attr_destroy(&process_attr);
+	if(destroy_rc != 0)
+		OSABNOR("thread attribute destroy failed:%d<%s>!", destroy_rc, strerror(destroy_rc));
+	if(rc != 0)
+		OSABNOR("thread create/init failed:%d<%s>!", rc, strerror(rc));
+
+	return handle;
 }
 
 void
 dave_os_release_thread(void *thread_id)
 {
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
+	DAVEPTHREAD *id;
+	int rc = 0;
 
-	if((id != NULL)
-		&& (id->thr_id != (pthread_t)NULL)
-		&& (id->state != THREADSTATE_RELEASED))
+	pthread_mutex_lock(&_thread_table_mutex);
+	id = _thread_find(thread_id);
+	if(id != NULL)
 	{
+		pthread_mutex_lock(&id->m_mutex_t);
 		id->state = THREADSTATE_RELEASED;
-
-		dave_os_thread_wakeup(thread_id);
+		id->signal_recd = dave_true;
+		rc = pthread_cond_broadcast(&id->m_cond_t);
+		pthread_mutex_unlock(&id->m_mutex_t);
 	}
+	pthread_mutex_unlock(&_thread_table_mutex);
+	if(rc != 0)
+		OSABNOR("thread release wakeup failed:%d<%s>!", rc, strerror(rc));
+	if((id == NULL) && (thread_id != NULL))
+		OSDEBUG("inactive thread handle:%p", thread_id);
 }
 
 void *
@@ -217,6 +325,7 @@ dave_os_thread_self(u64 *dave_thread_id)
 {
 	pthread_t thr_id;
 	ub thread_index;
+	void *handle = NULL;
 
 	if(dave_thread_id != NULL)
 	{
@@ -225,20 +334,24 @@ dave_os_thread_self(u64 *dave_thread_id)
 
 	thr_id = pthread_self();
 
+	pthread_mutex_lock(&_thread_table_mutex);
 	for(thread_index=0; thread_index<DAVE_THREAD_MAX; thread_index++)
 	{
-		if(_dave_pthread[thread_index].thr_id == thr_id)
+		if((_dave_pthread[thread_index].fun != NULL)
+			&& pthread_equal(_dave_pthread[thread_index].thr_id, thr_id))
 		{
 			if(dave_thread_id != NULL)
 			{
 				*dave_thread_id = _dave_pthread[thread_index].dave_thread_id;
 			}
 
-			return (void *)(&(_dave_pthread[thread_index]));
+			handle = _thread_handle(&_dave_pthread[thread_index]);
+			break;
 		}
 	}
+	pthread_mutex_unlock(&_thread_table_mutex);
 
-	return NULL;
+	return handle;
 }
 
 ub
@@ -254,56 +367,85 @@ dave_os_thread_id(void)
 dave_bool
 dave_os_thread_sleep(void *thread_id)
 {
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
+	DAVEPTHREAD *id;
+	int rc = 0;
 
-	if(id != NULL)
+	if(thread_id == NULL)
+		return dave_true;
+	pthread_mutex_lock(&_thread_table_mutex);
+	id = _thread_find(thread_id);
+	if(id == NULL)
 	{
-		if(dave_os_thread_canceled(thread_id) == dave_false)
-		{
-			pthread_mutex_lock(&(id->m_mutex_t));
-			while(id->signal_recd == dave_false)
-			{
-				// child thread sleep.
-				pthread_cond_wait(&(id->m_cond_t), &(id->m_mutex_t));
-			}
-			id->signal_recd = dave_false;
-			pthread_mutex_unlock(&(id->m_mutex_t));
-		}
+		pthread_mutex_unlock(&_thread_table_mutex);
+		OSDEBUG("inactive thread sleep handle:%p", thread_id);
+		return dave_false;
 	}
+	if(!pthread_equal(id->thr_id, pthread_self()))
+	{
+		pthread_mutex_unlock(&_thread_table_mutex);
+		OSLOG("thread sleep requires the calling thread's handle!");
+		return dave_false;
+	}
+	pthread_mutex_lock(&id->m_mutex_t);
+	pthread_mutex_unlock(&_thread_table_mutex);
 
-	return dave_true;
+	// Cancellation of cond_wait reacquires the mutex before cleanup runs.
+	pthread_cleanup_push(_thread_sleep_unlock, &id->m_mutex_t);
+	while((id->signal_recd == dave_false) && (id->state != THREADSTATE_RELEASED))
+	{
+		rc = pthread_cond_wait(&id->m_cond_t, &id->m_mutex_t);
+		if(rc != 0)
+			break;
+	}
+	id->signal_recd = dave_false;
+	pthread_cleanup_pop(1);
+	if(rc != 0)
+		OSABNOR("thread sleep failed:%d<%s>!", rc, strerror(rc));
+	return (rc == 0) ? dave_true : dave_false;
 }
 
 dave_bool
 dave_os_thread_wakeup(void *thread_id)
 {
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
+	DAVEPTHREAD *id;
+	int rc = 0;
 
+	if(thread_id == NULL)
+		return dave_true;
+	pthread_mutex_lock(&_thread_table_mutex);
+	id = _thread_find(thread_id);
 	if(id != NULL)
 	{
-		pthread_mutex_lock(&(id->m_mutex_t));
+		pthread_mutex_lock(&id->m_mutex_t);
 		id->signal_recd = dave_true;
-		pthread_mutex_unlock(&(id->m_mutex_t));
-		// child thread wakeup.
-		pthread_cond_broadcast(&(id->m_cond_t));
+		rc = pthread_cond_broadcast(&id->m_cond_t);
+		pthread_mutex_unlock(&id->m_mutex_t);
 	}
+	pthread_mutex_unlock(&_thread_table_mutex);
+	if(id == NULL)
+		OSDEBUG("inactive thread wakeup handle:%p", thread_id);
+	if(rc != 0)
+		OSABNOR("thread wakeup failed:%d<%s>!", rc, strerror(rc));
 
-	return dave_true;
+	return ((id != NULL) && (rc == 0)) ? dave_true : dave_false;
 }
 
 dave_bool
 dave_os_thread_canceled(void *thread_id)
 {
-	DAVEPTHREAD *id = (DAVEPTHREAD *)thread_id;
+	DAVEPTHREAD *id;
+	dave_bool canceled = dave_false;
 
-	if((id != NULL) && (id->state == THREADSTATE_RELEASED))
+	if(thread_id != NULL)
 	{
-		return dave_true;
+		pthread_mutex_lock(&_thread_table_mutex);
+		id = _thread_find(thread_id);
+		canceled = (id == NULL) || (id->state == THREADSTATE_RELEASED);
+		pthread_mutex_unlock(&_thread_table_mutex);
+		if(id == NULL)
+			OSDEBUG("inactive thread cancel handle:%p", thread_id);
 	}
-	else
-	{
-		return dave_false;
-	}
+	return canceled;
 }
 
 #endif

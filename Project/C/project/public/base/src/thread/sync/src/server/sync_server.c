@@ -17,8 +17,6 @@
 #include "sync_base_package.h"
 #include "sync_server_param.h"
 #include "sync_server_broadcadt.h"
-#include "sync_server_remote_cfg.h"
-#include "sync_server_local_cfg.h"
 #include "sync_server_tx.h"
 #include "sync_server_rx.h"
 #include "sync_server_data.h"
@@ -173,10 +171,6 @@ _sync_server_reboot(RESTARTREQMSG *pRestart)
 
 		sync_server_data_exit();
 
-		sync_server_remote_cfg_exit();
-
-		sync_server_local_cfg_exit();
-
 		sync_server_broadcadt_exit();
 
 		sync_server_run_exit();
@@ -308,10 +302,6 @@ _sync_server_init(MSGBODY *msg)
 	sync_server_run_init();
 
 	sync_server_broadcadt_init();
-
-	sync_server_local_cfg_init();
-
-	sync_server_remote_cfg_init();
 
 	sync_server_msg_buffer_init();
 

@@ -130,14 +130,6 @@ _base_thread_remote_id_ready(ThreadRemoteIDReadyMsg *pReady)
 		pReady->remote_thread_id, thread_name(pReady->remote_thread_id),
 		pReady->remote_thread_name, pReady->globally_identifier);
 
-	if(dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
-	{
-		rcfg_set("base_product_ttl_debug", "asdffffffffffffffffffffff", 60);
-		rcfg_set("/set/base_product_ttl_debug", "asdffffffffffffffffffffff", 0);
-		rcfg_set("/set/base_product_ttl_debug", "asdffffffffffffffffffffffmodify", 0);
-		rcfg_set("base_product_ttl_debug", "debug", 60);
-	}
-
 	if((dave_strcmp(pReady->remote_thread_name, "bbs") == dave_true)
 		|| (dave_strcmp(pReady->remote_thread_name, "aib") == dave_true))
 	{
@@ -155,16 +147,6 @@ _base_thread_remote_id_remove(ThreadRemoteIDRemoveMsg *pReady)
 		pReady->remote_thread_name, pReady->globally_identifier);
 
 	id_inner_loop(FREE_MESSAGE_AREA_1, _base_inner_loop);
-}
-
-static void
-_base_cfg_remote_update(CFGRemoteUpdate *pUpdate)
-{
-	BASETRACE("%s (%d)%s : (%d)%s ttl:%d",
-		pUpdate->put_flag==dave_true?"PUT":"DELETE",
-		dave_strlen(pUpdate->cfg_name), pUpdate->cfg_name,
-		dave_strlen(pUpdate->cfg_value), pUpdate->cfg_value,
-		pUpdate->ttl);
 }
 
 static void
@@ -199,9 +181,6 @@ _base_thread_main(MSGBODY *msg)
 			break;
 		case MSGID_RPC_DEBUG_RSP:
 				_base_thread_rpc_debug_rsp(msg->msg_src, (RPCDebugRsp *)(msg->msg_body));
-			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				_base_cfg_remote_update((CFGRemoteUpdate *)(msg->msg_body));
 			break;
 		default:
 			break;

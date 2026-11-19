@@ -145,7 +145,7 @@ _thread_reset_all(void)
 		thread_queue_booting(_thread[thread_index].seq_queue, THREAD_SEQ_QUEUE_NUM);
 		thread_queue_booting(_thread[thread_index].pre_queue, THREAD_PRE_QUEUE_NUM);
 
-		t_lock_reset(&(_thread[thread_index].sync.sync_pv));
+		thread_booting_sync(&(_thread[thread_index].sync));
 
 		_thread_reset(&_thread[thread_index]);
 	}
@@ -238,13 +238,14 @@ _thread_get_name_(ThreadId thread_id, s8 *fun, ub line)
 	thread_id = thread_get_local(thread_sync_thread_id(thread_id));
 	if(thread_id == INVALID_THREAD_ID)
 	{
+		THREADLOG("%s:%d has invalid thread_id", fun, line);
 		return can_not_find;
 	}
 
 	thread_index = thread_id;
 	if(thread_index >= THREAD_MAX)
 	{
-		THREADDEBUG("thread_id:%d", thread_id);
+		THREADLOG("%s:%d has invalid thread_index:%d", fun, line, thread_index);
 		return can_not_find;
 	}
 
@@ -1617,6 +1618,19 @@ base_thread_get_id(const s8 *name, s8 *fun, ub line)
 }
 
 ThreadId
+base_thread_fast_get_id(const s8 *name, s8 *fun, ub line)
+{
+	ThreadStruct *pThread = __thread_map_name__((s8 *)name, fun, line);
+
+	if(pThread != NULL)
+	{
+		return thread_get_local(pThread->thread_id);
+	}
+
+	return INVALID_THREAD_ID;
+}
+
+ThreadId
 base_thread_gid_to_id(const s8 *gid, const s8 *thread_name, s8 *fun, ub line)
 {
 	return thread_gid_table_inq((s8 *)gid, (s8 *)thread_name);	
@@ -1640,7 +1654,10 @@ base_thread_get_name(ThreadId thread_id, s8 *fun, ub line)
 	s8 *name = "NULL";
 
 	if(thread_id == INVALID_THREAD_ID)
+	{
+		THREADDEBUG("%s:%d has invalid thread_id", fun, line);
 		return name;
+	}
 
 	if(_system_schedule_counter < SYSTEM_READY_COUNTER)
 	{
@@ -1694,7 +1711,13 @@ base_thread_get_self(s8 *fun, ub line)
 	}
 	else
 	{
+		THREADLOG("%s:%d system not startup!", fun, line);
 		self = INVALID_THREAD_ID;
+	}
+
+	if(self == INVALID_THREAD_ID)
+	{
+		THREADDEBUG("%s:%d has invalid thread_id is_main:%d", fun, line, thread_thread_is_main());
 	}
 
 	return thread_get_local(self);

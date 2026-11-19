@@ -22,8 +22,9 @@ from jmpy.log import logger
 def get_package_dir(*args, **kwargs):
     return ""
 
-
+#
 # 重写get_package_dir， 否者生成的so文件路径有问题
+#
 build_py.get_package_dir = get_package_dir
 
 
@@ -168,7 +169,7 @@ def rename_excrypted_file(output_file_path):
     files = walk_file(output_file_path)
     for file in files:
         if file.endswith(".pyd") or file.endswith(".so"):
-            new_filename = re.sub("(.*)\..*\.(.*)", r"\1.\2", file)
+            new_filename = re.sub(r"(.*)\..*\.(.*)", r"\1.\2", file)
             os.rename(file, new_filename)
 
 

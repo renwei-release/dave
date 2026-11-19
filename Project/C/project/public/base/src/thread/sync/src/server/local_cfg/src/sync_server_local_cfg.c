@@ -11,8 +11,6 @@
 #include "dave_3rdparty.h"
 #include "dave_tools.h"
 #include "dave_verno.h"
-#include "sync_server_remote_cfg.h"
-#include "remote_etcd_cfg.h"
 #include "sync_server_app_tx.h"
 #include "sync_log.h"
 

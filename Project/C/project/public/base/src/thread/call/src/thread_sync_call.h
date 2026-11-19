@@ -19,6 +19,9 @@ void thread_sync_call_check(void);
 
 void * thread_sync_call_step_1_pre(ThreadStruct *pSrcThread, ThreadId *sync_src_id, ThreadStruct *pDstThread, ub wait_msg, u8 *wait_body, ub wait_len);
 
+void thread_sync_call_step_1_clean(void *param);
+
+/* Non-coroutine waits use a monotonic deadline set during preparation. */
 void * thread_sync_call_step_2_wait(ThreadStruct *pSrcThread, ThreadStruct *pDstThread, void *param);
 
 dave_bool thread_sync_call_step_3_catch(ThreadStruct *pDstThread, ThreadId dst_id, ThreadId wait_thread, ub wait_msg, void *catch_body, ub catch_len);

@@ -14,11 +14,12 @@ publicloaderror=true
 
 if [ -f public-load.sh ]; then
    if [ -f ./deploy/${PROJECT}/Dockerfile ]; then
-      ./public-load.sh $PROJECT ${IMAGE} ${TAG}
+      ./public-load.sh $PROJECT ${IMAGE} ${TAG} || exit $?
       publicloaderror=false
    fi
 fi
 
 if [ $publicloaderror = true ]; then
    echo ${PROJECT} "No public-load.sh or Dockerfile file found"
+   exit 1
 fi

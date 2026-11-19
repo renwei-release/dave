@@ -26,8 +26,14 @@
 
 static const char dll_file_table[][64] = {
 	{"/usr/lib64/libmysqlclient.so"},
+	{"/usr/lib/x86_64-linux-gnu/libmariadbclient.so"},
 	{"/usr/lib64/mysql/libmysqlclient.so"},
+	{"/usr/lib/x86_64-linux-gnu/libmysqlclient.so.21"},
 	{"/usr/lib/x86_64-linux-gnu/libmysqlclient.so"},
+	{"/usr/lib/x86_64-linux-gnu/libmariadb.so.3"},
+	{"/usr/lib/aarch64-linux-gnu/libmysqlclient.so.21"},
+	{"/usr/lib/aarch64-linux-gnu/libmysqlclient.so"},
+	{"/usr/lib/aarch64-linux-gnu/libmariadb.so.3"},
 	{""}
 };
 

@@ -29,8 +29,8 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), BDATA)), 1)
 LIB += -L../../../../ThirdParty/build/Aliyun/setup/log/lib -llog_c_sdk_static
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), IO)), 1)
-LIB += -L../../../../ThirdParty/build/libwebsockets/setup/lib -lwebsockets
+ifeq ($(words $(findstring $(NAME_PRODUCT), STORE)), 1)
+LIB += -L../../../../ThirdParty/build/libpq/setup/lib -lpq -lpgcommon -lpgport
 endif
 
 LIB += -Wl,-Bdynamic
@@ -41,9 +41,6 @@ endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), AIX)), 1)
 LIB += -L/dave/tools/tensorflow/lib -ltensorflow_cc -ltensorflow_framework
 endif
-ifeq ($(words $(findstring $(NAME_PRODUCT), SYNC)), 1)
-LIB += -L/dave/tools/etcd-cpp-apiv3/lib64 -letcd-cpp-api -lcpprest
-endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), DBA)), 1)
 LIB += -L/dave/tools/mongodb-c/lib64 -lmongoc-1.0 -lbson-1.0
 endif
@@ -52,6 +49,9 @@ LIB += -L/user/lib64 -laprutil-1 -lapr-1 -lcurl
 endif
 ifeq ($(words $(findstring $(NAME_PRODUCT), IO)), 1)
 LIB += -lcurl -lssl -lcrypto
+endif
+ifeq ($(words $(findstring $(NAME_PRODUCT), STORE)), 1)
+#LIB += -L/dave/tools/oracle/lib -Wl,-rpath-link,/dave/tools/oracle/lib -l:libclntsh.so.23.1
 endif
 
 LIB += -lpthread -lrt -ldl -lm -lgomp -lstdc++ -lutil -lgcov

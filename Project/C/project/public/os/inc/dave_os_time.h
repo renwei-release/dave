@@ -18,8 +18,11 @@ ub dave_os_time_s(void);
 
 void dave_os_utc_date(DateStruct *date);
 
+// Uses monotonic periodic deadlines; restarting from the callback is rejected.
 dave_bool dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms);
 
+// Interrupts the wait and joins any in-flight callback. From the callback itself,
+// only requests stop; a later external stop/start joins the finished thread.
 void dave_os_stop_hardware_timer(void);
 
 RetCode dave_os_set_time(u16 year, u8 month, u8 day, u8 hour, u8 minute, u8 second, s8 zone);

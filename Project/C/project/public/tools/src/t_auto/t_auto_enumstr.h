@@ -19,7 +19,6 @@
 #include "dave_error_code.h"
 #include "dave_mcard.h"
 #include "nlp_param.h"
-#include "bbs_param.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
@@ -42,7 +41,6 @@ s8 *t_auto_BDataLogLevel_str(BDataLogLevel enum_value);
 s8 *t_auto_BaseMsgType_str(BaseMsgType enum_value);
 s8 *t_auto_CVSearchOpt_str(CVSearchOpt enum_value);
 s8 *t_auto_ChainType_str(ChainType enum_value);
-s8 *t_auto_CommentAttributes_str(CommentAttributes enum_value);
 s8 *t_auto_CountryCode_str(CountryCode enum_value);
 s8 *t_auto_CurrencyType_str(CurrencyType enum_value);
 s8 *t_auto_DaveDataType_str(DaveDataType enum_value);

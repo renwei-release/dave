@@ -36,12 +36,7 @@ def gid_id(gid, thread_name):
 
 
 def thread_self():
-    __func__, __LINE__ = t_sys_myline(2)
-
-    self_id = davelib.base_thread_get_self(c_char_p(__func__), c_int(__LINE__))
-
-    davelib.base_thread_get_name.restype = c_char_p
-    return str(davelib.base_thread_get_name(c_longlong(self_id), c_char_p(__func__), c_int(__LINE__)), encoding = "utf-8")
+    return dave_PROJECT()
 
 
 def thread_msg(class_struct):
@@ -189,6 +184,9 @@ def sync_msg(dst, req_id, pReq, rsp_id, rsp_class):
 
 def gid_sync(gid, dst, req_id, pReq, rsp_id, rsp_class):
     dst = gid_id(gid, dst)
+    if dst == -1:
+        return None
+
     return sync_msg(dst, req_id, pReq, rsp_id, rsp_class)
 
 
@@ -202,6 +200,11 @@ def broadcast_msg(thread_name, msg_id, class_instance):
 
 
 def inner_loop(fun, param, msg_id=MSGID_INNER_LOOP):
+    if param is not None and not isinstance(param, dict):
+        __func__, __LINE__ = t_sys_myline(2)
+        DAVEABNORMAL(f"inner_loop param must be None or dict, got {type(param).__name__} caller:{__func__}:{__LINE__}")
+        return
+
     dave_system_function_table_add(msg_id, fun)
 
     if isinstance(param, dict) == True:

@@ -35,6 +35,7 @@ typedef struct {
 } StoreMysql;
 
 static ub _mysql_number = 0;
+static ub _mysql_boot_times = 0;
 static StoreMysql *_pMysql;
 
 static void
@@ -106,6 +107,16 @@ _store_mysql_booting(void)
 	cfg_get_str(CFG_MYSQL_PWD, pwd, sizeof(pwd), "123456");
 	cfg_get_str(CFG_MYSQL_DBNAME, db, sizeof(db), "mysql");
 
+	if((dave_strlen(address) == 0)
+		|| (port == 0)
+		|| (dave_strlen(user) == 0)
+		|| (dave_strlen(pwd) == 0)
+		|| (dave_strlen(db) == 0))
+	{
+		STLOG("invalid mysql config address:%s port:%d user:%s pwd:%s db:%s", address, port, user, pwd, db);
+		return dave_true;
+	}
+
 	STLOG("address:%s port:%d user:%s pwd:%s db:%s", address, port, user, pwd, db);
 
 	boot_number = 0;
@@ -136,7 +147,8 @@ _store_mysql_booting(void)
 static void
 _store_mysql_boot_timer_out(TIMERID timer_id, ub thread_index)
 {
-	if(_store_mysql_booting() == dave_true)
+	if((_store_mysql_booting() == dave_true)
+		|| (++ _mysql_boot_times > 3))
 	{
 		base_timer_die(timer_id);
 	}
@@ -146,6 +158,7 @@ static void
 _store_mysql_init(ub mysql_number)
 {
 	_mysql_number = mysql_number;
+	_mysql_boot_times = 0;
 
 	_pMysql = dave_ralloc(_mysql_number * sizeof(StoreMysql));
 }
@@ -189,9 +202,9 @@ _store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *s
 		ret = dave_mysql_query(pMysql->mysql_client, sql_ptr);
 		if(ret.ret == RetCode_connect_error)
 		{
-			STLOG("safe_counter:%d disconnect address:%s port:%d user:%s pwd:%s db:%s",
+			STLOG("safe_counter:%d disconnect address:%s port:%d user:%s db:%s",
 				safe_counter,
-				pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
+				pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_db);
 
 			dave_mysql_free_ret(ret);
 		
@@ -201,9 +214,9 @@ _store_mysql_sql(MBUF **data, s8 *msg_ptr, ub msg_len, StoreMysql *pMysql, s8 *s
 
 			if(pMysql->mysql_client != NULL)
 			{
-				STLOG("safe_counter:%d connect to address:%s port:%d user:%s pwd:%s db:%s",
+				STLOG("safe_counter:%d connect to address:%s port:%d user:%s db:%s",
 					safe_counter,
-					pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_pwd, pMysql->mysql_db);
+					pMysql->mysql_address, pMysql->mysql_port, pMysql->mysql_user, pMysql->mysql_db);
 			}
 
 			continue;		

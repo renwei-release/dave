@@ -5,6 +5,7 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+import time
 
 
 class t_print_progress_bar():
@@ -16,8 +17,11 @@ class t_print_progress_bar():
         self.self_percentage = 10000
         self.self_total_process = total_process
         self.self_current_process = 0
+        self.start_time = time.time()
+        output_message = f'[{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}]'
         if message is not None:
-            print(message)
+            output_message += f' {message}'
+        print(output_message)
 
     def show(self):
         self.self_current_process += 1
@@ -25,14 +29,14 @@ class t_print_progress_bar():
             percentage = 100
         else:
             percentage = int((int(self.self_current_process) * 100) / int(self.self_total_process))
-        if self.self_percentage != percentage:
+        if percentage > 100:
+            print(f'({time.time() - self.start_time:.2f}s) {self.self_current_process} bar overflow!')
+        elif self.self_percentage != percentage:
             self.self_percentage = percentage
             for step in range(0, percentage + 1):
                 print('\r[%3d%%] %s' % (step, '>' * step), flush=True, end='')
         if percentage == 100:
-            print(f'')
-        if percentage > 100:
-            print(f'{self.self_current_process} bar overflow!')
+            print(f'({time.time() - self.start_time:.2f}s)')
 
 
 def t_print_class_member(class_struct):

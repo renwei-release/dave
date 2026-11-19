@@ -13,7 +13,7 @@ else
    HOMEPATH=$1
 fi
 IMAGE="io_docker_image"
-TAG="1.24.0"
+TAG="latest"
 EXTEND=""
 
 cd ../../

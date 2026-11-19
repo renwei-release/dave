@@ -95,33 +95,18 @@ def cfg_get_bool(key, default_value=False):
         return False
 
 
+def cfg_set_bool(key, value):
+    if value == True:
+        value_string = "true"
+    else:
+        value_string = "false"
+    cfg_set(key, value_string)
+    return
+
+
 CFGREGFUNC=CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int)
 def cfg_reg(key, reg_fun):
     byte_key = bytes(key, encoding="utf8")
     davelib.dave_dll_cfg_reg.restype = c_int
     davelib.dave_dll_cfg_reg(c_char_p(byte_key), reg_fun)
-    return
-
-
-def rcfg_set(key, value, ttl=0):
-    key = bytes(key, encoding="utf8")
-    value = bytes(value, encoding="utf8")
-    davelib.dave_dll_cfg_remote_set(c_char_p(key), c_char_p(value), c_int(ttl))
-    return
-
-
-def rcfg_get(key, default_value=None):
-    key = bytes(key, encoding="utf8")
-    value = bytes(1024 * 10)
-    davelib.dave_dll_cfg_get.restype = c_int
-    ret = davelib.dave_dll_cfg_remote_get(c_char_p(key), c_char_p(value), c_int(len(value)))
-    if ret < 0:
-        return default_value
-    value = str(value, encoding="utf8").replace("\0", "")
-    return value
-
-
-def rcfg_del(key):
-    key = bytes(key, encoding="utf8")
-    davelib.dave_dll_cfg_remote_del(c_char_p(key))
     return

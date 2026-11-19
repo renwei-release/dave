@@ -111,41 +111,6 @@ type ApplicationIdle struct {
 	Ptr uint64
 }
 
-/* for BBSMSG_ADD_COMMENT_REQ message */
-type BBSMsgAddCommentReq struct {
-	Product_name [DAVE_NORMAL_NAME_LEN] byte
-	Post_id [DAVE_KEY_LEN_MAX] byte
-	Mcard MCard
-	Ptr uint64
-}
-
-/* for BBSMSG_ADD_COMMENT_RSP message */
-type BBSMsgAddCommentRsp struct {
-	Ret int64
-	Ptr uint64
-}
-
-/* for BBSMSG_INQ_COMMENT_REQ message */
-type BBSMsgInqCommentReq struct {
-	Product_name [DAVE_NORMAL_NAME_LEN] byte
-	Post_or_comment_id [DAVE_KEY_LEN_MAX] byte
-	Page_id uint64
-	Page_number uint64
-	Ptr uint64
-}
-
-/* for BBSMSG_INQ_COMMENT_RSP message */
-type BBSMsgInqCommentRsp struct {
-	Ret int64
-	Total_page_number uint64
-	Page_id uint64
-	Page_array_number uint64
-	Page_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
-	Reply_array_number uint64
-	Reply_array [DAVE_COMMENT_MCARD_ARRAY_MAX] MCard
-	Ptr uint64
-}
-
 /* for BDATA_LOG_REQ message */
 type BDataLogReq struct {
 	Level int64
@@ -167,22 +132,6 @@ type BDataLogReq struct {
 type BDataLogRsp struct {
 	Ret int64
 	Ptr uint64
-}
-
-/* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
-type CFGRemoteSyncUpdate struct {
-	Put_flag int8
-	Cfg_mbuf_name *MBUF
-	Cfg_mbuf_value *MBUF
-	Ttl int64
-}
-
-/* for MSGID_CFG_REMOTE_UPDATE message */
-type CFGRemoteUpdate struct {
-	Put_flag int8
-	Cfg_name [1024] byte
-	Cfg_value [262144] byte
-	Ttl int64
 }
 
 /* for MSGID_CFG_UPDATE message */
@@ -461,7 +410,7 @@ type DebugReq struct {
 
 /* for MSGID_DEBUG_RSP message */
 type DebugRsp struct {
-	Msg [1048576] byte
+	Msg [16777216] byte
 	Ptr uint64
 }
 
@@ -528,6 +477,16 @@ type FreeMessageArea4 struct {
 
 /* for FREE_MESSAGE_AREA_5 message */
 type FreeMessageArea5 struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
+	Ptr uint64
+}
+
+/* for GENERAL_LOOP_MSG message */
+type GeneralLoopMsg struct {
 	General_type [256] byte
 	General_data *MBUF
 	Send_req_us_time uint64
@@ -1080,6 +1039,16 @@ type SIPStopRsp struct {
 	Ptr uint64
 }
 
+/* for SQL_LOOP_MSG message */
+type SQLLoopMsg struct {
+	General_type [256] byte
+	General_data *MBUF
+	Send_req_us_time uint64
+	Recv_req_us_time uint64
+	Send_rsp_us_time uint64
+	Ptr uint64
+}
+
 /* for SOCKET_BIND_REQ message */
 type SocketBindReq struct {
 	Netinfo SocNetInfo
@@ -1185,6 +1154,34 @@ type StoreMysqlReq struct {
 
 /* for STORE_MYSQL_RSP message */
 type StoreMysqlRsp struct {
+	Ret int64
+	Msg [4096] byte
+	Data *MBUF
+	Ptr uint64
+}
+
+/* for STORE_ORACLE_REQ message */
+type StoreOracleReq struct {
+	Sql *MBUF
+	Ptr uint64
+}
+
+/* for STORE_ORACLE_RSP message */
+type StoreOracleRsp struct {
+	Ret int64
+	Msg [4096] byte
+	Data *MBUF
+	Ptr uint64
+}
+
+/* for STORE_PGSQL_REQ message */
+type StorePgsqlReq struct {
+	Sql *MBUF
+	Ptr uint64
+}
+
+/* for STORE_PGSQL_RSP message */
+type StorePgsqlRsp struct {
 	Ret int64
 	Msg [4096] byte
 	Data *MBUF

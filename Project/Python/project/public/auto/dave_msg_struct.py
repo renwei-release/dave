@@ -129,45 +129,6 @@ class ApplicationIdle (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
-#* for BBSMSG_ADD_COMMENT_REQ message *#
-class BBSMsgAddCommentReq (Structure):
-	_fields_ = [
-		("product_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("post_id", c_char * DAVE_KEY_LEN_MAX),
-		("mcard", MCard),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_ADD_COMMENT_RSP message *#
-class BBSMsgAddCommentRsp (Structure):
-	_fields_ = [
-		("ret", c_longlong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_INQ_COMMENT_REQ message *#
-class BBSMsgInqCommentReq (Structure):
-	_fields_ = [
-		("product_name", c_char * DAVE_NORMAL_NAME_LEN),
-		("post_or_comment_id", c_char * DAVE_KEY_LEN_MAX),
-		("page_id", c_ulonglong),
-		("page_number", c_ulonglong),
-		("ptr", POINTER(c_char)),
-]
-
-#* for BBSMSG_INQ_COMMENT_RSP message *#
-class BBSMsgInqCommentRsp (Structure):
-	_fields_ = [
-		("ret", c_longlong),
-		("total_page_number", c_ulonglong),
-		("page_id", c_ulonglong),
-		("page_array_number", c_ulonglong),
-		("page_array", MCard * DAVE_COMMENT_MCARD_ARRAY_MAX),
-		("reply_array_number", c_ulonglong),
-		("reply_array", MCard * DAVE_COMMENT_MCARD_ARRAY_MAX),
-		("ptr", POINTER(c_char)),
-]
-
 #* for BDATA_LOG_REQ message *#
 class BDataLogReq (Structure):
 	_fields_ = [
@@ -191,24 +152,6 @@ class BDataLogRsp (Structure):
 	_fields_ = [
 		("ret", c_longlong),
 		("ptr", POINTER(c_char)),
-]
-
-#* for MSGID_CFG_REMOTE_SYNC_UPDATE message *#
-class CFGRemoteSyncUpdate (Structure):
-	_fields_ = [
-		("put_flag", c_char),
-		("cfg_mbuf_name", POINTER(MBUF)),
-		("cfg_mbuf_value", POINTER(MBUF)),
-		("ttl", c_longlong),
-]
-
-#* for MSGID_CFG_REMOTE_UPDATE message *#
-class CFGRemoteUpdate (Structure):
-	_fields_ = [
-		("put_flag", c_char),
-		("cfg_name", c_char * 1024),
-		("cfg_value", c_char * 262144),
-		("ttl", c_longlong),
 ]
 
 #* for MSGID_CFG_UPDATE message *#
@@ -521,7 +464,7 @@ class DebugReq (Structure):
 #* for MSGID_DEBUG_RSP message *#
 class DebugRsp (Structure):
 	_fields_ = [
-		("msg", c_char * 1048576),
+		("msg", c_char * 16777216),
 		("ptr", POINTER(c_char)),
 ]
 
@@ -595,6 +538,17 @@ class FreeMessageArea4 (Structure):
 
 #* for FREE_MESSAGE_AREA_5 message *#
 class FreeMessageArea5 (Structure):
+	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
+#* for GENERAL_LOOP_MSG message *#
+class GeneralLoopMsg (Structure):
 	_fields_ = [
 		("general_type", c_char * 256),
 		("general_data", POINTER(MBUF)),
@@ -1212,6 +1166,17 @@ class SIPStopRsp (Structure):
 		("ptr", POINTER(c_char)),
 ]
 
+#* for SQL_LOOP_MSG message *#
+class SQLLoopMsg (Structure):
+	_fields_ = [
+		("general_type", c_char * 256),
+		("general_data", POINTER(MBUF)),
+		("send_req_us_time", c_ulonglong),
+		("recv_req_us_time", c_ulonglong),
+		("send_rsp_us_time", c_ulonglong),
+		("ptr", POINTER(c_char)),
+]
+
 #* for SOCKET_BIND_REQ message *#
 class SocketBindReq (Structure):
 	_fields_ = [
@@ -1330,6 +1295,38 @@ class StoreMysqlReq (Structure):
 
 #* for STORE_MYSQL_RSP message *#
 class StoreMysqlRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("msg", c_char * 4096),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_ORACLE_REQ message *#
+class StoreOracleReq (Structure):
+	_fields_ = [
+		("sql", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_ORACLE_RSP message *#
+class StoreOracleRsp (Structure):
+	_fields_ = [
+		("ret", c_longlong),
+		("msg", c_char * 4096),
+		("data", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_PGSQL_REQ message *#
+class StorePgsqlReq (Structure):
+	_fields_ = [
+		("sql", POINTER(MBUF)),
+		("ptr", POINTER(c_char)),
+]
+
+#* for STORE_PGSQL_RSP message *#
+class StorePgsqlRsp (Structure):
 	_fields_ = [
 		("ret", c_longlong),
 		("msg", c_char * 4096),

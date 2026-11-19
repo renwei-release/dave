@@ -58,17 +58,6 @@ if [ ! -f ${THIRDPARTYDIR}/redis/setup/lib/libhiredis.a ]; then
    build
    cd ${homepath}
 fi
-if [ "$PRODUCT" == "sync" ]; then
-   ETCDFILE=/dave/tools/etcd-cpp-apiv3/lib64/libetcd-cpp-api.so
-   if [ ! -f ${ETCDFILE} ]; then
-      cd ${THIRDPARTYDIR}/etcd-cpp-apiv3
-      chmod a+x __build__
-      ./__build__
-      cd ${homepath}
-   fi
-   echo ${File} cp ${ETCDFILE} to ${DEPLOYDIR}
-   cp ${ETCDFILE} ${DEPLOYDIR}/sync/file_system/dave/tools/etcd-cpp-apiv3/lib64/
-fi
 if [ ! -f ${THIRDPARTYDIR}/protobuf/setup/lib/libprotobuf.a ]; then
    cd ${THIRDPARTYDIR}/protobuf
    build

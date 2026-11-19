@@ -27,5 +27,7 @@ def dave_timer_creat(name, alarm_second, timer_fun):
 
 
 def dave_timer_kill(name):
+    if isinstance(name, str):
+        name = name.encode("utf8")
     davelib.dave_dll_timer_kill(c_char_p(name))
     return

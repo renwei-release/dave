@@ -41,7 +41,7 @@ typedef struct {
 
 /* for MSGID_DEBUG_RSP message */
 typedef struct {
-	s8 msg[1048576];
+	s8 msg[16777216];
 	void *ptr;
 } DebugRsp;
 
@@ -245,28 +245,12 @@ typedef struct {
 	void *ptr;
 } RPCDebugRsp;
 
-/* for MSGID_CFG_REMOTE_UPDATE message */
-typedef struct {
-	dave_bool put_flag;
-	s8 cfg_name[1024];
-	s8 cfg_value[262144];
-	sb ttl;
-} CFGRemoteUpdate;
-
 /* for MSGID_DOS_FORWARD message */
 typedef struct {
 	MBUF *cmd;
 	MBUF *param;
 	void *ptr;
 } DosForward;
-
-/* for MSGID_CFG_REMOTE_SYNC_UPDATE message */
-typedef struct {
-	dave_bool put_flag;
-	MBUF *cfg_mbuf_name;
-	MBUF *cfg_mbuf_value;
-	sb ttl;
-} CFGRemoteSyncUpdate;
 
 /* for MSGID_QUEUE_UPLOAD_MESSAGE_REQ message */
 typedef struct {
@@ -455,6 +439,26 @@ typedef struct {
 	ub send_rsp_us_time;
 	void *ptr;
 } FreeMessageArea5;
+
+/* for GENERAL_LOOP_MSG message */
+typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
+	void *ptr;
+} GeneralLoopMsg;
+
+/* for SQL_LOOP_MSG message */
+typedef struct {
+	s8 general_type[256];
+	MBUF *general_data;
+	ub send_req_us_time;
+	ub recv_req_us_time;
+	ub send_rsp_us_time;
+	void *ptr;
+} SQLLoopMsg;
 
 #endif
 

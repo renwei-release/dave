@@ -15,9 +15,9 @@ RUNNINGFILE=dave-running.sh
 DOCKERFILE=./deploy/${PROJECT}/Dockerfile
 
 if [ "$TAG" == "" ]; then
-   exit_dave_image=`docker image ls | grep -w ${IMAGE}`
+   exit_dave_image=`docker image ls --format '{{.Repository}} {{.Tag}} {{.ID}}' | grep -w ${IMAGE}`
 else
-   exit_dave_image=`docker image ls | grep -w ${IMAGE} | grep ${TAG}`
+   exit_dave_image=`docker image ls --format '{{.Repository}} {{.Tag}} {{.ID}}' | grep -w ${IMAGE} | grep ${TAG}`
 fi
 
 if [ -f ${RUNNINGPATH}/${RUNNINGFILE} ]; then

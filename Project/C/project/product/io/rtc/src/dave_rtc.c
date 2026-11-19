@@ -23,8 +23,10 @@ _rtc_init(MSGBODY *pMsg)
 {
 	rtc_token_init();
 	rtc_socket_init();
+#ifdef WEBSOCKET_3RDPARTY
 	if(cfg_get_bool("IOWebScoketEnable", dave_true) == dave_true)
 		rtc_websocket_init();
+#endif
 }
 
 static void
@@ -55,7 +57,9 @@ _rtc_main(MSGBODY *pMsg)
 static void
 _rtc_exit(MSGBODY *pMsg)
 {
+#ifdef WEBSOCKET_3RDPARTY
 	rtc_websocket_exit();
+#endif
 	rtc_socket_exit();
 	rtc_token_exit();
 }

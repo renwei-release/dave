@@ -37,13 +37,93 @@
 #include "os_log.h"
 
 typedef struct {
-	volatile dave_bool start;
+	dave_bool start;
+	dave_bool thread_created;
 	pthread_t thread;
 	ub interval_ms;
+	pthread_mutex_t mutex;
+	pthread_cond_t condition;
 } HWTIMER;
 
-static HWTIMER _hw_timer;
+static HWTIMER _hw_timer = { .mutex = PTHREAD_MUTEX_INITIALIZER };
+// Serialize lifecycle operations without holding the worker's mutex during join.
+static pthread_mutex_t _timer_control_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_once_t _timer_condition_once = PTHREAD_ONCE_INIT;
+static int _timer_condition_error;
 static sync_notify_fun _linux_timer_notify = NULL;
+
+static void
+_timer_condition_init(void)
+{
+	pthread_condattr_t attr;
+	int rc = pthread_condattr_init(&attr);
+
+	if(rc == 0)
+	{
+		rc = pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+		if(rc == 0)
+			rc = pthread_cond_init(&_hw_timer.condition, &attr);
+		int destroy_rc = pthread_condattr_destroy(&attr);
+		if(destroy_rc != 0)
+			OSABNOR("timer condition attribute destroy failed:%d<%s>!", destroy_rc, strerror(destroy_rc));
+	}
+	_timer_condition_error = rc;
+}
+
+static dave_bool
+_timer_in_callback(dave_bool request_stop)
+{
+	dave_bool in_callback;
+
+	pthread_mutex_lock(&_hw_timer.mutex);
+	in_callback = (_hw_timer.thread_created == dave_true)
+		&& pthread_equal(pthread_self(), _hw_timer.thread);
+	if((in_callback == dave_true) && (request_stop == dave_true))
+	{
+		_hw_timer.start = dave_false;
+		_linux_timer_notify = NULL;
+	}
+	pthread_mutex_unlock(&_hw_timer.mutex);
+
+	return in_callback;
+}
+
+static dave_bool
+_timer_stop(void)
+{
+	int rc;
+	pthread_t thread;
+
+	pthread_mutex_lock(&_hw_timer.mutex);
+	_hw_timer.start = dave_false;
+	if(_hw_timer.thread_created == dave_false)
+	{
+		_linux_timer_notify = NULL;
+		pthread_mutex_unlock(&_hw_timer.mutex);
+		return dave_true;
+	}
+	thread = _hw_timer.thread;
+	rc = pthread_cond_signal(&_hw_timer.condition);
+	pthread_mutex_unlock(&_hw_timer.mutex);
+	if(rc != 0)
+	{
+		OSABNOR("timer condition signal failed:%d<%s>!", rc, strerror(rc));
+		return dave_false;
+	}
+
+	rc = pthread_join(thread, NULL);
+	if(rc != 0)
+	{
+		OSABNOR("timer thread join failed:%d<%s>!", rc, strerror(rc));
+		return dave_false;
+	}
+	pthread_mutex_lock(&_hw_timer.mutex);
+	_hw_timer.thread_created = dave_false;
+	_linux_timer_notify = NULL;
+	pthread_mutex_unlock(&_hw_timer.mutex);
+
+	return dave_true;
+}
 
 static inline void
 _timespec_add_ms(struct timespec *ts, ub ms)
@@ -60,29 +140,44 @@ _timespec_add_ms(struct timespec *ts, ub ms)
 static void *
 _timer_thread_fn(void *arg)
 {
+	struct timespec next;
+	int rc;
+
 	(void)arg;
 
-	if (_hw_timer.interval_ms == 0) {
-		_hw_timer.interval_ms = 1;
+	pthread_mutex_lock(&_hw_timer.mutex);
+	if(clock_gettime(CLOCK_MONOTONIC, &next) != 0)
+	{
+		OSABNOR("timer clock read failed:%d<%s>!", errno, strerror(errno));
+		_hw_timer.start = dave_false;
+		pthread_mutex_unlock(&_hw_timer.mutex);
+		return NULL;
 	}
-
-	struct timespec next;
-	clock_gettime(CLOCK_MONOTONIC, &next);
 	_timespec_add_ms(&next, _hw_timer.interval_ms);
 
-	while (_hw_timer.start == dave_true) {
-		int rc = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next, NULL);
-		if (rc == EINTR) {
+	while(_hw_timer.start == dave_true)
+	{
+		rc = pthread_cond_timedwait(&_hw_timer.condition, &_hw_timer.mutex, &next);
+		if(_hw_timer.start == dave_false)
+			break;
+		if(rc == 0)
 			continue;
+		if(rc != ETIMEDOUT)
+		{
+			OSABNOR("timer condition wait failed:%d<%s>!", rc, strerror(rc));
+			_hw_timer.start = dave_false;
+			break;
 		}
 
 		sync_notify_fun cb = _linux_timer_notify;
-		if (cb != NULL) {
+		pthread_mutex_unlock(&_hw_timer.mutex);
+		if(cb != NULL)
 			cb(0);
-		}
+		pthread_mutex_lock(&_hw_timer.mutex);
 
 		_timespec_add_ms(&next, _hw_timer.interval_ms);
 	}
+	pthread_mutex_unlock(&_hw_timer.mutex);
 
 	return NULL;
 }
@@ -181,42 +276,61 @@ dave_os_utc_date(DateStruct *date)
 dave_bool
 dave_os_start_hardware_timer(sync_notify_fun fun, ub alarm_ms)
 {
-	dave_os_stop_hardware_timer();
+	int rc;
 
+	if(_timer_in_callback(dave_false) == dave_true)
+	{
+		OSABNOR("can't restart hardware timer from its callback!");
+		return dave_false;
+	}
+	pthread_mutex_lock(&_timer_control_mutex);
+	if(_timer_stop() == dave_false)
+	{
+		pthread_mutex_unlock(&_timer_control_mutex);
+		return dave_false;
+	}
+
+	rc = pthread_once(&_timer_condition_once, _timer_condition_init);
+	if(rc == 0)
+		rc = _timer_condition_error;
+	if(rc != 0)
+	{
+		OSABNOR("timer condition init failed:%d<%s>!", rc, strerror(rc));
+		pthread_mutex_unlock(&_timer_control_mutex);
+		return dave_false;
+	}
+
+	pthread_mutex_lock(&_hw_timer.mutex);
 	_linux_timer_notify = fun;
-	_hw_timer.interval_ms = alarm_ms;
+	_hw_timer.interval_ms = (alarm_ms == 0) ? 1 : alarm_ms;
 	_hw_timer.start = dave_true;
-
-	pthread_attr_t attr;
-	if(pthread_attr_init(&attr) != 0)
+	rc = pthread_create(&_hw_timer.thread, NULL, _timer_thread_fn, NULL);
+	if(rc == 0)
+	{
+		_hw_timer.thread_created = dave_true;
+	}
+	else
 	{
 		_hw_timer.start = dave_false;
-		return dave_false;
-	}
-
-	int rc = pthread_create(&(_hw_timer.thread), &attr, _timer_thread_fn, NULL);
-	pthread_attr_destroy(&attr);
-	if(rc != 0) {
-		_hw_timer.start = dave_false;
+		_linux_timer_notify = NULL;
 		OSABNOR("timer thread create failed:%d<%s>!", rc, strerror(rc));
-		return dave_false;
 	}
+	pthread_mutex_unlock(&_hw_timer.mutex);
+	pthread_mutex_unlock(&_timer_control_mutex);
 
-	return dave_true;
+	return (rc == 0) ? dave_true : dave_false;
 }
 
 void
 dave_os_stop_hardware_timer(void)
 {
-	if(_hw_timer.start == dave_true)
-	{
-		_hw_timer.start = dave_false;
-		if (_hw_timer.thread != (pthread_t)0) {
-			pthread_join(_hw_timer.thread, NULL);
-			_hw_timer.thread = (pthread_t)0;
-		}
-	}
-	_linux_timer_notify = NULL;
+	// A callback can request stop, but another thread must reap it.
+	if(_timer_in_callback(dave_true) == dave_true)
+		return;
+
+	pthread_mutex_lock(&_timer_control_mutex);
+	_timer_stop();
+	pthread_mutex_unlock(&_timer_control_mutex);
 }
 
 RetCode

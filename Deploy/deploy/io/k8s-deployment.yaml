@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: io-renwei
+  labels:
+    app: io-renwei
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: io-renwei
+  template:
+    metadata:
+      labels:
+        app: io-renwei
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: io-renwei
+          image: io_docker_image:latest
+          imagePullPolicy: Never
+          stdin: true
+          tty: true
+          securityContext:
+            capabilities:
+              add:
+                - SYS_PTRACE
+          volumeMounts:
+            - name: io-config
+              mountPath: /dave/io/config
+      volumes:
+        - name: io-config
+          hostPath:
+            path: /dave/k8s/io/config
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: io-renwei
+spec:
+  clusterIP: None
+  selector:
+    app: io-renwei

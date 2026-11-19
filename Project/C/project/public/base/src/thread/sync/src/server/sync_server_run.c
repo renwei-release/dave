@@ -15,31 +15,9 @@
 #include "sync_param.h"
 #include "sync_server_data.h"
 #include "sync_server_msg_buffer.h"
-#include "sync_server_remote_cfg.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
-
-static void
-_sync_server_run_cfg_remote_update(SyncClient *pClient, CFGRemoteSyncUpdate *pUpdate)
-{
-	SYNCTRACE("%s %s ttl:%d",
-		pClient->globally_identifier,
-		ms8(pUpdate->cfg_mbuf_name),
-		pUpdate->ttl);
-
-	if(pUpdate->put_flag == dave_true)
-	{
-		sync_server_remote_cfg_set(pClient, pUpdate);
-	}
-	else
-	{
-		sync_server_remote_cfg_del(pClient, pUpdate);
-	}
-
-	dave_mfree(pUpdate->cfg_mbuf_name);
-	dave_mfree(pUpdate->cfg_mbuf_value);
-}
 
 static void
 _sync_server_run_client_busy(SyncClient *pClient, SystemBusy *pBusy)
@@ -89,9 +67,6 @@ _sync_server_run_internal(
 
 	switch(msg_id)
 	{
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				_sync_server_run_cfg_remote_update(pClient, (CFGRemoteSyncUpdate *)(msg_body));
-			break;
 		case MSGID_THREAD_BUSY:
 		case MSGID_THREAD_IDLE:
 			break;

@@ -79,6 +79,8 @@ _log_client_server_ip(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
 			ip[0] = 127; ip[1] = 0; ip[2] = 0; ip[3] = 1;
 		}
 
+		LOGLOG("invalid domain:%s reset to 127.0.0.1", domain);
+
 		dave_snprintf(domain, sizeof(domain), "%d.%d.%d.%d:%d", ip[0], ip[1], ip[2], ip[3], *port);
 		cfg_set(CFG_LOG_SERVER_DOMAIN, domain, dave_strlen(domain));
 	}

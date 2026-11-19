@@ -9,6 +9,10 @@
 PROJECT=${PWD##*/}
 CONTAINER=$1
 
+if [ "$CONTAINER" == "" ]; then
+   CONTAINER="ubuntu20"-${USER}
+fi
+
 ../ENV ${CONTAINER}
 
 if [ ! "$CONTAINER" == "" ]; then

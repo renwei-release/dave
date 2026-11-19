@@ -7,11 +7,7 @@
 # */
 
 PRODUCT=${PWD##*/}
-if [ "${USER}" == "root" ]; then
-   CONTAINER="ubuntu22"
-else
-   CONTAINER="ubuntu22"-${USER}
-fi
+CONTAINER="ubuntu22"-${USER}
 
 ../ENV ${CONTAINER}
 

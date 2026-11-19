@@ -102,42 +102,6 @@ _or_cfg_load_json_struct(void *pJson, dave_bool put_flag)
 	}
 }
 
-static s8 *
-_or_cfg_remote_config_name(s8 *cfg_name)
-{
-	s8 *dir_path = dave_strfindfrist(cfg_name, '/');
-
-	if(dave_memcmp(dir_path,
-		"sync/ORCHESTRATION",
-		dave_strlen("sync/ORCHESTRATION")) == dave_false)
-	{
-		return NULL;
-	}
-
-	return dave_strfindlast(cfg_name, '/');
-}
-
-static void
-_or_cfg_remote_update(MSGBODY *msg)
-{
-	CFGRemoteUpdate *pUpdate = (CFGRemoteUpdate *)(msg->msg_body);
-	s8 *remote_config_name;
-
-	remote_config_name = _or_cfg_remote_config_name(pUpdate->cfg_name);
-
-	if(remote_config_name != NULL)
-	{
-		void *pJson = dave_string_to_json(pUpdate->cfg_value, pUpdate->cfg_value);
-
-		if(pJson != NULL)
-		{
-			_or_cfg_load_json_struct(pJson, pUpdate->put_flag);
-
-			dave_json_free(pJson);
-		}
-	}
-}
-
 static void
 _or_cfg_local_update(void)
 {
@@ -159,13 +123,11 @@ orchestration_config_init(void)
 {
 	_or_kv = kv_malloc("orkv", 0, NULL);
 	_or_cfg_local_update();
-	reg_msg(MSGID_CFG_REMOTE_UPDATE, _or_cfg_remote_update);
 }
 
 void
 orchestration_config_exit(void)
 {
-	unreg_msg(MSGID_CFG_REMOTE_UPDATE);
 	if(_or_kv != NULL)
 	{
 		kv_free(_or_kv, _or_cfg_del);

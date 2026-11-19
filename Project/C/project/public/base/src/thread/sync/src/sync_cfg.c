@@ -15,9 +15,9 @@
 #include "sync_log.h"
 
 #define SYNC_SERVICE_PORT 6004
-#define SYNC_SERVER_DOMAIN "localhost:6004"
+#define SYNC_SERVER_DOMAIN "127.0.0.1:6004"
 
-static void
+static dave_bool
 _sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 {
 	s8 *ip_str = (s8 *)t_gp_localhost();
@@ -28,6 +28,35 @@ _sync_cfg_get_syncs_ip(u8 ip[DAVE_IP_V4_ADDR_LEN])
 		ip[1] = 0;
 		ip[2] = 0;
 		ip[3] = 1;
+	}
+
+	if((ip[0] == 127) && (ip[1] == 0) && (ip[2] == 0) && (ip[3] == 1))
+	{
+		s8 listening_ip_str[64];
+
+		if(dave_os_listening_on_the_port(listening_ip_str, 64, sync_cfg_get_syncs_port()) == dave_true)
+		{
+			if(strip(listening_ip_str, dave_strlen(listening_ip_str), ip, DAVE_IP_V4_ADDR_LEN) == DAVE_IP_V4_ADDR_LEN)
+			{
+				SYNCLOG("get sync server info:%d.%d.%d.%d:%d", ip[0], ip[1], ip[2], ip[3], sync_cfg_get_syncs_port());
+
+				return dave_true;
+			}
+		}
+	}
+
+	return dave_false;
+}
+
+static void
+_sync_cfg_auto_update_sync_server(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
+{
+	u8 sync_ip[DAVE_IP_V4_ADDR_LEN];
+
+	if(_sync_cfg_get_syncs_ip(sync_ip) == dave_true)
+	{
+		dave_memcpy(ip, sync_ip, DAVE_IP_V4_ADDR_LEN);
+		*port = sync_cfg_get_syncs_port();
 	}
 }
 
@@ -58,32 +87,6 @@ sync_cfg_external_incoming_sync_domain(s8 *sync_domain)
 	}
 }
 
-dave_bool
-sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
-{
-	s8 domain[1024];
-
-	if(cfg_get(CFG_SYNC_SERVER_DOMAIN, domain, sizeof(domain)) == dave_false)
-	{
-		_sync_cfg_get_syncs_ip(ip);
-		*port = _sync_cfg_get_syncs_port();
-
-		dave_snprintf(domain, sizeof(domain),
-			"%d.%d.%d.%d:%d",
-			ip[0], ip[1], ip[2], ip[3], *port);
-		cfg_set(CFG_SYNC_SERVER_DOMAIN, domain, dave_strlen(domain));
-	}
-	else
-	{
-		if(domainip(ip, port, domain) == dave_false)
-		{
-			domainip(ip, port, SYNC_SERVER_DOMAIN);
-		}
-	}
-
-	return dave_true;
-}
-
 u16
 sync_cfg_get_syncs_port(void)
 {
@@ -93,8 +96,10 @@ sync_cfg_get_syncs_port(void)
 	if(cfg_get(CFG_SYNC_SERVER_PORT, port_str, sizeof(port_str)) == dave_false)
 	{
 		port = _sync_cfg_get_syncs_port();
+#ifdef SYNC_STACK_SERVER
 		dave_snprintf(port_str, sizeof(port_str), "%d", port);
 		cfg_set(CFG_SYNC_SERVER_PORT, port_str, dave_strlen(port_str));
+#endif
 	}
 	else
 	{
@@ -107,6 +112,37 @@ sync_cfg_get_syncs_port(void)
 	}
 
 	return port;
+}
+
+dave_bool
+sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port)
+{
+	s8 domain[1024];
+
+	if(cfg_get(CFG_SYNC_SERVER_DOMAIN, domain, sizeof(domain)) == dave_false)
+	{
+		cfg_set(CFG_SYNC_SERVER_DOMAIN, SYNC_SERVER_DOMAIN, dave_strlen(SYNC_SERVER_DOMAIN));
+
+		_sync_cfg_auto_update_sync_server(ip, port);
+	}
+	else
+	{
+		if(domainip(ip, port, domain) == dave_false)
+		{
+			domainip(ip, port, SYNC_SERVER_DOMAIN);
+		}
+
+		if(((ip[0] == 127) && (ip[1] == 0) && (ip[2] == 0) && (ip[3] == 1)) && (*port != 0))
+		{
+			_sync_cfg_auto_update_sync_server(ip, port);
+		}
+		else
+		{
+			SYNCLOG("This domain:%s has been configured in a disabled mode; it will not automatically retrieve IP address information.", domain);
+		}
+	}
+
+	return dave_true;
 }
 
 dave_bool

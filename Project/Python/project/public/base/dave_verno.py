@@ -17,8 +17,8 @@ class define_VERSION:
     VERSION_PRODUCT=default_PRODUCT
     VERSION_MISC=("".join(("py"+platform.python_version()).replace('.', '-')))
     VERSION_MAIN="5"
-    VERSION_SUB="1"
-    VERSION_REV="6"
+    VERSION_SUB="2"
+    VERSION_REV="11"
     VERSION_DATE_TIME=time.strftime("%Y%m%d%H%M%S", time.localtime())
     VERSION_LEVEL="Alpha"
 
@@ -37,11 +37,29 @@ def _reset_product():
    return (v.VERSION_PRODUCT).encode("utf-8")
 
 
+def _dave_project() -> str:
+    raw = _reset_product()
+    if isinstance(raw, (bytes, bytearray)):
+        return raw.decode("utf-8", errors="ignore").strip().lower()
+    return str(raw).strip().lower()
+
+
+__project__ = _dave_project()
+__PROJECT__ = __project__.upper()
+
 # =====================================================================
 
 
 def dave_product():
    return _reset_product()
+
+
+def dave_project() -> str:
+   return __project__
+
+
+def dave_PROJECT() -> str:
+   return __PROJECT__
 
 
 def dave_verno():

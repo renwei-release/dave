@@ -113,6 +113,30 @@ _sync_client_run_thread_msg(
 	return ret;
 }
 
+static inline void
+_sync_client_load_balancing_priority(s8 *thread_name, ThreadId thread_id, SyncServer *pServer)
+{
+	LinkThread *pThread;
+
+	pThread = sync_client_thread_id_to_thread(thread_id);
+	if(pThread == NULL)
+	{
+		SYNCLOG("can't find the thread:%s link!", thread_name);
+		return;
+	}
+
+	/*
+	 * 如果服务有响应，
+	 * 有蛮大可能是服务已经处理完一个应用消息后的回复，
+	 * 不能100%确认，也有可能是服务主动发起的请求，
+	 * 这里默认是前者概率大，那么主动把下次负载均衡的服务设定为当前有回应的服务。
+	 * 为了达成更乱序的效果，这里不考虑赋值chose_server_index时的竞争。
+	 *
+	 */
+	pThread->chose_server_index = pServer->server_index;
+}
+
+
 static inline dave_bool
 _sync_client_run_thread(
 	SyncServer *pServer,
@@ -130,6 +154,8 @@ _sync_client_run_thread(
 
 	src_thread = thread_id(src);
 	dst_thread = thread_id(dst);
+
+	_sync_client_load_balancing_priority(src, src_thread, pServer);
 
 	/*
 	 * 如果影子索引没准备好，
@@ -212,65 +238,6 @@ _sync_client_run_cfg_update(CFGUpdate *pUpdate)
 }
 
 static void
-_sync_client_run_cfg_remote_update(CFGRemoteSyncUpdate *pUpdate)
-{
-	dave_bool broadcast_flag = dave_false;
-	ub cfg_len = 1024 * 1024;
-	s8 *cfg_value = dave_malloc(cfg_len);
-
-	SYNCTRACE("put_flag:%d %s : %s",
-		pUpdate->put_flag,
-		ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
-
-	if(pUpdate->put_flag == dave_true)
-	{
-		if(base_remote_cfg_internal_inq(ms8(pUpdate->cfg_mbuf_name), cfg_value, cfg_len) < 0)
-		{
-			broadcast_flag = base_cfg_remote_internal_add(ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
-		}
-		else
-		{
-			if(dave_strcmp(cfg_value, ms8(pUpdate->cfg_mbuf_value)) == dave_false)
-			{
-				broadcast_flag = base_cfg_remote_internal_add(ms8(pUpdate->cfg_mbuf_name), ms8(pUpdate->cfg_mbuf_value));
-			}
-		}
-	}
-	else
-	{
-		broadcast_flag = base_cfg_remote_internal_del(ms8(pUpdate->cfg_mbuf_name));
-	}
-
-	if(broadcast_flag == dave_true)
-	{
-		CFGRemoteUpdate *boradcast_update = thread_reset_msg(boradcast_update);
-
-		boradcast_update->put_flag = pUpdate->put_flag;
-		if(mlen(pUpdate->cfg_mbuf_name) >= sizeof(boradcast_update->cfg_name))
-		{
-			SYNCABNOR("too longer name:%d/%d", mlen(pUpdate->cfg_mbuf_name), sizeof(boradcast_update->cfg_name));
-		}
-		dave_strcpy(boradcast_update->cfg_name, ms8(pUpdate->cfg_mbuf_name), sizeof(boradcast_update->cfg_name));
-		if(mlen(pUpdate->cfg_mbuf_value) >= sizeof(boradcast_update->cfg_value))
-		{
-			SYNCABNOR("too longer value:%d/%d", mlen(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
-		}
-		if(pUpdate->put_flag == dave_true)
-		{
-			dave_strcpy(boradcast_update->cfg_value, ms8(pUpdate->cfg_mbuf_value), sizeof(boradcast_update->cfg_value));
-		}
-		boradcast_update->ttl = pUpdate->ttl;
-
-		broadcast_local_no_me(MSGID_CFG_REMOTE_UPDATE, boradcast_update);
-	}
-
-	dave_free(cfg_value);
-
-	dave_mfree(pUpdate->cfg_mbuf_name);
-	dave_mfree(pUpdate->cfg_mbuf_value);
-}
-
-static void
 _sync_client_server_busy(SyncServer *pServer)
 {
 	if(pServer->server_app_busy == dave_false)
@@ -349,9 +316,6 @@ _sync_client_run_internal(
 			break;
 		case MSGID_CFG_UPDATE:
 				_sync_client_run_cfg_update((CFGUpdate *)(msg_body));
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				_sync_client_run_cfg_remote_update((CFGRemoteSyncUpdate *)(msg_body));
 			break;
 		default:
 				process_flag = dave_false;

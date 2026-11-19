@@ -13,8 +13,8 @@ DEPLOYPATH=../../../../../Deploy/deploy/${PRODUCT}
 
 cd ${DEPLOYPATH}
 
-docker attach ${CONTAINER}-${USER}
+PRODUCTNAME=${PRODUCT}-${USER}
 
 echo debug $PRODUCTNAME
-chmod a+x *.sh
+chmod +x *.sh
 ./debug.sh $PRODUCTNAME

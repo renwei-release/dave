@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-renwei
+  labels:
+    app: store-renwei
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store-renwei
+  template:
+    metadata:
+      labels:
+        app: store-renwei
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: store-renwei
+          image: store_docker_image:latest
+          imagePullPolicy: Never
+          stdin: true
+          tty: true
+          securityContext:
+            capabilities:
+              add:
+                - SYS_PTRACE
+          volumeMounts:
+            - name: store-data
+              mountPath: /dave/store
+            - name: store-config
+              mountPath: /dave/store/config
+      volumes:
+        - name: store-data
+          hostPath:
+            path: /dave/store
+            type: DirectoryOrCreate
+        - name: store-config
+          hostPath:
+            path: /dave/k8s/store/config
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-renwei
+spec:
+  clusterIP: None
+  selector:
+    app: store-renwei

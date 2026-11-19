@@ -16,7 +16,8 @@
 #include "http_tools.h"
 #include "http_log.h"
 
-static ub _distributor_port_list[] = { 443, 80, 0 };
+#define DISTRIBUTOR_CFG_PORT_INDEX 2
+static ub _distributor_port_list[] = { 443, 80, 0, 0, 0, 0 };
 
 #define DISTRIBUTOR_THREAD_MAX 8
 #define DISTRIBUTOR_ROOT_PATH "/"
@@ -107,7 +108,7 @@ _distributor_http_listen_req(ub port)
 
 	pReq->listen_port = port;
 	pReq->rule = LocationMatch_CaseRegular;
-	if(port == 80)
+	if((port == 80) || (port > 10000))
 		pReq->type = ListenHttp;
 	else
 		pReq->type = ListenHttps;
@@ -269,7 +270,7 @@ _distributor_recv_req(MSGBODY *msg)
 	pInfo = _distributor_recv_info(msg);
 	if(pInfo != NULL)
 	{
-		name_qmsg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
+		name_msg(pInfo->thread_name, HTTPMSG_RECV_REQ, pReq);
 
 		t_lock_spin(&(pInfo->pv));
 		pInfo->receive_counter ++;
@@ -382,6 +383,19 @@ _distributor_listen_path_time(ThreadId src, HTTPListenAutoCloseReq *pReq)
 }
 
 static void
+_distributor_load_cfg_port(void)
+{
+	ub distributor_port = cfg_get_ub("DistributorPort", 0);
+
+	_distributor_port_list[DISTRIBUTOR_CFG_PORT_INDEX] = distributor_port;
+
+	if(distributor_port != 0)
+	{
+		HTTPLOG("load distributor cfg port:%d", distributor_port);
+	}
+}
+
+static void
 _distributor_init(MSGBODY *msg)
 {
 	ub list_index;
@@ -390,11 +404,13 @@ _distributor_init(MSGBODY *msg)
 
 	_http_thread = thread_id(HTTP_THREAD_NAME);
 
+	_distributor_load_cfg_port();
+
 	for(list_index=0; list_index<1024; list_index++)
 	{
 		if(_distributor_port_list[list_index] == 0)
 			break;
-	
+
 		_distributor_http_listen_req(_distributor_port_list[list_index]);
 	}
 }

@@ -20,9 +20,11 @@ void socket_snd_list_clean(SocketCore *pCore);
 
 dave_bool socket_snd_list_catch_snd_token(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *data, SOCKETINFO snd_flag);
 
-void socket_snd_list_release_snd_token(SocketCore *pCore);
+dave_bool socket_snd_list_release_snd_token(SocketCore *pCore, dave_bool wait_write);
 
 SokcetSndList * socket_snd_list_catch_data(SocketCore *pCore);
+
+void socket_snd_list_return_data(SocketCore *pCore, SokcetSndList *pSndData);
 
 void socket_snd_list_release_data(SokcetSndList *pSndData);
 

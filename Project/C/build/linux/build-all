@@ -4,6 +4,7 @@ homepath=$(cd `dirname $0`; pwd)
 
 LEVEL=$1
 OUTPUTFILE=${homepath}/build-all-`date +%Y-%m-%d-%H-%M-%S`.txt
+BUILD_FAIL_COUNT=0
 
 build()
 {
@@ -12,7 +13,29 @@ build()
 
    for project_name in $(ls ./)
       do
-         [ -d $project_name ] && last_project=$project_name && echo -e "   -> \033[35m$project_name\033[0m" && cd $project_name && chmod a+x clean && ./clean > /dev/null && chmod +x build && ./build $LEVEL >> ${OUTPUTFILE} && cd ../
+         if [ -d "$project_name" ]; then
+            last_project=$project_name
+            echo -e "   -> \033[35m$project_name\033[0m"
+
+            cd "$project_name" || {
+               BUILD_FAIL_COUNT=$((BUILD_FAIL_COUNT + 1))
+               echo "[strict] build command failed: ${project_name}, exit code=98 (cd failed)" >> "${OUTPUTFILE}"
+               continue
+            }
+
+            chmod a+x clean
+            ./clean > /dev/null
+            chmod +x build
+
+            ./build "$LEVEL" >> "${OUTPUTFILE}" 2>&1
+            BUILD_RC=$?
+            if [ "$BUILD_RC" -ne 0 ]; then
+               BUILD_FAIL_COUNT=$((BUILD_FAIL_COUNT + 1))
+               echo "[strict] build command failed: ${project_name}, exit code=${BUILD_RC}" >> "${OUTPUTFILE}"
+            fi
+
+            cd ../ || exit 1
+         fi
       done
    if [ -d $last_project ]; then
       cd $last_project && chmod +x clean && ./clean > /dev/null && cd ../
@@ -40,11 +63,35 @@ if [ "$LEVEL" == "all" ]; then
    build
 fi
 
-if [[ `grep -c "warning:" $OUTPUTFILE` -ne '0' ]] || [[ `grep -c "error:" $OUTPUTFILE` -ne '0' ]];then
-   echo -e `grep "warning:" $OUTPUTFILE`
-   echo -e `grep "error:" $OUTPUTFILE`
+WARN_PATTERN='warning:'
+ERROR_PATTERN='fatal error:|error:|undefined reference|ld: error|collect2: error|make: \*\*\*|ninja: build stopped|segmentation fault|traceback|exception|(^|[^a-zA-Z])failed([^a-zA-Z]|$)|FAILED'
+
+WARN_COUNT=$(grep -Eic "$WARN_PATTERN" "$OUTPUTFILE")
+ERROR_COUNT=$(grep -Eic "$ERROR_PATTERN" "$OUTPUTFILE")
+FINAL_RC=0
+
+if [[ "$WARN_COUNT" -ne 0 ]] || [[ "$ERROR_COUNT" -ne 0 ]] || [[ "$BUILD_FAIL_COUNT" -ne 0 ]]; then
+   if [[ "$WARN_COUNT" -ne 0 ]]; then
+      echo -e "\033[33mfound warnings:\033[0m"
+      grep -Ein "$WARN_PATTERN" "$OUTPUTFILE"
+   fi
+
+   if [[ "$ERROR_COUNT" -ne 0 ]]; then
+      echo -e "\033[31mfound errors:\033[0m"
+      grep -Ein "$ERROR_PATTERN" "$OUTPUTFILE"
+      FINAL_RC=1
+   fi
+
+   if [[ "$BUILD_FAIL_COUNT" -ne 0 ]]; then
+      echo -e "\033[31mstrict check failed: ${BUILD_FAIL_COUNT} project build(s) returned non-zero exit code.\033[0m"
+      grep -Ein '^\[strict\] build command failed:' "$OUTPUTFILE"
+      FINAL_RC=1
+   fi
+
    echo -e "\033[31mfound some problems!\033[0m"
    echo -e "For details, please check:${OUTPUTFILE}"
 else
    rm -rf $OUTPUTFILE
 fi
+
+exit $FINAL_RC

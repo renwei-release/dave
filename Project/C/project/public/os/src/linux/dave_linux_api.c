@@ -77,6 +77,10 @@ void
 dave_os_restart(s8 *reason)
 {
 	OSLOG("%s", reason);
+
+	dave_os_sleep(2000);
+	
+	exit(0);
 }
 
 void

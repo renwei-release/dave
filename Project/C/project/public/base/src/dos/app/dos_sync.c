@@ -51,7 +51,6 @@ _dos_sync_info_req(s8 *cmd_ptr, ub cmd_len)
 	return RetCode_OK;
 }
 
-
 // =====================================================================
 
 void

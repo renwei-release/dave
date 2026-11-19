@@ -197,22 +197,19 @@ ramkv_local_multimap_inq(KV *pKV, sb index, u8 *key_ptr, ub key_len, void *value
 {
 	sb inq_value_len = -1;
 
-	SAFECODEv2R(pKV->ramkv_pv, {
-
-		if((index < 0) && (key_ptr != NULL) && (key_len > 0))
-		{
+	if((index < 0) && (key_ptr != NULL) && (key_len > 0))
+	{
+		SAFECODEv2R(pKV->ramkv_pv, {
 			inq_value_len = _ramkv_local_multimap_inq(pKV->local.pMultiMap, key_ptr, key_len, value_ptr, value_len);
-		}
-		else if(index >= 0)
-		{
-			inq_value_len = ramkv_local_listmap_inq(pKV->local.pMultiMap, index, value_ptr, value_len);
-		}
-		else if(key_ptr == NULL)
-		{
-			inq_value_len = ramkv_local_listmap_inq(pKV->local.pMultiMap, 0, value_ptr, value_len);
-		}
-
-	} );
+		} );
+	}
+	else if((index >= 0) || (key_ptr == NULL))
+	{
+		SAFECODEv2W(pKV->ramkv_pv, {
+			inq_value_len = ramkv_local_listmap_inq(pKV->local.pMultiMap,
+				(index >= 0) ? index : 0, value_ptr, value_len);
+		} );
+	}
 
 	KVDEBUG("key:%s value_ptr:%lx value_len:%d", key_ptr, *((ub *)value_ptr), inq_value_len);
 

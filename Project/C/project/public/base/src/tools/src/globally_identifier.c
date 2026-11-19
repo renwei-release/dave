@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Renwei
+ * Copyright (c) 2026 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -14,6 +14,7 @@
 #include "base_lock.h"
 
 #define GLOBALLY_IDENTIFIER_CFG_NAME (s8 *)"GLOBALLYIDENTIFIER"
+#define GLOBALLY_IDENTIFIER_NOT_SAVE_FLAG (s8 *)"NULL"
 
 static s8 __globally_identifier__[DAVE_GLOBALLY_IDENTIFIER_LEN] = { '\0', '\0'};
 
@@ -44,6 +45,28 @@ _globally_identifier_check(s8 *globally_identifier_ptr, ub globally_identifier_l
 	}
 
 	return dave_true;
+}
+
+static dave_bool
+_globally_identifier_not_save_flag(s8 *globally_identifier_ptr, ub globally_identifier_len)
+{
+	dave_bool not_save;
+
+	/*
+	 * 有些场景下，不保存GID，
+	 * 每次都动态生成会比较好，
+	 * 比如在k8s部署时，POD共享一个config文件夹时，配置GID为NULL可以防止GID冲突，
+	 * GID冲突会引发reset_globally_identifier操作。
+	 * 这里没有考虑必须要回到某个GID的带状态消息的处理。
+	 */
+	if(dave_strlen(globally_identifier_ptr) != dave_strlen(GLOBALLY_IDENTIFIER_NOT_SAVE_FLAG))
+	{
+		return dave_false;
+	}
+
+	not_save = dave_strcmp(globally_identifier_ptr, GLOBALLY_IDENTIFIER_NOT_SAVE_FLAG);
+
+	return not_save;
 }
 
 static void
@@ -102,18 +125,33 @@ _globally_identifier_load(s8 *globally_identifier_ptr, ub globally_identifier_le
 	return _globally_identifier_check(globally_identifier_ptr, globally_identifier_len);
 }
 
+static void
+_reset_globally_identifier(dave_bool not_save)
+{
+	s8 *id_ptr = __globally_identifier__;
+	ub id_len = sizeof(__globally_identifier__);
+
+	_globally_identifier_build(id_ptr, id_len);
+
+	if(not_save == dave_false)
+	{
+		_globally_identifier_save(id_ptr, id_len);
+	}
+}
+
 static s8 *
 _globally_identifier(void)
 {
 	s8 *id_ptr = __globally_identifier__;
 	ub id_len = sizeof(__globally_identifier__);
+	dave_bool not_save;
 
 	base_lock();
 	if((_globally_identifier_load(id_ptr, id_len) == dave_false)
 		|| (_globally_identifier_check(id_ptr, id_len) == dave_false))
 	{
-		_globally_identifier_build(id_ptr, id_len);
-		_globally_identifier_save(id_ptr, id_len);
+		not_save = _globally_identifier_not_save_flag(id_ptr, id_len);
+		_reset_globally_identifier(not_save);
 	}
 	base_unlock();
 
@@ -129,6 +167,14 @@ globally_identifier(void)
 		return __globally_identifier__;
 	else
 		return _globally_identifier();
+}
+
+void
+reset_globally_identifier(void)
+{
+	_reset_globally_identifier(dave_false);
+
+	dave_os_restart("reset globally identifier");
 }
 
 #endif

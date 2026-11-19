@@ -1685,12 +1685,8 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'MSGID_RPC_DEBUG_REQ-36'"
 	elif enum_value == MSGID_RPC_DEBUG_RSP:
 		value_str = "'MSGID_RPC_DEBUG_RSP-37'"
-	elif enum_value == MSGID_CFG_REMOTE_UPDATE:
-		value_str = "'MSGID_CFG_REMOTE_UPDATE-38'"
 	elif enum_value == MSGID_DOS_FORWARD:
 		value_str = "'MSGID_DOS_FORWARD-39'"
-	elif enum_value == MSGID_CFG_REMOTE_SYNC_UPDATE:
-		value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'"
 	elif enum_value == MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
 		value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_REQ-41'"
 	elif enum_value == MSGID_QUEUE_UPLOAD_MESSAGE_RSP:
@@ -1735,6 +1731,10 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'FREE_MESSAGE_AREA_4-103'"
 	elif enum_value == FREE_MESSAGE_AREA_5:
 		value_str = "'FREE_MESSAGE_AREA_5-104'"
+	elif enum_value == GENERAL_LOOP_MSG:
+		value_str = "'GENERAL_LOOP_MSG-105'"
+	elif enum_value == SQL_LOOP_MSG:
+		value_str = "'SQL_LOOP_MSG-106'"
 	elif enum_value == SOCKET_BIND_REQ:
 		value_str = "'SOCKET_BIND_REQ-1000'"
 	elif enum_value == SOCKET_BIND_RSP:
@@ -1847,6 +1847,14 @@ def t_auto_RPCMSG_str(enum_value):
 		value_str = "'STORE_REDIS_REQ-3003'"
 	elif enum_value == STORE_REDIS_RSP:
 		value_str = "'STORE_REDIS_RSP-3004'"
+	elif enum_value == STORE_PGSQL_REQ:
+		value_str = "'STORE_PGSQL_REQ-3005'"
+	elif enum_value == STORE_PGSQL_RSP:
+		value_str = "'STORE_PGSQL_RSP-3006'"
+	elif enum_value == STORE_ORACLE_REQ:
+		value_str = "'STORE_ORACLE_REQ-3007'"
+	elif enum_value == STORE_ORACLE_RSP:
+		value_str = "'STORE_ORACLE_RSP-3008'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_REQ:
 		value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'"
 	elif enum_value == DBMSG_SYS_INQ_IMAGE_RSP:

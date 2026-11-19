@@ -35,7 +35,7 @@
 
 // #define ENABLE_PROTECTOR
 
-#define DLL_MAIN_THREAD_MAX_NUMBER 512
+#define DLL_MAIN_THREAD_MAX_NUMBER 2048
 #define CFG_COROUTINE_STACK_SIZE "CoroutineStackSize"
 
 typedef struct {

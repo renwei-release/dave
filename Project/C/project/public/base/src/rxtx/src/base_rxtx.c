@@ -44,6 +44,7 @@ _base_rxtx_reset(RXTX *pRxTx)
 	pRxTx->rx_buffer_ptr = NULL;
 	pRxTx->rx_buffer_len = 0;
 	pRxTx->rx_buffer_malloc_len = _rxtx_buffer_cfg_length;
+	pRxTx->rx_buffer_shrink_counter = 0;
 	pRxTx->receive_fun = NULL;
 	pRxTx->param = NULL;
 	pRxTx->owner_thread = INVALID_THREAD_ID;
@@ -325,12 +326,78 @@ _base_rxtx_build_head(u8 *head_data, u8 ver_type, ORDER_CODE order_id, ub data_l
 	return head_index;
 }
 
+static inline ub
+_base_rxtx_buffer_has_warring(RXTX *pRxTx, ub maybe_recv_len)
+{
+	ub required_space;
+	u8 *new_rx_buffer_ptr;
+	ub new_rx_buffer_malloc_len;
+	ub securely_received_buffer_len;
+
+	required_space = pRxTx->rx_buffer_len + maybe_recv_len;
+	new_rx_buffer_malloc_len = pRxTx->rx_buffer_malloc_len;
+
+	if((pRxTx->rx_buffer_malloc_len <= required_space)
+		|| ((pRxTx->rx_buffer_malloc_len - required_space) < RX_TX_BUF_WARRING))
+	{
+		RTDEBUG("socket:%d accept that the buffer(%d/%d/%d/%d/%d) is too small, now start to increase the buffer! thread:%s",
+			pRxTx->socket,
+			pRxTx->rx_buffer_malloc_len, pRxTx->rx_buffer_len, required_space,
+			RX_TX_BUF_WARRING, RX_TX_AUTOMATIC_EXPANSION,
+			thread_name(pRxTx->owner_thread));
+
+		new_rx_buffer_malloc_len += RX_TX_AUTOMATIC_EXPANSION;
+		pRxTx->rx_buffer_shrink_counter = 0;
+	}
+	else if((pRxTx->rx_buffer_malloc_len > RX_TX_BUF_MIN)
+		&& (required_space < (RX_TX_BUF_MIN - RX_TX_BUF_WARRING)))
+	{
+		if((++ pRxTx->rx_buffer_shrink_counter) >= RX_TX_BUF_SHRINK_COUNTER_MAX)
+		{
+			RTDEBUG("socket:%d shrink buffer:%d to %d thread:%s",
+				pRxTx->socket, pRxTx->rx_buffer_malloc_len, RX_TX_BUF_MIN,
+				thread_name(pRxTx->owner_thread));
+
+			new_rx_buffer_malloc_len = RX_TX_BUF_MIN;
+			pRxTx->rx_buffer_shrink_counter = 0;
+		}
+	}
+	else
+	{
+		pRxTx->rx_buffer_shrink_counter = 0;
+	}
+
+	if(new_rx_buffer_malloc_len != pRxTx->rx_buffer_malloc_len)
+	{
+		new_rx_buffer_ptr = dave_malloc(new_rx_buffer_malloc_len);
+		dave_memcpy(new_rx_buffer_ptr, pRxTx->rx_buffer_ptr, pRxTx->rx_buffer_len);
+	
+		dave_free(pRxTx->rx_buffer_ptr);
+	
+		pRxTx->rx_buffer_ptr = new_rx_buffer_ptr;
+		pRxTx->rx_buffer_malloc_len = new_rx_buffer_malloc_len;
+	}
+
+	securely_received_buffer_len = pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len;
+
+	if(securely_received_buffer_len < RX_TX_SECURELY_BUF_LEN)
+	{
+		RTABNOR("Logical error:%d/%d/%d", securely_received_buffer_len, RX_TX_BUF_WARRING, RX_TX_SECURELY_BUF_LEN);
+	}
+	else
+	{
+		/*
+		 * Leave some safe space for receiving data.
+		 */
+		securely_received_buffer_len -= RX_TX_SECURELY_BUF_LEN;
+	}
+
+	return securely_received_buffer_len;
+}
+
 static inline void
 _base_rxtx_buffer_reset(RXTX *pRxTx)
 {
-	u8 *new_rx_buffer_ptr;
-	ub new_rx_buffer_len;
-
 	if(pRxTx->rx_buffer_ptr == NULL)
 	{
 		pRxTx->rx_buffer_ptr = dave_malloc(_rxtx_buffer_cfg_length);
@@ -339,21 +406,7 @@ _base_rxtx_buffer_reset(RXTX *pRxTx)
 	}
 	else
 	{
-		if((pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
-		{
-			RTLOG("accept that the buffer(%d/%d/%d) is too small, now start to increase the buffer!",
-				pRxTx->rx_buffer_malloc_len, pRxTx->rx_buffer_len, RX_TX_BUF_WARRING);
-			pRxTx->rx_buffer_malloc_len += RX_TX_BUF_WARRING;
-		}
-
-		new_rx_buffer_ptr = dave_malloc(pRxTx->rx_buffer_malloc_len);
-		new_rx_buffer_len = pRxTx->rx_buffer_len;
-		dave_memcpy(new_rx_buffer_ptr, pRxTx->rx_buffer_ptr, new_rx_buffer_len);
-
-		dave_free(pRxTx->rx_buffer_ptr);
-
-		pRxTx->rx_buffer_ptr = new_rx_buffer_ptr;
-		pRxTx->rx_buffer_len = new_rx_buffer_len;
+		_base_rxtx_buffer_has_warring(pRxTx, 0);
 	}
 }
 
@@ -990,13 +1043,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 	ub rx_buffer_len;
 	RetCode ret = RetCode_OK;
 
-	rx_buffer_len = pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len;
-	if(rx_buffer_len < RX_TX_BUF_WARRING)
-	{
-		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s, wait _base_rxtx_buffer_reset auto increase the buffer!",
-			rx_buffer_len, pRxTx->rx_buffer_len,
-			thread_name(pRxTx->owner_thread));
-	}
+	rx_buffer_len = _base_rxtx_buffer_has_warring(pRxTx, 0);
 
 	pEvent->NetInfo.type = pRxTx->type;
 
@@ -1066,12 +1113,7 @@ _base_rxtx_event_receive(ub *recv_total_length, RXTX *pRxTx, SocketRawEvent *pEv
 static inline void
 _base_rxtx_read_receive(RXTX *pRxTx, SocketRead *pRead)
 {
-	if((pRxTx->rx_buffer_malloc_len - pRxTx->rx_buffer_len) < RX_TX_BUF_WARRING)
-	{
-		RTLTRACE(60,1, "rx_buffer too short:%d/%d on %s",
-			pRxTx->rx_buffer_len, pRxTx->rx_buffer_malloc_len,
-			thread_name(pRxTx->owner_thread));
-	}
+	_base_rxtx_buffer_has_warring(pRxTx, mlen(pRead->data));
 
 	if((pRxTx->rx_buffer_len + mlen(pRead->data)) < pRxTx->rx_buffer_malloc_len)
 	{

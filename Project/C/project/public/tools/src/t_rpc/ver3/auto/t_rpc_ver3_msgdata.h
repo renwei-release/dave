@@ -19,7 +19,6 @@
 #include "dave_msg.h"
 #include "aix_msg.h"
 #include "cv_msg.h"
-#include "bbs_msg.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "email_msg.h"
@@ -101,26 +100,6 @@ dave_bool t_rpc_ver3_unzip_ApplicationIdle(void **unzip_data, ub *unzip_len, voi
 void * t_rpc_ver3_ptr_ApplicationIdle(ApplicationIdle *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_ApplicationIdle(void);
 
-void * t_rpc_ver3_zip_BBSMsgAddCommentReq(BBSMsgAddCommentReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BBSMsgAddCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgAddCommentReq(BBSMsgAddCommentReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BBSMsgAddCommentReq(void);
-
-void * t_rpc_ver3_zip_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BBSMsgAddCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgAddCommentRsp(BBSMsgAddCommentRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BBSMsgAddCommentRsp(void);
-
-void * t_rpc_ver3_zip_BBSMsgInqCommentReq(BBSMsgInqCommentReq *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BBSMsgInqCommentReq(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgInqCommentReq(BBSMsgInqCommentReq *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BBSMsgInqCommentReq(void);
-
-void * t_rpc_ver3_zip_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_BBSMsgInqCommentRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_BBSMsgInqCommentRsp(BBSMsgInqCommentRsp *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_BBSMsgInqCommentRsp(void);
-
 void * t_rpc_ver3_zip_BDataLogReq(BDataLogReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BDataLogReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_BDataLogReq(BDataLogReq *struct_data, void *new_ptr);
@@ -130,16 +109,6 @@ void * t_rpc_ver3_zip_BDataLogRsp(BDataLogRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_BDataLogRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_BDataLogRsp(BDataLogRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_BDataLogRsp(void);
-
-void * t_rpc_ver3_zip_CFGRemoteSyncUpdate(CFGRemoteSyncUpdate *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_CFGRemoteSyncUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CFGRemoteSyncUpdate(CFGRemoteSyncUpdate *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_CFGRemoteSyncUpdate(void);
-
-void * t_rpc_ver3_zip_CFGRemoteUpdate(CFGRemoteUpdate *zip_data, ub zip_len);
-dave_bool t_rpc_ver3_unzip_CFGRemoteUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
-void * t_rpc_ver3_ptr_CFGRemoteUpdate(CFGRemoteUpdate *struct_data, void *new_ptr);
-ub t_rpc_ver3_sizeof_CFGRemoteUpdate(void);
 
 void * t_rpc_ver3_zip_CFGUpdate(CFGUpdate *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_CFGUpdate(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -350,6 +319,11 @@ void * t_rpc_ver3_zip_FreeMessageArea5(FreeMessageArea5 *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_FreeMessageArea5(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_FreeMessageArea5(FreeMessageArea5 *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_FreeMessageArea5(void);
+
+void * t_rpc_ver3_zip_GeneralLoopMsg(GeneralLoopMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_GeneralLoopMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_GeneralLoopMsg(GeneralLoopMsg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_GeneralLoopMsg(void);
 
 void * t_rpc_ver3_zip_GeneralReq(GeneralReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_GeneralReq(void **unzip_data, ub *unzip_len, void *pStructBson);
@@ -671,6 +645,11 @@ dave_bool t_rpc_ver3_unzip_SIPStopRsp(void **unzip_data, ub *unzip_len, void *pS
 void * t_rpc_ver3_ptr_SIPStopRsp(SIPStopRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_SIPStopRsp(void);
 
+void * t_rpc_ver3_zip_SQLLoopMsg(SQLLoopMsg *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_SQLLoopMsg(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_SQLLoopMsg(SQLLoopMsg *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_SQLLoopMsg(void);
+
 void * t_rpc_ver3_zip_SocketBindReq(SocketBindReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_SocketBindReq(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_SocketBindReq(SocketBindReq *struct_data, void *new_ptr);
@@ -740,6 +719,26 @@ void * t_rpc_ver3_zip_StoreMysqlRsp(StoreMysqlRsp *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_StoreMysqlRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
 void * t_rpc_ver3_ptr_StoreMysqlRsp(StoreMysqlRsp *struct_data, void *new_ptr);
 ub t_rpc_ver3_sizeof_StoreMysqlRsp(void);
+
+void * t_rpc_ver3_zip_StoreOracleReq(StoreOracleReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreOracleReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreOracleReq(StoreOracleReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreOracleReq(void);
+
+void * t_rpc_ver3_zip_StoreOracleRsp(StoreOracleRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StoreOracleRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StoreOracleRsp(StoreOracleRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StoreOracleRsp(void);
+
+void * t_rpc_ver3_zip_StorePgsqlReq(StorePgsqlReq *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StorePgsqlReq(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StorePgsqlReq(StorePgsqlReq *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StorePgsqlReq(void);
+
+void * t_rpc_ver3_zip_StorePgsqlRsp(StorePgsqlRsp *zip_data, ub zip_len);
+dave_bool t_rpc_ver3_unzip_StorePgsqlRsp(void **unzip_data, ub *unzip_len, void *pStructBson);
+void * t_rpc_ver3_ptr_StorePgsqlRsp(StorePgsqlRsp *struct_data, void *new_ptr);
+ub t_rpc_ver3_sizeof_StorePgsqlRsp(void);
 
 void * t_rpc_ver3_zip_StoreRedisReq(StoreRedisReq *zip_data, ub zip_len);
 dave_bool t_rpc_ver3_unzip_StoreRedisReq(void **unzip_data, ub *unzip_len, void *pStructBson);

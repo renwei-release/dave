@@ -78,7 +78,7 @@ def t_time_end_action(start_time, time_flag=None, time_name=None, time_msg=None)
         run_time_msg = f'{run_time/1000}ms'
     else:
         # detected bug, maybe date updated.
-        if run_time > 1000000 * 1000:
+        if run_time > 1000000 * 3600:
             print(f't_time_end_action run_time:{run_time} is too long start_time:{start_time} stop_time:{stop_time}')
         run_time_msg = f'{run_time/1000000}s'
 

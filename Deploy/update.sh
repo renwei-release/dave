@@ -37,13 +37,17 @@ fi
 
 echo -e "${File} deploy ${CONTAINER} mode:\033[35m${DEPLOYMODE}\033[0m code:\033[35m${DEPLOYCODE}\033[0m"
 
+remove_project_file()
+{
+   docker cp rm-project.sh ${CONTAINER}:/
+   docker exec -it ${CONTAINER} sh -c "cd / && chmod +x rm-project.sh && ./rm-project.sh && rm -f rm-project.sh"
+}
+
 ############## copy_project_file function ##############
 copy_python_project_to_container()
 {
    if [ -d ${HOMEPRJDIR} ]; then
-      chmod +x rm-project.sh
-      docker cp rm-project.sh ${CONTAINER}:/
-      docker exec -it ${CONTAINER} sh -c "cd / && ./rm-project.sh && rm -rf rm-project.sh"
+      remove_project_file
 
       docker cp ${HOMEPRJDIR}/dave_main.py ${CONTAINER}:/project
       docker cp ${HOMEPRJDIR}/components ${CONTAINER}:/project
@@ -93,6 +97,8 @@ copy_bin_project_file()
    PRJBINFILE=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/file_system/project/${PROJECT^^}-BIN
    WEIGHTS=$(cd `dirname $0`; pwd)/deploy/${PROJECT}/file_system/project/weights
    if [ -f ${PRJBINFILE} ]; then
+      remove_project_file
+
       chmod +x ${PRJBINFILE}
       docker cp ${PRJBINFILE} ${CONTAINER}:/project
       docker exec -it ${CONTAINER} sh -c "chmod +x /project/${PROJECT^^}-BIN"

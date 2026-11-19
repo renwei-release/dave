@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <netinet/ip.h>
 #include <net/if.h>
+#include <ifaddrs.h>
 #include <time.h>
 #include <pthread.h>
 #include <sys/mman.h>
@@ -41,7 +42,7 @@
 #define EPOLL_EVENTS EPOLL_EDGE_EVENTS
 static void *_linux_socket_epoll_thread = NULL;
 static dave_socket_event_fun _epoll_event_notify_fun = NULL;
-static int m_epFd;
+static int m_epFd = -1;
 static struct epoll_event m_pEvent[EPOLL_MANAGE_MAX];
 static pthread_mutex_t m_epoll_mutex;
 
@@ -54,6 +55,9 @@ typedef struct conn_info {
 #define EPOLL_CONN_WAIT_TIMES (3)
 #define EPOLL_WAIT_TIME 3000
 static struct conn_info m_connWait[EPOLL_CONN_WAIT_MAX];
+
+#define LAN_PORT_SCAN_MAX_HOSTS (4096)
+#define LAN_PORT_SCAN_TIMEOUT_USEC (25000)
 
 static int
 _os_linux_domain(SOCDOMAIN domain)
@@ -366,6 +370,62 @@ _os_linux_socket_bind_ip_v6(s32 socket, SocNetInfo *pNetInfo)
 	return dave_false;
 }
 
+static dave_bool
+_os_linux_tcp_port_is_open(struct in_addr *address, u16 port)
+{
+	int socket_id;
+	int error;
+	socklen_t error_len;
+	fd_set write_set;
+	struct sockaddr_in target;
+	struct timeval timeout;
+
+	socket_id = socket(AF_INET, SOCK_STREAM, 0);
+	if(socket_id < 0)
+	{
+		return dave_false;
+	}
+
+	if(_os_linux_setnonblocking(socket_id) == 0)
+	{
+		close(socket_id);
+		return dave_false;
+	}
+
+	dave_memset(&target, 0x00, sizeof(target));
+	target.sin_family = AF_INET;
+	target.sin_port = htons(port);
+	target.sin_addr = *address;
+
+	if(connect(socket_id, (struct sockaddr *)&target, sizeof(target)) == 0)
+	{
+		close(socket_id);
+		return dave_true;
+	}
+	if(errno != EINPROGRESS)
+	{
+		close(socket_id);
+		return dave_false;
+	}
+
+	FD_ZERO(&write_set);
+	FD_SET(socket_id, &write_set);
+	timeout.tv_sec = 0;
+	timeout.tv_usec = LAN_PORT_SCAN_TIMEOUT_USEC;
+	if(select(socket_id + 1, NULL, &write_set, NULL, &timeout) <= 0)
+	{
+		close(socket_id);
+		return dave_false;
+	}
+
+	error = 0;
+	error_len = sizeof(error);
+	getsockopt(socket_id, SOL_SOCKET, SO_ERROR, &error, &error_len);
+	close(socket_id);
+
+	return (error == 0) ? dave_true : dave_false;
+}
+
 static void
 _os_linux_epoll_add_event(int fd, __uint32_t event)
 {
@@ -392,7 +452,7 @@ _os_linux_epoll_del_event(int fd)
 	}
 }
 
-static void
+static dave_bool
 _os_linux_epoll_mdf_event(int fd, __uint32_t event)
 {
 	if(m_epFd >= 0)
@@ -403,8 +463,16 @@ _os_linux_epoll_mdf_event(int fd, __uint32_t event)
 
 		ev.events = event;
 		ev.data.fd = fd;
-		epoll_ctl(m_epFd, EPOLL_CTL_MOD, ev.data.fd, &ev);
+		if(epoll_ctl(m_epFd, EPOLL_CTL_MOD, ev.data.fd, &ev) == 0)
+			return dave_true;
 	}
+	else
+	{
+		errno = EBADF;
+	}
+
+	OSLOG("epoll modify failed! fd:%d event:%x errno:%d/%s", fd, event, errno, strerror(errno));
+	return dave_false;
 }
 
 static void
@@ -507,6 +575,43 @@ _os_linux_epoll_check_wait(void)
 	pthread_mutex_unlock(&m_epoll_mutex);
 }
 
+static void
+_os_linux_epoll_process_event(struct epoll_event *event)
+{
+	int fd = event->data.fd;
+
+	if(event->events & (EPOLLERR|EPOLLHUP))
+	{
+		_os_linux_epoll_event_notify(SOC_EVENT_CLOSE, fd);
+		return;
+	}
+
+	if(event->events & EPOLLOUT)
+	{
+		if(_os_linux_epoll_del_wait(fd) == dave_true)
+		{
+			int error = 0;
+			socklen_t len = sizeof(error);
+
+			if((getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) == 0) && (error == 0))
+				_os_linux_epoll_event_notify(SOC_EVENT_CONNECT, fd);
+			else
+				_os_linux_epoll_event_notify(SOC_EVENT_CONNECT_FAIL, fd);
+		}
+		else
+		{
+			// Disarm before notifying; a subsequent EAGAIN can safely rearm EPOLLOUT.
+			if(_os_linux_epoll_mdf_event(fd, EPOLL_EVENTS) == dave_true)
+				_os_linux_epoll_event_notify(SOC_EVENT_SND, fd);
+			else
+				_os_linux_epoll_event_notify(SOC_EVENT_CLOSE, fd);
+		}
+	}
+
+	if(event->events & (EPOLLIN|EPOLLPRI))
+		_os_linux_epoll_event_notify(SOC_EVENT_REV, fd);
+}
+
 static void *
 _os_linux_epoll_event_thread(void *arg)
 {
@@ -534,38 +639,7 @@ _os_linux_epoll_event_thread(void *arg)
 		{
 			OSDEBUG("socket:%d event:%x", m_pEvent[event_index].data.fd, m_pEvent[event_index].events);
 
-			if((m_pEvent[event_index].events) & EPOLLOUT)
-			{
-				sw_uint32 error = 0;
-				sw_uint32 len = sizeof(int);
-
-				if(_os_linux_epoll_del_wait(m_pEvent[event_index].data.fd) == dave_false)
-				{
-					continue;
-				}
-
-				getsockopt(m_pEvent[event_index].data.fd, SOL_SOCKET, SO_ERROR, &error, (socklen_t *)&len);
-				if(error == 0)
-				{
-					_os_linux_epoll_event_notify(SOC_EVENT_CONNECT, m_pEvent[event_index].data.fd);
-				}
-				else
-				{
-					_os_linux_epoll_event_notify(SOC_EVENT_CONNECT_FAIL, m_pEvent[event_index].data.fd);
-				}
-			}
-			else if((m_pEvent[event_index].events) & (EPOLLERR|EPOLLHUP))
-			{
-				_os_linux_epoll_event_notify(SOC_EVENT_CLOSE, m_pEvent[event_index].data.fd);
-			}
-			else if(((m_pEvent[event_index].events) & EPOLLIN) || ((m_pEvent[event_index].events) & EPOLLPRI))
-			{
-				_os_linux_epoll_event_notify(SOC_EVENT_REV, m_pEvent[event_index].data.fd);
-			}
-			else
-			{
-				OSLOG("unprocess events:%x", m_pEvent[event_index].events);
-			}
+			_os_linux_epoll_process_event(&m_pEvent[event_index]);
 		}
 	}
 
@@ -866,6 +940,12 @@ dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub *data_len)
 	}
 }
 
+dave_bool
+dave_os_wait_write(s32 socket)
+{
+	return _os_linux_epoll_mdf_event(socket, EPOLL_EVENTS|EPOLLOUT);
+}
+
 sb
 dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_bool urg)
 {
@@ -929,7 +1009,7 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_b
 			addr.sin_addr.s_addr = inet_addr((char *)ip_str);
 		}
 
-		snd_len = sendto(socket, data_ptr, data_len, 0, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
+		snd_len = sendto(socket, data_ptr, data_len, MSG_DONTWAIT, (struct sockaddr *)(&addr), sizeof(struct sockaddr_in));
 
 		OSDEBUG("socket:%d data_len:%d %s:%d->%d", socket, data_len, ip_str, pNetInfo->port, snd_len);
 
@@ -951,8 +1031,9 @@ dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_b
 	}
 	else
 	{
-		OSDEBUG("socket send type:%d", pNetInfo->type);
-		return 0;
+		OSLOG("unsupported socket send type:%d", pNetInfo->type);
+		errno = EPROTOTYPE;
+		return -1;
 	}
 }
 
@@ -1004,6 +1085,97 @@ dave_os_gethostbyname(s8 *ip_ptr, ub ip_len, char *domain)
 	dave_strcpy(ip_ptr, inet_ntoa(*((struct in_addr *)h->h_addr)), ip_len);
 
 	return dave_true;
+}
+
+dave_bool
+dave_os_listening_on_the_port(s8 *ip_ptr, ub ip_len, u16 port)
+{
+	struct ifaddrs *interfaces;
+	struct ifaddrs *interface;
+	struct sockaddr_in *local_address;
+	struct sockaddr_in *netmask_address;
+	struct in_addr target_address;
+	unsigned long network;
+	unsigned long broadcast;
+	unsigned long local_host;
+	unsigned long candidate;
+	ub scanned_hosts;
+
+	if((ip_ptr == NULL) || (ip_len < INET_ADDRSTRLEN) || (port == 0))
+	{
+		OSLOG("invalid parameters: ip_ptr=%x, ip_len=%d/%d, port=%d", ip_ptr, ip_len, INET_ADDRSTRLEN, port);
+		return dave_false;
+	}
+	dave_memset(ip_ptr, 0x00, ip_len);
+
+	if(getifaddrs(&interfaces) != 0)
+	{
+		OSLOG("getifaddrs failed: errno(%d):%s", errno, strerror(errno));
+		return dave_false;
+	}
+
+	/* Prioritize local interface IPs before scanning other hosts in LAN. */
+	for(interface = interfaces; interface != NULL; interface = interface->ifa_next)
+	{
+		if((interface->ifa_addr == NULL) || (interface->ifa_netmask == NULL)
+			|| (interface->ifa_addr->sa_family != AF_INET)
+			|| ((interface->ifa_flags & (IFF_UP | IFF_LOOPBACK)) != IFF_UP))
+		{
+			continue;
+		}
+
+		local_address = (struct sockaddr_in *)interface->ifa_addr;
+		if(_os_linux_tcp_port_is_open(&(local_address->sin_addr), port) == dave_true)
+		{
+			if(inet_ntop(AF_INET, &(local_address->sin_addr), (char *)ip_ptr, ip_len) != NULL)
+			{
+				freeifaddrs(interfaces);
+				return dave_true;
+			}
+		}
+	}
+
+	for(interface = interfaces; interface != NULL; interface = interface->ifa_next)
+	{
+		if((interface->ifa_addr == NULL) || (interface->ifa_netmask == NULL)
+			|| (interface->ifa_addr->sa_family != AF_INET)
+			|| ((interface->ifa_flags & (IFF_UP | IFF_LOOPBACK)) != IFF_UP))
+		{
+			continue;
+		}
+
+		local_address = (struct sockaddr_in *)interface->ifa_addr;
+		netmask_address = (struct sockaddr_in *)interface->ifa_netmask;
+		network = ntohl(local_address->sin_addr.s_addr) & ntohl(netmask_address->sin_addr.s_addr);
+		broadcast = network | ~ntohl(netmask_address->sin_addr.s_addr);
+		local_host = ntohl(local_address->sin_addr.s_addr);
+		scanned_hosts = 0;
+
+		for(candidate = network + 1;
+			(candidate < broadcast) && (scanned_hosts < LAN_PORT_SCAN_MAX_HOSTS);
+			candidate ++, scanned_hosts ++)
+		{
+			if(candidate == local_host)
+			{
+				continue;
+			}
+
+			target_address.s_addr = htonl(candidate);
+			if(_os_linux_tcp_port_is_open(&target_address, port) == dave_true)
+			{
+				if(inet_ntop(AF_INET, &target_address, (char *)ip_ptr, ip_len) != NULL)
+				{
+					freeifaddrs(interfaces);
+					return dave_true;
+				}
+			}
+		}
+	}
+
+	freeifaddrs(interfaces);
+
+	OSLOG("no open port found on the local network for port %d", port);
+	return dave_false;
 }
 
 #endif

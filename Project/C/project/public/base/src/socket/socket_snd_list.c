@@ -40,6 +40,8 @@ _socket_snd_list_malloc(IPBaseInfo *pIPInfo, MBUF *data, SOCKETINFO snd_flag)
 	}
 	pList->data = data;
 	pList->snd_flag = snd_flag;
+	pList->current_data = data;
+	pList->data_offset = 0;
 	pList->next = NULL;
 
 	return pList;
@@ -57,6 +59,8 @@ static void
 _socket_snd_list_reset(SocketCoreSndList *pList)
 {
 	pList->snd_token = dave_false;
+	pList->wait_write = dave_false;
+	pList->retry_requested = dave_false;
 	pList->snd_list_depth = 0;
 	pList->snd_head = pList->snd_tail = NULL;
 }
@@ -79,6 +83,7 @@ _socket_snd_list_clean(SocketCoreSndList *pList)
 	}
 	
 	pList->snd_head = pList->snd_tail = NULL;
+	pList->snd_list_depth = 0;
 
 	return safe_counter;
 }
@@ -88,9 +93,16 @@ _socket_snd_list_catch_snd_token(SocketCoreSndList *pList, SokcetSndList *pNewLi
 {
 	dave_bool snd_token = dave_false;
 
-	if(pList->snd_token == dave_false)
+	if(pNewList == NULL)
+	{
+		pList->wait_write = dave_false;
+		pList->retry_requested = dave_true;
+	}
+
+	if((pList->snd_token == dave_false) && (pList->wait_write == dave_false))
 	{
 		pList->snd_token = dave_true;
+		pList->retry_requested = dave_false;
 
 		snd_token = dave_true;
 	}
@@ -117,8 +129,8 @@ _socket_snd_list_catch_snd_token(SocketCoreSndList *pList, SokcetSndList *pNewLi
 	return snd_token;
 }
 
-static void
-_socket_snd_list_release_snd_token(SocketCoreSndList *pList)
+static dave_bool
+_socket_snd_list_release_snd_token(SocketCoreSndList *pList, dave_bool wait_write)
 {
 	if(pList->snd_token == dave_false)
 	{
@@ -126,6 +138,11 @@ _socket_snd_list_release_snd_token(SocketCoreSndList *pList)
 	}
 
 	pList->snd_token = dave_false;
+	// Retain a writable event that raced with the active sender.
+	pList->wait_write = (wait_write == dave_true) && (pList->retry_requested == dave_false);
+	pList->retry_requested = dave_false;
+
+	return (pList->wait_write == dave_false) && (pList->snd_head != NULL);
 }
 
 static SokcetSndList *
@@ -226,12 +243,15 @@ socket_snd_list_catch_snd_token(SocketCore *pCore, IPBaseInfo *pIPInfo, MBUF *da
 	return snd_token;
 }
 
-void
-socket_snd_list_release_snd_token(SocketCore *pCore)
+dave_bool
+socket_snd_list_release_snd_token(SocketCore *pCore, dave_bool wait_write)
 {
 	SocketCoreSndList *pList = &(pCore->snd_list);
+	dave_bool retry = dave_false;
 
-	SAFECODEv1(pList->opt_pv_for_snd, { _socket_snd_list_release_snd_token(pList); });
+	SAFECODEv1(pList->opt_pv_for_snd, { retry = _socket_snd_list_release_snd_token(pList, wait_write); });
+
+	return retry;
 }
 
 SokcetSndList *
@@ -243,6 +263,20 @@ socket_snd_list_catch_data(SocketCore *pCore)
 	SAFECODEv1(pList->opt_pv_for_snd, { pSndData = _socket_snd_list_catch_data(pList); });
 
 	return pSndData;
+}
+
+void
+socket_snd_list_return_data(SocketCore *pCore, SokcetSndList *pSndData)
+{
+	SocketCoreSndList *pList = &(pCore->snd_list);
+
+	SAFECODEv1(pList->opt_pv_for_snd, {
+		pSndData->next = pList->snd_head;
+		pList->snd_head = pSndData;
+		if(pList->snd_tail == NULL)
+			pList->snd_tail = pSndData;
+		pList->snd_list_depth ++;
+	});
 }
 
 void

@@ -52,6 +52,10 @@ def byte_to_mbuf(byte_data):
     else:
         raise ValueError("byte_data must be a list, str, bytes, or bytearray")
 
+    if len(byte_data) > 0x7fffffff:
+        DAVELOG(f"byte_data is too large:{len(byte_data)}")
+        return None
+
     mbuf_data = dave_mmalloc(len(byte_data))
     memmove(mbuf_data.contents.payload, byte_data, len(byte_data))
     return mbuf_data
@@ -78,7 +82,7 @@ def dict_to_mbuf(dict_object):
     return byte_to_mbuf(json_str)
 
 
-def mbuf_to_dict(mbuf_data):
+def mbuf_to_dict(mbuf_data, free_mbuf=False):
     if mbuf_data == None:
         return None
     try:
@@ -87,6 +91,9 @@ def mbuf_to_dict(mbuf_data):
         return None
 
     str_data = mbuf_to_str(mbuf_data)
+    if free_mbuf:
+        dave_mfree(mbuf_data)
+
     json_dict = json.loads(str_data, strict=False)
     if json_dict == None:
         return None

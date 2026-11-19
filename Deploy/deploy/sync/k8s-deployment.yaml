@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sync-sync
+  labels:
+    app: sync-sync
+spec:
+  selector:
+    matchLabels:
+      app: sync-sync
+  template:
+    metadata:
+      labels:
+        app: sync-sync
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: sync-sync
+          image: sync_docker_image:latest
+          imagePullPolicy: Never
+          stdin: true
+          tty: true
+          securityContext:
+            capabilities:
+              add:
+                - SYS_PTRACE
+          volumeMounts:
+            - name: sync-data
+              mountPath: /dave/sync
+            - name: sync-config
+              mountPath: /dave/sync/config
+      volumes:
+        - name: sync-data
+          hostPath:
+            path: /dave/sync
+            type: DirectoryOrCreate
+        - name: sync-config
+          hostPath:
+            path: /dave/k8s/sync/config
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sync-sync
+spec:
+  clusterIP: None
+  selector:
+    app: sync-sync

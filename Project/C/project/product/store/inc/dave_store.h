@@ -48,6 +48,70 @@ STORESQL(const char *sql, ...)
 	return ret;
 }
 
+static inline StoreSqlRet
+STOREPGSQL(const char *sql, ...)
+{
+	StorePgsqlReq *pReq = thread_msg(pReq);
+	StorePgsqlRsp *pRsp;
+	va_list list_args;
+	StoreSqlRet ret;
+
+	pReq->sql = dave_mmalloc(10240);
+	pReq->ptr = pReq;
+
+	va_start(list_args, sql);
+	pReq->sql->len = pReq->sql->tot_len = vsnprintf(dave_mptr(pReq->sql), dave_mlen(pReq->sql), sql, list_args);
+	va_end(list_args);
+
+	pRsp = name_co(STORE_THREAD_NAME, STORE_PGSQL_REQ, pReq, STORE_PGSQL_RSP);
+	if(pRsp == NULL)
+	{
+		ret.ret = RetCode_Request_failed;
+		ret.pJson = NULL;
+	}
+	else
+	{
+		ret.ret = pRsp->ret;
+		ret.pJson = t_a2b_mbuf_to_json(pRsp->data);
+
+		dave_mfree(pRsp->data);
+	}
+
+	return ret;
+}
+
+static inline StoreSqlRet
+STOREORACLE(const char *sql, ...)
+{
+	StoreOracleReq *pReq = thread_msg(pReq);
+	StoreOracleRsp *pRsp;
+	va_list list_args;
+	StoreSqlRet ret;
+
+	pReq->sql = dave_mmalloc(10240);
+	pReq->ptr = pReq;
+
+	va_start(list_args, sql);
+	pReq->sql->len = pReq->sql->tot_len = vsnprintf(dave_mptr(pReq->sql), dave_mlen(pReq->sql), sql, list_args);
+	va_end(list_args);
+
+	pRsp = name_co(STORE_THREAD_NAME, STORE_ORACLE_REQ, pReq, STORE_ORACLE_RSP);
+	if(pRsp == NULL)
+	{
+		ret.ret = RetCode_Request_failed;
+		ret.pJson = NULL;
+	}
+	else
+	{
+		ret.ret = pRsp->ret;
+		ret.pJson = t_a2b_mbuf_to_json(pRsp->data);
+
+		dave_mfree(pRsp->data);
+	}
+
+	return ret;
+}
+
 static inline s8 *
 STORELOAD(StoreSqlRet ret, ub row, ub column)
 {

@@ -64,18 +64,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case APPMSG_TALK_MCARD_RSP:
 				pBson = t_rpc_ver3_zip_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, msg_len);
 			break;
-		case BBSMSG_ADD_COMMENT_REQ:
-				pBson = t_rpc_ver3_zip_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, msg_len);
-			break;
-		case BBSMSG_ADD_COMMENT_RSP:
-				pBson = t_rpc_ver3_zip_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, msg_len);
-			break;
-		case BBSMSG_INQ_COMMENT_REQ:
-				pBson = t_rpc_ver3_zip_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, msg_len);
-			break;
-		case BBSMSG_INQ_COMMENT_RSP:
-				pBson = t_rpc_ver3_zip_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, msg_len);
-			break;
 		case BDATA_LOG_REQ:
 				pBson = t_rpc_ver3_zip_BDataLogReq((BDataLogReq *)msg_body, msg_len);
 			break;
@@ -193,6 +181,9 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case FREE_MESSAGE_AREA_5:
 				pBson = t_rpc_ver3_zip_FreeMessageArea5((FreeMessageArea5 *)msg_body, msg_len);
 			break;
+		case GENERAL_LOOP_MSG:
+				pBson = t_rpc_ver3_zip_GeneralLoopMsg((GeneralLoopMsg *)msg_body, msg_len);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				pBson = t_rpc_ver3_zip_HTTPCloseReq((HTTPCloseReq *)msg_body, msg_len);
 			break;
@@ -234,12 +225,6 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 			break;
 		case MSGID_APPLICATION_IDLE:
 				pBson = t_rpc_ver3_zip_ApplicationIdle((ApplicationIdle *)msg_body, msg_len);
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				pBson = t_rpc_ver3_zip_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, msg_len);
-			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				pBson = t_rpc_ver3_zip_CFGRemoteUpdate((CFGRemoteUpdate *)msg_body, msg_len);
 			break;
 		case MSGID_CFG_UPDATE:
 				pBson = t_rpc_ver3_zip_CFGUpdate((CFGUpdate *)msg_body, msg_len);
@@ -499,11 +484,26 @@ _t_rpc_zip(ub msg_id, void *msg_body, ub msg_len)
 		case SOCKET_WRITE:
 				pBson = t_rpc_ver3_zip_SocketWrite((SocketWrite *)msg_body, msg_len);
 			break;
+		case SQL_LOOP_MSG:
+				pBson = t_rpc_ver3_zip_SQLLoopMsg((SQLLoopMsg *)msg_body, msg_len);
+			break;
 		case STORE_MYSQL_REQ:
 				pBson = t_rpc_ver3_zip_StoreMysqlReq((StoreMysqlReq *)msg_body, msg_len);
 			break;
 		case STORE_MYSQL_RSP:
 				pBson = t_rpc_ver3_zip_StoreMysqlRsp((StoreMysqlRsp *)msg_body, msg_len);
+			break;
+		case STORE_ORACLE_REQ:
+				pBson = t_rpc_ver3_zip_StoreOracleReq((StoreOracleReq *)msg_body, msg_len);
+			break;
+		case STORE_ORACLE_RSP:
+				pBson = t_rpc_ver3_zip_StoreOracleRsp((StoreOracleRsp *)msg_body, msg_len);
+			break;
+		case STORE_PGSQL_REQ:
+				pBson = t_rpc_ver3_zip_StorePgsqlReq((StorePgsqlReq *)msg_body, msg_len);
+			break;
+		case STORE_PGSQL_RSP:
+				pBson = t_rpc_ver3_zip_StorePgsqlRsp((StorePgsqlRsp *)msg_body, msg_len);
 			break;
 		case STORE_REDIS_REQ:
 				pBson = t_rpc_ver3_zip_StoreRedisReq((StoreRedisReq *)msg_body, msg_len);
@@ -586,18 +586,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				ret = t_rpc_ver3_unzip_AppMsgTalkMCardRsp(msg_body, msg_len, pBson);
-			break;
-		case BBSMSG_ADD_COMMENT_REQ:
-				ret = t_rpc_ver3_unzip_BBSMsgAddCommentReq(msg_body, msg_len, pBson);
-			break;
-		case BBSMSG_ADD_COMMENT_RSP:
-				ret = t_rpc_ver3_unzip_BBSMsgAddCommentRsp(msg_body, msg_len, pBson);
-			break;
-		case BBSMSG_INQ_COMMENT_REQ:
-				ret = t_rpc_ver3_unzip_BBSMsgInqCommentReq(msg_body, msg_len, pBson);
-			break;
-		case BBSMSG_INQ_COMMENT_RSP:
-				ret = t_rpc_ver3_unzip_BBSMsgInqCommentRsp(msg_body, msg_len, pBson);
 			break;
 		case BDATA_LOG_REQ:
 				ret = t_rpc_ver3_unzip_BDataLogReq(msg_body, msg_len, pBson);
@@ -716,6 +704,9 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case FREE_MESSAGE_AREA_5:
 				ret = t_rpc_ver3_unzip_FreeMessageArea5(msg_body, msg_len, pBson);
 			break;
+		case GENERAL_LOOP_MSG:
+				ret = t_rpc_ver3_unzip_GeneralLoopMsg(msg_body, msg_len, pBson);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ret = t_rpc_ver3_unzip_HTTPCloseReq(msg_body, msg_len, pBson);
 			break;
@@ -757,12 +748,6 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 			break;
 		case MSGID_APPLICATION_IDLE:
 				ret = t_rpc_ver3_unzip_ApplicationIdle(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				ret = t_rpc_ver3_unzip_CFGRemoteSyncUpdate(msg_body, msg_len, pBson);
-			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				ret = t_rpc_ver3_unzip_CFGRemoteUpdate(msg_body, msg_len, pBson);
 			break;
 		case MSGID_CFG_UPDATE:
 				ret = t_rpc_ver3_unzip_CFGUpdate(msg_body, msg_len, pBson);
@@ -1022,11 +1007,26 @@ _t_rpc_unzip(void **msg_body, ub *msg_len, ub msg_id, void *pBson)
 		case SOCKET_WRITE:
 				ret = t_rpc_ver3_unzip_SocketWrite(msg_body, msg_len, pBson);
 			break;
+		case SQL_LOOP_MSG:
+				ret = t_rpc_ver3_unzip_SQLLoopMsg(msg_body, msg_len, pBson);
+			break;
 		case STORE_MYSQL_REQ:
 				ret = t_rpc_ver3_unzip_StoreMysqlReq(msg_body, msg_len, pBson);
 			break;
 		case STORE_MYSQL_RSP:
 				ret = t_rpc_ver3_unzip_StoreMysqlRsp(msg_body, msg_len, pBson);
+			break;
+		case STORE_ORACLE_REQ:
+				ret = t_rpc_ver3_unzip_StoreOracleReq(msg_body, msg_len, pBson);
+			break;
+		case STORE_ORACLE_RSP:
+				ret = t_rpc_ver3_unzip_StoreOracleRsp(msg_body, msg_len, pBson);
+			break;
+		case STORE_PGSQL_REQ:
+				ret = t_rpc_ver3_unzip_StorePgsqlReq(msg_body, msg_len, pBson);
+			break;
+		case STORE_PGSQL_RSP:
+				ret = t_rpc_ver3_unzip_StorePgsqlRsp(msg_body, msg_len, pBson);
 			break;
 		case STORE_REDIS_REQ:
 				ret = t_rpc_ver3_unzip_StoreRedisReq(msg_body, msg_len, pBson);
@@ -1109,18 +1109,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				ptr = t_rpc_ver3_ptr_AppMsgTalkMCardRsp((AppMsgTalkMCardRsp *)msg_body, new_ptr);
-			break;
-		case BBSMSG_ADD_COMMENT_REQ:
-				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentReq((BBSMsgAddCommentReq *)msg_body, new_ptr);
-			break;
-		case BBSMSG_ADD_COMMENT_RSP:
-				ptr = t_rpc_ver3_ptr_BBSMsgAddCommentRsp((BBSMsgAddCommentRsp *)msg_body, new_ptr);
-			break;
-		case BBSMSG_INQ_COMMENT_REQ:
-				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentReq((BBSMsgInqCommentReq *)msg_body, new_ptr);
-			break;
-		case BBSMSG_INQ_COMMENT_RSP:
-				ptr = t_rpc_ver3_ptr_BBSMsgInqCommentRsp((BBSMsgInqCommentRsp *)msg_body, new_ptr);
 			break;
 		case BDATA_LOG_REQ:
 				ptr = t_rpc_ver3_ptr_BDataLogReq((BDataLogReq *)msg_body, new_ptr);
@@ -1239,6 +1227,9 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case FREE_MESSAGE_AREA_5:
 				ptr = t_rpc_ver3_ptr_FreeMessageArea5((FreeMessageArea5 *)msg_body, new_ptr);
 			break;
+		case GENERAL_LOOP_MSG:
+				ptr = t_rpc_ver3_ptr_GeneralLoopMsg((GeneralLoopMsg *)msg_body, new_ptr);
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				ptr = t_rpc_ver3_ptr_HTTPCloseReq((HTTPCloseReq *)msg_body, new_ptr);
 			break;
@@ -1280,12 +1271,6 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 			break;
 		case MSGID_APPLICATION_IDLE:
 				ptr = t_rpc_ver3_ptr_ApplicationIdle((ApplicationIdle *)msg_body, new_ptr);
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				ptr = t_rpc_ver3_ptr_CFGRemoteSyncUpdate((CFGRemoteSyncUpdate *)msg_body, new_ptr);
-			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				ptr = t_rpc_ver3_ptr_CFGRemoteUpdate((CFGRemoteUpdate *)msg_body, new_ptr);
 			break;
 		case MSGID_CFG_UPDATE:
 				ptr = t_rpc_ver3_ptr_CFGUpdate((CFGUpdate *)msg_body, new_ptr);
@@ -1545,11 +1530,26 @@ _t_rpc_ptr(ub msg_id, void *msg_body, void *new_ptr)
 		case SOCKET_WRITE:
 				ptr = t_rpc_ver3_ptr_SocketWrite((SocketWrite *)msg_body, new_ptr);
 			break;
+		case SQL_LOOP_MSG:
+				ptr = t_rpc_ver3_ptr_SQLLoopMsg((SQLLoopMsg *)msg_body, new_ptr);
+			break;
 		case STORE_MYSQL_REQ:
 				ptr = t_rpc_ver3_ptr_StoreMysqlReq((StoreMysqlReq *)msg_body, new_ptr);
 			break;
 		case STORE_MYSQL_RSP:
 				ptr = t_rpc_ver3_ptr_StoreMysqlRsp((StoreMysqlRsp *)msg_body, new_ptr);
+			break;
+		case STORE_ORACLE_REQ:
+				ptr = t_rpc_ver3_ptr_StoreOracleReq((StoreOracleReq *)msg_body, new_ptr);
+			break;
+		case STORE_ORACLE_RSP:
+				ptr = t_rpc_ver3_ptr_StoreOracleRsp((StoreOracleRsp *)msg_body, new_ptr);
+			break;
+		case STORE_PGSQL_REQ:
+				ptr = t_rpc_ver3_ptr_StorePgsqlReq((StorePgsqlReq *)msg_body, new_ptr);
+			break;
+		case STORE_PGSQL_RSP:
+				ptr = t_rpc_ver3_ptr_StorePgsqlRsp((StorePgsqlRsp *)msg_body, new_ptr);
 			break;
 		case STORE_REDIS_REQ:
 				ptr = t_rpc_ver3_ptr_StoreRedisReq((StoreRedisReq *)msg_body, new_ptr);
@@ -1632,18 +1632,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case APPMSG_TALK_MCARD_RSP:
 				msg_len = t_rpc_ver3_sizeof_AppMsgTalkMCardRsp();
-			break;
-		case BBSMSG_ADD_COMMENT_REQ:
-				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentReq();
-			break;
-		case BBSMSG_ADD_COMMENT_RSP:
-				msg_len = t_rpc_ver3_sizeof_BBSMsgAddCommentRsp();
-			break;
-		case BBSMSG_INQ_COMMENT_REQ:
-				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentReq();
-			break;
-		case BBSMSG_INQ_COMMENT_RSP:
-				msg_len = t_rpc_ver3_sizeof_BBSMsgInqCommentRsp();
 			break;
 		case BDATA_LOG_REQ:
 				msg_len = t_rpc_ver3_sizeof_BDataLogReq();
@@ -1762,6 +1750,9 @@ _t_rpc_sizeof(ub msg_id)
 		case FREE_MESSAGE_AREA_5:
 				msg_len = t_rpc_ver3_sizeof_FreeMessageArea5();
 			break;
+		case GENERAL_LOOP_MSG:
+				msg_len = t_rpc_ver3_sizeof_GeneralLoopMsg();
+			break;
 		case HTTPMSG_CLOSE_REQ:
 				msg_len = t_rpc_ver3_sizeof_HTTPCloseReq();
 			break;
@@ -1803,12 +1794,6 @@ _t_rpc_sizeof(ub msg_id)
 			break;
 		case MSGID_APPLICATION_IDLE:
 				msg_len = t_rpc_ver3_sizeof_ApplicationIdle();
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				msg_len = t_rpc_ver3_sizeof_CFGRemoteSyncUpdate();
-			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				msg_len = t_rpc_ver3_sizeof_CFGRemoteUpdate();
 			break;
 		case MSGID_CFG_UPDATE:
 				msg_len = t_rpc_ver3_sizeof_CFGUpdate();
@@ -2068,11 +2053,26 @@ _t_rpc_sizeof(ub msg_id)
 		case SOCKET_WRITE:
 				msg_len = t_rpc_ver3_sizeof_SocketWrite();
 			break;
+		case SQL_LOOP_MSG:
+				msg_len = t_rpc_ver3_sizeof_SQLLoopMsg();
+			break;
 		case STORE_MYSQL_REQ:
 				msg_len = t_rpc_ver3_sizeof_StoreMysqlReq();
 			break;
 		case STORE_MYSQL_RSP:
 				msg_len = t_rpc_ver3_sizeof_StoreMysqlRsp();
+			break;
+		case STORE_ORACLE_REQ:
+				msg_len = t_rpc_ver3_sizeof_StoreOracleReq();
+			break;
+		case STORE_ORACLE_RSP:
+				msg_len = t_rpc_ver3_sizeof_StoreOracleRsp();
+			break;
+		case STORE_PGSQL_REQ:
+				msg_len = t_rpc_ver3_sizeof_StorePgsqlReq();
+			break;
+		case STORE_PGSQL_RSP:
+				msg_len = t_rpc_ver3_sizeof_StorePgsqlRsp();
 			break;
 		case STORE_REDIS_REQ:
 				msg_len = t_rpc_ver3_sizeof_StoreRedisReq();

@@ -13,6 +13,8 @@
 #include "dave_base.h"
 #include "store_msg.h"
 #include "store_mysql.h"
+#include "store_oracle.h"
+#include "store_pgsql.h"
 #include "store_redis.h"
 #include "store_log.h"
 
@@ -22,6 +24,8 @@ _store_info(s8 *info_ptr, ub info_len)
 	ub info_index = 0;
 
 	info_index += store_mysql_info(&info_ptr[info_index], info_len-info_index);
+	info_index += store_oracle_info(&info_ptr[info_index], info_len-info_index);
+	info_index += store_pgsql_info(&info_ptr[info_index], info_len-info_index);
 	info_index += store_redis_info(&info_ptr[info_index], info_len-info_index);
 }
 

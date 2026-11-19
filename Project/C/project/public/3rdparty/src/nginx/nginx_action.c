@@ -54,6 +54,9 @@ _nginx_action_start(void)
 	s8 cmd[512];
 	dave_bool ret;
 
+	dave_snprintf(cmd, sizeof(cmd), "chmod +x %s", _nginx_bin_name);
+	dave_os_system((char *)cmd, NULL, 0);
+
 	if(dave_os_process_exist(_nginx_bin_name) == dave_false)
 	{
 		dave_snprintf(cmd, sizeof(cmd), "%s -c %s", _nginx_bin_name, _nginx_conf_name);

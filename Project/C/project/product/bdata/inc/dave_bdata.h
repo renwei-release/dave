@@ -36,15 +36,19 @@
  * BDATALOG("my log flag xxxx", "%s", str_data);
  */
 #define BDATALOG(sub, log, ...) {\
-	BDataLogReq *pReq = thread_reset_msg(pReq);\
+	if(qget_thread_id(BDATA_THREAD_NAME) != INVALID_THREAD_ID)\
+	{\
 \
-	pReq->level = BDataLogLevel_normal;\
+		BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
-	__BDATABASE__(sub, pReq)\
-	pReq->log_data = dave_mmalloc(1024 * 32);\
-	pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
+		pReq->level = BDataLogLevel_normal;\
 \
-	name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
+		__BDATABASE__(sub, pReq)\
+		pReq->log_data = dave_mmalloc(1024 * 32);\
+		pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
+\
+		name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
+	}\
 }
 
 /*
@@ -53,7 +57,7 @@
  */
 #define BDATAJSON(sub, json) {\
 \
-	if(json != NULL)\
+	if((json != NULL) && (qget_thread_id(BDATA_THREAD_NAME) != INVALID_THREAD_ID))\
 	{\
 		BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
@@ -64,8 +68,8 @@
 \
 		name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
 \
-		dave_json_free(json);\
 	}\
+	dave_json_free(json);\
 }
 
 /*
@@ -73,15 +77,18 @@
  * BDATARPT("my log flag xxxx", "%s", str_data);
  */
 #define BDATARPT(sub, log, ...) {\
-	BDataLogReq *pReq = thread_reset_msg(pReq);\
+	if(qget_thread_id(BDATA_THREAD_NAME) != INVALID_THREAD_ID)\
+	{\
+		BDataLogReq *pReq = thread_reset_msg(pReq);\
 \
-	pReq->level = BDataLogLevel_report;\
+		pReq->level = BDataLogLevel_report;\
 \
-	__BDATABASE__(sub, pReq)\
-	pReq->log_data = dave_mmalloc(1024 * 32);\
-	pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
+		__BDATABASE__(sub, pReq)\
+		pReq->log_data = dave_mmalloc(1024 * 32);\
+		pReq->log_data->tot_len = pReq->log_data->len = dave_snprintf(dave_mptr(pReq->log_data), dave_mlen(pReq->log_data), log, ##__VA_ARGS__);\
 \
-	name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
+		name_msg(BDATA_THREAD_NAME, BDATA_LOG_REQ, pReq);\
+	}\
 }
 
 #endif

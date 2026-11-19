@@ -17,7 +17,7 @@ def dave_import_product(product_name):
 
     try:
         return importlib.import_module(f'product.{product_name}.{product_name}_product')
-    except:
-        print(f"{product_name} does not exist or has wrong!!!!!!")
+    except Exception as e:
+        print(f"Failed to import product '{product_name}': {e}")
         traceback.print_exc()
         return None

@@ -17,7 +17,9 @@ a = Analysis(
 		('./project/product/___FLAG_FOR_PRODUCT___', 'product/___FLAG_FOR_PRODUCT___'),
 		('./project/public', 'public'),
 	],
-    hiddenimports=[],
+    hiddenimports=[
+        'cryptocode',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

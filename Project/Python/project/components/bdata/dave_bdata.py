@@ -8,7 +8,6 @@
 from public import *
 import socket
 import time
-import uuid
 
 
 BDATA_THREAD_NAME = b"bdata"
@@ -59,6 +58,9 @@ def __BDATABASE__(sub, pReq):
 
 
 def BDATALOG(sub, *msg: object):
+    if thread_id(BDATA_THREAD_NAME) == -1:
+        return False
+
     msg = str(msg[0])
 
     pReq = thread_msg(BDataLogReq)
@@ -72,6 +74,9 @@ def BDATALOG(sub, *msg: object):
 
 
 def BDATARPT(sub, file_data, *msg: object):
+    if thread_id(BDATA_THREAD_NAME) == -1:
+        return False
+
     msg = str(msg[0])
 
     pReq = thread_msg(BDataLogReq)

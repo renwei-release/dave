@@ -31,6 +31,7 @@ typedef struct {
 } StoreRedis;
 
 static ub _redis_number = 0;
+static ub _redis_boot_times = 0;
 static StoreRedis *_pRedis;
 
 static void
@@ -64,6 +65,14 @@ _store_redis_booting(void)
 	port = cfg_get_ub(CFG_REDIS_PORT, 6379);
 	cfg_get_str(CFG_REDIS_PWD, pwd, sizeof(pwd), "123456");
 
+	if((dave_strlen(address) == 0)
+		|| (port == 0)
+		|| (dave_strlen(pwd) == 0))
+	{
+		STLOG("invalid redis config address:%s port:%d pwd:%s", address, port, pwd);
+		return dave_true;
+	}
+
 	STLOG("address:%s port:%d pwd:%s", address, port, pwd);
 
 	boot_number = 0;
@@ -95,7 +104,8 @@ _store_redis_booting(void)
 static void
 _store_redis_boot_timer_out(TIMERID timer_id, ub thread_index)
 {
-	if(_store_redis_booting() == dave_true)
+	if((_store_redis_booting() == dave_true)
+		| (++ _redis_boot_times > 3))
 	{
 		base_timer_die(timer_id);
 	}
@@ -105,6 +115,7 @@ static void
 _store_redis_init(ub mysql_number)
 {
 	_redis_number = mysql_number;
+	_redis_boot_times = 0;
 
 	_pRedis = dave_ralloc(_redis_number * sizeof(StoreRedis));
 }

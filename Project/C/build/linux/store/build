@@ -11,7 +11,7 @@ LEVEL=$1
 if [ "$LEVEL" == "" ]; then
    LEVEL="alpha"
 fi
-CONTAINER="fedora"
+CONTAINER="ubuntu20"-${USER}
 
 ../ENV ${PRODUCT} ${LEVEL} ${CONTAINER}
 

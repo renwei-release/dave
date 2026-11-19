@@ -9,6 +9,11 @@
 #define __THREAD_ROUTER_H__
 #include "base_define.h"
 
+/*
+ * For service orchestration, 
+ * specific user requests are routed only to specific services.
+ */
+
 #define DAVE_ROUTER_UID_LEN DAVE_UID_LEN
 #define DAVE_ROUTER_SUB_MAX 32
 

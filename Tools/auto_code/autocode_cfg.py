@@ -22,7 +22,9 @@ forgettable_path_list = [
 	"../../Project/C/project/inc/third_party",
 	"../../Project/C/project/src/verno",
     "../../Project/C/project/product/io/sip/src/osip",
-    "../../Project/C/project/product/bdata/src/recorder/aliyun/src/aliyun"
+    "../../Project/C/project/product/bdata/src/recorder/aliyun/src/aliyun",
+    "../../Project/C/project/product/store/src/oracle/src/oracle",
+    "../../Project/C/project/product/store/src/pgsql/src/pgsql"
 ]
 
 

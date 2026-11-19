@@ -96,3 +96,18 @@ def t_json_str_to_dict(json_str):
     if isinstance(json_str, dict):
         return json_str
     return json.loads(json_str)
+
+
+def t_dict_deduplicate(items):
+    item_iterator = iter(items)
+    try:
+        first_item = next(item_iterator)
+    except StopIteration:
+        return []
+
+    expected_type = type(first_item)
+    unique_items = [first_item]
+    for item in item_iterator:
+        if type(item) is expected_type and item not in unique_items:
+            unique_items.append(item)
+    return unique_items

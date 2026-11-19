@@ -126,47 +126,6 @@ dave_dll_cfg_reg(char *cfg_name, dll_cfg_reg_fun reg_fun)
 	}
 }
 
-int
-dave_dll_cfg_remote_set(char *cfg_name, char *cfg_value, int ttl)
-{
-	u32 value_len = dave_strlen(cfg_value);
-
-	if((value_len == 0) || (value_len > 8192))
-	{
-		DLLLOG("cfg set:%s failed! the length too longer:%d", cfg_name, value_len);
-		return -1;
-	}
-
-	if(rcfg_set((s8 *)cfg_name, (s8 *)cfg_value, (sb)ttl) != RetCode_OK)
-		return -1;
-	else
-		return 0;
-}
-
-int
-dave_dll_cfg_remote_get(char *cfg_name, char *cfg_value_ptr, int cfg_value_len)
-{
-	dave_memset(cfg_value_ptr, 0x00, cfg_value_len);
-
-	if(rcfg_get((s8 *)cfg_name, (s8 *)cfg_value_ptr, cfg_value_len) < 0)
-	{
-		return -1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-int
-dave_dll_cfg_remote_del(char *cfg_name)
-{
-	if(rcfg_del(cfg_name) == dave_false)
-		return -1;
-	else
-		return 0;
-}
-
 void
 dave_dll_poweroff(void)
 {
@@ -302,7 +261,7 @@ dave_dll_system_offline(void)
 int
 dave_dll_timer_creat(const char *name, int alarm_second, dll_timer_fun timer_fun)
 {
-	if(base_timer_creat((char *)name, (base_timer_fun)timer_fun, alarm_second * 1000) != INVALID_TIMER_ID)
+	if(base_timer_creat((char *)name, (base_timer_fun)timer_fun, alarm_second * 1000) == INVALID_TIMER_ID)
 		return -1;
 	else
 		return 0;

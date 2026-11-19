@@ -14,6 +14,8 @@
 #include "dave_echo.h"
 #include "store_msg.h"
 #include "store_mysql.h"
+#include "store_oracle.h"
+#include "store_pgsql.h"
 #include "store_redis.h"
 
 /*
@@ -21,7 +23,7 @@
  * and the current design is to have as many connections as there are threads, 
  * so the number of threads needs to be limited.
  */
-#define STORE_THREAD_MAX (16)
+#define STORE_THREAD_MAX (32)
 
 extern void store_debug(ThreadId src, DebugReq *pReq);
 
@@ -45,6 +47,8 @@ static void
 _store_init(MSGBODY *msg)
 {
 	store_mysql_init(_store_thread_number());
+	store_oracle_init(_store_thread_number());
+	store_pgsql_init(_store_thread_number());
 	store_redis_init(_store_thread_number());
 }
 
@@ -63,8 +67,14 @@ _store_main(MSGBODY *msg)
 		case STORE_MYSQL_REQ:
 				store_mysql_sql(msg->msg_src, msg->thread_wakeup_index, (StoreMysqlReq *)(msg->msg_body));
 			break;
+		case STORE_ORACLE_REQ:
+				store_oracle_sql(msg->msg_src, msg->thread_wakeup_index, (StoreOracleReq *)(msg->msg_body));
+			break;
 		case STORE_REDIS_REQ:
 				store_redis_command(msg->msg_src, msg->thread_wakeup_index, (StoreRedisReq *)(msg->msg_body));
+			break;
+		case STORE_PGSQL_REQ:
+				store_pgsql_sql(msg->msg_src, msg->thread_wakeup_index, (StorePgsqlReq *)(msg->msg_body));
 			break;
 		default:
 			break;
@@ -75,6 +85,8 @@ static void
 _store_exit(MSGBODY *msg)
 {
 	store_mysql_exit();
+	store_oracle_exit();
+	store_pgsql_exit();
 	store_redis_exit();
 }
 

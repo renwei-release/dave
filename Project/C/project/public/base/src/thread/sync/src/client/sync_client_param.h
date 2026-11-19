@@ -10,9 +10,9 @@
 #include "sync_param.h"
 
 #define SYNC_CLIENT_BASE_TIME (1000)
-#define SYNC_SERVER_LEFT_MAX (60)
+#define SYNC_SERVER_LEFT_MAX (780)
 #define SYNC_CLIENT_HEARTBEAT_TIME 15
-#define SYNC_RECONNECT_TIMES (3)
+#define SYNC_RECONNECT_TIMES (9)
 #define SYNC_BOOTING_RECIPROCAL (3)
 
 #endif

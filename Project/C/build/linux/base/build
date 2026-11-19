@@ -15,7 +15,7 @@ FORM=$2
 if [ "$FORM" == "" ]; then
    FORM="BIN"
 fi
-CONTAINER="fedora"
+CONTAINER="fedora30"-${USER}
 
 if [ "$FORM" == "BIN" ]; then
    chmod +x ../ENV

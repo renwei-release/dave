@@ -12,8 +12,11 @@
 
 #define RXTX_MAX (DAVE_SERVER_SUPPORT_SOCKET_MAX)
 
-#define RX_TX_BUF_MIN (16 * 1024 * 1024)
-#define RX_TX_BUF_WARRING (1024 * 1024)
+#define RX_TX_BUF_MIN (64 * 1024)
+#define RX_TX_BUF_WARRING (16 * 1024)
+#define RX_TX_SECURELY_BUF_LEN (256)
+#define RX_TX_AUTOMATIC_EXPANSION (3 * 1024 * 1024)
+#define RX_TX_BUF_SHRINK_COUNTER_MAX (128)
 
 #define RXTX_STACK_VERSION	(0x02)
 
@@ -42,6 +45,7 @@ typedef struct {
 	u8 *rx_buffer_ptr;
 	ub rx_buffer_len;
 	ub rx_buffer_malloc_len;
+	ub rx_buffer_shrink_counter;
 	stack_receive_fun receive_fun;
 	void *param;
 	ThreadId owner_thread;

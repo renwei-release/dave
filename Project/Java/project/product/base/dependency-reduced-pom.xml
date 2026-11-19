@@ -16,7 +16,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <release>17</release>
+          <release>25</release>
         </configuration>
       </plugin>
       <plugin>
@@ -115,8 +115,8 @@
     </profile>
   </profiles>
   <properties>
-    <maven.compiler.target>17</maven.compiler.target>
-    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
+    <maven.compiler.source>25</maven.compiler.source>
     <base.api.version>1.0.0</base.api.version>
     <base.api.jarPath>${project.basedir}/../../public/base/target/base-api-${base.api.version}.jar</base.api.jarPath>
   </properties>

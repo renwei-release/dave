@@ -58,7 +58,7 @@
 #define DAVE_SEARCH_INDEX_MAX 4096
 #endif
 
-#define DAVE_PUBLIC_TIMER_OUT 360
+#define DAVE_PUBLIC_TIMER_OUT 3600
 
 #endif
 

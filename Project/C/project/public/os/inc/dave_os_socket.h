@@ -26,6 +26,9 @@ s32 dave_os_accept(s32 socket, SocNetInfo *pNetInfo);
 
 void dave_os_epoll(s32 socket);
 
+// Request a SOC_EVENT_SND notification when a backpressured socket becomes writable.
+dave_bool dave_os_wait_write(s32 socket);
+
 dave_bool dave_os_recv(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub *data_len);
 
 sb dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dave_bool urg);
@@ -33,6 +36,8 @@ sb dave_os_send(s32 socket, SocNetInfo *pNetInfo, u8 *data_ptr, ub data_len, dav
 dave_bool dave_os_close(s32 socket, dave_bool clean_wait);
 
 dave_bool dave_os_gethostbyname(s8 *ip_ptr, ub ip_len, char *domain);
+
+dave_bool dave_os_listening_on_the_port(s8 *ip_ptr, ub ip_len, u16 port);
 
 #endif
 

@@ -14,6 +14,7 @@
 #include "base_tools.h"
 #include "base_lock.h"
 #include "base_dll_main.h"
+#include "base_log.h"
 
 static ThreadId _main_thread = INVALID_THREAD_ID;
 
@@ -31,6 +32,10 @@ _product_main_id(void)
 	if(main_id == INVALID_THREAD_ID)
 	{
 		main_id = thread_id(upper(product_name));
+	}
+	if(main_id == INVALID_THREAD_ID)
+	{
+		main_id = thread_id(SYNC_SERVER_THREAD_NAME);
 	}
 
 	return main_id;

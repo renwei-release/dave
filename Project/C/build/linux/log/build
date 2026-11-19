@@ -11,7 +11,7 @@ LEVEL=$1
 if [ "$LEVEL" == "" ]; then
    LEVEL="alpha"
 fi
-CONTAINER="fedora"
+CONTAINER="fedora30"-${USER}
 
 chmod a+x ../ENV
 ../ENV ${PRODUCT} ${LEVEL} ${CONTAINER}

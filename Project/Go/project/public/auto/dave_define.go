@@ -12,7 +12,6 @@ package auto
  * ================================================================================
  */
 
-const DAVE_COMMENT_MCARD_ARRAY_MAX = 16
 const DAVE_DBA_PAGE_MAX = 32
 const DAVE_E164_NUMBER_LEN = 32
 const DAVE_GLOBALLY_IDENTIFIER_LEN = 33

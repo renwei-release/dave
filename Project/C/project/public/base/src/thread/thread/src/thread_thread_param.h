@@ -29,6 +29,7 @@ typedef struct {
 	pthread_t thr_id;
 	pthread_mutex_t m_mutex_t;
 	pthread_cond_t  m_cond_t;
+	dave_bool wakeup_pending;	// Protected by m_mutex_t and consumed by the sleep path.
 
 	ub wakeup_index;
 

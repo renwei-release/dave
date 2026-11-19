@@ -61,7 +61,7 @@
 #endif
 
 #ifdef __DAVE_PRODUCT_IO__
-#define WEBSOCKET_3RDPARTY
+// #define WEBSOCKET_3RDPARTY
 #endif
 
 #ifdef __DAVE_PRODUCT_IO__

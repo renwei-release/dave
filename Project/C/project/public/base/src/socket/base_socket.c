@@ -210,11 +210,10 @@ _socket_write(ThreadId src, SocketWrite *pWrite)
 	if(socket_external_send(src, pWrite->socket, &(pWrite->IPInfo), pWrite->data, pWrite->close_flag) == dave_false)
 	{
 		dave_mfree(pWrite->data);
-	}
-
-	if(pWrite->close_flag == SOCKETINFO_WRITE_THEN_CLOSE)
-	{
-		socket_external_close(src, pWrite->socket);
+		if(pWrite->close_flag == SOCKETINFO_WRITE_THEN_CLOSE)
+		{
+			socket_external_close(src, pWrite->socket);
+		}
 	}
 }
 

@@ -9,6 +9,23 @@ import base64
 
 
 def t_crypto_base64_encode(data):
+    if isinstance(data, str):
+        raw = data.encode('utf-8')
+    elif isinstance(data, (bytes, bytearray, memoryview)):
+        raw = bytes(data)
+    else:
+        raise TypeError('data must be str or bytes-like')
+
+    return base64.b64encode(raw).decode('utf-8')
+
+
+def t_crypto_base64_decode(data):
     if isinstance(data, bytes):
-        return base64.b64encode(data).decode('utf-8')
-    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+        decoded = base64.b64decode(data)
+    else:
+        decoded = base64.b64decode(data.encode('utf-8'))
+
+    try:
+        return decoded.decode('utf-8')
+    except UnicodeDecodeError:
+        return decoded

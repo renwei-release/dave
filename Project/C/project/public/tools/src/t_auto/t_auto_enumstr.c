@@ -18,7 +18,6 @@
 #include "dave_error_code.h"
 #include "dave_mcard.h"
 #include "nlp_param.h"
-#include "bbs_param.h"
 #include "bdata_msg.h"
 #include "dba_msg.h"
 #include "http_param.h"
@@ -448,30 +447,6 @@ t_auto_ChainType_str(ChainType enum_value)
 			break;
 		case ChainType_max:
 				value_str = "'ChainType_max-0xff'";
-			break;
-		default:
-				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
-			break;
-	}
-
-	return value_str;
-}
-
-s8 *
-t_auto_CommentAttributes_str(CommentAttributes enum_value)
-{
-	s8 *value_str = _string_buf;
-
-	switch(enum_value)
-	{
-		case CommentAttributes_NULL:
-				value_str = "'CommentAttributes_NULL-0'";
-			break;
-		case CommentAttributes_POST:
-				value_str = "'CommentAttributes_POST-1'";
-			break;
-		case CommentAttributes_REPLY:
-				value_str = "'CommentAttributes_REPLY-2'";
 			break;
 		default:
 				dave_snprintf(_string_buf, sizeof(_string_buf), "'%d'", enum_value);
@@ -4610,14 +4585,8 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 		case MSGID_RPC_DEBUG_RSP:
 				value_str = "'MSGID_RPC_DEBUG_RSP-37'";
 			break;
-		case MSGID_CFG_REMOTE_UPDATE:
-				value_str = "'MSGID_CFG_REMOTE_UPDATE-38'";
-			break;
 		case MSGID_DOS_FORWARD:
 				value_str = "'MSGID_DOS_FORWARD-39'";
-			break;
-		case MSGID_CFG_REMOTE_SYNC_UPDATE:
-				value_str = "'MSGID_CFG_REMOTE_SYNC_UPDATE-40'";
 			break;
 		case MSGID_QUEUE_UPLOAD_MESSAGE_REQ:
 				value_str = "'MSGID_QUEUE_UPLOAD_MESSAGE_REQ-41'";
@@ -4684,6 +4653,12 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case FREE_MESSAGE_AREA_5:
 				value_str = "'FREE_MESSAGE_AREA_5-104'";
+			break;
+		case GENERAL_LOOP_MSG:
+				value_str = "'GENERAL_LOOP_MSG-105'";
+			break;
+		case SQL_LOOP_MSG:
+				value_str = "'SQL_LOOP_MSG-106'";
 			break;
 		case SOCKET_BIND_REQ:
 				value_str = "'SOCKET_BIND_REQ-1000'";
@@ -4852,6 +4827,18 @@ t_auto_RPCMSG_str(RPCMSG enum_value)
 			break;
 		case STORE_REDIS_RSP:
 				value_str = "'STORE_REDIS_RSP-3004'";
+			break;
+		case STORE_PGSQL_REQ:
+				value_str = "'STORE_PGSQL_REQ-3005'";
+			break;
+		case STORE_PGSQL_RSP:
+				value_str = "'STORE_PGSQL_RSP-3006'";
+			break;
+		case STORE_ORACLE_REQ:
+				value_str = "'STORE_ORACLE_REQ-3007'";
+			break;
+		case STORE_ORACLE_RSP:
+				value_str = "'STORE_ORACLE_RSP-3008'";
 			break;
 		case DBMSG_SYS_INQ_IMAGE_REQ:
 				value_str = "'DBMSG_SYS_INQ_IMAGE_REQ-4212'";

@@ -275,7 +275,7 @@ thread_index_list_loop(ub thread_index)
 {
 	ThreadThread *pTThread = NULL;
 
-	SAFECODEv2R(_thread_index_list_pv, { pTThread = _thread_index_list_loop(thread_index); });
+	SAFECODEv2W(_thread_index_list_pv, { pTThread = _thread_index_list_loop(thread_index); });
 
 	return pTThread;
 }

@@ -9,6 +9,10 @@
 PROJECT=${PWD##*/}
 CONTAINER=$1
 
+if [ "$CONTAINER" == "" ]; then
+   CONTAINER="fedora30"-${USER}
+fi
+
 ../ENV ${CONTAINER}
 
 if [ ! "$CONTAINER" == "" ]; then

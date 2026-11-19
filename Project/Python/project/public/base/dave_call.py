@@ -5,6 +5,10 @@
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.
 # */
+import threading
+from ..auto import *
+from ..tools.t_rand import t_rand
+from .dave_dll import *
 from .dave_thread import *
 from .dave_tools import *
 from .dave_log import *
@@ -40,10 +44,7 @@ def _general_data_process(general_data):
     return general_data, general_bin
 
 
-# =====================================================================
-
-
-def dave_call_general(call_dst, general_type, general_data):
+def _general_call_process(dst_gid, call_dst, general_type, general_data):
     if type(call_dst) == str:
         if thread_id(call_dst) == -1:
             return {}
@@ -67,7 +68,16 @@ def dave_call_general(call_dst, general_type, general_data):
     pReq.contents.send_req_us_time = t_time_current_us()
     pReq.contents.ptr = None
 
-    pRsp = sync_msg(call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
+    if dave_python_work_mode() == b'Coroutine Outer Loop':
+        if dst_gid == None:
+            pRsp = write_co(call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
+        else:
+            pRsp = gid_co(dst_gid, call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
+    else:
+        if dst_gid == None:
+            pRsp = sync_msg(call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
+        else:
+            pRsp = gid_sync(dst_gid, call_dst, MSGID_GENERAL_REQ, pReq, MSGID_GENERAL_RSP, GeneralRsp)
 
     if pRsp == None:
         return {}
@@ -84,120 +94,64 @@ def dave_call_general(call_dst, general_type, general_data):
     return general_result
 
 
-def dave_call_general_req(call_dst, general_type, general_data):
-    if type(call_dst) == str:
-        if thread_id(call_dst) == -1:
-            return None
+__general_task__ = {}
+__general_task_lock__ = threading.Lock()
+__general_task_cond__ = threading.Condition(__general_task_lock__)
+__GENERAL_PENDING__ = object()
 
-    pReq = thread_msg(GeneralReq)
 
-    if type(general_type) == str:
-        general_type = bytes(general_type, encoding='utf8')
-    else:
-        DAVELOG(f"Wrong general_type type:{general_type}!!!")
-        general_type = None
+def _general_loop(src_name, src_id, msg_len, msg_body):
+    global __general_task__
+    global __general_task_lock__
+    global __general_task_cond__
 
-    if general_type == None:
-        general_type = b'None'
+    pLoop = struct_copy(MsgInnerLoop, msg_body, msg_len)
 
-    general_data, general_bin = _general_data_process(general_data)
+    params = mbuf_to_dict(pLoop.param, free_mbuf=True)
 
-    pReq.contents.general_type = general_type
-    pReq.contents.general_data = general_data
-    pReq.contents.general_bin = general_bin
-    pReq.contents.send_req_us_time = t_time_current_us()
-    pReq.contents.ptr = None
+    task_id = params.get("task_id")
+    call_dst = params.get("call_dst")
+    dst_gid = params.get("dst_gid")
+    general_type = params.get("general_type")
+    general_data = params.get("general_data")
 
-    write_msg(call_dst, MSGID_GENERAL_REQ, pReq)
+    general_result = _general_call_process(dst_gid, call_dst, general_type, general_data)
+
+    with __general_task_cond__:
+        __general_task__[task_id] = general_result
+        __general_task_cond__.notify_all()
     return
 
 
-def dave_call_general_rsp(call_dst, general_type, general_data):
-    if type(call_dst) == str:
-        if thread_id(call_dst) == -1:
-            return None
-
-    pRsp = thread_msg(GeneralRsp)
-
-    if type(general_type) == str:
-        general_type = bytes(general_type, encoding='utf8')
-    else:
-        DAVELOG(f"Wrong general_type type:{general_type}!!!")
-        general_type = None
-
-    if general_type == None:
-        general_type = b'None'
-
-    general_data, general_bin = _general_data_process(general_data)
-
-    pRsp.contents.general_type = general_type
-    pRsp.contents.general_data = general_data
-    pRsp.contents.general_bin = general_bin
-    pRsp.contents.send_rsp_us_time = t_time_current_us()
-    pRsp.contents.ptr = None
-
-    write_msg(call_dst, MSGID_GENERAL_RSP, pRsp)
-    return
+# =====================================================================
 
 
-def dave_call_rtc_translation_start(call_dst, translation_id, src_lang, dst_lang):
-    if type(call_dst) == str:
-        if thread_id(call_dst) == -1:
-            return None
+def dave_call_general(call_dst, general_type, general_data, dst_gid=None):
+    global __general_task__
+    global __general_task_lock__
+    global __general_task_cond__
+    global __GENERAL_PENDING__
 
-    if type(translation_id) == str:
-        translation_id = bytes(translation_id, encoding='utf8')
-    if type(src_lang) == str:
-        src_lang = bytes(src_lang, encoding='utf8')
-    if type(dst_lang) == str:
-        dst_lang = bytes(dst_lang, encoding='utf8')
+    with __general_task_cond__:
+        task_id = t_rand()
+        while task_id in __general_task__:
+            task_id = t_rand()
+        __general_task__[task_id] = __GENERAL_PENDING__
 
-    pReq = thread_msg(RTCTranslationStartReq)
+    inner_loop(_general_loop, {
+        "task_id": task_id,
+        "call_dst": call_dst,
+        "dst_gid": dst_gid,
+        "general_type": general_type,
+        "general_data": general_data
+    }, GENERAL_LOOP_MSG)
 
-    pReq.contents.translation_id = translation_id
-    pReq.contents.src_lang = src_lang
-    pReq.contents.dst_lang = dst_lang
-    pReq.contents.ptr = None
+    with __general_task_cond__:
+        while __general_task__.get(task_id) is __GENERAL_PENDING__:
+            __general_task_cond__.wait()
+        general_result = __general_task__.pop(task_id, {})
 
-    pRsp = sync_msg(call_dst, RTC_TRANSLATION_START_REQ, pReq, RTC_TRANSLATION_START_RSP, RTCTranslationStartRsp)
-    if pRsp == None:
-        return None
-    return pRsp.gid
+    if general_result == {}:
+        DAVELOG(f"general call returned empty result for task_id:{task_id} call_dst:{call_dst} general_type:{general_type}")
+    return general_result
 
-
-def dave_call_rtc_translation_stop(call_dst, translation_id):
-    if type(call_dst) == str:
-        if thread_id(call_dst) == -1:
-            return False
-
-    if type(translation_id) == str:
-        translation_id = bytes(translation_id, encoding='utf8')
-
-    pReq = thread_msg(RTCTranslationStopReq)
-
-    pReq.contents.translation_id = translation_id
-    pReq.contents.ptr = None
-
-    pRsp = sync_msg(call_dst, RTC_TRANSLATION_STOP_REQ, pReq, RTC_TRANSLATION_STOP_RSP, RTCTranslationStopRsp)
-    if pRsp == None:
-        return False
-    return True
-
-
-def dave_call_rtc_translation_data(call_dst, translation_id, sequence_number, translation_data):
-    if type(call_dst) == str:
-        if thread_id(call_dst) == -1:
-            return False
-
-    if type(translation_id) == str:
-        translation_id = bytes(translation_id, encoding='utf8')
-
-    pReq = thread_msg(RTCTranslationDataReq)
-
-    pReq.contents.translation_id = translation_id
-    pReq.contents.sequence_number = sequence_number
-    pReq.contents.payload_data = byte_to_mbuf(translation_data)
-    pReq.contents.ptr = None
-
-    write_msg(call_dst, RTC_TRANSLATION_DATA_REQ, pReq)
-    return

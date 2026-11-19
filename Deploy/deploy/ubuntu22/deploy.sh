@@ -1,6 +1,6 @@
 #!/bin/bash
 #/*
-# * Copyright (c) 2024 Renwei
+# * Copyright (c) 2026 Renwei
 # *
 # * This is a free software; you can redistribute it and/or modify
 # * it under the terms of the MIT license. See LICENSE for details.

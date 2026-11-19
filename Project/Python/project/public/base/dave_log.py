@@ -16,7 +16,11 @@ davelib = dave_dll()
 def __dave_log__(*log_msg: object, log_type):
     __func__, __LINE__ = t_sys_myline(3)
     log_msg = str(log_msg[0][0]).encode("utf-8")
-    davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(log_type))
+
+    if len(log_msg) < 4096:
+        davelib.dave_dll_log(c_char_p(__func__), c_int(__LINE__), c_char_p(log_msg), c_int(log_type))
+    else:
+        print(log_msg.decode("utf-8"))
     return
 
 

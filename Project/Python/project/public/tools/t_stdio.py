@@ -8,6 +8,7 @@
 import string
 import unicodedata
 import re
+import html
 
 
 # =====================================================================
@@ -89,23 +90,6 @@ def t_stdio_remove_the_middle_space(string):
     return string
 
 
-def t_stdio_remove_all_punctuation(string):
-    if not string:
-        return ""
-
-    # 1. 移除空白字符（空格、换行、制表符等）
-    string = "".join(string.split())
-
-    # 2. 移除所有标点符号（包括中英文标点）
-    # \W 会匹配非字母数字下划线的字符（在 Unicode 模式下包括大部分标点）
-    # _ 也会被作为标点移除（如果需要的话）
-    string = re.sub(r'[^\w\s]', '', string, flags=re.UNICODE)
-    # 如果想更彻底地去掉下划线：
-    string = string.replace('_', '')
-
-    return string
-
-
 def t_stdio_remove_all_emoji(string):
     if not string:
         return ""
@@ -134,6 +118,123 @@ def t_stdio_remove_all_emoji(string):
     )
 
     return string
+
+
+def t_stdio_remove_all_punctuation(string):
+    if not string:
+        return ""
+
+    # 1. 移除空白字符（空格、换行、制表符等）
+    string = "".join(string.split())
+
+    # 2. 移除所有标点符号（包括中英文标点）
+    # \W 会匹配非字母数字下划线的字符（在 Unicode 模式下包括大部分标点）
+    # _ 也会被作为标点移除（如果需要的话）
+    string = re.sub(r'[^\w\s]', '', string, flags=re.UNICODE)
+    # 如果想更彻底地去掉下划线：
+    string = string.replace('_', '')
+
+    return string
+
+
+def t_stdio_remove_image_from_string(string_data: str) -> str:
+    if not isinstance(string_data, str):
+        return ""
+
+    # 移除 Markdown 图片语法 ![alt text](image_url)
+    string_data = re.sub(r"!\[.*?\]\(.*?\)", "", string_data)
+
+    # 移除 HTML 图片标签 <img src="image_url" alt="alt text" />
+    string_data = re.sub(r"<img\s+[^>]*>", "", string_data)
+
+    return string_data
+
+
+def t_stdio_load_data_uri_data_param(data_uri: str) -> str:
+    if not isinstance(data_uri, str):
+        return ""
+
+    normalized_uri = data_uri.strip()
+    if not normalized_uri:
+        return ""
+
+    #
+    # Standard Data URI form: data:<mime>;base64,<payload>
+    #
+    if normalized_uri.lower().startswith("data:"):
+        if "," not in normalized_uri:
+            return ""
+
+        header, payload = normalized_uri.split(",", 1)
+        if ";base64" not in header.lower():
+            return ""
+
+        # Remove accidental spaces/newlines in payload for safer downstream decode.
+        return re.sub(r"\s+", "", payload)
+
+    # Backward-compatible path: if caller already passes raw base64, return as-is.
+    return normalized_uri
+
+
+def t_stdio_markdown_to_plain_text(markdown: str) -> str:
+    if not isinstance(markdown, str):
+        return ""
+
+    text = markdown
+
+    # Normalize line endings early for consistent processing.
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Keep code content, remove fenced block markers.
+    text = re.sub(r"```[\w\-]*\n", "", text)
+    text = text.replace("```", "")
+
+    # Convert image/link markdown to visible text only.
+    text = re.sub(r"!\[([^\]]*)\]\(([^\)]*)\)", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\(([^\)]*)\)", r"\1", text)
+
+    # Remove heading/list/quote markers.
+    text = re.sub(r"^\s{0,3}#{1,6}\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^\s{0,3}>\s?", "", text, flags=re.MULTILINE)
+    text = re.sub(r"^\s{0,3}([-*+]|\d+\.)\s+", "", text, flags=re.MULTILINE)
+
+    # Remove emphasis/inline code markers and horizontal rules.
+    text = re.sub(r"(`{1,3})(.*?)\1", r"\2", text)
+    text = re.sub(r"(\*\*|__)(.*?)\1", r"\2", text)
+    text = re.sub(r"(\*|_)(.*?)\1", r"\2", text)
+    text = re.sub(r"^\s*([-*_])\1{2,}\s*$", "", text, flags=re.MULTILINE)
+
+    # Replace common markdown hard-break / HTML-break tags with real line breaks.
+    text = re.sub(r"[ \t]{2,}\n", "\n", text)
+    text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
+
+    # Convert common block-level HTML tags to line breaks before stripping tags.
+    # This keeps independent text chunks in separate lines (e.g., table cells/rows/paragraphs).
+    text = re.sub(
+        r"<\s*/?\s*(p|div|section|article|li|ul|ol|tr|td|th|table|h[1-6])(?:\s+[^>]*)?>",
+        "\n",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+    # Remove remaining HTML tags and unescape entities like &nbsp; / &amp;.
+    text = re.sub(r"<[^>]+>", "", text)
+    text = html.unescape(text)
+
+    # Drop markdown table separator lines such as: | --- | :---: |
+    text = re.sub(r"^\s*\|?(?:\s*:?-{3,}:?\s*\|)+\s*$", "", text, flags=re.MULTILINE)
+
+    # Collapse repeated blank lines produced by tag-boundary splitting.
+    text = re.sub(r"\n{2,}", "\n", text)
+
+    # Ensure each extracted independent text segment is separated by a newline.
+    segments = []
+    for line in text.split("\n"):
+        normalized = re.sub(r"[ \t]+", " ", line).strip()
+        if normalized:
+            segments.append(normalized)
+
+    return "\n".join(segments)
 
 
 def t_stdio_sql_escape(input_string):

@@ -16,15 +16,17 @@ fi
 SHHOMEPATH=$(cd `dirname $0`; pwd)
 
 if [[ "$DEPLOYMODEL" == "" ]] || [[ "$DEPLOYMODEL" == "log" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then
-   cp log_Dockerfile Dockerfile
+   cp log_Dockerfile Dockerfile || exit $?
    IMAGE="log_docker_image"
    TAG="latest"
    EXTEND="-v /dave/log:/dave/log"
-   cd ../../
-   chmod +x *.sh
+   cd ../../ || exit $?
+   chmod +x *.sh || exit $?
    ./deploy.sh -p ${PROJECT} -n ${PROJECT}-log -i ${IMAGE} -t ${TAG} -e "$EXTEND" -h ${HOMEPATH}
-   cd ${SHHOMEPATH}
-   rm -rf Dockerfile
+   DEPLOY_STATUS=$?
+   cd "${SHHOMEPATH}" || exit $?
+   rm -f Dockerfile || exit $?
+   [ "$DEPLOY_STATUS" -eq 0 ] || exit "$DEPLOY_STATUS"
 fi
 
 if [[ "$DEPLOYMODEL" == "es" ]] || [[ "$DEPLOYMODEL" == "all" ]]; then

@@ -32,9 +32,9 @@
 
 #define SYNC_STACK_HEAD_MAX_LEN (2048)
 
-#define SYNC_RPC_EFFICIENCY_WARNING (8 * 1024)
+#define SYNC_RPC_EFFICIENCY_WARNING (32 * 1024)
 
-#define SYNC_RPC_BIG_PACKAGE (4 * 1024 * 1024)
+#define SYNC_RPC_BIG_PACKAGE (256 * 1024 * 1024)
 
 typedef struct {
 	dave_bool support_queue_server;

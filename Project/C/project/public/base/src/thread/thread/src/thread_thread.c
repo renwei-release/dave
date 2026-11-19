@@ -46,6 +46,7 @@ _tthread_reset(ThreadThread *pTThread)
 	thread_router_reset(&(pTThread->router));
 
 	pTThread->state = ThreadState_INIT;
+	pTThread->wakeup_pending = dave_false;
 
 	pTThread->wakeup_index = 0;
 
@@ -64,7 +65,7 @@ _tthread_reset_all(void)
 
 		thread_queue_booting(_thread_thread[tthread_index].thread_queue, THREAD_THREAD_QUEUE_NUM);
 
-		t_lock_reset(&(_thread_thread[tthread_index].sync.sync_pv));
+		thread_booting_sync(&(_thread_thread[tthread_index].sync));
 
 		_tthread_reset(&_thread_thread[tthread_index]);
 	}
@@ -82,12 +83,17 @@ _tthread_sleep_thread(ThreadThread *pTThread)
 	pthread_mutex_lock(&(pTThread->m_mutex_t));
 	if(pTThread->state == ThreadState_RUNNING)
 	{
-		pTThread->state = ThreadState_SLEEP;
-
-		while(pTThread->state == ThreadState_SLEEP)
+		if(pTThread->wakeup_pending == dave_false)
 		{
-			pthread_cond_wait(&(pTThread->m_cond_t), &(pTThread->m_mutex_t));
+			pTThread->state = ThreadState_SLEEP;
+
+			while((pTThread->state == ThreadState_SLEEP)
+				&& (pTThread->wakeup_pending == dave_false))
+			{
+				pthread_cond_wait(&(pTThread->m_cond_t), &(pTThread->m_mutex_t));
+			}
 		}
+		pTThread->wakeup_pending = dave_false;
 	}
 	pthread_mutex_unlock(&(pTThread->m_mutex_t));
 }
@@ -96,6 +102,7 @@ static inline dave_bool
 _tthread_wakeup_thread(ThreadThread *pTThread)
 {
 	pthread_mutex_lock(&(pTThread->m_mutex_t));
+	pTThread->wakeup_pending = dave_true;
 	pTThread->state = ThreadState_RUNNING;
 	pthread_mutex_unlock(&(pTThread->m_mutex_t));
 

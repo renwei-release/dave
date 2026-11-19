@@ -39,5 +39,33 @@ typedef struct {
 	void *ptr;
 } StoreRedisRsp;
 
+/* for STORE_PGSQL_REQ message */
+typedef struct {
+	MBUF *sql;
+	void *ptr;
+} StorePgsqlReq;
+
+/* for STORE_PGSQL_RSP message */
+typedef struct {
+	RetCode ret;
+	s8 msg[4096];
+	MBUF *data;
+	void *ptr;
+} StorePgsqlRsp;
+
+/* for STORE_ORACLE_REQ message */
+typedef struct {
+	MBUF *sql;
+	void *ptr;
+} StoreOracleReq;
+
+/* for STORE_ORACLE_RSP message */
+typedef struct {
+	RetCode ret;
+	s8 msg[4096];
+	MBUF *data;
+	void *ptr;
+} StoreOracleRsp;
+
 #endif
 

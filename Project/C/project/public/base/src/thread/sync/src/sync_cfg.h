@@ -15,9 +15,9 @@
 
 void sync_cfg_external_incoming_sync_domain(s8 *sync_domain);
 
-dave_bool sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port);
-
 u16 sync_cfg_get_syncs_port(void);
+
+dave_bool sync_cfg_get_syncs_ip_and_port(u8 ip[DAVE_IP_V4_ADDR_LEN], u16 *port);
 
 dave_bool sync_cfg_get_local_ip(u8 ip[DAVE_IP_V4_ADDR_LEN]);
 

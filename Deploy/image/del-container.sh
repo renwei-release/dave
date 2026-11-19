@@ -5,7 +5,4 @@ CONTAINER=$1
 docker stop ${CONTAINER}
 docker rm ${CONTAINER}
 
-docker image prune -a
-
-# Clean cache
-docker builder prune
+chmod +x ./prune-image.sh && ./prune-image.sh

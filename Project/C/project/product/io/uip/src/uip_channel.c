@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Renwei
+ * Copyright (c) 2026 Renwei
  *
  * This is a free software; you can redistribute it and/or modify
  * it under the terms of the MIT license. See LICENSE for details.
@@ -11,11 +11,22 @@
 #include "uip_auth_key.h"
 #include "uip_log.h"
 
+#define ENABLE_PGSQL
+
 #define UIP_CHANNEL_KV_TABLE "uctKV"
 
 #define DB_NAME "UIP"
 
 #define CHANNEL_NAME "channel"
+#ifdef ENABLE_PGSQL
+#define CHANNEL_DISC "(id SERIAL PRIMARY KEY,"\
+	"channel_name VARCHAR(512) NOT NULL,"\
+	"auth_key VARCHAR(512) NOT NULL,"\
+	"allow_method TEXT,"\
+	"valid CHAR(1) NOT NULL CHECK (valid IN ('Y', 'N')),"\
+	"updatetime timestamp default current_timestamp);"
+#define SQLACTION STOREPGSQL
+#else
 #define CHANNEL_DISC "(id int primary key auto_increment,"\
 	"channel_name VARCHAR(512) NOT NULL,"\
 	"auth_key VARCHAR(512) NOT NULL,"\
@@ -23,6 +34,8 @@
 	"valid ENUM('Y', 'N') NOT NULL,"\
 	"updatetime timestamp default current_timestamp,"\
 	"INDEX (channel_name));"
+#define SQLACTION STORESQL
+#endif
 
 typedef struct {
 	s8 channel_name[DAVE_NORMAL_NAME_LEN];
@@ -184,8 +197,16 @@ _uip_channel_load_from_db(void)
 	StoreSqlRet ret;
 	s8 *channel_name, *auth_key, *allow_method;
 
-	STORESQL("CREATE DATABASE %s", DB_NAME);
-	STORESQL("CREATE TABLE %s.%s %s", DB_NAME, CHANNEL_NAME, CHANNEL_DISC);
+#ifdef ENABLE_PGSQL
+	SQLACTION("CREATE DATABASE %s", DB_NAME);
+	SQLACTION("CREATE SCHEMA IF NOT EXISTS %s", DB_NAME);
+	SQLACTION("CREATE TABLE %s.%s %s", DB_NAME, CHANNEL_NAME, CHANNEL_DISC);
+	SQLACTION("CREATE INDEX IF NOT EXISTS %s_channel_name_idx ON %s.%s (channel_name);",
+		CHANNEL_NAME, DB_NAME, CHANNEL_NAME);
+#else
+	SQLACTION("CREATE DATABASE %s", DB_NAME);
+	SQLACTION("CREATE TABLE %s.%s %s", DB_NAME, CHANNEL_NAME, CHANNEL_DISC);
+#endif
 
 	UIPLOG("uip channel table load ...");
 
@@ -193,7 +214,7 @@ _uip_channel_load_from_db(void)
 	safe_counter = channel_number = 0;
 	while((safe_counter ++) < 102400)
 	{
-		ret = STORESQL("SELECT id, channel_name, auth_key, allow_method FROM %s.%s WHERE id >= %d and valid = \"Y\" LIMIT 1;",
+		ret = SQLACTION("SELECT id, channel_name, auth_key, allow_method FROM %s.%s WHERE id >= %d and valid = 'Y' LIMIT 1;",
 			DB_NAME, CHANNEL_NAME,
 			table_id);
 		if(ret.ret != RetCode_OK)
@@ -231,7 +252,7 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 {
 	StoreSqlRet select_ret, ret;
 
-	select_ret = STORESQL("SELECT id FROM %s.%s WHERE channel_name = \"%s\";",
+	select_ret = SQLACTION("SELECT id FROM %s.%s WHERE channel_name = '%s';",
 		DB_NAME, CHANNEL_NAME,
 		channel_name);
 
@@ -239,14 +260,14 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	{
 		if(allow_method == NULL)
 		{
-			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", valid = \"Y\", updatetime=now() WHERE channel_name = \"%s\";",
+			ret = SQLACTION("UPDATE %s.%s SET auth_key = '%s', valid = 'Y', updatetime=now() WHERE channel_name = '%s';",
 				DB_NAME, CHANNEL_NAME,
 				auth_key,
 				channel_name);
 		}
 		else
 		{
-			ret = STORESQL("UPDATE %s.%s SET auth_key = \"%s\", allow_method = \"%s\", valid = \"Y\", updatetime=now() WHERE channel_name = \"%s\";",
+			ret = SQLACTION("UPDATE %s.%s SET auth_key = '%s', allow_method = '%s', valid = 'Y', updatetime=now() WHERE channel_name = '%s';",
 				DB_NAME, CHANNEL_NAME,
 				auth_key, allow_method,
 				channel_name);
@@ -256,13 +277,13 @@ _uip_channel_store_to_db(s8 *channel_name, s8 *auth_key, s8 *allow_method)
 	{
 		if(allow_method == NULL)
 		{
-			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key, valid) VALUES (\"%s\", \"%s\", \"Y\");",
+			ret = SQLACTION("INSERT INTO %s.%s (channel_name, auth_key, valid) VALUES ('%s', '%s', 'Y');",
 				DB_NAME, CHANNEL_NAME,
 				channel_name, auth_key);
 		}
 		else
 		{
-			ret = STORESQL("INSERT INTO %s.%s (channel_name, auth_key, allow_method, valid) VALUES (\"%s\", \"%s\", \"%s\", \"Y\");",
+			ret = SQLACTION("INSERT INTO %s.%s (channel_name, auth_key, allow_method, valid) VALUES ('%s', '%s', '%s', 'Y');",
 				DB_NAME, CHANNEL_NAME,
 				channel_name, auth_key, allow_method);
 		}
@@ -286,7 +307,7 @@ _uip_channel_delete_to_db(s8 *channel_name)
 {
 	StoreSqlRet ret;
 
-	ret = STORESQL("UPDATE %s.%s SET valid = \"N\", updatetime=now() WHERE channel_name = \"%s\";",
+	ret = SQLACTION("UPDATE %s.%s SET valid = 'N', updatetime=now() WHERE channel_name = '%s';",
 		DB_NAME, CHANNEL_NAME,
 		channel_name);
 

@@ -39,7 +39,6 @@ system_function_table = {
     MSGID_REMOTE_THREAD_ID_READY: fun_None,
     MSGID_REMOTE_THREAD_ID_REMOVE: fun_None,
     MSGID_CFG_UPDATE: fun_None,
-    MSGID_CFG_REMOTE_UPDATE: fun_None,
     BDATA_LOG_RSP: fun_None,
 }
 

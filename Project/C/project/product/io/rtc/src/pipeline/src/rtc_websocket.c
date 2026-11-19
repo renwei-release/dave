@@ -5,6 +5,7 @@
  * it under the terms of the MIT license. See LICENSE for details.
  */
 #include "dave_3rdparty.h"
+#ifdef WEBSOCKET_3RDPARTY
 #include "rtc_main.h"
 #include "rtc_token.h"
 #include "rtc_log.h"
@@ -124,4 +125,6 @@ rtc_websocket_send(RTCClient *pClient, MBUF *data)
 
 	dave_mfree(data);
 }
+
+#endif
 

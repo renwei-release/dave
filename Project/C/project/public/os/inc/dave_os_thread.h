@@ -15,14 +15,18 @@ void dave_os_init_thread(void);
 
 void dave_os_exit_thread(void);
 
+// Returns an opaque handle (not a dereferenceable pointer). The slot is recycled
+// after the function exits; stale handles cannot affect a replacement thread.
 void *dave_os_create_thread(char *name, dave_os_thread_fun fun, void *arg);
 
+// Requests cooperative termination and wakes sleepers; does not wait for exit.
 void dave_os_release_thread(void *thread_id);
 
 void *dave_os_thread_self(u64 *dave_thread_id);
 
 ub dave_os_thread_id(void);
 
+// Only the owning thread may sleep on a non-NULL handle.
 dave_bool dave_os_thread_sleep(void *thread_id);
 
 dave_bool dave_os_thread_wakeup(void *thread_id);

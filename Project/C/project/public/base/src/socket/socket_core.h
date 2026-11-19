@@ -16,6 +16,8 @@ typedef struct {
 	IPBaseInfo IPInfo;
 	MBUF *data;
 	SOCKETINFO snd_flag;
+	MBUF *current_data;
+	ub data_offset;
 
 	void *next;
 } SokcetSndList;
@@ -24,6 +26,8 @@ typedef struct {
 	TLock opt_pv_for_snd;
 
 	dave_bool snd_token;
+	dave_bool wait_write;
+	dave_bool retry_requested;
 	sb snd_list_depth;
 	SokcetSndList *snd_head;
 	SokcetSndList *snd_tail;

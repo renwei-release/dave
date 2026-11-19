@@ -7,6 +7,7 @@
 
 #ifndef __THREAD_STRUCT_H__
 #define __THREAD_STRUCT_H__
+#include <time.h>
 #include "dave_tools.h"
 #include "thread_parameter.h"
 #include "thread_chain.h"
@@ -22,12 +23,15 @@ typedef struct {
 
 typedef struct {
 	TLock sync_pv;
+	pthread_cond_t sync_cond;
+	dave_bool sync_cond_ready;
+	dave_bool sync_busy;
+	struct timespec deadline;
 	s8 wait_name[THREAD_NAME_MAX];
 	ThreadId wait_thread;
 	ub wait_msg;
 	u8 *wait_body;
 	ub wait_len;
-	ub wait_time;
 } ThreadSync;
 
 typedef struct {

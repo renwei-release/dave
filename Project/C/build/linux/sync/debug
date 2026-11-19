@@ -13,8 +13,8 @@ DEPLOYPATH=../../../../../Deploy/deploy/${PRODUCT}
 
 cd ${DEPLOYPATH}
 
-PRODUCTNAME=${PRODUCT}-sync
+PRODUCTNAME=${PRODUCT}-${USER}
 
 echo debug $PRODUCTNAME
-chmod a+x *.sh
+chmod +x *.sh
 ./debug.sh $PRODUCTNAME

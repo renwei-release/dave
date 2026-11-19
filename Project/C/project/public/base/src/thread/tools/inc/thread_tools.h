@@ -32,6 +32,8 @@ ub thread_show_all_info(ThreadStruct *pThread, DateStruct *pWorkDate, s8 *msg, u
 
 void thread_check_pair_msg(ub req_id, ub rsp_id);
 
+void thread_booting_sync(ThreadSync *pSync);
+
 void thread_reset_sync(ThreadSync *pSync);
 
 void __thread_clean_user_input_data__(void *msg_body, ub msg_id, s8 *fun, ub line);

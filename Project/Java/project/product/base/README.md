@@ -1,6 +1,6 @@
 # JNA 控制台项目
 
-本项目为基于 Maven 管理的 Java 17 控制台程序，集成 JNA 库。
+本项目为基于 Maven 管理的 Java 25 控制台程序，集成 JNA 库。
 
 ## 运行方法
 
@@ -9,7 +9,7 @@
 3. 执行 `mvn exec:java -Dexec.mainClass=Main` 运行主程序。
 
 ## 依赖
-- Java 17
+- Java 25
 - Maven
 - JNA 5.13.0
 

@@ -19,6 +19,7 @@
 #include "sync_client_tools.h"
 #include "sync_client_data.h"
 #include "sync_client_tx.h"
+#include "globally_identifier.h"
 #include "sync_test.h"
 #include "sync_lock.h"
 #include "sync_log.h"
@@ -48,6 +49,11 @@ _sync_client_shadow_index_find_other(SyncServer *pMyServer)
 						pMyServer, pMyServer->verno, pMyServer->globally_identifier,
 						pOtherServer, pOtherServer->verno, pOtherServer->globally_identifier,
 						&pHeadServer[server_index], pHeadServer[server_index].verno, pHeadServer[server_index].globally_identifier);
+
+					if(dave_strcmp(pMyServer->globally_identifier, globally_identifier()) == dave_true)
+					{
+						reset_globally_identifier();
+					}
 				}
 			}
 		}
